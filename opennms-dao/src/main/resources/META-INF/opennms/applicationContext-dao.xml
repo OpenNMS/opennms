@@ -100,7 +100,7 @@
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.dao.api.EventdServiceManager" ref="eventdServiceManager" />
 
-  <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultJmxConfigDao"/>
+  <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.cm.DefaultJmxConfigDao"/>
   <onmsgi:service interface="org.opennms.netmgt.dao.jmx.JmxConfigDao" ref="jmxConfigDao" />
 
 

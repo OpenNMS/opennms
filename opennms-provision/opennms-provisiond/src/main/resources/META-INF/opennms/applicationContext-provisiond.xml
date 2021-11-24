@@ -177,7 +177,7 @@
     <constructor-arg value="file:${opennms.home}/etc/provisiond-configuration.xml" />
   </bean>
 
-  <bean id="provisiondConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
+  <bean id="provisiondConfigDao" class="org.opennms.netmgt.dao.cm.DefaultProvisiondConfigurationDao">
   </bean>
   
   
