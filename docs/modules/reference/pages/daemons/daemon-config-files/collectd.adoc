@@ -63,12 +63,12 @@ Attributes are extracted from the HTTP responses using a regular expression.
 | yes
 
 | snmp-config.xml
-| Defines data per-host security settings for SNMP communication.
+| Defines per-host security settings for SNMP communication.
 | no
 | no
 
 | wmi-config.xml
-| Defines data per-host security settings for WMI communication.
+| Defines per-host security settings for WMI communication.
 | no
 | no
 
@@ -78,7 +78,7 @@ Attributes are extracted from the HTTP responses using a regular expression.
 | yes
 
 | wsman-config.xml
-| Defines data per-host security settings for WSMAM communication.
+| Defines per-host security settings for WSMAN communication.
 | no
 | no
 

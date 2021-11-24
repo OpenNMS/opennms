@@ -41,7 +41,7 @@
 |
 
 | JettyServer
-| The Jetty server provides the web user interface of OpenNMS.
+| The Jetty server provides the {page-component-title} web user interface.
 
 | KarafStartupMonitor
 |
@@ -65,7 +65,7 @@
 |
 
 | Reportd
-| Report daemon is used to generate reports.
+| Report daemon generates reports.
 
 | Rtcd
 |
