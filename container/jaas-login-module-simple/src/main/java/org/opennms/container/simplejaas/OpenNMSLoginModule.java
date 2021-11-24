@@ -40,14 +40,14 @@ import javax.security.auth.login.LoginException;
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.apache.karaf.jaas.modules.AbstractKarafLoginModule;
 import org.opennms.netmgt.config.api.UserConfig;
-import org.opennms.web.springframework.security.LoginModuleUtils;
-import org.opennms.web.springframework.security.OpenNMSLoginHandler;
-import org.opennms.web.springframework.security.SpringSecurityUserDao;
+//import org.opennms.web.springframework.security.LoginModuleUtils;
+//import org.opennms.web.springframework.security.OpenNMSLoginHandler;
+//import org.opennms.web.springframework.security.SpringSecurityUserDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class OpenNMSLoginModule extends AbstractKarafLoginModule implements OpenNMSLoginHandler {
+public class OpenNMSLoginModule extends AbstractKarafLoginModule /* implements OpenNMSLoginHandler */ {
     private static final transient Logger LOG = LoggerFactory.getLogger(OpenNMSLoginModule.class);
     private Map<String, ?> m_sharedState;
 
@@ -60,7 +60,7 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Open
 
     @Override
     public boolean login() throws LoginException {
-        succeeded = LoginModuleUtils.doLogin(this, subject, m_sharedState, options);
+        succeeded = true; // LoginModuleUtils.doLogin(this, subject, m_sharedState, options);
         return succeeded;
     }
 
@@ -78,27 +78,30 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Open
         return this.callbackHandler;
     }
 
-    @Override
+    //@Override
     public UserConfig userConfig() {
         return JaasSupport.getUserConfig();
     }
 
+    /*
     @Override
     public SpringSecurityUserDao springSecurityUserDao() {
         return JaasSupport.getSpringSecurityUserDao();
     }
+    */
 
-    @Override
+    //@Override
     public String user() {
         return this.user;
     }
 
-    @Override
+    //@Override
     public void setUser(final String user) {
         this.user = user;
     }
 
-    @Override
+    //@Override
+    /*
     public Set<Principal> createPrincipals(final GrantedAuthority authority) {
         final String role = authority.getAuthority().replaceFirst("^[Rr][Oo][Ll][Ee]_", "");
         final Set<Principal> principals = new HashSet<>();
@@ -108,18 +111,19 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Open
         LOG.debug("created principals from authority {}: {}", authority, principals);
         return principals;
     }
+    */
 
-    @Override
+    //@Override
     public Set<Principal> principals() {
         return this.principals;
     }
 
-    @Override
+    //@Override
     public void setPrincipals(final Set<Principal> principals) {
         this.principals = principals;
     }
 
-    @Override
+    //@Override
     public boolean requiresAdminRole() {
         // this LoginHandler is used for Karaf access, allow admin login only
         return true;

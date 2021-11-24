@@ -42,12 +42,12 @@ public class JaasSupport {
 	private static transient volatile BundleContext m_context;
 	private static transient volatile UserConfig m_userConfig;
 	private static transient volatile GroupDao m_groupDao;
-	private static transient volatile SpringSecurityUserDao m_userDao;
+	// private static transient volatile SpringSecurityUserDao m_userDao;
 
 	public static synchronized void setContext(final BundleContext context) {
 		m_userConfig = null;
 		m_groupDao = null;
-		m_userDao = null;
+		//m_userDao = null;
 		m_context = context;
 	}
 
@@ -65,13 +65,14 @@ public class JaasSupport {
 		return m_userConfig;
 	}
 
+	/*
 	public static SpringSecurityUserDao getSpringSecurityUserDao() {
 		if (m_userDao == null) {
 			m_userDao = getFromRegistry(SpringSecurityUserDao.class);
 		}
 		return m_userDao;
 	}
-
+	*/
 	public static GroupDao getGroupDao() {
 		if (m_groupDao == null) {
 			m_groupDao = getFromRegistry(GroupDao.class);

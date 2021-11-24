@@ -20,12 +20,12 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>org.opennms.container.jaas-login-module</Bundle-SymbolicName>
-                        <Bundle-Activator>org.opennms.container.jaas.Activator</Bundle-Activator>
+                        <Bundle-Activator>org.opennms.container.simplejaas.Activator</Bundle-Activator>
                         <Import-Package>
                             org.apache.karaf.jaas.config;version="${karafVersion}",
                             *
                         </Import-Package>
-                        <Export-Package>org.opennms.container.jaas.*</Export-Package>
+                        <Export-Package>org.opennms.container.simplejaas.*</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -58,6 +58,12 @@
             <artifactId>org.apache.karaf.jaas.config</artifactId>
             <version>${karafVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.boot</artifactId>
+            <version>${karafVersion}</version>
+        </dependency>
+
     </dependencies>
 
 </project>

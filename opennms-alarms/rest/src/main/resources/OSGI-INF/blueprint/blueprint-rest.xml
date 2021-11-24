@@ -16,7 +16,7 @@
     <!-- Override the JAAS LoginModule in the Karaf Container -->
     <!--(references need to be built)-->
     <reference id="userConfig" interface="org.opennms.netmgt.config.api.UserConfig" availability="mandatory" />
-    <reference id="springSecurityUserDao" interface="org.opennms.web.springframework.security.SpringSecurityUserDao" availability="mandatory" />
+    <!-- <reference id="springSecurityUserDao" interface="org.opennms.web.springframework.security.SpringSecurityUserDao" availability="mandatory" /> -->
 
     <jaas:config name="karaf" rank="1">
         <jaas:module className="org.opennms.container.simplejaas.OpenNMSLoginModule" flags="required" />
