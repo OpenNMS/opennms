@@ -4,7 +4,8 @@
 # 0 indicates all files have been mapped
 # 1 indicates there are files missing component info
 
-TOPDIR="$1"
+RELDIR="$1"
+TOPDIR=$(cd $(RELDIR); pwd -P)
 # Make sure at least one Maven is in the path
 PATH="$PATH:$TOPDIR/maven/bin"
 
