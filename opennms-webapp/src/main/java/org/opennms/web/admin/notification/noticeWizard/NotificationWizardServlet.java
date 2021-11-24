@@ -47,6 +47,7 @@ import javax.servlet.http.HttpSession;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.notifications.Notification;
@@ -378,7 +379,7 @@ public class NotificationWizardServlet extends HttpServlet {
 
         final String criticalService = request.getParameter("criticalSvc");
         final String showNodes = request.getParameter("showNodes");
-        final String criticalIp = request.getParameter("criticalIp");
+        final String criticalIp = WebSecurityUtils.sanitizeString(request.getParameter("criticalIp"));
 
         final Map<String, Object> params = new HashMap<String, Object>();
         if (newRule != null) {

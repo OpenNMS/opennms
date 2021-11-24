@@ -123,7 +123,7 @@ public class MockLogger extends MarkerIgnoringBase {
     // Load properties file, if found.
     // Override with system properties.
     static void init() {
-        System.err.println("Initializing MockLogger.");
+        // System.err.println("Initializing MockLogger.");
 
         INITIALIZED = true;
         loadProperties();

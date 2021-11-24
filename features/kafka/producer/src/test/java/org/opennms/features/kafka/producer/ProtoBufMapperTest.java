@@ -40,11 +40,14 @@ import static org.opennms.topologies.service.api.EdgeMockUtil.PROTOCOL;
 import static org.opennms.topologies.service.api.EdgeMockUtil.createEdge;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.ObjectNotFoundException;
 import org.junit.Test;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
@@ -52,10 +55,14 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.topologies.service.api.EdgeMockUtil;
 
 /**
@@ -63,8 +70,12 @@ import org.opennms.topologies.service.api.EdgeMockUtil;
  */
 public class ProtoBufMapperTest {
 
-    private ProtobufMapper protobufMapper = new ProtobufMapper(mock(EventConfDao.class), mock(HwEntityDao.class),
-            mock(SessionUtils.class), mock(NodeDao.class), 1);
+    private final ProtobufMapper protobufMapper = new ProtobufMapper(mock(EventConfDao.class), mock(HwEntityDao.class),
+            mock(SessionUtils.class), mock(NodeDao.class),  1);
+
+    private final String FOREIGN_ID = "foreignId";
+    private final String FOREIGN_SOURCE = "foreignSource";
+    private final String NODE_LABEL = "test";
 
     /**
      * Tests that the mapper can handle related alarms.
@@ -96,6 +107,10 @@ public class ProtoBufMapperTest {
         assertEquals(childId, childProtoAlarm.getId());
         assertEquals(reductionKey, childProtoAlarm.getReductionKey());
         assertEquals(childLogMsg, childProtoAlarm.getLogMessage());
+        assertEquals(FOREIGN_ID, mappedAlarm.getNodeCriteria().getForeignId());
+        assertEquals(FOREIGN_SOURCE, mappedAlarm.getNodeCriteria().getForeignSource());
+        assertEquals(NODE_LABEL, mappedAlarm.getNodeCriteria().getNodeLabel());
+        assertEquals(LocationUtils.DEFAULT_LOCATION_NAME, mappedAlarm.getNodeCriteria().getLocation());
     }
 
     private OnmsAlarm generateTestAlarm() {
@@ -104,6 +119,13 @@ public class ProtoBufMapperTest {
         testAlarm.setSeverity(OnmsSeverity.MAJOR);
         testAlarm.setAlarmType(1);
 
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
+        node.setLabel(NODE_LABEL);
+        node.setForeignId(FOREIGN_ID);
+        node.setForeignSource(FOREIGN_SOURCE);
+        node.setLocation(new OnmsMonitoringLocation(LocationUtils.DEFAULT_LOCATION_NAME, LocationUtils.DEFAULT_LOCATION_NAME));
+        testAlarm.setNode(node);
         return testAlarm;
     }
 
@@ -121,6 +143,36 @@ public class ProtoBufMapperTest {
         assertEquals(mappedAlarm.getTroubleTicketId(), testAlarm.getTTicketId());
         assertEquals(mappedAlarm.getTroubleTicketState().getNumber(), testAlarm.getTTicketState().getValue());
 
+    }
+
+    @Test
+    public void testEventMappingWithSnmp() {
+        Event event = createEvent();
+        protobufMapper.getNodeIdToCriteriaCache().put(1L, OpennmsModelProtos.NodeCriteria.newBuilder()
+                .setId(1).build());
+        OpennmsModelProtos.Event mappedEvent = protobufMapper.toEvent(event).build();
+        assertNotNull(mappedEvent.getSnmpInfo());
+        assertEquals("OpenNMS", mappedEvent.getSnmpInfo().getCommunity());
+        assertEquals(23, mappedEvent.getSnmpInfo().getSpecific());
+    }
+
+    private Event createEvent() {
+        Event event = new Event();
+        event.setUuid(UUID.randomUUID().toString());
+        event.setUei("newSuspectEvent");
+        event.setDbid(254);
+        event.setNodeid(1L);
+        event.setSource("kafka-producer-test");
+        event.setDistPoller("systemId1");
+        event.setCreationTime(new Date());
+        Snmp snmp = new Snmp();
+        snmp.setId("id1");
+        snmp.setVersion("v3");
+        snmp.setSpecific(23);
+        snmp.setGeneric(45);
+        snmp.setCommunity("OpenNMS");
+        event.setSnmp(snmp);
+        return event;
     }
 
     @Test

@@ -3,18 +3,19 @@ version: 2.1
 executors:
   centos-build-executor:
     docker:
-      - image: opennms/build-env:1.8.0.252.b09-3.6.3-b5582
+      - image: opennms/build-env:1.8.0.302.b08-3.6.3-b7294
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk8-b5084
+      - image: opennms/build-env:debian-jdk8-b7288
   docker-executor:
     docker:
-      - image: docker:19.03.0-git
+      - image: docker:20.10.1-git
   integration-test-executor:
-    machine: true
+    machine:
+      image: ubuntu-2004:202010-01
   smoke-test-executor:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202010-01
 
 # NOTE: the "_label" versions of these are for the case when your source or target
 # branches have slashes in them, that way the merge branch gets created properly
@@ -104,12 +105,12 @@ commands:
             keys:
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
-  update-maven-cache:
-      description: "Maven: Refresh local repository from POM files"
-      steps:
         - run:
             name: Remove old artifacts to keep workspace size down
             command: .circleci/scripts/clean-m2.sh
+  update-maven-cache:
+      description: "Maven: Refresh local repository from POM files"
+      steps:
         - run:
             name: Collect Maven Dependencies
             command: |
@@ -272,6 +273,7 @@ commands:
             .circleci/scripts/configure-signing.sh
             mvn clean -DskipTests=true
             << parameters.node-memory >>
+            export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -326,7 +328,6 @@ commands:
         default: true
         type: boolean
     steps:
-      - update-maven-cache
       - run:
           name: Integration Tests
           no_output_timeout: 1.0h
@@ -341,8 +342,8 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/junit
-            find . -type f -regex ".*/target/surefire-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
-            find . -type f -regex ".*/target/failsafe-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*dump.*" -exec cp {} ~/test-results/junit/ \;
       - run:
           name: Gather tests
           when: always
@@ -390,7 +391,7 @@ commands:
             find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
             find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
       - save_cache:
-          key: << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          key: << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - "/tmp/<< parameters.cache_prefix >>"
   restore-workflow-assets:
@@ -405,8 +406,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
-            - << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-
+            - << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
       - when:
           condition: << parameters.target_path >>
           steps:
@@ -546,8 +546,25 @@ workflows:
                 - /^merge-foundation.*/
       - smoke-test-core:
           requires:
-            - horizon-rpm-build
             - tarball-assembly
+            - horizon-rpm-build
+            - minion-rpm-build
+            - sentinel-rpm-build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
+                - /^dependabot.*/
+      - smoke-test-flaky:
+          requires:
+            - tarball-assembly
+            - horizon-rpm-build
+            - minion-rpm-build
             - sentinel-rpm-build
           filters:
             branches:
@@ -561,8 +578,9 @@ workflows:
                 - /^dependabot.*/
       - smoke-test-minion:
           requires:
-            - horizon-rpm-build
             - tarball-assembly
+            - horizon-rpm-build
+            - minion-rpm-build
             - sentinel-rpm-build
           filters:
             branches:
@@ -576,6 +594,7 @@ workflows:
                 - /^dependabot.*/
       - smoke-test-sentinel:
           requires:
+            - tarball-assembly
             - horizon-rpm-build
             - tarball-assembly
             - sentinel-rpm-build
@@ -591,6 +610,7 @@ workflows:
                 - /^dependabot.*/
       - smoke-test-minimal:
           requires:
+            - tarball-assembly
             - horizon-rpm-build
             - tarball-assembly
             - sentinel-rpm-build
@@ -607,7 +627,15 @@ workflows:
                 - /^dependabot.*/
       - horizon-publish-oci:
           requires:
-            - horizon-rpm-build
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+            - smoke-test-minimal
+            - smoke-test-sentinel
           filters:
             branches:
               only:
@@ -616,7 +644,15 @@ workflows:
                 - /^release-.*/
       - sentinel-publish-oci:
           requires:
-            - sentinel-rpm-build
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+            - smoke-test-minimal
+            - smoke-test-sentinel
           filters:
             branches:
               only:
@@ -671,11 +707,12 @@ workflows:
             - horizon-deb-build
             - minion-deb-build
             - sentinel-deb-build
-            - smoke-test-core
-            - smoke-test-minion
-            - smoke-test-sentinel
-            - smoke-test-minimal
             - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+            - smoke-test-minimal
+            - smoke-test-sentinel
           filters:
             branches:
               only: << parameters.main_branch >>
@@ -692,11 +729,14 @@ workflows:
           # if everything passes
           requires:
             - horizon-deb-build
-            - smoke-test-core
-            - smoke-test-minion
-            - smoke-test-sentinel
-            - smoke-test-minimal
+            - minion-deb-build
+            - sentinel-deb-build
             - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+            - smoke-test-minimal
+            - smoke-test-sentinel
           filters:
             branches:
               only: /^foundation.*/
@@ -706,6 +746,7 @@ workflows:
           requires:
             - horizon-deb-build
             - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - smoke-test-minimal
@@ -721,11 +762,12 @@ workflows:
             - horizon-deb-build
             - minion-deb-build
             - sentinel-deb-build
-            - smoke-test-core
-            - smoke-test-minion
-            - smoke-test-sentinel
-            - smoke-test-minimal
             - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+            - smoke-test-minimal
+            - smoke-test-sentinel
           filters:
             branches:
               only:
@@ -746,13 +788,14 @@ jobs:
 
   tarball-assembly:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202010-01
       docker_layer_caching: true
+    resource_class: large
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     parameters:
       number-vcpu:
-        default: 2
+        default: 4
         type: integer
       vaadin-javamaxmem:
         default: 1g
@@ -789,17 +832,26 @@ jobs:
               -Dopennms.home=/opt/opennms \
               install --batch-mode
             # javadoc
-            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
-              -DupdatePolicy=never \
-              -Daether.connector.resumeDownloads=false \
-              -Daether.connector.basic.threads=1 \
-              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
-              -DmaxCpus=<< parameters.number-vcpu >> \
-              -Pbuild-bamboo \
-              -Prun-expensive-tasks \
-              -Dopennms.home=/opt/opennms \
-              javadoc:aggregate --batch-mode
+            date
+            case "${CIRCLE_BRANCH}" in
+              "master-"*|"release-"*)
+                ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+                  -DupdatePolicy=never \
+                  -Daether.connector.resumeDownloads=false \
+                  -Daether.connector.basic.threads=1 \
+                  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                  -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
+                  -DmaxCpus=<< parameters.number-vcpu >> \
+                  -Pbuild-bamboo \
+                  -Prun-expensive-tasks \
+                  -Dopennms.home=/opt/opennms \
+                  javadoc:aggregate --batch-mode
+                date
+                ;;
+              *)
+                echo "Skipping Javadoc compilation; it is enabled only on master/release branches."
+                ;;
+            esac
       - run:
           name: Collect Artifacts
           command: |
@@ -809,9 +861,11 @@ jobs:
             find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/remote-poller-standalone -name "*.tar.gz" -type f -exec cp {} "./target/artifacts/remote-poller-client-${OPENNMS_VERSION}.tar.gz" \;
-            pushd target/site/apidocs
-              tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
-            popd
+            if [ -d target/site/apidocs ]; then
+              pushd target/site/apidocs
+                tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+              popd
+            fi
             cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
             cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-docs.tar.gz"
             cp target/*-source.tar.gz ./target/artifacts/
@@ -1160,7 +1214,7 @@ jobs:
       - save-sonar-cache
   smoke-test-core:
     executor: smoke-test-executor
-    parallelism: 6
+    parallelism: 8
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
@@ -1169,6 +1223,17 @@ jobs:
           at: ~/
       - run-smoke-tests:
           suite: core
+  smoke-test-flaky:
+    executor: smoke-test-executor
+    parallelism: 5
+    # No resource class support for machine executors, we're constrained to use the default
+    # medium class which has 2 vCPUs and 8 GB RAM
+    #resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: flaky
   smoke-test-minion:
     executor: smoke-test-executor
     parallelism: 4

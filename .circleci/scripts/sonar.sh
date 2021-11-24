@@ -23,7 +23,7 @@ generate_junit_report_names()
 
 echo "#### Executing Sonar"
 cd ~/project
-mvn sonar:sonar \
+./compile.pl sonar:sonar \
   -Dsonar.projectKey="$SONARCLOUD_PROJECTKEY" \
   -Dsonar.organization="$SONARCLOUD_ORG" \
   -Dsonar.host.url="https://sonarcloud.io" \

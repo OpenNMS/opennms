@@ -60,6 +60,7 @@ import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
 import org.opennms.netmgt.syslogd.api.SyslogMessageLogDTO;
 import org.opennms.netmgt.xml.event.Event;
@@ -85,7 +86,9 @@ import com.codahale.metrics.MetricRegistry;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/mockSinkConsumerManager.xml",
         "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml",
-        "classpath:/META-INF/opennms/applicationContext-syslogDaemon.xml"
+        "classpath:/META-INF/opennms/applicationContext-syslogDaemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-dns.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
@@ -105,6 +108,9 @@ public class SyslogdIT implements InitializingBean {
 
     @Autowired
     private MockMessageDispatcherFactory<SyslogConnection, SyslogMessageLogDTO> m_messageDispatcherFactory;
+
+    @Autowired
+    private LocationAwareDnsLookupClient locationAwareDnsLookupClient;
 
     private SyslogSinkConsumer m_syslogSinkConsumer;
 
@@ -151,6 +157,7 @@ public class SyslogdIT implements InitializingBean {
         m_syslogSinkConsumer.setDistPollerDao(m_distPollerDao);
         m_syslogSinkConsumer.setSyslogdConfig(m_config);
         m_syslogSinkConsumer.setEventForwarder(m_eventIpcManager);
+        m_syslogSinkConsumer.setLocationAwareDnsLookupClient(locationAwareDnsLookupClient);
         m_syslogSinkModule = m_syslogSinkConsumer.getModule();
         m_messageDispatcherFactory.setConsumer(m_syslogSinkConsumer);
 
