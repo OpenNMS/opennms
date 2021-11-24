@@ -238,7 +238,7 @@
     <property name="configResource" value="file:${opennms.home}/etc/jdbc-datacollection-config.xml"/>
   </bean>
 
-  <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultJmxConfigDao"/>
+  <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.cm.DefaultJmxConfigDao"/>
 
   <bean id="jmxDataCollectionConfigDao" class="org.opennms.netmgt.config.JMXDataCollectionConfigDao" />
 
@@ -346,7 +346,7 @@
   
   <bean id="prometheusDataCollectionConfigDao" class="org.opennms.netmgt.dao.prometheus.PrometheusDataCollectionConfigDaoJaxb" />
 
-  <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
+  <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.cm.DefaultProvisiondConfigurationDao">
   </bean>
 
   <bean id="rancidAdapterConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
