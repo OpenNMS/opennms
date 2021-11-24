@@ -14,8 +14,12 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
 
     <!-- Override the JAAS LoginModule in the Karaf Container -->
-    <!--(references need to be built)-->
-    <reference id="userConfig" interface="org.opennms.netmgt.config.api.UserConfig" availability="mandatory" />
+    <bean id="userManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
+    </bean>
+    <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
+    <!-- <service interface="org.opennms.netmgt.config.api.UserConfig" ref="userManager" /> -->
+    <!-- <reference id="userConfig" interface="org.opennms.netmgt.config.api.UserConfig" availability="mandatory" /> -->
     <!-- <reference id="springSecurityUserDao" interface="org.opennms.web.springframework.security.SpringSecurityUserDao" availability="mandatory" /> -->
 
     <jaas:config name="karaf" rank="1">
