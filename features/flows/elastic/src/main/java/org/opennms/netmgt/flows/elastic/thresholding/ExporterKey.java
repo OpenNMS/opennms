@@ -30,13 +30,11 @@ package org.opennms.netmgt.flows.elastic.thresholding;
 
 import java.util.Objects;
 
-public class NodeInterfaceKey {
-    public final int nodeId;
-    public final String ifaceAddr;
+public class ExporterKey {
+    public final int interfaceId;
 
-    public NodeInterfaceKey(final int nodeId, final String ifaceAddr) {
-        this.nodeId = nodeId;
-        this.ifaceAddr = Objects.requireNonNull(ifaceAddr);
+    public ExporterKey(final int interfaceId) {
+        this.interfaceId = interfaceId;
     }
 
     @Override
@@ -44,16 +42,15 @@ public class NodeInterfaceKey {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof NodeInterfaceKey)) {
+        if (!(o instanceof ExporterKey)) {
             return false;
         }
-        final NodeInterfaceKey that = (NodeInterfaceKey) o;
-        return Objects.equals(this.nodeId, that.nodeId) &&
-               Objects.equals(this.ifaceAddr, that.ifaceAddr);
+        final ExporterKey that = (ExporterKey) o;
+        return Objects.equals(this.interfaceId, that.interfaceId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.nodeId, this.ifaceAddr);
+        return Objects.hash(this.interfaceId);
     }
 }

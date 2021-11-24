@@ -38,13 +38,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.opennms.core.cache.Cache;
 import org.opennms.core.cache.CacheBuilder;
 import org.opennms.core.cache.CacheConfig;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.elastic.Direction;
 import org.opennms.netmgt.flows.elastic.FlowDocument;
@@ -56,7 +56,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Maps;
 
 public class FlowThresholding {
@@ -70,38 +69,28 @@ public class FlowThresholding {
     private final ThresholdingService thresholdingService;
     private final CollectionAgentFactory collectionAgentFactory;
 
+    private final IpInterfaceDao ipInterfaceDao;
+
     private final Map<ApplicationKey, AtomicLong> applicationAccumulator;
 
-    private final Cache<NodeInterfaceKey, Session> sessions;
+    private final Cache<ExporterKey, Session> sessions;
 
     public FlowThresholding(final ThresholdingService thresholdingService,
                             final CollectionAgentFactory collectionAgentFactory,
+                            final IpInterfaceDao ipInterfaceDao,
                             final CacheConfig sessionCacheConfig) {
         this.thresholdingService = Objects.requireNonNull(thresholdingService);
         this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
+
+        this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
 
         //noinspection unchecked
         this.applicationAccumulator = Maps.newConcurrentMap();
 
         //noinspection unchecked
-        this.sessions = new CacheBuilder<NodeInterfaceKey, Session>()
+        this.sessions = new CacheBuilder<ExporterKey, Session>()
                 .withConfig(sessionCacheConfig)
-                .withCacheLoader(new CacheLoader<NodeInterfaceKey, Session>() {
-                    @Override
-                    public Session load(final NodeInterfaceKey nik) throws Exception {
-                        final var thresholdingSession = FlowThresholding.this.thresholdingService.createSession(nik.nodeId,
-                                                                                       nik.ifaceAddr,
-                                                                                       SERVICE_NAME,
-                                                                                       FLOW_APP_RRD_REPO,
-                                                                                       new ServiceParameters(Collections.emptyMap()));
-                        final var collectionAgent = FlowThresholding.this.collectionAgentFactory.createCollectionAgent(
-                                Integer.toString(nik.nodeId),
-                                InetAddressUtils.addr(nik.ifaceAddr));
-
-                        return new Session(thresholdingSession,
-                                           collectionAgent);
-                    }
-                }).build();
+                .build();
     }
 
     public void threshold(final List<FlowDocument> documents,
@@ -109,22 +98,36 @@ public class FlowThresholding {
 
         for (final var document : documents) {
             if (document.getNodeExporter() != null && !Strings.isNullOrEmpty(document.getApplication())) {
-                final var nodeId = document.getNodeExporter().getNodeId();
+                final var exporterKey = new ExporterKey(document.getNodeExporter().getInterfaceId());
 
-                final var key = new ApplicationKey(nodeId,
-                                                   document.getDirection() == Direction.INGRESS
-                                                   ? document.getInputSnmp()
-                                                   : document.getOutputSnmp(),
-                                                   document.getApplication());
+                final var applicationKey = new ApplicationKey(exporterKey,
+                                                              document.getDirection() == Direction.INGRESS
+                                                              ? document.getInputSnmp()
+                                                              : document.getOutputSnmp(),
+                                                              document.getApplication());
 
                 // Update the counter
-                final var counter = this.applicationAccumulator.computeIfAbsent(key, k -> new AtomicLong(0))
+                final var counter = this.applicationAccumulator.computeIfAbsent(applicationKey, k -> new AtomicLong(0))
                                                                .addAndGet(document.getBytes());
 
                 // Apply thresholding
-                final var session = this.sessions.get(new NodeInterfaceKey(nodeId, source.getSourceAddress()));
+                final var session = this.sessions.get(exporterKey, () -> {
+                    final var iface = ipInterfaceDao.get(document.getNodeExporter().getInterfaceId());
 
-                final var nodeResource = new NodeLevelResource(nodeId);
+                    final var collectionAgent = FlowThresholding.this.collectionAgentFactory.createCollectionAgent(iface);
+
+                    final var thresholdingSession = FlowThresholding.this.thresholdingService.createSession(document.getNodeExporter().getNodeId(),
+                                                                                                            collectionAgent.getHostAddress(),
+                                                                                                            SERVICE_NAME,
+                                                                                                            FLOW_APP_RRD_REPO,
+                                                                                                            new ServiceParameters(Collections.emptyMap()));
+
+
+                    return new Session(thresholdingSession,
+                                       collectionAgent);
+                });
+
+                final var nodeResource = new NodeLevelResource(document.getNodeExporter().getNodeId());
                 final var appResource = new DeferredGenericTypeResource(nodeResource, RESOURCE_TYPE_NAME, document.getApplication());
 
                 final var collectionSetBuilder = new CollectionSetBuilder(session.collectionAgent)

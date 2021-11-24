@@ -37,12 +37,14 @@ import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.dao.mock.AbstractMockDao;
 import org.opennms.netmgt.dao.mock.MockAssetRecordDao;
 import org.opennms.netmgt.dao.mock.MockCategoryDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
+import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
@@ -56,6 +58,7 @@ import com.google.common.collect.Lists;
 public class MockDocumentEnricherFactory {
 
     private final NodeDao nodeDao;
+    private final IpInterfaceDao ipInterfaceDao;
     private final InterfaceToNodeCache interfaceToNodeCache;
     private final MockAssetRecordDao assetRecordDao;
     private final MockCategoryDao categoryDao;
@@ -70,6 +73,7 @@ public class MockDocumentEnricherFactory {
 
     public MockDocumentEnricherFactory(final long clockSkewCorrectionThreshold) throws InterruptedException {
         nodeDao = createNodeDao();
+        ipInterfaceDao = new MockIpInterfaceDao();
         interfaceToNodeCache = new MockInterfaceToNodeCache();
         assetRecordDao = new MockAssetRecordDao();
         categoryDao = new MockCategoryDao();
@@ -81,7 +85,9 @@ public class MockDocumentEnricherFactory {
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()
         ), FilterService.NOOP);
         enricher = new DocumentEnricher(
-                new MetricRegistry(), nodeDao, interfaceToNodeCache, new MockSessionUtils(), classificationEngine,
+                new MetricRegistry(),
+                nodeDao, ipInterfaceDao,
+                interfaceToNodeCache, new MockSessionUtils(), classificationEngine,
                 new CacheConfigBuilder()
                     .withName("flows.node")
                     .withMaximumSize(1000)

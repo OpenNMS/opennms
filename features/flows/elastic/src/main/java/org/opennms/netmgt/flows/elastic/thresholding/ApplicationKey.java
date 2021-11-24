@@ -31,14 +31,14 @@ package org.opennms.netmgt.flows.elastic.thresholding;
 import java.util.Objects;
 
 public class ApplicationKey {
-    public final int nodeId;
+    public final ExporterKey exporterKey;
     public final int iface;
     public final String application;
 
-    public ApplicationKey(final int nodeId,
+    public ApplicationKey(final ExporterKey exporterKey,
                           final int iface,
                           final String application) {
-        this.nodeId = nodeId;
+        this.exporterKey = Objects.requireNonNull(exporterKey);
         this.iface = iface;
         this.application = Objects.requireNonNull(application);
     }
@@ -52,14 +52,14 @@ public class ApplicationKey {
             return false;
         }
         final ApplicationKey that = (ApplicationKey) o;
-        return Objects.equals(this.nodeId, that.nodeId) &&
+        return Objects.equals(this.exporterKey, that.exporterKey) &&
                Objects.equals(this.iface, that.iface) &&
                Objects.equals(this.application, that.application);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.nodeId,
+        return Objects.hash(this.exporterKey,
                             this.iface,
                             this.application);
     }

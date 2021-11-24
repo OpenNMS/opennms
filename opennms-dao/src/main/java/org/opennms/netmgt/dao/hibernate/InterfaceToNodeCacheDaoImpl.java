@@ -127,17 +127,24 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
     private static class Value implements Comparable<Value> {
         private final int nodeId;
+        private final int interfaceId;
         private final PrimaryType type;
 
 
         private Value(final int nodeId,
+                      final int interfaceId,
                       final PrimaryType type) {
             this.nodeId = nodeId;
+            this.interfaceId = interfaceId;
             this.type = type;
         }
 
         public int getNodeId() {
             return this.nodeId;
+        }
+
+        public int getInterfaceId() {
+            return this.interfaceId;
         }
 
         public PrimaryType getType() {
@@ -157,6 +164,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             }
             final Value that = (Value) obj;
             return Objects.equals(this.nodeId, that.nodeId)
+                    && Objects.equals(this.interfaceId, that.interfaceId)
                     && Objects.equals(this.type, that.type);
         }
 
@@ -167,7 +175,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
         @Override
         public String toString() {
-            return String.format("Value[nodeId='%s', type='%s']", this.nodeId, this.type);
+            return String.format("Value[nodeId='%s', interfaceId='%s', type='%s']", this.nodeId, this.interfaceId, this.type);
         }
 
         @Override
@@ -175,6 +183,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             return ComparisonChain.start()
                     .compare(this.type, that.type)
                     .compare(this.nodeId, that.nodeId)
+                    .compare(this.interfaceId, that.interfaceId)
                     .result();
         }
     }
@@ -283,7 +292,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
                     continue;
                 }
                 LOG.debug("Adding entry: {}:{} -> {}", node.getLocation().getLocationName(), iface.getIpAddress(), node.getId());
-                newAlreadyDiscovered.put(new Key(node.getLocation().getLocationName(), iface.getIpAddress()), new Value(node.getId(), iface.getIsSnmpPrimary()));
+                newAlreadyDiscovered.put(new Key(node.getLocation().getLocationName(), iface.getIpAddress()), new Value(node.getId(), iface.getId(), iface.getIsSnmpPrimary()));
             }
         }
 
@@ -298,16 +307,16 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
     }
 
     /**
-     * Returns the nodeid for the IP Address
+     * Returns the entry for the IP Address
      * <p>
-     * If multiple nodes hav assigned interfaces with the same IP, this returns all known nodes sorted by the interface
+     * If multiple nodes have assigned interfaces with the same IP, this returns all known nodes sorted by the interface
      * management priority.
      *
      * @param address The IP Address to query.
-     * @return The node ID of the IP Address if known.
+     * @return The Entry for the IP Address if known.
      */
     @Override
-    public synchronized Iterable<Integer> getNodeId(final String location, final InetAddress address) {
+    public synchronized Iterable<Entry> get(final String location, final InetAddress address) {
         if (address == null) {
             return Collections.emptySet();
         }
@@ -315,7 +324,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         m_lock.readLock().lock();
         try {
             return Iterables.transform(m_managedAddresses.get(new Key(location, address)),
-                    Value::getNodeId);
+                    v -> new Entry(v.nodeId, v.interfaceId));
         } finally {
             m_lock.readLock().unlock();
         }
@@ -344,7 +353,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
         m_lock.writeLock().lock();
         try {
-            return m_managedAddresses.put(new Key(location, addr), new Value(nodeid, iface.getIsSnmpPrimary()));
+            return m_managedAddresses.put(new Key(location, addr), new Value(nodeid, iface.getId(), iface.getIsSnmpPrimary()));
         } finally {
             m_lock.writeLock().unlock();
         }
@@ -368,9 +377,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         m_lock.writeLock().lock();
         try {
             final Key key = new Key(location, address);
-            return m_managedAddresses.remove(key, new Value(nodeId, PrimaryType.PRIMARY)) ||
-                    m_managedAddresses.remove(key, new Value(nodeId, PrimaryType.SECONDARY)) ||
-                    m_managedAddresses.remove(key, new Value(nodeId, PrimaryType.NOT_ELIGIBLE));
+            return !m_managedAddresses.removeAll(key).isEmpty();
         } finally {
             m_lock.writeLock().unlock();
         }

@@ -55,17 +55,6 @@ import org.opennms.netmgt.collectd.DefaultResourceTypeMapper;
 import org.opennms.netmgt.collection.core.DefaultCollectionAgentFactory;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDao;
-import org.opennms.netmgt.config.threshd.Filter;
-import org.opennms.netmgt.config.threshd.Group;
-import org.opennms.netmgt.config.threshd.IncludeRange;
-import org.opennms.netmgt.config.threshd.Package;
-import org.opennms.netmgt.config.threshd.Parameter;
-import org.opennms.netmgt.config.threshd.Service;
-import org.opennms.netmgt.config.threshd.ServiceStatus;
-import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
-import org.opennms.netmgt.config.threshd.Threshold;
-import org.opennms.netmgt.config.threshd.ThresholdType;
-import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -188,6 +177,7 @@ public class ThresholdingIT {
 
         final var documentEnricher = new DocumentEnricher(metricRegistry,
                                                           this.databasePopulator.getNodeDao(),
+                                                          this.databasePopulator.getIpInterfaceDao(),
                                                           this.interfaceToNodeCache,
                                                           sessionUtils,
                                                           classificationEngine,
@@ -214,6 +204,7 @@ public class ThresholdingIT {
                 .build();
         final var thresholding = new FlowThresholding(this.thresholdingService,
                                                       collectionAgentFactory,
+                                                      this.databasePopulator.getIpInterfaceDao(),
                                                       sessionCacheConfig);
 
         final var elasticFlowRepository = new ElasticFlowRepository(
