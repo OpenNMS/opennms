@@ -90,10 +90,7 @@ sudo apt update && \
                 jicmp6 \
             || exit 1
 
-JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64/bin
-PATH="$JAVA_HOME/bin:$PATH"
-
-export JAVA_HOME PATH
+export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64
 
 echo "#### Building Assembly Dependencies"
 ./compile.pl install -P'!checkstyle' \
