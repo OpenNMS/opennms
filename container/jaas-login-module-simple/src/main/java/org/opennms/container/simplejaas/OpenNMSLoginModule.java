@@ -69,7 +69,7 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Simp
     @Override
     public boolean abort() throws LoginException {
         LOG.info("~~~~~ OpenNMS Login Module aborting");
-        return super.abort(); // TODO: WHAT DOES LOGIN() NEED TO DO BESIDES SET SUCCEEDED? "Authentication failed: Login Failure: all modules ignore"
+        return super.abort();
     }
 
     @Override

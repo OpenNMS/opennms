@@ -77,12 +77,12 @@ public abstract class SimpleLoginModuleUtils {
         }
 
         // password callback get value
-        if (((PasswordCallback) callbacks[1]).getPassword() == null) {
+        final String password = new String(((PasswordCallback) callbacks[1]).getPassword());
+        if (password == null) {
             final String msg = "Password can not be null.";
             LOG.debug(msg);
             throw new LoginException(msg);
         }
-        final String password = new String(((PasswordCallback) callbacks[1]).getPassword());
 
         final User configUser;
         //final SpringSecurityUser onmsUser;
@@ -92,7 +92,7 @@ public abstract class SimpleLoginModuleUtils {
         } catch (final Exception e) {
             final String message = "Failed to retrieve user " + user + " from OpenNMS UserConfig.";
             LOG.debug(message, e);
-            throw new LoginException(message);
+            throw new LoginException(message); // causes abort
         }
 
         if (configUser == null) {

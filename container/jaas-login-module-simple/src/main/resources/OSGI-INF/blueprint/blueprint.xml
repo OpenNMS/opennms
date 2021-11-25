@@ -13,23 +13,25 @@
 
 
 
-    <!-- Override the JAAS LoginModule in the Karaf Container -->
-    <!--
-    <bean id="userManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
-    </bean>
-    <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
-    -->
-    <!-- more blueprint way of above ^^ -->
+    <!-- OVERRIDE THE JAAS LOGIN MODULE IN THE KARAF CONTAINER -->
 
-    <!-- <reference id="springSecurityUserDao" interface="org.opennms.web.springframework.security.SpringSecurityUserDao" availability="mandatory" /> -->
-
-    <!-- <service interface="org.opennms.netmgt.config.api.UserConfig" ref="userManager" /> -->
+    <bean id="userFactory" class="org.opennms.netmgt.config.UserFactory" />
+    <bean id="userManager" class="org.opennms.netmgt.config.UserManager" factory-ref="userFactory" factory-method="getInstance" init-method="init"/>
 
 
 
+    <!-- UserConfig interface, UserFactory and UserManager implementations -->
+<!--    <bean id="userFactory" class="org.opennms.netmgt.config.UserFactory" />-->
+<!--    <bean id="userManager" factory-ref="userFactory" factory-method="getInstance"/>-->
+<!--    <service interface="org.opennms.netmgt.config.api.UserConfig" ref="userManager" />-->
     <!-- <reference id="userConfig" interface="org.opennms.netmgt.config.api.UserConfig" availability="mandatory" /> -->
+
+
     <!-- <reference id="springSecurityUserDao" interface="org.opennms.web.springframework.security.SpringSecurityUserDao" availability="mandatory" /> -->
+
+
+
+
 
     <jaas:config name="karaf" rank="1">
         <jaas:module className="org.opennms.container.simplejaas.OpenNMSLoginModule" flags="required" />
