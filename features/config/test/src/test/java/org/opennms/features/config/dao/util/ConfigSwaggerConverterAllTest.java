@@ -69,8 +69,10 @@ public class ConfigSwaggerConverterAllTest {
 
     @Before
     public void init() throws IOException {
-        ConfigDefinition def = XsdHelper.buildConfigDefinition(CONFIG_NAME, XSD_PATH, TOP_ELEMENT);
-        ConfigDefinition def2 = XsdHelper.buildConfigDefinition(CONFIG_NAME + "2", XSD2_PATH, TOP_ELEMENT);
+        ConfigDefinition def = XsdHelper.buildConfigDefinition(CONFIG_NAME, XSD_PATH, TOP_ELEMENT,
+                ConfigurationManagerService.BASE_PATH);
+        ConfigDefinition def2 = XsdHelper.buildConfigDefinition(CONFIG_NAME + "2", XSD2_PATH, TOP_ELEMENT,
+                ConfigurationManagerService.BASE_PATH);
         configurationManagerService.registerConfigDefinition(CONFIG_NAME, def);
         configurationManagerService.registerConfigDefinition(CONFIG_NAME + "2", def2);
     }
@@ -83,7 +85,7 @@ public class ConfigSwaggerConverterAllTest {
         Map<String, OpenAPI> apis = new HashMap<>(defs.size());
         defs.forEach((key, def) -> {
             OpenAPI api = def.getSchema();
-            if(api != null && api.getPaths() != null){
+            if (api != null && api.getPaths() != null) {
                 apis.put(key, api);
             }
         });
@@ -92,18 +94,19 @@ public class ConfigSwaggerConverterAllTest {
         String yaml = configSwaggerConverter.convertOpenAPIToString(openapi, "application/yaml");
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<>() {};
+        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<>() {
+        };
         Map<String, Object> map = mapper.readValue(yaml, typeRef);
 
         Assert.assertNull("It should have empty components.", (map.get("components")));
         Map<String, Map> paths = (Map) map.get("paths");
         Assert.assertEquals("It should have 4 paths.", paths.size(), 4);
-        Map<String,Map> getVaccuumdContent = (Map)((Map)((Map)((Map)paths.get("/rest/cm/vacuumd/{configId}")
+        Map<String, Map> getVaccuumdContent = (Map) ((Map) ((Map) ((Map) paths.get("/rest/cm/vacuumd/{configId}")
                 .get("get")).get("responses")).get("200")).get("content");
-        Map<String,Map> getVaccuumd2Content = (Map)((Map)((Map)((Map)paths.get("/rest/cm/vacuumd2/{configId}")
+        Map<String, Map> getVaccuumd2Content = (Map) ((Map) ((Map) ((Map) paths.get("/rest/cm/vacuumd2/{configId}")
                 .get("get")).get("responses")).get("200")).get("content");
-        String ref = (String) ((Map)getVaccuumdContent.get("application/json").get("schema")).get("$ref");
-        String ref2 = (String) ((Map)getVaccuumd2Content.get("application/json").get("schema")).get("$ref");
+        String ref = (String) ((Map) getVaccuumdContent.get("application/json").get("schema")).get("$ref");
+        String ref2 = (String) ((Map) getVaccuumd2Content.get("application/json").get("schema")).get("$ref");
         Assert.assertEquals("It should have correct ref.",
                 "/opennms/rest/cm/schema/vacuumd#/components/schemas/VacuumdConfiguration", ref);
         Assert.assertEquals("It should have correct ref2.",

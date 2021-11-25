@@ -81,7 +81,6 @@ public class ConfigSwaggerConverterTest {
 
     @Test
     public void canConvertXsd() throws IOException {
-        final XmlSchemaCollection schemaCol = new XmlSchemaCollection();
         String xsdStr = Resources.toString(SchemaUtil.getSchemaPath(XSD_PATH), StandardCharsets.UTF_8);
 
         XsdModelConverter xsdModelConverter = new XsdModelConverter(xsdStr);

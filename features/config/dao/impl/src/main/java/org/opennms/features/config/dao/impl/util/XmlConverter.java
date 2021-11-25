@@ -134,16 +134,19 @@ public class XmlConverter implements ConfigConverter {
             m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
             m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
 
-            if (elementNameToValueNameMap != null) {
-                //dirty tricks to remove xml value (use for JSONObject remove)
-                m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, VALUE_TAG);
-            }
+            //dirty tricks to detect xml value (use for JSONObject remove)
+            m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, VALUE_TAG);
 
             final StringWriter writer = new StringWriter();
             m.marshal(entity, writer);
             String jsonStr = writer.toString();
-            if (elementNameToValueNameMap != null && jsonStr.indexOf(VALUE_TAG) != -1) {
-                return this.replaceXmlValueAttributeName(jsonStr);
+            if (jsonStr.indexOf(VALUE_TAG) != -1) {
+                JSONObject json = new JSONObject(jsonStr);
+                if (!this.elementNameToValueNameMap.isEmpty()) {
+                    json = this.replaceXmlValueAttributeName(json);
+                }
+                json = this.removeEmptyValueTag(json);
+                return json.toString();
             } else {
                 return jsonStr;
             }
@@ -153,9 +156,26 @@ public class XmlConverter implements ConfigConverter {
         }
     }
 
+    private JSONObject removeEmptyValueTag(JSONObject json) {
+        json.toMap().forEach((key, value) -> {
+            if (VALUE_TAG.equals(key) && value instanceof String && ((String) value).trim().length() == 0) {
+                LOG.warn("!!!!!! REMOVING KEY {} VALUE {}", key, value);
+                json.remove(key);
+            } else if (value instanceof JSONObject) {
+                removeEmptyValueTag((JSONObject) value);
+            } else if (value instanceof JSONArray) {
+                ((JSONArray) value).forEach(arrayItem -> {
+                    if (arrayItem instanceof JSONObject)
+                        this.removeEmptyValueTag((JSONObject) arrayItem);
+                });
+            }
+        });
+        return json;
+    }
+
     //TODO: need more data for testing
-    private String replaceXmlValueAttributeName(String jsonStr) {
-        JSONObject json = new JSONObject(jsonStr);
+    private JSONObject replaceXmlValueAttributeName(JSONObject json) {
+
         this.elementNameToValueNameMap.forEach((elementName, valueName) -> {
             if (json.has(elementName)) {
                 Object value = json.get(elementName);
@@ -172,7 +192,7 @@ public class XmlConverter implements ConfigConverter {
                 }
             }
         });
-        return json.toString();
+        return json;
     }
 
     private void replaceKey(JSONObject json, String oldKey, String newKey) {

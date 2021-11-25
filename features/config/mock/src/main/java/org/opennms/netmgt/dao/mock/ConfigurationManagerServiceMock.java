@@ -84,8 +84,8 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     public Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) {
         ConfigDefinition def = null;
         if ("provisiond".equals(configName)) {
-            def = XsdHelper.buildConfigDefinition("provisiond", "discovery-configuration.xsd",
-                    "discovery-configuration");
+            def = XsdHelper.buildConfigDefinition("provisiond", "provisiond-configuration.xsd",
+                    "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
         }
 
         return Optional.ofNullable(def);
@@ -117,7 +117,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     @Override
     public Optional<String> getJSONStrConfiguration(String configName, String configId) throws IOException {
         String xmlStr = this.getXmlConfiguration(configName, configId).get();
-        ConfigConverter converter  =XsdHelper.getConverter(this.getRegisteredConfigDefinition(configName).get());
+        ConfigConverter converter = XsdHelper.getConverter(this.getRegisteredConfigDefinition(configName).get());
         return Optional.ofNullable(converter.xmlToJson(xmlStr));
     }
 

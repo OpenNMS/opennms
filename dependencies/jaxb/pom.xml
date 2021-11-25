@@ -24,6 +24,12 @@
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>eclipselink</artifactId>
       <version>${eclipselinkVersion}</version>
+      <exclusions>
+          <exclusion>
+              <groupId>org.eclipse.persistence</groupId>
+              <artifactId>javax.persistence</artifactId>
+          </exclusion>
+      </exclusions>
     </dependency>
     <!-- MOXy relies on javax.mail classes for Base64 decoding -->
     <dependency>

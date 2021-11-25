@@ -50,11 +50,15 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+/**
+ * Convert ConfigItem into OpenAPI
+ */
 public class ConfigSwaggerConverter {
     public static final String APPLICATION_JSON = "application/json";
+    public static final String SCHEMA_PATH = "#/components/schemas/";
+    public static final String REMOTE_REF_PATH = "/opennms/rest/cm/schema/";
+
     private final Logger LOG = LoggerFactory.getLogger(ConfigSwaggerConverter.class);
 
     private final Map<ConfigItem, Schema<?>> schemasByItem = new LinkedHashMap<>();
@@ -85,23 +89,14 @@ public class ConfigSwaggerConverter {
                 objectMapper = Yaml.mapper();
             }
         } catch (Exception e) {
-            LOG.warn("UNKNOWN MediaType: " + acceptType + " error: " + e.getMessage() + " using media type = yaml instead.");
+            LOG.warn("UNKNOWN MediaType: {} error: {} using media type = yaml instead.", acceptType, e.getMessage());
             objectMapper = new ObjectMapper(new YAMLFactory());
         }
 
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        //TODO: dirty hack to remove exampleSetFlag
-        if (objectMapper.getFactory() instanceof YAMLFactory) {
-            final String intermediateJson = objectMapper.writeValueAsString(openapi);
-            final String almostSwaggerJson = intermediateJson.replaceAll("[\\n\\r\\s]*exampleSetFlag.*,", "");
-            return almostSwaggerJson.replaceAll(",?[\\n\\r\\s]*exampleSetFlag.*", "");
-        } else {
-            final String intermediateJson = objectMapper.writeValueAsString(openapi);
-            final String almostSwaggerJson = intermediateJson.replaceAll("[\\n\\r\\s]*\"exampleSetFlag\".*,", "");
-            return almostSwaggerJson.replaceAll(",?[\\n\\r\\s]*\"exampleSetFlag\".*", "");
-        }
+        return objectMapper.writeValueAsString(openapi);
     }
 
     private Info genInfo() {
@@ -216,16 +211,6 @@ public class ConfigSwaggerConverter {
         return openAPI;
     }
 
-//    public OpenAPI appendPaths(OpenAPI openapi, String prefix){
-//        // Create an empty set of paths
-//        Paths paths = new Paths();
-//        openAPI.setPaths(paths);
-//
-//        // Generate paths for the items
-//        this.generatePathsForItems(item, prefix, null);
-//        pathItemsByPath.forEach(paths::addPathItem);
-//    }
-
     /**
      * @param item
      * @param prefix
@@ -237,7 +222,7 @@ public class ConfigSwaggerConverter {
         // Index the path for future reference
         pathsByItem.put(item, path);
 
-        Schema schemaForCurrentItem = new Schema();
+        Schema<?> schemaForCurrentItem = new Schema<>();
         schemaForCurrentItem.setName(item.getName());
         schemaForCurrentItem.set$ref(this.generate$ref(item, externalConfigName));
 
@@ -254,7 +239,7 @@ public class ConfigSwaggerConverter {
         Content configIdContent = new Content();
         MediaType configIdMediaType = new MediaType();
         ArraySchema configIdParent = new ArraySchema();
-        Schema configIdSchema = new StringSchema();
+        StringSchema configIdSchema = new StringSchema();
         configIdParent.setItems(configIdSchema);
         configIdMediaType.schema(configIdParent);
         configIdContent.addMediaType(APPLICATION_JSON, configIdMediaType);
@@ -334,8 +319,8 @@ public class ConfigSwaggerConverter {
         apiResponses.addApiResponse("200", apiResponse);
 
         // 400 error
-        Map<String, Schema> properties = new HashMap<>();
-        Schema errorMessageSchema = new StringSchema();
+        Map<String, Schema<?>> properties = new HashMap<>();
+        StringSchema errorMessageSchema = new StringSchema();
         properties.put("message", errorMessageSchema);
         apiResponses.addApiResponse("400", getSimpleObjectResponse("Error message", properties));
 
@@ -343,14 +328,14 @@ public class ConfigSwaggerConverter {
         return operation;
     }
 
-    private ApiResponse getSimpleObjectResponse(String description, Map<String, Schema> properties) {
+    private ApiResponse getSimpleObjectResponse(String description, Map<String, Schema<?>> properties) {
         ApiResponse messageResponse = new ApiResponse();
         messageResponse.setDescription(description);
         Content messageContent = new Content();
         messageResponse.setContent(messageContent);
         MediaType mediaType = new MediaType();
 
-        messageContent.addMediaType(APPLICATION_JSON.toString(), mediaType);
+        messageContent.addMediaType(APPLICATION_JSON, mediaType);
 
         ObjectSchema parentSchema = new ObjectSchema();
 
@@ -373,16 +358,6 @@ public class ConfigSwaggerConverter {
             return relevantPath;
         }
         return pathElements[1];
-    }
-
-    private List<String> buildUrlParamList(String path) {
-        List<String> params = new ArrayList();
-        Matcher m = Pattern.compile("\\{[\\w\\-\\.]+\\}").matcher(path);
-        while (m.find()) {
-            String urlItem = m.group();
-            params.add(urlItem.substring(1, (urlItem.length() - 1)));
-        }
-        return params;
     }
 
     private void generateSchemasForItems(ConfigItem parent, ConfigItem item) {
@@ -469,7 +444,7 @@ public class ConfigSwaggerConverter {
             Schema<?> schemaForCurrentItem = schema;
             if (ConfigItem.Type.OBJECT.equals(item.getType())) {
                 // Use a reference - these have no actual type set
-                schemaForCurrentItem = new Schema();
+                schemaForCurrentItem = new Schema<>();
                 schemaForCurrentItem.setName(schema.getName());
                 schemaForCurrentItem.set$ref(this.generate$ref(item));
             }
@@ -503,9 +478,9 @@ public class ConfigSwaggerConverter {
      */
     private String generate$ref(ConfigItem item, String configName) {
         if (configName != null) {
-            return "/opennms/rest/cm/schema/" + configName + "#/components/schemas/" + item.getName();
+            return REMOTE_REF_PATH + configName + SCHEMA_PATH + item.getName();
         } else
-            return "#/components/schemas/" + item.getName();
+            return SCHEMA_PATH + item.getName();
     }
 
     public void walk(ConfigItem parent, ConfigItem item, BiConsumer<ConfigItem, ConfigItem> consumer) {

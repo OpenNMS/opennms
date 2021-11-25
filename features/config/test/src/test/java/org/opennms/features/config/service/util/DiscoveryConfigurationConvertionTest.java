@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -80,7 +81,8 @@ public class DiscoveryConfigurationConvertionTest {
 
     @Test
     public void testConvert() throws IOException {
-        ConfigDefinition def = XsdHelper.buildConfigDefinition("discovery", "discovery-configuration.xsd", "discovery-configuration");
+        ConfigDefinition def = XsdHelper.buildConfigDefinition("discovery", "discovery-configuration.xsd",
+                "discovery-configuration", ConfigurationManagerService.BASE_PATH);
         ConfigConverter converter = XsdHelper.getConverter(def);
         String jsonStr = converter.xmlToJson(xmlStr);
 

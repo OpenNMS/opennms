@@ -78,8 +78,8 @@ public class ConfigurationManagerServiceImplTest {
     @Before
     public void init() throws Exception {
         if (configManagerService.getRegisteredConfigDefinition(CONFIG_NAME).isEmpty()) {
-            ConfigDefinition def = XsdHelper.buildConfigDefinition(CONFIG_NAME,
-                    "provisiond-configuration.xsd", "provisiond-configuration");
+            ConfigDefinition def = XsdHelper.buildConfigDefinition(CONFIG_NAME, "provisiond-configuration.xsd",
+                    "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
             configManagerService.registerConfigDefinition(CONFIG_NAME, def);
         }
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
@@ -105,8 +105,8 @@ public class ConfigurationManagerServiceImplTest {
     @Test
     public void testRegisterExtraSchema() throws IOException, JAXBException {
         String VACUUMD_CONFIG_NAME = "vacuumd";
-        ConfigDefinition def = XsdHelper.buildConfigDefinition(VACUUMD_CONFIG_NAME,
-                "vacuumd-configuration.xsd", "VacuumdConfiguration");
+        ConfigDefinition def = XsdHelper.buildConfigDefinition(VACUUMD_CONFIG_NAME, "vacuumd-configuration.xsd",
+                "VacuumdConfiguration", ConfigurationManagerService.BASE_PATH);
         configManagerService.registerConfigDefinition(VACUUMD_CONFIG_NAME, def);
         Optional<ConfigDefinition> configSchema = configManagerService.getRegisteredConfigDefinition(VACUUMD_CONFIG_NAME);
         Assert.assertTrue(VACUUMD_CONFIG_NAME + " fail to register", configSchema.isPresent());

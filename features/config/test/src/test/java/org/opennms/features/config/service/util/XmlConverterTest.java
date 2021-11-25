@@ -28,19 +28,10 @@
 
 package org.opennms.features.config.service.util;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import javax.xml.bind.JAXBException;
-
+import com.google.common.io.Resources;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.dao.api.ConfigConverter;
-import org.opennms.features.config.dao.api.ValidationSchema;
 import org.opennms.features.config.dao.impl.util.XmlConverter;
 import org.opennms.features.config.dao.impl.util.XmlSchema;
 import org.opennms.features.config.service.config.FakeXsdForTest;
@@ -49,7 +40,12 @@ import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import com.google.common.io.Resources;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @JUnitConfigurationEnvironment
 public class XmlConverterTest {

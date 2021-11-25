@@ -41,6 +41,7 @@ import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,8 @@ public class ConfigStoreDaoImplTest {
     @Test
     public void testData() throws Exception {
         // register
-        ConfigDefinition def = XsdHelper.buildConfigDefinition(configName, "provisiond-configuration.xsd", "provisiond-configuration");
+        ConfigDefinition def = XsdHelper.buildConfigDefinition(configName, "provisiond-configuration.xsd",
+                "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
         configStoreDao.register(def);
 
         // config
@@ -88,8 +90,8 @@ public class ConfigStoreDaoImplTest {
 
         // register more and update
         String configName2 = configName + "_2";
-        ConfigDefinition def2 = XsdHelper.buildConfigDefinition(configName2,
-                "provisiond-configuration.xsd", "provisiond-configuration");
+        ConfigDefinition def2 = XsdHelper.buildConfigDefinition(configName2, "provisiond-configuration.xsd",
+                "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
         configStoreDao.register(def2);
         configStoreDao.updateConfigDefinition(def2);
         Optional<ConfigDefinition> tmpConfigSchema2 = configStoreDao.getConfigDefinition(configName2);

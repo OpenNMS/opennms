@@ -45,9 +45,7 @@ import java.util.Map;
 public class XsdHelper {
     /**
      * Convert xsd into openapi spec
-     * @param configName
      * @param xsdName
-     * @param topLevelElement
      * @return
      */
     private static XsdModelConverter getConverter(String xsdName) {
@@ -67,13 +65,13 @@ public class XsdHelper {
      * @param topLevelElement
      * @return ConfigDefinition
      */
-    public static ConfigDefinition buildConfigDefinition(String configName, String xsdName, String topLevelElement){
+    public static ConfigDefinition buildConfigDefinition(String configName, String xsdName, String topLevelElement, String basePath){
         ConfigDefinition def = new ConfigDefinition(configName);
         XsdModelConverter xsdConverter = XsdHelper.getConverter( xsdName);
         ConfigItem item = xsdConverter.convert(topLevelElement);
 
         ConfigSwaggerConverter swaggerConverter = new ConfigSwaggerConverter();
-        OpenAPI api = swaggerConverter.convert(item, "/rest/cm/" + configName);
+        OpenAPI api = swaggerConverter.convert(item, basePath + "/" + configName);
 
         def.setSchema(api);
         def.setMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG, topLevelElement);

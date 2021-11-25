@@ -82,7 +82,8 @@ public class UpgradeSchema extends AbstractSchemaChange {
 
     protected RunnableWithException getCmFunction(ConfigurationManagerService m) {
         return () -> {
-            m.changeConfigDefinition(id, XsdHelper.buildConfigDefinition(id, xsdFileName, rootElement));
+            m.changeConfigDefinition(id, XsdHelper.buildConfigDefinition(id, xsdFileName, rootElement,
+                    ConfigurationManagerService.BASE_PATH));
         };
     }
 
