@@ -62,7 +62,7 @@ public class XmpCollectorComplianceTest extends CollectorComplianceTest {
         XmpConfig config = new XmpConfig();
         XmpConfigFactory xmpConfigFactory = mock(XmpConfigFactory.class);
         when(xmpConfigFactory.getXmpConfig()).thenReturn(config);
-        //XmpConfigFactory.setInstance(xmpConfigFactory);
+        XmpConfigFactory.setInstance(xmpConfigFactory);
 
         XmpCollection collection = new XmpCollection();
         collection.setGroups(new Groups());

@@ -101,8 +101,6 @@ public class XmpCollector extends AbstractServiceCollector {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(XmpCollector.class);
 
-    @Autowired
-    XmpConfigFactory xmpConfigFactory;
 
     /* class variables and methods *********************** */
     static final String SERVICE_NAME = "XMP";
@@ -326,12 +324,12 @@ public class XmpCollector extends AbstractServiceCollector {
         // initialize authenUser, port, timeout, other parameters
         // want a xmp-config.xml for port, authenUser, timeout, etc.
 
-       /* try {
+        try {
             XmpConfigFactory.init();
         } catch (Throwable e) {
             LOG.error("initialize: config factory failed to initialize");
             throw new UndeclaredThrowableException(e);
-        }*/
+        }
 
         if (m_resourceTypesDao == null) {
             m_resourceTypesDao = BeanUtils.getBean("daoContext", "resourceTypesDao", ResourceTypesDao.class);
@@ -339,7 +337,7 @@ public class XmpCollector extends AbstractServiceCollector {
 
         // get our top-level object for our protocol config file,
         // xmp-config.xml, already parsed and ready to examine
-        XmpConfig protoConfig = xmpConfigFactory.getXmpConfig();
+        XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
 
         if (protoConfig.hasPort())
             xmpPort = protoConfig.getPort();

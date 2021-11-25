@@ -66,97 +66,81 @@ import javax.annotation.PostConstruct;
 
 public class XmpConfigFactory extends AbstractCmJaxbConfigDao<XmpConfig> {
 
-    /* class variables and methods *********************** */
-    //private static XmpConfigFactory instance;
-    private XmpConfig config = null;
-    private static final String CONFIG_NAME = "xmp";
-    private static final String DEFAULT_CONFIG_ID = "default";
-    // initialize our class for the creation of instances
-    /**
-     * <p>init</p>
-     *
-     * @throws java.io.IOException if any.
-     * @throws java.io.FileNotFoundException if any.
-     */
-    /*public static void init() throws IOException, FileNotFoundException
-    {
-        if (instance == null) {
-            //File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.XMP_CONFIG_FILE_NAME);
-            // create instance of ourselves and that causes
-            // config file to be read and XmpConfig to be instantiated
-            instance = BeanUtils.getBean("commonContext", "xmpFactory", XmpConfigFactory.class);
-
+        /* class variables and methods *********************** */
+        private static XmpConfigFactory instance;
+        private XmpConfig config = null;
+        private static final String CONFIG_NAME = "xmp";
+        private static final String DEFAULT_CONFIG_ID = "default";
+        // initialize our class for the creation of instances
+        /**
+         * <p>init</p>
+         *
+         * @throws java.io.IOException if any.
+         * @throws java.io.FileNotFoundException if any.
+         */
+        public static void init() throws IOException, FileNotFoundException
+        {
+            if (instance == null) {
+                instance = BeanUtils.getBean("commonContext", "xmpFactory", XmpConfigFactory.class);
+            }
+            instance.reload();
         }
-    }*/
 
-    @PostConstruct
-    public void postConstruct() throws IOException {
-        config = this.loadConfig(this.getDefaultConfigId());
-    }
+        public void reload() {
+            config = this.loadConfig(this.getDefaultConfigId());
+        }
 
-    /**
-     * <p>getXmpConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.xmpConfig.XmpConfig} object.
-     */
-    public XmpConfig getXmpConfig() { return config; }
+        /**
+         * <p>getXmpConfig</p>
+         *
+         * @return a {@link org.opennms.netmgt.config.xmpConfig.XmpConfig} object.
+         */
+        public XmpConfig getXmpConfig() { return config; }
 
-    /**
-     * <p>Getter for the field <code>instance</code>.</p>
-     *
-     * @return a {@link org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory} object.
-     */
-   //public static XmpConfigFactory getInstance() { return instance; }
+        /**
+         * <p>Getter for the field <code>instance</code>.</p>
+         *
+         * @return a {@link org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory} object.
+         */
+       public static XmpConfigFactory getInstance() { return instance;}
 
-    /*public static void setInstance(XmpConfigFactory instance) {
-        XmpConfigFactory.instance = instance;
-    }*/
+        public static void setInstance(XmpConfigFactory instance) {
+            XmpConfigFactory.instance = instance;
+        }
 
-    /* instance variables ******************************** */
+        /* instance variables ******************************** */
 
-    /* constructors  ************************************* */
+        /* constructors  ************************************* */
 
-    public XmpConfigFactory() throws IOException
-    {
-        super(XmpConfig.class, "xmp Configuration");
-    }
-    /**
-     * <p>Constructor for XmpConfigFactory.</p>
-     *
-     * @param configFile a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     */
-    public XmpConfigFactory(XmpConfig config) throws IOException
-    {
-        //config = JaxbUtils.unmarshal(XmpConfig.class, configFile);
-        super(XmpConfig.class, "xmp Configuration");
-        this.config = config;
-    }
+        public XmpConfigFactory() throws IOException
+        {
+            super(XmpConfig.class, "xmp Configuration");
+        }
+        /**
+         * <p>Constructor for XmpConfigFactory.</p>
+         *
+         * @param  {@link java.lang.String} object.
+         * @throws java.io.IOException if any.
+         */
+        public XmpConfigFactory(XmpConfig config) throws IOException
+        {
+            super(XmpConfig.class, "xmp Configuration");
+            this.config = config;
+        }
 
-    /**
-     * <p>Constructor for XmpConfigFactory.</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @throws java.io.IOException if any.
-     */
-    /*public XmpConfigFactory(Reader rdr) throws IOException
-    {
-        config = (XmpConfig)JaxbUtils.unmarshal(XmpConfig.class,rdr);
-    }*/
+        @Override
+        public String getConfigName() {
+            return CONFIG_NAME;
+        }
 
-    @Override
-    public String getConfigName() {
-        return CONFIG_NAME;
-    }
-
-    @Override
-    public String getDefaultConfigId() {
-        return DEFAULT_CONFIG_ID;
-    }
+        @Override
+        public String getDefaultConfigId() {
+            return DEFAULT_CONFIG_ID;
+        }
 
 
-    /* private methods *********************************** */
+        /* private methods *********************************** */
 
-    /* public methods ************************************ */
+        /* public methods ************************************ */
 
 } /* class XmpConfigFactory */
