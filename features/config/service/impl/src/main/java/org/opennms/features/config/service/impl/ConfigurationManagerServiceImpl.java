@@ -173,7 +173,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         // try to fill default value or empty signature
         Optional<ConfigDefinition> def = configStoreDao.getConfigDefinition(configName);
         if (def.isPresent()) {
-            String schemaName = def.get().getMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG);
+            String schemaName = (String) def.get().getMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG);
             if (schemaName == null) { // assume if top element name is null, the top schema name is configName
                 schemaName = configName;
             }
@@ -189,25 +189,6 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
             return Optional.empty();
         }
         return Optional.of(config.get().toString());
-    }
-
-    @Override
-    public Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
-        Optional<ConfigDefinition> configDefinition = configStoreDao.getConfigDefinition(configName);
-        if (configDefinition.isEmpty()) {
-            LOG.error("Fail to get configDefinition for configName: {}, configId: {}", configName, configId);
-            return Optional.empty();
-        }
-        Optional<JSONObject> config = configStoreDao.getConfig(configName, configId);
-        if (config.isEmpty()) {
-            LOG.error("Fail to get config for configName: {}, configId: {}", configName, configId);
-            return Optional.empty();
-        }
-        JSONObject json = config.get();
-        ConfigDefinition xmlConfigDef = configDefinition.get();
-
-        ConfigConverter converter = XsdHelper.getConverter(xmlConfigDef);
-        return Optional.of(converter.jsonToXml(json.toString()));
     }
 
     @Override

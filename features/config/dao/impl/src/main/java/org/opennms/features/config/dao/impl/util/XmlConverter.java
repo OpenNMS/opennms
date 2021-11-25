@@ -28,10 +28,13 @@
 
 package org.opennms.features.config.dao.impl.util;
 
+import com.google.common.base.Strings;
 import com.google.common.io.Resources;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.internal.oxm.ByteArraySource;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.oxm.MediaType;
@@ -39,7 +42,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigConverter;
-import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -51,6 +53,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.sax.SAXSource;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -62,11 +66,10 @@ import java.util.stream.Collectors;
  * It handles all kinds of xml <> json conventions.
  */
 public class XmlConverter implements ConfigConverter {
-    private static final Logger LOG = LoggerFactory.getLogger(ConfigConverter.class);
-    public static final String __VALUE__TAG = "__VALUE__";
+    private static final Logger LOG = LoggerFactory.getLogger(XmlConverter.class);
+    public static final String VALUE_TAG = "__VALUE__";
 
     private final DynamicJAXBContext jaxbContext;
-    private XmlMapper xmlMapper;
     private final XmlSchema xmlSchema;
     private String xsdName;
     private String rootElement;
@@ -80,8 +83,6 @@ public class XmlConverter implements ConfigConverter {
         this.rootElement = Objects.requireNonNull(rootElement);
         this.elementNameToValueNameMap = elementNameToValueNameMap;
         this.xmlSchema = this.readXmlSchema();
-        //TODO: remove xmlMapper
-        this.xmlMapper = new XmlMapper(xmlSchema);
         this.jaxbContext = getDynamicJAXBContextForService(xmlSchema);
     }
 
@@ -114,13 +115,12 @@ public class XmlConverter implements ConfigConverter {
 
 
     /**
-     * Convert xml to json
+     * Convert xml to json. If elementNameToValueNameMap is not null, it will setup XmlValue attribute name properly
      *
      * @param sourceXml
      * @return json string
      */
     @Override
-
     public String xmlToJson(String sourceXml) {
         try {
             final XMLFilter filter = JaxbUtils.getXMLFilterForNamespace(this.xmlSchema.getNamespace());
@@ -133,16 +133,17 @@ public class XmlConverter implements ConfigConverter {
             final Marshaller m = jaxbContext.createMarshaller();
             m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
             m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
+
             if (elementNameToValueNameMap != null) {
                 //dirty tricks to remove xml value (use for JSONObject remove)
-                m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, __VALUE__TAG);
+                m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, VALUE_TAG);
             }
 
             final StringWriter writer = new StringWriter();
             m.marshal(entity, writer);
             String jsonStr = writer.toString();
-            if (elementNameToValueNameMap != null && jsonStr.indexOf(__VALUE__TAG) != -1) {
-                return this.handleElementBody(jsonStr);
+            if (elementNameToValueNameMap != null && jsonStr.indexOf(VALUE_TAG) != -1) {
+                return this.replaceXmlValueAttributeName(jsonStr);
             } else {
                 return jsonStr;
             }
@@ -152,43 +153,51 @@ public class XmlConverter implements ConfigConverter {
         }
     }
 
-    private void replaceKey(JSONObject json, String oldKey, String newKey){
+    //TODO: need more data for testing
+    private String replaceXmlValueAttributeName(String jsonStr) {
+        JSONObject json = new JSONObject(jsonStr);
+        this.elementNameToValueNameMap.forEach((elementName, valueName) -> {
+            if (json.has(elementName)) {
+                Object value = json.get(elementName);
+                if (value instanceof JSONArray) {
+                    JSONArray tmpList = (JSONArray) value;
+                    tmpList.forEach(item -> {
+                        if (item instanceof JSONObject) {
+                            replaceKey((JSONObject) item, VALUE_TAG, valueName);
+                        }
+                    });
+
+                } else if (value instanceof JSONObject) {
+                    replaceKey((JSONObject) value, VALUE_TAG, valueName);
+                }
+            }
+        });
+        return json.toString();
+    }
+
+    private void replaceKey(JSONObject json, String oldKey, String newKey) {
         Object value = json.remove(oldKey);
         json.put(newKey, value);
     }
 
-    //TODO: need more data for testing
-    private String handleElementBody(String jsonStr){
-        JSONObject json = new JSONObject(jsonStr);
-        this.elementNameToValueNameMap.forEach((elementName,valueName)->{
-            if(json.has(elementName)){
-                Object value = json.get(elementName);
-                if(value instanceof JSONArray){
-                    JSONArray tmpList = (JSONArray) value;
-                    tmpList.forEach(item->{
-                        if(item instanceof JSONObject){
-                            replaceKey((JSONObject)item, __VALUE__TAG, valueName);
-                        }
-                    });
-
-                } else if (value instanceof JSONObject){
-                    replaceKey((JSONObject)value, __VALUE__TAG, valueName);
-                }
-            }
-        });
-//        if (json.has(__VALUE__TAG)) {
-//            String value = json.getString(__VALUE__TAG);
-//            if (value != null && value.trim().length() == 0) {
-//                json.remove(__VALUE__TAG);
-//            }
-//        }
-        return json.toString();
-
-    }
-
     @Override
     public String jsonToXml(final String jsonStr) {
-        return xmlMapper.jsonToXml(jsonStr);
+        try {
+            final Unmarshaller u = jaxbContext.createUnmarshaller();
+            u.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+            u.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
+
+            Class<? extends DynamicEntity> entityClass = getTopLevelEntity(jaxbContext);
+            ByteArraySource byteArraySource = new ByteArraySource(jsonStr.getBytes(StandardCharsets.UTF_8));
+            DynamicEntity entity = u.unmarshal(byteArraySource, entityClass).getValue();
+
+            final Marshaller m = jaxbContext.createMarshaller();
+            final StringWriter writer = new StringWriter();
+            m.marshal(entity, writer);
+            return writer.toString();
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private DynamicJAXBContext getDynamicJAXBContextForService(XmlSchema xmlSchema) {
@@ -199,6 +208,48 @@ public class XmlConverter implements ConfigConverter {
         } catch (JAXBException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Class<? extends DynamicEntity> getTopLevelEntity(DynamicJAXBContext jc) {
+        String className = namespace2package(xmlSchema.getNamespace()) +
+                "." +
+                TopLevelElementToClass.topLevelElementToClass(xmlSchema.getTopLevelObject());
+        return jc.newDynamicEntity(className).getClass();
+    }
+
+    public static String namespace2package(String s) {
+        // "http://xmlns.opennms.org/xsd/config/vacuumd" -> "org.opennms.xmlns.xsd.config.vacuumd"
+        final URL url;
+        try {
+            url = new URL(s);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
+        StringBuilder pkgName = new StringBuilder();
+
+        // Split and reverse the host part
+        String[] parts = url.getHost().split("\\.");
+        for (int i = parts.length - 1; i >= 0; i--) {
+            if (i != parts.length - 1) {
+                pkgName.append(".");
+            }
+            pkgName.append(parts[i]);
+        }
+
+        // Split and append the parts of the path
+        parts = url.getPath().split("/");
+        for (String part : parts) {
+            if (Strings.isNullOrEmpty(part)) {
+                continue;
+            }
+            pkgName.append(".");
+            pkgName.append(part);
+        }
+
+        String packageName = pkgName.toString();
+        packageName = packageName.replace('-', '_');
+        return packageName;
     }
 
     public XmlSchema getXmlSchema() {

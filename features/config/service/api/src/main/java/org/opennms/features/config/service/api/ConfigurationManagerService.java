@@ -104,17 +104,6 @@ public interface ConfigurationManagerService {
     Optional<String> getJSONStrConfiguration(String configName, String configId) throws IOException;
 
     /**
-     * get config as xml by configName, configId
-     * TODO: Freddy keeps until there is a better ConfigurationManagerServiceMock which can handle xml > json without extra info.
-     * @param configName
-     * @param configId
-     * @return xml string
-     * @throws IOException
-     */
-    @Deprecated
-    Optional<String> getXmlConfiguration(String configName, String configId) throws IOException, JAXBException;
-
-    /**
      * get whole ConfigData by configName
      *
      * @param configName

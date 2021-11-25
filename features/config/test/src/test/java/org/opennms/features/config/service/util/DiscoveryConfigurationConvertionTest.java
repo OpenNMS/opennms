@@ -27,19 +27,19 @@
  ******************************************************************************/
 package org.opennms.features.config.service.util;
 
-import org.apache.ws.commons.schema.XmlSchemaCollection;
+import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
-import org.opennms.features.config.dao.impl.util.XsdModelConverter;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.Specific;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
 
 public class DiscoveryConfigurationConvertionTest {
-    String xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+    private String xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<discovery-configuration\n" +
             "        xmlns=\"http://xmlns.opennms.org/xsd/config/discovery\"\n" +
             "        location=\"localhost\" packets-per-second=\"1.0\"\n" +
@@ -76,12 +76,32 @@ public class DiscoveryConfigurationConvertionTest {
             "    <include-url>10.10.30.1/bar.html</include-url>\n" +
             "</discovery-configuration>";
 
-    String expectedJson = "{\"initial-sleep-time\":30000,\"include-range\":[{\"retries\":1,\"location\":\"localhost\",\"end\":\"10.10.10.20\",\"begin\":\"10.10.10.10\",\"timeout\":2000},{\"retries\":1,\"location\":\"pittsboro\",\"end\":\"10.10.20.20\",\"begin\":\"10.10.20.10\",\"timeout\":2000},{\"end\":\"10.10.30.20\",\"begin\":\"10.10.30.10\"}],\"exclude-range\":[{\"end\":\"192.168.10.10\",\"begin\":\"192.168.10.1\"},{\"end\":\"192.168.20.10\",\"begin\":\"192.168.20.1\"},{\"end\":\"192.168.30.10\",\"begin\":\"192.168.30.1\"}],\"location\":\"localhost\",\"restart-sleep-time\":86400000,\"specific\":[{\"retries\":1,\"address\":\"10.10.10.1\",\"location\":\"localhost\",\"timeout\":2000},{\"retries\":1,\"address\":\"10.10.20.1\",\"location\":\"pittsboro\",\"timeout\":2000},{\"address\":\"10.10.30.1\"}],\"include-url\":[{\"retries\":1,\"location\":\"localhost\",\"timeout\":2000,\"url\":\"10.10.10.1/foo.html\"},{\"retries\":1,\"location\":\"pittsboro\",\"timeout\":2000,\"url\":\"10.10.20.1/bar.html\"},{\"url\":\"10.10.30.1/bar.html\"}],\"packets-per-second\":1}";
+    private String expectedJson = "{\"initial-sleep-time\":30000,\"include-range\":[{\"retries\":1,\"location\":\"localhost\",\"end\":\"10.10.10.20\",\"begin\":\"10.10.10.10\",\"timeout\":2000},{\"retries\":1,\"location\":\"pittsboro\",\"end\":\"10.10.20.20\",\"begin\":\"10.10.20.10\",\"timeout\":2000},{\"end\":\"10.10.30.20\",\"begin\":\"10.10.30.10\"}],\"exclude-range\":[{\"end\":\"192.168.10.10\",\"begin\":\"192.168.10.1\"},{\"end\":\"192.168.20.10\",\"begin\":\"192.168.20.1\"},{\"end\":\"192.168.30.10\",\"begin\":\"192.168.30.1\"}],\"location\":\"localhost\",\"restart-sleep-time\":86400000,\"specific\":[{\"retries\":1,\"address\":\"10.10.10.1\",\"location\":\"localhost\",\"timeout\":2000},{\"retries\":1,\"address\":\"10.10.20.1\",\"location\":\"pittsboro\",\"timeout\":2000},{\"address\":\"10.10.30.1\"}],\"include-url\":[{\"retries\":1,\"location\":\"localhost\",\"timeout\":2000,\"url\":\"10.10.10.1/foo.html\"},{\"retries\":1,\"location\":\"pittsboro\",\"timeout\":2000,\"url\":\"10.10.20.1/bar.html\"},{\"url\":\"10.10.30.1/bar.html\"}],\"packets-per-second\":1}";
+
     @Test
     public void testConvert() throws IOException {
         ConfigDefinition def = XsdHelper.buildConfigDefinition("discovery", "discovery-configuration.xsd", "discovery-configuration");
         ConfigConverter converter = XsdHelper.getConverter(def);
         String jsonStr = converter.xmlToJson(xmlStr);
+
         JSONAssert.assertEquals(expectedJson, jsonStr, true);
+    }
+
+    @Test
+    public void testObjectToJson() {
+        DiscoveryConfiguration discoveryConfiguration = new DiscoveryConfiguration();
+        discoveryConfiguration.setInitialSleepTime(100L);
+        Specific specific = new Specific();
+        specific.setAddress("address");
+        specific.setLocation("location");
+        specific.setForeignSource("foreign");
+        discoveryConfiguration.addSpecific(specific);
+
+        String json = ConfigConvertUtil.objectToJson(discoveryConfiguration);
+
+        DiscoveryConfiguration d2 = ConfigConvertUtil.jsonToObject(json, DiscoveryConfiguration.class);
+        Assert.assertEquals(100L, (long) discoveryConfiguration.getInitialSleepTime().get());
+        Assert.assertEquals("address", discoveryConfiguration.getSpecifics().get(0).getAddress());
+        Assert.assertEquals("location", discoveryConfiguration.getSpecifics().get(0).getLocation().get());
     }
 }

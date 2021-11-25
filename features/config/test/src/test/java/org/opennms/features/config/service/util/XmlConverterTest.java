@@ -68,7 +68,7 @@ public class XmlConverterTest {
         JSONAssert.assertEquals(expectedJson, convertedJson, true);
 
         // Verify the rendered JSON
-        final ProvisiondConfiguration objectFromMappedJson = JaxbUtils.unmarshal(ProvisiondConfiguration.class, converter.jsonToXml(convertedJson));
+        final ProvisiondConfiguration objectFromMappedJson = ConfigConvertUtil.jsonToObject(convertedJson, ProvisiondConfiguration.class);
 
         Assert.assertEquals("json importThreads Value is not correct", 11L, (long) objectFromMappedJson.getImportThreads());
         Assert.assertTrue("json foreign-source-dir is not correct. " + objectFromMappedJson.getForeignSourceDir(), FOREIGN_SOURCES.equals(objectFromMappedJson.getForeignSourceDir()));

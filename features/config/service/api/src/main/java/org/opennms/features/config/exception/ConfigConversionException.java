@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,26 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.dao.api;
+package org.opennms.features.config.exception;
 
-public interface ConfigConverter {
-
-    /**
-     * convert xml string to json string
-     *
-     * @param xmlStr input xml string
-     * @return json string
-     */
-    String xmlToJson(String xmlStr);
-
-    /**
-     * convert json string to xml string
-     *
-     * !!!It should not have any use case to convert json back to xml!!!
-     *
-     * @param jsonStr input json config
-     * @return xml string
-     */
-    @Deprecated
-    String jsonToXml(String jsonStr);
+/**
+ * This exception is mainly about config conversion
+ */
+public class ConfigConversionException extends RuntimeException {
+    public ConfigConversionException(Exception e) {
+        super(e);
+    }
 }
