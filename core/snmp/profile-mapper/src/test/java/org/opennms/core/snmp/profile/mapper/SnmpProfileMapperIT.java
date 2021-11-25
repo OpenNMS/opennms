@@ -56,6 +56,7 @@ import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpProfileMapper;
@@ -169,7 +170,7 @@ public class SnmpProfileMapperIT {
     }
 
     private void setUpProfileMapper(InputStream configStream, URL resourceURL) throws FileNotFoundException {
-        snmpPeerFactory = new ProxySnmpAgentConfigFactory(configStream);
+        snmpPeerFactory = new ProxySnmpAgentConfigFactory(new SnmpConfig());
         // This is to not override snmp-config from etc
         SnmpPeerFactory.setFile(new File(resourceURL.getFile()));
         FilterDao filterDao = Mockito.mock(FilterDao.class);

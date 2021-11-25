@@ -154,7 +154,7 @@ public class OpenNMSITCase {
             
             DataSourceFactory.setInstance(m_db);
 
-            SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+            SnmpPeerFactory.setInstance(new SnmpPeerFactory());
             
             if (isStartEventd()) {
                 m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_registry);

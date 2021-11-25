@@ -57,6 +57,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -116,7 +117,7 @@ public class NodeInfoScanIT {
     public void testNodeInfoScanWithDefaultConfig() throws InterruptedException {
         URL url =  getClass().getResource("/snmp-config1.xml");
         try (InputStream configStream = url.openStream()) {
-            snmpPeerFactory = new ProxySnmpAgentConfigFactory(configStream);
+            snmpPeerFactory = new ProxySnmpAgentConfigFactory(new SnmpConfig());
             // This is to not override snmp-config from etc
             SnmpPeerFactory.setFile(new File(url.getFile()));
             initializeProvisionService();
@@ -137,7 +138,7 @@ public class NodeInfoScanIT {
         URL url =  getClass().getResource("/snmp-config1.xml");
         try (InputStream configStream = url.openStream()) {
             // Make default scan fail by setting wrong read community.
-            snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(configStream);
+            snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(new SnmpConfig());
             SnmpPeerFactory.setFile(new File(url.getFile()));
             initializeProvisionService();
             FilterDao filterDao = Mockito.mock(FilterDao.class);
@@ -162,7 +163,7 @@ public class NodeInfoScanIT {
         URL url =  getClass().getResource("/snmp-config1.xml");
         try (InputStream configStream = url.openStream()) {
             // Make default scan fail by setting wrong read community.
-            snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension2(configStream);
+            snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension2(new SnmpConfig());
             SnmpPeerFactory.setFile(new File(url.getFile()));
             initializeProvisionService();
             FilterDao filterDao = Mockito.mock(FilterDao.class);
@@ -207,7 +208,7 @@ public class NodeInfoScanIT {
      **/
     static class ProxySnmpAgentConfigFactoryExtension extends ProxySnmpAgentConfigFactory {
 
-        ProxySnmpAgentConfigFactoryExtension(InputStream config) throws FileNotFoundException {
+        ProxySnmpAgentConfigFactoryExtension(SnmpConfig config) throws FileNotFoundException {
             super(config);
         }
 
@@ -224,7 +225,7 @@ public class NodeInfoScanIT {
      **/
     class ProxySnmpAgentConfigFactoryExtension2 extends ProxySnmpAgentConfigFactory {
 
-        ProxySnmpAgentConfigFactoryExtension2(InputStream config) throws FileNotFoundException {
+        ProxySnmpAgentConfigFactoryExtension2(SnmpConfig config) throws FileNotFoundException {
             super(config);
         }
 

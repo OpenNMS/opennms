@@ -108,7 +108,7 @@ public class SnmpProxyIT {
     public void agentShouldUseConfiguredProxy() throws Exception {
 
         Resource configuration = createConfiguration();
-        SnmpPeerFactory snmpAgentConfigFactory = new SnmpPeerFactory(configuration);
+        SnmpPeerFactory snmpAgentConfigFactory = new SnmpPeerFactory();
 
         agentShouldUseConfiguredProxy(snmpAgentConfigFactory, "169.254.1.1"); // proxy1
         agentShouldUseConfiguredProxy(snmpAgentConfigFactory, "169.254.1.2"); // proxy2

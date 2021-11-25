@@ -67,6 +67,11 @@
         <cm:importSchemaFromXsd id="notifd" xsdFileName="notifd-configuration.xsd" xsdFileHash="ffb7114b6ac496314340fa5eb95b5bfdd8e7754c3c2916e618673802c913a5e2" rootElement="notifd-configuration"/>
         <cm:importConfig schemaId="notifd" filePath="notifd-configuration.xml"/>
     </changeSet>
+    <changeSet author="psuthar" id="1.0-register-schema-snmp">
+        <cm:registerSchema id="snmp"/>
+        <cm:importSchemaFromXsd id="snmp" xsdFileName="snmp-config.xsd" xsdFileHash="731b7a0642261bc3b71d883e8bc36cfb3c4b41b3d2061b5ab972764729a2a689" rootElement="snmp-config"/>
+        <cm:importConfig schemaId="snmp" configId="default" filePath="snmp-config.xml"/>
+    </changeSet>
 
     <changeSet author="pschweizer" id="register-org.opennms.features.topology.app.icons.application">
         <cm:registerSchema id="org.opennms.features.topology.app.icons.application"/>

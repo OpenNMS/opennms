@@ -56,7 +56,7 @@ public class ConfigureSnmpTest extends TestCase {
     	super.setUp();
     	
         Resource rsrc = ConfigurationTestUtils.getSpringResourceForResource(this, "snmp-config-configureSnmpTest.xml");
-    	SnmpPeerFactory.setInstance(new SnmpPeerFactory(rsrc));
+    	SnmpPeerFactory.setInstance(new SnmpPeerFactory());
     }
 
     /**

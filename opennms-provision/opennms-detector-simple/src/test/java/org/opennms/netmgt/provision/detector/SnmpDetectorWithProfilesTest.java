@@ -50,6 +50,7 @@ import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetectorFactory;
@@ -92,7 +93,7 @@ public class SnmpDetectorWithProfilesTest {
 
         URL url = getClass().getResource("/org/opennms/netmgt/provision/detector/snmp-config-with-profiles.xml");
         try (InputStream configStream = url.openStream()) {
-            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(configStream);
+            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(new SnmpConfig());
             // This is to not override snmp-config from etc
             SnmpPeerFactory.setFile(new File(url.getFile()));
             m_detectorFactory.setAgentConfigFactory(snmpPeerFactory);
@@ -107,7 +108,7 @@ public class SnmpDetectorWithProfilesTest {
 
         URL url = getClass().getResource("/org/opennms/netmgt/provision/detector/snmp-config-with-invalid-profiles.xml");
         try (InputStream configStream = url.openStream()) {
-            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(configStream);
+            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(new SnmpConfig());
             // This is to not override snmp-config from etc
             SnmpPeerFactory.setFile(new File(url.getFile()));
             m_detectorFactory.setAgentConfigFactory(snmpPeerFactory);
@@ -122,7 +123,7 @@ public class SnmpDetectorWithProfilesTest {
      **/
     static class ProxySnmpAgentConfigFactoryExtension extends ProxySnmpAgentConfigFactory {
 
-        ProxySnmpAgentConfigFactoryExtension(InputStream config) throws FileNotFoundException {
+        ProxySnmpAgentConfigFactoryExtension(SnmpConfig config) throws FileNotFoundException {
             super(config);
         }
 

@@ -51,7 +51,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         setVersion(SnmpAgentConfig.VERSION2C);
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
         MockLogAppender.setupLogging(true);
     }
 
@@ -453,7 +453,7 @@ public class SnmpPeerFactoryTest extends TestCase {
      * @throws UnknownHostException
      */
     public void testReversedRange() throws UnknownHostException {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getBadRangeSnmpConfig().getBytes())));
+       // SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getBadRangeSnmpConfig().getBytes())));
 
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("10.7.23.100"));
         assertNotNull(agentConfig);
@@ -462,7 +462,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testSnmpv3WithNoAuthNoPriv() throws Exception {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("10.11.12.13"));
         assertEquals("opennmsuser1", agentConfig.getSecurityName());
         assertEquals("VF:2", agentConfig.getContextName());
@@ -477,7 +477,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testSnmpProfile() {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
         List<SnmpProfile> profiles = SnmpPeerFactory.getInstance().getProfiles();
         assertEquals(2, profiles.size());
         for(SnmpProfile snmpProfile : profiles) {

@@ -51,6 +51,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.filter.api.FilterDao;
@@ -138,7 +139,7 @@ public class NodeScanIT {
         // This has profiles with valid config.
         URL url =  getClass().getResource("/snmp-config1.xml");
         try (InputStream configStream = url.openStream()) {
-            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactory(configStream);
+            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactory(new SnmpConfig());
             // This is to not override snmp-config from etc
             SnmpPeerFactory.setFile(new File(url.getFile()));
             m_provisioner.setAgentConfigFactory(snmpPeerFactory);
