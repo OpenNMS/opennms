@@ -44,7 +44,6 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 
 import com.google.common.collect.ImmutableMap;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class XmpCollectorComplianceTest extends CollectorComplianceTest {
 

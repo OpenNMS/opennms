@@ -95,7 +95,6 @@ import org.opennms.netmgt.protocols.xmp.config.XmpPeerFactory;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class XmpCollector extends AbstractServiceCollector {
 	

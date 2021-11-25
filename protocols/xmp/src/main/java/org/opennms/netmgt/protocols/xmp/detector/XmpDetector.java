@@ -78,7 +78,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class XmpDetector implements SyncServiceDetector {
     @Autowired
-    XmpConfigFactory xmpConfigFactory;
+    private XmpConfigFactory xmpConfigFactory;
 
     private static final String DEFAULT_SERVICE_NAME = "XMP";
     private static final String XMP_DEFAULT_AUTH_USER = "xmpUser";
@@ -149,7 +149,6 @@ public class XmpDetector implements SyncServiceDetector {
         try {
             XmpConfig protoConfig;
 
-            //XmpConfigFactory.init();
             protoConfig = xmpConfigFactory.getXmpConfig();
             if (protoConfig.hasPort())
                 xmpPort = protoConfig.getPort();

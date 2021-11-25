@@ -81,10 +81,6 @@ public class XmpPeerFactory {
         if (m_loaded) {
             return;
         }
-        
-        // Someday we might do something substantial here
-        //XmpConfigFactory.init();
-        //m_config = xmpConfigFactory.getXmpConfig();
         m_singleton = new XmpPeerFactory();
         m_loaded = true;
     }
@@ -98,8 +94,6 @@ public class XmpPeerFactory {
     public static synchronized void reload() throws FileNotFoundException, IOException {
         m_singleton = null;
         m_loaded = false;
-        
-        //XmpConfigFactory.init();
         init();
     }
 

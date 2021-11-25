@@ -61,7 +61,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class XmpMonitor extends AbstractServiceMonitor {
     @Autowired
-    XmpConfigFactory xmpConfigFactory;
+    private XmpConfigFactory xmpConfigFactory;
     /**
      * The default port to use for XMP
      */
