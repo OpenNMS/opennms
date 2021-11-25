@@ -66,7 +66,10 @@ export interface Node {
   type: string
   label: string
   id: string
-  assetRecord: any
+  assetRecord: {
+    longitude: string
+    latitude: string
+  }
   categories: Category[]
   createTime: number
   foreignId: string

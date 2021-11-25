@@ -25,7 +25,6 @@
         :columnDefs="columnDefs"
         :rowData="rowData"
         :defaultColDef="defaultColDef"
-        :gridOptions="gridOptions"
         :pagination="true"
         @selection-changed="onSelectionChanged"
       ></ag-grid-vue>
@@ -46,8 +45,6 @@ import { ColumnApi, GridApi, GridReadyEvent } from 'ag-grid-community'
 
 const store = useStore()
 
-const gridOptions = ref({})
-
 const interestedNodesID = computed<string[]>(() => store.state.mapModule.interestedNodesID)
 
 const alarms = computed(() => store.getters['mapModule/getAlarmsFromSelectedNodes'])
@@ -57,13 +54,13 @@ const rowData = ref(getAlarmsFromSelectedNodes())
 let gridApi: GridApi
 let gridColumnApi: ColumnApi
 
-function onGridReady(params: GridReadyEvent) {
+const onGridReady = (params: GridReadyEvent) => {
   gridApi = params.api
   gridColumnApi = params.columnApi
   autoSizeAll(false)
 }
 
-function autoSizeAll(skipHeader: boolean) {
+const autoSizeAll = (skipHeader: boolean) => {
   const columns = gridColumnApi.getAllColumns() || []
   const allColumnIds = columns.map((column) => column.getColId())
   gridColumnApi.autoSizeColumns(allColumnIds, skipHeader)
@@ -154,17 +151,15 @@ const selectedAlarmIds = ref<string[]>([])
 
 const hasAlarmSelected = ref<boolean>(false)
 
-function onSelectionChanged() {
-  let selectedRows = gridApi.getSelectedNodes().map((node: any) => node.data)
+const onSelectionChanged = () => {
+  const selectedRows = gridApi.getSelectedNodes().map((node: any) => node.data)
   selectedAlarmIds.value = selectedRows.map((alarm: any) => alarm.id)
   hasAlarmSelected.value = selectedAlarmIds.value.length > 0
 }
 
-function clearFilters() {
-  gridApi.setFilterModel(null)
-}
+const clearFilters = () => gridApi.setFilterModel(null)
 
-function applyFilters() {
+const applyFilters = () => {
   const nodesLabel: string[] = []
   gridApi.forEachNodeAfterFilter((node: any) => {
     nodesLabel.push(node.data.node)
@@ -176,20 +171,18 @@ function applyFilters() {
   store.dispatch("mapModule/setInterestedNodesId", ids)
 }
 
-function reset() {
-  store.dispatch("mapModule/resetInterestedNodesID")
-}
+const reset = () => store.dispatch("mapModule/resetInterestedNodesID")
 
-const defaultColDef = ref({
+const defaultColDef = {
   floatingFilter: true,
   resizable: true,
   enableBrowserTooltips: true,
   filter: "agTextColumnFilter",
   sortable: true,
   suppressMenu: true
-})
+}
 
-const columnDefs = ref([
+const columnDefs = [
   {
     headerName: "ID",
     field: "id",
@@ -279,9 +272,8 @@ const columnDefs = ref([
         </style> ${data.value}`
       return newData
     }
-  },
+  }
 ]
-)
 </script>
 
 <style lang="scss" scoped>

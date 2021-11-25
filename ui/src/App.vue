@@ -24,8 +24,6 @@ import Sidebar from './components/Layout/Sidebar.vue'
 @import "@featherds/styles/themes/open-mixins";
 .container {
   max-height: calc(100vh - 60px);
-  overflow-y: scroll;
-  overflow-x: hidden;
 }
 .full-width {
   padding: 0px !important;

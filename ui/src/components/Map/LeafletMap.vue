@@ -56,31 +56,25 @@ import {
 } from "@vue-leaflet/vue-leaflet"
 import MarkerCluster from "./MarkerCluster.vue"
 import { useStore } from "vuex"
-import { Coordinates, Node, Alarm } from "@/types"
-let leafletReady = ref<boolean>(false)
-let leafletObject = ref("")
-let map = ref()
-const store = useStore()
-const center = computed<[number, number]>(() => {
-  const coordinates: Coordinates = store.state.mapModule.mapCenter
-  return [coordinates.latitude, coordinates.longitude]
-})
-const zoom = ref<number>(2)
-const interestedNodes = computed<Node[]>(() => store.getters['mapModule/getInterestedNodes'])
-function getCoordinateFromNode(node: Node) {
-  const coordinate: string[] = []
-  coordinate.push(node.assetRecord.latitude)
-  coordinate.push(node.assetRecord.longitude)
-  return coordinate
-}
+import { Node, Alarm } from "@/types"
 
-const iconWidth = ref((25))
-const iconHeight = ref((42))
-const iconSize = computed(() => [iconWidth.value, iconHeight.value])
+const store = useStore()
+const map = ref()
+const leafletReady = ref<boolean>(false)
+const leafletObject = ref("")
+const zoom = ref<number>(2)
+const iconWidth = 25
+const iconHeight = 42
+const iconSize = [iconWidth, iconHeight]
+
+const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => store.state.mapModule.mapCenter[k]))
+const interestedNodes = computed<Node[]>(() => store.getters['mapModule/getInterestedNodes'])
+const interestedNodesID = computed<string[]>(() => store.state.mapModule.interestedNodesID)
+
 const nodeLabelAlarmServerityMap = computed(() => {
   const alarms: Alarm[] = store.getters["mapModule/getAlarmsFromSelectedNodes"]
   const map: Map<string, string> = new Map<string, string>()
-  alarms.forEach(function (alarm: Alarm) {
+  alarms.forEach((alarm: Alarm) => {
     if (getServerityLevel(alarm.severity) > getServerityLevel(map.get(alarm.nodeLabel))) {
       map.set(alarm.nodeLabel, alarm.severity.toUpperCase())
     }
@@ -88,7 +82,7 @@ const nodeLabelAlarmServerityMap = computed(() => {
   return map
 })
 
-function getServerityLevel(severity: string | undefined) {
+const getServerityLevel = (severity: string | undefined) => {
   if (severity) {
     switch (severity.toUpperCase()) {
       case "NORMAL":
@@ -108,11 +102,9 @@ function getServerityLevel(severity: string | undefined) {
   return 0
 }
 
-function setIcon(node: Node) {
-  return setMarkerColor(nodeLabelAlarmServerityMap.value.get(node.label))
-}
+const setIcon = (node: Node) => setMarkerColor(nodeLabelAlarmServerityMap.value.get(node.label))
 
-function setMarkerColor(severity: string | undefined) {
+const setMarkerColor = (severity: string | undefined) => {
   if (severity) {
     switch (severity.toUpperCase()) {
       case "NORMAL":
@@ -132,7 +124,6 @@ function setMarkerColor(severity: string | undefined) {
   return ("src/assets/Normal-icon.png")
 }
 
-const interestedNodesID = computed<string[]>(() => store.state.mapModule.interestedNodesID)
 const edges = computed(() => {
   const ids: string[] = interestedNodesID.value
   const interestedNodesCoordinateMap = getInterestedNodesCoordinateMap()
@@ -144,20 +135,24 @@ const edges = computed(() => {
       return edgeCoordinatesPair
     })
 })
-function getInterestedNodesCoordinateMap() {
+
+const getCoordinateFromNode = (node: Node) => [node.assetRecord.latitude, node.assetRecord.longitude]
+const getInterestedNodesCoordinateMap = () => {
   const map = new Map()
   interestedNodes.value.forEach((node: Node) => {
     map.set(node.id, getCoordinateFromNode(node))
   })
   return map
 }
-async function onLeafletReady() {
+
+const onLeafletReady = async () => {
   await nextTick()
   leafletObject.value = map.value.leafletObject
   if (leafletObject.value != undefined && leafletObject.value != null) {
     leafletReady.value = true
   }
 }
+
 /*****Tile Layer*****/
 const tileProviders = [
   {

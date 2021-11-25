@@ -16,7 +16,6 @@
         @grid-ready="onGridReady"
         :rowData="rowData"
         :defaultColDef="defaultColDef"
-        :gridOptions="gridOptions"
         :pagination="true"
         @rowDoubleClicked="rowDoubleClicked"
       ></ag-grid-vue>
@@ -36,22 +35,18 @@ import { ColumnApi, GridApi, GridReadyEvent } from 'ag-grid-community'
 
 const store = useStore()
 
-const gridOptions = ref({})
-
-const defaultColDef = ref({
+const defaultColDef = {
   floatingFilter: true,
   resizable: true,
   enableBrowserTooltips: true,
   filter: "agTextColumnFilter",
   sortable: true,
   suppressMenu: true
-})
+}
 
 const interestedNodesID = computed<string[]>(() => store.state.mapModule.interestedNodesID)
 
-const rowData = ref(getGridRowDataFromInterestedNodes())
-
-function getGridRowDataFromInterestedNodes() {
+const getGridRowDataFromInterestedNodes = () => {
   return store.getters['mapModule/getInterestedNodes'].map((node: any) => ({
     id: +node.id,
     foreignSource: node.foreignSource,
@@ -67,20 +62,21 @@ function getGridRowDataFromInterestedNodes() {
     sysLocation: node.sysLocation
   }))
 }
+const rowData = ref(getGridRowDataFromInterestedNodes())
 
 let gridApi: GridApi
 let gridColumnApi: ColumnApi
 
-function onGridReady(params: GridReadyEvent) {
-  gridApi = params.api
-  gridColumnApi = params.columnApi
-  autoSizeAll(false)
-}
-
-function autoSizeAll(skipHeader: boolean) {
+const autoSizeAll = (skipHeader: boolean) => {
   const columns = gridColumnApi.getAllColumns() || []
   const allColumnIds = columns.map((column) => column.getColId())
   gridColumnApi.autoSizeColumns(allColumnIds, skipHeader)
+}
+
+const onGridReady = (params: GridReadyEvent) => {
+  gridApi = params.api
+  gridColumnApi = params.columnApi
+  autoSizeAll(false)
 }
 
 watch(
@@ -94,21 +90,17 @@ watch(
   }
 )
 
-function clearFilters() {
-  gridApi.setFilterModel(null)
-}
+const clearFilters = () => gridApi.setFilterModel(null)
 
-function confirmFilters() {
+const confirmFilters = () => {
   const ids: string[] = []
   gridApi.forEachNodeAfterFilter((node: any) => ids.push(node.data.id.toString()))
   store.dispatch("mapModule/setInterestedNodesId", ids)
 }
 
-function reset() {
-  store.dispatch("mapModule/resetInterestedNodesID")
-}
+const reset = () => store.dispatch("mapModule/resetInterestedNodesID")
 
-function rowDoubleClicked() {
+const rowDoubleClicked = () => {
   const id = gridApi.getSelectedNodes().map((node: any) => node.data)[0].id
   const node = store.getters['mapModule/getInterestedNodes'].filter((n: Node) => n.id == id)
 
@@ -116,7 +108,7 @@ function rowDoubleClicked() {
   store.dispatch("mapModule/setMapCenter", coordinate)
 }
 
-const columnDefs = ref([
+const columnDefs = [
   {
     headerName: "ID",
     field: "id",
@@ -187,7 +179,7 @@ const columnDefs = ref([
     field: "sysLocation",
     headerTooltip: "Sys Location",
   },
-])
+]
 </script>
 <style lang="scss" scoped>
 .mapnodes {

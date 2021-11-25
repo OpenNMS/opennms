@@ -7,44 +7,39 @@
   </div>
 </template>
 
-<script>
-export default {
-  data: function () {
-    return {
-      severities: [
-        'Normal',
-        'Warning',
-        'Minor',
-        'Major',
-        'Critical'
-      ],
-      currentValue: ""
-    }
-  },
-  methods: {
-    onSelectionChanged() {
-      if (this.currentValue === '') {
-        // clear the filter
-        this.params.parentFilterInstance((instance) => {
-          instance.onFloatingFilterChanged(null, null)
-        })
-        return
-      }
+<script setup lang="ts">
+import { ref, getCurrentInstance } from 'vue'
+const app: any = getCurrentInstance()
+const severities = [
+  'Normal',
+  'Warning',
+  'Minor',
+  'Major',
+  'Critical'
+]
+const currentValue = ref("")
 
-      this.params.parentFilterInstance((instance) => {
-        instance.onFloatingFilterChanged('contains', this.currentValue)
-      })
-    },
-
-    onParentModelChanged(parentModel) {
-      // When the filter is empty we will receive a null value here
-      if (!parentModel) {
-        this.currentValue = ''
-      } else {
-        this.currentValue = parentModel.filter
-      }
-    }
-
+const onSelectionChanged = () => {
+  if (currentValue.value === '') {
+    // clear the filter
+    app?.data.params.parentFilterInstance((instance: any) => {
+      instance.onFloatingFilterChanged(null, null)
+    })
+    return
   }
+  app?.data.params.parentFilterInstance((instance: any) => {
+    instance.onFloatingFilterChanged('contains', currentValue.value)
+  })
 }
+
+defineExpose({
+  onParentModelChanged: (parentModel: any) => {
+    // When the filter is empty we will receive a null value here
+    if (!parentModel) {
+      currentValue.value = ''
+    } else {
+      currentValue.value = parentModel.filter
+    }
+  }
+})
 </script>
