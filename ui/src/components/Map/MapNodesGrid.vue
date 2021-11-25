@@ -183,7 +183,9 @@ const columnDefs = [
 </script>
 <style lang="scss" scoped>
 .mapnodes {
-  height: calc(100% - 60px);
+  background: var(--feather-background);
+  color: var(--feather-primary-text-on-surface);
+  height: calc(100% - 54px);
 }
 .button-group {
   width: 100%;
@@ -195,6 +197,7 @@ const columnDefs = [
 }
 .buttons {
   float: right;
+  margin-top: -5px;
 }
 .btn {
   margin-top: 0px;

@@ -8,9 +8,7 @@
           </div>
         </pane>
         <pane id="map-pane-under">
-          <router-link :to="{ name: 'MapNodes' }">Nodes({{ interestedNodesID.length }})</router-link>|
-          <router-link :to="{ name: 'MapAlarms' }">Alarms({{ alarms.length }})</router-link>
-          <router-view />
+          <GridTabs />
         </pane>
       </splitpanes>
     </div>
@@ -18,16 +16,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useStore } from "vuex"
 import { Splitpanes, Pane } from "splitpanes"
 import "splitpanes/dist/splitpanes.css"
 import LeafletMap from "../components/Map/LeafletMap.vue"
+import GridTabs from '@/components/Map/GridTabs.vue'
 
 const store = useStore()
-
-const interestedNodesID = computed<string[]>(() => store.state.mapModule.interestedNodesID)
-const alarms = computed(() => store.getters['mapModule/getAlarmsFromSelectedNodes'])
 
 onMounted(() => {
   store.dispatch("mapModule/getNodes", {
@@ -45,20 +41,21 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-#map-pane-under {
-  text-align: left;
-  a {
-    font-family: Arial;
-    font-size: 15px;
-    &.router-link-exact-active {
-      background-color: #cfd1df;
-      font-weight: bold;
-      padding: 8px;
-      border-radius: 3px;
-    }
-  }
-}
 .map {
   padding: 10px;
+}
+</style>
+
+<style lang="scss">
+.ag-row,
+.ag-header-row,
+.ag-paging-panel,
+.ag-center-cols-viewport,
+.ag-header-viewport {
+  background: var(--feather-background) !important;
+  color: var(--feather-primary-text-on-surface) !important;
+}
+.ag-icon {
+  color: var(--feather-primary-text-on-surface) !important;
 }
 </style>

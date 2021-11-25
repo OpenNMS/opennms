@@ -1,20 +1,18 @@
 <template>
   <div id="flashMessage" v-if="GStore.flashMessage">{{ GStore.flashMessage }}</div>
   <div class="map-alarms">
-    <div class="button-group">
-      <span class="map-alarm-buttons">
-        <select
-          name="alarmOptions"
-          id="alarmOptions"
-          v-model="alarmOption"
-          :disabled="!hasAlarmSelected"
-        >
-          <option v-for="option in alarmOptions" :value="option" :key="option">{{ option }}</option>
-        </select>
-        <feather-button primary @click="clearFilters()">Clear Filters</feather-button>
-        <feather-button primary @click="applyFilters()">Filter Map</feather-button>
-        <feather-button primary @click="reset()">Reset</feather-button>
-      </span>
+    <div style="display: flex; justify-content: flex-end;">
+      <FeatherSelect
+        class="select"
+        name="alarmOptions"
+        id="alarmOptions"
+        v-model="alarmOption"
+        :disabled="!hasAlarmSelected"
+        :options="alarmOptions"
+      />
+      <FeatherButton primary @click="clearFilters()">Clear Filters</FeatherButton>
+      <FeatherButton primary @click="applyFilters()">Filter Map</FeatherButton>
+      <FeatherButton primary @click="reset()">Reset</FeatherButton>
     </div>
     <div class="map-alarms-grid">
       <ag-grid-vue
@@ -41,15 +39,15 @@ import { computed, watch } from 'vue'
 import { Alarm, Node, AlarmQueryParameters } from "@/types"
 import SeverityFloatingFilter from "./SeverityFloatingFilter.vue"
 import { FeatherButton } from "@featherds/button"
+import { FeatherSelect } from '@featherds/select'
 import { ColumnApi, GridApi, GridReadyEvent } from 'ag-grid-community'
 
 const store = useStore()
-
 const interestedNodesID = computed<string[]>(() => store.state.mapModule.interestedNodesID)
-
 const alarms = computed(() => store.getters['mapModule/getAlarmsFromSelectedNodes'])
-
 const rowData = ref(getAlarmsFromSelectedNodes())
+const alarmOptions = ["Not Selected", "Acknowledge", "Unacknowledge", "Escalate", "Clear"]
+const alarmOption = ref<string>(alarmOptions[0])
 
 let gridApi: GridApi
 let gridColumnApi: ColumnApi
@@ -89,9 +87,6 @@ function getAlarmsFromSelectedNodes() {
     logMessage: alarm.logMessage,
   }))
 }
-
-const alarmOptions = ["Not Selected", "Acknowledge", "Unacknowledge", "Escalate", "Clear"]
-const alarmOption = ref<string>(alarmOptions[0])
 
 watch(
   () => [alarmOption.value],
@@ -291,30 +286,23 @@ const columnDefs = [
   animation-duration: 4s;
   text-align: center;
 }
-.button-group {
-  width: 100%;
-  height: 40px;
-}
 .map-alarms {
-  height: calc(100% - 60px);
+  background: var(--feather-background);
+  color: var(--feather-primary-text-on-surface);
+  height: calc(100% - 54px);
 }
 .map-alarms-grid {
   width: 100%;
   height: 100%;
 }
-.map-alarm-buttons {
-  float: right;
-}
-button {
-  margin-left: 4px;
-  margin-right: 6px;
+.select {
+  width: 200px;
+  padding: 0px;
+  margin-top: -14px;
+  margin-bottom: 10px;
+  margin-right: 17px;
 }
 .btn {
-  margin-top: 0px;
-  margin-bottom: 0px;
-  margin-right: 10px;
-}
-.my-select {
-  width: 200px;
+  margin: 0px;
 }
 </style>

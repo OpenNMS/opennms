@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@ag-grid-community/vue3@^26.0.0":
+"@ag-grid-community/vue3@^26.2.0":
   version "26.2.0"
   resolved "https://registry.yarnpkg.com/@ag-grid-community/vue3/-/vue3-26.2.0.tgz#093ce65f79cf3adcc2351d90a3306069e256aa3b"
   integrity sha512-c+yJGfZ5FYaSpryRcDjjFWr1zqRIC8mU39Ke6ZvRiEN4/ggjfZaKNI+rEK0s/WfNXF4pxyLWpCRaUC8i3SCaig==
@@ -1176,15 +1176,15 @@ acorn@^8.2.4:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.4.1.tgz#56c36251fc7cabc7096adc18f05afe814321a28c"
   integrity sha512-asabaBSkEKosYKMITunzX177CXxQ4Q8BSSzMTKD+FefUhipQC70gfW5SiUDhYQ3vk8G+81HqQk7Fv9OXwwn9KA==
 
-ag-grid-community@^26.0.0:
+ag-grid-community@^26.2.0:
   version "26.2.0"
   resolved "https://registry.yarnpkg.com/ag-grid-community/-/ag-grid-community-26.2.0.tgz#f561d5b6d9ca9510275961079c74cfa0f6e1069c"
   integrity sha512-YkNQUJ7EsmXbwfSrT4sIBYp1MbFku+ebEiqKc4+YFVZ5+nniHFzvSomHzFqbbkOtEfb42Gmo8cMNvBz9aPnZsQ==
 
-ag-grid-vue3@26.0.0:
-  version "26.0.0"
-  resolved "https://registry.yarnpkg.com/ag-grid-vue3/-/ag-grid-vue3-26.0.0.tgz#555b9cb29c0f19c6fec724b770e8cac442c6b77b"
-  integrity sha512-lobzqo+UWTzAoDgxaJ0Uen8azbEDhyz7gBJa6UzyrQe3GOTyu7XyLF5TI3aoj6hRsHxih5Av2u+S4FGHpZAZHQ==
+ag-grid-vue3@26.2.0:
+  version "26.2.0"
+  resolved "https://registry.yarnpkg.com/ag-grid-vue3/-/ag-grid-vue3-26.2.0.tgz#2b391111e542b7d6b60e5dc66725eb2c2bd5d4ae"
+  integrity sha512-m9Y67x4JbekltU/IijnlJlSt2dplRhH1Oz+VXmB5Tx1i5uTv1Pk+i1R31tFZb4DUU4aW1GGIIIliOIbOfY+3WQ==
 
 agent-base@6:
   version "6.0.2"
@@ -2754,7 +2754,7 @@ klona@^2.0.4:
   resolved "https://registry.yarnpkg.com/klona/-/klona-2.0.4.tgz#7bb1e3affb0cb8624547ef7e8f6708ea2e39dfc0"
   integrity sha512-ZRbnvdg/NxqzC7L9Uyqzf4psi1OM4Cuc+sJAkQPjO6XkQIJTNbfK2Rsmbw8fx1p2mkZdp2FZYo2+LwXYY/uwIA==
 
-leaflet.markercluster@^1.5.0:
+leaflet.markercluster@^1.5.3:
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/leaflet.markercluster/-/leaflet.markercluster-1.5.3.tgz#9cdb52a4eab92671832e1ef9899669e80efc4056"
   integrity sha512-vPTw/Bndq7eQHjLBVlWpnGeLa3t+3zGiuM7fJwCkiMFq+nmRuG3RI3f7f4N4TDX7T4NpbAXpR2+NTRSEGfCSeA==
