@@ -79,7 +79,7 @@ public class GenericTest {
 
             JSONObject result = new JSONObject(schema);
             JSONObject path = new JSONObject(result.get("paths").toString());
-            JSONObject get = new JSONObject(path.get("/opennms/rest/cm/"+configName).toString());
+            JSONObject get = new JSONObject(path.get("/rest/cm/"+configName).toString());
             JSONObject getDetails = new JSONObject(get.get("get").toString());
             String  tag =getDetails.get("tags").toString();
             boolean  responseCodeCheck = getDetails.get("responses").toString().contains("200");
