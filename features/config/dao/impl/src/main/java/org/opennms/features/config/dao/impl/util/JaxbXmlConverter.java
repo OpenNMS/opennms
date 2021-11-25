@@ -63,10 +63,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * It handles all kinds of xml <> json conventions.
+ * It handles xml <> json conventions base on xsd.
  */
-public class XmlConverter implements ConfigConverter {
-    private static final Logger LOG = LoggerFactory.getLogger(XmlConverter.class);
+public class JaxbXmlConverter implements ConfigConverter {
+    private static final Logger LOG = LoggerFactory.getLogger(JaxbXmlConverter.class);
     public static final String VALUE_TAG = "__VALUE__";
 
     private final DynamicJAXBContext jaxbContext;
@@ -75,9 +75,9 @@ public class XmlConverter implements ConfigConverter {
     private String rootElement;
     private Map<String, String> elementNameToValueNameMap;
 
-    public XmlConverter(final String xsdName,
-                        final String rootElement,
-                        Map<String, String> elementNameToValueNameMap)
+    public JaxbXmlConverter(final String xsdName,
+                            final String rootElement,
+                            Map<String, String> elementNameToValueNameMap)
             throws IOException {
         this.xsdName = Objects.requireNonNull(xsdName);
         this.rootElement = Objects.requireNonNull(rootElement);
@@ -156,10 +156,15 @@ public class XmlConverter implements ConfigConverter {
         }
     }
 
+    /**
+     * Remove empty XmlValue tag
+     *
+     * @param json
+     * @return json without empty value tag
+     */
     private JSONObject removeEmptyValueTag(JSONObject json) {
         json.toMap().forEach((key, value) -> {
             if (VALUE_TAG.equals(key) && value instanceof String && ((String) value).trim().length() == 0) {
-                LOG.warn("!!!!!! REMOVING KEY {} VALUE {}", key, value);
                 json.remove(key);
             } else if (value instanceof JSONObject) {
                 removeEmptyValueTag((JSONObject) value);
@@ -173,9 +178,13 @@ public class XmlConverter implements ConfigConverter {
         return json;
     }
 
-    //TODO: need more data for testing
+    /**
+     * Help to replace XmlValue tag (value) to expected attributeName
+     *
+     * @param json
+     * @return json with replacedvalue
+     */
     private JSONObject replaceXmlValueAttributeName(JSONObject json) {
-
         this.elementNameToValueNameMap.forEach((elementName, valueName) -> {
             if (json.has(elementName)) {
                 Object value = json.get(elementName);
@@ -183,13 +192,23 @@ public class XmlConverter implements ConfigConverter {
                     JSONArray tmpList = (JSONArray) value;
                     tmpList.forEach(item -> {
                         if (item instanceof JSONObject) {
-                            replaceKey((JSONObject) item, VALUE_TAG, valueName);
+                            this.replaceKey((JSONObject) item, VALUE_TAG, valueName);
                         }
                     });
-
                 } else if (value instanceof JSONObject) {
-                    replaceKey((JSONObject) value, VALUE_TAG, valueName);
+                    this.replaceKey((JSONObject) value, VALUE_TAG, valueName);
                 }
+            }
+        });
+        // loop through children elements
+        json.toMap().forEach((key, value) -> {
+            if (value instanceof JSONObject) {
+                this.replaceXmlValueAttributeName((JSONObject) value);
+            } else if (value instanceof JSONArray) {
+                ((JSONArray) value).forEach(arrayItem -> {
+                    if (arrayItem instanceof JSONObject)
+                        this.replaceXmlValueAttributeName((JSONObject) arrayItem);
+                });
             }
         });
         return json;

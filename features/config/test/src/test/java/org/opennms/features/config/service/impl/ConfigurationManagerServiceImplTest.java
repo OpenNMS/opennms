@@ -41,7 +41,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
@@ -99,7 +99,7 @@ public class ConfigurationManagerServiceImplTest {
     public void testGetRegisterSchema() throws Exception {
         Optional<ConfigDefinition> def = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
         Assert.assertTrue(CONFIG_NAME + " fail to register", def.isPresent());
-        Assert.assertTrue("Wrong converter", XsdHelper.getConverter(def.get()) instanceof XmlConverter);
+        Assert.assertTrue("Wrong converter", XsdHelper.getConverter(def.get()) instanceof JaxbXmlConverter);
     }
 
     @Test

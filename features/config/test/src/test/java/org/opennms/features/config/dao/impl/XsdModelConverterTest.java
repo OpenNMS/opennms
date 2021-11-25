@@ -29,12 +29,11 @@
 package org.opennms.features.config.dao.impl;
 
 import com.google.common.io.Resources;
-import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.SchemaUtil;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
 import org.opennms.features.config.dao.impl.util.XsdModelConverter;
 
 import java.io.IOException;
@@ -46,7 +45,7 @@ public class XsdModelConverterTest {
     @Test
     public void testData() throws IOException {
         // register
-        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration", null);
+        JaxbXmlConverter converter = new JaxbXmlConverter("provisiond-configuration.xsd", "provisiond-configuration", null);
 
         String xsdStr = Resources.toString(SchemaUtil.getSchemaPath("provisiond-configuration.xsd"), StandardCharsets.UTF_8);
         XsdModelConverter xsdConverter = new XsdModelConverter(xsdStr);

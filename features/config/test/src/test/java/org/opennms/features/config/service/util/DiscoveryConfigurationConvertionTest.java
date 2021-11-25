@@ -34,10 +34,13 @@ import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DiscoveryConfigurationConvertionTest {
     private String xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -93,6 +96,12 @@ public class DiscoveryConfigurationConvertionTest {
     public void testObjectToJson() {
         DiscoveryConfiguration discoveryConfiguration = new DiscoveryConfiguration();
         discoveryConfiguration.setInitialSleepTime(100L);
+        List<IncludeUrl> includeUrls = new ArrayList<>();
+        IncludeUrl iurl = new IncludeUrl();
+        iurl.setUrl("url");
+        iurl.setLocation("location-range");
+        includeUrls.add(iurl);
+        discoveryConfiguration.setIncludeUrls(includeUrls);
         Specific specific = new Specific();
         specific.setAddress("address");
         specific.setLocation("location");
@@ -102,8 +111,9 @@ public class DiscoveryConfigurationConvertionTest {
         String json = ConfigConvertUtil.objectToJson(discoveryConfiguration);
 
         DiscoveryConfiguration d2 = ConfigConvertUtil.jsonToObject(json, DiscoveryConfiguration.class);
-        Assert.assertEquals(100L, (long) discoveryConfiguration.getInitialSleepTime().get());
-        Assert.assertEquals("address", discoveryConfiguration.getSpecifics().get(0).getAddress());
-        Assert.assertEquals("location", discoveryConfiguration.getSpecifics().get(0).getLocation().get());
+        Assert.assertEquals(100L, (long) d2.getInitialSleepTime().get());
+        Assert.assertEquals("address", d2.getSpecifics().get(0).getAddress());
+        Assert.assertEquals("location", d2.getSpecifics().get(0).getLocation().get());
+        Assert.assertEquals("url", d2.getIncludeUrls().get(0).getUrl().get());
     }
 }

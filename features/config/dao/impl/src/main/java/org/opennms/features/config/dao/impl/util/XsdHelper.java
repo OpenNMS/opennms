@@ -29,7 +29,6 @@ package org.opennms.features.config.dao.impl.util;
 
 import com.google.common.io.Resources;
 import io.swagger.v3.oas.models.OpenAPI;
-import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
@@ -94,6 +93,6 @@ public class XsdHelper {
         if(xsdName == null || topLevelElement == null){
             throw new RuntimeException("ConfigDefinition " + def.getConfigName() + " NOT support XmlConverter.");
         }
-        return new XmlConverter(xsdName, topLevelElement, elementNameToValueNameMap);
+        return new JaxbXmlConverter(xsdName, topLevelElement, elementNameToValueNameMap);
     }
 }
