@@ -43,6 +43,8 @@ import static org.apache.ws.commons.schema.constants.Constants.MetaDataConstants
 
 /**
  * Used to convert a XSD to a structure of {@link ConfigItem}s.
+ * It usually uses with JaxbXmlConverter together.
+ * @see JaxbXmlConverter
  */
 public class XsdModelConverter extends NoopXmlSchemaVisitor {
     public static final String XML_ELEMENT_VALUE_BODY_TAG = "body-name";

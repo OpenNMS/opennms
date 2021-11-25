@@ -32,9 +32,12 @@ import io.swagger.v3.oas.models.OpenAPI;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -43,6 +46,22 @@ import java.util.Map;
  */
 public class XsdHelper {
     /**
+     * It will search xsds first, otherwise it will search across classpath
+     *
+     * @return URL of the xsd file
+     */
+    public static URL getSchemaPath(String xsdName) throws IOException {
+        URL url = Thread.currentThread().getContextClassLoader().getResource("xsds/" + xsdName);
+        if (url == null) {
+            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource[] resources = resolver.getResources("classpath*:**/" + xsdName);
+            if (resources != null && resources.length > 0)
+                url = resources[0].getURL();
+        }
+        return url;
+    }
+
+    /**
      * Convert xsd into openapi spec
      * @param xsdName
      * @return
@@ -50,7 +69,7 @@ public class XsdHelper {
     private static XsdModelConverter getConverter(String xsdName) {
         Assert.notNull(xsdName);
         try {
-            String xsdStr = Resources.toString(SchemaUtil.getSchemaPath(xsdName), StandardCharsets.UTF_8);
+            String xsdStr = Resources.toString(XsdHelper.getSchemaPath(xsdName), StandardCharsets.UTF_8);
             return new XsdModelConverter(xsdStr);
         } catch (IOException e) {
             throw new RuntimeException(e);

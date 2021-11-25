@@ -93,7 +93,7 @@ public class JaxbXmlConverter implements ConfigConverter {
      * @throws IOException
      */
     private XmlSchema readXmlSchema() throws IOException {
-        String xsdStr = Resources.toString(SchemaUtil.getSchemaPath(xsdName), StandardCharsets.UTF_8);
+        String xsdStr = Resources.toString(XsdHelper.getSchemaPath(xsdName), StandardCharsets.UTF_8);
         final XsdModelConverter xsdModelConverter = new XsdModelConverter(xsdStr);
         final XmlSchemaCollection schemaCollection = xsdModelConverter.getCollection();
         // Grab the first namespace that includes 'opennms', sort for predictability

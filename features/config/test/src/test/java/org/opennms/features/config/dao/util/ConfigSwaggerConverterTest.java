@@ -31,19 +31,15 @@ package org.opennms.features.config.dao.util;
 
 import com.google.common.io.Resources;
 import io.swagger.v3.oas.models.OpenAPI;
-import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
-import org.opennms.features.config.dao.impl.util.SchemaUtil;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.dao.impl.util.XsdModelConverter;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
@@ -81,7 +77,7 @@ public class ConfigSwaggerConverterTest {
 
     @Test
     public void canConvertXsd() throws IOException {
-        String xsdStr = Resources.toString(SchemaUtil.getSchemaPath(XSD_PATH), StandardCharsets.UTF_8);
+        String xsdStr = Resources.toString(XsdHelper.getSchemaPath(XSD_PATH), StandardCharsets.UTF_8);
 
         XsdModelConverter xsdModelConverter = new XsdModelConverter(xsdStr);
         ConfigItem configItem = xsdModelConverter.convert(TOP_ELEMENT);
