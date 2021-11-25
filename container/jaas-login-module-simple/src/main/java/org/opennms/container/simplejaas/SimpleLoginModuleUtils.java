@@ -28,6 +28,7 @@
 
 package org.opennms.container.simplejaas;
 
+import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,8 @@ public abstract class SimpleLoginModuleUtils {
     public static boolean doLogin(final SimpleOpenNMSLoginHandler handler, final Subject subject, final Map<String, ?> sharedState, final Map<String, ?> options) throws LoginException {
         LOG.debug("OpenNMSLoginModule: login(): handler={}, subject={}, sharedState={}, options={}", handler.getClass(), subject.getClass(), sharedState, options);
         final Callback[] callbacks = new Callback[2];
+
+        // A U T H E N T I C A T I O N
 
         callbacks[0] = new NameCallback("Username: ");
         callbacks[1] = new PasswordCallback("Password: ", false);
@@ -84,50 +87,69 @@ public abstract class SimpleLoginModuleUtils {
             throw new LoginException(msg);
         }
 
+        final UserConfig userConfig = handler.userConfig();
+        if (userConfig==null) {
+            final String message = "Could not retrieve UserConfig.";
+            LOG.error(message);
+            throw new LoginException(message);
+        }
+        // file for userConfig = /Users/markcbordelon/Documents/clodovicus/opennms/opennms/opennms-base-assembly/target/classes/etc/users.xml
+
         final User configUser;
-        //final SpringSecurityUser onmsUser;
         try {
-            configUser = handler.userConfig().getUser(user);
-            //onmsUser = handler.springSecurityUserDao().getByUsername(user);
-        } catch (final Exception e) {
-            final String message = "Failed to retrieve user " + user + " from OpenNMS UserConfig.";
-            LOG.debug(message, e);
-            throw new LoginException(message); // causes abort
+            configUser = userConfig.getUser(user);
+        } catch (IOException e) {
+            final String msg = "Could not retrieve " + user + " from OpenNMS UserConfig.";
+            LOG.error(msg);
+            throw new FailedLoginException(msg);
         }
 
         if (configUser == null) {
-            final String msg = "User  " + user + " does not exist.";
+            final String msg = "User " + user + " does not exist in OpenNMS UserConfig.";
             LOG.debug(msg);
             throw new FailedLoginException(msg);
         }
 
-        if (!handler.userConfig().comparePasswords(user, password)) {
-            final String msg = "Login failed: passwords did not match.";
+        if (!userConfig.comparePasswords(user, password)) {
+            final String msg = "Login failed: passwords did not match for User "+ user + " in OpenNMS UserConfig.";
             LOG.debug(msg);
             throw new FailedLoginException(msg);
         };
 
-        boolean allowed = true;
+
+        //  logon  "A U T H O R I Z A T I O N"
+
+        boolean allowed = true; // except if handler requires admin and user is not admin
+        /*
+        final SpringSecurityUser onmsUser;
+        try {
+            //onmsUser = handler.springSecurityUserDao().getByUsername(user);
+        } catch (final Exception e) {
+            final String message = "Could not retrieve OnmsCser " + onmsUser + " via userDao.";
+            LOG.debug(message, e);
+            throw new LoginException(message);
+        }
         final Set<Principal> principals = null; // SimpleLoginModuleUtils.createPrincipals(handler, onmsUser.getAuthorities());
         handler.setPrincipals(principals);
-
         if (handler.requiresAdminRole()) {
             allowed = false;
             for (final Principal principal : principals) {
                 final String name = principal.getName().toLowerCase().replaceAll("^role_", "");
                 if ("admin".equals(name)) {
                     allowed = true;
+                    break;
                 }
             }
         }
-
+        */
         if (!allowed) {
             final String msg = "User " + user + " is not an administrator!  OSGi console access is forbidden.";
             LOG.debug(msg);
             throw new LoginException(msg);
         }
+
         LOG.debug("Successfully logged in {}.", user);
-        return true;
+        return true; // in the LoginContext, after the LOGIN method, the COMMIT throws an exc which invokes Abort.
     }
 
     /*
