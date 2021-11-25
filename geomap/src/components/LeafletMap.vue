@@ -87,29 +87,49 @@ let interestedAlarms = computed(() => {
 });
 
 
-const setIcon = (node: Node): L.Icon | void =>  {
-  for (const alarm of interestedAlarms.value) {
-    if (node.label === alarm.nodeLabel) {
-      return new Icon({
-        iconUrl: setMarkerColor(alarm.severity),
-        shadowUrl: "src/assets/marker-shadow.png",
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41],
-      })
-    }else{
-      return new Icon({
-        iconUrl: "src/assets/Normal-icon.png",
-        shadowUrl: "src/assets/marker-shadow.png",
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41],
-      })
-    }
-  }
-}
+
+// const setIcon = (node: Node): L.Icon | void => {
+
+//   var map = new Map();
+//   interestedAlarms.value.forEach((alarm: any) => {
+//     if (node.label === alarm.nodeLabel) {
+//       map.set(node.label, setMarkerColor(alarm.severity));
+//     }
+//   });
+//   console.log("Map val", map)
+//   return new Icon({
+//           iconUrl: map.values,
+//           shadowUrl: "src/assets/marker-shadow.png",
+//           iconSize: [25, 41],
+//           iconAnchor: [12, 41],
+//           popupAnchor: [1, -34],
+//           shadowSize: [41, 41],
+//         })
+// }
+
+ const setIcon = (node: Node): L.Icon | void =>  {
+   for (const alarm of interestedAlarms.value) {
+     if (node.label === alarm.nodeLabel) {
+       return new Icon({
+         iconUrl: setMarkerColor(alarm.severity),
+         shadowUrl: "src/assets/marker-shadow.png",
+         iconSize: [25, 41],
+         iconAnchor: [12, 41],
+         popupAnchor: [1, -34],
+         shadowSize: [41, 41],
+       })
+     }else{
+       return new Icon({
+         iconUrl: "src/assets/Normal-icon.png",
+         shadowUrl: "src/assets/marker-shadow.png",
+         iconSize: [25, 41],
+         iconAnchor: [12, 41],
+         popupAnchor: [1, -34],
+         shadowSize: [41, 41],
+       })
+     }
+   }
+ }
 
 
 function setMarkerColor(severity: any) {
