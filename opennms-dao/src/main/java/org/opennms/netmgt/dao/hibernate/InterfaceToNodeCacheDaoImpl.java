@@ -313,7 +313,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
      * management priority.
      *
      * @param address The IP Address to query.
-     * @return The Entry for the IP Address if known.
+     * @return The entry for the IP Address if known.
      */
     @Override
     public synchronized Iterable<Entry> get(final String location, final InetAddress address) {

@@ -98,7 +98,7 @@ public interface InterfaceToNodeCache {
 		@Override
 		public int hashCode() {
 			return Objects.hash(this.nodeId,
-								this.interfaceId);
+			                    this.interfaceId);
 		}
 	}
 }
