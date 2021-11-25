@@ -141,9 +141,12 @@ public class ThresholdingIT {
     }
 
     private List<Flow> createMockedFlows(final int count) {
+        final var now = System.currentTimeMillis();
+
         final List<Flow> flows = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             final FlowDocument flowDocument = new FlowDocument();
+            flowDocument.setTimestamp(now + i * 1000L);
             flowDocument.setIpProtocolVersion(4);
             flowDocument.setInputSnmp(10);
             flowDocument.setOutputSnmp(20);
@@ -152,7 +155,7 @@ public class ThresholdingIT {
             flowDocument.setSrcPort(1);
             flowDocument.setDstPort(2);
             flowDocument.setProtocol(6);
-            flowDocument.setBytes(1024L);
+            flowDocument.setBytes(1024L * (count - i));
             flowDocument.setDirection(Direction.INGRESS);
 
             final TestFlow flow = new TestFlow(flowDocument);

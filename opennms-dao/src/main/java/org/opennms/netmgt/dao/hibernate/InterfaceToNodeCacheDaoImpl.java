@@ -377,7 +377,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         m_lock.writeLock().lock();
         try {
             final Key key = new Key(location, address);
-            return !m_managedAddresses.removeAll(key).isEmpty();
+            return m_managedAddresses.get(key).removeIf(e -> e.nodeId == nodeId);
         } finally {
             m_lock.writeLock().unlock();
         }

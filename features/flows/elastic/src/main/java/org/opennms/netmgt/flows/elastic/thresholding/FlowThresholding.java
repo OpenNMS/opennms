@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.elastic.thresholding;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -56,6 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
+import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Maps;
 
 public class FlowThresholding {
@@ -90,6 +92,12 @@ public class FlowThresholding {
         //noinspection unchecked
         this.sessions = new CacheBuilder<ExporterKey, Session>()
                 .withConfig(sessionCacheConfig)
+                .withCacheLoader(new CacheLoader<ExporterKey, Session>() {
+                    @Override
+                    public Session load(final ExporterKey key) throws Exception {
+                        throw new IllegalStateException();
+                    }
+                })
                 .build();
     }
 
@@ -131,6 +139,7 @@ public class FlowThresholding {
                 final var appResource = new DeferredGenericTypeResource(nodeResource, RESOURCE_TYPE_NAME, document.getApplication());
 
                 final var collectionSetBuilder = new CollectionSetBuilder(session.collectionAgent)
+                        .withTimestamp(new Date(document.getTimestamp()))
                         .withCounter(appResource, document.getApplication(), "bytes", counter);
                 // TODO fooker: Set sequence number from flow to aid distributed thresholding
 
