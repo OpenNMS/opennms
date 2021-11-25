@@ -21,5 +21,4 @@
 Files in this folder must be specified as an include directive in `eventconf.xml`.
 | yes
 | no
-
 |===

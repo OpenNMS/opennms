@@ -17,8 +17,8 @@
 |===
 | File
 | Description
-| Restart Required
 | Reload Event
+| Restart Required
 
 | snmp-interface-poller-configuration.xml
 | Change how and when polling is performed globally or define fine-grained settings for specific packages.

@@ -7,11 +7,11 @@
 |===
 | File
 | Description
-| Restart Required
 | Reload Event
+| Restart Required
 
 | alarmd/drools-rules.d/*.drl
 | Configure specific Drools rules.
-| no
 | yes
+| no
 |===
