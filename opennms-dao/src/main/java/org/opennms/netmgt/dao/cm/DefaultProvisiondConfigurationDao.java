@@ -26,15 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.jaxb;
+package org.opennms.netmgt.dao.cm;
+
+import java.io.IOException;
+import java.util.List;
 
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Default implementation of <code>AckdConfiguration</code> containing utility methods for manipulating
