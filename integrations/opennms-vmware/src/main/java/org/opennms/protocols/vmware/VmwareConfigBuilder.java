@@ -232,8 +232,7 @@ public class VmwareConfigBuilder {
 
                         long[] longs = ((PerfMetricIntSeries) perfMetricSeries[j]).getValue();
 
-                        if (longs.length == 1) {
-
+                        if (longs.length == 1 && perfCounterInfoMap.containsKey(perfMetricSeries[j].getId().getCounterId())) {
                             PerfCounterInfo perfCounterInfo = perfCounterInfoMap.get(perfMetricSeries[j].getId().getCounterId());
 
                             String instanceName = perfMetricSeries[j].getId().getInstance();

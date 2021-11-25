@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+
+<!--
+Configuration file generated for:
+
+Full name.......: VMware vCenter Server 7.0.3 build-18901211
+API type........: VirtualCenter
+API version.....: 7.0.3.0
+Product name....: VMware VirtualCenter Server
+Product version.: 7.0
+OS type.........: linux-x64
+-->
+
+<datacollection-group name="VMware7">
+
+  <resourceType name="vmware7Cpu" label="VMware v7 Cpu" resourceLabel="${vmware7CpuName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware7DaSt" label="VMware v7 DaSt" resourceLabel="${vmware7DaStName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware7Disk" label="VMware v7 Disk" resourceLabel="${vmware7DiskName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware7Mem" label="VMware v7 Mem" resourceLabel="${vmware7MemName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware7Net" label="VMware v7 Net" resourceLabel="${vmware7NetName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware7StAdptr" label="VMware v7 StAdptr" resourceLabel="${vmware7StAdptrName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware7StPth" label="VMware v7 StPth" resourceLabel="${vmware7StPthName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware7Sys" label="VMware v7 Sys" resourceLabel="${vmware7SysName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware7VrtDisk" label="VMware v7 VrtDisk" resourceLabel="${vmware7VrtDiskName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+</datacollection-group>
