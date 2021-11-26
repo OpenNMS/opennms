@@ -33,8 +33,6 @@ import java.net.InetAddress;
 
 import junit.framework.TestCase;
 
-import org.opennms.core.test.ConfigurationTestUtils;
-
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
  * the SNMP configuration XML.
@@ -44,8 +42,8 @@ import org.opennms.core.test.ConfigurationTestUtils;
  */
 public class WmiPeerFactoryTest extends TestCase {
     private WmiPeerFactory getFactory(String amiConfigXml) throws IOException {
-        WmiPeerFactory factory = new WmiPeerFactory(ConfigurationTestUtils.getResourceForConfigWithReplacements(amiConfigXml));
-        factory.afterPropertiesSet();
+        WmiPeerFactory factory = new WmiPeerFactory();
+//        factory.afterPropertiesSet();
         return factory;
     }
 

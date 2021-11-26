@@ -36,20 +36,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.codec.binary.Base64;
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.xml.AbstractWritableJaxbConfigDao;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.config.wmi.agent.Definition;
 import org.opennms.netmgt.config.wmi.agent.Range;
 import org.opennms.netmgt.config.wmi.agent.WmiConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 
 /**
  * This class is the main repository for WMI configuration information used by
@@ -68,7 +67,7 @@ import org.springframework.core.io.Resource;
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
  * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
  */
-public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiConfig> {
+public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(WmiPeerFactory.class);
 
     /**
@@ -76,35 +75,53 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      */
     private static WmiPeerFactory m_singleton = null;
 
+    private WmiConfig m_config;
+
+    private static final String CONFIG_NAME = "wmi";
+
+    private static final String DEFAULT_CONFIG_ID = "default";
+
     /**
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
 
-    public WmiPeerFactory() {
-        super(WmiConfig.class, "WMI peer configuration");
+    public WmiPeerFactory() throws IOException {
+        super(WmiConfig.class, "wmi Configuration");
     }
+
+    public WmiPeerFactory (WmiConfig config) {
+        super(WmiConfig.class, "wmi Configuration");
+        m_config = config;
+    }
+//    public WmiPeerFactory() {
+//        super(WmiConfig.class, "WMI peer configuration");
+//    }
 
     /**
      * Private constructor
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      */
-    WmiPeerFactory(final String configFile) {
-        super(WmiConfig.class, "WMI peer configuration");
-        setConfigResource(new FileSystemResource(configFile));
-    }
+//    WmiPeerFactory(final String configFile) {
+//        super(WmiConfig.class, "WMI peer configuration");
+//        setConfigResource(new FileSystemResource(configFile));
+//    }
+//
+//    public WmiPeerFactory(final Resource resource) {
+//        super(WmiConfig.class, "WMI peer configuration");
+//        setConfigResource(resource);
+//    }
 
-    public WmiPeerFactory(final Resource resource) {
-        super(WmiConfig.class, "WMI peer configuration");
-        setConfigResource(resource);
+    @PostConstruct
+    public void postConstruct() throws IOException {
+        reload();
     }
-
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @throws java.io.IOException
@@ -117,8 +134,8 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
             return;
         }
 
-        WmiPeerFactory factory = new WmiPeerFactory(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.WMI_CONFIG_FILE_NAME)));
-        factory.afterPropertiesSet();
+        WmiPeerFactory factory = new WmiPeerFactory();
+//        factory.afterPropertiesSet();
         setInstance(factory);
     }
 
@@ -131,9 +148,10 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      * @throws java.io.IOException
      *             if any.
      */
-    public static void reload() throws IOException {
-        init();
-        getInstance().update();
+    public void reload() throws IOException {
+//        init();
+//        getInstance().update();
+        this.m_config = this.loadConfig(this.getDefaultConfigId());
     }
 
     /**
@@ -162,13 +180,8 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
 
     }
 
-    @Override
-    public WmiConfig translateConfig(WmiConfig config) {
-        return config;
-    }
-
     public WmiConfig getConfig() {
-        return super.getObject();
+        return m_config;
     }
 
     /**
@@ -183,7 +196,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
     public void optimize() throws UnknownHostException {
         // First pass: Remove empty definition elements
         for (Iterator<Definition> definitionsIterator = getConfig().getDefinitions().iterator();
-        definitionsIterator.hasNext();) {
+             definitionsIterator.hasNext();) {
             final Definition definition = definitionsIterator.next();
             if (definition.getSpecifics().size() == 0 && definition.getRanges().size() == 0) {
 
@@ -271,7 +284,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
 
                     if (
                             InetAddressUtils.toInteger(specific).compareTo(InetAddressUtils.toInteger(begin)) >= 0 &&
-                            InetAddressUtils.toInteger(specific).compareTo(InetAddressUtils.toInteger(end)) <= 0
+                                    InetAddressUtils.toInteger(specific).compareTo(InetAddressUtils.toInteger(end)) <= 0
                     ) {
                         specificsMap.remove(specific);
                         break;
@@ -388,12 +401,12 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
 
     private void setWmiAgentConfig(WmiAgentConfig agentConfig, Definition def) {
         setCommonAttributes(agentConfig, def);
-        agentConfig.setPassword(determinePassword(def));       
+        agentConfig.setPassword(determinePassword(def));
     }
 
     /**
      * This is a helper method to set all the common attributes in the agentConfig.
-     * 
+     *
      * @param agentConfig
      * @param def
      */
@@ -437,7 +450,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
     }
 
     /**
-     * Helper method to search the wmi-config 
+     * Helper method to search the wmi-config
      * @param def
      * @return a long containing the timeout, WmiAgentConfig.DEFAULT_TIMEOUT if not specified.
      */
@@ -445,8 +458,18 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
         return (long)(def.getTimeout() == 0 ? getConfig().getTimeout().orElse(WmiAgentConfig.DEFAULT_TIMEOUT) : def.getTimeout());
     }
 
-    private int determineRetries(final Definition def) {        
+    private int determineRetries(final Definition def) {
         return (def.getRetry() == 0 ? getConfig().getRetry().orElse(WmiAgentConfig.DEFAULT_RETRIES) : def.getRetry());
+    }
+
+    @Override
+    public String getConfigName() {
+        return CONFIG_NAME;
+    }
+
+    @Override
+    public String getDefaultConfigId() {
+        return DEFAULT_CONFIG_ID;
     }
 
 }
