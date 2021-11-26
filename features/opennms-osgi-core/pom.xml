@@ -12,6 +12,9 @@
     <properties>
         <bundle.symbolicName>org.opennms.osgi.core</bundle.symbolicName>
         <bundle.namespace>org.opennms.osgi</bundle.namespace>
+
+        <opennms.doc.component>webapp</opennms.doc.component>
+        <opennms.doc.subcomponent>osgi</opennms.doc.subcomponent>
     </properties>
 
     <modelVersion>4.0.0</modelVersion>

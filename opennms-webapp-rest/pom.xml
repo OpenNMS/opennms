@@ -15,6 +15,9 @@
       onms libs into the WEB-INF/lib for jetty 
     -->
     <onmsLibScope>provided</onmsLibScope>
+
+    <opennms.doc.component>webapp</opennms.doc.component>
+    <opennms.doc.subcomponent>rest</opennms.doc.subcomponent>
   </properties>
 
   <build>

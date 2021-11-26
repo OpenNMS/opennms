@@ -9,6 +9,9 @@
   <artifactId>opennms-web-api</artifactId>
   <name>OpenNMS Web APIs</name>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>webapp</opennms.doc.component>
+  </properties>
   <build>
     <plugins>
       <plugin>

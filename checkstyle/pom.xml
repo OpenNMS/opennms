@@ -5,6 +5,10 @@
   <artifactId>org.opennms.checkstyle</artifactId>
   <version>30.0.0-SNAPSHOT</version>
   <name>OpenNMS :: Checkstyle</name>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.subcomponent>build</opennms.doc.subcomponent>
+  </properties>
   <build>
     <plugins>
       <plugin>

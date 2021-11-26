@@ -8,6 +8,10 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-javamail</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.subcomponent>mail</opennms.doc.subcomponent>
+  </properties>
   <name>OpenNMS :: JavaMail</name>
   <modules>
     <module>opennms-javamail-api</module>

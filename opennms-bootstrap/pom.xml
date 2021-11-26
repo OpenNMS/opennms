@@ -8,6 +8,10 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-bootstrap</artifactId>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.subcomponent>bootstrap</opennms.doc.subcomponent>
+  </properties>
   <name>OpenNMS :: Bootstrap</name>
   <build>
     <plugins>

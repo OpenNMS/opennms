@@ -12,6 +12,11 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.openconfig</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>telemetry</opennms.doc.component>
+    <opennms.doc.subcomponent>openconfig</opennms.doc.subcomponent>
+  </properties>
+
   <modules>
     <module>api</module>
     <module>common</module>

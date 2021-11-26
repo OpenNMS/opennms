@@ -8,6 +8,10 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.tests</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.subcomponent>tests</opennms.doc.subcomponent>
+  </properties>
   <name>OpenNMS :: Tests</name>
   <modules>
     <module>dao</module>
