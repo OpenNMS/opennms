@@ -30,6 +30,7 @@ package org.opennms.container.simplejaas;
 
 import java.security.Principal;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,6 +44,7 @@ import org.opennms.netmgt.config.api.UserConfig;
 //import org.opennms.web.springframework.security.LoginModuleUtils;
 
 //import org.opennms.web.springframework.security.SpringSecurityUserDao;
+import org.opennms.netmgt.config.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 //import org.springframework.security.core.GrantedAuthority;
@@ -103,7 +105,7 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Simp
         this.user = user;
     }
 
-    //@Override
+
     /*
     public Set<Principal> createPrincipals(final GrantedAuthority authority) {
         final String role = authority.getAuthority().replaceFirst("^[Rr][Oo][Ll][Ee]_", "");
@@ -115,6 +117,15 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Simp
         return principals;
     }
     */
+    // unused from this class
+    private static Set<Principal> createPrincipals(SimpleOpenNMSLoginHandler handler, User configUser) {
+        final Set<Principal> principals = new LinkedHashSet<>();
+        for (final String role : configUser.getRoles()) {
+            principals.add(new RolePrincipal(role));
+        }
+        return principals;
+    }
+
 
     @Override
     public Set<Principal> principals() {

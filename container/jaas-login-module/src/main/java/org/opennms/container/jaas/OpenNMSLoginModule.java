@@ -109,6 +109,16 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Open
         return principals;
     }
 
+    /* REPLACE WITH THIS?
+    private static Set<Principal> createPrincipals(SimpleOpenNMSLoginHandler handler, User configUser) {
+        final Set<Principal> principals = new LinkedHashSet<>();
+        for (final String role : configUser.getRoles()) {
+            principals.add(new RolePrincipal(role));
+        }
+        return principals;
+    }
+    */
+
     @Override
     public Set<Principal> principals() {
         return this.principals;

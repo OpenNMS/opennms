@@ -9,8 +9,8 @@
   https://github.com/OpenNMS/opennms/blob/opennms-29.0.1-1/opennms-webapp-rest/src/main/java/org/opennms/web/rest/v2/AlarmRestService.java#L342
 * wire in ticketer when this service is done
 * authentication and authorization in karaf using user.props DONE
-* wire in the Opennms jaas-login-module (Blueprint) 
-
+* wire in the Opennms jaas-login-module (Blueprint) DONE
+* test user/role combos (/Users/markcbordelon/Documents/clodovicus/opennms/opennms/opennms-base-assembly/target/classes/etc)
   - write IT for a dockerized karaf with injected config 
 * ( next-next steps:  distributed, IPC,  camel)
  

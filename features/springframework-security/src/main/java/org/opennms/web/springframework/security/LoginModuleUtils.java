@@ -105,11 +105,11 @@ public abstract class LoginModuleUtils {
         if (!handler.userConfig().comparePasswords(user, password)) {
             final String msg = "Login failed: passwords did not match.";
             LOG.debug(msg);
-            throw new FailedLoginException(msg);
-        };
+throw new FailedLoginException(msg);
+};
 
-        boolean allowed = true;
-        final Set<Principal> principals = LoginModuleUtils.createPrincipals(handler, onmsUser.getAuthorities());
+boolean allowed = true;
+final Set<Principal> principals = LoginModuleUtils.createPrincipals(handler, onmsUser.getAuthorities());
         handler.setPrincipals(principals);
 
         if (handler.requiresAdminRole()) {

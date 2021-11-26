@@ -28,6 +28,7 @@
 
 package org.opennms.container.simplejaas;
 
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.users.User;
 import org.slf4j.Logger;
@@ -45,6 +46,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -129,8 +131,12 @@ public abstract class SimpleLoginModuleUtils {
             LOG.debug(message, e);
             throw new LoginException(message);
         }
-        final Set<Principal> principals = null; // SimpleLoginModuleUtils.createPrincipals(handler, onmsUser.getAuthorities());
+        */
+
+        // must set principals to prevent commit phrase from failing
+        final Set<Principal> principals = SimpleLoginModuleUtils.createPrincipals(handler, configUser);
         handler.setPrincipals(principals);
+
         if (handler.requiresAdminRole()) {
             allowed = false;
             for (final Principal principal : principals) {
@@ -141,7 +147,7 @@ public abstract class SimpleLoginModuleUtils {
                 }
             }
         }
-        */
+
         if (!allowed) {
             final String msg = "User " + user + " is not an administrator!  OSGi console access is forbidden.";
             LOG.debug(msg);
@@ -163,4 +169,12 @@ public abstract class SimpleLoginModuleUtils {
         return principals;
     }
     */
+    private static Set<Principal> createPrincipals(SimpleOpenNMSLoginHandler handler, User configUser) {
+        final Set<Principal> principals = new LinkedHashSet<>();
+        for (final String role : configUser.getRoles()) {
+            principals.add(new RolePrincipal(role));
+        }
+        return principals;
+    }
+
 }
