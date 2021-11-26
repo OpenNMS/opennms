@@ -10,7 +10,7 @@
   <name>OpenNMS :: Alarms :: API</name>
   <packaging>bundle</packaging>
   <properties>
-    <opennms.doc.component>alarmd</opennms.doc.component>
+    <opennms.doc.component>alarms</opennms.doc.component>
     <opennms.doc.subcomponent>api</opennms.doc.subcomponent>
   </properties>
   <build>

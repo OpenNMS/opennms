@@ -8,6 +8,12 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jira-troubleticketer</artifactId>
     <packaging>bundle</packaging>
+    <properties>
+        <opennms.doc.component>ticketing</opennms.doc.component>
+        <opennms.doc.subcomponent>jira</opennms.doc.subcomponent>
+        <opennms.doc.stability>sustained</opennms.doc.stability>
+    </properties>
+
     <name>OpenNMS :: Features :: Ticketing :: JIRA</name>
     <build>
       <plugins>

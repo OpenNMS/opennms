@@ -9,6 +9,12 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.measurements</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>timeseries</opennms.doc.component>
+    <opennms.doc.subcomponent>measurements api</opennms.doc.subcomponent>
+    <opennms.doc.stability>sustained</opennms.doc.stability>
+  </properties>
+
   <name>OpenNMS :: Features :: Measurements</name>
   <modules>
     <module>api</module>

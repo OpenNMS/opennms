@@ -10,6 +10,11 @@
   <artifactId>org.opennms.features.ticketing.drools-integration</artifactId>
   <name>OpenNMS :: Features :: Ticketing :: Drools Integration</name>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>ticketing</opennms.doc.component>
+    <opennms.doc.subcomponent>drools</opennms.doc.subcomponent>
+    <opennms.doc.stability>maintenance</opennms.doc.stability>
+  </properties>
   <build>
     <plugins>
       <plugin>

@@ -10,7 +10,8 @@
   <name>OpenNMS :: Alarms</name>
   <packaging>pom</packaging>
   <properties>
-    <opennms.doc.component>alarmd</opennms.doc.component>
+    <opennms.doc.component>alarms</opennms.doc.component>
+    <opennms.doc.maturity>sustained</opennms.doc.maturity>
   </properties>
   <modules>
     <module>api</module>

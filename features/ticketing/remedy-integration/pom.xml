@@ -8,6 +8,12 @@
 	<artifactId>opennms-integration-remedy</artifactId>
 	<name>OpenNMS :: Features :: Ticketing :: Remedy</name>
 	<packaging>bundle</packaging>
+	<properties>
+		<opennms.doc.component>ticketing</opennms.doc.component>
+		<opennms.doc.subcomponent>remedy</opennms.doc.subcomponent>
+		<opennms.doc.stability>sustained</opennms.doc.stability>
+	</properties>
+
 	<build>
 		<plugins>
 			<plugin>

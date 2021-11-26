@@ -7,13 +7,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>bundle</packaging>
+    <properties>
+        <jiraClientVersion>3.0.0</jiraClientVersion>
+
+        <opennms.doc.component>ticketing</opennms.doc.component>
+        <opennms.doc.subcomponent>jira</opennms.doc.subcomponent>
+        <opennms.doc.stability>sustained</opennms.doc.stability>
+    </properties>
+
     <artifactId>jira-client</artifactId>
     <name>OpenNMS :: Features :: Ticketing :: JIRA Client</name>
     <description>OSGi wrapper for the Jira Client API.</description>
-
-    <properties>
-        <jiraClientVersion>3.0.0</jiraClientVersion>
-    </properties>
 
     <build>
       <defaultGoal>install</defaultGoal>

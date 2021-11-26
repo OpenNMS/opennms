@@ -11,6 +11,9 @@
   <artifactId>org.opennms.features.timeseries.shell</artifactId>
   <name>OpenNMS :: Features :: Timeseries :: Shell Commands</name>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>timeseries</opennms.doc.component>
+  </properties>
 
   <build>
     <plugins>

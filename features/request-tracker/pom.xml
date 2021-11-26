@@ -9,6 +9,11 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.request-tracker</artifactId>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>ticketing</opennms.doc.component>
+    <opennms.doc.subcomponent>request tracker</opennms.doc.subcomponent>
+    <opennms.doc.stability>maintenance</opennms.doc.stability>
+  </properties>
   <name>OpenNMS :: Features :: Request Tracker Interface</name>
   <build>
     <plugins>
