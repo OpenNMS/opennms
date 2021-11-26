@@ -13,6 +13,9 @@
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <opennms.doc.component>collection</opennms.doc.component>
+    <opennms.doc.subcomponent>ilr</opennms.doc.subcomponent>
   </properties>
   <build>
     <plugins>

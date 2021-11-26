@@ -9,6 +9,10 @@
   <artifactId>opennms-model</artifactId>
   <name>OpenNMS :: Model :: Objects</name>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.subcomponent>dao</opennms.doc.subcomponent>
+  </properties>
   <build>
     <plugins>
       <plugin>

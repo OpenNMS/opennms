@@ -13,6 +13,10 @@
     <name>OpenNMS :: Features :: Dashlets</name>
 
     <packaging>pom</packaging>
+    <properties>
+        <opennms.doc.component>webapp</opennms.doc.component>
+        <opennms.doc.subcomponent>dashboard</opennms.doc.subcomponent>
+    </properties>
 
     <modules>
         <module>dashlet-alarms</module>

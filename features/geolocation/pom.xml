@@ -9,6 +9,10 @@
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.geolocation</artifactId>
     <packaging>pom</packaging>
+    <properties>
+        <opennms.doc.component>webapp</opennms.doc.component>
+        <opennms.doc.subcomponent>geomap</opennms.doc.subcomponent>
+    </properties>
     <name>OpenNMS :: Features :: Geolocation</name>
     <modules>
         <module>api</module>

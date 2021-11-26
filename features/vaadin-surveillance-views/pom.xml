@@ -20,6 +20,9 @@
         <bundle.namespace>org.opennms.features.vaadin.surveillanceviews</bundle.namespace>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <guava.version>${guavaVersion}</guava.version>
+
+        <opennms.doc.component>webapp</opennms.doc.component>
+        <opennms.doc.subcomponent>surveillance</opennms.doc.subcomponent>
     </properties>
 
     <build>

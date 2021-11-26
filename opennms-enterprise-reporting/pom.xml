@@ -8,6 +8,9 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-enterprise-reporting</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>reporting</opennms.doc.component>
+  </properties>
   <name>OpenNMS :: Enterprise Reporting</name>
   <modules>
     <module>opennms-reportd</module>

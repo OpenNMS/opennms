@@ -9,6 +9,10 @@
   <artifactId>opennms-config-tester</artifactId>
   <name>OpenNMS Configuration Test Utility</name>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.subcomponent>config</opennms.doc.subcomponent>
+  </properties>
   <build>
     <resources>
       <resource>

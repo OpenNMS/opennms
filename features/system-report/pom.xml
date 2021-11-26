@@ -10,6 +10,10 @@
   <artifactId>org.opennms.features.system-report</artifactId>
   <name>OpenNMS :: Features :: System Report</name>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>support</opennms.doc.component>
+    <opennms.doc.subcomponent>system report</opennms.doc.subcomponent>
+  </properties>
   <build>
     <plugins>
       <plugin>

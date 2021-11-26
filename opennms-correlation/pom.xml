@@ -9,6 +9,10 @@
   <artifactId>opennms-correlation</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: Correlation</name>
+  <properties>
+    <opennms.doc.component>events</opennms.doc.component>
+    <opennms.doc.subcomponent>correlation</opennms.doc.subcomponent>
+  </properties>
   <modules>
     <module>opennms-correlator</module>
     <module>drools-correlation-engine</module>

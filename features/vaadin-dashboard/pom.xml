@@ -11,16 +11,20 @@
     <groupId>org.opennms.features</groupId>
     <artifactId>vaadin-dashboard</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS :: Features :: Dashboard</name>
-    <description>
-        OpenNMS Vaadin Dashboard
-    </description>
     <properties>
         <bundle.symbolicName>org.opennms.features.vaadin-dashboard</bundle.symbolicName>
         <bundle.namespace>org.opennms.features.vaadin.dashboard</bundle.namespace>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <guava.version>${guavaVersion}</guava.version>
+
+        <opennms.doc.component>webapp</opennms.doc.component>
+        <opennms.doc.subcomponent>dashboard</opennms.doc.subcomponent>
     </properties>
+
+    <name>OpenNMS :: Features :: Dashboard</name>
+    <description>
+        OpenNMS Vaadin Dashboard
+    </description>
 
     <build>
         <resources>

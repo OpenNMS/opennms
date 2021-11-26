@@ -16,6 +16,9 @@
 
   <properties>
     <json-simpleVersion>1.1.1</json-simpleVersion>
+
+    <opennms.doc.component>events</opennms.doc.component>
+    <opennms.doc.subcomponent>elasticsearch</opennms.doc.subcomponent>
   </properties>
 
   <dependencyManagement>

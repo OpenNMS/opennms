@@ -9,6 +9,10 @@
   <artifactId>opennms-jetty</artifactId>
   <name>OpenNMS :: Jetty</name>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>webapp</opennms.doc.component>
+    <opennms.doc.subcomponent>jetty</opennms.doc.subcomponent>
+  </properties>
   <build>
     <plugins>
       <plugin>

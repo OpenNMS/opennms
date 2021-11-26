@@ -9,6 +9,11 @@
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.name-cutter</artifactId>
     <packaging>bundle</packaging>
+    <properties>
+        <opennms.doc.component>core</opennms.doc.component>
+        <opennms.doc.subcomponent>utils</opennms.doc.subcomponent>
+    </properties>
+
     <name>OpenNMS :: Features :: Name Cutter</name>
 
     <build>

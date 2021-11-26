@@ -9,6 +9,10 @@
     <groupId>org.opennms.features.sentinel</groupId>
     <artifactId>sentinel-parent</artifactId>
     <packaging>pom</packaging>
+    <properties>
+        <opennms.doc.component>sentinel</opennms.doc.component>
+    </properties>
+
     <name>OpenNMS :: Features :: Sentinel</name>
 
     <modules>

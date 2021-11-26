@@ -19,6 +19,9 @@
 		<bundle.symbolicName>org.opennms.features.vaadin-node-maps</bundle.symbolicName>
 		<bundle.namespace>org.opennms.features.vaadin.nodemaps</bundle.namespace>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<opennms.doc.component>webapp</opennms.doc.component>
+		<opennms.doc.subcomponent>geomap</opennms.doc.subcomponent>
 	</properties>
 
 	<build>
