@@ -56,11 +56,6 @@
       <artifactId>org.opennms.features.config.rest.api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-config-model</artifactId>
-    </dependency>
-
     <!-- Dependencies used -->
     <dependency>
       <groupId>org.slf4j</groupId>
