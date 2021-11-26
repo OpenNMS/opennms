@@ -91,22 +91,27 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         return elementNameToValueNameMap;
     }
 
+    /**
+     * It will read the ejaxb:body-name and put in elementNameToValueNameMap
+     * @param xmlSchemaElement
+     */
     private void handleExternalAttributes(XmlSchemaElement xmlSchemaElement) {
         if (xmlSchemaElement.getMetaInfoMap() == null) {
             return;
         }
         Object attributes = xmlSchemaElement.getMetaInfoMap().get(EXTERNAL_ATTRIBUTES);
-        if (attributes instanceof Map)
+        if (attributes instanceof Map) {
             ((Map) attributes).forEach((key, value) -> {
-
                 if (value instanceof Node) {
                     Node attr = (Node) value;
                     if (XML_ELEMENT_VALUE_BODY_TAG.equals(attr.getLocalName())) {
                         String tmpName = xmlSchemaElement.getQName().getLocalPart();
                         elementNameToValueNameMap.computeIfAbsent(tmpName, elementName -> attr.getNodeValue());
+                        return;
                     }
                 }
             });
+        }
     }
 
     @Override
@@ -169,7 +174,9 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         if (currentConfigItem.isPrimitiveType()) {
             // Make a duplicate of the current item for the primitive type; current then becomes an object with children
             ConfigItem child = new ConfigItem();
-            child.setName(currentConfigItem.getName());
+            // special logic to handle Xml Value to attribute name mapping
+            String bodyName = this.elementNameToValueNameMap.get(currentConfigItem.getName());
+            child.setName(bodyName != null ? bodyName: currentConfigItem.getName());
             child.setType(currentConfigItem.getType());
             child.setSchemaRef(currentConfigItem.getSchemaRef());
             child.setRequired(currentConfigItem.isRequired());

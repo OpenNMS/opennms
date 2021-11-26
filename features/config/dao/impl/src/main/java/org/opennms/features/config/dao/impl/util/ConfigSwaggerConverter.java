@@ -94,8 +94,6 @@ public class ConfigSwaggerConverter {
         }
 
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
         return objectMapper.writeValueAsString(openapi);
     }
 
