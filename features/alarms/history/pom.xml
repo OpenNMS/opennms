@@ -12,6 +12,7 @@
   <properties>
     <opennms.doc.component>alarms</opennms.doc.component>
     <opennms.doc.subcomponent>history</opennms.doc.subcomponent>
+    <opennms.doc.stability>experimental</opennms.doc.stability>
   </properties>
   <name>OpenNMS :: Features :: Alarms :: History</name>
   <modules>

@@ -10,6 +10,11 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.opennms.config-dao</artifactId>
     <packaging>pom</packaging>
+    <properties>
+        <opennms.doc.component>core</opennms.doc.component>
+        <opennms.doc.subcomponent>config</opennms.doc.subcomponent>
+        <opennms.doc.stability>sustained</opennms.doc.stability>
+    </properties>
     <modules>
         <module>thresholding</module>
         <module>poll-outages</module>

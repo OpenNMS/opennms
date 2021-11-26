@@ -9,6 +9,11 @@
   <artifactId>opennms-asterisk</artifactId>
   <name>OpenNMS Asterisk PBX Support</name>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>asterisk</opennms.doc.component>
+    <opennms.doc.subcomponent>daemon</opennms.doc.subcomponent>
+    <opennms.doc.stability>unsupported</opennms.doc.stability>
+  </properties>
   <build>
     <plugins>
       <plugin>

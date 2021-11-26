@@ -14,6 +14,11 @@
     <seleniumVersion>2.53.1</seleniumVersion>
   </properties>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>polling</opennms.doc.component>
+    <opennms.doc.subcomponent>monitor</opennms.doc.subcomponent>
+    <opennms.doc.stability>sustained</opennms.doc.stability>
+  </properties>
   <build>
     <plugins>
       <plugin>

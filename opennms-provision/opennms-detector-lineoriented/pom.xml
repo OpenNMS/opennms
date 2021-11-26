@@ -10,6 +10,11 @@
   <name>OpenNMS :: Provisioning :: LineOriented Detectors</name>
   <url>http://www.opennms.org</url>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>provisioning</opennms.doc.component>
+    <opennms.doc.subcomponent>detector</opennms.doc.subcomponent>
+    <opennms.doc.stability>sustained</opennms.doc.stability>
+  </properties>
   <build>
     <plugins>
       <plugin>
