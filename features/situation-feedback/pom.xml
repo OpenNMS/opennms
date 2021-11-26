@@ -9,6 +9,11 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.situation-feedback</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>alarms</opennms.doc.component>
+    <opennms.doc.subcomponent>situation feedback</opennms.doc.subcomponent>
+    <opennms.doc.stability>experimental</opennms.doc.stability>
+  </properties>
   <name>OpenNMS :: Features :: Situation-Feedback (Parent)</name>
   <modules>
     <module>api</module>

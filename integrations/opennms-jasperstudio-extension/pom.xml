@@ -10,6 +10,9 @@
     <artifactId>opennms-jasperstudio-extension</artifactId>
     <name>OpenNMS Integration for Jaspersoft Studio</name>
     <packaging>jar</packaging>
+    <properties>
+        <opennms.doc.component>reporting</opennms.doc.component>
+    </properties>
     <description>Add this jar to the Jaspersoft Studio build path in order to be able to execute/debug/create reports for OpenNMS</description>
     <build>
         <plugins>

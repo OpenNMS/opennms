@@ -10,6 +10,11 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dominion</artifactId>
     <packaging>pom</packaging>
+    <properties>
+        <opennms.doc.component>minion</opennms.doc.component>
+        <opennms.doc.subcomponent>appliance</opennms.doc.subcomponent>
+        <opennms.doc.stability>active</opennms.doc.stability>
+    </properties>
     <name>OpenNMS :: Features :: Minion :: Dominion</name>
     <modules>
         <module>grpc-client</module>

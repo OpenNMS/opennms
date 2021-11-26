@@ -11,6 +11,9 @@
   <name>OpenNMS :: Integrations :: Jasper Extensions</name>
   <url>http://maven.apache.org</url>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>reporting</opennms.doc.component>
+  </properties>
   <build>
     <plugins>
       <plugin>

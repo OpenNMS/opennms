@@ -9,6 +9,11 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.scv</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.subcomponent>scv</opennms.doc.subcomponent>
+    <opennms.doc.stability>active</opennms.doc.stability>
+  </properties>
   <name>OpenNMS :: Features :: SCV</name>
   <modules>
     <module>api</module>

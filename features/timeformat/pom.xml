@@ -9,6 +9,9 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.timeformat</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>webapp</opennms.doc.component>
+  </properties>
   <name>OpenNMS :: Features :: Timeformat (Parent)</name>
   <modules>
     <module>api</module>

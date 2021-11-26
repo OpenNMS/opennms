@@ -10,6 +10,10 @@
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.rest-provider</artifactId>
     <packaging>bundle</packaging>
+    <properties>
+        <opennms.doc.component>webapp</opennms.doc.component>
+        <opennms.doc.subcomponent>rest</opennms.doc.subcomponent>
+    </properties>
     <name>OpenNMS :: Features :: REST Provider</name>
     <build>
         <plugins>

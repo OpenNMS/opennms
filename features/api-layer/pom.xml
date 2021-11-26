@@ -12,7 +12,7 @@
     <name>OpenNMS :: Features :: API Layer</name>
     <packaging>bundle</packaging>
     <properties>
-      <opennms.doc.component>Plugin Support</opennms.doc.component>
+      <opennms.doc.component>plugins</opennms.doc.component>
       <!-- automatically run annotation processors within the incremental compilation -->
       <m2e.apt.activation>jdt_apt</m2e.apt.activation>
     </properties>

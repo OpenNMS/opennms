@@ -9,6 +9,10 @@
   <artifactId>opennms-rancid-provisioning-adapter</artifactId>
   <name>OpenNMS :: Integrations :: Provisioning Adapter :: RANCID</name>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>provisioning</opennms.doc.component>
+    <opennms.doc.subcomponent>adapters</opennms.doc.subcomponent>
+  </properties>
   <build>
     <plugins>
       <plugin>

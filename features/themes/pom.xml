@@ -14,6 +14,10 @@
   <name>OpenNMS :: Features :: Vaadin :: Themes</name>
 
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>webapp</opennms.doc.component>
+    <opennms.doc.subcomponent>themes</opennms.doc.subcomponent>
+  </properties>
 
   <modules>
     <module>jmxconfiggenerator-theme</module>

@@ -19,6 +19,9 @@
     <properties>
         <bundle.namespace>org.opennms.osgi.core.rest</bundle.namespace>
         <bundle.symbolicName>${bundle.namespace}</bundle.symbolicName>
+
+        <opennms.doc.component>webapp</opennms.doc.component>
+        <opennms.doc.subcomponent>rest</opennms.doc.subcomponent>
     </properties>
     <dependencies>
         <dependency>

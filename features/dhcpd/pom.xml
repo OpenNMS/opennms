@@ -12,7 +12,8 @@
     <name>OpenNMS :: Features :: DHCP Integration</name>
     <packaging>bundle</packaging>
     <properties>
-      <opennms.doc.component>DHCP Integration</opennms.doc.component>
+      <opennms.doc.component>protocols</opennms.doc.component>
+      <opennms.doc.subcomponent>dhcp</opennms.doc.subcomponent>
     </properties>
 
     <build>

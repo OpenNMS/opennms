@@ -9,6 +9,12 @@
     <artifactId>opennms-taglib</artifactId>
     <name>OpenNMS Taglib</name>
     <packaging>jar</packaging>
+    <properties>
+        <opennms.doc.component>webapp</opennms.doc.component>
+        <opennms.doc.subcomponent>taglib</opennms.doc.subcomponent>
+        <opennms.doc.stability>maintenance</opennms.doc.stability>
+    </properties>
+
     <dependencies>
 
         <dependency>

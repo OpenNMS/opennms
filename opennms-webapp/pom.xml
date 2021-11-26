@@ -16,6 +16,9 @@
     <!-- this is used by runInPlace.sh to get the overwise provided 
          nms libs into the WEB-INF/lib for jetty -->
     <onmsLibScope>provided</onmsLibScope>
+
+    <opennms.doc.component>webapp</opennms.doc.component>
+    <opennms.doc.stability>sustained</opennms.doc.stability>
   </properties>
   <build>
     <plugins>

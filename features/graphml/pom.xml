@@ -10,6 +10,12 @@
   <artifactId>org.opennms.features.graphml</artifactId>
   <name>OpenNMS :: Features :: GraphML (Parent)</name>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>topology</opennms.doc.component>
+    <opennms.doc.subcomponent>graphml</opennms.doc.subcomponent>
+    <opennms.doc.stability>sustained</opennms.doc.stability>
+  </properties>
+
   <modules>
     <module>api</module>
     <module>service</module>
