@@ -1,57 +1,56 @@
 [[build-from-source]]
 = Build from source
 
-Building OpenNMS from source code highly recommends running a *nix system.
+We highly recommend running a *nix system to build OpenNMS from source code.
 You do not need to run it physically; a virtual machine is sufficient.
-In our community people use the following environments developing our software:
+Our community uses the following environments to develop our software:
 
-* link:https://en.wikipedia.org/wiki/List_of_Linux_distributions#Debian-based[Debian based] operating system
-* link:https://en.wikipedia.org/wiki/List_of_Linux_distributions#RPM-based[RPM based] operating system
+* link:https://en.wikipedia.org/wiki/List_of_Linux_distributions#Debian-based[Debian-based] operating system
+* link:https://en.wikipedia.org/wiki/List_of_Linux_distributions#RPM-based[RPM-based] operating system
 * Mac OS X
 
 This section describes how to build OpenNMS {page-component-title} with an Ubuntu Desktop system.
-With following these instructions you will have accomplished:
+Follow these instructions to accomplish the following:
 
-* The source code and a build environment
+* Download the source code and create a build environment
 * A compiled and assembled version from the latest develop branch
-* Running an OpenNMS {page-component-title} core server instance from a development directory locally
+* An OpenNMS {page-component-title} core server instance running locally from a development directory
 
-You should be familiar with deploying OpenNMS {page-component-title}.
-Especially setting up package repositories, configuring and initialising the PostgreSQL database.
-Basic knowledge with git is highly recommended.
+You should be familiar with deploying OpenNMS {page-component-title}, especially setting up package repositories and configuring and initializing the PostgreSQL database.
+Basic knowledge of git is highly recommended.
 
 == Before you begin
 
-Running {page-component-title} from source requires to install the following components on your system:
+To run {page-component-title} from source, you must install the following components on your system:
 
-* OpenJDK 11 development kit need to be installed, verify the correct `javac` and `java` executables are in your search path
-* Install the xref:deployment:core/getting-started.adoc#install-core-instance[OpenNMS package repositories]
-* Install JICMP and JICMP6 packages which allow sending ICMP messages with Java
-* Install link:https://git-scm.com/[git-scm] to check out the source code from the link:https://github.com/OpenNMS/opennms[OpenNMS GitHub repository]
-* Install and initialize xref:deployment:core/getting-started.adoc#setup-postgresql[PostgreSQL server]
+* OpenJDK 11 development kit; verify the correct `javac` and `java` executables are in your search path
+* xref:deployment:core/getting-started.adoc#install-core-instance[OpenNMS package repositories]
+* JICMP and JICMP6 packages to allow sending ICMP messages with Java
+* link:https://git-scm.com/[git-scm] to check out the source code from the link:https://github.com/OpenNMS/opennms[OpenNMS GitHub repository]
+* xref:deployment:core/getting-started.adoc#setup-postgresql[PostgreSQL server] (installed and initialized)
 * Access to GitHUb via HTTPS to fetch the source code
 * Perl to run the convenient compile and assemble helper scripts
 * Your user has administrative permissions and can use `sudo`
-* Some helper scripts require Python to be installed
-* Docker if you want to run smoke tests or start services as container
+*  Python (some helper scripts require it)
+* Docker to run smoke tests or start services as container
 
 Optional packages:
 
 * IPLIKE which is a stored procedure in PostgreSQL for complex IP queries.
   The iplike package is specific to the PostgreSQL major version.
-  As an example for PostgreSQL 13.x you need the package `iplike-pgsql13`
-* JRRD2 if you want to use RRDTool instead of the default Java based RRD implementation JRobin
+  For example, for PostgreSQL 13.x you need the package `iplike-pgsql13`.
+* JRRD2 if you want to use RRDtool instead of the default Java-based RRD implementation JRobin
 * RRDtool from the official package repositories
 
 TIP: You can set the environment `JAVA_HOME` in `/etc/environment` if you want additional control about the Java JDK used during builds.
 Changes are applied immediately with `source /etc/environment`.
 
 TIP: Within the source tree we ship a Maven version which is used by default.
-The environment variable `MVN` allows you using your own installed Maven version.
+The environment variable `MVN` allows you to use your own installed Maven version.
 
 == Get the source code
 
-First you need the source code from the GitHub repository.
+First, you need the source code from the GitHub repository.
 The default branch is `develop` which is the release candidate for the major release.
 You can check out a specific version tag if you want or switch to a branch you want to build from.
 The command `git tag -l` or `git branch -r` gives you available branches or version tags.
@@ -66,7 +65,7 @@ cd ~/dev/opennms
 == Compile and assemble from source
 
 The build is divided into two steps.
-The first step compiles the source code and the second step assembles the compiled artefacts in a way you can run OpenNMS {page-component-title} locally.
+The first step compiles the source code and the second step assembles the compiled artefacts so you can run OpenNMS {page-component-title} locally.
 To speed up the build steps, we explicitly disable tests and don't create a source tarball file.
 
 .Compile the source code without executing test tasks and skip the source tarball creation
@@ -81,10 +80,10 @@ To speed up the build steps, we explicitly disable tests and don't create a sour
 ./assemble.pl -p dir -DskipTests
 ----
 
-The profile argument `-p dir` allows running OpenNMS {page-component-title} directly from the target directory.
+The profile argument `-p dir` allows you to run OpenNMS {page-component-title} directly from the target directory.
 
 NOTE: If you build from source the first time, it takes some time.
-During the first build the Maven dependencies downloads is about ~4GB.
+During the first build, the Maven dependencies download is about ~4GB.
 The Maven repository is by default located in the `$\{HOME}/.m2` directory.
 
 == Run your build locally
@@ -94,7 +93,7 @@ The release version is defined in the root `pom.xml` in the source tree and chan
 This release version depends on which version tag or branch you have checked out and try to build.
 It is helpful to extract the release version in an environment variable and allows you to repeat the following instructions more easily.
 
-TIP: Instead of maintaining a local PostgreSQL installation you can also run an ephemeral PostgreSQL instance as a container.
+TIP: Instead of maintaining a local PostgreSQL installation, you can also run an ephemeral PostgreSQL instance as a container.
      The command `sudo docker run -d -e POSTGRES_HOST_AUTH_METHOD=trust -p 5432:5432 postgres:13` starts an instance which allows connections without authentication for development.
      If you want to persist the database on your host for later use, you can add `-v $(pwd)/data:/var/lib/postgresql/data`.
 
@@ -111,7 +110,7 @@ echo "RUNAS=$(id -u -n)" > "target/opennms-${ONMS_RELEASE}/etc/opennms.conf"
 ----
 
 The next step is configuring PostgreSQL to initialise the database.
-Follow the xref:deployment:core/getting-started.adoc#set-up-core-instance[Set up the core instance] from the deployment guide, the procedure is the same.
+Follow xref:deployment:core/getting-started.adoc#set-up-core-instance[Set up the core instance] from the deployment guide; the procedure is the same.
 The configuration file is located in `target/opennms-$\{ONMS_RELEASE}/etc/opennms-datasources.xml`.
 
 .Initialise the Java environment

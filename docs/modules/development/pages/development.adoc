@@ -5,7 +5,7 @@ This developer section is for anyone wanting to either write code which directly
 It assumes some familiarity with concepts deploying and running OpenNMS components described in the xref:deployment:core/introduction.adoc[Deployment] and xref:operation:overview/overview.adoc[Operations] sections of this manual.
 This section covers the following topics:
 
-* Instructions how to build {page-component-title} from source
+* How to build {page-component-title} from source
 * Enhance Minion running in Karaf OSGi container
 * Enhance the Topology visualisation
 * Create GraphML custom network topologies
