@@ -33,6 +33,7 @@ Running {page-component-title} from source requires to install the following com
 * Perl to run the convenient compile and assemble helper scripts
 * Your user has administrative permissions and can use `sudo`
 * Some helper scripts require Python to be installed
+* Docker if you want to run smoke tests or start services as container
 
 Optional packages:
 
@@ -92,6 +93,10 @@ The following instructions require the release version.
 The release version is defined in the root `pom.xml` in the source tree and changes with every major release.
 This release version depends on which version tag or branch you have checked out and try to build.
 It is helpful to extract the release version in an environment variable and allows you to repeat the following instructions more easily.
+
+TIP: Instead of maintaining a local PostgreSQL installation you can also run an ephemeral PostgreSQL instance as a container.
+     The command `sudo docker run -d -e POSTGRES_HOST_AUTH_METHOD=trust -p 5432:5432 postgres:13` starts an instance which allows connections without authentication for development.
+     If you want to persist the database on your host for later use, you can add `-v $(pwd)/data:/var/lib/postgresql/data`.
 
 .Set the OpenNMS release version in a global environment variable
 [source, console]
