@@ -34,6 +34,10 @@ def apply_component_inheritance(maven_module, maven_project):
       dir = os.path.relpath(dir, maven_project._root_module.path)
       # print("Checking  " + dir)
       parent = maven_project.modules_by_relative_path[dir]
+
+      # If this parent has inheritance disabled, stop
+      if parent.componentInheritance == 'false':
+        return
       if maven_module.componentName == '' and parent.componentName != '':
         maven_module.componentName = parent.componentName
       if maven_module.subcomponentName == '' and parent.subcomponentName != '':

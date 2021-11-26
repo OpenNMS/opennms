@@ -27,6 +27,7 @@ class MavenModule(MavenIdentifier):
         self.path = os.path.abspath(os.path.join(self.pom, '..'))
         self.componentName = ""
         self.subcomponentName = ""
+        self.componentInheritance = True
         self.stability = ""
         self.artifact_id = json_obj['artifactId']
         self.group_id = json_obj['groupId']
@@ -40,6 +41,7 @@ class MavenModule(MavenIdentifier):
           component = properties.getElementsByTagName('opennms.doc.component')
           subcomponent = properties.getElementsByTagName('opennms.doc.subcomponent')
           stability = properties.getElementsByTagName('opennms.doc.stability')
+          inheritance = properties.getElementsByTagName('opennms.doc.componentInheritance')
 
           if len(component)>0:
             self.componentName = component[0].firstChild.nodeValue
@@ -49,6 +51,9 @@ class MavenModule(MavenIdentifier):
 
           if len(stability)>0:
             self.stability = stability[0].firstChild.nodeValue
+
+          if len(inheritance)>0:
+            self.componentInheritance = inheritance[0].firstChild.nodeValue
 
         self.dependencies = [MavenIdentifier(obj) for obj in json_obj['dependencies']]
 

@@ -8,6 +8,9 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
   <packaging>pom</packaging>
+  <properties>
+      <opennms.doc.componentInheritance>false</opennms.doc.componentInheritance>
+  </properties>
   <name>OpenNMS :: Features</name>
   <modules>
 
