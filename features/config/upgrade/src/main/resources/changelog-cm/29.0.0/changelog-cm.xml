@@ -30,4 +30,10 @@
         <cm:importConfig schemaId="jmx" configId="default" filePath="jmx-config.xml"/>
     </changeSet>
 
+    <changeSet author="psuthar" id="1.0-register-xmp">
+        <cm:registerSchema id="xmp"/>
+        <cm:importSchemaFromXsd id="xmp" xsdFileName="xmp-config.xsd" xsdFileHash="0f7950d6175734b2f20d50123da6614af5d44346e8311f0fb3e9e9d86c3ce94a" rootElement="xmp-config"/>
+        <cm:importConfig schemaId="xmp" configId="default" filePath="xmp-config.xml"/>
+    </changeSet>
+
 </databaseChangeLog>

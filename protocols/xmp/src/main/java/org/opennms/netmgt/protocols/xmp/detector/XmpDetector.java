@@ -60,6 +60,7 @@ import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.support.DetectResultsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * OpenNMS XMP Detector allows for discovery of service/protocols via
@@ -76,6 +77,9 @@ import org.slf4j.LoggerFactory;
  */
 
 public class XmpDetector implements SyncServiceDetector {
+    @Autowired
+    private XmpConfigFactory xmpConfigFactory;
+
     private static final String DEFAULT_SERVICE_NAME = "XMP";
     private static final String XMP_DEFAULT_AUTH_USER = "xmpUser";
     private static final Logger LOG = LoggerFactory.getLogger(XmpDetector.class);
@@ -145,8 +149,7 @@ public class XmpDetector implements SyncServiceDetector {
         try {
             XmpConfig protoConfig;
 
-            XmpConfigFactory.init();
-            protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
+            protoConfig = xmpConfigFactory.getXmpConfig();
             if (protoConfig.hasPort())
                 xmpPort = protoConfig.getPort();
             if (protoConfig.hasTimeout())
