@@ -19,18 +19,13 @@
 
   <description>Generated using Pax-Construct</description>
 
-  <properties>
-    <!--
-     | some example OSGi runtime properties
-    -->
-    <org.osgi.service.http.port>8080</org.osgi.service.http.port>
-    <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
-  </properties>
-
   <packaging>pom</packaging>
+
   <properties>
     <opennms.doc.component>topology</opennms.doc.component>
     <opennms.doc.stability>sustained</opennms.doc.stability>
+    <org.osgi.service.http.port>8080</org.osgi.service.http.port>
+    <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
   </properties>
 
   <modules>

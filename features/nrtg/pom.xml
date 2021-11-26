@@ -13,6 +13,11 @@
   <artifactId>nrtg</artifactId>
   <packaging>pom</packaging>
   <properties>
+    <jdkLevel>1.6</jdkLevel>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <cglib.version>2.2.2</cglib.version>
+    <flexjson.version>2.0</flexjson.version>
+
     <opennms.doc.component>datacollection</opennms.doc.component>
     <opennms.doc.subcomponent>nrtg</opennms.doc.subcomponent>
     <opennms.doc.stability>sustained</opennms.doc.stability>
@@ -28,12 +33,6 @@
     a running JMS/AMPQ message broker is required on localhost. The
     recommended system is version 5.6 of ActiveMQ.
   </description>
-  <properties>
-    <jdkLevel>1.6</jdkLevel>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <cglib.version>2.2.2</cglib.version>
-    <flexjson.version>2.0</flexjson.version>
-  </properties>
   <modules>
     <module>system-exports</module>
     <module>commander</module>
