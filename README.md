@@ -24,13 +24,13 @@ Well, what does that mean?
 Installing OpenNMS
 ==================
 
-For details on installing OpenNMS, please see the install guide: [Installing OpenNMS][].
+For details on installing OpenNMS, please see the installation guide: [Installing OpenNMS][].
 
 Building OpenNMS
 ================
 
 For details on building OpenNMS, please see the wiki page: [Building OpenNMS][].
 
-[OpenNMS]:           http://www.opennms.org/
-[Building OpenNMS]:  https://wiki.opennms.org/wiki/Installation:Source
-[Installing OpenNMS]:  http://docs.opennms.org/opennms/branches/develop/guide-install/guide-install.html
+[OpenNMS]:           http://www.opennms.com/
+[Building OpenNMS]:  docs/modules/development/pages/build-from-source.adoc
+[Installing OpenNMS]:  docs/modules/deployment/pages/core/getting-started.adoc
