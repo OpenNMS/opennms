@@ -57,9 +57,6 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
  *  Day-of-Week 1-7 or SUN-SAT , - ? / L C #
  *  Year (Opt) empty, 1970-2099 , - /
  */
-@XmlRootElement(name = "requisition-def")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("provisiond-configuration.xsd")
 public class RequisitionDef implements Serializable {
     private static final List<String> RESCAN_EXISTING_OPTIONS = Arrays.asList("true", "false", "dbonly");
 
@@ -67,16 +64,12 @@ public class RequisitionDef implements Serializable {
 
     private static final String DEFAULT_RESCAN_EXISTING = System.getProperty("org.opennms.provisiond.scheduleRescanForUpdatedNodes", "true");
 
-    @XmlAttribute(name = "import-url-resource", required = true)
     private String importUrlResource;
 
-    @XmlAttribute(name = "import-name", required = true)
     private String importName;
 
-    @XmlAttribute(name = "rescan-existing")
     private String rescanExisting;
 
-    @XmlElement(name = "cron-schedule", required = true)
     private String cronSchedule;
 
     public Optional<String> getImportUrlResource() {
@@ -134,5 +127,4 @@ public class RequisitionDef implements Serializable {
         }
         return false;
     }
-
 }

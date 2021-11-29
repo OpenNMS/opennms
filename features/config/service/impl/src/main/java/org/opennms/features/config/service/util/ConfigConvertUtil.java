@@ -28,9 +28,9 @@
 
 package org.opennms.features.config.service.util;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
@@ -45,12 +45,7 @@ public class ConfigConvertUtil {
         @Override
         public ObjectMapper makeObject() {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.setVisibility(mapper.getSerializationConfig()
-                            .getDefaultVisibilityChecker()
-                            .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-                            .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-                            .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
-                            .withCreatorVisibility(JsonAutoDetect.Visibility.NONE))
+            return mapper.registerModule(new Jdk8Module())
                     .setPropertyNamingStrategy(new PropertyNamingStrategies.KebabCaseStrategy());
         }
     }

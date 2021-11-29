@@ -42,6 +42,7 @@ import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,8 +105,7 @@ public class ConfigStoreDaoImplTest {
         ProvisiondConfiguration config2 = new ProvisiondConfiguration();
         config2.setImportThreads(20L);
 
-        ConfigConverter converter = XsdHelper.getConverter(tmpConfigSchema2.get());
-        JSONObject config2AsJson = new JSONObject(converter.xmlToJson(JaxbUtils.marshal(config2)));
+        JSONObject config2AsJson = new JSONObject(ConfigConvertUtil.objectToJson(config2));
         configStoreDao.addConfig(configName, filename + "_2", config2AsJson);
         Optional<ConfigData> resultAfterUpdate = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL configs count is not equal to 2", resultAfterUpdate.isPresent());
