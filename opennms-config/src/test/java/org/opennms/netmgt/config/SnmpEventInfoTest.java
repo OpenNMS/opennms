@@ -51,6 +51,7 @@ import org.junit.Test;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.network.IPAddressRangeSet;
+import org.opennms.features.config.dao.impl.util.XmlConverter;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -59,7 +60,10 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.AbstractResource;
+
+import javax.xml.bind.JAXBException;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -69,7 +73,18 @@ import org.springframework.core.io.AbstractResource;
  *
  */
 public class SnmpEventInfoTest {
-
+    @Autowired
+    SnmpPeerFactory snmpPeerFactory;
+    private void updateConfig(String amiConfigXml) throws IOException {
+        try {
+            XmlConverter converter = new XmlConverter("snmp-config.xsd", "snmp-config");
+            String json = converter.xmlToJson(amiConfigXml);
+            snmpPeerFactory.updateConfig(json);
+            snmpPeerFactory.reload();
+        }catch(Exception e){
+            e.printStackTrace();;
+        }
+    }
     @Test(expected=IllegalArgumentException.class)
     public void testConfigRangeCreateOutOfOrder() {
         new IPAddressRange("192.168.1.2", "192.168.1.1");
@@ -403,7 +418,7 @@ public class SnmpEventInfoTest {
         "";
 
         //SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
-        
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
@@ -440,8 +455,8 @@ public class SnmpEventInfoTest {
                 "</snmp-config>\n" +
                 "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-
+       // SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -486,7 +501,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" +
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
@@ -554,8 +570,8 @@ public class SnmpEventInfoTest {
         "";
 
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+       // SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
@@ -597,8 +613,8 @@ public class SnmpEventInfoTest {
         "";
 
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
@@ -635,8 +651,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
@@ -674,8 +690,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
@@ -713,8 +729,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
@@ -747,8 +763,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
@@ -790,8 +806,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
@@ -837,8 +853,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
@@ -882,7 +898,7 @@ public class SnmpEventInfoTest {
         
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
-
+        this.updateConfig(expectedConfig);
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.1.199");
@@ -918,10 +934,11 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory factory = new SnmpPeerFactory();
-        SnmpPeerFactory.setInstance(factory);
-        
-        assertXmlEquals(snmpConfigXml, factory.getSnmpConfigAsString());
+        //SnmpPeerFactory factory = new SnmpPeerFactory();
+       // SnmpPeerFactory.setInstance(factory);
+        this.updateConfig(expectedConfig);
+
+        assertXmlEquals(snmpConfigXml, snmpPeerFactory.getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -966,8 +983,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";    
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
@@ -1013,8 +1030,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
@@ -1055,8 +1072,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
@@ -1128,8 +1145,8 @@ public class SnmpEventInfoTest {
         "";
         
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
@@ -1176,8 +1193,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
@@ -1212,7 +1229,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
@@ -1251,8 +1269,8 @@ public class SnmpEventInfoTest {
                 + "        <range begin=\"192.168.2.30\" end=\"192.168.2.40\"/>\n" + "    </definition>\n"
                 + "</snmp-config>\n" + "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -1393,7 +1411,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";            
         
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
@@ -1438,8 +1457,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
@@ -1481,8 +1500,8 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         
@@ -1512,8 +1531,9 @@ public class SnmpEventInfoTest {
 		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
 		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v2c\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\"/>\n";
     	
-    	  SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-          assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
+    	  //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
           SnmpEventInfo info = new SnmpEventInfo();
           info.setVersion("v2c");
@@ -1549,7 +1569,8 @@ public class SnmpEventInfoTest {
                 "    </definition>\n" +
                 "</snmp-config>\n" +
                 "";
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.1.35"), "MINION","test" );
@@ -1583,7 +1604,8 @@ public class SnmpEventInfoTest {
                 "    </definition>\n" +
                 "</snmp-config>\n" +
                 "";
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.1.25"), null, "test");
@@ -1614,7 +1636,8 @@ public class SnmpEventInfoTest {
                 "    </definition>\n" +
                 "</snmp-config>\n" +
                 "";
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.1.25"), "MINION", "test");
@@ -1652,7 +1675,8 @@ public class SnmpEventInfoTest {
                 "    </definition>\n" +
                 "</snmp-config>\n" +
                 "";
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.1.25"), "Minion", "test");
         assertTrue("Remove from definition should be successful", success);
@@ -1683,7 +1707,8 @@ public class SnmpEventInfoTest {
                 "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
                 "</snmp-config>\n" +
                 "";
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.0.8"), null, "test");
@@ -1714,7 +1739,8 @@ public class SnmpEventInfoTest {
                 "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
                 "</snmp-config>\n" +
                 "";
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.0.8"), null, "test");
@@ -1745,7 +1771,8 @@ public class SnmpEventInfoTest {
                 "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
                 "</snmp-config>\n" +
                 "";
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.0.8"), "MINION", "test");
@@ -1780,7 +1807,8 @@ public class SnmpEventInfoTest {
                 "    </definition>\n" +
                 "</snmp-config>\n" +
                 "";
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.1.25"), "MINION", "test");
@@ -1822,7 +1850,8 @@ public class SnmpEventInfoTest {
                 "    </definition>\n" +
                 "</snmp-config>\n" +
                 "";
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         // Should fetch config from the definition with profile3
@@ -1888,7 +1917,8 @@ public class SnmpEventInfoTest {
                 "    </definition>\n" +
                 "</snmp-config>\n" +
                 "";
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         // Should fetch config from the definition with profile3
@@ -1960,7 +1990,8 @@ public class SnmpEventInfoTest {
                 "       </profiles>\n" +
                 "</snmp-config>\n" +
                 "";
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         SnmpProfile snmpProfile = SnmpPeerFactory.getInstance().getProfiles().get(0);
@@ -2060,7 +2091,8 @@ public class SnmpEventInfoTest {
                 "       </profiles>\n" +
                 "</snmp-config>\n" +
                 "";
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         SnmpProfile snmpProfile = SnmpPeerFactory.getInstance().getProfiles().get(0);
@@ -2093,7 +2125,8 @@ public class SnmpEventInfoTest {
 		"</snmp-config>\n";
     	
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -2126,7 +2159,8 @@ public class SnmpEventInfoTest {
 		"</snmp-config>\n";
     	
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         SnmpEventInfo info = new SnmpEventInfo();
