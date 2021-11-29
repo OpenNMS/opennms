@@ -10,6 +10,7 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance } from 'vue'
 const app: any = getCurrentInstance()
+const params = app?.ctx.params || app?.data.params
 const severities = [
   'Normal',
   'Warning',
@@ -22,12 +23,12 @@ const currentValue = ref("")
 const onSelectionChanged = () => {
   if (currentValue.value === '') {
     // clear the filter
-    app?.ctx.params.parentFilterInstance((instance: any) => {
+    params.parentFilterInstance((instance: any) => {
       instance.onFloatingFilterChanged(null, null)
     })
     return
   }
-  app?.ctx.params.parentFilterInstance((instance: any) => {
+  params.parentFilterInstance((instance: any) => {
     instance.onFloatingFilterChanged('contains', currentValue.value)
   })
 }
@@ -42,7 +43,5 @@ const onParentModelChanged = (parentModel: any) => {
   }
 }
 
-defineExpose({
-  onParentModelChanged: onParentModelChanged
-})
+defineExpose({ onParentModelChanged })
 </script>

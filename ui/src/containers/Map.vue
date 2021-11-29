@@ -63,4 +63,7 @@ onMounted(() => {
 .ag-icon {
   color: var(--feather-primary-text-on-surface) !important;
 }
+.ag-input-field-input {
+  color: black !important;
+}
 </style>
