@@ -15,6 +15,11 @@
   </div>
 </template>
 
+<!-- used to keep map alive once loaded -->
+<script lang="ts">
+  export default {name: 'MapKeepAlive'}
+</script>
+
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useStore } from "vuex"

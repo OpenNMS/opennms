@@ -7,7 +7,11 @@
 
     <Sidebar />
     <div class="container">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <keep-alive include="MapKeepAlive">
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
     </div>
   </FeatherAppLayout>
 </template>
