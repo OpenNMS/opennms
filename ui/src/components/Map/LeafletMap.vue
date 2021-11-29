@@ -57,6 +57,11 @@ import {
 import MarkerCluster from "./MarkerCluster.vue"
 import { useStore } from "vuex"
 import { Node, Alarm } from "@/types"
+import NormalIcon from '@/assets/Normal-icon.png'
+import WarninglIcon from '@/assets/Warning-icon.png'
+import MinorIcon from '@/assets/Minor-icon.png'
+import MajorIcon from '@/assets/Major-icon.png'
+import CriticalIcon from '@/assets/Critical-icon.png'
 
 const store = useStore()
 const map = ref()
@@ -108,20 +113,20 @@ const setMarkerColor = (severity: string | undefined) => {
   if (severity) {
     switch (severity.toUpperCase()) {
       case "NORMAL":
-        return ("src/assets/Normal-icon.png")
+        return NormalIcon
       case "WARNING":
-        return ("src/assets/Warning-icon.png")
+        return WarninglIcon
       case "MINOR":
-        return ("src/assets/Minor-icon.png")
+        return MinorIcon
       case "MAJOR":
-        return ("src/assets/Major-icon.png")
+        return MajorIcon
       case "CRITICAL":
-        return ("src/assets/Critical-icon.png")
+        return CriticalIcon
       default:
-        return ("src/assets/Normal-icon.png")
+        return NormalIcon
     }
   }
-  return ("src/assets/Normal-icon.png")
+  return NormalIcon
 }
 
 const edges = computed(() => {
