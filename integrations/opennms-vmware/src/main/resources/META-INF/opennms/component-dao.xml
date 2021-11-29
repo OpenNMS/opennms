@@ -33,7 +33,6 @@
     </bean>
 
     <bean id="vmwareConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareConfigDaoJaxb">
-        <property name="configResource" ref="vmwareConfigResourceLocation"/>
     </bean>
 
     <!-- The 'vmware' provider -->

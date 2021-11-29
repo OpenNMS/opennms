@@ -17,6 +17,11 @@
         <cm:importSchemaFromXsd id="enlinkd" xsdFileName="enlinkd-configuration.xsd" xsdFileHash="cf03a578f483997efbbd931700a2946bb08157352f802cf39be954aa84856471" rootElement="enlinkd-configuration"/>
         <cm:importConfig schemaId="enlinkd" configId="default" filePath="enlinkd-configuration.xml"/>
     </changeSet>
+    <changeSet author="ssuman" id="1.0-register-schema-vmware">
+        <cm:registerSchema id="vmware"/>
+        <cm:importSchemaFromXsd id="vmware" xsdFileName="vmware-config.xsd" xsdFileHash="d95180bbd8950c40256527197f97b4aee1b6277649927e47c4e50d712aa77250" rootElement="vmware-config"/>
+        <cm:importConfig schemaId="vmware" configId="default" filePath="vmware-config.xml"/>
+    </changeSet>
 
     <changeSet author="tmohanta" id="1.0-register-schema-discovery">
         <cm:registerSchema id="discovery"/>
