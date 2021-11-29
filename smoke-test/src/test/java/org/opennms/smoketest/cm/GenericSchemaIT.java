@@ -42,7 +42,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -86,9 +85,6 @@ public class GenericSchemaIT extends OpenNMSSeleniumIT {
         HttpResponse configNames  = queryUri(uri, "application/json");
         LOG.info("Checking for data loading from db for provisiond'{}'", uri);
         HttpEntity entity = configNames.getEntity();
-        /*String json_string1 = EntityUtils.toString(entity);
-        JSONObject json_object1 = new JSONObject(json_string1);
-        json_object1.get("0");*/
         String entityBody = IOUtils.toString(entity.getContent(), StandardCharsets.UTF_8);
         String configName= entityBody.replace("[","").replace("]","");
         List<String> list = Arrays.asList(configName.split("\\s*,\\s*"));
@@ -97,15 +93,12 @@ public class GenericSchemaIT extends OpenNMSSeleniumIT {
             String uriSchema = uri + "/schema/" + schemaName;
 
             HttpResponse schema = queryUri(uriSchema, "application/json");
-            HttpEntity entity1 = schema.getEntity();
-            String json_string = EntityUtils.toString(entity1);
-            JSONObject json_object = new JSONObject(json_string);
+            HttpEntity schemaEntity = schema.getEntity();
+            String jsonString = EntityUtils.toString(schemaEntity);
+            JSONObject jsonObject = new JSONObject(jsonString);
 
-
-            //JSONObject path = new JSONObject(json_object.get("paths").get(getstr).get("get").get("tags"));
-
-            JSONObject path = new JSONObject(json_object.get("paths").toString());
-            System.out.println("**********************************path" + path);
+            JSONObject path = new JSONObject(jsonObject.get("paths").toString());
+            LOG.info("path : " + path);
             JSONObject get = new JSONObject(path.get("/opennms/rest/cm/" + schemaName).toString());
             JSONObject getDetails = new JSONObject(get.get("get").toString());
             boolean responseCodeCheck = getDetails.get("responses").toString().contains("200");
