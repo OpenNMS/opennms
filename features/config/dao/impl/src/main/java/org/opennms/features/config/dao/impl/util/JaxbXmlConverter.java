@@ -28,13 +28,10 @@
 
 package org.opennms.features.config.dao.impl.util;
 
-import com.google.common.base.Strings;
 import com.google.common.io.Resources;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.internal.oxm.ByteArraySource;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.oxm.MediaType;
@@ -53,8 +50,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.sax.SAXSource;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -151,7 +146,6 @@ public class JaxbXmlConverter implements ConfigConverter {
                 return jsonStr;
             }
         } catch (JAXBException | SAXException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -219,26 +213,6 @@ public class JaxbXmlConverter implements ConfigConverter {
         json.put(newKey, value);
     }
 
-    @Override
-    public String jsonToXml(final String jsonStr) {
-        try {
-            final Unmarshaller u = jaxbContext.createUnmarshaller();
-            u.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
-            u.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
-
-            Class<? extends DynamicEntity> entityClass = getTopLevelEntity(jaxbContext);
-            ByteArraySource byteArraySource = new ByteArraySource(jsonStr.getBytes(StandardCharsets.UTF_8));
-            DynamicEntity entity = u.unmarshal(byteArraySource, entityClass).getValue();
-
-            final Marshaller m = jaxbContext.createMarshaller();
-            final StringWriter writer = new StringWriter();
-            m.marshal(entity, writer);
-            return writer.toString();
-        } catch (JAXBException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private DynamicJAXBContext getDynamicJAXBContextForService(XmlSchema xmlSchema) {
         final String xsd = xmlSchema.getXsdContent();
 
@@ -247,48 +221,6 @@ public class JaxbXmlConverter implements ConfigConverter {
         } catch (JAXBException | IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private Class<? extends DynamicEntity> getTopLevelEntity(DynamicJAXBContext jc) {
-        String className = namespace2package(xmlSchema.getNamespace()) +
-                "." +
-                TopLevelElementToClass.topLevelElementToClass(xmlSchema.getTopLevelObject());
-        return jc.newDynamicEntity(className).getClass();
-    }
-
-    public static String namespace2package(String s) {
-        // "http://xmlns.opennms.org/xsd/config/vacuumd" -> "org.opennms.xmlns.xsd.config.vacuumd"
-        final URL url;
-        try {
-            url = new URL(s);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-
-        StringBuilder pkgName = new StringBuilder();
-
-        // Split and reverse the host part
-        String[] parts = url.getHost().split("\\.");
-        for (int i = parts.length - 1; i >= 0; i--) {
-            if (i != parts.length - 1) {
-                pkgName.append(".");
-            }
-            pkgName.append(parts[i]);
-        }
-
-        // Split and append the parts of the path
-        parts = url.getPath().split("/");
-        for (String part : parts) {
-            if (Strings.isNullOrEmpty(part)) {
-                continue;
-            }
-            pkgName.append(".");
-            pkgName.append(part);
-        }
-
-        String packageName = pkgName.toString();
-        packageName = packageName.replace('-', '_');
-        return packageName;
     }
 
     public XmlSchema getXmlSchema() {

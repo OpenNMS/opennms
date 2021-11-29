@@ -37,15 +37,4 @@ public interface ConfigConverter {
      * @return json string
      */
     String xmlToJson(String xmlStr);
-
-    /**
-     * convert json string to xml string
-     *
-     * !!!It should not have any use case to convert json back to xml!!!
-     *
-     * @param jsonStr input json config
-     * @return xml string
-     */
-    @Deprecated
-    String jsonToXml(String jsonStr);
 }
