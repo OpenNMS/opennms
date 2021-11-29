@@ -3,11 +3,6 @@
 = Create a Custom Resource Type
 
 This section describes how to create a custom resource type to collect SNMP data from tables with arbitrary indexes.
-* <<resourcetype-def, Create a resourceType definition>>
-* <<group-def, Create "group" and "mibObj" definitions>>
-* <<system-def, Add the group to a system definition>>
-* <<report-snmp-graph, Create a report in snmp-graph.properties>>
-
 Whether it is an MIB-2 host-resources storage table, a Brocade fibre channel port table, or the existing node-level performance data and interface resource types, {page-component-title} uses the custom resource type to collect and display the data.
 
 [[resourcetype-def]]
