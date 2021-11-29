@@ -45,34 +45,26 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 /**
  * Behavior configuration for the Provisioner Daemon
  */
-@XmlRootElement(name = "provisiond-configuration")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class ProvisiondConfiguration implements Serializable {
     private static final long serialVersionUID = 2L;
 
     private static final String DEFAULT_REQUISITION_DIR = "${install.dir}/etc/imports";
     private static final String DEFAULT_FOREIGN_SOURCE_DIR = "${install.dir}/etc/foreign-sources";
 
-    @XmlAttribute(name = "importThreads")
     @JsonProperty("importThreads")
     private Long importThreads;
 
-    @XmlAttribute(name = "scanThreads")
     @JsonProperty("scanThreads")
     private Long scanThreads;
 
-    @XmlAttribute(name = "rescanThreads")
     @JsonProperty("rescanThreads")
     private Long rescanThreads;
 
-    @XmlAttribute(name = "writeThreads")
     @JsonProperty("writeThreads")
     private Long writeThreads;
 
-    @XmlAttribute(name = "requistion-dir")
     private String requistionDir;
 
-    @XmlAttribute(name = "foreign-source-dir")
     private String foreignSourceDir;
 
     /**
@@ -89,7 +81,6 @@ public class ProvisiondConfiguration implements Serializable {
      *  Year (Opt) empty, 1970-2099 , - /
      *  
      */
-    @XmlElement(name = "requisition-def")
     @JsonProperty("requisition-def")
     private List<RequisitionDef> requisitionDefs = new ArrayList<>();
 
@@ -193,5 +184,4 @@ public class ProvisiondConfiguration implements Serializable {
         }
         return false;
     }
-
 }

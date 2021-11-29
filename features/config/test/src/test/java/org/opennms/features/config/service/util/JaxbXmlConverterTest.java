@@ -72,12 +72,6 @@ public class JaxbXmlConverterTest {
         // compare Object from json to object from source xml
         final ProvisiondConfiguration objectFromSourceXml = JaxbUtils.unmarshal(ProvisiondConfiguration.class, sourceXml);
         assertThat(objectFromMappedJson, equalTo(objectFromSourceXml));
-
-        // check xml > json > xml > object
-        String convertedXml = converter.jsonToXml(convertedJson);
-        ProvisiondConfiguration objectFromConvertedXml = JaxbUtils.unmarshal(ProvisiondConfiguration.class, convertedXml);
-        Assert.assertEquals("Object ImportThreads Value is not correct", 11L, (long) objectFromConvertedXml.getImportThreads());
-        Assert.assertEquals("Object ForeignSourceDir is not correct. " + objectFromConvertedXml.getForeignSourceDir(), FOREIGN_SOURCES, objectFromConvertedXml.getForeignSourceDir());
     }
 
     @Test
