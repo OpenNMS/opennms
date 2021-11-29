@@ -104,7 +104,7 @@ import com.vmware.vim25.ws.Client;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-public class VmwareViJavaAccess {
+public class VmwareViJavaAccess implements AutoCloseable {
 
     public final static int DEFAULT_TIMEOUT = 3000;
     /**
@@ -241,6 +241,11 @@ public class VmwareViJavaAccess {
             }
         }
         return false;
+    }
+
+    @Override
+    public void close() {
+        disconnect();
     }
 
     /**
