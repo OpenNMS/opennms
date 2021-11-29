@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import org.apache.camel.converter.jaxp.XmlConverter;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
@@ -113,6 +114,9 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
         } else if ("notifd".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("notifd", "notifd-configuration.xsd",
                     "notifd-configuration", ConfigurationManagerService.BASE_PATH);
+        }else if ("wmi".equals(configName)) {
+            def = XsdHelper.buildConfigDefinition("wmi", "wmi-config.xsd",
+                    "wmi-config", ConfigurationManagerService.BASE_PATH);
         }
         return Optional.ofNullable(def);
     }

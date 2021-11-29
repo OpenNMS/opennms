@@ -144,5 +144,10 @@
         </exclusion>
     </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>org.opennms.features.config.mock</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>
