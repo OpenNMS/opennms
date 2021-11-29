@@ -241,10 +241,21 @@
   <reference-list interface="org.opennms.integration.api.v1.ticketing.TicketingPlugin" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="ticketingExtensionManager" />
   </reference-list>
-
   <!-- Service Collectors -->
+  <bean id="rrdConfigStrings" class="java.util.ArrayList">
+    <argument>
+      <list>
+        <value>RRA:AVERAGE:0.5:1:2016</value>
+        <value>RRA:AVERAGE:0.5:12:1488</value>
+        <value>RRA:AVERAGE:0.5:288:366</value>
+        <value>RRA:MAX:0.5:288:366</value>
+        <value>RRA:MIN:0.5:288:366</value>
+      </list>
+    </argument>
+  </bean>
   <bean id="serviceCollectorManager" class="org.opennms.features.apilayer.collectors.ServiceCollectorManager">
     <argument ref="blueprintBundleContext"/>
+    <argument ref="rrdConfigStrings"/>
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.collectors.ServiceCollectorFactory" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="serviceCollectorManager" />

@@ -33,8 +33,8 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +57,7 @@ public class ServiceCollectorImplTest {
     public void setup(){
         System.setProperty("opennms.home", baseDir);
         mockFactory = mock(ServiceCollectorFactory.class);
-        serviceCollector = new ServiceCollectorImpl<>(mockFactory);
+        serviceCollector = new ServiceCollectorImpl<>(mockFactory, Arrays.asList(rrsList));
     }
 
     @Test
@@ -68,14 +68,5 @@ public class ServiceCollectorImplTest {
         assertThat(repository.getRraList(), hasSize(5));
         assertThat(repository.getRraList(), containsInAnyOrder(rrsList));
         assertThat(repository.getRrdBaseDir().getAbsolutePath(), equalTo(baseDir+"/share/rrd/test"));
-    }
-
-    @Test
-    public void testGetCollectorClassName() {
-        String testClass = "org.opennms.test.Collector";
-        when(mockFactory.getCollectorClassName()).thenReturn(testClass);
-        String className = serviceCollector.getCollectorClassName();
-        assertThat(className, equalTo(testClass));
-        verify(mockFactory).getCollectorClassName();
     }
 }

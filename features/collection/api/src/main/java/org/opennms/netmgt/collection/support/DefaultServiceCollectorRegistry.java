@@ -111,7 +111,7 @@ public class DefaultServiceCollectorRegistry implements ServiceCollectorRegistry
     }
 
     @Override
-    public CompletableFuture<ServiceCollector> getCollectorByClassName(String className) {
+    public synchronized CompletableFuture<ServiceCollector> getCollectorByClassName(String className) {
         CompletableFuture<ServiceCollector> future = m_collectorsByClassName.get(className);
         if(future == null) {
             future = new CompletableFuture<>();

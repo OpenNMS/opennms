@@ -29,6 +29,7 @@
 package org.opennms.features.apilayer.collectors;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.apilayer.utils.InterfaceMapper;
@@ -41,14 +42,16 @@ import org.slf4j.LoggerFactory;
 public class ServiceCollectorManager extends InterfaceMapper<ServiceCollectorFactory, ServiceCollector> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServiceCollectorManager.class);
+    private List<String> rrdConfigList;
 
-    public ServiceCollectorManager(BundleContext bundleContext) {
+    public ServiceCollectorManager(BundleContext bundleContext, List<String> rrdConfigList) {
         super(ServiceCollector.class, bundleContext);
+        this.rrdConfigList = rrdConfigList;
     }
 
     @Override
     public ServiceCollector map(ServiceCollectorFactory ext) {
-        return new ServiceCollectorImpl(ext);
+        return new ServiceCollectorImpl(ext, rrdConfigList);
     }
 
     // override as registry needs collector class name in properties.

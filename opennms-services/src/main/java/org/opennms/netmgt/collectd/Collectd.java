@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +43,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.logging.Logging;
@@ -225,10 +226,7 @@ public class Collectd extends AbstractServiceDaemon implements
         // make sure the instrumentation gets initialized
         instrumentation();
         
-        instantiateCollectors().whenComplete((v, ex)->{
-            getScheduler().schedule(0, ifScheduler());
-            installMessageSelectors();
-        });
+        instantiateCollectors();
     }
 
     private void installMessageSelectors() {
@@ -307,30 +305,6 @@ public class Collectd extends AbstractServiceDaemon implements
         m_thresholdingService = thresholdingService;
     }
 
-    private ReadyRunnable ifScheduler() {
-        // Schedule existing interfaces for data collection
-
-        ReadyRunnable interfaceScheduler = new ReadyRunnable() {
-
-            @Override
-            public boolean isReady() {
-                return true;
-            }
-
-            @Override
-            public void run() {
-                Logging.withPrefix(LOG4J_CATEGORY, () -> {
-                    try {
-                        scheduleExistingInterfaces();
-                    } finally {
-                        setSchedulingCompleted(true);
-                    }
-                });
-            }
-        };
-        return interfaceScheduler;
-    }
-
     private void createScheduler() {
         Logging.withPrefix(LOG4J_CATEGORY, () -> {
             // Create a scheduler
@@ -377,32 +351,6 @@ public class Collectd extends AbstractServiceDaemon implements
     @Override
     protected void onResume() {
         getScheduler().resume();
-    }
-
-    /**
-     * Schedule existing interfaces for data collection.
-     */
-    private void scheduleExistingInterfaces() {
-        
-        instrumentation().beginScheduleExistingInterfaces();
-        try {
-
-            m_transTemplate.execute(new TransactionCallbackWithoutResult() {
-
-                @Override
-                public void doInTransactionWithoutResult(TransactionStatus status) {
-                    
-                    // Loop through collectors and schedule for each one present
-                    for(String name : getCollectorNames()) {
-                        scheduleInterfacesWithService(name);
-                    }
-                }
-
-            });
-        
-        } finally {
-            instrumentation().endScheduleExistingInterfaces();
-        }
     }
 
     private void scheduleInterfacesWithService(String svcName) {
@@ -612,8 +560,8 @@ public class Collectd extends AbstractServiceDaemon implements
             }
 
             LOG.debug("getSpecificationsForInterface: address/service: {}/{} scheduled, interface does belong to package: {}", iface, svcName, wpkg.getName());
-            
-            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient, pollOutagesDao));
+            String className = m_collectdConfigFactory.getCollectdConfig().getCollectors().stream().filter(c->c.getService().equals(svcName)).findFirst().orElse(null).getClassName();
+            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient, pollOutagesDao, className));
         }
         return matchingPkgs;
     }
@@ -1025,39 +973,18 @@ public class Collectd extends AbstractServiceDaemon implements
     }
 
     private void rebuildScheduler() {
-        // Register new collectors if necessary
-        Set<String> configuredCollectors = new HashSet<>();
-        List<CompletableFuture<ServiceCollector>> futureList = new ArrayList<>();
-        for (Collector collector : m_collectdConfigFactory.getCollectdConfig().getCollectors()) {
-            String svcName = collector.getService();
-            configuredCollectors.add(svcName);
-            if (getServiceCollector(svcName) == null) {
-                LOG.debug("rebuildScheduler: Loading collector {}, classname {}", svcName, collector.getClassName());
-                futureList.add(m_serviceCollectorRegistry.getCollectorByClassName(collector.getClassName())
-                        .whenComplete((sc, ex) -> {
-                            try {
-                                sc.initialize();
-                                setServiceCollector(svcName, sc);
-                            } catch (Throwable t) {
-                                LOG.warn("rebuildScheduler: Failed to load collector {} for service {}", collector.getClassName(), svcName, t);
-                            }
-                        }));
-            }
-        }
-        CompletableFuture.allOf(futureList.toArray(new CompletableFuture[0])).join();
-        // Removing unused collectors if necessary
-        getCollectorNames().stream().filter(name->!configuredCollectors.contains(name))
-                .forEach(name ->{
-                    LOG.info("rebuildScheduler: removing collector for {}, it is no longer required", name);
-                    m_collectors.remove(name);
-                });
-        // Recreating all Collectable Services (using the nodeID list populated at the beginning)
+        //Remove all collectable services
         Collection<Integer> nodeIds = m_nodeDao.getNodeIds();
         m_filterDao.flushActiveIpAddressListCache();
         for (Integer nodeId : nodeIds) {
-            unscheduleNodeAndMarkForDeletion(new Long(nodeId));
-            scheduleNode(nodeId, true);
+            unscheduleNodeAndMarkForDeletion(Long.valueOf(nodeId));
         }
+       //Remove unused collectors if necessary
+        Set<String> newConfigured = m_collectdConfigFactory.getCollectdConfig().getCollectors().stream().map(c->c.getService()).collect(Collectors.toSet());
+        List<String> removedList = getCollectorNames().stream().filter(name-> !newConfigured.contains(name)).collect(Collectors.toList());
+        removedList.forEach(name -> m_collectors.remove(name));
+        //Re-instantiate collectors
+        instantiateCollectors();
     }
 
     private void unscheduleNodeAndMarkForDeletion(Long nodeId) {
@@ -1437,7 +1364,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>setCollectorConfigDao</p>
      *
-     * @param collectdConfigFactory a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
+     * @param collectdConfigFactory a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
      */
     void setCollectdConfigFactory(CollectdConfigFactory collectdConfigFactory) {
         m_collectdConfigFactory = collectdConfigFactory;
@@ -1524,31 +1451,61 @@ public class Collectd extends AbstractServiceDaemon implements
         return m_collectors.keySet();
     }
 
-    private CompletableFuture<Void> instantiateCollectors() {
+    private void instantiateCollectors() {
         LOG.debug("instantiateCollectors: Loading collectors");
-
+        AtomicInteger scheduledCounter = new AtomicInteger(0);
         /*
          * Load up an instance of each collector from the config
          * so that the event processor will have them for
          * new incoming events to create collectable service objects.
          */
         Collection<Collector> collectors = m_collectdConfigFactory.getCollectdConfig().getCollectors();
-        List<CompletableFuture<ServiceCollector>> list = new ArrayList<>();
+
         for(Collector collector: collectors) {
             String svcName = collector.getService();
             LOG.debug("instantiateCollectors: Loading collector {}, classname {}", svcName, collector.getClassName());
-            list.add(m_serviceCollectorRegistry.getCollectorByClassName(collector.getClassName())
-                    .whenComplete((sc, ex)-> {
-                        try {
-                            sc.initialize();
-                            setServiceCollector(svcName, sc);
-                            LOG.debug("instantiateCollectors: Loading collector {} was initialized", svcName);
-                        } catch (CollectionInitializationException e) {
-                            LOG.warn("instantiateCollectors: Failed to load collector {} for service {}", collector.getClassName(), svcName, e);
-                        }
-                    }));
+            CompletableFuture<ServiceCollector> collectorFuture = m_serviceCollectorRegistry.getCollectorByClassName(collector.getClassName());
+            collectorFuture.whenComplete((sc, ex) -> {
+                try {
+                    sc.initialize();
+                    setServiceCollector(svcName, sc);
+                    LOG.debug("instantiateCollectors: Loading collector {} was initialized", svcName);
+                } catch (CollectionInitializationException e) {
+                    LOG.warn("instantiateCollectors: Failed to load collector {} for service {}", collector.getClassName(), svcName, e);
+                }
+            }).whenComplete((Void, ex) -> {
+                getScheduler().schedule(0, scheduleCollector(svcName));
+                if(scheduledCounter.incrementAndGet() == collectors.size()) {
+                    setSchedulingCompleted(true);
+                }
+            });
+            if(!collectorFuture.isDone()) {
+                LOG.warn("The collector {} with class {} is not available.", svcName, collector.getClassName());
+            }
         }
-        return CompletableFuture.allOf(list.toArray(new CompletableFuture[0]));
+    }
+
+    private ReadyRunnable scheduleCollector(String svcName) {
+        ReadyRunnable runnable= new ReadyRunnable() {
+
+            @Override
+            public void run() {
+                Logging.withPrefix(LOG4J_CATEGORY, () ->{
+                    m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+                        @Override
+                        protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                            scheduleInterfacesWithService(svcName);
+                        }
+                    });
+                });
+            }
+
+            @Override
+            public boolean isReady() {
+                return true;
+            }
+        };
+        return runnable;
     }
 
     public static String getLoggingCategory() {

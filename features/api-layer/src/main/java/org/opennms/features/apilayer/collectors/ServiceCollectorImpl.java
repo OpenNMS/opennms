@@ -30,8 +30,8 @@ package org.opennms.features.apilayer.collectors;
 
 import java.io.File;
 import java.net.InetAddress;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -54,10 +54,12 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
     private static final Logger LOG = LoggerFactory.getLogger(ServiceCollectorImpl.class);
 
     private final ServiceCollectorFactory<T> serviceCollectorFactory;
+    private final List<String> rrdRepoConfigs;
 
 
-    public ServiceCollectorImpl(ServiceCollectorFactory<T> serviceCollectorFactory) {
+    public ServiceCollectorImpl(ServiceCollectorFactory<T> serviceCollectorFactory, List<String> rrdRepoConfigs) {
         this.serviceCollectorFactory = serviceCollectorFactory;
+        this.rrdRepoConfigs = rrdRepoConfigs;
     }
 
     @Override
@@ -97,18 +99,13 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
 
     @Override
     public RrdRepository getRrdRepository(String collectionName) {
+        //TODO configure in the blueprint file
         ResourcePath opennmsHome = ResourcePath.fromString(System.getProperty("opennms.home"));
         String path = ResourcePath.get(opennmsHome, "share", "rrd", collectionName.toLowerCase()).toString();
         final RrdRepository rrdRepository = new RrdRepository();
         rrdRepository.setStep(300);
         rrdRepository.setHeartBeat(rrdRepository.getStep()*2);
-        rrdRepository.setRraList(Arrays.asList(
-                "RRA:AVERAGE:0.5:1:2016",
-                "RRA:AVERAGE:0.5:12:1488",
-                "RRA:AVERAGE:0.5:288:366",
-                "RRA:MAX:0.5:288:366",
-                "RRA:MIN:0.5:288:366"
-        ));
+        rrdRepository.setRraList(rrdRepoConfigs);
         rrdRepository.setRrdBaseDir(new File(path));
         return rrdRepository;
     }
@@ -132,12 +129,6 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
     public Map<String, Object> unmarshalParameters(Map<String, String> parameters) {
         return serviceCollectorFactory.unmarshalParameters(parameters);
     }
-
-    @Override
-    public String getCollectorClassName() {
-        return serviceCollectorFactory.getCollectorClassName();
-    }
-
 
     private class CollectionRequestImpl implements CollectionRequest {
 

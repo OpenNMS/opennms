@@ -75,9 +75,4 @@ public abstract class AbstractServiceCollector implements ServiceCollector {
         // We always run at the default location, so no unmarshaling should be perfomed
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public String getCollectorClassName() {
-        return null;
-    }
 }
