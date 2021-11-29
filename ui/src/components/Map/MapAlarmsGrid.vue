@@ -11,8 +11,8 @@
         :options="alarmOptions"
         text-prop="option"
         @update:modelValue="selectAlarmAck"
-        :hideLabel="true"
-        label=""
+        label="Alarm Action"
+        background="true"
       />
       <FeatherButton primary @click="clearFilters()">Clear Filters</FeatherButton>
       <FeatherButton primary @click="applyFilters()">Filter Map</FeatherButton>
