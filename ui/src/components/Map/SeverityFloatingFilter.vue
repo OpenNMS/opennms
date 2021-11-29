@@ -7,41 +7,44 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, getCurrentInstance } from 'vue'
-const app: any = getCurrentInstance()
-const params = app?.ctx.params || app?.data.params
-const severities = [
-  'Normal',
-  'Warning',
-  'Minor',
-  'Major',
-  'Critical'
-]
-const currentValue = ref("")
+<script>
+export default {
+  data: function () {
+    return {
+      severities: [
+        'Normal',
+        'Warning',
+        'Minor',
+        'Major',
+        'Critical'
+      ],
+      currentValue: ""
+    }
+  },
+  methods: {
+    onSelectionChanged() {
+      if (this.currentValue === '') {
+        // clear the filter
+        this.params.parentFilterInstance((instance) => {
+          instance.onFloatingFilterChanged(null, null)
+        })
+        return
+      }
 
-const onSelectionChanged = () => {
-  if (currentValue.value === '') {
-    // clear the filter
-    params.parentFilterInstance((instance: any) => {
-      instance.onFloatingFilterChanged(null, null)
-    })
-    return
+      this.params.parentFilterInstance((instance) => {
+        instance.onFloatingFilterChanged('contains', this.currentValue)
+      })
+    },
+
+    onParentModelChanged(parentModel) {
+      // When the filter is empty we will receive a null value here
+      if (!parentModel) {
+        this.currentValue = ''
+      } else {
+        this.currentValue = parentModel.filter
+      }
+    }
+
   }
-  params.parentFilterInstance((instance: any) => {
-    instance.onFloatingFilterChanged('contains', currentValue.value)
-  })
 }
-
-// used by agGrid
-const onParentModelChanged = (parentModel: any) => {
-  // When the filter is empty we will receive a null value here
-  if (!parentModel) {
-    currentValue.value = ''
-  } else {
-    currentValue.value = parentModel.filter
-  }
-}
-
-defineExpose({ onParentModelChanged })
 </script>
