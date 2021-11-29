@@ -242,8 +242,8 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
                     }
                     span.setTag(TAG_VERSION, twinUpdate.getVersion());
                     span.setTag(TAG_SESSION_ID, twinUpdate.getSessionId());
-                    localTwinSubscriber.accept(twinUpdate);
                     handleSinkUpdate(twinUpdate);
+                    localTwinSubscriber.accept(twinUpdate);
                 }
                 span.finish();
             }

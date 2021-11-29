@@ -92,7 +92,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
     protected AbstractTwinSubscriber(final Identity identity, TracerRegistry tracerRegistry) {
         this.identity = Objects.requireNonNull(identity);
         this.tracerRegistry = tracerRegistry;
-        this.tracerRegistry.init(SystemInfoUtils.getInstanceId() + "@" + identity.getLocation() + "-" + identity.getId());
+        this.tracerRegistry.init(identity.getLocation() + "@" + identity.getId());
         this.tracer = this.tracerRegistry.getTracer();
     }
 
@@ -287,7 +287,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
         private synchronized void request() {
             // Send a request
-            String tracingOperationKey = generateTracingOperationKey(getIdentity().getLocation(), getIdentity().getId());
+            String tracingOperationKey = generateTracingOperationKey(getIdentity().getLocation(), this.key);
             Span span = tracer.buildSpan(tracingOperationKey).start();
             final var request = new TwinRequest(this.key, AbstractTwinSubscriber.this.identity.getLocation());
             updateTracingTags(span, request);
