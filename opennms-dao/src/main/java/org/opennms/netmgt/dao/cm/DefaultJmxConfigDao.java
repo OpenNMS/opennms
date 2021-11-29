@@ -26,22 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.jmx;
+package org.opennms.netmgt.dao.cm;
 
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.jmx.JmxConfig;
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 
 /**
  * Implementation for JMX config DAO class using configuration manager.
  *
  * @author Dmitri Herdt <dmitri@herdt.online>
  */
-public class JmxConfigDaoCm extends AbstractCmJaxbConfigDao<JmxConfig> implements JmxConfigDao {
+public class DefaultJmxConfigDao extends AbstractCmJaxbConfigDao<JmxConfig> implements JmxConfigDao {
     
     private static final String CONFIG_NAME = "jmx";
     private static final String DEFAULT_CONFIG_ID = "default";
 
-    public JmxConfigDaoCm() {
+    public DefaultJmxConfigDao() {
         super(JmxConfig.class, "JMX Configuration");
     }
 

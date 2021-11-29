@@ -30,9 +30,15 @@
     </changeSet>
 
     <changeSet author="dherdt" id="1.0-register-jmxconfig">
-        <cm:registerSchema id="jmxconfig"/>
-        <cm:importSchemaFromXsd id="jmxconfig" xsdFileName="jmx-config.xsd" xsdFileHash="282f7db937dcd1914c2cf4f5abc19fbe7b86f47c1d798981289666b7debed57d" rootElement="jmx-config"/>
-        <cm:importConfig schemaId="jmxconfig" configId="default" filePath="jmx-config.xml"/>
+        <cm:registerSchema id="jmx"/>
+        <cm:importSchemaFromXsd id="jmx" xsdFileName="jmx-config.xsd" xsdFileHash="a06f6d24c15f976e94ac1a4467b5d4195d7b89dc114ff385c7ac5c4a65fad193" rootElement="jmx-config"/>
+        <cm:importConfig schemaId="jmx" configId="default" filePath="jmx-config.xml"/>
+    </changeSet>
+
+    <changeSet author="psuthar" id="1.0-register-xmp">
+        <cm:registerSchema id="xmp"/>
+        <cm:importSchemaFromXsd id="xmp" xsdFileName="xmp-config.xsd" xsdFileHash="0f7950d6175734b2f20d50123da6614af5d44346e8311f0fb3e9e9d86c3ce94a" rootElement="xmp-config"/>
+        <cm:importConfig schemaId="xmp" configId="default" filePath="xmp-config.xml"/>
     </changeSet>
 
 </databaseChangeLog>
