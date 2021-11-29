@@ -116,13 +116,13 @@ The next step is configuring PostgreSQL to initialise the database.
 Follow xref:deployment:core/getting-started.adoc#set-up-core-instance[Set up the core instance] from the deployment guide; the procedure is the same.
 The configuration file is located in `target/opennms-$\{ONMS_RELEASE}/etc/opennms-datasources.xml`.
 
-.Initialise the Java environment
+.Initialize the Java environment
 [source, console]
 ----
 ./target/opennms-"${ONMS_RELEASE}"/bin/runjava -s
 ----
 
-.Initialise the database schema
+.Initialize the database schema
 [source, console]
 ----
 ./target/opennms-"${ONMS_RELEASE}"/bin/install -dis
