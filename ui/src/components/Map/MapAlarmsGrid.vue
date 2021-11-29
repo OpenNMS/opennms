@@ -9,6 +9,8 @@
         v-model="alarmOption"
         :disabled="!hasAlarmSelected"
         :options="alarmOptions"
+        text-prop="option"
+        @update:modelValue="selectAlarmAck"
       />
       <FeatherButton primary @click="clearFilters()">Clear Filters</FeatherButton>
       <FeatherButton primary @click="applyFilters()">Filter Map</FeatherButton>
@@ -46,8 +48,14 @@ const store = useStore()
 const interestedNodesID = computed<string[]>(() => store.state.mapModule.interestedNodesID)
 const alarms = computed(() => store.getters['mapModule/getAlarmsFromSelectedNodes'])
 const rowData = ref(getAlarmsFromSelectedNodes())
-const alarmOptions = ["Not Selected", "Acknowledge", "Unacknowledge", "Escalate", "Clear"]
-const alarmOption = ref<string>(alarmOptions[0])
+const alarmOptions = [
+  { id: 1, option: "Not Selected" },
+  { id: 2, option: "Acknowledge" },
+  { id: 3, option: "Unacknowledge" },
+  { id: 4, option: "Escalate" },
+  { id: 5, option: "Clear" }
+]
+const alarmOption = ref(alarmOptions[0])
 
 let gridApi: GridApi
 let gridColumnApi: ColumnApi
@@ -88,57 +96,57 @@ function getAlarmsFromSelectedNodes() {
   }))
 }
 
-watch(
-  () => [alarmOption.value],
-  () => {
-    let alarmQueryParameters: AlarmQueryParameters
-    switch (alarmOption.value) {
-      case alarmOptions[0]:
-        break
-      case alarmOptions[1]: { // "Acknowledge"
-        alarmQueryParameters = { ack: true }
-        break
-      }
-      case alarmOptions[2]: { // "Unacknowledge"
-        alarmQueryParameters = { ack: false }
-        break
-      }
-      case alarmOptions[3]: { // "Escalate"
-        alarmQueryParameters = { escalate: true }
-        break
-      }
-      case alarmOptions[4]: { // "Clear"
-        alarmQueryParameters = { clear: true }
-        break
-      }
-      default:
-        console.log("No such alarm option exists: " + alarmOption.value)
-        break
+const selectAlarmAck = () => {
+  let alarmQueryParameters: AlarmQueryParameters
+  switch (alarmOption.value.option) {
+    case alarmOptions[0].option:
+      break
+    case alarmOptions[1].option: { // "Acknowledge"
+      alarmQueryParameters = { ack: true }
+      break
     }
-
-    let numFail: number = 0
-    const respCollection: any = []
-    selectedAlarmIds.value.forEach((alarmId: string) => {
-      const resp = store.dispatch("mapModule/modifyAlarm", {
-        pathVariable: alarmId, queryParameters: alarmQueryParameters
-      })
-      respCollection.push(resp)
-    })
-    Promise.all(respCollection).then(function (result) {
-      result.forEach(r => {
-        if (r === false) {
-          numFail = numFail + 1
-        }
-      })
-      GStore.flashMessage = (selectedAlarmIds.value.length - numFail) + " success, " + numFail + ' failed.'
-
-      setTimeout(() => {
-        GStore.flashMessage = ''
-        window.location.reload()
-      }, 4000)
-    })
+    case alarmOptions[2].option: { // "Unacknowledge"
+      alarmQueryParameters = { ack: false }
+      break
+    }
+    case alarmOptions[3].option: { // "Escalate"
+      alarmQueryParameters = { escalate: true }
+      break
+    }
+    case alarmOptions[4].option: { // "Clear"
+      alarmQueryParameters = { clear: true }
+      break
+    }
+    default:
+      console.log("No such alarm option exists: " + alarmOption.value.option)
+      break
   }
-)
+
+  let numFail: number = 0
+  const respCollection: any = []
+  selectedAlarmIds.value.forEach((alarmId: string) => {
+    const resp = store.dispatch("mapModule/modifyAlarm", {
+      pathVariable: alarmId, queryParameters: alarmQueryParameters
+    })
+    respCollection.push(resp)
+  })
+  Promise.all(respCollection).then(function (result) {
+    result.forEach(r => {
+      if (r === false) {
+        numFail = numFail + 1
+      }
+    })
+
+    // TODO: Fix message display
+    GStore.flashMessage = (selectedAlarmIds.value.length - numFail) + " success, " + numFail + ' failed.'
+
+    // TODO: Update alarm display without page refresh
+    setTimeout(() => {
+      GStore.flashMessage = ''
+      window.location.reload()
+    }, 4000)
+  })
+}
 
 const GStore = inject<any>('GStore')
 
