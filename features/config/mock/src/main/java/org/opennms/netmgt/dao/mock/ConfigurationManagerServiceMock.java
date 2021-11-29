@@ -93,16 +93,24 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Optional<ConfigSchema<?>> getRegisteredSchema(String configName) {
+        LOG.info("getRegisteredSchema:" + configName);
         ConfigSchema schema = null;
         try {
-            XmlConverter converter = new XmlConverter("discovery-configuration.xsd", "discovery-configuration");
+            //XmlConverter converter = new XmlConverter("discovery-configuration.xsd", "discovery-configuration");
             if ("discovery".equals(configName)) {
+                XmlConverter converter = new XmlConverter("discovery-configuration.xsd", "discovery-configuration");
+                schema = new ConfigSchema(configName, XmlConverter.class, converter);
+            } else if ("wmi".equals(configName)) {
+                XmlConverter converter = new XmlConverter("wmi-config.xsd", "wmi-config");
+                schema = new ConfigSchema(configName, XmlConverter.class, converter);
+            } else if ("provisiond".equals(configName)){
+                XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
                 schema = new ConfigSchema(configName, XmlConverter.class, converter);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Optional.of(schema);
+        return Optional.ofNullable(schema);
     }
 
     @Override
