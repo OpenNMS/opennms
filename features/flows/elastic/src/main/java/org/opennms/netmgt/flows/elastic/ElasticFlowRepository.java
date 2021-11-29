@@ -305,7 +305,6 @@ public class ElasticFlowRepository implements FlowRepository {
 
         if (this.thresholding != null) {
             // TODO: add flag to disable/enable
-            // TODO: add timer
             try {
                 this.thresholding.threshold(flowDocuments, source);
             } catch (final ExecutionException | ThresholdInitializationException e) {

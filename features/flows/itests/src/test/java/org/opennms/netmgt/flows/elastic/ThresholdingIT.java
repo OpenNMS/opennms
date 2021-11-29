@@ -210,6 +210,8 @@ public class ThresholdingIT {
                                                       this.databasePopulator.getIpInterfaceDao(),
                                                       sessionCacheConfig);
 
+        thresholding.setStepSizeMs(1000);
+
         final var elasticFlowRepository = new ElasticFlowRepository(
                 metricRegistry,
                 jestClient,
@@ -252,8 +254,26 @@ public class ThresholdingIT {
 
             assertEquals(0, eventAnticipator.getUnanticipatedEvents().size());
 
+            // Sending just one flow, so that counters are initialized before starting the run
             this.transactionTemplate.execute((tx) -> {
                 try {
+                    flowRepository.persist(createMockedFlows(1), source);
+                } catch (FlowException e) {
+                    throw new RuntimeException(e);
+                }
+                return null;
+            });
+
+            // Sleep roundabout a second, so that at least one thresholding run has finished
+            try {
+                Thread.sleep(1200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            // Now, send the all the flows for triggering the threshold
+            this.transactionTemplate.execute((tx) -> {
+            try {
                     flowRepository.persist(createMockedFlows(1000), source);
                 } catch (FlowException e) {
                     throw new RuntimeException(e);

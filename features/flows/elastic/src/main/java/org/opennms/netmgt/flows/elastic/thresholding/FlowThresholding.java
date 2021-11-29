@@ -33,6 +33,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -49,6 +51,7 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.elastic.Direction;
 import org.opennms.netmgt.flows.elastic.FlowDocument;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
@@ -77,6 +80,10 @@ public class FlowThresholding {
 
     private final Cache<ExporterKey, Session> sessions;
 
+    private long stepSizeMs = 0;
+
+    private Timer timer;
+
     public FlowThresholding(final ThresholdingService thresholdingService,
                             final CollectionAgentFactory collectionAgentFactory,
                             final IpInterfaceDao ipInterfaceDao,
@@ -101,6 +108,72 @@ public class FlowThresholding {
                 .build();
     }
 
+    public long getStepSizeMs() {
+        return this.stepSizeMs;
+    }
+
+    public void setStepSizeMs(final long stepSizeMs) {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+
+        this.stepSizeMs = stepSizeMs;
+
+        if (this.stepSizeMs == 0) {
+            return;
+        }
+
+        this.timer = new Timer(SERVICE_NAME + "-Timer", true);
+        this.timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runTimerTask();
+            }
+        }, stepSizeMs, stepSizeMs);
+    }
+
+    private void runTimerTask() {
+        // Use one timestamp for the whole timer task run...
+        final Date timerTaskDate = new Date();
+
+        for (final Map.Entry<ApplicationKey, AtomicLong> entry : applicationAccumulator.entrySet()) {
+            final ExporterKey exporterKey = entry.getKey().exporterKey;
+
+            final OnmsIpInterface iface = ipInterfaceDao.get(exporterKey.interfaceId);
+
+            try {
+                final FlowThresholding.Session session = this.sessions.get(exporterKey, () -> {
+                    final CollectionAgent collectionAgent = FlowThresholding.this.collectionAgentFactory.createCollectionAgent(iface);
+
+                    final ThresholdingSession thresholdingSession = FlowThresholding.this.thresholdingService.createSession(iface.getNodeId(),
+                            collectionAgent.getHostAddress(),
+                            SERVICE_NAME,
+                            FLOW_APP_RRD_REPO,
+                            new ServiceParameters(Collections.emptyMap()));
+
+                    return new Session(thresholdingSession,
+                            collectionAgent);
+                });
+
+                final NodeLevelResource nodeResource = new NodeLevelResource(iface.getNodeId());
+                final DeferredGenericTypeResource appResource = new DeferredGenericTypeResource(nodeResource, RESOURCE_TYPE_NAME, entry.getKey().application);
+
+                final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(session.collectionAgent)
+                        .withTimestamp(timerTaskDate)
+                        .withCounter(appResource, entry.getKey().application, "bytes", entry.getValue().get());
+
+                // TODO fooker: Set sequence number from flow to aid distributed thresholding
+
+                session.thresholdingSession.accept(collectionSetBuilder.build());
+            } catch (ExecutionException e) {
+                LOG.warn("Error creating cache entry for thresholding session", e);
+            } catch (ThresholdInitializationException e) {
+                LOG.warn("Error initializing thresholding session", e);
+            }
+        }
+    }
+
     public void threshold(final List<FlowDocument> documents,
                           final FlowSource source) throws ExecutionException, ThresholdInitializationException {
 
@@ -109,41 +182,12 @@ public class FlowThresholding {
                 final var exporterKey = new ExporterKey(document.getNodeExporter().getInterfaceId());
 
                 final var applicationKey = new ApplicationKey(exporterKey,
-                                                              document.getDirection() == Direction.INGRESS
-                                                              ? document.getInputSnmp()
-                                                              : document.getOutputSnmp(),
-                                                              document.getApplication());
+                        document.getDirection() == Direction.INGRESS
+                                ? document.getInputSnmp()
+                                : document.getOutputSnmp(),
+                        document.getApplication());
 
-                // Update the counter
-                final var counter = this.applicationAccumulator.computeIfAbsent(applicationKey, k -> new AtomicLong(0))
-                                                               .addAndGet(document.getBytes());
-
-                // Apply thresholding
-                final var session = this.sessions.get(exporterKey, () -> {
-                    final var iface = ipInterfaceDao.get(document.getNodeExporter().getInterfaceId());
-
-                    final var collectionAgent = FlowThresholding.this.collectionAgentFactory.createCollectionAgent(iface);
-
-                    final var thresholdingSession = FlowThresholding.this.thresholdingService.createSession(document.getNodeExporter().getNodeId(),
-                                                                                                            collectionAgent.getHostAddress(),
-                                                                                                            SERVICE_NAME,
-                                                                                                            FLOW_APP_RRD_REPO,
-                                                                                                            new ServiceParameters(Collections.emptyMap()));
-
-
-                    return new Session(thresholdingSession,
-                                       collectionAgent);
-                });
-
-                final var nodeResource = new NodeLevelResource(document.getNodeExporter().getNodeId());
-                final var appResource = new DeferredGenericTypeResource(nodeResource, RESOURCE_TYPE_NAME, document.getApplication());
-
-                final var collectionSetBuilder = new CollectionSetBuilder(session.collectionAgent)
-                        .withTimestamp(new Date(document.getTimestamp()))
-                        .withCounter(appResource, document.getApplication(), "bytes", counter);
-                // TODO fooker: Set sequence number from flow to aid distributed thresholding
-
-                session.thresholdingSession.accept(collectionSetBuilder.build());
+                this.applicationAccumulator.computeIfAbsent(applicationKey, k -> new AtomicLong(0)).addAndGet(document.getBytes());
             }
         }
     }
