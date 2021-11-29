@@ -22,24 +22,27 @@ const currentValue = ref("")
 const onSelectionChanged = () => {
   if (currentValue.value === '') {
     // clear the filter
-    app?.data.params.parentFilterInstance((instance: any) => {
+    app?.ctx.params.parentFilterInstance((instance: any) => {
       instance.onFloatingFilterChanged(null, null)
     })
     return
   }
-  app?.data.params.parentFilterInstance((instance: any) => {
+  app?.ctx.params.parentFilterInstance((instance: any) => {
     instance.onFloatingFilterChanged('contains', currentValue.value)
   })
 }
 
-defineExpose({
-  onParentModelChanged: (parentModel: any) => {
-    // When the filter is empty we will receive a null value here
-    if (!parentModel) {
-      currentValue.value = ''
-    } else {
-      currentValue.value = parentModel.filter
-    }
+// used by agGrid
+const onParentModelChanged = (parentModel: any) => {
+  // When the filter is empty we will receive a null value here
+  if (!parentModel) {
+    currentValue.value = ''
+  } else {
+    currentValue.value = parentModel.filter
   }
+}
+
+defineExpose({
+  onParentModelChanged: onParentModelChanged
 })
 </script>

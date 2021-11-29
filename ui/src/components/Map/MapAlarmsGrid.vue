@@ -34,7 +34,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, inject } from "vue"
+import { ref, inject, onDeactivated } from "vue"
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 import { AgGridVue } from "ag-grid-vue3"
@@ -279,6 +279,7 @@ const columnDefs = [
     }
   }
 ]
+onDeactivated(() => reset())
 </script>
 
 <style lang="scss" scoped>

@@ -23,7 +23,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, onDeactivated } from "vue"
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 import { AgGridVue } from "ag-grid-vue3"
@@ -82,7 +82,7 @@ const onGridReady = (params: GridReadyEvent) => {
 watch(
   () => interestedNodesID.value,
   () => {
-    if (gridApi.setRowData != undefined && gridApi.setRowData != null) {
+    if (gridApi && gridApi.setRowData != undefined && gridApi.setRowData != null) {
       gridApi.setRowData(
         getGridRowDataFromInterestedNodes()
       )
@@ -180,6 +180,7 @@ const columnDefs = [
     headerTooltip: "Sys Location",
   },
 ]
+onDeactivated(() => reset())
 </script>
 <style lang="scss" scoped>
 .mapnodes {
