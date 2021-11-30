@@ -1,46 +1,42 @@
 <template>
   <div class="p-col-9">
     <div class="p-fluid">
-      <div class="p-field">
+      <div>
         <label for="import" class="required">Import</label>
-        <InputNumber
-          id="import"
-          mode="decimal"
+        <FeatherInput
+          :error="getErrorMessage(validationVar.threadpool.importThreads.$errors)"
           v-model="validationVar.threadpool.importThreads.$model"
-          :class="{ 'p-invalid': validationVar.threadpool.importThreads.$error }"
+          type="number"
+          background
         />
-        <ValidationMessage :model="validationVar.threadpool.importThreads"></ValidationMessage>
       </div>
-      <div class="p-field">
+      <div>
         <label for="scan" class="required">Scan</label>
-        <InputNumber
-          id="scan"
-          mode="decimal"
+        <FeatherInput
+          :error="getErrorMessage(validationVar.threadpool.scanThreads.$errors)"
           v-model="validationVar.threadpool.scanThreads.$model"
-          :class="{ 'p-invalid': validationVar.threadpool.scanThreads.$error }"
+          type="number"
+          background
         />
-        <ValidationMessage :model="validationVar.threadpool.scanThreads"></ValidationMessage>
       </div>
 
-      <div class="p-field">
+      <div>
         <label for="rescan" class="required">Rescan</label>
-        <InputNumber
-          id="rescan"
-          mode="decimal"
+        <FeatherInput
+          :error="getErrorMessage(validationVar.threadpool.rescanThreads.$errors)"
           v-model="validationVar.threadpool.rescanThreads.$model"
-          :class="{ 'p-invalid': validationVar.threadpool.rescanThreads.$error }"
+          type="number"
+          background
         />
-        <ValidationMessage :model="validationVar.threadpool.rescanThreads"></ValidationMessage>
       </div>
-      <div class="p-field">
+      <div>
         <label for="write" class="required">Write</label>
-        <InputNumber
-          id="write"
-          mode="decimal"
+        <FeatherInput
+          :error="getErrorMessage(validationVar.threadpool.writeThreads.$errors)"
           v-model="validationVar.threadpool.writeThreads.$model"
-          :class="{ 'p-invalid': validationVar.threadpool.writeThreads.$error }"
+          type="number"
+          background
         />
-        <ValidationMessage :model="validationVar.threadpool.writeThreads"></ValidationMessage>
       </div>
       <div class="p-field p-col-2">
         <FeatherButton 
@@ -62,16 +58,19 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import InputNumber from '../Common/InputNumber.vue'
 import { FeatherButton } from '@featherds/button'
+import { FeatherInput } from '@featherds/input'
 import State from './formState'
-import ValidationMessage from '../Common/ValidationMessage.vue'
 import { useStore } from 'vuex'
 import { notify } from "@kyvg/vue3-notification"
 import { putProvisionDService } from "./../../services/configurationService"
 
 const store = useStore()
 const validationVar = State.toModel()
+
+const getErrorMessage = (err:any) =>{
+ return err.length > 0 ? err[0].$message: '';
+}
 
 const onSave = () => {
   const provisionDService = store.state.configuration.provisionDService
@@ -122,5 +121,8 @@ onMounted(async () => {
 .notification-font {
   font-style: normal;
   font-size: 14px;
+}
+.feather-input-container {
+  padding-top: 0px;
 }
 </style>
