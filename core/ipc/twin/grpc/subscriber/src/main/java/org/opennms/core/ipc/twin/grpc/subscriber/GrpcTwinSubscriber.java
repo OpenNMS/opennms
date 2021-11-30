@@ -87,7 +87,7 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
 
         asyncStub = OpenNMSTwinIpcGrpc.newStub(channel);
         retryInitializeRpcStream();
-        LOG.info("Started Twin gRPC Subscriber at location {} with systemId {}", getMinionIdentity().getLocation(), getMinionIdentity().getId());
+        LOG.info("Started Twin gRPC Subscriber at location {} with systemId {}", getIdentity().getLocation(), getIdentity().getId());
 
     }
 
@@ -109,8 +109,8 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     private synchronized void sendMinionHeader() {
         // Sink stream is unidirectional Response stream from OpenNMS <-> Minion.
         // gRPC Server needs at least one message to initialize the stream
-        MinionHeader minionHeader = MinionHeader.newBuilder().setLocation(getMinionIdentity().getLocation())
-                .setSystemId(getMinionIdentity().getId()).build();
+        MinionHeader minionHeader = MinionHeader.newBuilder().setLocation(getIdentity().getLocation())
+                                                .setSystemId(getIdentity().getId()).build();
         asyncStub.sinkStreaming(minionHeader, responseHandler);
     }
 

@@ -30,13 +30,13 @@ export default {
   detectSNMPAvailable,
   provision,
   getLocations,
-  getFileNames,
+  getLog,
+  getLogs,
   getFile,
   postFile,
-  getSnippets,
-  getLogs,
-  getLog,
   getWhoAmI,
   deleteFile,
-  getFileExtensions
+  getSnippets,
+  getFileNames,
+  getFileExtensions,
 }

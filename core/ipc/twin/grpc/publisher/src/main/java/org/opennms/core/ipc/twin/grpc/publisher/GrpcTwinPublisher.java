@@ -47,6 +47,7 @@ import org.opennms.core.ipc.twin.grpc.common.OpenNMSTwinIpcGrpc;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.core.logging.Logging;
+import org.opennms.distributed.core.api.Identity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

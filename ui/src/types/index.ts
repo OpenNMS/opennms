@@ -274,3 +274,8 @@ export interface WhoAmIResponse {
   internal: boolean
   roles: string[]
 }
+
+export interface FileEditorResponseLog {
+  success: boolean,
+  msg: string
+}

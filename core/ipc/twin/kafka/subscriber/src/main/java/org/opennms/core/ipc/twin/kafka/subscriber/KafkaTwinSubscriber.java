@@ -78,7 +78,7 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
 
     public void init() {
         final var kafkaConfig = new Properties();
-        kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, this.getMinionIdentity().getId());
+        kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, this.getIdentity().getId());
         kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         kafkaConfig.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -93,7 +93,7 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
 
         final KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
         consumer.subscribe(ImmutableList.<String>builder()
-                                        .add(Topic.responseForLocation(this.getMinionIdentity().getLocation()))
+                                        .add(Topic.responseForLocation(this.getIdentity().getLocation()))
                                         .add(Topic.responseGlobal())
                                         .build());
 

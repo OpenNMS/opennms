@@ -59,10 +59,10 @@ const postFile = async (fileName: string, formData: FormData): Promise<FileEdito
 }
 
 export {
-  getFileNames,
   getFile,
   postFile,
+  deleteFile,
   getSnippets,
-  getFileExtensions,
-  deleteFile
+  getFileNames,
+  getFileExtensions
 }

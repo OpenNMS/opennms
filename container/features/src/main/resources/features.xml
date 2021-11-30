@@ -670,6 +670,11 @@
     <feature name="opennms-provisioning-api" version="${project.version}" description="OpenNMS :: Provisioning :: API">
         <bundle dependency="true">mvn:org.apache.mina/mina-core/${minaVersion}</bundle>
         <bundle dependency="true">mvn:io.netty/netty/3.9.4.Final</bundle>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
+        <feature>opentracing-api</feature>
+        <feature>commons-lang</feature>
+        <feature>opennms-core</feature>
+        <feature>opennms-model</feature>
         <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
     </feature>
     <feature name="opennms-rrd-api" version="${project.version}" description="OpenNMS :: RRD :: API">
@@ -1136,7 +1141,8 @@
         <feature>opennms-situation-feedback-api</feature>
         <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
         <bundle dependency="true">mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
-        <bundle>mvn:org.opennms.features/org.opennms.features.api-layer/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.core/${project.version}</bundle>
     </feature>
     <feature name="opennms-enlinkd-shell" version="${project.version}" description="OpenNMS :: Features :: Enlinkd :: Shell">
         <feature>opennms-dao</feature>
@@ -1799,9 +1805,9 @@
     </feature>
 
     <feature name="json-patch" description="OpenNMS :: Json Patch " version="${project.version}">
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/2.11.0</bundle>
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/2.11.0</bundle>
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/2.11.0</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jsr305/3.0.2_1</bundle>
         <bundle>wrap:mvn:com.github.java-json-tools/btf/1.3</bundle>
         <bundle>wrap:mvn:com.github.java-json-tools/msg-simple/1.2</bundle>

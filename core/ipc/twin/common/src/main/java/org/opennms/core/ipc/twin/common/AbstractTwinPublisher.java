@@ -144,8 +144,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
                     twinUpdate.setPatch(true);
                 }
                 // Update Twin tracker with updated obj.
-                twinTracker.setObj(updatedObj);
-                twinTracker.incrementVersion();
+                twinTracker.update(updatedObj);
             }
             twinTrackerMap.put(sessionKey, twinTracker);
             twinUpdate.setVersion(twinTracker.getVersion());
