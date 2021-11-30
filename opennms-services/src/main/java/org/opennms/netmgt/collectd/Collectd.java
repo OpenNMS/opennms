@@ -206,7 +206,7 @@ public class Collectd extends AbstractServiceDaemon implements
     public Collectd() {
         super(LOG4J_CATEGORY);
 
-        m_collectableServices = Collections.synchronizedList(new LinkedList<CollectableService>());
+        m_collectableServices = Collections.synchronizedList(new LinkedList<>());
     }
 
     /**
@@ -225,8 +225,10 @@ public class Collectd extends AbstractServiceDaemon implements
         
         // make sure the instrumentation gets initialized
         instrumentation();
-        
+        //initialize and schedule collectors
         instantiateCollectors();
+        //listen to the events
+        installMessageSelectors();
     }
 
     private void installMessageSelectors() {
