@@ -359,8 +359,8 @@ W/TIMESCALE<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><
           <y:Geometry height="41.0" width="68.0" x="-523.1420593284174" y="-227.91785615710603"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle hasColor="false" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Open Sans" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="47.578125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="115.3359375" x="51.414691447274436" xml:space="preserve" y="13.306788431691473">BMP Persisting
-Adapter<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.35619999358200416" labelRatioY="0.08205764872635324" nodeRatioX="0.5" nodeRatioY="0.5" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Open Sans" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="47.578125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="130.0703125" x="49.29588822770927" xml:space="preserve" y="13.306788431691473">BMP PERSISTING
+ADAPTER<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.35619999358200416" labelRatioY="0.08205764872635324" nodeRatioX="0.5" nodeRatioY="0.5" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
           <y:Shape type="rectangle"/>
         </y:ShapeNode>
       </data>
