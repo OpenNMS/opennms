@@ -37,21 +37,20 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -78,8 +77,8 @@ public class ConfigurationManagerServiceImplTest {
     @Before
     public void init() throws Exception {
         if (configManagerService.getRegisteredConfigDefinition(CONFIG_NAME).isEmpty()) {
-            ConfigDefinition def = XsdHelper.buildConfigDefinition(CONFIG_NAME,
-                    "provisiond-configuration.xsd", "provisiond-configuration");
+            ConfigDefinition def = XsdHelper.buildConfigDefinition(CONFIG_NAME, "provisiond-configuration.xsd",
+                    "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
             configManagerService.registerConfigDefinition(CONFIG_NAME, def);
         }
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
@@ -99,14 +98,14 @@ public class ConfigurationManagerServiceImplTest {
     public void testGetRegisterSchema() throws Exception {
         Optional<ConfigDefinition> def = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
         Assert.assertTrue(CONFIG_NAME + " fail to register", def.isPresent());
-        Assert.assertTrue("Wrong converter", XsdHelper.getConverter(def.get()) instanceof XmlConverter);
+        Assert.assertTrue("Wrong converter", XsdHelper.getConverter(def.get()) instanceof JaxbXmlConverter);
     }
 
     @Test
-    public void testRegisterExtraSchema() throws IOException, JAXBException {
+    public void testRegisterExtraSchema() throws IOException {
         String VACUUMD_CONFIG_NAME = "vacuumd";
-        ConfigDefinition def = XsdHelper.buildConfigDefinition(VACUUMD_CONFIG_NAME,
-                "vacuumd-configuration.xsd", "VacuumdConfiguration");
+        ConfigDefinition def = XsdHelper.buildConfigDefinition(VACUUMD_CONFIG_NAME, "vacuumd-configuration.xsd",
+                "VacuumdConfiguration", ConfigurationManagerService.BASE_PATH);
         configManagerService.registerConfigDefinition(VACUUMD_CONFIG_NAME, def);
         Optional<ConfigDefinition> configSchema = configManagerService.getRegisteredConfigDefinition(VACUUMD_CONFIG_NAME);
         Assert.assertTrue(VACUUMD_CONFIG_NAME + " fail to register", configSchema.isPresent());
@@ -134,7 +133,7 @@ public class ConfigurationManagerServiceImplTest {
         config.setImportThreads(-1L);
         Optional<ConfigDefinition> def = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
         ConfigConverter converter = XsdHelper.getConverter(def.get());
-        JsonAsString json = new JsonAsString(converter.xmlToJson(JaxbUtils.marshal(config)));
+        JsonAsString json = new JsonAsString(converter.xmlToJson(ConfigConvertUtil.objectToJson(config)));
         configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID + "_2", json);
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config should not store", configData.get().getConfigs().size() == 1);
@@ -145,11 +144,12 @@ public class ConfigurationManagerServiceImplTest {
         Optional<ConfigDefinition> def = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
         ConfigConverter converter = XsdHelper.getConverter(def.get());
 
-        ProvisiondConfiguration pConfig = JaxbUtils.unmarshal(ProvisiondConfiguration.class,
-                converter.jsonToXml(configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID).get()), false);
+        ProvisiondConfiguration pConfig = ConfigConvertUtil.jsonToObject(
+                configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID).get(), ProvisiondConfiguration.class);
 
         pConfig.setImportThreads(12L);
-        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JsonAsString(converter.xmlToJson(JaxbUtils.marshal(pConfig))));
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID,
+                new JsonAsString(ConfigConvertUtil.objectToJson(pConfig)));
         Optional<JSONObject> jsonAfterUpdate = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
         Assert.assertEquals("Incorrect importThreads", 12, jsonAfterUpdate.get().get("importThreads"));
     }
@@ -179,10 +179,12 @@ public class ConfigurationManagerServiceImplTest {
     public void testUpdateInvalidateConfiguration() throws Exception {
         Optional<ConfigDefinition> def = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
         ConfigConverter converter = XsdHelper.getConverter(def.get());
-        ProvisiondConfiguration config = JaxbUtils.unmarshal(ProvisiondConfiguration.class,
-                converter.jsonToXml(configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID).get()), false);
+        ProvisiondConfiguration config = ConfigConvertUtil.jsonToObject(
+                configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID).get(), ProvisiondConfiguration.class);
         config.setImportThreads(-1L);
-        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JsonAsString(converter.xmlToJson(JaxbUtils.marshal(config))));
+
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID,
+                new JsonAsString(ConfigConvertUtil.objectToJson(config)));
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config not found", configData.isPresent());
     }
@@ -197,7 +199,8 @@ public class ConfigurationManagerServiceImplTest {
         configManagerService.unregisterConfiguration(CONFIG_NAME, CONFIG_ID);
         Optional<JSONObject> json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
         Assert.assertTrue("Fail to unregister config", json.isEmpty());
-        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID, new JsonAsString(converter.xmlToJson(JaxbUtils.marshal(new ProvisiondConfiguration()))));
+        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID,
+                new JsonAsString(ConfigConvertUtil.objectToJson(new ProvisiondConfiguration())));
         configManagerService.unregisterSchema(CONFIG_NAME);
         Optional<ConfigDefinition> schemaAfterDeregister = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
         Optional<ConfigData<JSONObject>> configAfterDeregister = configManagerService.getConfigData(CONFIG_NAME);

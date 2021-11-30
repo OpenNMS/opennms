@@ -27,51 +27,97 @@
  ******************************************************************************/
 package org.opennms.features.config.dao.impl.util;
 
-import java.io.StringReader;
-import java.util.*;
-
-import javax.xml.namespace.QName;
-
 import org.apache.ws.commons.schema.*;
 import org.apache.ws.commons.schema.walker.XmlSchemaAttrInfo;
 import org.apache.ws.commons.schema.walker.XmlSchemaRestriction;
 import org.apache.ws.commons.schema.walker.XmlSchemaTypeInfo;
 import org.apache.ws.commons.schema.walker.XmlSchemaWalker;
 import org.opennms.features.config.dao.api.ConfigItem;
+import org.w3c.dom.Node;
+
+import javax.xml.namespace.QName;
+import java.io.StringReader;
+import java.util.*;
+
+import static org.apache.ws.commons.schema.constants.Constants.MetaDataConstants.EXTERNAL_ATTRIBUTES;
 
 /**
  * Used to convert a XSD to a structure of {@link ConfigItem}s.
+ * It usually uses with JaxbXmlConverter together.
+ * @see JaxbXmlConverter
  */
 public class XsdModelConverter extends NoopXmlSchemaVisitor {
+    public static final String XML_ELEMENT_VALUE_BODY_TAG = "body-name";
 
-    final Map<QName, ConfigItem> configItemsByQName = new LinkedHashMap<>();
-    final List<ConfigItem> configItemStack = new LinkedList<>();
-    ConfigItem currentConfigItem;
+    private final Map<QName, ConfigItem> configItemsByQName = new LinkedHashMap<>();
+    private final List<ConfigItem> configItemStack = new LinkedList<>();
+    private ConfigItem currentConfigItem;
+    private XmlSchemaCollection collection;
+    private Map<String, String> elementNameToValueNameMap = null;
 
-    public XmlSchemaCollection convertToSchemaCollection(String xsdStr) {
+    public XsdModelConverter(String xsdStr) {
+        super();
+        this.collection = this.convertToSchemaCollection(xsdStr);
+    }
+
+    public XmlSchemaCollection getCollection() {
+        return collection;
+    }
+
+    private XmlSchemaCollection convertToSchemaCollection(String xsdStr) {
         XmlSchemaCollection schemaCollection = new XmlSchemaCollection();
-        StringReader reader = new StringReader(xsdStr);
-        try {
+        try (StringReader reader = new StringReader(xsdStr)) {
             // no need to check read for StringReader if the source is a String
             schemaCollection.read(reader);
-        } finally {
-            reader.close();
         }
         return schemaCollection;
     }
 
-    public ConfigItem convert(XmlSchemaCollection collection, String topLevelElement) {
+    public ConfigItem convert(String topLevelElement) {
         XmlSchemaWalker walker = new XmlSchemaWalker(collection, this);
         XmlSchemaElement rootEl = getElementOf(collection, topLevelElement);
         if (rootEl == null) {
             throw new RuntimeException("No element found with name: " + topLevelElement);
         }
+        elementNameToValueNameMap = new HashMap<>();
         walker.walk(rootEl);
         return configItemsByQName.get(rootEl.getQName());
     }
 
+    public Map<String, String> getElementNameToValueNameMap() {
+        if (elementNameToValueNameMap == null) {
+            throw new RuntimeException("Should call after convert.");
+        }
+        return elementNameToValueNameMap;
+    }
+
+    /**
+     * It will read the ejaxb:body-name and put in elementNameToValueNameMap
+     * @param xmlSchemaElement
+     */
+    private void handleExternalAttributes(XmlSchemaElement xmlSchemaElement) {
+        if (xmlSchemaElement.getMetaInfoMap() == null) {
+            return;
+        }
+        Object attributes = xmlSchemaElement.getMetaInfoMap().get(EXTERNAL_ATTRIBUTES);
+        if (attributes instanceof Map) {
+            ((Map) attributes).forEach((key, value) -> {
+                if (value instanceof Node) {
+                    Node attr = (Node) value;
+                    if (XML_ELEMENT_VALUE_BODY_TAG.equals(attr.getLocalName())) {
+                        String tmpName = xmlSchemaElement.getQName().getLocalPart();
+                        elementNameToValueNameMap.computeIfAbsent(tmpName, elementName -> attr.getNodeValue());
+                        return;
+                    }
+                }
+            });
+        }
+    }
+
     @Override
     public void onEnterElement(XmlSchemaElement xmlSchemaElement, XmlSchemaTypeInfo xmlSchemaTypeInfo, boolean b) {
+        this.handleExternalAttributes(xmlSchemaElement);
+
         currentConfigItem = configItemsByQName.get(xmlSchemaElement.getQName());
         if (currentConfigItem == null) {
             ConfigItem.Type baseType = getConfigType(xmlSchemaTypeInfo.getBaseType().name());
@@ -128,7 +174,9 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         if (currentConfigItem.isPrimitiveType()) {
             // Make a duplicate of the current item for the primitive type; current then becomes an object with children
             ConfigItem child = new ConfigItem();
-            child.setName(currentConfigItem.getName());
+            // special logic to handle Xml Value to attribute name mapping
+            String bodyName = this.elementNameToValueNameMap.get(currentConfigItem.getName());
+            child.setName(bodyName != null ? bodyName: currentConfigItem.getName());
             child.setType(currentConfigItem.getType());
             child.setSchemaRef(currentConfigItem.getSchemaRef());
             child.setRequired(currentConfigItem.isRequired());
@@ -138,42 +186,51 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         }
     }
 
-    private static void setRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
-        if (facets != null) {
-            if(item.getType() == ConfigItem.Type.STRING){
-                List<XmlSchemaRestriction> patternFacets = facets.get(XmlSchemaRestriction.Type.PATTERN);
-                if ((patternFacets != null) && (patternFacets.size() > 0)) {
-                    XmlSchemaRestriction restriction = patternFacets.get(0);
-                    Object obj = restriction.getValue();
-                    if (obj instanceof String) {
-                        item.setPattern((String) obj);
-                    }
-                }
-            } else {
-                List<XmlSchemaRestriction> minfacets = facets.get(XmlSchemaRestriction.Type.INCLUSIVE_MIN);
-                if ((minfacets != null) && (minfacets.size() > 0)) {
-                    // Should only be one minimum specified
-                    XmlSchemaRestriction minRestriction = minfacets.get(0);
-                    Object minVal = minRestriction.getValue();
-                    if (minVal instanceof String) {
-                        item.setMin(Long.valueOf((String) minVal));
-                    }
-                }
-
-                List<XmlSchemaRestriction> maxfacets = facets.get(XmlSchemaRestriction.Type.INCLUSIVE_MAX);
-                if ((maxfacets != null) && (maxfacets.size() > 0)) {
-                    // Should only be one minimum specified
-                    XmlSchemaRestriction maxRestriction = maxfacets.get(0);
-                    Object maxVal = maxRestriction.getValue();
-                    if (maxVal instanceof String) {
-                        item.setMax(Long.valueOf((String) maxVal));
-                    }
-                }
+    private void handleStringRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
+        List<XmlSchemaRestriction> patternFacets = facets.get(XmlSchemaRestriction.Type.PATTERN);
+        if (patternFacets != null && !patternFacets.isEmpty()) {
+            XmlSchemaRestriction restriction = patternFacets.get(0);
+            Object obj = restriction.getValue();
+            if (obj instanceof String) {
+                item.setPattern((String) obj);
             }
         }
     }
 
-    private static XmlSchemaElement getElementOf(XmlSchemaCollection collection, String name) {
+    private void handleOtherRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
+        List<XmlSchemaRestriction> minFacets = facets.get(XmlSchemaRestriction.Type.INCLUSIVE_MIN);
+        if ((minFacets != null) && !minFacets.isEmpty()) {
+            // Should only be one minimum specified
+            XmlSchemaRestriction minRestriction = minFacets.get(0);
+            Object minVal = minRestriction.getValue();
+            if (minVal instanceof String) {
+                item.setMin(Long.valueOf((String) minVal));
+            }
+        }
+
+        List<XmlSchemaRestriction> maxFacets = facets.get(XmlSchemaRestriction.Type.INCLUSIVE_MAX);
+        if ((maxFacets != null) && !maxFacets.isEmpty()) {
+            // Should only be one minimum specified
+            XmlSchemaRestriction maxRestriction = maxFacets.get(0);
+            Object maxVal = maxRestriction.getValue();
+            if (maxVal instanceof String) {
+                item.setMax(Long.valueOf((String) maxVal));
+            }
+        }
+    }
+
+    private void setRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
+        if (facets == null) {
+            return;
+        }
+        if (item.getType() == ConfigItem.Type.STRING) {
+            this.handleStringRestrictions(item, facets);
+        } else {
+            this.handleOtherRestrictions(item, facets);
+        }
+    }
+
+    private XmlSchemaElement getElementOf(XmlSchemaCollection collection, String name) {
         XmlSchemaElement elem = null;
         for (org.apache.ws.commons.schema.XmlSchema schema : collection.getXmlSchemas()) {
             elem = schema.getElementByName(name);
@@ -186,17 +243,18 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
 
     /**
      * Reading documentation from xsd annotation
+     *
      * @param xmlSchemaAnnotation
      * @return
      */
-    public static String getDocumentation(XmlSchemaAnnotation xmlSchemaAnnotation){
-        if(xmlSchemaAnnotation != null){
-            for(XmlSchemaAnnotationItem item: xmlSchemaAnnotation.getItems()){
+    public String getDocumentation(XmlSchemaAnnotation xmlSchemaAnnotation) {
+        if (xmlSchemaAnnotation != null) {
+            for (XmlSchemaAnnotationItem item : xmlSchemaAnnotation.getItems()) {
                 if (item instanceof XmlSchemaDocumentation) {
                     XmlSchemaDocumentation doc = (XmlSchemaDocumentation) item;
-                    if ( doc.getMarkup() != null ){
+                    if (doc.getMarkup() != null) {
                         StringBuffer sb = new StringBuffer();
-                        for(int i = 0 ; i < doc.getMarkup().getLength() ; i++){
+                        for (int i = 0; i < doc.getMarkup().getLength(); i++) {
                             sb.append(doc.getMarkup().item(i).getNodeValue());
                         }
                         return sb.toString();
@@ -209,19 +267,20 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
 
     /**
      * Convert xsd attribute into ConfigItem
+     *
      * @param xmlSchemaAttrInfo
      * @return
      */
-    public static ConfigItem getConfigItemForAttribute(XmlSchemaAttrInfo xmlSchemaAttrInfo) {
+    public ConfigItem getConfigItemForAttribute(XmlSchemaAttrInfo xmlSchemaAttrInfo) {
         ConfigItem configItem = new ConfigItem();
         configItem.setName(xmlSchemaAttrInfo.getAttribute().getName());
-        if(xmlSchemaAttrInfo.getAttribute().getAnnotation() != null){
+        if (xmlSchemaAttrInfo.getAttribute().getAnnotation() != null) {
             configItem.setDocumentation(getDocumentation(xmlSchemaAttrInfo.getAttribute().getAnnotation()));
-        } else if (xmlSchemaAttrInfo.getAttribute().getSchemaType().getAnnotation() != null){
+        } else if (xmlSchemaAttrInfo.getAttribute().getSchemaType().getAnnotation() != null) {
             configItem.setDocumentation(getDocumentation(xmlSchemaAttrInfo.getAttribute().getSchemaType().getAnnotation()));
         }
         configItem.setType(getTypeForAttribute(xmlSchemaAttrInfo));
-        configItem.setRequired("REQUIRED".equals(xmlSchemaAttrInfo.getAttribute().getUse()));
+        configItem.setRequired("REQUIRED".equals(xmlSchemaAttrInfo.getAttribute().getUse().name()));
         configItem.setDefaultValue(xmlSchemaAttrInfo.getAttribute().getDefaultValue());
         configItem.setSchemaRef(xmlSchemaAttrInfo.getAttribute().getQName().toString());
         setRestrictions(configItem, xmlSchemaAttrInfo.getType().getFacets());
@@ -231,25 +290,26 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
 
     /**
      * Handle xsd type
+     *
      * @param xmlSchemaAttrInfo
      * @return
      */
-    public static ConfigItem.Type getTypeForAttribute(XmlSchemaAttrInfo xmlSchemaAttrInfo) {
+    public ConfigItem.Type getTypeForAttribute(XmlSchemaAttrInfo xmlSchemaAttrInfo) {
         String strType;
         ConfigItem.Type type = null;
 
-        if(xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName() != null) {
+        if (xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName() != null) {
             strType = xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName().getLocalPart().toLowerCase();
             type = getConfigType(strType);
         }
-        if(ConfigItem.Type.OBJECT == type || type == null){
+        if (ConfigItem.Type.OBJECT == type || type == null) {
             strType = xmlSchemaAttrInfo.getType().getBaseType().name().toLowerCase();
             type = getConfigType(strType);
         }
         return type;
     }
 
-    private static ConfigItem.Type getConfigType(String type) {
+    private ConfigItem.Type getConfigType(String type) {
         switch (type.toLowerCase()) {
             case "double":
             case "decimal":

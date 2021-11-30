@@ -28,8 +28,6 @@
 
 package org.opennms.features.config.dao.api;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public interface ConfigConverter {
 
     /**
@@ -39,18 +37,4 @@ public interface ConfigConverter {
      * @return json string
      */
     String xmlToJson(String xmlStr);
-
-    /**
-     * convert json string to xml string
-     *
-     * @param jsonStr input json config
-     * @return xml string
-     */
-    String jsonToXml(String jsonStr);
-
-    /**
-     * @return raw content of schema
-     */
-    @JsonIgnore
-    String getRawSchema();
 }

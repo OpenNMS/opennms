@@ -26,21 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.dao.api;
+package org.opennms.features.config.exception;
 
 /**
- * It is the class which hold the schema info. (e.g. xsd) It also helps to transform to ConfigItem for openapi use
+ * This exception is mainly about config conversion
  */
-public interface ValidationSchema<SCHEMA_TYPE> {
-    /**
-     * It returns the whole schema
-     * @return
-     */
-    SCHEMA_TYPE getSchema();
-
-    /**
-     * This is use for openapi generation use
-     * @return
-     */
-    ConfigItem getConfigItem();
+public class ConfigConversionException extends RuntimeException {
+    public ConfigConversionException(Exception e) {
+        super(e);
+    }
 }

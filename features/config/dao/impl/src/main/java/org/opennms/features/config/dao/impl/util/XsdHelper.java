@@ -29,37 +29,48 @@ package org.opennms.features.config.dao.impl.util;
 
 import com.google.common.io.Resources;
 import io.swagger.v3.oas.models.OpenAPI;
-import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * Main helper class for all xsd related function
  */
 public class XsdHelper {
     /**
+     * It will search xsds first, otherwise it will search across classpath
+     *
+     * @return URL of the xsd file
+     */
+    public static URL getSchemaPath(String xsdName) throws IOException {
+        URL url = Thread.currentThread().getContextClassLoader().getResource("xsds/" + xsdName);
+        if (url == null) {
+            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource[] resources = resolver.getResources("classpath*:**/" + xsdName);
+            if (resources != null && resources.length > 0)
+                url = resources[0].getURL();
+        }
+        return url;
+    }
+
+    /**
      * Convert xsd into openapi spec
-     * @param configName
      * @param xsdName
-     * @param topLevelElement
      * @return
      */
-    private static OpenAPI convertXsd(String configName, String xsdName, String topLevelElement) {
-        Assert.notNull(configName);
+    private static XsdModelConverter getXsdModelConverter(String xsdName) {
         Assert.notNull(xsdName);
-        Assert.notNull(topLevelElement);
         try {
-            ConfigSwaggerConverter converter = new ConfigSwaggerConverter();
-            XsdModelConverter xsdConverter = new XsdModelConverter();
-            String xsdStr = Resources.toString(SchemaUtil.getSchemaPath(xsdName), StandardCharsets.UTF_8);
-            XmlSchemaCollection collection = xsdConverter.convertToSchemaCollection(xsdStr);
-            ConfigItem item = xsdConverter.convert(collection, topLevelElement);
-            return converter.convert(item, "/rest/cm/" + configName);
+            String xsdStr = Resources.toString(XsdHelper.getSchemaPath(xsdName), StandardCharsets.UTF_8);
+            return new XsdModelConverter(xsdStr);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -72,12 +83,19 @@ public class XsdHelper {
      * @param topLevelElement
      * @return ConfigDefinition
      */
-    public static ConfigDefinition buildConfigDefinition(String configName, String xsdName, String topLevelElement){
+    public static ConfigDefinition buildConfigDefinition(String configName, String xsdName, String topLevelElement, String basePath){
         ConfigDefinition def = new ConfigDefinition(configName);
-        OpenAPI api = XsdHelper.convertXsd(configName, xsdName, topLevelElement);
+        XsdModelConverter xsdConverter = XsdHelper.getXsdModelConverter(xsdName);
+        ConfigItem item = xsdConverter.convert(topLevelElement);
+
+        ConfigSwaggerConverter swaggerConverter = new ConfigSwaggerConverter();
+        OpenAPI api = swaggerConverter.convert(item, basePath + "/" + configName);
+
         def.setSchema(api);
         def.setMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG, topLevelElement);
         def.setMetaValue(ConfigDefinition.XSD_FILENAME_TAG, xsdName);
+        def.setMetaValue(ConfigDefinition.ELEMENT_NAME_TO_VALUE_NAME_TAG, xsdConverter.getElementNameToValueNameMap());
+
         return def;
     }
 
@@ -88,11 +106,12 @@ public class XsdHelper {
      * @throws IOException
      */
     public static ConfigConverter getConverter(ConfigDefinition def) throws IOException {
-        String xsdName = def.getMetaValue(ConfigDefinition.XSD_FILENAME_TAG);
-        String topLevelElement = def.getMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG);
+        String xsdName = (String) def.getMetaValue(ConfigDefinition.XSD_FILENAME_TAG);
+        String topLevelElement = (String) def.getMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG);
+        Map<String, String> elementNameToValueNameMap = (Map) def.getMetaValue(ConfigDefinition.ELEMENT_NAME_TO_VALUE_NAME_TAG);
         if(xsdName == null || topLevelElement == null){
             throw new RuntimeException("ConfigDefinition " + def.getConfigName() + " NOT support XmlConverter.");
         }
-        return new XmlConverter(xsdName, topLevelElement);
+        return new JaxbXmlConverter(xsdName, topLevelElement, elementNameToValueNameMap);
     }
 }

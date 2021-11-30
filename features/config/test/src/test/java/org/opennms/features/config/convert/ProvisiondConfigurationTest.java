@@ -26,19 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.provisiond;
+package org.opennms.features.config.convert;
 
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.opennms.netmgt.config.provisiond.RequisitionDef;
 
-public class ProvisiondConfigurationTest extends XmlTestNoCastor<ProvisiondConfiguration> {
+public class ProvisiondConfigurationTest extends CmConfigTest<ProvisiondConfiguration> {
 
-    public ProvisiondConfigurationTest(ProvisiondConfiguration sampleObject, Object sampleXml) {
-        super(sampleObject, sampleXml, "src/main/resources/xsds/provisiond-configuration.xsd");
+    public ProvisiondConfigurationTest(ProvisiondConfiguration sampleObject, String sampleXml) {
+        super(sampleObject, sampleXml, "provisiond-configuration.xsd", "provisiond-configuration");
     }
 
     @Parameters

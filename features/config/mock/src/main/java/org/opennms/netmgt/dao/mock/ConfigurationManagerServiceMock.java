@@ -30,8 +30,10 @@ package org.opennms.netmgt.dao.mock;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -80,7 +82,13 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) {
-        return Optional.empty();
+        ConfigDefinition def = null;
+        if ("provisiond".equals(configName)) {
+            def = XsdHelper.buildConfigDefinition("provisiond", "provisiond-configuration.xsd",
+                    "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
+        }
+
+        return Optional.ofNullable(def);
     }
 
     @Override
@@ -108,11 +116,12 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Optional<String> getJSONStrConfiguration(String configName, String configId) throws IOException {
-        return null;
+        String xmlStr = this.getXmlConfiguration(configName, configId).get();
+        ConfigConverter converter = XsdHelper.getConverter(this.getRegisteredConfigDefinition(configName).get());
+        return Optional.ofNullable(converter.xmlToJson(xmlStr));
     }
 
-    @Override
-    public Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
+    private Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
         if (configOptional != null) {
             return configOptional;
         }

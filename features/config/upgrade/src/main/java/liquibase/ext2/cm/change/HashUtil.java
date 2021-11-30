@@ -33,11 +33,11 @@ import java.net.URL;
 
 import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
-import org.opennms.features.config.dao.impl.util.SchemaUtil;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
 
 public class HashUtil {
     public static String getHash(String xsdFileName) throws IOException {
-        URL url = SchemaUtil.getSchemaPath(xsdFileName);
+        URL url = XsdHelper.getSchemaPath(xsdFileName);
         byte[] bytes = Resources.toByteArray(url);
         return Hashing.sha256().hashBytes(bytes).toString();
     }
