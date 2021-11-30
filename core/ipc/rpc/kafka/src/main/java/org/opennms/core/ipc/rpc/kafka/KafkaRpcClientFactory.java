@@ -30,6 +30,7 @@
 package org.opennms.core.ipc.rpc.kafka;
 
 import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.DEFAULT_TTL;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.KAFKA_IPC_CONFIG_SYS_PROP_PREFIX;
 import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
@@ -320,7 +321,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
 
             // Find all of the system properties that start with 'org.opennms.core.ipc.rpc.kafka.' and add them to the config.
-            KafkaConfigProvider kafkaConfigProvider = new OnmsKafkaConfigProvider(KafkaRpcConstants.KAFKA_RPC_CONFIG_SYS_PROP_PREFIX);
+            KafkaConfigProvider kafkaConfigProvider = new OnmsKafkaConfigProvider(KafkaRpcConstants.KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, KAFKA_IPC_CONFIG_SYS_PROP_PREFIX);
             kafkaConfig.putAll(kafkaConfigProvider.getProperties());
             producer = new KafkaProducer<>(kafkaConfig);
             LOG.info("initializing the Kafka producer with: {}", kafkaConfig);

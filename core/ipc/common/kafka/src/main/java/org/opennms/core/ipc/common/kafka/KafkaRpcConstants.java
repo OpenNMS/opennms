@@ -39,7 +39,9 @@ import org.opennms.core.utils.PropertiesUtils;
 public interface KafkaRpcConstants {
 
     String KAFKA_RPC_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka";
+    String KAFKA_IPC_CONFIG_PID = "org.opennms.core.ipc.kafka";
     String KAFKA_RPC_CONFIG_SYS_PROP_PREFIX = KAFKA_RPC_CONFIG_PID + ".";
+    String KAFKA_IPC_CONFIG_SYS_PROP_PREFIX = KAFKA_IPC_CONFIG_PID + ".";
     String RPC_TOPIC_PREFIX = "rpc";
     String RPC_REQUEST_TOPIC_NAME = "rpc-request";
     String RPC_RESPONSE_TOPIC_NAME = "rpc-response";

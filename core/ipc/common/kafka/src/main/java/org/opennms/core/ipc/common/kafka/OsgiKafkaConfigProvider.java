@@ -42,6 +42,8 @@ public class OsgiKafkaConfigProvider implements KafkaConfigProvider {
 
     private final String pid;
 
+    private String commonPID;
+
     private final ConfigurationAdmin configAdmin;
 
 
@@ -51,8 +53,18 @@ public class OsgiKafkaConfigProvider implements KafkaConfigProvider {
         this.configAdmin = Objects.requireNonNull(configAdmin);
     }
 
+    public OsgiKafkaConfigProvider(final String groupId, final String specificPID, final  ConfigurationAdmin configAdmin, final String commonPID) {
+        this(groupId, commonPID, configAdmin);
+        this.commonPID = commonPID;
+    }
+
     public OsgiKafkaConfigProvider(final String pid, final  ConfigurationAdmin configAdmin) {
         this(null, pid, configAdmin);
+    }
+
+    public OsgiKafkaConfigProvider(final String pid, final  ConfigurationAdmin configAdmin, final  String commonPID) {
+        this(null, pid, configAdmin);
+        this.commonPID = commonPID;
     }
 
     @Override
@@ -63,19 +75,28 @@ public class OsgiKafkaConfigProvider implements KafkaConfigProvider {
             kafkaConfig.put("group.id", groupId);
         }
 
-        // Retrieve all of the properties from org.opennms.core.ipc.sink.kafka.consumer.cfg
+        // Retrieve all of the properties from the given pid
         try {
             final Dictionary<String, Object> properties = configAdmin.getConfiguration(pid).getProperties();
-            if (properties != null) {
-                final Enumeration<String> keys = properties.keys();
-                while (keys.hasMoreElements()) {
-                    final String key = keys.nextElement();
-                    kafkaConfig.put(key, properties.get(key));
+            if (properties != null && properties.get("bootstrap.servers") != null) {
+                convertFromDictionaryToProperties(properties, kafkaConfig);
+            } else {
+                final Dictionary<String, Object> commonPidProperties = configAdmin.getConfiguration(pid).getProperties();
+                if (properties != null && properties.get("bootstrap.servers") != null) {
+                    convertFromDictionaryToProperties(commonPidProperties, kafkaConfig);
                 }
             }
             return kafkaConfig;
         } catch (IOException e) {
             throw new RuntimeException("Cannot load properties", e);
+        }
+    }
+
+    private void convertFromDictionaryToProperties(Dictionary<String, Object> properties, Properties kafkaConfig) {
+        final Enumeration<String> keys = properties.keys();
+        while (keys.hasMoreElements()) {
+            final String key = keys.nextElement();
+            kafkaConfig.put(key, properties.get(key));
         }
     }
 }
