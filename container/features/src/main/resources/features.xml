@@ -126,8 +126,8 @@
     <feature name="commons-lang3" version="${commonsLang3Version}" description="Apache :: commons-lang3">
         <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
     </feature>
-    <feature name="commons-net" version="3.6" description="Apache :: commons-net">
-        <bundle>mvn:commons-net/commons-net/3.6</bundle>
+    <feature name="commons-net" version="${commonsNetVersion}" description="Apache :: commons-net">
+        <bundle>mvn:commons-net/commons-net/${commonsNetVersion}</bundle>
     </feature>
     <feature name="dnsjava" version="${dnsjavaVersion}" description="dnsjava">
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dnsjava/${dnsjavaVersion}</bundle>
