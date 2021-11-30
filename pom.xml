@@ -1540,6 +1540,8 @@
     <!-- nodejs development -->
     <frontendPluginVersion>1.12.0</frontendPluginVersion>
     <nodeVersion>v12.19.0</nodeVersion>
+    <!-- used for the new UI -->
+    <nodeNewUIVersion>v16.3.0</nodeNewUIVersion>
     <npmVersion>6.13.4</npmVersion>
     <yarnVersion>v1.22.10</yarnVersion>
 

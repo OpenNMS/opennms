@@ -7,6 +7,10 @@ import eventsModule from './events'
 import ifServicesModule from './ifServices'
 import configuration from './configuration'
 import spinnerModule from './spinner'
+import fileEditorModule from './fileEditor'
+import authModule from './auth'
+import logsModule from './logs'
+import appModule from './app'
 
 export default createStore({
   modules: {
@@ -15,6 +19,10 @@ export default createStore({
     eventsModule,
     ifServicesModule,
     configuration,
-    spinnerModule
+    spinnerModule,
+    fileEditorModule,
+    logsModule,
+    authModule,
+    appModule
   }
 })
