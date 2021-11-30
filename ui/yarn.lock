@@ -113,6 +113,14 @@
     lodash.debounce "^4.0.8"
     vue "^3.1.0-0"
 
+"@featherds/composables@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@featherds/composables/-/composables-0.9.1.tgz#e0f72eec9991b970cd2070f8f17769fc63b030cc"
+  integrity sha512-Ag/pfjP6VZI7fwfje8H2usX842ALdSSBeVnwvABLRDvPrGQiP3ND2hsz6A74OXQwK1UuAmSPLI7NwLMyoJ8MNQ==
+  dependencies:
+    "@featherds/utils" "^0.9.1"
+    vue "^3.1.0-0"
+
 "@featherds/date-input@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/date-input/-/date-input-0.2.12.tgz#e07aa2280caae83a5b51da584577541c1606baed"
@@ -169,12 +177,27 @@
   dependencies:
     vue "^3.1.0-0"
 
+"@featherds/icon@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@featherds/icon/-/icon-0.9.1.tgz#11b4c9527673f49acbf6da589852cdc8eecb0ffe"
+  integrity sha512-t6KtbxSMSIXynyAFFFlUOiVe8t3VukZgySBtR/A8p2TOE4Iy4+L1RhalDujTFV0kVZLqABRRJi1W98eQkBDW2A==
+  dependencies:
+    vue "^3.1.0-0"
+
 "@featherds/input-helper@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/input-helper/-/input-helper-0.2.12.tgz#c062cf1905c3179c53f9eefea0654c24cd6db4ae"
   integrity sha512-4UVDlxfQM/HAkA8NFSGzkb0fwb3fzoUM7qroN9Of3CLtYh01DJxmv8Dq5fcY5xRwtRfoGngYdzVi8m/h81nwIg==
   dependencies:
     "@featherds/styles" "^0.2.12"
+    vue "^3.1.0-0"
+
+"@featherds/input-helper@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@featherds/input-helper/-/input-helper-0.9.1.tgz#497cb57ff544e3562bf349f4e18429eb799f25b2"
+  integrity sha512-s7jvdV9+tjA1LG9w7nXlYTs6UN6mmVE9yMoFiru5xXg882gA741AVP6UBcd2DWbBb/Slx+YW9jelWI/vjpQC2A==
+  dependencies:
+    "@featherds/styles" "^0.9.1"
     vue "^3.1.0-0"
 
 "@featherds/input@0.2.12", "@featherds/input@^0.2.12":
@@ -200,6 +223,17 @@
     "@featherds/utils" "^0.2.12"
     vue "^3.1.0-0"
 
+"@featherds/list@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@featherds/list/-/list-0.9.1.tgz#159d4e4cd781125dee6bb5c2cfc7d3ee8a4d94e7"
+  integrity sha512-s5YNFV6uD0eSAVYQKEc99CI97OpYewr2HGcQ3HuTzLm1F3KVxie/cWp1/klJ8I0MhcQnYWcyX12CpLs21tKnrw==
+  dependencies:
+    "@featherds/ripple" "^0.9.1"
+    "@featherds/styles" "^0.9.1"
+    "@featherds/switch" "^0.9.1"
+    "@featherds/utils" "^0.9.1"
+    vue "^3.1.0-0"
+
 "@featherds/menu@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/menu/-/menu-0.2.12.tgz#f33a79d96752d45266dec23993ed69e0d0e9f805"
@@ -209,6 +243,17 @@
     "@featherds/ripple" "^0.2.12"
     "@featherds/styles" "^0.2.12"
     "@featherds/utils" "^0.2.12"
+    vue "^3.1.0-0"
+
+"@featherds/menu@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@featherds/menu/-/menu-0.9.1.tgz#f80a101eca534ec0cf9797419c18a6ada6994534"
+  integrity sha512-Bv51xak82DXPWr13SHII2OltdiApe/SLwksH6Izh6m8ZABbM/Y8Mab8v1uMw5H7be4kXzDnqUGz+jybdymmWaA==
+  dependencies:
+    "@featherds/composables" "^0.9.1"
+    "@featherds/ripple" "^0.9.1"
+    "@featherds/styles" "^0.9.1"
+    "@featherds/utils" "^0.9.1"
     vue "^3.1.0-0"
 
 "@featherds/navigation-rail@0.2.12":
@@ -270,7 +315,27 @@
   dependencies:
     vue "^3.1.0-0"
 
-"@featherds/select@0.2.12", "@featherds/select@^0.2.12":
+"@featherds/ripple@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@featherds/ripple/-/ripple-0.9.1.tgz#bba8f7751ef253637431ee65f057b5166ef7c782"
+  integrity sha512-QitUHX5X6mCO6G56TJCnhQhx0jpiMt45wEzXHvNpXPs2P2QyKTrmPL1nJIyqlJG678JL4wpeW99o/ZjGnhH4mA==
+  dependencies:
+    vue "^3.1.0-0"
+
+"@featherds/select@0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@featherds/select/-/select-0.9.1.tgz#fe45ade2f247b74677f932f8b1089874dd41ebaf"
+  integrity sha512-BeXlm0EGEiCwd6tA3CJV+HrAp1Pf81w+e6y6hfwVlVMnkxDKiVK8oz6/aN/Ki5SdyU+dxzywi2ELGsrqSZjXUA==
+  dependencies:
+    "@featherds/icon" "^0.9.1"
+    "@featherds/input-helper" "^0.9.1"
+    "@featherds/list" "^0.9.1"
+    "@featherds/menu" "^0.9.1"
+    "@featherds/styles" "^0.9.1"
+    "@featherds/utils" "^0.9.1"
+    vue "^3.1.0-0"
+
+"@featherds/select@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/select/-/select-0.2.12.tgz#f10a7abc708655d40672ae45c3081b1387622e05"
   integrity sha512-O2EU5hKIlZP+rlN6aTMYl8TOtO03cDQAOrmvqg5jxMH+fcPROY7f24wdnkXkg9ueIAlTXLAiSWCWi7Sj24LJNw==
@@ -288,12 +353,25 @@
   resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.2.12.tgz#404e57f16caec7ec309dfcf173252196e962efa1"
   integrity sha512-dCP4kR7ZBzqr1Xy2us+PHuzUO0KkTwl9LkqIKlBMUBW1xxVY0W4Hf4H5ZJ7MaeL1yv1oA5uKqeXITrzKisUtcQ==
 
+"@featherds/styles@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.9.1.tgz#bb6336d3814ea71c030a7a704ebc8a1be5e36b07"
+  integrity sha512-bkCi7h/uZiys+rDR0bFkHFqrulJvr/rJ1oA5dVQiybq3enbIFdLbky2kTP0vwzg6dIEldaiJdWMQUfGVfgz2rg==
+
 "@featherds/switch@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/switch/-/switch-0.2.12.tgz#964e956a3b05f912aa9f846bb13f6afe1a8ae230"
   integrity sha512-5HWt6SGisYL+IziZDXKYBzm0CsbFkpPsClFw+s4SroBNcWvEluSBcEjyudwqxtSfBxEmt1Yu1VOjyQJERaQXAg==
   dependencies:
     "@featherds/styles" "^0.2.12"
+    vue "^3.1.0-0"
+
+"@featherds/switch@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@featherds/switch/-/switch-0.9.1.tgz#54e1b317baceeec85de1cccf4bd145a1a58c4d0c"
+  integrity sha512-54wcbBz870q1DaU2uyKoNB+E6Hil1qowHu/OY8NypmdBqXzGHyeJJR5DLVStY8eYp+XYFL0BEyCWzwPRLlXfRA==
+  dependencies:
+    "@featherds/styles" "^0.9.1"
     vue "^3.1.0-0"
 
 "@featherds/table@0.2.12":
@@ -321,6 +399,11 @@
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/utils/-/utils-0.2.12.tgz#0895990c5801c999444a72ce05c65722c9e9fff3"
   integrity sha512-dXiY0xux8N6nZz69EZZRxWlUho1pky2vTwmRztHRzaeZpVy3FHSI8r6L0e8LShYcR7KyXu0FoNtX0LdkqjQ+Tw==
+
+"@featherds/utils@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@featherds/utils/-/utils-0.9.1.tgz#d9dc710274f0f74ad12a768fc8f02608fe1b432c"
+  integrity sha512-HouE1NA+72PPkBUROzcpO/daCs2nwcw8mgKGZFf6jUri1hv4YjxsqpOJzV9tIKkqFeMa8y8an5VNVwQsi2DP8A==
 
 "@trysound/sax@0.2.0":
   version "0.2.0"

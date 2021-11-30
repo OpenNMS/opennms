@@ -26,7 +26,7 @@
     "@featherds/pagination": "0.2.12",
     "@featherds/progress": "0.2.12",
     "@featherds/protected-input": "0.2.12",
-    "@featherds/select": "0.2.12",
+    "@featherds/select": "0.9.1",
     "@featherds/styles": "0.2.12",
     "@featherds/table": "0.2.12",
     "@featherds/tabs": "0.2.12",
