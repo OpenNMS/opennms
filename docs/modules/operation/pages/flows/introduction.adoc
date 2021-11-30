@@ -31,7 +31,7 @@ At a high level, basic set up:
 * <<telemetryd/introduction.adoc#ga-telemetryd, Telemetryd>> receives and decodes flows on {page-component-title}.
 * Telemetryd adapters convert the flows to a canonical flow model and dispatch these to the flow repository.
 * The flow repository enriches the flows and persists them to Elasticsearch:
-** Flows are tagged with an application name via the <<flows/classification-engine.adoc#ga-flow-support-classification-engine, classification engine>>.
+** The <<flows/classification-engine.adoc#ga-flow-support-classification-engine, classification engine>> tags flows with an application name.
 ** Metadata related to associated nodes (such as IDs and categories) are also added to the flows.
 * The REST API supports generating both summaries and time series data from the flows stored in the flow repository.
 * OpenNMS Helm visualizes the flow data through the flow datasource, which interfaces with the {page-component-title} REST API.

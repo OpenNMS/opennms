@@ -2,7 +2,7 @@
 [[flows-basic]]
 = Basic flows setup
 
-This section describes how to get started with flows, in a basic set up to collect, enrich (classify), persist, and visualize flows.
+This section describes how to get started with flows in a basic setup to collect, enrich (classify), persist, and visualize flows.
 
 == Before you begin
 
@@ -10,4 +10,94 @@ Make sure you have configured your routers to send flows.
 Refer to the manufacturer's documentation.
 You will need to set up the flow receiver, which is OpenNMS {page-component-title}, and enable sending flows per interface on the firewall.
 
+Set up an Elasticsearch with the link:https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch-drift plugin] installed on every Elasticsearch node.
 
+The Drift plugin persists and queries flows that {page-component-title} collects.
+The Drift version must match the targeted Elasticsearch version.
+
+== Elasticsearch setup
+
+Set the following environment variables in Elasticsearch:
+
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTICSEARCH_VERSION:-7.6.2}
+    container_name: es01
+    hostname: es01
+    environment:
+     TZ: ${TIMEZONE:-America/New_York}
+     discovery.type: single-node
+     node.name: es-node-01
+    ports:
+      - "9200:9200/tcp"
+      - "9300:9300/tcp"
+    volumes:
+      - data-es01:/usr/share/elasticsearch/data
+      - ./plugins:/usr/share/elasticsearch/plugins
+    healthcheck:
+      test: curl http://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
+```
+discovery.type 	single-node
+ELASTIC_CONTAINER 	true
+ES_JAVA_OPTS 	-Xms12g -Xmx12g
+node.name 	es-node-01
+PATH 	/usr/share/elasticsearch/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+search.max_buckets 	30000
+```
+
+Besides of the ES_JAVA_OPTS values (It's the RAM that JVM is allowed to consume), we had to increase this search bucket env because of https://opennms.discourse.group/t/too-many-buckets-exception-in-flow-deep-dive-dashboard/
+
+
+The ElasticSearch configuration in the Stack Play can be found here: https://github.com/opennms-forge/stack-play/blob/master/minimal-flows/docker-compose.yaml#L30-L48
+It does not have set all ENVs I have set. So we can recommend those I guess.
+
+
+Maybe also worth to mention: I have ~ 300GB flow data in ES. BUT there is a trap. Without a cleaning job in ES you will fill up the disk and then a non ES expert has a big problem to solve the issue.
+So an ONMS admin has to make sure somehow that there is a clean job. Something like: just keep X days of flows. Usually you can do that by sending `curl` commands, but this is not easy for an normal person.
+
+I am solving this problem with a ES tool called `Curator`. I have this script running regularly that deletes indices older than a 15 days. Here the elasticIndexStrategy is important. In my case 1 day = 1 index to keep.
+
+```
+#!/bin/bash -eux
+
+KEEP=15
+
+docker run --rm -i \
+    --entrypoint=/usr/bin/curator_cli bobrik/curator:5.8.1 \
+    --host 10.10.3.218 \
+    --timeout 600 \
+    delete_indices \
+    --ignore_empty_list \
+    --filter_list '[{"filtertype":"pattern","kind":"prefix","value":"netflow"},{"filtertype":"count","count":'${KEEP}',"source":"creation_date"}]'
+
+```
+
+monitor the stack ... to get an alarm if these are down (see M. docs)
+
+== OpenNMS configuration
+
+**etc/org.opennms.features.flows.persistence.elastic.cfg**
+
+```
+# ElasticSearch persistence configuration
+elasticUrl = http://10.10.3.218:9200
+connTimeout = 30000
+readTimeout = 300000
+settings.index.number_of_replicas = 0
+settings.index.number_of_shards=1
+settings.index.refresh_interval=10s
+elasticIndexStrategy=daily
+```
+
+Those settings or elasticIndexStrategy can differ, depending on the needs. For example I just need one shard because I just have one ElasticSearch VM running. Not a big cluster.
+
+**etc/telemetryd-configuration.xml**
+
+-> make sure you are using the Multi-port listener 
+
+
+You can find both configuration files in the Stack Play here: https://github.com/opennms-forge/stack-play/tree/master/minimal-flows/container-fs/opt/opennms-overlay/etc

@@ -1,4 +1,11 @@
 
 [[flows-nephron]]
-
 = Streaming telemetry for flows
+
+
+* Source of NetFlow5 or NetFlow9 records
+* Horizon 26/Meridian 2020 and later
+* Elasticsearch cluster sized for your flows volume with the netflow_agg index template installed
+* Apache Flink 1.9 cluster sized for your flows volume
+* Kafka
+* A fast-caching DNS resolver if using reverse DNS
