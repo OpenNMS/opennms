@@ -1,5 +1,5 @@
 <template>
-  <div class="feather-row map">
+  <div class="feather-row">
     <div class="feather-col-12">
       <splitpanes class="default-theme" horizontal style="height: calc(100vh - 80px)">
         <pane min-size="1" max-size="60">
@@ -44,12 +44,6 @@ onMounted(() => {
   store.dispatch("mapModule/getNodesGraphEdges")
 })
 </script>
-
-<style lang="scss" scoped>
-.map {
-  padding: 10px;
-}
-</style>
 
 <style lang="scss">
 .ag-row,

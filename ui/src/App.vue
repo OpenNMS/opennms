@@ -5,15 +5,19 @@
       <Menubar />
     </template>
 
-    <Sidebar />
-    <Spinner />
-    <div class="container">
+    <template v-slot:rail>
+      <NavigationRail :modelValue="true" />
+    </template>
+
+    <div class="main-content">
+      <Spinner />
       <router-view v-slot="{ Component }">
         <keep-alive include="MapKeepAlive">
           <component :is="Component" />
         </keep-alive>
       </router-view>
     </div>
+
   </FeatherAppLayout>
 </template>
   
@@ -22,8 +26,8 @@ import { onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Menubar from './components/Layout/Menubar.vue'
-import Sidebar from './components/Layout/Sidebar.vue'
 import Spinner from './components/Common/Spinner.vue'
+import NavigationRail from './components/Layout/NavigationRail.vue'
 
 const store = useStore()
 onMounted(() => store.dispatch('authModule/getWhoAmI'))
@@ -33,14 +37,11 @@ onMounted(() => store.dispatch('authModule/getWhoAmI'))
 @import "@featherds/styles/lib/grid";
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/themes/open-mixins";
-.container {
-  max-height: calc(100vh - 60px);
+html {
+  overflow: hidden;
 }
-.full-width {
-  padding: 0px !important;
-}
-body {
-  margin: 0px;
+.main-content {
+  margin-left: 218px;
 }
 .logo {
   color: var(--feather-primary-text-on-color) !important;
