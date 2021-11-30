@@ -9,7 +9,7 @@
       <Search />
       <FeatherButton @click="returnHandler" class="return-btn">Return to previous UI</FeatherButton>
       <FeatherIcon
-        :icon="lightDark"
+        :icon="LightDarkMode"
         class="pointer light-dark"
         @click.native="toggleDarkLightMode(null)"
       />
@@ -22,7 +22,7 @@ import { ref, onMounted } from 'vue'
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
-import LightDark from '@/assets/LightDark.vue'
+import LightDarkMode from "@featherds/icon/action/LightDarkMode"
 import Logo from '@/assets/Logo.vue'
 import Search from './Search.vue'
 import { useStore } from 'vuex'
@@ -30,7 +30,6 @@ import { useStore } from 'vuex'
 const store = useStore()
 const returnHandler = () => window.location.href = '/opennms/'
 const logo = Logo
-const lightDark = LightDark
 const theme = ref('')
 const light = 'open-light'
 const dark = 'open-dark'
@@ -84,8 +83,8 @@ body {
   @include open-dark();
 }
 .light-dark {
-  margin-right: 10px;
-  margin-bottom: 6px;
+  font-size: 24px;
+  margin-top: 2px;
 }
 </style>
   
