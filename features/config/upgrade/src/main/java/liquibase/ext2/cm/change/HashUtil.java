@@ -31,14 +31,13 @@ package liquibase.ext2.cm.change;
 import java.io.IOException;
 import java.net.URL;
 
-import org.opennms.features.config.dao.api.util.SchemaUtil;
-
 import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
 
 public class HashUtil {
     public static String getHash(String xsdFileName) throws IOException {
-        URL url = SchemaUtil.getSchemaPath(xsdFileName);
+        URL url = XsdHelper.getSchemaPath(xsdFileName);
         byte[] bytes = Resources.toByteArray(url);
         return Hashing.sha256().hashBytes(bytes).toString();
     }

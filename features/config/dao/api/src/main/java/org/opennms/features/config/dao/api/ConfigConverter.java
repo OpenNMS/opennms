@@ -28,12 +28,7 @@
 
 package org.opennms.features.config.dao.api;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public interface ConfigConverter {
-    enum SCHEMA_TYPE {XML, JSON, PROPERTY};
-
-    boolean validate(String config, SCHEMA_TYPE type);
 
     /**
      * convert xml string to json string
@@ -42,29 +37,4 @@ public interface ConfigConverter {
      * @return json string
      */
     String xmlToJson(String xmlStr);
-
-    /**
-     * convert json string to xml string
-     *
-     * @param jsonStr input json config
-     * @return xml string
-     */
-    String jsonToXml(String jsonStr);
-
-    /**
-     * @return ServiceSchema
-     */
-    ValidationSchema<?> getValidationSchema();
-
-    /**
-     * @return schema type
-     */
-    @JsonIgnore
-    SCHEMA_TYPE getSchemaType();
-
-    /**
-     * @return raw content of schema
-     */
-    @JsonIgnore
-    String getRawSchema();
 }

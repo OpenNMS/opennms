@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 
 /**
@@ -46,10 +47,10 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
     /**
      * register service to config manager
      *
-     * @param configSchema schema object
+     * @param configDefinition
      * @return status
      */
-    void register(ConfigSchema<?> configSchema) throws IOException;
+    void register(ConfigDefinition configDefinition) throws IOException;
 
     /**
      * get all config names managing by config manager
@@ -59,7 +60,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      */
     Optional<Set<String>> getConfigNames();
 
-    Map<String, ConfigSchema<?>> getAllConfigSchema();
+    Map<String, ConfigDefinition> getAllConfigDefinition();
 
     /**
      * get configs meta by configName
@@ -67,16 +68,16 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * @param configName
      * @return status
      */
-    Optional<ConfigSchema<?>> getConfigSchema(String configName);
+    Optional<ConfigDefinition> getConfigDefinition(String configName) throws JsonProcessingException;
 
     /**
      * update configs meta by configName
      *
-     * @param configSchema
+     * @param configDefinition
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    void updateConfigSchema(ConfigSchema<?> configSchema) throws IOException;
+    void updateConfigDefinition(ConfigDefinition configDefinition) throws IOException;
 
     /**
      * get configs data by configName

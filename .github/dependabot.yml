@@ -3,7 +3,7 @@ updates:
 
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
-    directory: "/web"
+    directory: "/ui"
     target-branch: "develop"
     reviewers:
       - "rangerrick"
@@ -18,7 +18,8 @@ updates:
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/core/web-assets/"
-    target-branch: "foundation-2019"
+    target-branch: "foundation-2021"
+    versioning-strategy: "increase-if-necessary"
     reviewers:
       - "rangerrick"
     labels:

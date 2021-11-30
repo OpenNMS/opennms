@@ -27,27 +27,29 @@
  *******************************************************************************/
 package org.opennms.features.config.dao.impl;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.xml.bind.JAXBException;
-
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
-import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.util.Optional;
+import java.util.Set;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -58,16 +60,18 @@ import org.springframework.test.context.ContextConfiguration;
 public class ConfigStoreDaoImplTest {
     final String configName = "testConfigName";
     final String filename = "testFilename";
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Autowired
     private ConfigStoreDao configStoreDao;
 
     @Test
-    public void testData() throws IOException, JAXBException {
+    public void testData() throws Exception {
         // register
-        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
-        ConfigSchema<XmlConverter> configSchema = new ConfigSchema<>(configName, XmlConverter.class, converter);
-
-        configStoreDao.register(configSchema);
+        ConfigDefinition def = XsdHelper.buildConfigDefinition(configName, "provisiond-configuration.xsd",
+                "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
+        configStoreDao.register(def);
 
         // config
         JSONObject config = new JSONObject();
@@ -76,21 +80,22 @@ public class ConfigStoreDaoImplTest {
         configData.getConfigs().put(filename, config);
 
         // register
-        configStoreDao.register(configSchema);
+        configStoreDao.register(def);
         configStoreDao.addConfigs(configName, configData);
         Optional<ConfigData> configsInDb = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL TO getConfigData", configsInDb.isPresent());
 
         // get
-        Optional<ConfigSchema> result = configStoreDao.getConfigSchema(configName);
+        Optional<ConfigDefinition> result = configStoreDao.getConfigDefinition(configName);
         Assert.assertTrue("FAIL TO getConfigSchema", result.isPresent());
 
         // register more and update
         String configName2 = configName + "_2";
-        ConfigSchema<XmlConverter> configSchema2 = new ConfigSchema<>(configName2, XmlConverter.class, converter);
-        configStoreDao.register(configSchema2);
-        configStoreDao.updateConfigSchema(configSchema2);
-        Optional<ConfigSchema> tmpConfigSchema2 = configStoreDao.getConfigSchema(configName2);
+        ConfigDefinition def2 = XsdHelper.buildConfigDefinition(configName2, "provisiond-configuration.xsd",
+                "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
+        configStoreDao.register(def2);
+        configStoreDao.updateConfigDefinition(def2);
+        Optional<ConfigDefinition> tmpConfigSchema2 = configStoreDao.getConfigDefinition(configName2);
 
         // list all
         Optional<Set<String>> all = configStoreDao.getConfigNames();
@@ -99,7 +104,8 @@ public class ConfigStoreDaoImplTest {
         // add config
         ProvisiondConfiguration config2 = new ProvisiondConfiguration();
         config2.setImportThreads(20L);
-        JSONObject config2AsJson = new JSONObject(converter.xmlToJson(JaxbUtils.marshal(config2)));
+
+        JSONObject config2AsJson = new JSONObject(ConfigConvertUtil.objectToJson(config2));
         configStoreDao.addConfig(configName, filename + "_2", config2AsJson);
         Optional<ConfigData> resultAfterUpdate = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL configs count is not equal to 2", resultAfterUpdate.isPresent());
@@ -107,16 +113,22 @@ public class ConfigStoreDaoImplTest {
         // delete config
         configStoreDao.deleteConfig(configName, filename + "_2");
         Optional<ConfigData> resultAfterDelete = configStoreDao.getConfigData(configName);
-        Assert.assertTrue("FAIL configs count is not equal to 1", resultAfterDelete.get().getConfigs().size() == 1);
+        Assert.assertEquals("FAIL configs count is not equal to 1", 1, resultAfterDelete.get().getConfigs().size());
+
+        //check if its last config, deletion not allowed if it is last config
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Deletion of the last config is not allowed. testConfigName, configId testFilename");
+        configStoreDao.deleteConfig(configName, filename);
 
         // updateConfigs
         configStoreDao.updateConfigs(configName, new ConfigData());
         Optional<ConfigData> resultAfterUpdateConfigs = configStoreDao.getConfigData(configName);
-        Assert.assertTrue("FAIL configs count is not equal to 0", resultAfterUpdateConfigs.get().getConfigs().size() == 0);
+        Assert.assertEquals("FAIL configs count is not equal to 0", 0,
+                resultAfterUpdateConfigs.get().getConfigs().size());
 
         // deregister
         configStoreDao.unregister(configName);
-        Optional<ConfigSchema<?>> schemaAfterDeregister = configStoreDao.getConfigSchema(configName);
+        Optional<ConfigDefinition> schemaAfterDeregister = configStoreDao.getConfigDefinition(configName);
         Optional<ConfigData> configAfterDeregister = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL TO deregister schema", schemaAfterDeregister.isEmpty());
         Assert.assertTrue("FAIL TO deregister config", configAfterDeregister.isEmpty());

@@ -1,3 +1,15 @@
+opennms (29.0.0-1) stable; urgency=medium
+
+  * New major release. It contains a number of updates including
+    introducing running as non-root by default, optimizations to Minion
+    communication, time-series improvements, support for Cortex for
+    storing flow data, and more.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/29.0.0/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 10 Nov 2021 09:12:00 -0400
+ 
 opennms (28.1.1-1) stable; urgency=low
 
   * New minor release. It contains a number of bug fixes and enhancements,

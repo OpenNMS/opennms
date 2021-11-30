@@ -10,6 +10,9 @@ import 'primevue/resources/primevue.min.css'
 import 'primeicons/primeicons.css'
 import 'primeflex/primeflex.css'
 
+import "@featherds/styles"
+import "@featherds/styles/themes/open-light.css"
+
 createApp({
   render: () => h(App)
 })

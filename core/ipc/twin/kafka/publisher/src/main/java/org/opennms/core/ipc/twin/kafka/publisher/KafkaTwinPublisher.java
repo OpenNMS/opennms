@@ -49,19 +49,16 @@ import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.twin.common.AbstractTwinPublisher;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
-import org.opennms.core.ipc.twin.common.TwinRequestBean;
-import org.opennms.core.ipc.twin.common.TwinResponseBean;
+import org.opennms.core.ipc.twin.common.TwinRequest;
+import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.kafka.common.KafkaConsumerRunner;
 import org.opennms.core.ipc.twin.kafka.common.Topic;
-import org.opennms.core.ipc.twin.model.TwinRequestProto;
-import org.opennms.core.ipc.twin.model.TwinResponseProto;
+import org.opennms.distributed.core.api.Identity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public class KafkaTwinPublisher extends AbstractTwinPublisher {
@@ -91,7 +88,7 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
         final var kafkaConfig = new Properties();
         kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         kafkaConfig.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
-        kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         kafkaConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getCanonicalName());
         kafkaConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class.getCanonicalName());
         kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
@@ -110,7 +107,6 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     }
 
     public void close() throws IOException {
-        super.close();
 
         if (this.consumerRunner != null) {
             this.consumerRunner.close();
@@ -122,43 +118,32 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     }
 
     @Override
-    protected void handleSinkUpdate(final TwinResponseBean sinkUpdate) {
-        final var topic = Strings.isNullOrEmpty(sinkUpdate.getLocation())
-                ? Topic.responseGlobal()
-                : Topic.responseForLocation(sinkUpdate.getLocation());
+    protected void handleSinkUpdate(final TwinUpdate sinkUpdate) {
+        try {
+            final var topic = Strings.isNullOrEmpty(sinkUpdate.getLocation())
+                    ? Topic.responseGlobal()
+                    : Topic.responseForLocation(sinkUpdate.getLocation());
 
-        final var proto = TwinResponseProto.newBuilder();
-        proto.setConsumerKey(sinkUpdate.getKey());
-        if (!Strings.isNullOrEmpty(sinkUpdate.getLocation())) {
-            proto.setLocation(sinkUpdate.getLocation());
-        }
-        if (sinkUpdate.getObject() != null) {
-            proto.setTwinObject(ByteString.copyFrom(sinkUpdate.getObject()));
-        }
+            final var proto = mapTwinResponse(sinkUpdate);
 
-        final var record = new ProducerRecord<>(topic, sinkUpdate.getKey(), proto.build().toByteArray());
-        this.producer.send(record, (meta, ex) -> {
-            if (ex != null) {
-                RATE_LIMITED_LOG.error("Error publishing update", ex);
-            }
-        });
-        this.producer.flush();
+            final var record = new ProducerRecord<>(topic, sinkUpdate.getKey(), proto.toByteArray());
+            this.producer.send(record, (meta, ex) -> {
+                if (ex != null) {
+                    RATE_LIMITED_LOG.error("Error publishing update", ex);
+                }
+            });
+        } catch (Exception e) {
+            LOG.error("Exception while sending update for key {} at location {} ", sinkUpdate.getKey(), sinkUpdate.getLocation());
+        }
     }
 
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {
-        final TwinRequestBean request;
         try {
-            final var proto = TwinRequestProto.parseFrom(record.value());
-
-            request = new TwinRequestBean();
-            request.setKey(proto.getConsumerKey());
-            request.setLocation(proto.getLocation());
-        } catch (final InvalidProtocolBufferException e) {
-            LOG.error("Failed to parse protobuf for the request", e);
-            return;
+            final TwinRequest request = mapTwinRequestProto(record.value());
+            final var response = this.getTwin(request);
+            this.handleSinkUpdate(response);
+        } catch (Exception e) {
+            LOG.error("Exception while processing request", e);
         }
-
-        final var response = this.getTwin(request);
-        this.handleSinkUpdate(response);
     }
 }

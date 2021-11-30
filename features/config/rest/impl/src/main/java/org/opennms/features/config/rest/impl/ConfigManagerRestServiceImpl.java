@@ -28,21 +28,13 @@
 
 package org.opennms.features.config.rest.impl;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.parser.converter.SwaggerConverter;
-import org.opennms.features.config.dao.api.ConfigItem;
-import org.opennms.features.config.dao.api.ConfigSchema;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.servers.Server;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
 import org.opennms.features.config.rest.api.ConfigManagerRestService;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -50,12 +42,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.*;
+
 /**
  * <b>Currently for testing OSGI integration</b>
  */
 public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigManagerRestServiceImpl.class);
-    private String BASE_PATH = "/rest/cm/";
     public static final String MESSAGE_TAG = "MESSAGE";
 
     @Autowired
@@ -74,7 +70,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     @Override
     public Response getRawSchema(String configName) {
         try {
-            Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
+            Optional<ConfigDefinition> schema = configurationManagerService.getRegisteredConfigDefinition(configName);
             if (schema.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -87,26 +83,33 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
 
     @Override
     public Response getAllOpenApiSchema(String acceptType, HttpServletRequest request) throws JsonProcessingException {
-        Map<String, ConfigSchema<?>> schemas = configurationManagerService.getAllConfigSchema();
-        Map<String, ConfigItem> items = new HashMap<>();
-        schemas.forEach((key, schema) -> {
-            items.put(key, schema.getConverter().getValidationSchema().getConfigItem());
+        Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinition();
+
+        Map<String, OpenAPI> apis = new HashMap<>(defs.size());
+        defs.forEach((key, def) -> {
+            OpenAPI api = def.getSchema();
+            if(api != null && api.getPaths() != null){
+                apis.put(key, api);
+            }
         });
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
-        OpenAPI openapi = configSwaggerConverter.convert(request.getContextPath() + BASE_PATH, items);
-        return Response.ok(configSwaggerConverter.convertOpenAPIToString(openapi, acceptType)).build();
+        OpenAPI allAPI = configSwaggerConverter.mergeAllPathsWithRemoteRef(apis, request.getContextPath() + ConfigurationManagerService.BASE_PATH);
+        allAPI = configSwaggerConverter.setupServers(allAPI, Arrays.asList(new String[]{request.getContextPath()}));
+        String outStr = configSwaggerConverter.convertOpenAPIToString(allAPI, acceptType);
+        return Response.ok(outStr).build();
     }
 
     @Override
     public Response getOpenApiSchema(String configName, String acceptType, HttpServletRequest request) {
         try {
-            Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
-            if (schema.isEmpty()) {
+            Optional<ConfigDefinition> def = configurationManagerService.getRegisteredConfigDefinition(configName);
+            if (def.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
             ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
-            String outStr = configSwaggerConverter.convertToString(schema.get().getConverter().getValidationSchema().getConfigItem(),
-                    request.getContextPath() + BASE_PATH + schema.get().getName(), acceptType);
+            OpenAPI openapi = def.get().getSchema();
+            openapi = configSwaggerConverter.setupServers(openapi, Arrays.asList(new String[]{request.getContextPath()}));
+            String outStr = configSwaggerConverter.convertOpenAPIToString(openapi, acceptType);
             return Response.ok(outStr).build();
         } catch (IOException | RuntimeException e) {
             LOG.error(e.getMessage());
@@ -127,10 +130,11 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     @Override
     public Response getConfig(String configName, String configId) {
         try {
-            String jsonStr = configurationManagerService.getJSONStrConfiguration(configName, configId);
-            return Response.ok(jsonStr).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            Optional<String> json = configurationManagerService.getJSONStrConfiguration(configName, configId);
+            if(json.isEmpty()){
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            return Response.ok(json.get()).build();
         } catch (Exception e) {
             LOG.error("configName: {}, configId: {}", configName, configId, e);
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());

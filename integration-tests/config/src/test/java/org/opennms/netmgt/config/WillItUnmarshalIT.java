@@ -79,6 +79,7 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
+import org.opennms.netmgt.config.geoip.GeoIpConfig;
 import org.opennms.netmgt.config.groups.Groupinfo;
 import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
@@ -95,7 +96,6 @@ import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.config.prometheus.PrometheusDatacollectionConfig;
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.config.reporting.OpennmsReports;
@@ -225,6 +225,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, false, null);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, true, null);
         addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, true, null);
+        addFile(Source.CONFIG, "geoip-adapter-configuration.xml", GeoIpConfig.class, false, null);
         addFile(Source.CONFIG, "groups.xml", Groupinfo.class, true, null);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, false, null);
         addFile(Source.CONFIG, "ifttt-config.xml", IfTttConfig.class, true, null);
@@ -242,7 +243,8 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, false, null);
         addFile(Source.CONFIG, "poll-outages.xml", Outages.class, true, null);
         addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, true, null);
-        addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, false, null);
+        // moved to CmWillItUnmarshalIT
+        //addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, false, null);
         addFile(Source.CONFIG, "rancid-configuration.xml", RancidConfiguration.class, true, null);
         addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, true, null);
         addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, false, null);

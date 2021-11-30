@@ -29,7 +29,6 @@
 package org.opennms.core.ipc.twin.memory;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.function.Consumer;
 

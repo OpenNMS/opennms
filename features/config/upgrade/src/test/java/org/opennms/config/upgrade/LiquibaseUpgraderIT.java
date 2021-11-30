@@ -28,32 +28,10 @@
 
 package org.opennms.config.upgrade;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
-import static org.opennms.core.test.OnmsAssert.assertThrowsException;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Optional;
-
-import javax.sql.DataSource;
-import javax.xml.bind.JAXBException;
+import io.swagger.v3.oas.models.OpenAPI;
+import liquibase.exception.LiquibaseException;
+import liquibase.exception.MigrationFailedException;
+import liquibase.exception.ValidationFailedException;
 
 import org.json.JSONObject;
 import org.junit.After;
@@ -69,15 +47,34 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.util.FileSystemUtils;
 
-import liquibase.exception.LiquibaseException;
-import liquibase.exception.MigrationFailedException;
-import liquibase.exception.ValidationFailedException;
+import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
+import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({TemporaryDatabaseExecutionListener.class})
@@ -111,7 +108,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     }
 
     @Before
-    public void setUp() throws SQLException, IOException, URISyntaxException {
+    public void setUp() throws IOException, URISyntaxException, JAXBException, SQLException {
         this.opennmsHome = Files.createTempDirectory(this.getClass().getSimpleName());
         opennmsHomeOrg = System.getProperty(SYSTEM_PROP_OPENNMS_HOME);
         System.setProperty(SYSTEM_PROP_OPENNMS_HOME, this.opennmsHome.toString());
@@ -126,24 +123,20 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         this.connection = dataSource.getConnection();
         db.watch(connection);
         cmSpy = spy(cm);
-        assertTrue(this.cm.getRegisteredSchema(SCHEMA_NAME_PROVISIOND).isEmpty());
-        assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isEmpty());
-        assertTrue(this.cm.getRegisteredSchema(SCHEMA_NAME_EVENTD).isEmpty());
-        assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isEmpty());
+        assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROVISIOND).isEmpty());
+        assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isEmpty());
+        assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_EVENTD).isEmpty());
+        assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isEmpty());
     }
 
     @After
-    public void tearDown() throws SQLException, IOException {
-        if (cm.getXmlConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent()) {
-            this.cm.unregisterConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID);
-        }
-        if (cm.getRegisteredSchema(SCHEMA_NAME_PROVISIOND).isPresent()) {
+    public void tearDown() throws IOException, JAXBException {
+
+        if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROVISIOND).isPresent()) {
             this.cm.unregisterSchema(SCHEMA_NAME_PROVISIOND);
         }
-        if (cm.getXmlConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent()) {
-            this.cm.unregisterConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID);
-        }
-        if (cm.getRegisteredSchema(SCHEMA_NAME_EVENTD).isPresent()) {
+
+        if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_EVENTD).isPresent()) {
             this.cm.unregisterSchema(SCHEMA_NAME_EVENTD);
         }
         FileSystemUtils.deleteRecursively(this.opennmsHome.toFile());
@@ -171,15 +164,13 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             checkIfTableExists(LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOGLOCK);
 
             // check for the data itself
-            assertTrue(this.cm.getRegisteredSchema(SCHEMA_NAME_PROVISIOND).isPresent());
-            assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent());
-            assertTrue(this.cm.getRegisteredSchema(SCHEMA_NAME_EVENTD).isPresent());
-            assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent());
+            assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROVISIOND).isPresent());
+            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent());
+            assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_EVENTD).isPresent());
+            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent());
 
             // check if CM was called for schema
-            verify(cmSpy).upgradeSchema(anyString(),
-                    eq("provisiond-configuration_v2.xsd"),
-                    eq("provisiond-configuration"));
+            verify(cmSpy, times(5)).changeConfigDefinition(anyString(), any(ConfigDefinition.class));
 
             // check if xml file was moved into archive folder
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"))); // should be gone since we moved the file
@@ -189,7 +180,9 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             // check if schema changes work properly
             Optional<ConfigDefinition> configDefinition = this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROPERTIES);
             assertTrue(configDefinition.isPresent());
-            ConfigItem schema = configDefinition.get().getSchema();
+
+            OpenAPI openApi = configDefinition.get().getSchema();
+            ConfigItem schema = OpenAPIBuilder.createBuilder(SCHEMA_NAME_PROPERTIES, SCHEMA_NAME_PROPERTIES, "", openApi).getRootConfig();
             assertNotNull(schema);
             assertEquals(2, schema.getChildren().size());
             assertEquals("property1", schema.getChildren().get(0).getName());
@@ -200,7 +193,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             // check for org.opennms.features.datachoices.cfg
             Optional<JSONObject> config = this.cm.getJSONConfiguration("datachoices", "default");
             assertEquals(2, config.get().keySet().size());
-            assertEquals("false", config.get().get("enabled"));
+            assertEquals(false, config.get().get("enabled"));
             assertEquals("admin", config.get().get("acknowledged-by"));
         } finally {
             this.db.cleanUp();

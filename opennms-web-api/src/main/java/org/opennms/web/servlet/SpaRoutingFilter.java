@@ -62,7 +62,6 @@ public class SpaRoutingFilter implements Filter {
     private boolean isClientPath(final String uri) {
         return uri.startsWith("/ui/")
                 && !uri.startsWith("/ui/assets/")
-                // FIXME: This is here to serve the favicon, we could move it under /assets/, find another approach, or delete this comment and keep it as-is
                 && !uri.endsWith(".svg");
     }
 

@@ -171,8 +171,8 @@
         <bundle>mvn:net.java.dev.jna/jna/${jnaVersion}</bundle>
         <bundle>mvn:net.java.dev.jna/jna-platform/${jnaVersion}</bundle>
     </feature>
-    <feature name="javax.mail" version="1.4.5" description="javax.mail">
-        <bundle>mvn:javax.mail/mail/1.4.5</bundle>
+    <feature name="javax.mail" version="1.6.7" description="javax.mail">
+        <bundle>mvn:com.sun.mail/jakarta.mail/1.6.7</bundle>
     </feature>
     <feature name="javax.servlet" version="${servletApiVersion}" description="javax.servlet">
         <bundle start-level="30">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
@@ -422,6 +422,7 @@
         <bundle>mvn:org.opennms/opennms-config-api/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-config-model/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-config-jaxb/${project.version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
     </feature>
     <feature name="opennms-config-jaxb" version="${project.version}" description="OpenNMS :: Configuration :: JAXB">
         <feature>hibernate36</feature>
@@ -455,14 +456,6 @@
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_${scalaVersion}/${kafkaBundleVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
         <bundle dependency="true">mvn:com.github.luben/zstd-jni/${zstdJniVersion}</bundle>
-    </feature>
-    <feature name="opennms-aws-sqs" version="${project.version}" description="OpenNMS :: Features :: AWS SQS">
-        <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-core/${awsSdkVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-sqs/${awsSdkVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:com.amazonaws/amazon-sqs-java-messaging-lib/${awsSqsMessagingVersion}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
     </feature>
     <feature name="opennms-core-ipc-sink-api" version="${project.version}" description="OpenNMS :: Core :: IPC :: Sink :: API">
         <feature>dropwizard-metrics</feature>
@@ -517,14 +510,6 @@
         <feature>opennms-core-ipc-sink-kafka-common</feature>
         <bundle>mvn:org.opennms.core.ipc.sink.kafka/org.opennms.core.ipc.sink.kafka.server/${project.version}</bundle>
     </feature>
-    <feature name="opennms-core-ipc-sink-aws-sqs" version="${project.version}" description="OpenNMS :: Core :: IPC :: Sink :: AWS SQS Impl.">
-        <feature>guava</feature>
-        <feature>opennms-core-ipc-sink-api</feature>
-        <feature>opennms-aws-sqs</feature>
-        <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.aws-sqs/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.sink.aws.sqs/org.opennms.core.ipc.sink.aws.sqs.common/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.sink.aws.sqs/org.opennms.core.ipc.sink.aws.sqs.client/${project.version}</bundle>
-    </feature>
     <feature name="opennms-core-ipc-rpc-api" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: API">
         <feature>camel-blueprint</feature>
         <feature>camel-jms</feature>
@@ -545,12 +530,6 @@
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature>opennms-dao-api</feature>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.jms-impl/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-core-ipc-rpc-aws-sqs" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: AWQ SQS Impl.">
-        <feature>opennms-aws-sqs</feature>
-        <feature>opennms-core-ipc-rpc-api</feature>
-        <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.aws-sqs/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.aws-sqs-impl/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-ipc-rpc-kafka" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: Kafka Impl.">
         <feature>opennms-kafka</feature>
@@ -1679,9 +1658,8 @@
     </feature>
 
     <feature name="opennms-core-ipc-twin-grpc-publisher" description="OpenNMS :: Core :: IPC :: Twin :: GRPC :: Publisher" version="${project.version}">
+        <feature>opennms-core-ipc-twin-common</feature>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.publisher/${project.version}</bundle>
     </feature>
@@ -1794,9 +1772,9 @@
         <bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/${jackson2Version}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-core/${xmlschemaVersion}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-walker/${xmlschemaVersion}</bundle>
-        <bundle>wrap:mvn:com.atlassian.oai/swagger-request-validator-core/${swaggerRequestValidatorVersion}</bundle>
+        <!--bundle>wrap:mvn:com.atlassian.oai/swagger-request-validator-core/${swaggerRequestValidatorVersion}</bundle>
         <bundle>wrap:mvn:io.swagger.core.v3/swagger-models/${swaggerVersion}</bundle>
-        <bundle>wrap:mvn:io.swagger.parser.v3/swagger-parser/${swaggerParserVersion}</bundle>
+        <bundle>wrap:mvn:io.swagger.parser.v3/swagger-parser/${swaggerParserVersion}</bundle-->
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${servicemixSpecsVersion}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/${project.version}</bundle>
@@ -1809,7 +1787,6 @@
         <feature>opennms-bridge-http-service</feature>
     </feature>
 
-
     <feature name="opennms-bridge-http-service" description="OpenNMS Bridge OSGi HTTP Service" version="${opennms.osgi.version}">
         <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
@@ -1820,21 +1797,37 @@
         </conditional>
     </feature>
 
-    <feature name="opennms-core-ipc-twin-jms-subscriber" description="OpenNMS :: Core :: IPC :: Twin :: JMS :: Subscriber" version="${project.version}">
+    <feature name="opennms-core-ipc-twin-jms" description="OpenNMS :: Core :: IPC :: Twin :: JMS" version="${project.version}">
         <feature>camel-blueprint</feature>
         <feature>camel-jms</feature>
-        <feature>guava</feature>
         <feature>opennms-core-camel</feature>
+        <feature>opennms-core-ipc-twin-common</feature>
+        <bundle>mvn:org.opennms.core.ipc.twin.jms/org.opennms.core.ipc.twin.jms.subscriber/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-twin-common" description="OpenNMS :: Core :: IPC :: Twin :: Common" version="${project.version}">
+        <feature>guava</feature>
+        <feature>json-patch</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin.jms/org.opennms.core.ipc.twin.jms.subscriber/${project.version}</bundle>
+    </feature>
+
+    <feature name="json-patch" description="OpenNMS :: Json Patch " version="${project.version}">
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jsr305/3.0.2_1</bundle>
+        <bundle>wrap:mvn:com.github.java-json-tools/btf/1.3</bundle>
+        <bundle>wrap:mvn:com.github.java-json-tools/msg-simple/1.2</bundle>
+        <bundle>wrap:mvn:com.github.java-json-tools/jackson-coreutils/2.0$overwrite=merge&amp;Import-Package=*;</bundle>
+        <bundle>wrap:mvn:com.github.java-json-tools/json-patch/1.13$overwrite=merge&amp;Import-Package=*;resolution:=optional&amp;Export-Package=com.github.fge.jsonpatch.diff,com.github.fge.jsonpatch</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-jms" description="OpenNMS :: Core :: IPC :: JMS" version="${project.version}">
         <feature>opennms-core-ipc-sink-camel</feature>
         <feature>opennms-core-ipc-rpc-jms</feature>
-        <feature>opennms-core-ipc-twin-jms-subscriber</feature>
+        <feature>opennms-core-ipc-twin-jms</feature>
     </feature>
     <feature name="opennms-core-ipc-kafka" description="OpenNMS :: Core :: IPC :: Kafka" version="${project.version}">
         <feature>opennms-core-ipc-sink-kafka</feature>
@@ -1844,9 +1837,8 @@
 
     <feature name="opennms-core-ipc-twin-kafka-common" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Common">
         <feature>opennms-kafka</feature>
+        <feature>opennms-core-ipc-twin-common</feature>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.kafka/org.opennms.core.ipc.twin.kafka.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
@@ -1854,5 +1846,9 @@
     <feature name="opennms-core-ipc-twin-kafka" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Subscriber">
         <feature>opennms-core-ipc-twin-kafka-common</feature>
         <bundle>mvn:org.opennms.core.ipc.twin.kafka/org.opennms.core.ipc.twin.kafka.subscriber/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-twin-shell" description="OpenNMS :: Core :: IPC :: Twin :: Shell" version="${project.version}">
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.shell/${project.version}</bundle>
     </feature>
 </features>

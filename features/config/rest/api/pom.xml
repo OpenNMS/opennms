@@ -41,21 +41,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.atlassian.oai</groupId>
-      <artifactId>swagger-request-validator-core</artifactId>
-      <version>${swaggerRequestValidatorVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.swagger.parser.v3</groupId>
-      <artifactId>swagger-parser</artifactId>
-      <version>${swaggerParserVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.swagger.core.v3</groupId>
-      <artifactId>swagger-models</artifactId>
-      <version>${swaggerVersion}</version>
-    </dependency>
-    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
       <version>${jackson2Version}</version>
