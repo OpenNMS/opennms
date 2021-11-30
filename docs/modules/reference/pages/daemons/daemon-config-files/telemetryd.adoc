@@ -27,7 +27,7 @@
 | no
 
 | org.opennms.features.flows.persistence.elastic.cfg
-| Configuration for offloading flow data to Elasticsearch/
+| Configuration for offloading flow data to Elasticsearch.
 | no
 | yes
 
