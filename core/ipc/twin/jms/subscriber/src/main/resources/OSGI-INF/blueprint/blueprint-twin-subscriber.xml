@@ -23,10 +23,13 @@
     <!-- Provided by jms service-->
     <reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)" />
 
+    <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
+
     <bean id="jmsTwinSubscriber" class="org.opennms.core.ipc.twin.jms.subscriber.JmsTwinSubscriber"
     init-method="init" destroy-method="close">
         <argument ref="minionIdentity"/>
         <argument ref="queuingservice"/>
+        <argument ref="tracerRegistry"/>
         <argument value="${body.debug}"/>
     </bean>
 
