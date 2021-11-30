@@ -50,7 +50,6 @@ import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
-import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.distributed.core.api.Identity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +91,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
     protected AbstractTwinSubscriber(final Identity identity, TracerRegistry tracerRegistry) {
         this.identity = Objects.requireNonNull(identity);
         this.tracerRegistry = tracerRegistry;
-        this.tracerRegistry.init(SystemInfoUtils.getInstanceId() + "@" + identity.getLocation() + "-" + identity.getId());
+        this.tracerRegistry.init(identity.getLocation() + "@" + identity.getId());
         this.tracer = this.tracerRegistry.getTracer();
     }
 
@@ -287,7 +286,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
         private synchronized void request() {
             // Send a request
-            String tracingOperationKey = generateTracingOperationKey(getIdentity().getLocation(), getIdentity().getId());
+            String tracingOperationKey = generateTracingOperationKey(getIdentity().getLocation(), this.key);
             Span span = tracer.buildSpan(tracingOperationKey).start();
             final var request = new TwinRequest(this.key, AbstractTwinSubscriber.this.identity.getLocation());
             updateTracingTags(span, request);
