@@ -66,7 +66,7 @@ public class XsdHelper {
      * @param xsdName
      * @return
      */
-    private static XsdModelConverter getConverter(String xsdName) {
+    private static XsdModelConverter getXsdModelConverter(String xsdName) {
         Assert.notNull(xsdName);
         try {
             String xsdStr = Resources.toString(XsdHelper.getSchemaPath(xsdName), StandardCharsets.UTF_8);
@@ -85,7 +85,7 @@ public class XsdHelper {
      */
     public static ConfigDefinition buildConfigDefinition(String configName, String xsdName, String topLevelElement, String basePath){
         ConfigDefinition def = new ConfigDefinition(configName);
-        XsdModelConverter xsdConverter = XsdHelper.getConverter( xsdName);
+        XsdModelConverter xsdConverter = XsdHelper.getXsdModelConverter(xsdName);
         ConfigItem item = xsdConverter.convert(topLevelElement);
 
         ConfigSwaggerConverter swaggerConverter = new ConfigSwaggerConverter();
