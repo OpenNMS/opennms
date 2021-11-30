@@ -17,6 +17,11 @@
         <cm:importSchemaFromXsd id="enlinkd" xsdFileName="enlinkd-configuration.xsd" xsdFileHash="cf03a578f483997efbbd931700a2946bb08157352f802cf39be954aa84856471" rootElement="enlinkd-configuration"/>
         <cm:importConfig schemaId="enlinkd" configId="default" filePath="enlinkd-configuration.xml"/>
     </changeSet>
+    <changeSet author="ssuman" id="1.0-register-schema-vmware">
+        <cm:registerSchema id="vmware"/>
+        <cm:importSchemaFromXsd id="vmware" xsdFileName="vmware-config.xsd" xsdFileHash="d95180bbd8950c40256527197f97b4aee1b6277649927e47c4e50d712aa77250" rootElement="vmware-config"/>
+        <cm:importConfig schemaId="vmware" configId="default" filePath="vmware-config.xml"/>
+    </changeSet>
 
     <changeSet author="tmohanta" id="1.0-register-schema-discovery">
         <cm:registerSchema id="discovery"/>
@@ -34,6 +39,12 @@
         <cm:registerSchema id="jmx"/>
         <cm:importSchemaFromXsd id="jmx" xsdFileName="jmx-config.xsd" xsdFileHash="a06f6d24c15f976e94ac1a4467b5d4195d7b89dc114ff385c7ac5c4a65fad193" rootElement="jmx-config"/>
         <cm:importConfig schemaId="jmx" configId="default" filePath="jmx-config.xml"/>
+    </changeSet>
+
+    <changeSet author="psuthar" id="1.0-register-xmp">
+        <cm:registerSchema id="xmp"/>
+        <cm:importSchemaFromXsd id="xmp" xsdFileName="xmp-config.xsd" xsdFileHash="0f7950d6175734b2f20d50123da6614af5d44346e8311f0fb3e9e9d86c3ce94a" rootElement="xmp-config"/>
+        <cm:importConfig schemaId="xmp" configId="default" filePath="xmp-config.xml"/>
     </changeSet>
 
 </databaseChangeLog>
