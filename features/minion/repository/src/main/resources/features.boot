@@ -28,3 +28,4 @@ scv-jceks-impl
 scv-shell
 minion-rest-service
 minion-health-check
+minion-api-layer
