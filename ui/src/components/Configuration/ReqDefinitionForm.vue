@@ -5,76 +5,109 @@
       <div class="p-fluid">
         <div class="p-field">
           <label for="name" class="required">Name</label>
-          <InputText
+          <FeatherInput
             id="name"
             v-model="model.reqDef.name.$model"
-            :class="{ 'p-invalid': model.reqDef.name.$error }"
-          />
-          <ValidationMessage :model="model.reqDef.name"></ValidationMessage>
+            :error="nameValidation"
+            @keyup="getErrorMessage('name', model.reqDef.name.$errors)"
+          >
+          </FeatherInput>
         </div>
 
         <div class="p-field">
           <label for="type" class="required">Type</label>
-          <DropDown
+          <div>
+            <FeatherDropdown>
+              <template v-slot:trigger :right="right" :cover="cover" :standard="standard">
+                <FeatherButton link href="#" menu-trigger>
+                  {{typeDropDownValue==="" ? "Select type": typeDropDownValue}}
+                  <!-- {{model.reqDef.type.$model.name}} -->
+                </FeatherButton>
+              </template>
+              <FeatherDropdownItem v-for="state in stateTypes" :key="state" @click="typeDropdownChange(state)">
+                {{ state.name }}
+              </FeatherDropdownItem>
+            </FeatherDropdown>
+          </div>
+          <!-- <DropDown
             v-model="model.reqDef.type.$model"
             :options="stateTypes"
             optionLabel="name"
             optionValue="value"
             :filter="true"
             @change="generateURL"
-          ></DropDown>
+          ></DropDown> -->
         </div>
 
         <div class="p-field">
           <label for="host" class="required">Host</label>
-          <InputText
+
+          <FeatherInput
             id="host"
             v-model="model.reqDef.host.$model"
+            :error="hostValidation"
+            @keyup="getErrorMessage('host', model.reqDef.host.$errors)"
             @change="generateURL"
-            :class="{ 'p-invalid': model.reqDef.host.$error }"
-            :placeholder="hostPlaceholder"
-          />
-          <ValidationMessage :model="model.reqDef.host"></ValidationMessage>
+          >
+          </FeatherInput>
         </div>
 
         <div class="p-field">
           <label for="foreignSource" class="required">Foreign Source</label>
-          <InputText
+          <FeatherInput
             id="foreignSource"
             v-model="model.reqDef.foreignSource.$model"
-            @change="generateURL"
-            :class="{ 'p-invalid': model.reqDef.foreignSource.$error }"
-          />
-          <ValidationMessage :model="model.reqDef.foreignSource"></ValidationMessage>
+            :error="foreignSourceValidation"
+            @keyup="getErrorMessage('foreignSource', model.reqDef.foreignSource.$errors)"
+          >
+          </FeatherInput>
         </div>
 
         <div class="p-field">
           <label for="advOps">Advanced Options</label>
           <div class v-for="add in addAnotherArr">
             <p class="closeBtn">
-              <FeatherButton 
-                primary 
-                v-if="add.id !== 0" 
+              <FeatherButton
+                primary
+                v-if="add.id !== 0"
                 icon="Cancel"
-                @click="closeIcon(add.id)" 
+                @click="closeIcon(add.id)"
                 @change="generateURL"
               >
                 <FeatherIcon :icon="navigationCancelIcon"> </FeatherIcon>
               </FeatherButton>
             </p>
-            <DropDown
+            <!-- <DropDown
               v-model="add.dropdownVal"
               :options="stateAdvancedDropdown"
               optionLabel="name"
               optionValue="value"
               @change="generateURL"
-            ></DropDown>
+            ></DropDown> -->
+
+            <FeatherDropdown>
+              <template v-slot:trigger :right="right" :cover="cover" :standard="standard">
+                <FeatherButton link href="#" menu-trigger>
+                  {{advanceOptionDropDownValue==="" ? "Select type": advanceOptionDropDownValue}}
+                  <!-- {{model.reqDef.type.$model.name}} -->
+                </FeatherButton>
+              </template>
+              <FeatherDropdownItem 
+                v-for="advanceOption in stateAdvancedDropdown" 
+                :key="advanceOption" 
+                @click="advanceOptionDropdownChange(advanceOption)"
+              >
+                {{ advanceOption.name }}
+              </FeatherDropdownItem>
+            </FeatherDropdown>
+
             <p class="inputText-margin">
-              <InputText
+              <FeatherInput
+                id="name"
                 v-model="add.advTextVal"
-                placeholder="please enter parameter"
                 @change="generateURL"
-              />
+              >
+              </FeatherInput>
             </p>
           </div>
           <div class="width100">
@@ -97,32 +130,47 @@
 
         <div class="p-field">
           <label for="type" class="required">Schedule Period</label>
-          <DropDown
+          <!-- <DropDown
             v-model="model.reqDef.schedulePeriod.$model"
             :options="stateSchedulePeriod"
             optionLabel="name"
             optionValue="value"
             :filter="true"
-          ></DropDown>
+          ></DropDown> -->
+          <div>
+            <FeatherDropdown>
+              <template v-slot:trigger :right="right" :cover="cover" :standard="standard">
+                <FeatherButton link href="#" menu-trigger>
+                  {{schedulePeriodDropDownValue==="" ? "Select Period": schedulePeriodDropDownValue}}
+                </FeatherButton>
+              </template>
+              <FeatherDropdownItem 
+                v-for="schedulePeriod in stateSchedulePeriod" 
+                :key="schedulePeriod" 
+                @click="schedulePeriodDropdownChange(schedulePeriod)">
+                {{ schedulePeriod.name }}
+              </FeatherDropdownItem>
+            </FeatherDropdown>
+          </div>
           <p class="p-field p-col-6">
             Every
             <span>
-              <InputNumber
-                class="inputNumberSection"
-                showButtons
-                :min="minVal"
+              <FeatherInput
                 v-model="model.reqDef.schedulePeriodNumber.$model"
+                type="number"
+                :min="minVal"
               />
             </span>
-            {{ model.reqDef.schedulePeriod.$model }}
+            {{ schedulePeriodDropDownValue }}
           </p>
         </div>
 
         <div class="p-field p-col-2">
-          <FeatherButton 
-            primary 
-            :disabled="model.reqDef.$invalid" 
+          <FeatherButton
+            primary
+            :disabled="model.reqDef.$invalid"
             type="submit"
+            @disabled-click="disabledClick"
           >Save
           </FeatherButton>
         </div>
@@ -135,15 +183,15 @@
 
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
-import InputText from '../Common/InputText.vue'
-import DropDown from '../Common/DropDown.vue'
 import { FeatherButton }   from '@featherds/button'
 import { FeatherIcon }   from '@featherds/icon'
-import actionsAdd from "@featherds/icon/actions/Add";
+import { FeatherInput }   from '@featherds/input'
+// import { FeatherDropdown, FeatherDropdownItem }   from '@featherds/dropdown'
+import actionsAdd from "@featherds/icon/action/Add";
 import navigationCancel from "@featherds/icon/navigation/Cancel";
-import InputNumber from '../Common/InputNumber.vue'
+import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
+// import InputNumber from '../Common/InputNumber.vue'
 import State from './formState'
-import ValidationMessage from '../Common/ValidationMessage.vue'
 import router from '@/router'
 import {
   GET_TYPES_DROPDOWN,
@@ -163,19 +211,44 @@ const navigationCancelIcon = ref(navigationCancel);
 const addAnotherArr = ref([{ "id": count.value, "dropdownVal": '', "advTextVal": '' }])
 const generatedURL = ref('')
 const advString: any = ref([])
-
-const hostPlaceholder = ref('(0-255).(0-255).(0-255).(0-255)')
-
 const putDataPosition = ref()
-
 const model = State.toModel()
-
+const right = ref(false)
+const cover = ref(false)
+const standard = ref(false)
+const typeDropDownValue = ref('')
+const advanceOptionDropDownValue = ref('')
+const schedulePeriodDropDownValue = ref('')
 const props = defineProps({
   title: {
     type: String,
     default: "New"
   }
 })
+
+const nameValidation = ref('');
+const hostValidation = ref('');
+const foreignSourceValidation = ref('');
+
+const disabledClick = (e:any)=>{
+  e.preventDefault();
+}
+
+const getErrorMessage = (field:string, err:any) => {
+  switch (field) {
+    case 'name':
+      nameValidation.value = err.length > 0 ? err[0].$message: '';
+      break;
+
+    case 'host':
+      hostValidation.value = err.length > 0 ? err[0].$message: '';
+      break;
+
+    case 'foreignSource':
+      foreignSourceValidation.value = err.length > 0 ? err[0].$message: '';
+      break;
+  }
+}
 
 onMounted(async () => {
   try {
@@ -194,6 +267,7 @@ onMounted(async () => {
       putDataPosition.value = data['tablePosition']   //Helps in edit save
       reqDefinition.reqDef.name = data['import-name']
       reqDefinition.reqDef.type = url[0].split(':')[0]
+      typeDropDownValue.value = reqDefinition.reqDef.type
       reqDefinition.reqDef.host = url[2]
       generatedURL.value = data['import-url-resource']
 
@@ -233,8 +307,10 @@ const setCronSchedule = (data: any) => {
   reqDefinition.reqDef.schedulePeriodNumber = parseInt(values[1])
   if (values.length > 3) {
     reqDefinition.reqDef.schedulePeriod = values.slice(2, values.length + 1).join(' ')
+    schedulePeriodDropDownValue.value = values.slice(2, values.length + 1).join(' ')
   } else {
     reqDefinition.reqDef.schedulePeriod = values[2]
+    schedulePeriodDropDownValue.value = values[2]
   }
 }
 
@@ -243,6 +319,7 @@ const setAdvDropDowndata = (patchVal: any) => {
   const dropVal = (dropdownVal: any, advTextVal: any, index: any) => {
     if (index == 1) {
       addAnotherArr.value[0]['dropdownVal'] = dropdownVal
+      advanceOptionDropDownValue.value = dropdownVal
       addAnotherArr.value[0]['advTextVal'] = advTextVal
     } else {
       let addObj = { "id": index - 1, "dropdownVal": dropdownVal, "advTextVal": advTextVal }
@@ -290,10 +367,10 @@ const generateURL = () => {
       + reqDefinition.reqDef.foreignSource
   }
 }
-//Save 
+//Save
 const onSave = () => {
     let provisionDService = store.state.configuration.provisionDService['requisition-def'];
-    if(provisionDService != undefined){ 
+    if(provisionDService != undefined){
         //create copy state data
     let copyProvisionData = JSON.parse(JSON.stringify(provisionDService));
     //generate cron_expression
@@ -378,6 +455,18 @@ const saveCronSchedule = () => {
   return expression.join(' ')
 }
 
+const typeDropdownChange = (val: any) => {
+  typeDropDownValue.value = val.name
+}
+
+const advanceOptionDropdownChange = (val: any) => {
+  advanceOptionDropDownValue.value = val.name
+}
+
+const schedulePeriodDropdownChange = (val: any) => {
+  schedulePeriodDropDownValue.value =  val.name
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -413,5 +502,9 @@ const saveCronSchedule = () => {
   width: 30%;
   height: 30%;
   margin: 1%;
+}
+
+.feather-input-container {
+  padding-top: 0px;
 }
 </style>
