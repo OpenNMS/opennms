@@ -103,7 +103,7 @@ TIP: Instead of maintaining a local PostgreSQL installation, you can also run an
 .Set the OpenNMS release version in a global environment variable
 [source, console]
 ----
-export ONMS_RELEASE=$(python3 -c "import xml.etree.ElementTree as ET; print(ET.parse(open('pom.xml')).getroot().find( '{http://maven.apache.org/POM/4.0.0}version').text)";)
+export ONMS_RELEASE=$(./.circleci/scripts/pom2version.sh pom.xml)
 ----
 
 .Run the core server instance as your user instead of the opennms system user
