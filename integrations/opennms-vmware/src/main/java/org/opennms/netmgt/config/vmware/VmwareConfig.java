@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.config.vmware;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -38,15 +40,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * This is the top-level element for vmware-config.xml
  */
-@XmlRootElement(name = "vmware-config")
-@XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("all")
 public class VmwareConfig implements java.io.Serializable {
 
     /**
      * A VMware Server entry
      */
-    @XmlElement(name = "vmware-server")
+    @JsonProperty("vmware-server")
     private java.util.List<org.opennms.netmgt.config.vmware.VmwareServer> _vmwareServerList;
 
     public VmwareConfig() {
@@ -233,6 +233,7 @@ public class VmwareConfig implements java.io.Serializable {
     /**
      * @param vVmwareServerArray
      */
+    @JsonIgnore
     public void setVmwareServer(
             final org.opennms.netmgt.config.vmware.VmwareServer[] vVmwareServerArray) {
         //-- copy array

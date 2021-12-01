@@ -32,6 +32,9 @@ package org.opennms.netmgt.config.xmpConfig;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Top-level element for the xmp-config.xml configuration
  *  file.
@@ -50,36 +53,43 @@ package org.opennms.netmgt.config.xmpConfig;
      * If set, overrides TCP port 5270 as the port
      *  where XMP documents (queries) are sent.
      */
+    @JsonProperty("port")
     private int _port;
 
     /**
      * keeps track of state for field: _port
      */
+    @JsonIgnore
     private boolean _has_port;
 
     /**
      * Default number of retries
      */
+    @JsonProperty("retry")
     private int _retry;
 
     /**
      * keeps track of state for field: _retry
      */
+    @JsonIgnore
     private boolean _has_retry;
 
     /**
      * Default timeout (in milliseconds)
      */
+    @JsonProperty("timeout")
     private int _timeout;
 
     /**
      * keeps track of state for field: _timeout
      */
+    @JsonIgnore
     private boolean _has_timeout;
 
     /**
      * Default XMP user/profile
      */
+    @JsonProperty("authenUser")
     private java.lang.String _authenUser;
 
 
@@ -119,7 +129,7 @@ package org.opennms.netmgt.config.xmpConfig;
 
     /**
      * Overrides the java.lang.Object.equals method.
-     * 
+     *
      * @param obj
      * @return true if the objects are equal.
      */
@@ -128,9 +138,9 @@ package org.opennms.netmgt.config.xmpConfig;
             final java.lang.Object obj) {
         if ( this == obj )
             return true;
-        
+
         if (obj instanceof XmpConfig) {
-        
+
             XmpConfig temp = (XmpConfig)obj;
             if (this._port != temp._port)
                 return false;
@@ -146,7 +156,7 @@ package org.opennms.netmgt.config.xmpConfig;
                 return false;
             if (this._authenUser != null) {
                 if (temp._authenUser == null) return false;
-                else if (!(this._authenUser.equals(temp._authenUser))) 
+                else if (!(this._authenUser.equals(temp._authenUser)))
                     return false;
             }
             else if (temp._authenUser != null)
@@ -160,7 +170,7 @@ package org.opennms.netmgt.config.xmpConfig;
      * Returns the value of field 'authenUser'. The field
      * 'authenUser' has the following description: Default XMP
      * user/profile
-     * 
+     *
      * @return the value of field 'AuthenUser'.
      */
     public java.lang.String getAuthenUser(
@@ -173,7 +183,7 @@ package org.opennms.netmgt.config.xmpConfig;
      * following description: If set, overrides TCP port 5270 as
      * the port
      *  where XMP documents (queries) are sent.
-     * 
+     *
      * @return the value of field 'Port'.
      */
     public int getPort(
@@ -184,7 +194,7 @@ package org.opennms.netmgt.config.xmpConfig;
     /**
      * Returns the value of field 'retry'. The field 'retry' has
      * the following description: Default number of retries
-     * 
+     *
      * @return the value of field 'Retry'.
      */
     public int getRetry(
@@ -196,7 +206,7 @@ package org.opennms.netmgt.config.xmpConfig;
      * Returns the value of field 'timeout'. The field 'timeout'
      * has the following description: Default timeout (in
      * milliseconds)
-     * 
+     *
      * @return the value of field 'Timeout'.
      */
     public int getTimeout(
@@ -206,7 +216,7 @@ package org.opennms.netmgt.config.xmpConfig;
 
     /**
      * Method hasPort.
-     * 
+     *
      * @return true if at least one Port has been added
      */
     public boolean hasPort(
@@ -216,7 +226,7 @@ package org.opennms.netmgt.config.xmpConfig;
 
     /**
      * Method hasRetry.
-     * 
+     *
      * @return true if at least one Retry has been added
      */
     public boolean hasRetry(
@@ -226,7 +236,7 @@ package org.opennms.netmgt.config.xmpConfig;
 
     /**
      * Method hasTimeout.
-     * 
+     *
      * @return true if at least one Timeout has been added
      */
     public boolean hasTimeout(
@@ -239,14 +249,14 @@ package org.opennms.netmgt.config.xmpConfig;
      * <p>
      * The following steps came from <b>Effective Java Programming
      * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
+     *
      * @return a hash code value for the object.
      */
     @Override
     public int hashCode(
     ) {
         int result = 17;
-        
+
         long tmp;
         result = 37 * result + _port;
         result = 37 * result + _retry;
@@ -254,14 +264,14 @@ package org.opennms.netmgt.config.xmpConfig;
         if (_authenUser != null) {
            result = 37 * result + _authenUser.hashCode();
         }
-        
+
         return result;
     }
 
     /**
      * Sets the value of field 'authenUser'. The field 'authenUser'
      * has the following description: Default XMP user/profile
-     * 
+     *
      * @param authenUser the value of field 'authenUser'.
      */
     public void setAuthenUser(
@@ -274,7 +284,7 @@ package org.opennms.netmgt.config.xmpConfig;
      * following description: If set, overrides TCP port 5270 as
      * the port
      *  where XMP documents (queries) are sent.
-     * 
+     *
      * @param port the value of field 'port'.
      */
     public void setPort(

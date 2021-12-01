@@ -195,7 +195,8 @@ public class JaxbXmlConverter implements ConfigConverter {
             }
         });
         // loop through children elements
-        json.toMap().forEach((key, value) -> {
+        json.keySet().forEach(key -> {
+            Object value = json.get(key);
             if (value instanceof JSONObject) {
                 this.replaceXmlValueAttributeName((JSONObject) value);
             } else if (value instanceof JSONArray) {

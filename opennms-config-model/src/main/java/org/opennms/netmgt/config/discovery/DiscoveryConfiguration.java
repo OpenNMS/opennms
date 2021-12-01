@@ -29,27 +29,15 @@
 package org.opennms.netmgt.config.discovery;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.opennms.core.xml.DoubleAdapter;
-import org.opennms.core.xml.ValidateUsing;
-import org.opennms.netmgt.config.utils.ConfigUtils;
-
-@XmlRootElement(name = "discovery-configuration")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("discovery-configuration.xsd")
 public class DiscoveryConfiguration implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -57,22 +45,18 @@ public class DiscoveryConfiguration implements Serializable {
      * The monitoring location where this discovery configuration
      *  will be executed.
      */
-    @XmlAttribute(name = "location")
     private String location;
 
     /**
      * The total number of ping packets sent per second from
      *  OpenNMS for discovery
      */
-    @XmlAttribute(name = "packets-per-second", required = true)
-    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double packetsPerSecond;
 
     /**
      * The initial pause (in milliseconds) after discovery
      *  starts up before discovery is started.
      */
-    @XmlAttribute(name = "initial-sleep-time", required = true)
     private Long initialSleepTime;
 
     /**
@@ -81,7 +65,6 @@ public class DiscoveryConfiguration implements Serializable {
      *  addresses, it sleeps for this duration before starting another
      *  sweep.
      */
-    @XmlAttribute(name = "restart-sleep-time", required = true)
     private Long restartSleepTime;
 
     /**
@@ -91,7 +74,6 @@ public class DiscoveryConfiguration implements Serializable {
      *  count is a default and can be overridden for specific addresses or
      *  sets of addresses that are configured in this file.
      */
-    @XmlAttribute(name = "retries")
     private Integer retries;
 
     /**
@@ -99,10 +81,8 @@ public class DiscoveryConfiguration implements Serializable {
      *  default and can be overridden for specific addresses or sets of
      *  addresses that are configured in this file.
      */
-    @XmlAttribute(name = "timeout")
     private Long timeout;
 
-    @XmlAttribute(name = "foreign-source")
     private String foreignSource;
 
     /**
@@ -110,20 +90,17 @@ public class DiscoveryConfiguration implements Serializable {
      * minions. This size determines the individual unit of work a particular
      * discovery job sent to a minion will encompass.
      */
-    @XmlAttribute(name = "chunk-size")
     private Integer chunkSize;
 
     /**
      * the specific addresses to be polled
      */
-    @XmlElement(name = "specific")
     @JsonProperty("specific")
     private List<Specific> specifics = new ArrayList<>();
 
     /**
      * the range of addresses to be polled
      */
-    @XmlElement(name = "include-range")
     @JsonProperty("include-range")
     private List<IncludeRange> includeRanges = new ArrayList<>();
 
@@ -131,7 +108,6 @@ public class DiscoveryConfiguration implements Serializable {
      * the range of addresses to be excluded from the
      *  polling
      */
-    @XmlElement(name = "exclude-range")
     @JsonProperty("exclude-range")
     private List<ExcludeRange> excludeRanges = new ArrayList<>();
 
@@ -139,11 +115,9 @@ public class DiscoveryConfiguration implements Serializable {
      * a file URL holding specific addresses to be
      *  polled
      */
-    @XmlElement(name = "include-url")
     @JsonProperty("include-url")
     private List<IncludeUrl> includeUrls = new ArrayList<>();
 
-    @XmlElement(name = "definition")
     @JsonProperty("definition")
     private List<Definition> definitions = new ArrayList<>();
 
@@ -379,5 +353,4 @@ public class DiscoveryConfiguration implements Serializable {
                 + ", excludeRanges=" + this.excludeRanges + ", includeUrls="
                 + this.includeUrls + "]";
     }
-
 }

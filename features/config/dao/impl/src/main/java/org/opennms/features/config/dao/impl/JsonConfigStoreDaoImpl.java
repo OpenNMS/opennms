@@ -159,6 +159,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         }
         ValidationReport report = this.validateConfig(configName, configObject);
         if (report.hasErrors()) {
+            LOG.warn("Reject invalid config. configName: {} configId: {}\n {} \n Errors: {}", configName, configId, configObject, report.getMessages());
             throw new IllegalArgumentException(mapper.writeValueAsString(report));
         }
         configs.put(configId, configObject);

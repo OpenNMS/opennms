@@ -26,10 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.convert;
+package org.opennms.netmgt.config;
 
 import junit.framework.AssertionFailedError;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +40,13 @@ import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
+import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.config.vmware.VmwareConfig;
+import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -95,10 +102,17 @@ public class CmWillItUnmarshalIT {
      */
     private static void addFile(final Source source, final String file, final Class<?> clazz, String schemaFile, String topLevelElement, boolean checkFormat, final String exceptionMessage) {
         FILES.add(new Object[] {source, file, clazz, schemaFile, topLevelElement, checkFormat, exceptionMessage});
+
     }
 
     static {
         addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, "provisiond-configuration.xsd", "provisiond-configuration", false, null);
+        addFile(Source.CONFIG, "snmp-config.xml", SnmpConfig.class, "snmp-config.xsd", "snmp-config", false, null);
+        addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, "enlinkd-configuration.xsd", "enlinkd-configuration",  false, null);
+        addFile(Source.CONFIG, "vmware-config.xml", VmwareConfig.class, "vmware-config.xsd", "vmware-config", false, null);
+        addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, "discovery-configuration.xsd","discovery-configuration", false, null);
+        addFile(Source.CONFIG, "jmx-config.xml", JmxConfig.class, "jmx-config.xsd","jmx-config", true, null);
+        addFile(Source.CLASSPATH, "/defaults/xmp-config.xml", XmpConfig.class, "xmp-config.xsd","xmp-config", true, null);
     }
 
     /**
@@ -185,7 +199,7 @@ public class CmWillItUnmarshalIT {
     }
 
     @Test
-    public void testJaxbFormat() throws IOException {
+    public void testJaxbFormat() throws IOException, JSONException {
         if (!checkFormat) {
             return;
         }

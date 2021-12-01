@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.netmgt.config.jmx;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,12 +42,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-@XmlRootElement(name = "jmx-config")
-@XmlAccessorType(XmlAccessType.NONE)
+
 public class JmxConfig {
+    @JsonProperty("mbean-server")
     private Set<MBeanServer> m_mBeanServer = new HashSet<>();
 
-    @XmlElement(name = "mbean-server")
     public Set<MBeanServer> getMBeanServer() {
         return m_mBeanServer;
     }

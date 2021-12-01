@@ -49,23 +49,18 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
  *  "#<comments>". Lines starting with a '#' are ignored and so are
  *  characters after a '<space>#' in a line.
  */
-@XmlRootElement(name = "include-url")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("discovery-configuration.xsd")
 public class IncludeUrl implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
      * inner value
      */
-    @XmlValue
     private String url;
 
     /**
      * The monitoring location where this include URL
      *  will be executed.
      */
-    @XmlAttribute(name = "location")
     private String location;
 
     /**
@@ -75,17 +70,14 @@ public class IncludeUrl implements Serializable {
      *  number of retries. This retry count overrides the
      *  default.
      */
-    @XmlAttribute(name = "retries")
     private Integer retries;
 
     /**
      * The timeout on each poll for addresses listed in
      *  this file. This timeout overrides the default.
      */
-    @XmlAttribute(name = "timeout")
     private Long timeout;
 
-    @XmlAttribute(name = "foreign-source")
     private String foreignSource;
 
     public IncludeUrl() {

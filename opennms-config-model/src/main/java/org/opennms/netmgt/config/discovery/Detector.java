@@ -39,22 +39,18 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opennms.core.xml.ValidateUsing;
 
-@XmlRootElement(name = "detector")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("discovery-configuration.xsd")
 public class Detector implements Serializable {
 
     private static final long serialVersionUID = -565655596645361870L;
 
-    @XmlAttribute(name = "name")
     private String name;
 
-    @XmlAttribute(name = "class-name")
     private String className;
 
-    @XmlElement(name = "parameter")
+    @JsonProperty("parameter")
     private List<Parameter> parameters = new ArrayList<>();
 
     public String getName() {

@@ -283,7 +283,8 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         configItem.setRequired("REQUIRED".equals(xmlSchemaAttrInfo.getAttribute().getUse().name()));
         configItem.setDefaultValue(xmlSchemaAttrInfo.getAttribute().getDefaultValue());
         configItem.setSchemaRef(xmlSchemaAttrInfo.getAttribute().getQName().toString());
-        setRestrictions(configItem, xmlSchemaAttrInfo.getType().getFacets());
+        setRestrictions(configItem, xmlSchemaAttrInfo.getType() == null ? null : xmlSchemaAttrInfo.getType().getFacets());
+
 
         return configItem;
     }
@@ -298,13 +299,17 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         String strType;
         ConfigItem.Type type = null;
 
-        if (xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName() != null) {
-            strType = xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName().getLocalPart().toLowerCase();
-            type = getConfigType(strType);
-        }
-        if (ConfigItem.Type.OBJECT == type || type == null) {
-            strType = xmlSchemaAttrInfo.getType().getBaseType().name().toLowerCase();
-            type = getConfigType(strType);
+        if(xmlSchemaAttrInfo.getAttribute().getSchemaType() == null && xmlSchemaAttrInfo.getType() == null){
+            type = ConfigItem.Type.STRING;
+        } else {
+            if (xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName() != null) {
+                strType = xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName().getLocalPart().toLowerCase();
+                type = getConfigType(strType);
+            }
+            if (ConfigItem.Type.OBJECT == type || type == null) {
+                strType = xmlSchemaAttrInfo.getType().getBaseType().name().toLowerCase();
+                type = getConfigType(strType);
+            }
         }
         return type;
     }

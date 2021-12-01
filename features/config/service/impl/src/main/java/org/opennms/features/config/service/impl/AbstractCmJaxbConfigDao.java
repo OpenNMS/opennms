@@ -28,10 +28,6 @@
 
 package org.opennms.features.config.service.impl;
 
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.dao.api.ConfigConverter;
-import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
