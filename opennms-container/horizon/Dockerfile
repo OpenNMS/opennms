@@ -43,7 +43,7 @@ RUN groupadd -g 10001 opennms && \
 FROM horizon-base
 
 # A default which installs the required OpenNMS Horizon packages
-ARG ONMS_PACKAGES="opennms opennms-core opennms-webapp-jetty opennms-webapp-hawtio"
+ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-hawtio opennms-plugin-protocol-xmp"
 
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES
