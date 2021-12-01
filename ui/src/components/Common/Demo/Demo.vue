@@ -2,23 +2,19 @@
 <template>
   <p>InputText Demo</p>
   <p>Input Text :: {{ showInputText }}</p>
-  <InputText
+  <FeatherInput
     id="inputText01"
-    type="text"
-    placeholder="Please Enter Text"
-    primeClass="lg"
+    class="test"
+    data-ref-id="test"
     v-model="showInputText"
-  />
+  >
+  </FeatherInput>
   <hr />
   <p>InputNumber Demo</p>
-  <InputNumber
-    id="inputNumber01"
-    mode="decimal"
-    showButtons
-    :min="5"
-    :max="10"
-    :step="2"
+  <FeatherInput
     v-model="showInputNumber"
+    type="number"
+    background
   />
   <p>Input Number :: {{ showInputNumber }}</p>
   <p>FieldSet Demo</p>
@@ -26,15 +22,16 @@
     label="Fieldset Area"
     rows="5" /> -->
   <p>Dropdown Demo</p>
-  <DropDown
-    v-model="selectedCity1"
-    :options="cities"
-    optionLabel="name"
-    optionValue="code"
-    placeholder="City Name"
-    :editable="true"
-    :filter="true"
-  ></DropDown>
+  <FeatherDropdown>
+    <template v-slot:trigger :right="right" :cover="cover" :standard="standard">
+      <FeatherButton link href="#" menu-trigger>
+        {{selectedDropDownValue==="" ? "Select City Name": selectedDropDownValue}}
+      </FeatherButton>
+    </template>
+    <FeatherDropdownItem v-for="city in cities" :key="city" @click="dropdownChange(city.name)">
+      {{ city.name }}
+    </FeatherDropdownItem>
+  </FeatherDropdown>
 
   <hr />
   <p>TimePicker Demo</p>
@@ -60,21 +57,20 @@
 <script setup lang="ts">
 
 import { ref } from 'vue'
-import InputText from '../InputText.vue'
-import InputNumber from '../InputNumber.vue'
-import DropDown from '../DropDown.vue'
 import TimePicker from '../TimePicker.vue'
 import { FeatherButton }   from '@featherds/button'
 import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
-//import FeatherTextarea from '@featherds/textarea'
+import { FeatherInput } from '@featherds/input'
+import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 
-const city = ref('')
+const selectedDropDownValue = ref('')
 const showInputText = ref('')
 const showInputNumber = ref()
-const selectedCity1 = ref('')
 const showTimePicker = ref('')
 const cityGroupName = ref('')
-const pcontent = ref('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+const right = ref(false)
+const cover = ref(false)
+const standard = ref(false)
 const cities = ref([
   { name: 'New York', code: 'NY' },
   { name: 'Rome', code: 'RM' },
@@ -92,6 +88,10 @@ const categories = ref([
 
 const selectedValue = (val: string) => {
   cityGroupName.value = val
+}
+
+const dropdownChange = (val: string) => {
+  selectedDropDownValue.value = val
 }
 
 </script>

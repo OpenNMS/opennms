@@ -248,29 +248,6 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         }
     }
 
-//    /**
-//     * convert (it will skip convert it JSONObject passed) and validate
-//     *
-//     * @param configName
-//     * @param configObject (config object / JSONObject)
-//     * @return
-//     * @throws IOException
-//     */
-//    private JSONObject validateConfigWithConvert(final String configName, final JSONObject configObject)
-//            throws IOException {
-//        Optional<ConfigDefinition> configDefinition = this.getConfigDefinition(configName);
-//        try {
-//                this.validateConfig(configDefinition, configObject);
-//                return configObject;
-//        } catch (RuntimeException e) {
-//            // make it error easier to understand
-//            if (e.getCause() instanceof UnmarshalException) {
-//                throw new RuntimeException("Input format error ! " + e.getMessage());
-//            }
-//            throw e;
-//        }
-//    }
-
     /**
      * Validate the whole config set
      * @param configName

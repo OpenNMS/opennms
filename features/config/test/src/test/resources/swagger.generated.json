@@ -201,6 +201,7 @@
   "components" : {
     "schemas" : {
       "VacuumdConfiguration" : {
+        "required" : [ "period" ],
         "type" : "object",
         "properties" : {
           "period" : {
@@ -257,6 +258,7 @@
         }
       },
       "automation" : {
+        "required" : [ "action-name", "date", "dateTime", "name", "positiveInterval" ],
         "type" : "object",
         "properties" : {
           "date" : {
@@ -322,6 +324,7 @@
         "description" : "A collection of triggers"
       },
       "trigger" : {
+        "required" : [ "name" ],
         "type" : "object",
         "properties" : {
           "operator" : {
@@ -359,6 +362,7 @@
         "description" : "A collection of actions"
       },
       "action" : {
+        "required" : [ "name" ],
         "type" : "object",
         "properties" : {
           "name" : {
@@ -386,6 +390,7 @@
         }
       },
       "auto-event" : {
+        "required" : [ "name" ],
         "type" : "object",
         "properties" : {
           "fields" : {
@@ -412,6 +417,7 @@
         }
       },
       "action-event" : {
+        "required" : [ "name" ],
         "type" : "object",
         "properties" : {
           "add-all-parms" : {
@@ -434,6 +440,7 @@
         }
       },
       "assignment" : {
+        "required" : [ "name", "type", "value" ],
         "type" : "object",
         "properties" : {
           "type" : {

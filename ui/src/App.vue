@@ -6,6 +6,7 @@
     </template>
 
     <Sidebar />
+    <Spinner />
 
     <router-view />
     <notifications position="top center" ignoreDuplicates = true />  
@@ -13,10 +14,16 @@
 </template>
   
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useStore } from 'vuex'
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Menubar from './components/Layout/Menubar.vue'
 import Sidebar from './components/Layout/Sidebar.vue'
 import { notify } from "@kyvg/vue3-notification"
+import Spinner from './components/Common/Spinner.vue'
+
+const store = useStore()
+onMounted(() => store.dispatch('authModule/getWhoAmI'))
 </script>
   
 <style lang="scss">
@@ -82,6 +89,7 @@ a {
   display: flex;
 }
 .space-between {
+  display: flex;
   justify-content: space-between;
 }
 .space-evenly {
@@ -96,6 +104,24 @@ a {
 }
 .pointer {
   cursor: pointer !important;
+}
+.feather-secondary {
+  background: var(--feather-secondary);
+}
+.feather-secondary-variant {
+  background: var(--feather-secondary-variant);
+}
+.feather-shade3 {
+  background: var(--feather-shade-3);
+}
+.body-small {
+  @include body-small();
+}
+.subtitle1 {
+  @include subtitle1();
+}
+.subtitle2 {
+  @include subtitle2();
 }
 
 // header theme

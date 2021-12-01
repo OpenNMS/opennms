@@ -28,35 +28,32 @@
 
 package org.opennms.features.config.service.util;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import javax.xml.bind.JAXBException;
-
+import com.google.common.io.Resources;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.dao.api.ConfigConverter;
-import org.opennms.features.config.dao.api.ValidationSchema;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
+import org.opennms.features.config.dao.impl.util.XmlSchema;
 import org.opennms.features.config.service.config.FakeXsdForTest;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import com.google.common.io.Resources;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @JUnitConfigurationEnvironment
-public class XmlConverterTest {
+public class JaxbXmlConverterTest {
     final static String FOREIGN_SOURCES = "/opt/opennms/etc/foreign-sources";
 
     @Test
     public void testConverter() throws IOException {
-        final XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
+        final JaxbXmlConverter converter = new JaxbXmlConverter("provisiond-configuration.xsd", "provisiond-configuration", null);
         final String sourceXml = Resources.toString(
                 Resources.getResource("provisiond-configuration.xml"), StandardCharsets.UTF_8);
         final String expectedJson = Resources.toString(
@@ -67,33 +64,27 @@ public class XmlConverterTest {
         JSONAssert.assertEquals(expectedJson, convertedJson, true);
 
         // Verify the rendered JSON
-        final ProvisiondConfiguration objectFromMappedJson = JaxbUtils.unmarshal(ProvisiondConfiguration.class, converter.jsonToXml(convertedJson));
+        final ProvisiondConfiguration objectFromMappedJson = ConfigConvertUtil.jsonToObject(convertedJson, ProvisiondConfiguration.class);
 
         Assert.assertEquals("json importThreads Value is not correct", 11L, (long) objectFromMappedJson.getImportThreads());
-        Assert.assertTrue("json foreign-source-dir is not correct. " + objectFromMappedJson.getForeignSourceDir(), FOREIGN_SOURCES.equals(objectFromMappedJson.getForeignSourceDir()));
+        Assert.assertEquals("json foreign-source-dir is not correct. " + objectFromMappedJson.getForeignSourceDir(), FOREIGN_SOURCES, objectFromMappedJson.getForeignSourceDir());
 
         // compare Object from json to object from source xml
         final ProvisiondConfiguration objectFromSourceXml = JaxbUtils.unmarshal(ProvisiondConfiguration.class, sourceXml);
         assertThat(objectFromMappedJson, equalTo(objectFromSourceXml));
-
-        // check xml > json > xml > object
-        String convertedXml = converter.jsonToXml(convertedJson);
-        ProvisiondConfiguration objectFromConvertedXml =  JaxbUtils.unmarshal(ProvisiondConfiguration.class, convertedXml);
-        Assert.assertEquals("Object ImportThreads Value is not correct", 11L, (long) objectFromConvertedXml.getImportThreads());
-        Assert.assertTrue("Object ForeignSourceDir is not correct. " + objectFromConvertedXml.getForeignSourceDir(), FOREIGN_SOURCES.equals(objectFromConvertedXml.getForeignSourceDir()));
     }
 
     @Test
     public void testXsdSearch() throws IOException, JAXBException {
         // check if xsd is not located in xsds path
-        XmlConverter converter = new XmlConverter("trapd-configuration.xsd", "trapd-configuration");
-        String schema = converter.getRawSchema();
+        JaxbXmlConverter converter = new JaxbXmlConverter("trapd-configuration.xsd", "trapd-configuration", null);
+        XmlSchema schema = converter.getXmlSchema();
         Assert.assertNotNull("Fail to find schema!!!", schema);
     }
 
     @Test
     public void testValidate() throws JAXBException, IOException {
-        XmlConverter converter = new XmlConverter("trapd-configuration.xsd", "trapd-configuration");
+        JaxbXmlConverter converter = new JaxbXmlConverter("trapd-configuration.xsd", "trapd-configuration", null);
         FakeXsdForTest test = new FakeXsdForTest(1024, "127.0.0.1");
         Snmpv3User user = new Snmpv3User();
         user.setSecurityName("SecurityName");
@@ -101,7 +92,7 @@ public class XmlConverterTest {
         test.setUseAddressFromVarbind(true);
         String xmlStr = JaxbUtils.marshal(test);
 
-        FakeXsdForTest convertedTest =  JaxbUtils.unmarshal(FakeXsdForTest.class, xmlStr);
+        FakeXsdForTest convertedTest = JaxbUtils.unmarshal(FakeXsdForTest.class, xmlStr);
         Assert.assertEquals("Trap port is wrong after conversion!",
                 1024, convertedTest.getSnmpTrapPort());
         Assert.assertEquals("SnmpTrapAddress is wrong after conversion!",

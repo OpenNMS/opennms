@@ -21,6 +21,10 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.vue",
-    "spec/**/*.ts",
-    "vite.config.ts"]
+    "vite.config.ts",
+    "tests"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
