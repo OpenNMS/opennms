@@ -1466,7 +1466,7 @@ public class Collectd extends AbstractServiceDaemon implements
         for(Collector collector: collectors) {
             String svcName = collector.getService();
             LOG.debug("instantiateCollectors: Loading collector {}, classname {}", svcName, collector.getClassName());
-            CompletableFuture<ServiceCollector> collectorFuture = m_serviceCollectorRegistry.getCollectorByClassName(collector.getClassName());
+            CompletableFuture<ServiceCollector> collectorFuture = m_serviceCollectorRegistry.getCollectorFutureByClassName(collector.getClassName());
             collectorFuture.whenComplete((sc, ex) -> {
                 try {
                     sc.initialize();

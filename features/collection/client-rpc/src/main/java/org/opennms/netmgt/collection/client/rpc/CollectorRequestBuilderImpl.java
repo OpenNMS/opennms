@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
@@ -93,7 +92,7 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
     @Override
     public CollectorRequestBuilder withCollectorClassName(String className) {
         this.className = className;
-        this.serviceCollector = client.getRegistry().getCollectorByClassName(className).completeOnTimeout(null, 1, TimeUnit.SECONDS).join();
+        this.serviceCollector = client.getRegistry().getCollectorByClassName(className);
         return this;
     }
 

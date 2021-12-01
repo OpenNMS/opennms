@@ -31,7 +31,6 @@ package org.opennms.netmgt.collection.client.rpc;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.opennms.core.logging.Logging;
@@ -70,7 +69,7 @@ public class CollectorClientRpcModule extends AbstractXmlRpcModule<CollectorRequ
     @Override
     public CompletableFuture<CollectorResponseDTO> execute(CollectorRequestDTO request) {
         final String className = request.getClassName();
-        final ServiceCollector collector = serviceCollectorRegistry.getCollectorByClassName(className).completeOnTimeout(null, 1, TimeUnit.SECONDS).join();
+        final ServiceCollector collector = serviceCollectorRegistry.getCollectorByClassName(className);
         if (collector == null) {
             throw new IllegalArgumentException("No collector found with class name '" + className + "'.");
         }

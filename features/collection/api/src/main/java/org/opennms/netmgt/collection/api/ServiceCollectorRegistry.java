@@ -38,7 +38,10 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface ServiceCollectorRegistry {
 
-    CompletableFuture<ServiceCollector> getCollectorByClassName(String className);
+    ServiceCollector getCollectorByClassName(String className);
+
+    CompletableFuture<ServiceCollector> getCollectorFutureByClassName(String className);
+
 
     Set<String> getCollectorClassNames();
 

@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceCollectorRegistry;
@@ -111,7 +112,21 @@ public class DefaultServiceCollectorRegistry implements ServiceCollectorRegistry
     }
 
     @Override
-    public synchronized CompletableFuture<ServiceCollector> getCollectorByClassName(String className) {
+    public synchronized ServiceCollector getCollectorByClassName(String className) {
+        ServiceCollector collector = null;
+        CompletableFuture<ServiceCollector> future = m_collectorsByClassName.get(className);
+        if(future != null) {
+            try {
+                collector = future.get(100, TimeUnit.MILLISECONDS);
+            } catch (Exception e) {
+                //do nothing
+            }
+        }
+        return collector;
+    }
+
+    @Override
+    public synchronized CompletableFuture<ServiceCollector> getCollectorFutureByClassName(String className) {
         CompletableFuture<ServiceCollector> future = m_collectorsByClassName.get(className);
         if(future == null) {
             future = new CompletableFuture<>();
@@ -119,6 +134,7 @@ public class DefaultServiceCollectorRegistry implements ServiceCollectorRegistry
         }
         return future;
     }
+
 
     @Override
     public Set<String> getCollectorClassNames() {

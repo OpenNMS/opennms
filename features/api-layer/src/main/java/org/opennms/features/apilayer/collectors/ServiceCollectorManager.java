@@ -28,6 +28,7 @@
 
 package org.opennms.features.apilayer.collectors;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,9 +45,9 @@ public class ServiceCollectorManager extends InterfaceMapper<ServiceCollectorFac
     private static final Logger LOG = LoggerFactory.getLogger(ServiceCollectorManager.class);
     private List<String> rrdConfigList;
 
-    public ServiceCollectorManager(BundleContext bundleContext, List<String> rrdConfigList) {
+    public ServiceCollectorManager(BundleContext bundleContext, String rraConfigStr) {
         super(ServiceCollector.class, bundleContext);
-        this.rrdConfigList = rrdConfigList;
+        this.rrdConfigList = Arrays.asList(rraConfigStr.split(","));
     }
 
     @Override

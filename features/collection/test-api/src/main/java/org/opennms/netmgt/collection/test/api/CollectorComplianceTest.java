@@ -36,7 +36,6 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Assume;
 import org.junit.Test;
@@ -204,7 +203,7 @@ public abstract class CollectorComplianceTest {
     }
 
     private ServiceCollector getCollector() {
-        return serviceCollectorRegistry.getCollectorByClassName(collectorClass.getCanonicalName()).completeOnTimeout(null, 1, TimeUnit.SECONDS).join();
+        return serviceCollectorRegistry.getCollectorByClassName(collectorClass.getCanonicalName());
     }
 
     private ServiceCollector getNewCollector() {
