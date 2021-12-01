@@ -90,7 +90,7 @@ public class ConfigSwaggerConverterAllTest {
             }
         });
 
-        OpenAPI openapi = configSwaggerConverter.mergeAllPathsWithRemoteRef(apis, "/opennms/rest/cm/");
+        OpenAPI openapi = configSwaggerConverter.mergeAllPathsWithRemoteRef(apis, "/opennms/rest/cm");
         String yaml = configSwaggerConverter.convertOpenAPIToString(openapi, "application/yaml");
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
