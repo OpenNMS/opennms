@@ -254,7 +254,6 @@
         <span>Descriptions</span>
       </div>
       <div class="card-body">
-        <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
         </p>
           <p><b>(Delete) Bucket Item</b>: Delete the specified image file from <em>bucket</em>.</p>
 
