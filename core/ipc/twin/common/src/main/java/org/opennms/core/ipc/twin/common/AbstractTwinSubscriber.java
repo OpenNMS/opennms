@@ -50,7 +50,6 @@ import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
-import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.distributed.core.api.Identity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

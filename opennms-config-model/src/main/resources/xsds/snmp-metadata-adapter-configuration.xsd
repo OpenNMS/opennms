@@ -5,7 +5,7 @@
     <xs:element name="snmp-metadata-config">
       <xs:complexType>
         <xs:sequence>
-          <xs:element name="config">
+          <xs:element name="config" maxOccurs="unbounded" minOccurs="1">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="entry" maxOccurs="unbounded" minOccurs="0">

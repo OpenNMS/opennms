@@ -19,12 +19,11 @@ fi
 if [ -e "${OPENNMS_HOME}/etc/opennms.conf" ]; then
   # shellcheck disable=SC1090,SC1091
   . "${OPENNMS_HOME}/etc/opennms.conf"
-else
-  [ -z "$RUNAS" ] && RUNAS=opennms
 fi
+[ -z "$RUNAS" ] && RUNAS=opennms
 
-if [ -z "${RUNAS}" ]; then
-  echo "Something is very wrong, \$RUNAS is not set. Bailing."
+if ! id -u "${RUNAS}" >/dev/null 2>&1; then
+  echo "Something is very wrong, \$RUNAS=${RUNAS} but that user does not exist. Bailing."
   exit 1
 fi
 
