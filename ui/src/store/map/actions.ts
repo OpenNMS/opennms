@@ -1,5 +1,6 @@
 import API from "@/services"
 import { QueryParameters, VuexContext, Coordinates, AlarmModificationQueryVariable, Node } from '@/types'
+import { LatLngBounds } from 'leaflet'
 
 const getNodes = async (context: VuexContext, queryParameters?: QueryParameters) => {
   const resp = await API.getNodes(queryParameters)
@@ -53,6 +54,10 @@ const setMapCenter = (context: VuexContext, center: Coordinates) => {
   context.commit("SAVE_MAP_CENTER", center)
 }
 
+const setMapBounds = (context: VuexContext, bounds: LatLngBounds) => {
+  context.commit("SAVE_MAP_BOUNDS", bounds)
+}
+
 const modifyAlarm = async (context: VuexContext, alarmQueryVariable: AlarmModificationQueryVariable) => {
   const resp = await API.modifyAlarm(alarmQueryVariable.pathVariable, alarmQueryVariable.queryParameters)
   return resp
@@ -65,5 +70,6 @@ export default {
   getNodesGraphEdges,
   setInterestedNodesId,
   setMapCenter,
-  modifyAlarm
+  modifyAlarm,
+  setMapBounds
 }

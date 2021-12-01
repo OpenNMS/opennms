@@ -9,6 +9,7 @@
         :zoom="zoom"
         :zoomAnimation="true"
         @ready="onLeafletReady"
+        @moveend="onMoveEnd"
       >
         <template v-if="leafletReady">
           <l-control-layers />
@@ -62,11 +63,12 @@ import WarninglIcon from '@/assets/Warning-icon.png'
 import MinorIcon from '@/assets/Minor-icon.png'
 import MajorIcon from '@/assets/Major-icon.png'
 import CriticalIcon from '@/assets/Critical-icon.png'
+import { Map as LeafletMap } from 'leaflet'
 
 const store = useStore()
 const map = ref()
 const leafletReady = ref<boolean>(false)
-const leafletObject = ref("")
+const leafletObject = ref({} as LeafletMap)
 const zoom = ref<number>(2)
 const iconWidth = 25
 const iconHeight = 42
@@ -157,6 +159,8 @@ const onLeafletReady = async () => {
     leafletReady.value = true
   }
 }
+
+const onMoveEnd = () => store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
 
 /*****Tile Layer*****/
 const tileProviders = [

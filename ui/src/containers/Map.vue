@@ -2,12 +2,12 @@
   <div class="feather-row">
     <div class="feather-col-12">
       <splitpanes class="default-theme" horizontal style="height: calc(100vh - 80px)">
-        <pane min-size="1" max-size="60">
+        <pane min-size="1" max-size="100" size="62">
           <div class="leaflet-map">
             <LeafletMap />
           </div>
         </pane>
-        <pane id="map-pane-under">
+        <pane min-size="1" max-size="100" size="38" id="map-pane-under">
           <GridTabs />
         </pane>
       </splitpanes>
@@ -21,7 +21,7 @@
 </script>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, onActivated, onDeactivated } from 'vue'
 import { useStore } from "vuex"
 import { Splitpanes, Pane } from "splitpanes"
 import "splitpanes/dist/splitpanes.css"
@@ -43,6 +43,9 @@ onMounted(() => {
 
   store.dispatch("mapModule/getNodesGraphEdges")
 })
+
+onActivated(() => store.dispatch('appModule/setNavRailOpen', false))
+onDeactivated(() => store.dispatch('appModule/setNavRailOpen', true))
 </script>
 
 <style lang="scss">

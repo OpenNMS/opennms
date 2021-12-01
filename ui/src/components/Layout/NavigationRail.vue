@@ -1,35 +1,33 @@
 <template>
-  <FeatherNavigationRail>
-    <FeatherRailItem
-      :class="{ selected: isSelected('/') }"
-      slot="main"
-      href="#/"
-      :icon="Instances"
-      title="Nodes"
-    />
-    <FeatherRailItem
-      :class="{ selected: isSelected('/map') }"
-      slot="main"
-      href="#/map"
-      :icon="Location"
-      title="Map"
-    />
-    <FeatherRailItem
-      :class="{ selected: isSelected('/file-editor') }"
-      v-if="isAdmin"
-      slot="main"
-      href="#/file-editor"
-      :icon="AddNote"
-      title="File Editor"
-    />
-    <FeatherRailItem
-      :class="{ selected: isSelected('/logs') }"
-      v-if="isAdmin"
-      slot="main"
-      href="#/logs"
-      :icon="MarkComplete"
-      title="Logs"
-    />
+  <FeatherNavigationRail @update:modelValue="onNavRailClick">
+    <template v-slot:main>
+      <FeatherRailItem
+        :class="{ selected: isSelected('/') }"
+        href="#/"
+        :icon="Instances"
+        title="Nodes"
+      />
+      <FeatherRailItem
+        :class="{ selected: isSelected('/map') }"
+        href="#/map"
+        :icon="Location"
+        title="Map"
+      />
+      <FeatherRailItem
+        :class="{ selected: isSelected('/file-editor') }"
+        v-if="isAdmin"
+        href="#/file-editor"
+        :icon="AddNote"
+        title="File Editor"
+      />
+      <FeatherRailItem
+        :class="{ selected: isSelected('/logs') }"
+        v-if="isAdmin"
+        href="#/logs"
+        :icon="MarkComplete"
+        title="Logs"
+      />
+    </template>
   </FeatherNavigationRail>
 </template>
 <script setup lang=ts>
@@ -48,6 +46,8 @@ import {
 const store = useStore()
 const route = useRoute()
 const isAdmin = computed(() => store.getters['authModule/isAdmin'])
+const navRailOpen = computed(() => store.state.appModule.navRailOpen)
+const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRailOpen.value)
 const isSelected = (path: string) => path === route.fullPath
 </script>
 

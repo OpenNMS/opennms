@@ -28,7 +28,7 @@ import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 import { AgGridVue } from "ag-grid-vue3"
 import { useStore } from "vuex"
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import { Coordinates, Node } from "@/types"
 import { FeatherButton } from "@featherds/button"
 import { ColumnApi, GridApi, GridReadyEvent } from 'ag-grid-community'
@@ -44,9 +44,7 @@ const defaultColDef = {
   suppressMenu: true
 }
 
-const interestedNodesID = computed<string[]>(() => store.state.mapModule.interestedNodesID)
-
-const getGridRowDataFromInterestedNodes = () => {
+const rowData = computed(() => {
   return store.getters['mapModule/getInterestedNodes'].map((node: any) => ({
     id: +node.id,
     foreignSource: node.foreignSource,
@@ -61,8 +59,7 @@ const getGridRowDataFromInterestedNodes = () => {
     sysContact: node.sysContact,
     sysLocation: node.sysLocation
   }))
-}
-const rowData = ref(getGridRowDataFromInterestedNodes())
+})
 
 let gridApi: GridApi
 let gridColumnApi: ColumnApi
@@ -78,17 +75,6 @@ const onGridReady = (params: GridReadyEvent) => {
   gridColumnApi = params.columnApi
   autoSizeAll(false)
 }
-
-watch(
-  () => interestedNodesID.value,
-  () => {
-    if (gridApi && gridApi.setRowData != undefined && gridApi.setRowData != null) {
-      gridApi.setRowData(
-        getGridRowDataFromInterestedNodes()
-      )
-    }
-  }
-)
 
 const clearFilters = () => gridApi.setFilterModel(null)
 

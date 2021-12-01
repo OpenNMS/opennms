@@ -1,4 +1,5 @@
 import { Node, Alarm, Coordinates } from '@/types'
+import { LatLngBounds } from 'leaflet'
 import { State } from './state'
 
 const SAVE_NODES_TO_STATE = (state: State, nodes: Node[]) => {
@@ -21,10 +22,15 @@ const SAVE_MAP_CENTER = (state: State, center: Coordinates) => {
   state.mapCenter = center
 }
 
+const SAVE_MAP_BOUNDS = (state: State, bounds: LatLngBounds) => {
+  state.mapBounds = bounds
+}
+
 export default {
   SAVE_NODES_TO_STATE,
   SAVE_ALARMS_TO_STATE,
   SAVE_INTERESTED_NODES_ID,
   SAVE_NODE_EDGES,
-  SAVE_MAP_CENTER
+  SAVE_MAP_CENTER,
+  SAVE_MAP_BOUNDS
 }

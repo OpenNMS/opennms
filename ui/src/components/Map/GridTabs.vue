@@ -1,8 +1,8 @@
 <template>
   <FeatherTabContainer class="tabs">
     <template v-slot:tabs>
-      <FeatherTab ref="nodesTab" @click="goToNodes">Nodes({{ interestedNodesID.length }})</FeatherTab>
       <FeatherTab ref="alarmTab" @click="goToAlarms">Alarms({{ alarms.length }})</FeatherTab>
+      <FeatherTab ref="nodesTab" @click="goToNodes">Nodes({{ interestedNodesID.length }})</FeatherTab>
     </template>
   </FeatherTabContainer>
   <router-view />
@@ -24,8 +24,8 @@ const alarms = computed(() => store.getters['mapModule/getAlarmsFromSelectedNode
 const alarmTab = ref()
 const nodesTab = ref()
 
-const goToNodes = () => router.push('/map')
-const goToAlarms = () => router.push('/map/alarms')
+const goToAlarms = () => router.push('/map')
+const goToNodes = () => router.push('/map/nodes')
 
 onActivated(() => {
   if (router.currentRoute.value.name === 'MapAlarms') {

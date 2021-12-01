@@ -38,13 +38,13 @@ const router = createRouter({
       children: [
         {
           path: "",
-          name: "MapNodes",
-          component: () => import('@/components/Map/MapNodesGrid.vue')
-        },
-        {
-          path: "alarms",
           name: "MapAlarms",
           component: () => import('@/components/Map/MapAlarmsGrid.vue')
+        },
+        {
+          path: "nodes",
+          name: "MapNodes",
+          component: () => import('@/components/Map/MapNodesGrid.vue')
         },
       ],
     },
