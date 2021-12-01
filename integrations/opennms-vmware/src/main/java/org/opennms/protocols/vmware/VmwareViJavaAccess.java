@@ -551,6 +551,11 @@ public class VmwareViJavaAccess implements AutoCloseable {
                 }
             }
         }
+
+        if (ipAddresses.isEmpty()) {
+            logger.warn("Requisition node for host system '{}' will not have any assigned IP addresses!", hostSystem.getName());
+        }
+
         return ipAddresses;
     }
 
@@ -577,6 +582,10 @@ public class VmwareViJavaAccess implements AutoCloseable {
                     }
                 }
             }
+        }
+
+        if (ipAddresses.isEmpty()) {
+            logger.warn("Requisition node for virtual machine '{}' will not have any assigned IP addresses!", virtualMachine.getName());
         }
 
         return ipAddresses;
