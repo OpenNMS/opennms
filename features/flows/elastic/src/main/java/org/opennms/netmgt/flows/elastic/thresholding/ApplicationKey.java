@@ -30,16 +30,18 @@ package org.opennms.netmgt.flows.elastic.thresholding;
 
 import java.util.Objects;
 
+import org.opennms.netmgt.flows.elastic.Direction;
+
 public class ApplicationKey {
-    public final ExporterKey exporterKey;
     public final int iface;
+    public final Direction direction;
     public final String application;
 
-    public ApplicationKey(final ExporterKey exporterKey,
-                          final int iface,
+    public ApplicationKey(final int iface,
+                          final Direction direction,
                           final String application) {
-        this.exporterKey = Objects.requireNonNull(exporterKey);
         this.iface = iface;
+        this.direction = direction;
         this.application = Objects.requireNonNull(application);
     }
 
@@ -52,15 +54,15 @@ public class ApplicationKey {
             return false;
         }
         final ApplicationKey that = (ApplicationKey) o;
-        return Objects.equals(this.exporterKey, that.exporterKey) &&
-               Objects.equals(this.iface, that.iface) &&
+        return Objects.equals(this.iface, that.iface) &&
+               Objects.equals(this.direction, that.direction) &&
                Objects.equals(this.application, that.application);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.exporterKey,
-                            this.iface,
+        return Objects.hash(this.iface,
+                            this.direction,
                             this.application);
     }
 }

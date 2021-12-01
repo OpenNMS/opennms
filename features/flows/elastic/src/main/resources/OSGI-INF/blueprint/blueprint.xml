@@ -31,11 +31,8 @@
             <cm:property name="nodeCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
             <cm:property name="nodeCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
             <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
-            <cm:property name="flowThresholdCache.enabled" value="true"/>
-            <cm:property name="flowThresholdCache.maximumSize" value="10000"/>
-            <cm:property name="flowThresholdCache.expireAfterWrite" value="1800000"/> <!-- Drop cached sessions after 30 minutes -->
-            <cm:property name="flowThresholdCache.recordStats" value="true"/>
             <cm:property name="flowThreshold.stepSizeMs" value="300000"/>
+            <cm:property name="flowThreshold.idleTimeoutMs" value="900000"/>
             <cm:property name="skipElasticsearchPersistence" value="false"/> <!-- Set to false to disable persisting flows to ES. -->
 
             <!-- Bulk Action settings -->
@@ -216,21 +213,13 @@
     <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"/>
 
     <!-- Thresholding -->
-    <bean id="thresholdingCacheConfig" class="org.opennms.core.cache.CacheConfig">
-        <argument value="flow-thresholding-sessions"/>
-        <property name="metricRegistry" ref="flowRepositoryMetricRegistry" />
-        <property name="enabled" value="${flowThresholdCache.enabled}" />
-        <property name="maximumSize" value="${flowThresholdCache.maximumSize}" />
-        <property name="expireAfterWrite" value="${flowThresholdCache.expireAfterWrite}" />
-        <property name="recordStats" value="${flowThresholdCache.recordStats}" />
-    </bean>
-
-    <bean id="flowThresholding" class="org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding" >
+    <bean id="flowThresholding" class="org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding" destroy-method="close">
         <argument ref="thresholdingService"/>
         <argument ref="collectionAgentFactory"/>
         <argument ref="ipInterfaceDao"/>
-        <argument ref="thresholdingCacheConfig"/>
+
         <property name="stepSizeMs" value="${flowThreshold.stepSizeMs}"/>
+        <property name="idleTimeoutMs" value="${flowThreshold.idleTimeoutMs}"/>
     </bean>
 
     <!-- The repository -->

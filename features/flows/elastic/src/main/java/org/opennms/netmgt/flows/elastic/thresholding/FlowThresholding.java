@@ -28,19 +28,21 @@
 
 package org.opennms.netmgt.flows.elastic.thresholding;
 
+import java.io.Closeable;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.opennms.core.cache.Cache;
-import org.opennms.core.cache.CacheBuilder;
-import org.opennms.core.cache.CacheConfig;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -60,14 +62,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.common.cache.CacheLoader;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class FlowThresholding {
+public class FlowThresholding implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(FlowThresholding.class);
 
     public static final String SERVICE_NAME = "Flow-Threshold";
     public static final String RESOURCE_TYPE_NAME = "flowApp";
+    public static final String RESOURCE_GROUP = "application";
 
     private final static RrdRepository FLOW_APP_RRD_REPO = new RrdRepository();
 
@@ -76,36 +79,20 @@ public class FlowThresholding {
 
     private final IpInterfaceDao ipInterfaceDao;
 
-    private final Map<ApplicationKey, AtomicLong> applicationAccumulator;
-
-    private final Cache<ExporterKey, Session> sessions;
+    private final ConcurrentMap<ExporterKey, Session> sessions = Maps.newConcurrentMap();
 
     private long stepSizeMs = 0;
+    private volatile long idleTimeoutMs = 15 * 60 * 1000;
 
     private Timer timer;
 
     public FlowThresholding(final ThresholdingService thresholdingService,
                             final CollectionAgentFactory collectionAgentFactory,
-                            final IpInterfaceDao ipInterfaceDao,
-                            final CacheConfig sessionCacheConfig) {
+                            final IpInterfaceDao ipInterfaceDao) {
         this.thresholdingService = Objects.requireNonNull(thresholdingService);
         this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
 
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
-
-        //noinspection unchecked
-        this.applicationAccumulator = Maps.newConcurrentMap();
-
-        //noinspection unchecked
-        this.sessions = new CacheBuilder<ExporterKey, Session>()
-                .withConfig(sessionCacheConfig)
-                .withCacheLoader(new CacheLoader<ExporterKey, Session>() {
-                    @Override
-                    public Session load(final ExporterKey key) throws Exception {
-                        throw new IllegalStateException();
-                    }
-                })
-                .build();
     }
 
     public long getStepSizeMs() {
@@ -133,78 +120,154 @@ public class FlowThresholding {
         }, stepSizeMs, stepSizeMs);
     }
 
+    public long getIdleTimeoutMs() {
+        return this.idleTimeoutMs;
+    }
+
+    public void setIdleTimeoutMs(final long idleTimeoutMs) {
+        this.idleTimeoutMs = idleTimeoutMs;
+    }
+
     private void runTimerTask() {
         // Use one timestamp for the whole timer task run...
         final Date timerTaskDate = new Date();
 
-        for (final Map.Entry<ApplicationKey, AtomicLong> entry : applicationAccumulator.entrySet()) {
-            final ExporterKey exporterKey = entry.getKey().exporterKey;
+        final List<ExporterKey> idleSessions = Lists.newArrayList();
 
-            final OnmsIpInterface iface = ipInterfaceDao.get(exporterKey.interfaceId);
+        for (final Map.Entry<ExporterKey, Session> entry : this.sessions.entrySet()) {
+            final var exporterKey = entry.getKey();
+            final var session = entry.getValue();
 
-            final FlowThresholding.Session session;
-
-            try {
-                session = this.sessions.get(exporterKey, () -> {
-                    final CollectionAgent collectionAgent = FlowThresholding.this.collectionAgentFactory.createCollectionAgent(iface);
-
-                    final ThresholdingSession thresholdingSession = FlowThresholding.this.thresholdingService.createSession(iface.getNodeId(),
-                            collectionAgent.getHostAddress(),
-                            SERVICE_NAME,
-                            FLOW_APP_RRD_REPO,
-                            new ServiceParameters(Collections.emptyMap()));
-
-                    return new Session(thresholdingSession,
-                            collectionAgent);
-                });
-            } catch (ExecutionException e) {
-                LOG.warn("Error creating cache entry for thresholding session", e);
+            // Check whether session is idle and mark it for removal
+            if (session.lastUpdate.isBefore(Instant.now().minus(this.idleTimeoutMs, ChronoUnit.MILLIS))) {
+                idleSessions.add(exporterKey);
                 continue;
             }
 
-            try {
-                final NodeLevelResource nodeResource = new NodeLevelResource(iface.getNodeId());
-                final DeferredGenericTypeResource appResource = new DeferredGenericTypeResource(nodeResource, RESOURCE_TYPE_NAME, entry.getKey().application);
+            final OnmsIpInterface iface = this.ipInterfaceDao.get(exporterKey.interfaceId);
+            final NodeLevelResource nodeResource = new NodeLevelResource(iface.getNodeId());
 
-                final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(session.collectionAgent)
-                        .withTimestamp(timerTaskDate)
-                        .withCounter(appResource, entry.getKey().application, "bytes", entry.getValue().get());
+            for (final Map.Entry<ApplicationKey, AtomicLong> application : session.applications.entrySet()) {
+                try {
+                    final DeferredGenericTypeResource appResource = new DeferredGenericTypeResource(nodeResource,
+                                                                                                    RESOURCE_TYPE_NAME,
+                                                                                                    String.format("%s:%s",
+                                                                                                                  application.getKey().iface, // TODO cpape: Find interface name
+                                                                                                                  application.getKey().application));
 
-                // TODO fooker: Set sequence number from flow to aid distributed thresholding
+                    final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(session.collectionAgent)
+                            .withTimestamp(timerTaskDate)
+                            .withCounter(appResource,
+                                         RESOURCE_GROUP,
+                                         application.getKey().direction == Direction.INGRESS
+                                         ? "bytesIn"
+                                         : "bytesOut",
+                                         application.getValue().get())
+                            .withStringAttribute(appResource,
+                                                 RESOURCE_GROUP,
+                                                 "application",
+                                                 application.getKey().application)
+                            .withStringAttribute(appResource,
+                                                 RESOURCE_GROUP,
+                                                 "interface",
+                                                 Integer.toString(application.getKey().iface)); // TODO cpape: Find interface name
 
-                session.thresholdingSession.accept(collectionSetBuilder.build());
-            } catch (ThresholdInitializationException e) {
-                LOG.warn("Error initializing thresholding session", e);
+                    // TODO fooker: Set sequence number from flow to aid distributed thresholding
+
+                    session.thresholdingSession.accept(collectionSetBuilder.build());
+                } catch (ThresholdInitializationException e) {
+                    LOG.warn("Error initializing thresholding session", e);
+                }
             }
+        }
+
+        // Cleanup idle sessions
+        for (ExporterKey exporterKey : idleSessions) {
+            LOG.debug("Dropping session for {}", exporterKey);
+            this.sessions.remove(exporterKey);
         }
     }
 
     public void threshold(final List<FlowDocument> documents,
                           final FlowSource source) throws ExecutionException, ThresholdInitializationException {
 
+        final var now = Instant.now();
+
         for (final var document : documents) {
             if (document.getNodeExporter() != null && !Strings.isNullOrEmpty(document.getApplication())) {
                 final var exporterKey = new ExporterKey(document.getNodeExporter().getInterfaceId());
 
-                final var applicationKey = new ApplicationKey(exporterKey,
-                        document.getDirection() == Direction.INGRESS
-                                ? document.getInputSnmp()
-                                : document.getOutputSnmp(),
-                        document.getApplication());
+                final var session = this.sessions.computeIfAbsent(exporterKey, key -> {
+                    LOG.debug("Accepting session for {}", exporterKey);
 
-                this.applicationAccumulator.computeIfAbsent(applicationKey, k -> new AtomicLong(0)).addAndGet(document.getBytes());
+                    final OnmsIpInterface iface = this.ipInterfaceDao.get(exporterKey.interfaceId);
+
+                    final CollectionAgent collectionAgent = FlowThresholding.this.collectionAgentFactory.createCollectionAgent(iface);
+
+                    final ThresholdingSession thresholdingSession;
+                    try {
+                        thresholdingSession = FlowThresholding.this.thresholdingService.createSession(iface.getNodeId(),
+                                                                                                      collectionAgent.getHostAddress(),
+                                                                                                      SERVICE_NAME,
+                                                                                                      FLOW_APP_RRD_REPO,
+                                                                                                      new ServiceParameters(Collections.emptyMap()));
+                    } catch (ThresholdInitializationException e) {
+                        throw new RuntimeException("Error initializing thresholding session", e);
+                    }
+
+                    return new Session(thresholdingSession,
+                                       collectionAgent);
+                });
+
+                session.process(now, document);
             }
         }
     }
 
+    public Set<ExporterKey> getSessions() {
+        return Collections.unmodifiableSet(this.sessions.keySet());
+    }
+
     private static class Session {
+        public final Map<ApplicationKey, AtomicLong> applications;
+
         public final ThresholdingSession thresholdingSession;
         public final CollectionAgent collectionAgent;
 
+        // The last time this session sees any incoming flow.
+        // This is not synchronized as reference updates are always atomic.
+        // See https://docs.oracle.com/javase/specs/jls/se7/html/jls-17.html#jls-17.7
+        private volatile Instant lastUpdate = null;
+
         private Session(final ThresholdingSession thresholdingSession,
                         final CollectionAgent collectionAgent) {
+            this.applications = Maps.newConcurrentMap();
+
             this.thresholdingSession = Objects.requireNonNull(thresholdingSession);
             this.collectionAgent = Objects.requireNonNull(collectionAgent);
         }
+
+        public void process(final Instant now, final FlowDocument document) {
+            final var applicationKey = new ApplicationKey(document.getDirection() == Direction.INGRESS
+                                                          ? document.getInputSnmp()
+                                                          : document.getOutputSnmp(),
+                                                          document.getDirection(),
+                                                          document.getApplication());
+
+            this.applications.computeIfAbsent(applicationKey, k -> new AtomicLong(0)).addAndGet(document.getBytes());
+
+            // Mark session as updated
+            this.lastUpdate = now;
+        }
+
+        public Instant getLastUpdate() {
+            return this.lastUpdate;
+        }
+    }
+
+    @Override
+    public void close() {
+        this.sessions.clear();
+        this.timer.cancel();
     }
 }
