@@ -47,10 +47,26 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
     public OnmsSnmpInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex) {
         Assert.notNull(nodeId, "nodeId may not be null");
         Assert.notNull(ifIndex, "ifIndex may not be null");
-        return findUnique("select distinct snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ? and snmpIf.ifIndex = ?", 
+        return findUnique("select snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ? and snmpIf.ifIndex = ?",
                           nodeId, 
                           ifIndex);
         
+    }
+
+    @Override
+    public List<OnmsSnmpInterface> findByNodeId(Integer nodeId) {
+        Assert.notNull(nodeId, "nodeId may not be null");
+        return find("select snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ?",
+                nodeId);
+
+    }
+
+    @Override
+    public List<OnmsSnmpInterface> findByMacLinksOfNode(Integer nodeId) {
+        Assert.notNull(nodeId, "nodeId may not be null");
+        return find("from OnmsSnmpInterface snmpIf where snmpIf.physAddr in (select l.macAddress from BridgeMacLink l where l.node.id = ?)",
+                nodeId);
+
     }
 
     @Override
@@ -58,7 +74,7 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
         Assert.notNull(foreignSource, "foreignSource may not be null");
         Assert.notNull(foreignId, "foreignId may not be null");
         Assert.notNull(ifIndex, "ifIndex may not be null");
-        return findUnique("select distinct snmpIf from OnmsSnmpInterface as snmpIf join snmpIf.node as node where node.foreignSource = ? and node.foreignId = ? and node.type = 'A' and snmpIf.ifIndex = ?", 
+        return findUnique("select snmpIf from OnmsSnmpInterface as snmpIf join snmpIf.node as node where node.foreignSource = ? and node.foreignId = ? and node.type = 'A' and snmpIf.ifIndex = ?",
                           foreignSource, 
                           foreignId, 
                           ifIndex);
@@ -69,7 +85,7 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
         Assert.notNull(nodeId, "nodeId may not be null");
         Assert.notNull(description, "description may not be null");
 
-        return findUnique("SELECT DISTINCT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ? AND (LOWER(snmpIf.ifDescr) = LOWER(?) OR LOWER(snmpIf.ifName) = LOWER(?))", 
+        return findUnique("SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ? AND (LOWER(snmpIf.ifDescr) = LOWER(?) OR LOWER(snmpIf.ifName) = LOWER(?))",
             nodeId, 
             description,
             description
