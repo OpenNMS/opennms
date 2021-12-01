@@ -490,12 +490,8 @@
   </bean>
 
   <bean id="eventTranslatorConfigFactory" class="org.opennms.netmgt.config.EventTranslatorConfigFactory" depends-on="eventTranslatorConfigFactory-init" factory-method="getInstance"/>
-  
-  <bean id="trapdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
-  </bean>
 
-  <bean id="trapdConfigFactory" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfigFactory-init" factory-method="getInstance"/>
+  <bean id="trapdConfigFactory" class="org.opennms.netmgt.config.TrapdConfigFactory"/>
 
   <bean id="userFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>

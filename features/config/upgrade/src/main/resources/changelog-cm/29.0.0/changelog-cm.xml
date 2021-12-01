@@ -29,6 +29,12 @@
         <cm:importConfig schemaId="discovery" configId="default" filePath="discovery-configuration.xml"/>
     </changeSet>
 
+    <changeSet author="psuthar" id="1.0-register-schema-trapd">
+        <cm:registerSchema id="trapd"/>
+        <cm:importSchemaFromXsd id="trapd" xsdFileName="trapd-configuration.xsd" xsdFileHash="ad97a001cd7ebb8a8b1a45574ba4e681e204ecf8592bf264764d4d7f52efc7a1" rootElement="trapd-configuration"/>
+        <cm:importConfig schemaId="trapd" configId="default" filePath="trapd-configuration.xml"/>
+    </changeSet>
+
     <changeSet author="dherdt" id="1.0-register-jmxconfig">
         <cm:registerSchema id="jmx"/>
         <cm:importSchemaFromXsd id="jmx" xsdFileName="jmx-config.xsd" xsdFileHash="a06f6d24c15f976e94ac1a4467b5d4195d7b89dc114ff385c7ac5c4a65fad193" rootElement="jmx-config"/>

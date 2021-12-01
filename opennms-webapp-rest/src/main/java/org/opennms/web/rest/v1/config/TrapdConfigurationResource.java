@@ -37,23 +37,24 @@ import javax.ws.rs.core.Response;
 import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("trapdConfigurationResource")
 public class TrapdConfigurationResource {
+    @Autowired
+    TrapdConfigFactory m_trapdConfigResource;
 
     @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(TrapdConfigurationResource.class);
-    
-    @Resource(name="trapd-configuration.xml")
-    ConfigurationResource<TrapdConfig> m_trapdConfigResource;
-    
+
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getTrapdConfiguration() throws ConfigurationResourceException {
-        return Response.ok(m_trapdConfigResource.get()).build();
+        return Response.ok(m_trapdConfigResource.getConfig()).build();
     }
 
 }
