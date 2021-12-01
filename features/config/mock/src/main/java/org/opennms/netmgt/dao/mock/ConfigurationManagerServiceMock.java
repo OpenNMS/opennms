@@ -86,8 +86,22 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
         if ("provisiond".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("provisiond", "provisiond-configuration.xsd",
                     "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
+        } else if ("enlinkd".equals(configName)) {
+            def = XsdHelper.buildConfigDefinition("enlinkd", "enlinkd-configuration.xsd",
+                    "enlinkd-configuration", ConfigurationManagerService.BASE_PATH);
+        } else if ("vmware".equals(configName)) {
+            def = XsdHelper.buildConfigDefinition("vmware", "vmware-config.xsd",
+                    "vmware-config", ConfigurationManagerService.BASE_PATH);
+        } else if ("discovery".equals(configName)) {
+            def = XsdHelper.buildConfigDefinition("discovery", "discovery-configuration.xsd",
+                    "discovery-configuration", ConfigurationManagerService.BASE_PATH);
+        } else if ("jmx".equals(configName)) {
+            def = XsdHelper.buildConfigDefinition("jmx", "jmx-config.xsd",
+                    "jmx-config", ConfigurationManagerService.BASE_PATH);
+        } else if ("xmp".equals(configName)) {
+            def = XsdHelper.buildConfigDefinition("xmp", "xmp-config.xsd",
+                    "xmp-config", ConfigurationManagerService.BASE_PATH);
         }
-
         return Optional.ofNullable(def);
     }
 
