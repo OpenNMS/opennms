@@ -98,7 +98,7 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
 
         private static File s_configFile;
 
-        private static final String CONFIG_NAME = "discovery";
+        private static final String CONFIG_NAME = "snmp";
         private static final String DEFAULT_CONFIG_ID = "default";
         /**
          * The singleton instance of this factory
