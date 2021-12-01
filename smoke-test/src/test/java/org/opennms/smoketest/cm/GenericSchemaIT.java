@@ -99,7 +99,7 @@ public class GenericSchemaIT extends OpenNMSSeleniumIT {
 
             JSONObject path = new JSONObject(jsonObject.get("paths").toString());
             LOG.info("path : " + path);
-            JSONObject get = new JSONObject(path.get("/opennms/rest/cm/" + schemaName).toString());
+            JSONObject get = new JSONObject(path.get("/rest/cm/" + schemaName).toString());
             JSONObject getDetails = new JSONObject(get.get("get").toString());
             boolean responseCodeCheck = getDetails.get("responses").toString().contains("200");
             boolean tagCheck = getDetails.get("tags").toString().contains(schemaName);
