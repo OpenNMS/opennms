@@ -1,6 +1,6 @@
 
 [[flows-basic]]
-= Basic flows setup
+= Start here: basic flows setup
 
 This section describes how to get started with flows in a basic setup to collect, enrich (classify), persist, and visualize flows.
 
@@ -18,6 +18,9 @@ The Drift version must match the targeted Elasticsearch version.
 == Elasticsearch setup
 
 Set the following environment variables in Elasticsearch:
+
+[source, xml]
+----
 
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTICSEARCH_VERSION:-7.6.2}
@@ -38,30 +41,32 @@ Set the following environment variables in Elasticsearch:
       interval: 30s
       timeout: 10s
       retries: 5
+----
 
+=== Tips
 
-```
-discovery.type 	single-node
+You may also want to set the following:
+
+[source, xml]
+----
 ELASTIC_CONTAINER 	true
-ES_JAVA_OPTS 	-Xms12g -Xmx12g
-node.name 	es-node-01
-PATH 	/usr/share/elasticsearch/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-search.max_buckets 	30000
-```
+ES_JAVA_OPTS 	-Xms12g -Xmx12g <1>
+PATH 	/usr/share/elasticsearch/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin <2>
+search.max_buckets 	30000 <3>
+----
 
-Besides of the ES_JAVA_OPTS values (It's the RAM that JVM is allowed to consume), we had to increase this search bucket env because of https://opennms.discourse.group/t/too-many-buckets-exception-in-flow-deep-dive-dashboard/
+<1> The RAM that JVM is allowed to consume.
+<2> TBD
+<3> Search bucket size.
+You may want to increase the default value.
 
+You may also want to create a job to clean the jobs so that the disk does not fill up, for example, keep X days of flows.
+Filled disks are a challenging problem to address for non-Elasticsearch experts.
+We recommend the Elasticsearch https://www.elastic.co/guide/en/elasticsearch/client/curator/current/index.html[Curator tool] to do this.
 
-The ElasticSearch configuration in the Stack Play can be found here: https://github.com/opennms-forge/stack-play/blob/master/minimal-flows/docker-compose.yaml#L30-L48
-It does not have set all ENVs I have set. So we can recommend those I guess.
+[source, xml]
+----
 
-
-Maybe also worth to mention: I have ~ 300GB flow data in ES. BUT there is a trap. Without a cleaning job in ES you will fill up the disk and then a non ES expert has a big problem to solve the issue.
-So an ONMS admin has to make sure somehow that there is a clean job. Something like: just keep X days of flows. Usually you can do that by sending `curl` commands, but this is not easy for an normal person.
-
-I am solving this problem with a ES tool called `Curator`. I have this script running regularly that deletes indices older than a 15 days. Here the elasticIndexStrategy is important. In my case 1 day = 1 index to keep.
-
-```
 #!/bin/bash -eux
 
 KEEP=15
@@ -74,15 +79,27 @@ docker run --rm -i \
     --ignore_empty_list \
     --filter_list '[{"filtertype":"pattern","kind":"prefix","value":"netflow"},{"filtertype":"count","count":'${KEEP}',"source":"creation_date"}]'
 
-```
+----
 
 monitor the stack ... to get an alarm if these are down (see M. docs)
 
-== OpenNMS configuration
+== Configure Elasticsearch persistence
 
-**etc/org.opennms.features.flows.persistence.elastic.cfg**
+From a Karaf shell on your {page-component-title} instance, update `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to configure the flow persistence to use your Elasticsearch cluster:
 
-```
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.flows.persistence.elastic
+admin@opennms()> config:property-set elasticUrl http://elastic:9200
+admin@opennms()> config:update
+----
+
+We also recommend setting the following:
+
+[source, xml]
+----
 # ElasticSearch persistence configuration
 elasticUrl = http://10.10.3.218:9200
 connTimeout = 30000
@@ -91,13 +108,63 @@ settings.index.number_of_replicas = 0
 settings.index.number_of_shards=1
 settings.index.refresh_interval=10s
 elasticIndexStrategy=daily
-```
+----
 
-Those settings or elasticIndexStrategy can differ, depending on the needs. For example I just need one shard because I just have one ElasticSearch VM running. Not a big cluster.
+See <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch Configuration>> for a complete set of options.
+
+== Enable a protocol
+
+Enable one or more of the protocols you would like to handle in `$OPENNMS_HOME/etc/telemetryd-configuration.xml`.
+
+NOTE: In this example we enable the NetFlow v5 protocol, but you can repeat the same process for any of the other flow-related protocols.
+
+.Enable NetFlow v5 in telemetryd-configuration.xml
+[source, xml]
+----
+<listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
+    <parameter key="port" value="8877"/>
+
+    <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5" />
+</listener>
+
+<queue name="Netflow-5">
+    <adapter name="Netflow-5-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter" enabled="true">
+    </adapter>
+</queue>
+----
+
+Send a `reloadDaemonConfig` event via the CLI to apply the changes without restarting:
+
+[source, console]
+----
+$OPENNMS_HOME/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+----
+
+This opens a UDP socket bound to `0.0.0.0:8877` to which NetFlow v5 messages are forwarded.
+
+== Link the web UI to Helm
+
+To access flow-related graphs from the {page-component-title} web interface, you must configure a link to your instance of OpenNMS Helm.
+
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.netmgt.flows.rest
+admin@opennms()> config:property-set flowGraphUrl 'http://grafana:3000/dashboard/flows?node=$nodeId&interface=$ifIndex'
+admin@opennms()> config:update
+----
+
+NOTE: This URL can optionally point to other tools as well.
+It supports placeholders for `$nodeId`, `$ifIndex`, `$start`, and `$end`.
+
+Once configured, an icon will appear on the top-right corner of a resource graph for an SNMP interface if there is flow data for that interface.
+
+== OpenNMS configuration
+
+**etc/org.opennms.features.flows.persistence.elastic.cfg**
+
+
 
 **etc/telemetryd-configuration.xml**
 
--> make sure you are using the Multi-port listener 
-
-
-You can find both configuration files in the Stack Play here: https://github.com/opennms-forge/stack-play/tree/master/minimal-flows/container-fs/opt/opennms-overlay/etc
+-> make sure you are using the Multi-port listener

@@ -129,9 +129,13 @@
 ** xref:elasticsearch/features/alarm-history.adoc[]
 
 * xref:flows/introduction.adoc[]
-** xref:flows/setup.adoc[]
+** xref:flows/basic.adoc[]
+** xref:flows/distributed.adoc[]
+** xref:flows/sentinel.adoc[]
+** xref:flows/nephron.adoc[]
 ** xref:flows/classification-engine.adoc[]
 ** xref:flows/aggregation.adoc[]
+** xref:flows/troubleshoot.adoc[]
 
 * xref:kafka-producer/kafka-producer.adoc[]
 ** xref:kafka-producer/enable-kafka.adoc[]

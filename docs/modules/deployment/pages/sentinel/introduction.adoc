@@ -1,3 +1,4 @@
+[[sentinel-intro]]
 = Sentinel
 
 Sentinel provides scalability for data processing, including flows, SNMP traps, syslog messages, and streaming telemetry. 
