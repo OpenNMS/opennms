@@ -35,6 +35,7 @@
             <cm:property name="flowThresholdCache.maximumSize" value="10000"/>
             <cm:property name="flowThresholdCache.expireAfterWrite" value="1800000"/> <!-- Drop cached sessions after 30 minutes -->
             <cm:property name="flowThresholdCache.recordStats" value="true"/>
+            <cm:property name="flowThreshold.stepSizeMs" value="300000"/>
             <cm:property name="skipElasticsearchPersistence" value="false"/> <!-- Set to false to disable persisting flows to ES. -->
 
             <!-- Bulk Action settings -->
@@ -229,6 +230,7 @@
         <argument ref="collectionAgentFactory"/>
         <argument ref="ipInterfaceDao"/>
         <argument ref="thresholdingCacheConfig"/>
+        <property name="stepSizeMs" value="${flowThreshold.stepSizeMs}"/>
     </bean>
 
     <!-- The repository -->
