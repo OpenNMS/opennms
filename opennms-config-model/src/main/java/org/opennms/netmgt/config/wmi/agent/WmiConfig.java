@@ -97,8 +97,18 @@ public class WmiConfig implements Serializable {
         m_timeout = timeout;
     }
 
+    public void setTimeout(final Optional<Integer> timeout){
+        if(timeout.isPresent())
+            this.setTimeout(timeout.get());
+    }
+
     public Optional<Integer> getRetry() {
         return Optional.ofNullable(m_retry);
+    }
+
+    public void setRetry(final Optional<Integer> retry){
+        if(retry.isPresent())
+            this.setRetry(retry.get());
     }
 
     public void setRetry(final Integer retry) {
@@ -107,6 +117,11 @@ public class WmiConfig implements Serializable {
 
     public Optional<String> getUsername() {
         return Optional.ofNullable(m_username);
+    }
+
+    public void setUsername(final Optional<String> username){
+        if(username.isPresent())
+            this.setUsername(username.get());
     }
 
     public void setUsername(final String username) {
@@ -121,12 +136,22 @@ public class WmiConfig implements Serializable {
         m_domain = ConfigUtils.normalizeString(domain);
     }
 
+    public void setDomain(final Optional<String> domain){
+        if(domain.isPresent())
+            this.setDomain(domain.get());
+    }
+
     public Optional<String> getPassword() {
         return Optional.ofNullable(m_password);
     }
 
     public void setPassword(final String password) {
         m_password = ConfigUtils.normalizeString(password);
+    }
+
+    public void setPassword(final Optional<String> password){
+        if(password.isPresent())
+            this.setPassword(password.get());
     }
 
     public List<Definition> getDefinitions() {
