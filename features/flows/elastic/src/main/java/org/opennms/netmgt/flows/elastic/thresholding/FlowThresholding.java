@@ -142,8 +142,10 @@ public class FlowThresholding {
 
             final OnmsIpInterface iface = ipInterfaceDao.get(exporterKey.interfaceId);
 
+            final FlowThresholding.Session session;
+
             try {
-                final FlowThresholding.Session session = this.sessions.get(exporterKey, () -> {
+                session = this.sessions.get(exporterKey, () -> {
                     final CollectionAgent collectionAgent = FlowThresholding.this.collectionAgentFactory.createCollectionAgent(iface);
 
                     final ThresholdingSession thresholdingSession = FlowThresholding.this.thresholdingService.createSession(iface.getNodeId(),
@@ -155,7 +157,12 @@ public class FlowThresholding {
                     return new Session(thresholdingSession,
                             collectionAgent);
                 });
+            } catch (ExecutionException e) {
+                LOG.warn("Error creating cache entry for thresholding session", e);
+                continue;
+            }
 
+            try {
                 final NodeLevelResource nodeResource = new NodeLevelResource(iface.getNodeId());
                 final DeferredGenericTypeResource appResource = new DeferredGenericTypeResource(nodeResource, RESOURCE_TYPE_NAME, entry.getKey().application);
 
@@ -166,8 +173,6 @@ public class FlowThresholding {
                 // TODO fooker: Set sequence number from flow to aid distributed thresholding
 
                 session.thresholdingSession.accept(collectionSetBuilder.build());
-            } catch (ExecutionException e) {
-                LOG.warn("Error creating cache entry for thresholding session", e);
             } catch (ThresholdInitializationException e) {
                 LOG.warn("Error initializing thresholding session", e);
             }
