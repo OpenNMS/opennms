@@ -6,19 +6,22 @@
     </template>
 
     <template v-slot:rail>
-      <NavigationRail :modelValue="true" />
+      <NavigationRail :modelValue="navRailOpen" />
     </template>
 
     <div class="main-content">
       <Spinner />
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <keep-alive include="MapKeepAlive">
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
     </div>
-
   </FeatherAppLayout>
 </template>
   
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Menubar from './components/Layout/Menubar.vue'
@@ -26,6 +29,9 @@ import Spinner from './components/Common/Spinner.vue'
 import NavigationRail from './components/Layout/NavigationRail.vue'
 
 const store = useStore()
+const navRailOpen = computed(() => store.state.appModule.navRailOpen)
+const contentMargin = computed(() => navRailOpen.value ? '218px' : '0px')
+const ease = computed(() => navRailOpen.value ? '10ms' : '80ms')
 onMounted(() => store.dispatch('authModule/getWhoAmI'))
 </script>
   
@@ -37,7 +43,8 @@ html {
   overflow: hidden;
 }
 .main-content {
-  margin-left: 218px;
+  transform: translate(v-bind(contentMargin));
+  transition: transform 0.28s ease-in-out v-bind(ease);
 }
 .logo {
   color: var(--feather-primary-text-on-color) !important;
@@ -79,11 +86,22 @@ a {
 }
 
 // global feather typography classes
-.headline1 { @include headline1(); }
-.headline2 { @include headline2(); }
-.headline3 { @include headline3(); }
-.headline4 { @include headline4(); }
-.subtitle1 { @include subtitle1(); }
-.subtitle2 { @include subtitle2(); }
-
+.headline1 {
+  @include headline1();
+}
+.headline2 {
+  @include headline2();
+}
+.headline3 {
+  @include headline3();
+}
+.headline4 {
+  @include headline4();
+}
+.subtitle1 {
+  @include subtitle1();
+}
+.subtitle2 {
+  @include subtitle2();
+}
 </style>

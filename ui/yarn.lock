@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@ag-grid-community/vue3@^26.2.0":
+  version "26.2.0"
+  resolved "https://registry.yarnpkg.com/@ag-grid-community/vue3/-/vue3-26.2.0.tgz#093ce65f79cf3adcc2351d90a3306069e256aa3b"
+  integrity sha512-c+yJGfZ5FYaSpryRcDjjFWr1zqRIC8mU39Ke6ZvRiEN4/ggjfZaKNI+rEK0s/WfNXF4pxyLWpCRaUC8i3SCaig==
+
 "@babel/helper-validator-identifier@^7.15.7":
   version "7.15.7"
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.15.7.tgz#220df993bfe904a4a6b02ab4f3385a5ebf6e2389"
@@ -326,6 +331,18 @@
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
   integrity sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==
 
+"@types/geojson@*":
+  version "7946.0.8"
+  resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.8.tgz#30744afdb385e2945e22f3b033f897f76b1f12ca"
+  integrity sha512-1rkryxURpr6aWP7R786/UQOkJ3PcpQiWkAXBmdWc7ryFWqN6a4xfK7BtjXvFBKO9LjQ+MWQSWxYeZX1OApnArA==
+
+"@types/leaflet@^1.7.6":
+  version "1.7.6"
+  resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.7.6.tgz#6580f4babb648972c5af3abc3d66866753fa9311"
+  integrity sha512-Emkz3V08QnlelSbpT46OEAx+TBZYTOX2r1yM7W+hWg5+djHtQ1GbEXBDRLaqQDOYcDI51Ss0ayoqoKD4CtLUDA==
+  dependencies:
+    "@types/geojson" "*"
+
 "@types/lodash@^4.14.172":
   version "4.14.177"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.177.tgz#f70c0d19c30fab101cad46b52be60363c43c4578"
@@ -340,6 +357,13 @@
   version "15.14.9"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-15.14.9.tgz#bc43c990c3c9be7281868bbc7b8fdd6e2b57adfa"
   integrity sha512-qjd88DrCxupx/kJD5yQgZdcYKZKSIGBVDIBE1/LTGcNm3d2Np/jxojkdePDdfnBHJc5W7vSMpbJ1aB7p/Py69A==
+
+"@types/splitpanes@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@types/splitpanes/-/splitpanes-2.2.1.tgz#7ff67e639b16eecfc3ad403269dff320cf96e866"
+  integrity sha512-H5BgO6UdJRzz5ddRzuGvLBiPSPEuuHXb5ET+7avLLrEx1uc7f5Ut5oLMDQsfvGtHBBAFczt1QNYuDf27wHbvDQ==
+  dependencies:
+    vue "^2.0.0"
 
 "@vitejs/plugin-vue@^1.3.0":
   version "1.10.1"
@@ -412,6 +436,11 @@
     vscode-languageserver-types "^3.15.1"
     vscode-nls "^5.0.0"
     vscode-uri "^2.1.2"
+
+"@vue-leaflet/vue-leaflet@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@vue-leaflet/vue-leaflet/-/vue-leaflet-0.6.1.tgz#d731a5d2256d049e345f58330616180191d88b12"
+  integrity sha512-/sm0bdrdftXh5nSGEPsoKrJI1D/GtKiEsBo9X/TA2yu4lYTDcaem6U4t1Ea5CoLleiZRCNUrZr9PG/xHdUPXYA==
 
 "@vue/compiler-core@3.2.23", "@vue/compiler-core@^3.2.21":
   version "3.2.23"
@@ -517,6 +546,16 @@ acorn@^7.1.1:
   version "7.4.1"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-7.4.1.tgz#feaed255973d2e77555b83dbc08851a6c63520fa"
   integrity sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==
+
+ag-grid-community@^26.2.0:
+  version "26.2.0"
+  resolved "https://registry.yarnpkg.com/ag-grid-community/-/ag-grid-community-26.2.0.tgz#f561d5b6d9ca9510275961079c74cfa0f6e1069c"
+  integrity sha512-YkNQUJ7EsmXbwfSrT4sIBYp1MbFku+ebEiqKc4+YFVZ5+nniHFzvSomHzFqbbkOtEfb42Gmo8cMNvBz9aPnZsQ==
+
+ag-grid-vue3@26.2.0:
+  version "26.2.0"
+  resolved "https://registry.yarnpkg.com/ag-grid-vue3/-/ag-grid-vue3-26.2.0.tgz#2b391111e542b7d6b60e5dc66725eb2c2bd5d4ae"
+  integrity sha512-m9Y67x4JbekltU/IijnlJlSt2dplRhH1Oz+VXmB5Tx1i5uTv1Pk+i1R31tFZb4DUU4aW1GGIIIliOIbOfY+3WQ==
 
 anymatch@~3.1.2:
   version "3.1.2"
@@ -989,6 +1028,16 @@ klona@^2.0.4:
   resolved "https://registry.yarnpkg.com/klona/-/klona-2.0.5.tgz#d166574d90076395d9963aa7a928fabb8d76afbc"
   integrity sha512-pJiBpiXMbt7dkzXe8Ghj/u4FfXOOa98fPW+bihOJ4SjnoijweJrNThJfd3ifXpXhREjpoF2mZVH1GfS9LV3kHQ==
 
+leaflet.markercluster@^1.5.3:
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/leaflet.markercluster/-/leaflet.markercluster-1.5.3.tgz#9cdb52a4eab92671832e1ef9899669e80efc4056"
+  integrity sha512-vPTw/Bndq7eQHjLBVlWpnGeLa3t+3zGiuM7fJwCkiMFq+nmRuG3RI3f7f4N4TDX7T4NpbAXpR2+NTRSEGfCSeA==
+
+leaflet@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.7.1.tgz#10d684916edfe1bf41d688a3b97127c0322a2a19"
+  integrity sha512-/xwPEBidtg69Q3HlqPdU3DnrXQOvQU/CCHA1tcDQVzOwm91YMYaILjNp7L4Eaw5Z4sOYdbBz6koWyibppd8Zqw==
+
 lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
@@ -1266,6 +1315,11 @@ sourcemap-codec@^1.4.4:
   resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.8.tgz#ea804bd94857402e6992d05a38ef1ae35a9ab4c4"
   integrity sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==
 
+splitpanes@^3.0.6:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/splitpanes/-/splitpanes-3.0.6.tgz#45636c36972d3391f837073807726a2dcc49af15"
+  integrity sha512-Ogxc+e2te4Tp5IpMwjOPO1ZvXUf2PsuEoyZhF9H5Hp6XOB0mLg/OnEZFaK2MxT7Q3O+WSEKE7CeOoTC+4zsQ6A==
+
 stable@^0.1.8:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/stable/-/stable-0.1.8.tgz#836eb3c8382fe2936feaf544631017ce7d47a3cf"
@@ -1488,6 +1542,11 @@ vscode-vue-languageservice@0.29.8:
     vscode-pug-languageservice "0.29.8"
     vscode-typescript-languageservice "0.29.8"
 
+vue-class-component@^8.0.0-rc.1:
+  version "8.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-8.0.0-rc.1.tgz#db692cd97656eb9a08206c03d0b7398cdb1d9420"
+  integrity sha512-w1nMzsT/UdbDAXKqhwTmSoyuJzUXKrxLE77PCFVuC6syr8acdFDAq116xgvZh9UCuV0h+rlCtxXolr3Hi3HyPQ==
+
 vue-router@4:
   version "4.0.12"
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-4.0.12.tgz#8dc792cddf5bb1abcc3908f9064136de7e13c460"
@@ -1511,6 +1570,11 @@ vue3-ace-editor@^2.2.1:
     ace-builds "^1.4.12"
     resize-observer-polyfill "^1.5.1"
     vue "^3.0.0"
+
+vue@^2.0.0:
+  version "2.6.14"
+  resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.14.tgz#e51aa5250250d569a3fbad3a8a5a687d6036e235"
+  integrity sha512-x2284lgYvjOMj3Za7kqzRcUSxBboHqtgRE2zlos1qWaOye5yUmHn42LB1250NJBLRwEcdrB0JRwyPTEPhfQjiQ==
 
 vue@^3.0.0, vue@^3.1.0-0, vue@^3.2.17:
   version "3.2.23"

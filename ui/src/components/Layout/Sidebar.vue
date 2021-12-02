@@ -3,6 +3,7 @@
   <div class="sidebar">
     <Link to="/">Nodes</Link>
     <Link to="/inventory">Inventory</Link>
+    <Link to="/map">Map</Link>
     <Link v-if="isAdmin" to="/file-editor">File Editor</Link>
     <Link v-if="isAdmin" to="/logs">Logs</Link>
   </div>

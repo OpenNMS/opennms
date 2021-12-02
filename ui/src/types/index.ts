@@ -37,6 +37,14 @@ export interface EventApiResponse extends ApiResponse {
   event: Event[]
 }
 
+export interface AlarmApiResponse extends ApiResponse {
+  alarm: Alarm[]
+}
+export interface GraphNodesApiResponse {
+  vertices: Vertice[]
+  edges: Edge[]
+}
+
 export interface SnmpInterfaceApiResponse extends ApiResponse {
   snmpInterface: SnmpInterface[]
 }
@@ -62,13 +70,52 @@ export interface Node {
   type: string
   label: string
   id: string
-  assetRecord: any
+  assetRecord: {
+    longitude: string
+    latitude: string
+  }
   categories: Category[]
   createTime: number
   foreignId: string
   foreignSource: string
   lastEgressFlow: any
   lastIngressFlow: any
+  labelSource: string
+  lastCapabilitiesScan: string
+  primaryInterface: number
+  sysObjectid: string
+  sysDescription: string
+  sysName: string
+  sysContact: string
+  sysLocation: string
+}
+
+export interface MapNode {
+  id: string
+  coordinates: [number, number]
+  foreignSource: string
+  foreignId: string
+  label: string
+  labelSource: any
+  lastCapabilitiesScan: string
+  primaryInterface: number
+  sysObjectid: string
+  sysDescription: string
+  sysName: string
+  sysContact: any
+  sysLocation: any
+  alarm: Alarm[]
+}
+
+export interface Alarm {
+  id: string
+  severity: string
+  nodeId: number
+  nodeLabel: string
+  uei: string
+  count: number
+  lastEvent: any
+  logMessage: string
 }
 
 export interface Event {
@@ -268,6 +315,38 @@ export interface BreadCrumb {
   position?: string
 }
 
+export interface Vertice {
+  tooltipText: string
+  namespace: string
+  ipAddress: string
+  x: string
+  y: string
+  id: string
+  label: string
+  iconKey: string
+  nodeId: string
+}
+
+export interface Edge {
+  source: { namespace: string, id: number }
+  target: { namespace: string, id: number }
+}
+
+export interface Coordinates {
+  latitude: number,
+  longitude: number
+}
+
+export interface AlarmQueryParameters {
+  ack?: boolean
+  clear?: boolean
+  escalate?: boolean
+}
+
+export interface AlarmModificationQueryVariable {
+  pathVariable: string
+  queryParameters:  AlarmQueryParameters
+}
 export interface WhoAmIResponse {
   fullName: string
   id: string

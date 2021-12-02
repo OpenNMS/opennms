@@ -8,6 +8,7 @@ import ifServicesModule from './ifServices'
 import spinnerModule from './spinner'
 import inventoryModule from './inventory'
 import locationsModule from './locations'
+import mapModule from './map'
 import fileEditorModule from './fileEditor'
 import authModule from './auth'
 import logsModule from './logs'
@@ -22,6 +23,7 @@ export default createStore({
     spinnerModule,
     inventoryModule,
     locationsModule,
+    mapModule,
     fileEditorModule,
     logsModule,
     appModule,
