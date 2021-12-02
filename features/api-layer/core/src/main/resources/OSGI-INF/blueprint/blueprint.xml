@@ -253,8 +253,8 @@
   <bean id="serviceCollectorManager" class="org.opennms.features.apilayer.common.collectors.ServiceCollectorManager">
     <argument ref="blueprintBundleContext"/>
     <argument value="${rrdStep}"/>
-    <argument value="${rrdHeatBeat}" />
-    <argument value="$rrdRrsStr}" />
+    <argument value="${rrdHeartbeat}" />
+    <argument value="${rrdRraStr}" />
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.collectors.ServiceCollectorFactory" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="serviceCollectorManager" />
