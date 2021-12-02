@@ -42,6 +42,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -50,6 +51,7 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
@@ -86,13 +88,12 @@ public class GenericSchemaIT extends OpenNMSSeleniumIT {
         LOG.info("Checking for data loading from db for provisiond'{}'", uri);
         HttpEntity entity = configNames.getEntity();
         String entityBody = IOUtils.toString(entity.getContent(), StandardCharsets.UTF_8);
-        String configName= entityBody.replace("[","").replace("]","");
-        List<String> list = Arrays.asList(configName.split("\\s*,\\s*"));
-        for(int i =0;i<list.size();i++) {
-            String schemaName = list.get(i).replaceAll("\"", "");
-            String uriSchema = uri + "/schema/" + schemaName;
+        JSONArray schemaNamesList = new JSONArray(entityBody);
+        for(int i =0;i<schemaNamesList.length();i++) {
+            String schemaName=  schemaNamesList.get(i).toString().replaceAll("\"", "");
+            String schemaUri = uri + "/schema/" + schemaName;
 
-            HttpResponse schema = queryUri(uriSchema, "application/json");
+            HttpResponse schema = queryUri(schemaUri, "application/json");
             HttpEntity schemaEntity = schema.getEntity();
             String jsonString = EntityUtils.toString(schemaEntity);
             JSONObject jsonObject = new JSONObject(jsonString);
