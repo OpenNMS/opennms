@@ -17,7 +17,7 @@ Collecting and analyzing flows data provides a picture of network use, and helps
 
 See the <<reference:telemetryd/protocols/introduction.adoc#ref-protocol, Telemetry>> section for a list of supported protocols.
 
-This section presents a set of procedures to set up flows that progress from a basic environment to the most complex:
+This section presents a set of procedures to set up flows that progress from a basic environment to more complex:
 
 * xref:operation:flows/basic.adoc#flows-basic[basic] (out-of-the-box) setup
 * flows data in a xref:operation:flows/distributed.adoc#flows-remote[distributed/remote network] (add a Minion)

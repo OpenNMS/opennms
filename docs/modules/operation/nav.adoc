@@ -130,6 +130,7 @@
 
 * xref:flows/introduction.adoc[]
 ** xref:flows/basic.adoc[]
+** xref:flows/basic-plus.adoc[]
 ** xref:flows/distributed.adoc[]
 ** xref:flows/sentinel.adoc[]
 ** xref:flows/nephron.adoc[]

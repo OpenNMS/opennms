@@ -6,12 +6,11 @@ This section describes how to get started with flows in a basic setup to collect
 
 == Before you begin
 
-Make sure you have configured your routers to send flows.
+Make sure you have configured your devices to send flows.
 Refer to the manufacturer's documentation.
 You will need to set up the flow receiver, which is OpenNMS {page-component-title}, and enable sending flows per interface on the firewall.
 
-Set up an Elasticsearch with the link:https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch-drift plugin] installed on every Elasticsearch node.
-
+Set up an Elasticsearch cluster with the link:https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin] installed on every Elasticsearch node.
 The Drift plugin persists and queries flows that {page-component-title} collects.
 The Drift version must match the targeted Elasticsearch version.
 
@@ -114,11 +113,12 @@ See <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration
 
 == Enable a protocol
 
-Enable one or more of the protocols you would like to handle in `$OPENNMS_HOME/etc/telemetryd-configuration.xml`.
+By default ... 
 
-NOTE: In this example we enable the NetFlow v5 protocol, but you can repeat the same process for any of the other flow-related protocols.
+Update `$OPENNMS_HOME/etc/telemetryd-configuration.xml` to enable one or more of the protocols you would like to handle.
 
-.Enable NetFlow v5 in telemetryd-configuration.xml
+In this example we enable the NetFlow v5 protocol, but you can repeat the same process for any of the other flow-related protocols.
+
 [source, xml]
 ----
 <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
@@ -141,6 +141,11 @@ $OPENNMS_HOME/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/inter
 ----
 
 This opens a UDP socket bound to `0.0.0.0:8877` to which NetFlow v5 messages are forwarded.
+
+=== Set up multi-port listener
+make sure you are using the Multi-port listener
+
+edit `etc/telemetryd-configuration.xml` to specify multi-port listener.
 
 == Link the web UI to Helm
 
@@ -167,4 +172,4 @@ Once configured, an icon will appear on the top-right corner of a resource graph
 
 **etc/telemetryd-configuration.xml**
 
--> make sure you are using the Multi-port listener
+->
