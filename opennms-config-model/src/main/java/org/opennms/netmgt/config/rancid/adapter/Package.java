@@ -95,6 +95,16 @@ public class Package implements Serializable {
     @XmlElement(name = "include-url")
     private List<String> m_includeUrls = new ArrayList<>();
 
+    /**
+     * A file URL holding specific addresses to be excluded from being polled.
+     *  Each line in the URL file can be one of:
+     *  <IP><space>#<comments> or <IP> or
+     *  #<comments>. Lines starting with a '#' are ignored and so
+     *  are characters after a '<space>#' in a line.
+     */
+    @XmlElement(name = "exclude-url")
+    private List<String> m_excludeUrls = new ArrayList<>();
+
     public Package() {
     }
 
@@ -186,6 +196,24 @@ public class Package implements Serializable {
         return m_includeUrls.remove(includeUrl);
     }
 
+    public List<String> geExcludeUrls() {
+        return m_excludeUrls;
+    }
+
+    public void setExcludeUrls(final List<String> excludeUrls) {
+        if (excludeUrls == m_excludeUrls) return;
+        m_excludeUrls.clear();
+        if (excludeUrls != null) m_excludeUrls.addAll(excludeUrls);
+    }
+
+    public void addExcludeUrl(final String excludeUrl) {
+        m_excludeUrls.add(excludeUrl);
+    }
+
+    public boolean removeExcludeUrl(final String excludeUrl) {
+        return m_excludeUrls.remove(excludeUrl);
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(m_name, 
@@ -193,7 +221,8 @@ public class Package implements Serializable {
                             m_specifics, 
                             m_includeRanges, 
                             m_excludeRanges, 
-                            m_includeUrls);
+                            m_includeUrls,
+                            m_excludeUrls);
     }
 
     @Override
@@ -209,7 +238,8 @@ public class Package implements Serializable {
                     && Objects.equals(this.m_specifics, that.m_specifics)
                     && Objects.equals(this.m_includeRanges, that.m_includeRanges)
                     && Objects.equals(this.m_excludeRanges, that.m_excludeRanges)
-                    && Objects.equals(this.m_includeUrls, that.m_includeUrls);
+                    && Objects.equals(this.m_includeUrls, that.m_includeUrls)
+                    && Objects.equals(this.m_excludeUrls, that.m_excludeUrls);
         }
         return false;
     }

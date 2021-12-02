@@ -113,6 +113,15 @@ public class Package implements Serializable {
     private List<String> m_includeUrls = new ArrayList<>();
 
     /**
+     * A file URL holding specific addresses to be excluded from being polled. Each line in the
+     * URL file can be one of: &lt;IP&gt;&lt;space&gt;#&lt;comments&gt; or &lt;IP&gt; or #&lt;comments&gt;.
+     * Lines starting with a '#' are ignored and so are characters after a
+     * '&lt;space&gt;#' in a line.
+     */
+    @XmlElement(name="exclude-url")
+    private List<String> m_excludeUrls = new ArrayList<>();
+
+    /**
      * RRD parameters for response time data.
      */
     @XmlElement(name="rrd")
@@ -277,6 +286,25 @@ public class Package implements Serializable {
         return m_includeUrls.remove(includeUrl);
     }
 
+    public List<String> getExcludeUrls() {
+        if (m_excludeUrls == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_excludeUrls);
+        }
+    }
+
+    public void setExcludeUrls(final List<String> excludeUrls) {
+        m_excludeUrls = new ArrayList<String>(excludeUrls);
+    }
+
+    public void addExcludeUrl(final String excludeUrl) throws IndexOutOfBoundsException {
+        m_excludeUrls.add(excludeUrl);
+    }
+
+    public boolean removeExcludeUrl(final String excludeUrl) {
+        return m_excludeUrls.remove(excludeUrl);
+    }
     /**
      * RRD parameters for response time data.
      */
@@ -366,6 +394,7 @@ public class Package implements Serializable {
         result = prime * result + ((m_filter == null) ? 0 : m_filter.hashCode());
         result = prime * result + ((m_includeRanges == null) ? 0 : m_includeRanges.hashCode());
         result = prime * result + ((m_includeUrls == null) ? 0 : m_includeUrls.hashCode());
+        result = prime * result + ((m_excludeUrls == null) ? 0 : m_excludeUrls.hashCode());
         result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
         result = prime * result + ((m_outageCalendars == null) ? 0 : m_outageCalendars.hashCode());
         result = prime * result + ((m_remote == null) ? 0 : m_remote.hashCode());
@@ -420,6 +449,13 @@ public class Package implements Serializable {
                 return false;
             }
         } else if (!m_includeUrls.equals(other.m_includeUrls)) {
+            return false;
+        }
+        if (m_excludeUrls == null) {
+            if (other.m_excludeUrls != null) {
+                return false;
+            }
+        } else if (!m_excludeUrls.equals(other.m_excludeUrls)) {
             return false;
         }
         if (m_name == null) {

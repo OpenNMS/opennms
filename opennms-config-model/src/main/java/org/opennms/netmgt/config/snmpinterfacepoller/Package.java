@@ -97,6 +97,16 @@ public class Package implements Serializable {
     private List<String> m_includeUrls = new ArrayList<>();
 
     /**
+     * A file URL holding specific addresses to be excluded from being polled.
+     *  Each line in the URL file can be one of:
+     *  <IP><space>#<comments> or <IP> or
+     *  #<comments>. Lines starting with a '#' are ignored and so
+     *  are characters after a '<space>#' in a line.
+     */
+    @XmlElement(name = "exclude-url")
+    private List<String> m_excludeUrls = new ArrayList<>();
+
+    /**
      * Interfaces to be polled for addresses belonging to
      *  this package.
      */
@@ -192,6 +202,24 @@ public class Package implements Serializable {
 
     public boolean removeIncludeUrl(final String includeUrl) {
         return m_includeUrls.remove(includeUrl);
+    }
+
+    public List<String> getExcludeUrls() {
+        return m_excludeUrls;
+    }
+
+    public void setExcludeUrls(final List<String> excludeUrls) {
+        if (excludeUrls == m_excludeUrls) return;
+        m_excludeUrls.clear();
+        if (excludeUrls != null) m_excludeUrls.addAll(excludeUrls);
+    }
+
+    public void addExcludeUrl(final String excludeUrl) {
+        m_excludeUrls.add(excludeUrl);
+    }
+
+    public boolean removeExcludeUrl(final String excludeUrl) {
+        return m_excludeUrls.remove(excludeUrl);
     }
 
     public List<Interface> getInterfaces() {
