@@ -28,6 +28,18 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
@@ -41,16 +53,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-
 /**
  * It is a minimal mock for CM use. If configFile is passed, it will read and return as configEntity.
  * Otherwise, I will return a new instance.
@@ -60,7 +62,9 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationManagerServiceMock.class);
 
     private String configFile;
-    private Optional<String> configOptional;
+
+    private Map<String, ConfigData<JSONObject>> configs = new HashMap<>();
+    private Map<String, ConfigDefinition> definationsMap = new HashMap<>();
 
     public void setConfigFile(String configFile) {
         this.configFile = configFile;
@@ -73,17 +77,19 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public void registerConfigDefinition(String configName, ConfigDefinition configDefinition) {
+        LOG.info("registerConfigDefinition:" + configName + " " + configDefinition);
 
+        definationsMap.put(configName, configDefinition);
     }
 
     @Override
     public void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException {
-
     }
 
     @Override
     public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) {
-
+        LOG.info("changeConfigDefinition:" + configName + " " + configDefinition);
+        definationsMap.put(configName, configDefinition);
     }
 
     @Override
@@ -96,14 +102,13 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
         LOG.info("getRegisteredSchema:" + configName);
         ConfigSchema schema = null;
         try {
-            //XmlConverter converter = new XmlConverter("discovery-configuration.xsd", "discovery-configuration");
             if ("discovery".equals(configName)) {
                 XmlConverter converter = new XmlConverter("discovery-configuration.xsd", "discovery-configuration");
                 schema = new ConfigSchema(configName, XmlConverter.class, converter);
             } else if ("wmi".equals(configName)) {
                 XmlConverter converter = new XmlConverter("wmi-config.xsd", "wmi-config");
                 schema = new ConfigSchema(configName, XmlConverter.class, converter);
-            } else if ("provisiond".equals(configName)){
+            } else if ("provisiond".equals(configName)) {
                 XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
                 schema = new ConfigSchema(configName, XmlConverter.class, converter);
             }
@@ -115,7 +120,8 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) {
-        return Optional.empty();
+        LOG.info("getRegisteredConfigDefinition:" + configName);
+        return Optional.ofNullable(definationsMap.get(configName));
     }
 
     @Override
@@ -124,6 +130,11 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public void registerConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
+        Optional<JSONObject> configJson = this.getJSONConfiguration(configName, configId);
+        if (configJson.isPresent()) {
+            throw new RuntimeException("Exist configName: " + configName + " configId: " + configId);
+        }
+        this.updateConfiguration(configName, configId, configObject);
     }
 
     @Override
@@ -133,35 +144,51 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public void updateConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
-        Optional<ConfigSchema<?>> schema = this.getRegisteredSchema(configName);
-        configOptional = Optional.of(schema.get().getConverter().jsonToXml(configObject.toString()));
+        ConfigData<JSONObject> configData = configs.get(configName);
+        if (configData == null) {
+            configData = new ConfigData<>();
+            configs.put(configName, configData);
+        }
+        configData.getConfigs().put(configId, new JSONObject(configObject.toString()));
     }
 
     @Override
     public Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException {
-        return Optional.empty();
+        ConfigData<JSONObject> configData = configs.get(configName);
+        if (configData == null || configData.getConfigs().isEmpty())
+            return Optional.empty();
+        return Optional.ofNullable(configData.getConfigs().get(configId));
     }
 
     @Override
     public String getJSONStrConfiguration(String configName, String configId) throws IOException {
-        return null;
+        LOG.info("getJSONStrConfiguration:" + configName);
+        Optional<JSONObject> json = this.getJSONConfiguration(configName, configId);
+        return json.isEmpty() ? null : json.get().toString();
     }
 
     @Override
     public Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
-        if (configOptional != null) {
-            return configOptional;
+        LOG.info("getXmlConfiguration:" + configName);
+        String jsonStr = this.getJSONStrConfiguration(configName, configId);
+
+        if (jsonStr != null) {
+            Optional<ConfigSchema<?>> schema = this.getRegisteredSchema(configName);
+            LOG.info(jsonStr);
+            return Optional.of(schema.get().getConverter().jsonToXml(jsonStr));
         }
+
         if (configFile == null) {
             // if configFile is null, assume config file in opennms-dao-mock resource etc directly
             configFile = "etc/" + configName + "-" + configId + ".xml";
         }
 
+        Optional<String> configOptional = Optional.empty();
         try {
             InputStream in = ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(configFile);
             String xmlStr = IOUtils.toString(in, StandardCharsets.UTF_8);
             configOptional = Optional.of(xmlStr);
-            LOG.debug("xmlStr: {}", xmlStr);
+            LOG.info("xmlStr: {}", xmlStr);
         } catch (Exception e) {
             LOG.error("FAIL TO LOAD XML: {}", configFile, e);
         }
