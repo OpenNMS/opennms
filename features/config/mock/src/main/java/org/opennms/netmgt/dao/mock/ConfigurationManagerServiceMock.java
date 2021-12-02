@@ -44,8 +44,10 @@ import org.springframework.stereotype.Component;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
@@ -55,6 +57,8 @@ import java.util.function.Consumer;
 @Component
 public class ConfigurationManagerServiceMock implements ConfigurationManagerService {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationManagerServiceMock.class);
+    public final String JSON_EXTENSION = ".json";
+    public final String XML_EXTENSION = ".xml";
 
     private String configFile;
 
@@ -67,17 +71,18 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public void registerConfigDefinition(String configName, ConfigDefinition configDefinition) {
-
+        // mock not support liquibase
     }
 
     @Override
     public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) {
-
+        // mock not support liquibase
     }
 
     @Override
     public Map<String, ConfigDefinition> getAllConfigDefinition() {
-        return null;
+        // mock not support
+        return new HashMap<>();
     }
 
     @Override
@@ -107,15 +112,18 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer) {
+        // mock not support yet
+
     }
 
     @Override
     public void registerConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
+        this.putConfig(configName, configId, configObject.toString());
     }
 
     @Override
     public void unregisterConfiguration(String configName, String configId) throws IOException {
-
+        // mock not support liquibase
     }
 
     @Override
@@ -132,36 +140,59 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     private void putConfig(String configName, String configId, String json) {
-        Map<String, String> configs = configStore.get(configName);
-        if (configs == null) {
-            configs = new HashMap<>();
-            configStore.put(configName, configs);
-        }
+        Map<String, String> configs = configStore.computeIfAbsent(configName, value -> new HashMap<>());
         configs.put(configId, json);
     }
 
     @Override
     public Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException {
         Optional<String> jsonStr = this.getJSONStrConfiguration(configName, configId);
-        if(jsonStr.isEmpty())
+        if (jsonStr.isEmpty())
             return Optional.empty();
         return Optional.of(new JSONObject(jsonStr.get()));
     }
 
+    /**
+     * It will return config in following order. After first read, it will cache it in memory. updateConfig will overwrite existing config in memory
+     * <ul>
+     * <li>memory</li>
+     * <li>json file</li>
+     * <li>xml file</li>
+     * </ul>
+     *
+     * @param configName
+     * @param configId
+     * @return
+     * @throws IOException
+     */
     @Override
     public Optional<String> getJSONStrConfiguration(String configName, String configId) throws IOException {
         String jsonStr = this.getConfig(configName, configId);
-        if(jsonStr != null){
+        if (jsonStr != null) {
             return Optional.of(jsonStr);
         }
-        String xmlStr = this.getXmlConfiguration(configName, configId);
-        if(xmlStr == null){
-            LOG.error("Cannot found config !!! configName: {}, configId: {}", configName, configId);
-            return Optional.empty();
+        // try get json from file
+        List<String> paths = new ArrayList<>();
+        paths.add(configFile);
+        paths.add("etc/" + configName + "-" + configId + JSON_EXTENSION);
+        paths.add("mock/" + configName + "-" + configId + JSON_EXTENSION);
+        configFile = this.findConfigFile(paths);
+        if (configFile != null && configFile.endsWith(JSON_EXTENSION)) {
+            jsonStr = IOUtils.toString(
+                    ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(configFile), StandardCharsets.UTF_8);
         }
-        ConfigConverter converter = XsdHelper.getConverter(this.getRegisteredConfigDefinition(configName).get());
-        jsonStr = converter.xmlToJson(xmlStr);
-        if(jsonStr != null){
+
+        // fall back to old xml file
+        if (jsonStr == null) {
+            String xmlStr = this.getXmlConfiguration(configName, configId);
+            if (xmlStr == null) {
+                LOG.error("Cannot found config !!! configName: {}, configId: {}", configName, configId);
+                return Optional.empty();
+            }
+            ConfigConverter converter = XsdHelper.getConverter(this.getRegisteredConfigDefinition(configName).get());
+            jsonStr = converter.xmlToJson(xmlStr);
+        }
+        if (jsonStr != null) {
             this.putConfig(configName, configId, jsonStr);
         }
         return Optional.ofNullable(jsonStr);
@@ -169,6 +200,15 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     /**
      * Main function in this mock, it read the xml and return to getJsonConfiguration for conversion
+     * <p>
+     * It will look up xml in following path
+     * <ul>
+     * <li>configFile in bean property</li>
+     * <li>resources/etc/configName-configId.xml</li>
+     * <li>resources/default/configName-configuration.xml</li>
+     * <li>resources/default/configName-config.xml</li>
+     * </ul>
+     *
      * @param configName
      * @param configId
      * @return
@@ -176,13 +216,17 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
      */
     private String getXmlConfiguration(String configName, String configId) throws IOException {
         if (configFile == null) {
+            List<String> paths = new ArrayList<>();
             // if configFile is null, assume config file in opennms-dao-mock resource etc directly
-            configFile = "etc/" + configName + "-" + configId + ".xml";
+            paths.add("etc/" + configName + "-" + configId + XML_EXTENSION);
+            paths.add("default/" + configName + "-configuration.xml");
+            paths.add("default/" + configName + "-config.xml");
+            configFile = this.findConfigFile(paths);
         }
 
         try {
             InputStream in;
-            if(configFile.startsWith("/")){
+            if (configFile.startsWith("/")) {
                 in = new FileInputStream(configFile);
             } else {
                 in = ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(configFile);
@@ -197,6 +241,23 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
         return null;
     }
 
+    private String findConfigFile(List<String> paths) {
+        if (paths == null) {
+            return null;
+        }
+        AtomicReference<String> fileFound = new AtomicReference<>();
+        paths.forEach(path -> {
+            if (fileFound.get() != null) {
+                return;
+            }
+            URL url = ConfigurationManagerServiceMock.class.getClassLoader().getResource(path);
+            if (url != null) {
+                fileFound.set(path);
+            }
+        });
+        return fileFound.get();
+    }
+
     @Override
     public Optional<ConfigData<JSONObject>> getConfigData(String configName) throws IOException {
         return Optional.empty();
@@ -209,11 +270,15 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public void unregisterSchema(String configName) throws IOException {
-
+        // mock not support liquibase
     }
 
     @Override
     public Set<String> getConfigIds(String configName) throws IOException {
+        Map<String, String> configs = this.configStore.get(configName);
+        if (configs != null) {
+            return configs.keySet();
+        }
         return new HashSet<>();
     }
 }
