@@ -1,22 +1,39 @@
 
 [[ga-flow-support-introduction]]
-= Flow Support
+= Flows
 
-{page-component-title} supports receiving, decoding, and persisting flow information sent from your network devices.
-A list of currently supported protocols is available in the <<reference:telemetryd/protocols/introduction.adoc#ref-protocol, Telemetry>> section.
-While flows offer a great breadth of information, the current focus of the support in {page-component-title} is aimed at:
+Flows refers to the summary of network traffic sent by network devices (switches, routers, and so on).
+This information includes, but is not limited to, source and destination address, source and destination port, octet count, and duration of activity.
+Collecting and analyzing flows data provides a picture of network use, and helps to diagnose network issues and persist flows for long-term storage and forensic analysis.
 
-* Network diagnostic: viewing the top protocols and top talkers within the context of a particular network interface.
-* Forensic analysis: persisting the flows for long-term storage.
+{page-component-title} provides the following:
+
+* a platform to collect, persist, and visualize flows, with support for NetFlow versions 5 and 9, IPFIX, and sFlow
+* inventory enrichment (map to OpenNMS nodes)
+* application classification
+* horizontal scaling (tested with 250,000+ flows/second)
+* enterprise reporting (push reports to PDF)
+* top K statistics by interface, application, host, conversation with QoS
+
+See the <<reference:telemetryd/protocols/introduction.adoc#ref-protocol, Telemetry>> section for a list of supported protocols.
+
+This section presents a set of procedures to set up flows that progress from a basic environment to more complex:
+
+* xref:operation:flows/basic.adoc#flows-basic[basic] (out-of-the-box) setup
+* flows data in a xref:operation:flows/distributed.adoc#flows-remote[distributed/remote network] (add a Minion)
+* processing xref:operation:flows/sentinel.adoc#flows-scaling[large volume of flows data] (add Sentinel to scale)
+* issues with flows at scale and queries taking too long (add Nephron for aggregation and xref:operation:flows/nephron.adoc#flows-nephron[streaming analytics])
 
 == How it works
 
-At a high level:
+At a high level, with a xref:operation:flows/basic.adoc#flows-basic[basic] setup, OpenNMS processes flows as follows:
 
-* <<telemetryd/introduction.adoc#ga-telemetryd, Telemetryd>> receives and decodes flows on both {page-component-title} and Minion.
+* <<telemetryd/introduction.adoc#ga-telemetryd, Telemetryd>> receives and decodes flows on {page-component-title}.
 * Telemetryd adapters convert the flows to a canonical flow model and dispatch these to the flow repository.
 * The flow repository enriches the flows and persists them to Elasticsearch:
-** Flows are tagged with an application name via the <<flows/classification-engine.adoc#ga-flow-support-classification-engine, classification engine>>.
+** The <<flows/classification-engine.adoc#ga-flow-support-classification-engine, classification engine>> tags flows with an application name.
 ** Metadata related to associated nodes (such as IDs and categories) are also added to the flows.
 * The REST API supports generating both summaries and time series data from the flows stored in the flow repository.
-* Use OpenNMS Helm to visualize the flow data using the flow datasource that interfaces with the {page-component-title} REST API.
+* OpenNMS Helm visualizes the flow data through the flow datasource, which interfaces with the {page-component-title} REST API.
+
+Add other OpenNMS components for remote/distributed flows data collection (Minion), scaling (Sentinel), and streaming telemetry (Nephron).
