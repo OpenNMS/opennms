@@ -95,8 +95,9 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     public Optional<ConfigSchema<?>> getRegisteredSchema(String configName) {
         ConfigSchema schema = null;
         try {
-            XmlConverter converter = new XmlConverter("discovery-configuration.xsd", "discovery-configuration");
+
             if ("discovery".equals(configName)) {
+                XmlConverter converter = new XmlConverter("discovery-configuration.xsd", "discovery-configuration");
                 schema = new ConfigSchema(configName, XmlConverter.class, converter);
             }
         } catch (Exception e) {

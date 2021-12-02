@@ -37,12 +37,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.snmp.SnmpV3User;
 import org.springframework.core.io.FileSystemResource;
+
+import javax.annotation.PostConstruct;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -56,7 +61,7 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class TrapdConfigFactory implements TrapdConfig {
+public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfiguration> implements TrapdConfig {
     /**
      * The singleton instance of this factory
      */
@@ -72,48 +77,36 @@ public final class TrapdConfigFactory implements TrapdConfig {
      */
     private static boolean m_loaded = false;
 
+
+    private static final String CONFIG_NAME = "trapd";
+    private static final String DEFAULT_CONFIG_ID = "default";
     /**
      * Private constructor
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      */
-    private TrapdConfigFactory(String configFile) throws IOException {
-        m_config = JaxbUtils.unmarshal(TrapdConfiguration.class, new FileSystemResource(configFile));
+    private TrapdConfigFactory() throws IOException {
+        super(TrapdConfiguration.class, "trapd Configuration");
     }
     
     /**
      * <p>Constructor for TrapdConfigFactory.</p>
      *
-     * @param stream a {@link java.io.InputStream} object.
+     * @param config  TrapdConfiguration object.
      * @throws IOException 
      */
-    public TrapdConfigFactory(InputStream stream) throws IOException {
-        try(final Reader reader = new InputStreamReader(stream)) {
-            m_config = JaxbUtils.unmarshal(TrapdConfiguration.class, reader);
-        }
+    public TrapdConfigFactory(TrapdConfiguration config) throws IOException {
+        super(TrapdConfiguration.class, "trapd Configuration");
+        m_config = config;
     }
 
-    /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @throws java.io.IOException if any.
-     */
-    public static synchronized void init() throws IOException {
-        if (m_loaded) {
-            // init already called - return
-            // to reload, reload() will need to be called
-            return;
-        }
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.TRAPD_CONFIG_FILE_NAME);
-
-        m_singleton = new TrapdConfigFactory(cfgFile.getPath());
-
-        m_loaded = true;
+    @PostConstruct
+    public void postConstruct() throws IOException {
+        reload();
     }
+
+
 
     /**
      * Reload the config from the default config file
@@ -122,11 +115,8 @@ public final class TrapdConfigFactory implements TrapdConfig {
      *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
      */
-    public static synchronized void reload() throws IOException {
-        m_singleton = null;
-        m_loaded = false;
-
-        init();
+    public synchronized void reload() throws IOException {
+        this.m_config = this.loadConfig(this.getDefaultConfigId());
     }
 
     /**
@@ -136,11 +126,11 @@ public final class TrapdConfigFactory implements TrapdConfig {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized TrapdConfig getInstance() {
-        if (!m_loaded)
-            throw new IllegalStateException("The factory has not been initialized");
-
-        return m_singleton;
+    public static synchronized TrapdConfigFactory getInstance() throws IOException {
+        TrapdConfigFactory configFactory = BeanUtils.getBean("commonContext", "trapdConfig", TrapdConfigFactory.class);
+        if(!m_loaded)
+            configFactory.reload();
+        return configFactory;
     }
     
     /**
@@ -254,5 +244,15 @@ public final class TrapdConfigFactory implements TrapdConfig {
 
     public TrapdConfiguration getConfig() {
         return m_config;
+    }
+
+    @Override
+    public String getConfigName() {
+        return CONFIG_NAME;
+    }
+
+    @Override
+    public String getDefaultConfigId() {
+        return DEFAULT_CONFIG_ID;
     }
 }

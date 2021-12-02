@@ -267,7 +267,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "thresholds.xml", ThresholdingConfig.class, true, null);
         addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, true, null);
         addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, false, null);
-        addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, true, null);
+       // addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, true, null);
         addFile(Source.CONFIG, "trend-configuration.xml", TrendConfiguration.class, true, null);
         addFile(Source.CONFIG, "users.xml", Userinfo.class, true, null);
         addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, false, null);
