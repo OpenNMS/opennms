@@ -45,7 +45,9 @@ import org.opennms.enlinkd.generator.topology.RandomConnectedPairGenerator;
 import org.opennms.enlinkd.generator.topology.UndirectedPairGenerator;
 import org.opennms.enlinkd.generator.util.InetAddressGenerator;
 import org.opennms.enlinkd.generator.util.RandomUtil;
+import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -115,12 +117,18 @@ public abstract class Protocol<Element> {
         OnmsMonitoringLocation location = createMonitoringLocation();
         ArrayList<OnmsNode> nodes = new ArrayList<>();
         for (int i = 0; i < amountNodes; i++) {
-            nodes.add(createNode(i, location, category));
+            final OnmsGeolocation gl = new OnmsGeolocation();
+            // bound latitude between [-90,90]
+            gl.setLatitude(Math.random() * 180 - 90);
+            // bound longitude between [-180,80]
+            gl.setLongitude(Math.random() * 260 - 80);
+
+            nodes.add(createNode(i, location, category, gl));
         }
         return nodes;
     }
 
-    protected OnmsNode createNode(int count, OnmsMonitoringLocation location, OnmsCategory category) {
+    protected OnmsNode createNode(int count, OnmsMonitoringLocation location, OnmsCategory category, OnmsGeolocation geolocation) {
         OnmsNode node = new OnmsNode();
         node.setId(count);
         node.setLabel("Node" + count);
@@ -129,6 +137,12 @@ public abstract class Protocol<Element> {
         node.setType(OnmsNode.NodeType.ACTIVE);
         node.setForeignSource("fs" + count);
         node.setForeignId("fid" + count);
+
+        // Set geolocation via asset record
+        OnmsAssetRecord assetRecord = new OnmsAssetRecord();
+        node.setAssetRecord(assetRecord) ;
+        assetRecord.setGeolocation(geolocation);
+
         return node;
     }
 
