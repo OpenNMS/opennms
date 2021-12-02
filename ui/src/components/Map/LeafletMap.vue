@@ -32,6 +32,7 @@
               <l-icon :icon-url="setIcon(node)" :icon-size="iconSize" />
             </l-marker>
             <l-polyline
+              v-if="zoom > 5"
               v-for="(coordinatePair, index) in edges"
               :key="index"
               :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
@@ -76,8 +77,6 @@ const iconSize = [iconWidth, iconHeight]
 
 const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => store.state.mapModule.mapCenter[k]))
 const interestedNodes = computed<Node[]>(() => store.getters['mapModule/getInterestedNodes'])
-const interestedNodesID = computed<string[]>(() => store.state.mapModule.interestedNodesID)
-
 const nodeLabelAlarmServerityMap = computed(() => {
   const alarms: Alarm[] = store.getters["mapModule/getAlarmsFromSelectedNodes"]
   const map: Map<string, string> = new Map<string, string>()
@@ -132,7 +131,7 @@ const setMarkerColor = (severity: string | undefined) => {
 }
 
 const edges = computed(() => {
-  const ids: string[] = interestedNodesID.value
+  const ids: string[] = interestedNodes.value.map((node: Node) => node.id)
   const interestedNodesCoordinateMap = getInterestedNodesCoordinateMap()
   return store.state.mapModule.edges.filter((edge: [number, number]) => ids.includes(edge[0].toString()) && ids.includes(edge[1].toString()))
     .map((edge: [number, number]) => {
@@ -160,7 +159,10 @@ const onLeafletReady = async () => {
   }
 }
 
-const onMoveEnd = () => store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
+const onMoveEnd = () => {
+  zoom.value = leafletObject.value.getZoom()
+  store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
+}
 
 /*****Tile Layer*****/
 const tileProviders = [

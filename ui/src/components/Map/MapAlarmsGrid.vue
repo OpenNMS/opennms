@@ -12,7 +12,7 @@
         text-prop="option"
         @update:modelValue="selectAlarmAck"
         label="Alarm Action"
-        background="true"
+        :background="true"
       />
       <FeatherButton primary @click="clearFilters()">Clear Filters</FeatherButton>
       <FeatherButton primary @click="applyFilters()">Filter Map</FeatherButton>
