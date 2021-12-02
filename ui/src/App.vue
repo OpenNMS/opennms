@@ -31,6 +31,7 @@ import NavigationRail from './components/Layout/NavigationRail.vue'
 const store = useStore()
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const contentMargin = computed(() => navRailOpen.value ? '218px' : '0px')
+const ease = computed(() => navRailOpen.value ? '10ms' : '80ms')
 onMounted(() => store.dispatch('authModule/getWhoAmI'))
 </script>
   
@@ -43,7 +44,7 @@ html {
 }
 .main-content {
   transform: translate(v-bind(contentMargin));
-  transition: transform 0.28s ease-in-out;
+  transition: transform 0.28s ease-in-out v-bind(ease);
 }
 .logo {
   color: var(--feather-primary-text-on-color) !important;
