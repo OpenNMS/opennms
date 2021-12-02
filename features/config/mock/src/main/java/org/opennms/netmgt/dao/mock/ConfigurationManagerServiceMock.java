@@ -41,13 +41,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -59,7 +57,9 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationManagerServiceMock.class);
 
     private String configFile;
-    private Optional<String> configOptional;
+
+    // It is Map<configName, Map<configId, json>>
+    private Map<String, Map<String, String>> configStore = new HashMap<>();
 
     public void setConfigFile(String configFile) {
         this.configFile = configFile;
@@ -120,40 +120,81 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public void updateConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
-        configOptional = Optional.of(configObject.toString());
+        this.putConfig(configName, configId, configObject.toString());
+    }
+
+    private String getConfig(String configName, String configId) {
+        Map<String, String> configs = configStore.get(configName);
+        if (configs == null) {
+            return null;
+        }
+        return configs.get(configId);
+    }
+
+    private void putConfig(String configName, String configId, String json) {
+        Map<String, String> configs = configStore.get(configName);
+        if (configs == null) {
+            configs = new HashMap<>();
+            configStore.put(configName, configs);
+        }
+        configs.put(configId, json);
     }
 
     @Override
     public Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException {
-        return Optional.empty();
+        Optional<String> jsonStr = this.getJSONStrConfiguration(configName, configId);
+        if(jsonStr.isEmpty())
+            return Optional.empty();
+        return Optional.of(new JSONObject(jsonStr.get()));
     }
 
     @Override
     public Optional<String> getJSONStrConfiguration(String configName, String configId) throws IOException {
-        String xmlStr = this.getXmlConfiguration(configName, configId).get();
+        String jsonStr = this.getConfig(configName, configId);
+        if(jsonStr != null){
+            return Optional.of(jsonStr);
+        }
+        String xmlStr = this.getXmlConfiguration(configName, configId);
+        if(xmlStr == null){
+            LOG.error("Cannot found config !!! configName: {}, configId: {}", configName, configId);
+            return Optional.empty();
+        }
         ConfigConverter converter = XsdHelper.getConverter(this.getRegisteredConfigDefinition(configName).get());
-        return Optional.ofNullable(converter.xmlToJson(xmlStr));
+        jsonStr = converter.xmlToJson(xmlStr);
+        if(jsonStr != null){
+            this.putConfig(configName, configId, jsonStr);
+        }
+        return Optional.ofNullable(jsonStr);
     }
 
-    private Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
-        if (configOptional != null) {
-            return configOptional;
-        }
+    /**
+     * Main function in this mock, it read the xml and return to getJsonConfiguration for conversion
+     * @param configName
+     * @param configId
+     * @return
+     * @throws IOException
+     */
+    private String getXmlConfiguration(String configName, String configId) throws IOException {
         if (configFile == null) {
             // if configFile is null, assume config file in opennms-dao-mock resource etc directly
             configFile = "etc/" + configName + "-" + configId + ".xml";
         }
 
         try {
-            InputStream in = ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(configFile);
+            InputStream in;
+            if(configFile.startsWith("/")){
+                in = new FileInputStream(configFile);
+            } else {
+                in = ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(configFile);
+            }
             String xmlStr = IOUtils.toString(in, StandardCharsets.UTF_8);
-            configOptional = Optional.of(xmlStr);
             LOG.debug("xmlStr: {}", xmlStr);
+            return xmlStr;
         } catch (Exception e) {
             LOG.error("FAIL TO LOAD XML: {}", configFile, e);
         }
 
-        return configOptional;
+        return null;
     }
 
     @Override
