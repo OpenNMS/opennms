@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext2.cm.change.types;
+package org.opennms.features.config.service.util;
 
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import static org.junit.Assert.assertEquals;
+import static org.opennms.features.config.service.util.PropertiesConversionUtil.jsonToMap;
+import static org.opennms.features.config.service.util.PropertiesConversionUtil.propertiesToJsonString;
 
-import org.opennms.features.config.dao.api.ConfigItem.Type;
+import java.util.HashMap;
+import java.util.Map;
 
-import liquibase.parser.core.ParsedNode;
+import org.junit.Test;
 
-public class StringType extends AbstractPropertyType {
+public class PropertiesConversionUtilTest {
+    @Test
+    public void testRoundtrip() {
+        Map<String, Object> originalMap = new HashMap<>();
+        originalMap.put("key1", "value1");
+        originalMap.put("key2", null);
 
-    public StringType(final List<ParsedNode> listOfAttributes) {
-        super(listOfAttributes);
-        this.configItem.setType(Type.STRING);
-        getAttributeValue(Attribute.PATTERN)
-                .map(this::validateRegex)
-                .ifPresent(configItem::setPattern);
-        configItem.setDefaultValue(defaultValueOpt.orElse(null));
+        Map<String, Object> convertedMap = new HashMap<>(jsonToMap(propertiesToJsonString(originalMap).toString()));
+        assertEquals(originalMap, convertedMap);
     }
-
-    private String validateRegex(String regex) {
-        try {
-            Pattern.compile(regex);
-        } catch (PatternSyntaxException e) {
-            throw new IllegalArgumentException(String.format("Invalid regex %s:  %s", regex, e.getMessage()));
-        }
-        return regex;
-    }
-
 }

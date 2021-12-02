@@ -2,7 +2,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 2021-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext2.cm.change.types;
+package org.opennms.features.config.osgi.cm;
 
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Objects;
+import java.util.Properties;
 
-import org.opennms.features.config.dao.api.ConfigItem.Type;
+import org.json.JSONObject;
+import org.opennms.features.config.service.api.JsonAsString;
 
-import liquibase.parser.core.ParsedNode;
+// TODO: Patrick: write test
+public class DictionaryUtil {
 
-public class StringType extends AbstractPropertyType {
-
-    public StringType(final List<ParsedNode> listOfAttributes) {
-        super(listOfAttributes);
-        this.configItem.setType(Type.STRING);
-        getAttributeValue(Attribute.PATTERN)
-                .map(this::validateRegex)
-                .ifPresent(configItem::setPattern);
-        configItem.setDefaultValue(defaultValueOpt.orElse(null));
+    public static Dictionary createFromJson(JsonAsString json) {
+        Objects.requireNonNull(json);
+        Properties props = new Properties();
+        props.putAll(new JSONObject(json.toString()).toMap());
+        return props;
     }
 
-    private String validateRegex(String regex) {
-        try {
-            Pattern.compile(regex);
-        } catch (PatternSyntaxException e) {
-            throw new IllegalArgumentException(String.format("Invalid regex %s:  %s", regex, e.getMessage()));
+    public static JsonAsString writeToJson(final Dictionary dictionary) {
+        Objects.requireNonNull(dictionary);
+        JSONObject json = new JSONObject();
+        Enumeration keys = dictionary.keys();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            Object value = dictionary.get(key);
+            json.put(key.toString(), value);
         }
-        return regex;
+        return new JsonAsString(json.toString());
     }
-
 }

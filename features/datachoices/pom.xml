@@ -58,6 +58,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.config.service</groupId>
+            <artifactId>org.opennms.features.config.service.api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <scope>provided</scope>

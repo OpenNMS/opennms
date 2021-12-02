@@ -2,7 +2,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 2021-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext2.cm.change.types;
+package org.opennms.features.config.osgi.cm;
+import java.util.Set;
 
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+// TODO: Patrick: find a better solution, e.g. read all available PIDs dynamically from CM.
+// TODO: Patrick: keep MigratedServices between 2 projects in sync
+public class MigratedServices {
+    final static Set<String> PIDS =  Set.of(
+            "org.opennms.features.datachoices"
+    );
 
-import org.opennms.features.config.dao.api.ConfigItem.Type;
-
-import liquibase.parser.core.ParsedNode;
-
-public class StringType extends AbstractPropertyType {
-
-    public StringType(final List<ParsedNode> listOfAttributes) {
-        super(listOfAttributes);
-        this.configItem.setType(Type.STRING);
-        getAttributeValue(Attribute.PATTERN)
-                .map(this::validateRegex)
-                .ifPresent(configItem::setPattern);
-        configItem.setDefaultValue(defaultValueOpt.orElse(null));
+    public static boolean isMigrated(final String pid) {
+        return PIDS.contains(pid);
     }
-
-    private String validateRegex(String regex) {
-        try {
-            Pattern.compile(regex);
-        } catch (PatternSyntaxException e) {
-            throw new IllegalArgumentException(String.format("Invalid regex %s:  %s", regex, e.getMessage()));
-        }
-        return regex;
-    }
-
 }

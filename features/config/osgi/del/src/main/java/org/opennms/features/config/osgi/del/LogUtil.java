@@ -2,7 +2,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 2021-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext2.cm.change.types;
+package org.opennms.features.config.osgi.del;
 
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+// import org.apache.felix.cm.impl.Log;
 
-import org.opennms.features.config.dao.api.ConfigItem.Type;
-
-import liquibase.parser.core.ParsedNode;
-
-public class StringType extends AbstractPropertyType {
-
-    public StringType(final List<ParsedNode> listOfAttributes) {
-        super(listOfAttributes);
-        this.configItem.setType(Type.STRING);
-        getAttributeValue(Attribute.PATTERN)
-                .map(this::validateRegex)
-                .ifPresent(configItem::setPattern);
-        configItem.setDefaultValue(defaultValueOpt.orElse(null));
+public class LogUtil {
+    public static void logInfo(String msg, Object...objects) {
+        // Log.logger.log( LogService.LOG_INFO, "{0} stopped.", objects);
     }
 
-    private String validateRegex(String regex) {
-        try {
-            Pattern.compile(regex);
-        } catch (PatternSyntaxException e) {
-            throw new IllegalArgumentException(String.format("Invalid regex %s:  %s", regex, e.getMessage()));
-        }
-        return regex;
+    private interface LogService {
+        // values from org.osgi.service.log.LogService
+        int LOG_ERROR = 1;
+        int LOG_WARNING = 2;
+        int LOG_INFO = 3;
+        int LOG_DEBUG = 4;
     }
-
 }

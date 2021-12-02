@@ -1785,6 +1785,14 @@
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/${project.version}</bundle>
     </feature>
+    <feature name="opennms-config-management-osgi-del" description="OpenNMS :: Features :: Config :: Osgi :: Delegate" version="${project.version}">
+        <bundle>mvn:org.opennms.features.config.osgi/org.opennms.features.config.osgi.del/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-config-management-osgi-cm" description="OpenNMS :: Features :: Config :: Osgi :: CM" version="${project.version}">
+        <bundle>mvn:org.json/json/${jsonVersion}</bundle>
+        <bundle>mvn:org.opennms.features.config.osgi/org.opennms.features.config.osgi.cm/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-timeseries-shell" version="${project.version}" description="OpenNMS :: Features :: Timeseries :: Shell Commands">
         <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
     </feature>

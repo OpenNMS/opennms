@@ -28,15 +28,15 @@
 
 package org.opennms.features.datachoices.internal;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.opennms.core.utils.PropertiesCache;
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.util.PropertiesCacheWithCm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,56 +58,52 @@ import com.google.common.collect.Lists;
 public class StateManager {
     private static final Logger LOG = LoggerFactory.getLogger(StateManager.class);
 
-    private static final String PROPERTIES_FILE_NAME = "org.opennms.features.datachoices.cfg";
+    private static final String PROPERTIES_CONFIG_NAME = "org.opennms.features.datachoices";
     private static final String ENABLED_KEY = "enabled";
     private static final String SYSTEM_ID_KEY = "systemid";
     private static final String ACKNOWLEDGED_BY_KEY = "acknowledged-by";
     private static final String ACKNOWLEDGED_AT_KEY = "acknowledged-at";
 
     private final List<StateChangeHandler> m_listeners = Lists.newArrayList();
-    private final PropertiesCache m_propertiesCache = new PropertiesCache();
-    private final File m_propertiesFile;
+    private final PropertiesCacheWithCm m_propertiesCache;
+    private final ConfigUpdateInfo configKey;
 
-    public static interface StateChangeHandler {
+    public interface StateChangeHandler {
         void onIsEnabledChanged(boolean isEnabled);
     }
 
-    public StateManager() {
-        String opennmsHomeStr = System.getProperty("opennms.home");
-        if (opennmsHomeStr == null) {
-            // Use working directory
-            opennmsHomeStr = "";
-        }
-        m_propertiesFile = Paths.get(opennmsHomeStr, "etc", PROPERTIES_FILE_NAME).toFile();
+    public StateManager(ConfigurationManagerService cm) {
+        configKey = new ConfigUpdateInfo(PROPERTIES_CONFIG_NAME, "default");
+        m_propertiesCache = new PropertiesCacheWithCm(cm);
     }
 
     public Boolean isEnabled() throws IOException {
-        final String enabled = m_propertiesCache.getProperty(m_propertiesFile, ENABLED_KEY);
+        final String enabled = m_propertiesCache.getProperty(configKey, ENABLED_KEY);
         return enabled == null ? null : Boolean.valueOf(enabled);
     }
 
     public void setEnabled(boolean enabled, String user) throws Exception {
-        m_propertiesCache.setProperty(m_propertiesFile, ENABLED_KEY, Boolean.valueOf(enabled).toString());
-        m_propertiesCache.setProperty(m_propertiesFile, ACKNOWLEDGED_BY_KEY, user == null ? "" : user);
-        m_propertiesCache.setProperty(m_propertiesFile, ACKNOWLEDGED_AT_KEY, new Date().toString());
+        m_propertiesCache.setProperty(configKey, ENABLED_KEY, Boolean.valueOf(enabled).toString());
+        m_propertiesCache.setProperty(configKey, ACKNOWLEDGED_BY_KEY, user == null ? "" : user);
+        m_propertiesCache.setProperty(configKey, ACKNOWLEDGED_AT_KEY, new Date().toString());
         for (StateChangeHandler listener : m_listeners) {
             listener.onIsEnabledChanged(enabled);
         }
     }
 
     public String getOrGenerateSystemId() throws IOException {
-        String systemId = m_propertiesCache.getProperty(m_propertiesFile, SYSTEM_ID_KEY);
+        String systemId = m_propertiesCache.getProperty(configKey, SYSTEM_ID_KEY);
         if (systemId == null) {
             LOG.debug("No existing system id was found. Generating a new system id.");
             systemId = UUID.randomUUID().toString();
-            m_propertiesCache.setProperty(m_propertiesFile, SYSTEM_ID_KEY, systemId);
+            m_propertiesCache.setProperty(configKey, SYSTEM_ID_KEY, systemId);
         }
         return systemId;
     }
 
     public String getAndRegenerateSystemId() throws IOException {
         String systemId = UUID.randomUUID().toString();
-        m_propertiesCache.setProperty(m_propertiesFile, SYSTEM_ID_KEY, systemId);
+        m_propertiesCache.setProperty(configKey, SYSTEM_ID_KEY, systemId);
         return systemId;
     }
 

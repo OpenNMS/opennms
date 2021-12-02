@@ -56,11 +56,12 @@ public class StringTypeTest extends AbstractTypeTest {
     }
 
     @Test
-    public void shouldDefaultToEmptyForNoDefaultValue() {
+    public void shouldDefaultNullForNoDefaultValue() {
+        // we want it null since some services check against null
         attributes.remove("default");
         ConfigItem item = createItem();
         assertEquals(Type.STRING, item.getType());
-        assertEquals("", item.getDefaultValue());
+        assertEquals(null, item.getDefaultValue());
     }
 
     @Override
