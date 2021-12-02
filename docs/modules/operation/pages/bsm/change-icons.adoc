@@ -10,6 +10,6 @@ As shown in figure <<gu-bsm-change-icon, Change Icon for Business Service or Edg
 
 [[gu-bsm-change-icon]]
 .Change Icon for Business Service or Edges
-image:bsm/09_bsm-change-icon.png[]
+image::bsm/09_bsm-change-icon.png[]
 
 It is also possible create custom icon sets, as described in the Business Service Monitoring section of the Developer Guide.

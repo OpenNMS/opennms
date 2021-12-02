@@ -19,7 +19,7 @@ Before assigning a group to an on-call role, you must <<user-management/user-gro
 . In the calendar, click the plus *(+)* icon on the day for which you want to create a schedule.
 . Specify the user, date, and time the user should be on call and click *Save*:
 +
-image:users/on-call-schedule.png[]
+image::users/on-call-schedule.png[]
 
 . Repeat for other days and users.
 . Click *Done* to apply the changes.
