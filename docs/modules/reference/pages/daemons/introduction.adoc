@@ -11,7 +11,7 @@
 | Acknowledge daemon is responsible for alarm acknowledgment.
 
 | Actiond
-|
+| Generates Java actions based on events received.
 
 | xref:daemons/daemon-config-files/alarmd.adoc[Alarmd]
 | Alarm daemon handles the alarm workflows.
@@ -26,7 +26,7 @@
 | Collect daemon is responsible for collecting data from nodes.
 
 | Correlator
-|
+| Associate multiple, related events.
 
 | xref:daemons/daemon-config-files/discovery.adoc[Discovery]
 | The Discovery daemon provides network discovery functions to scan once or regularly for nodes that should be added into the OpenNMS database.
@@ -38,7 +38,7 @@
 | The Event Translator (ET) can transform and enhance the data from OpenNMS events that other daemons generate.
 
 | xref:daemons/daemon-config-files/eventd.adoc[Eventd]
-|
+| Receives and writes event information.
 
 | JettyServer
 | The Jetty server provides the {page-component-title} web user interface.
@@ -74,7 +74,8 @@
 | Scriptd allows the user to configure Bean Shell script to run in response to events.
 
 | xref:daemons/daemon-config-files/snmp-interface-poller.adoc[SnmpPoller]
-|
+| Checks SNMP interface admin status.
+Separate from Pollerd's SnmpMonitor.
 
 | Statsd
 |
