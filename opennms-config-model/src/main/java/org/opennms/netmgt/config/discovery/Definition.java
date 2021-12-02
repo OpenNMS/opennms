@@ -113,6 +113,7 @@ public class Definition implements Serializable {
         return Optional.ofNullable(location);
     }
 
+    @JsonIgnore
     public String getLocationName() {
         return location;
     }
