@@ -3,7 +3,7 @@
     <div class="geo-map">
       <l-map
         ref="map"
-        v-model:center="center"
+        :center="center"
         :max-zoom="19"
         :min-zoom="2"
         :zoom="zoom"
