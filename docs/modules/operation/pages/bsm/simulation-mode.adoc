@@ -12,7 +12,7 @@ Figure <<gu-bsm-simulate,BSM Simulation Mode>> shows the menu and severity setti
 
 [[gu-bsm-simulate]]
 .BSM Simulation Mode
-image:bsm/07_bsm-simulation.png[Simulation Mode,400,293]
+image::bsm/07_bsm-simulation.png[Simulation Mode,400,293]
 
 NOTE: Hide the Info Panel with the Arrow button in the top-left corner.
 

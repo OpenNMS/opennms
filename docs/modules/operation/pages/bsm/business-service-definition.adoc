@@ -20,7 +20,7 @@ Use the *Manage Business Services* option on the system admin page to manage and
 Administrator permissions are required to define business services.
 
 .Managing business services with the business service editor
-image:bsm/01_bsm-editor.png[]
+image::bsm/01_bsm-editor.png[]
 
 (1) Create a new business service definition.
 
