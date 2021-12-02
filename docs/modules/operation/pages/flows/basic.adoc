@@ -6,7 +6,7 @@ This section describes how to get started with flows in a basic setup to collect
 
 == Before you begin
 
-Make sure you have configured your devices to send flows.
+Configure your devices to send flows.
 Refer to the manufacturer's documentation.
 You will need to set up the flow receiver, which is OpenNMS {page-component-title}, and enable sending flows per interface on the firewall.
 
