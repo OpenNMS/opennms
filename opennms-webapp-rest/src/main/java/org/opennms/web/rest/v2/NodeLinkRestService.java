@@ -47,10 +47,9 @@ import org.opennms.web.enlinkd.LldpLinkNode;
 import org.opennms.web.enlinkd.OspfElementNode;
 import org.opennms.web.enlinkd.OspfLinkNode;
 import org.opennms.web.rest.model.v2.BridgeElementNodeDTO;
-import org.opennms.web.rest.model.v2.CdpElementNodeDTO;
-import org.opennms.web.rest.v2.api.NodeLinkRestApi;
 import org.opennms.web.rest.model.v2.BridgeLinkNodeDTO;
 import org.opennms.web.rest.model.v2.BridgeLinkRemoteNodeDTO;
+import org.opennms.web.rest.model.v2.CdpElementNodeDTO;
 import org.opennms.web.rest.model.v2.CdpLinkNodeDTO;
 import org.opennms.web.rest.model.v2.EnlinkdDTO;
 import org.opennms.web.rest.model.v2.IsisElementNodeDTO;
@@ -59,12 +58,13 @@ import org.opennms.web.rest.model.v2.LldpElementNodeDTO;
 import org.opennms.web.rest.model.v2.LldpLinkNodeDTO;
 import org.opennms.web.rest.model.v2.OspfElementNodeDTO;
 import org.opennms.web.rest.model.v2.OspfLinkNodeDTO;
+import org.opennms.web.rest.v2.api.NodeLinkRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Transactional
+@Transactional(readOnly = true)
 public class NodeLinkRestService implements NodeLinkRestApi {
 
     private EnLinkdElementFactoryInterface enLinkdElementFactory;

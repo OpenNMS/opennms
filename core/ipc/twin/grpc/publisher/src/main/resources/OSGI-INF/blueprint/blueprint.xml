@@ -17,6 +17,8 @@
         <argument ref="grpcIpcServer"/>
     </bean>
 
+    <service ref="localTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
+
     <service ref="grpcTwinPublisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher">
         <service-properties>
             <entry key="strategy" value="grpc"/>

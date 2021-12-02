@@ -55,6 +55,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.poller.pollables.PollableService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -333,11 +334,15 @@ public class QueryManagerDaoImpl implements QueryManager {
     }
 
     @Override
-    public void updateLastGoodOrFail(int nodeId, InetAddress ipAddr, String serviceName, PollStatus status) {
+    public void updateLastGoodOrFail(PollableService pollableService, PollStatus status) {
+        final var nodeId = pollableService.getNodeId();
+        final var ipAddr = pollableService.getAddress();
+        final var serviceName = pollableService.getSvcName();
         try {
             m_transcationOps.execute((TransactionCallback<Object>) transactionStatus -> {
                 final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, ipAddr, serviceName);
                 if (service == null) {
+                    pollableService.delete();
                     // Throw so we can hit the exception block bellow and re-use the log message
                     throw new NoSuchElementException("Service no longer exists.");
                 }

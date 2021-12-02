@@ -89,7 +89,7 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
                         byte[] response = exchange.getOut().getBody(byte[].class);
                         TwinUpdate twinUpdate = mapTwinResponseToProto(response);
                         if (twinUpdate.getLocation() == null ||
-                                twinUpdate.getLocation().equals(getMinionIdentity().getLocation())) {
+                                twinUpdate.getLocation().equals(getIdentity().getLocation())) {
                             LOG.trace("Received TwinUpdate as RPC reply {}", twinUpdate);
                             accept(twinUpdate);
                         }
@@ -133,7 +133,7 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
         byte[] sinkUpdateBytes = exchange.getIn().getBody(byte[].class);
         TwinUpdate twinUpdate = mapTwinResponseToProto(sinkUpdateBytes);
         if (twinUpdate.getLocation() == null ||
-                twinUpdate.getLocation().equals(getMinionIdentity().getLocation())) {
+                twinUpdate.getLocation().equals(getIdentity().getLocation())) {
             LOG.trace("Received TwinResponse as sink update {}", twinUpdate);
             accept(twinUpdate);
         }

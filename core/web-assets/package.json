@@ -52,7 +52,7 @@
         "jest": "^24.9.0",
         "lodash.clonedeep": "^4.5.0",
         "main-bower-files": "^2.13.3",
-        "moment-timezone": "^0.5.27",
+        "moment-timezone": "^0.5.33",
         "ngtemplate-loader": "^2.0.1",
         "node-sass": "^4.13.1",
         "parallel-webpack": "^2.4.0",

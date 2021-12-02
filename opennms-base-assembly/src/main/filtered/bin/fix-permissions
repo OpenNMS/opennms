@@ -38,12 +38,11 @@ fi
 if [ -e "${OPENNMS_HOME}/etc/opennms.conf" ]; then
   # shellcheck disable=SC1090,SC1091
   . "${OPENNMS_HOME}/etc/opennms.conf"
-else
-  [ -z "$RUNAS" ] && RUNAS=opennms
 fi
+[ -z "$RUNAS" ] && RUNAS=opennms
 
-if [ -z "${RUNAS}" ]; then
-  echo "Something is very wrong, \$RUNAS is not set. Bailing."
+if ! id -u "${RUNAS}" >/dev/null 2>&1; then
+  echo "Something is very wrong, \$RUNAS=${RUNAS} but that user does not exist. Bailing."
   exit 1
 fi
 
@@ -66,6 +65,18 @@ fi
 
 SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
 
+do_sudo() {
+  if [ -x "$SUDO" ]; then
+    "$SUDO" "$@"
+  else
+    # if no sudo, fall back to running as the current user
+    if [ "$(id -u -n)" != "root" ]; then
+      echo "WARNING: sudo was not located, but this script is not being run as root. This will probably fail."
+    fi
+    "$@"
+  fi
+}
+
 do_chown() {
   _mypath="$1"
 
@@ -75,18 +86,13 @@ do_chown() {
     exit 1
   fi
 
-  _chown=("chown")
-  if [ -x "$SUDO" ]; then
-    _chown=("$SUDO" "chown")
-  fi
-
   echo "* fixing ownership of ${_mypath}"
-  "${_chown[@]}" -h "${RUNAS_UID}:${RUNAS_GID}" "${_mypath}"
+  do_sudo chown -h "${RUNAS_UID}:${RUNAS_GID}" "${_mypath}"
   if [ "$RECURSE" -eq 1 ]; then
     echo "* fixing ownership of ${_mypath} contents"
     _count="$(find -L "${_mypath}" -mount ! -user "${RUNAS_UID}" | wc -l)"
     if [ "${_count}" -ge 1 ]; then
-      find -L "${_mypath}" -mount ! -user "${RUNAS_UID}" -print0 | xargs -0 "${_chown[@]}" "${RUNAS_UID}:${RUNAS_GID}"
+      find -L "${_mypath}" -mount ! -user "${RUNAS_UID}" -print0 | do_sudo xargs -0 chown "${RUNAS_UID}:${RUNAS_GID}"
     fi
   fi
 }

@@ -31,9 +31,7 @@ package org.opennms.core.ipc.twin.test;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
@@ -57,8 +55,8 @@ public abstract class AbstractTwinBrokerIT {
     protected abstract TwinPublisher createPublisher() throws Exception;
     protected abstract TwinSubscriber createSubscriber(final MinionIdentity identity) throws Exception;
 
-    private TwinPublisher publisher;
-    private TwinSubscriber subscriber;
+    public TwinPublisher publisher;
+    public TwinSubscriber subscriber;
 
     private final MinionIdentity standardIdentity = new MockMinionIdentity("remote");
 
