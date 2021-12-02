@@ -7,7 +7,7 @@ Furthermore it is also possible to configure these charts to be displayed on the
 To achieve this alter the `org.opennms.web.console.centerUrl` property to also include the entry `/trend/trend-box.htm`.
 
 .Trend chart structure
-image:webui/trend/trend-chart.png[]
+image::webui/trend/trend-chart.png[]
 
 These charts can be configured and defined in the `trend-configuration.xml` file in your OpenNMS `etc` directory.
 The following sample defines a Trend chart for displaying nodes with ongoing outages.

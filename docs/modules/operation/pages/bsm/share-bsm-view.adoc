@@ -8,6 +8,6 @@ In figure <<gu-bsm-share-view-image, Share Business Service View>> the Share men
 
 [[gu-bsm-share-view-image]]
 .Share Business Service View
-image:bsm/08_bsm-share-view.png[]
+image::bsm/08_bsm-share-view.png[]
 
 NOTE: The user receiving the link needs an OpenNMS account to be able to see the Business Service View.
