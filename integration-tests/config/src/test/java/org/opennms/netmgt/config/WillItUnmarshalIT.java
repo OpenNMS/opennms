@@ -275,11 +275,9 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, false, null);
         addFile(Source.CONFIG, "wsman-asset-adapter-configuration.xml", WsManAssetAdapterConfiguration.class, true, null);
         addFile(Source.CONFIG, "wsman-config.xml", WsmanConfig.class, true, null);
-
         addFile(Source.EXAMPLE, "collectd-configuration.xml", CollectdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "destinationPaths.xml", DestinationPaths.class, false, null);
         addFile(Source.EXAMPLE, "devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class, false, null);
-        addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class, false, null);

@@ -28,13 +28,12 @@
 
 package org.opennms.netmgt.config.enlinkd;
 
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.features.config.convert.CmConfigTest;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
-
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
-import org.opennms.features.config.convert.CmConfigTest;
 
 public class EnlinkdConfigurationTest extends CmConfigTest<EnlinkdConfiguration> {
 

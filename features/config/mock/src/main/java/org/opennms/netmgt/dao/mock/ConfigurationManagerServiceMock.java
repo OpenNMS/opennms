@@ -247,9 +247,10 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
         }
         AtomicReference<String> fileFound = new AtomicReference<>();
         paths.forEach(path -> {
-            if (fileFound.get() != null) {
+            if (fileFound.get() != null)
                 return;
-            }
+            if (path == null)
+                return;
             URL url = ConfigurationManagerServiceMock.class.getClassLoader().getResource(path);
             if (url != null) {
                 fileFound.set(path);
