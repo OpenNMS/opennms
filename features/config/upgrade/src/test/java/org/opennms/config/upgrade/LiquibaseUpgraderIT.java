@@ -115,7 +115,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         Path etcDir = Files.createDirectories(Paths.get(this.opennmsHome + "/etc"));
         Files.copy(Path.of("../../../opennms-base-assembly/src/main/filtered/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"),
                 Path.of(etcDir + "/" + SCHEMA_NAME_EVENTD + "-configuration.xml"));
-        Files.copy(Path.of("../../../smoke-test/src/main/resources/opennms-overlay/etc/org.opennms.features.datachoices.cfg"),
+        Files.copy(Path.of("../../../opennms-config-model/src/main/resources/defaults/org.opennms.features.datachoices.cfg"),
                 Path.of(etcDir + "/org.opennms.features.datachoices.cfg"));
 
 
