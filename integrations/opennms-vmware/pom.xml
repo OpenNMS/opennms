@@ -24,7 +24,9 @@
               <Bundle-Version>${project.version}</Bundle-Version>
               <!-- Don't export any packages, expose services only. -->
               <Export-Package></Export-Package>
+              <!-- changing  org.opennms.netmgt.dao.jaxb > org.opennms.netmgt.dao.vmware.jaxb; didn't work after some time, use not import first-->
               <Import-Package>
+                !org.opennms.features.config.service.impl,
                 org.eclipse.persistence.internal.jaxb;resolution:=optional,
                 org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
                 org.opennms.core.network,
