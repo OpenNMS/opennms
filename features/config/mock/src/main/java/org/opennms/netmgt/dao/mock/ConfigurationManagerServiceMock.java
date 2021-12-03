@@ -58,8 +58,8 @@ import java.util.function.Consumer;
 @Component
 public class ConfigurationManagerServiceMock implements ConfigurationManagerService {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationManagerServiceMock.class);
-    public final String JSON_EXTENSION = ".json";
-    public final String XML_EXTENSION = ".xml";
+    public static final String JSON_EXTENSION = ".json";
+    public static final String XML_EXTENSION = ".xml";
 
     private String configFile;
 
