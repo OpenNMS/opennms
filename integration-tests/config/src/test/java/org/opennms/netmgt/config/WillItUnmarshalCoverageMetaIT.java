@@ -131,6 +131,7 @@ public class WillItUnmarshalCoverageMetaIT {
         ignoreFile(new File(getDaemonEtcDirectory(), "opennms-activemq.xml"));
 
         // list of config file moved to CmWillItUnmarshalIT
+        ignoreFile(new File(getDaemonEtcDirectory(), "examples/discovery-configuration.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "discovery-configuration.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "enlinkd-configuration.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "examples/snmp-config.xml"));

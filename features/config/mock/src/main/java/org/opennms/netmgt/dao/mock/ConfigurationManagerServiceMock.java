@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -189,8 +190,14 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
                 LOG.error("Cannot found config !!! configName: {}, configId: {}", configName, configId);
                 return Optional.empty();
             }
-            ConfigConverter converter = XsdHelper.getConverter(this.getRegisteredConfigDefinition(configName).get());
+            Optional<ConfigDefinition> def = this.getRegisteredConfigDefinition(configName);
+            if (def.isEmpty()) {
+                LOG.error("Cannot find ConfigDefinition for {}. ", configName);
+                throw new IOException("ConfigDefinition not found!");
+            }
+            ConfigConverter converter = XsdHelper.getConverter(def.get());
             jsonStr = converter.xmlToJson(xmlStr);
+
         }
         if (jsonStr != null) {
             this.putConfig(configName, configId, jsonStr);
@@ -251,9 +258,14 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
                 return;
             if (path == null)
                 return;
-            URL url = ConfigurationManagerServiceMock.class.getClassLoader().getResource(path);
-            if (url != null) {
-                fileFound.set(path);
+            File tmpFile = new File(path);
+            if (tmpFile.isFile() && tmpFile.canRead()) {
+                fileFound.set(tmpFile.getAbsolutePath());
+            } else {
+                URL url = ConfigurationManagerServiceMock.class.getClassLoader().getResource(path);
+                if (url != null) {
+                    fileFound.set(path);
+                }
             }
         });
         return fileFound.get();

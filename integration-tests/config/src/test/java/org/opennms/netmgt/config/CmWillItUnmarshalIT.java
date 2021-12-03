@@ -110,6 +110,7 @@ public class CmWillItUnmarshalIT {
         addFile(Source.CONFIG, "snmp-config.xml", SnmpConfig.class, "snmp-config.xsd", "snmp-config", false, null);
         addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, "enlinkd-configuration.xsd", "enlinkd-configuration",  false, null);
         addFile(Source.CONFIG, "vmware-config.xml", VmwareConfig.class, "vmware-config.xsd", "vmware-config", false, null);
+        addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, "discovery-configuration.xsd","discovery-configuration", false, null);
         addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, "discovery-configuration.xsd","discovery-configuration", false, null);
         addFile(Source.CONFIG, "jmx-config.xml", JmxConfig.class, "jmx-config.xsd","jmx-config", true, null);
         addFile(Source.CLASSPATH, "/defaults/xmp-config.xml", XmpConfig.class, "xmp-config.xsd","xmp-config", true, null);
