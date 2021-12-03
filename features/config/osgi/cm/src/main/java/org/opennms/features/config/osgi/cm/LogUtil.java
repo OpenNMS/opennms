@@ -28,18 +28,9 @@
 
 package org.opennms.features.config.osgi.cm;
 
-// import org.apache.felix.cm.impl.Log;
-
 public class LogUtil {
+    // TODO Patrick: revisit if we can't use a logging framework
     public static void logInfo(String msg, Object...objects) {
-        // Log.logger.log( LogService.LOG_INFO, "{0} stopped.", objects);
-    }
-
-    private interface LogService {
-        // values from org.osgi.service.log.LogService
-        int LOG_ERROR = 1;
-        int LOG_WARNING = 2;
-        int LOG_INFO = 3;
-        int LOG_DEBUG = 4;
+        System.out.printf(msg, objects);
     }
 }

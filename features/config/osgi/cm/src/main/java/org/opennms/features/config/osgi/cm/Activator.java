@@ -31,7 +31,6 @@ package org.opennms.features.config.osgi.cm;
 import static org.opennms.features.config.osgi.cm.LogUtil.logInfo;
 
 import java.io.IOException;
-import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Optional;
 
@@ -52,7 +51,7 @@ public class Activator implements BundleActivator {
     private ServiceRegistration<PersistenceManager> registration;
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
 
         // Register CmPersistenceManager
         Hashtable<String, Object> config = new Hashtable<>();
@@ -63,25 +62,12 @@ public class Activator implements BundleActivator {
         registration = context.registerService(PersistenceManager.class, persistenceManager, config);
 
         final ConfigurationAdmin configurationAdmin = findService(context, ConfigurationAdmin.class);
-        // primeConfigurationAdmin(configurationAdmin, persistenceManager);
         registerCallbacks(context, cm, persistenceManager);
 
         logInfo("{0} started.", CmPersistenceManager.class.getSimpleName());
     }
 
-    /**
-     * We are started late (after org.osgi.service.cm.ConfigurationAdmin) in the startup sequence.
-     * Therefore, ConfigurationAdmin (which caches configs) doesn't know about our configs.
-     * Let's tell him.
-     */
-    private void primeConfigurationAdmin(ConfigurationAdmin configurationAdmin, PersistenceManager persistenceManager) {
-        for (String pid : MigratedServices.PIDS) {
-            updateConfig(configurationAdmin, persistenceManager, pid);
-        }
-    }
-
     private void registerCallbacks(BundleContext context, ConfigurationManagerService cm, PersistenceManager persistenceManager) {
-        // Register callbacks
         final ConfigurationAdmin configurationAdmin = findService(context, ConfigurationAdmin.class);
         for (String pid : MigratedServices.PIDS) {
             ConfigUpdateInfo key = new ConfigUpdateInfo(pid, "default");

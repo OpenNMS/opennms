@@ -42,8 +42,7 @@ import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 
 /**
- * Our own implementation of a PersistenceManager (subclass of FilePersistenceManager).
- * Must be activated in custom.properties: felix.cm.pm=org.opennms.config.osgi.CmPersistenceManager
+ * Our own implementation of a PersistenceManager, using the CM system instead of files.
  */
 public class CmPersistenceManager implements PersistenceManager {
 

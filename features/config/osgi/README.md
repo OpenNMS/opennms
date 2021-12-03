@@ -14,7 +14,7 @@ They are executed at different times in the startup order:
 ## Part One: Delegating facade
 Called very early in the startup process.
 It needs to be available for Felix ConfigurationAdmin.
-It has very limited dependencies and can thus started very early.
+It has very limited dependencies and can thus start very early.
 
 It acts as a delegater:
 - OpenNMS plugins => CM
