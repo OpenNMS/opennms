@@ -1,0 +1,29 @@
+<features
+        name="ALARM-JAAS IT Hotdeploy Features"
+        xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 http://karaf.apache.org/xmlns/features/v1.0.0">
+
+    <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</repository>
+    <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</repository>
+    <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
+    <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/sentinel</repository>
+
+    <feature name="sentinel-alarm-jaas-rest" description="OpenNMS :: Alarms :: Rest"  version="${project.version}">
+
+        <!-- (aries-blueprint, deployer) -->
+        <feature>scv-jceks-impl</feature>
+        <feature>http</feature>
+        <feature>jetty</feature>
+        <feature>cxf-jaxrs</feature>
+
+        <feature>sentinel-alarmd</feature>
+        <feature>jaas-deployer</feature>
+        <bundle>wrap:mvn:org.opennms/opennms-webapp-rest/${project.version}</bundle>
+        <bundle>mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
+        <bundle>mvn:org.opennms.container/org.opennms.container.jaas-login-module-simple/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-alarm-rest/${project.version}</bundle>
+    </feature>
+
+
+</features>

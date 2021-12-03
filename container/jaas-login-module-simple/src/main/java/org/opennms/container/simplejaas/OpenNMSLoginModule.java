@@ -29,7 +29,6 @@
 package org.opennms.container.simplejaas;
 
 import java.security.Principal;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -41,13 +40,10 @@ import javax.security.auth.login.LoginException;
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.apache.karaf.jaas.modules.AbstractKarafLoginModule;
 import org.opennms.netmgt.config.api.UserConfig;
-//import org.opennms.web.springframework.security.LoginModuleUtils;
 
-//import org.opennms.web.springframework.security.SpringSecurityUserDao;
 import org.opennms.netmgt.config.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import org.springframework.security.core.GrantedAuthority;
 
 
 public class OpenNMSLoginModule extends AbstractKarafLoginModule implements SimpleOpenNMSLoginHandler {
@@ -88,13 +84,6 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Simp
         return JaasSupport.getUserConfig();
     }
 
-    /*
-    @Override
-    public SpringSecurityUserDao springSecurityUserDao() {
-        return JaasSupport.getSpringSecurityUserDao();
-    }
-    */
-
     @Override
     public String user() {
         return this.user;
@@ -106,7 +95,7 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Simp
     }
 
 
-    /*
+/*
     public Set<Principal> createPrincipals(final GrantedAuthority authority) {
         final String role = authority.getAuthority().replaceFirst("^[Rr][Oo][Ll][Ee]_", "");
         final Set<Principal> principals = new HashSet<>();
@@ -116,7 +105,7 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Simp
         LOG.debug("created principals from authority {}: {}", authority, principals);
         return principals;
     }
-    */
+ */
     // unused from this class
     private static Set<Principal> createPrincipals(SimpleOpenNMSLoginHandler handler, User configUser) {
         final Set<Principal> principals = new LinkedHashSet<>();
@@ -139,7 +128,7 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Simp
 
     @Override
     public boolean requiresAdminRole() {
-        // this LoginHandler is used for Karaf access, allow admin login only
-        return true;
+        // this LoginHandler is used for Rest endpoint access in karaf, so admin should not be required
+        return false;
     }
 }

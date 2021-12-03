@@ -17,6 +17,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <!-- activator loads JASS context -->
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>org.opennms.container.jaas-login-module</Bundle-SymbolicName>

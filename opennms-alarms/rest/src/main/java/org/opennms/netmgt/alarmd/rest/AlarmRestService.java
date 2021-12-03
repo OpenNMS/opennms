@@ -94,10 +94,10 @@ public interface AlarmRestService {
 
 
     @GET
-    @Path("/testjaas/groomer") // curl -u karaf:karaf -X GET http://localhost:8181/cxf/alarmservice/alarms/testjaas/groomer
-    @RolesAllowed("groomer")
+    @Path("/testjaas/user") // curl -u karaf:karaf -X GET http://localhost:8181/cxf/alarmservice/alarms/testjaas/groomer
+    @RolesAllowed("user")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    Response echoJaasUserPrincipalGroomer();
+    Response echoJaasUserPrincipalUser();
 
     @GET
     @Path("/testjaas/admin") // curl -u karaf:karaf -X GET http://localhost:8181/cxf/alarmservice/alarms/testjaas/admin

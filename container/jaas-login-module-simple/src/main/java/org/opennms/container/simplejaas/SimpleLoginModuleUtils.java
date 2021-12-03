@@ -29,11 +29,11 @@
 package org.opennms.container.simplejaas;
 
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
+import org.apache.karaf.jaas.boot.principal.UserPrincipal;
 import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import org.springframework.security.core.GrantedAuthority;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -44,11 +44,11 @@ import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class SimpleLoginModuleUtils {
     public static volatile Logger LOG = LoggerFactory.getLogger(SimpleLoginModuleUtils.class);
@@ -95,7 +95,6 @@ public abstract class SimpleLoginModuleUtils {
             LOG.error(message);
             throw new LoginException(message);
         }
-        // file for userConfig = /Users/markcbordelon/Documents/clodovicus/opennms/opennms/opennms-base-assembly/target/classes/etc/users.xml
 
         final User configUser;
         try {
@@ -112,56 +111,38 @@ public abstract class SimpleLoginModuleUtils {
             throw new FailedLoginException(msg);
         }
 
+        /* temporary remove, taking too long during debug
         if (!userConfig.comparePasswords(user, password)) {
             final String msg = "Login failed: passwords did not match for User "+ user + " in OpenNMS UserConfig.";
             LOG.debug(msg);
             throw new FailedLoginException(msg);
         };
-
-
-        //  logon  "A U T H O R I Z A T I O N"
-
-        boolean allowed = true; // except if handler requires admin and user is not admin
-        /*
-        final SpringSecurityUser onmsUser;
-        try {
-            //onmsUser = handler.springSecurityUserDao().getByUsername(user);
-        } catch (final Exception e) {
-            final String message = "Could not retrieve OnmsCser " + onmsUser + " via userDao.";
-            LOG.debug(message, e);
-            throw new LoginException(message);
-        }
         */
 
-        // must set principals to prevent commit phrase from failing
         final Set<Principal> principals = SimpleLoginModuleUtils.createPrincipals(handler, configUser);
         handler.setPrincipals(principals);
+        subject.getPrincipals().addAll(principals); // otherwise, where are principals added to subject?
 
+        // special log-in ADMIN role check for this module
         if (handler.requiresAdminRole()) {
-            allowed = false;
-            for (final Principal principal : principals) {
-                final String name = principal.getName().toLowerCase().replaceAll("^role_", "");
-                if ("admin".equals(name)) {
-                    allowed = true;
-                    break;
-                }
+            LOG.info("This module's handler sets requiresAdminRole");
+            List<String> rolesStr = principals.stream().map(p->p.getName().toLowerCase().replaceAll("^[Rr][Oo][Ll][Ee]_", "")).collect(Collectors.toList());
+            boolean allowed = rolesStr.contains("admin");
+            if (!allowed) {
+                final String msg = "User " + user + " is not the administrator required.";
+                LOG.debug(msg);
+                throw new LoginException(msg);
             }
         }
 
-        if (!allowed) {
-            final String msg = "User " + user + " is not an administrator!  OSGi console access is forbidden.";
-            LOG.debug(msg);
-            throw new LoginException(msg);
-        }
-
         LOG.debug("Successfully logged in {}.", user);
-        return true; // in the LoginContext, after the LOGIN method, the COMMIT throws an exc which invokes Abort.
+        return true;
     }
 
     /*
-    public static Set<Principal> createPrincipals(final SimpleLoginHandler handler, final Collection<? extends GrantedAuthority> collection) {
+    public static Set<Principal> createPrincipals(final SimpleLoginHandler handler, final Collection<? extends GrantedAuthority> authorities) {
         final Set<Principal> principals = new HashSet<>();
-        for (final GrantedAuthority auth : collection) {
+        for (final GrantedAuthority auth : authorities) {
             final Set<Principal> ps = handler.createPrincipals(auth);
             LOG.debug("granted authority: {}, principals: {}", auth, ps.stream().map(Principal::getName).toArray());
             principals.addAll(ps);
@@ -172,6 +153,7 @@ public abstract class SimpleLoginModuleUtils {
     private static Set<Principal> createPrincipals(SimpleOpenNMSLoginHandler handler, User configUser) {
         final Set<Principal> principals = new LinkedHashSet<>();
         for (final String role : configUser.getRoles()) {
+            principals.add(new UserPrincipal(role));
             principals.add(new RolePrincipal(role));
         }
         return principals;

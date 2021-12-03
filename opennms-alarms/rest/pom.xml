@@ -10,8 +10,21 @@
   <name>OpenNMS :: Alarms :: Rest</name>
   <packaging>bundle</packaging>
   <build>
+
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>false</filtering>
+      </testResource>
+      <testResource>
+        <directory>src/test/resources-filtered</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
     <plugins>
-      <plugin>
+
+      <plugin> <!-- for writing the bundle's manifest -->
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <extensions>true</extensions>
@@ -30,6 +43,129 @@
           </instructions>
         </configuration>
       </plugin>
+
+      <plugin> <!-- for starting/loading the container for the IT -->
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.23.0</version>
+        <configuration>
+          <showLogs>true</showLogs>
+          <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
+          <images>
+            <image>
+              <name>alarm-application-it-image</name>
+              <alias>application</alias>
+              <build>
+                <from>artnaseef/karaf:4.3.3</from>  <!-- 4.3.2 again -->
+                <!-- 4.3.3 checks for stdin (tty) it shuts down shell, which shuts down the container: entryPoint -->
+                <!-- <from>mkroli/karaf:4.3</from>  4.2 in case hotdeploy is broken -->
+
+                <assembly>
+                  <user>karaf:users:karaf</user> <!-- still better than running as root -->
+                  <targetDir>/</targetDir>
+
+                  <inline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+                          xsi:schemaLocation="
+                                             http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2
+                                             http://maven.apache.org/xsd/assembly-1.1.2.xsd
+                                             ">
+                    <files>
+                      <file>
+                        <source> <!-- config for alarm rest service is currently empty -->
+                          ${project.build.testOutputDirectory}/custom.system.properties
+                        </source>
+                        <outputDirectory>/opt/karaf/etc</outputDirectory>
+                        <destName>custom.system.properties</destName>
+                      </file>
+                    </files>
+
+                  </inline>
+                </assembly>
+                <entryPoint>
+                  <exec>
+                    <arg>/opt/karaf/apache-karaf/bin/karaf</arg>
+                    <arg>run</arg>
+                  </exec>
+                </entryPoint>
+              </build>
+              <run>
+                <ports>
+                  <port>karaf-ssh-port:8101</port>
+                  <port>karaf-http-port:8181</port>
+                </ports>
+                <wait> <!-- not a test: just to make sure container is up before proceeding to tests -->
+                  <http>
+                    <!-- // curl -X GET http://localhost:8181/cxf/alarmservice/alarms/list -->
+                    <url>http://localhost:${karaf-http-port}/cxf/alarmservice</url>
+                    <method>GET</method>
+                  </http>
+                  <time>200000</time> <!-- karaf should finish hotdeploy in 12000 -->
+                </wait>
+                <volumes>
+                  <bind>
+                    <volume>${user.home}/.m2:/opt/karaf/.m2</volume>
+                    <volume>${project.build.testOutputDirectory}/deploy:/opt/karaf/apache-karaf/deploy</volume>
+                  </bind>
+                </volumes>
+                <network>
+                  <mode>custom</mode>
+                  <name>alarm-network</name>
+                  <alias>application</alias>
+                </network>
+              </run>
+            </image>
+          </images>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-before-integration-test</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+              <goal>start</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>stop-after-integration-test</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin> <!-- for running the integration tests -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.18</version>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+            <configuration>
+              <reuseForks>true</reuseForks>
+              <useSystemClassLoader>false</useSystemClassLoader>
+              <systemProperties>
+                <property>
+                  <name>alarm.service.url</name>
+                  <value>http://localhost:${karaf-http-port}</value>
+                </property>
+              </systemProperties>
+            </configuration>
+          </execution>
+          <execution>
+            <id>verify-it</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
   <dependencies>
@@ -58,15 +194,36 @@
       <scope>provided</scope>
     </dependency>
 
-
-
-    <!-- sessionutils for transaction and alarmDao -->
-    <!-- to package containing
     <dependency>
-      <groupId>org.opennms.core.health</groupId>
-      <artifactId>org.opennms.core.health.rest</artifactId>
-      <version>${project.version}</version>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>3.0.6</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-    -->
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 </project>

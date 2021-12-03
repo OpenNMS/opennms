@@ -399,6 +399,8 @@ feature:install scv-jceks-impl
     bundle:install -s wrap:mvn:org.opennms/opennms-webapp-rest/30.0.0-SNAPSHOT  mvn:javax.annotation/javax.annotation-api/1.3.2 mvn:org.opennms.container/org.opennms.container.jaas-login-module-simple/30.0.0-SNAPSHOT mvn:org.opennms/opennms-alarm-rest/30.0.0-SNAPSHOT
     -->
     <feature name="sentinel-alarmd-rest" description="OpenNMS :: Alarms :: Rest"  version="${project.version}">
+        <feature>scv-jceks-impl</feature>
+
         <feature>http</feature>
         <feature>jetty</feature>
         <feature>cxf-jaxrs</feature>
@@ -415,6 +417,13 @@ feature:install scv-jceks-impl
         bundle:install -s mvn:javax.annotation/javax.annotation-api/1.3.2
         bundle:install -s mvn:org.opennms/opennms-alarm-rest/30.0.0-SNAPSHOT
         -->
+        <feature>sentinel-alarmd</feature>
+        <feature>jaas-deployer</feature>
+        <bundle>wrap:mvn:org.opennms/opennms-webapp-rest/30.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
+        <bundle>mvn:org.opennms.container/org.opennms.container.jaas-login-module-simple/30.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opennms/opennms-alarm-rest/30.0.0-SNAPSHOT</bundle>
+
     </feature>
 
 </features>

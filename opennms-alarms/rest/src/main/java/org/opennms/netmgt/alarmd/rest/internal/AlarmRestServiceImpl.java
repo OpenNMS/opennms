@@ -252,12 +252,13 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response echoJaxrsSecCtxAnyone(@Context SecurityContext context) {
         final String[] GROUPS = {"admingroup", "group", "capybaras"};
-        final String[] ROLES = {"admin", "manager", "viewer", "ssh", "read-only", "groomer"};
+        final String[] ROLES = {"admin", "manager", "viewer", "ssh", "read-only", "user", "ROLE_USER"};
 
         Token token = new Token("jaxrs test: check logs for user's role membership");
 
         // get access to user principle via SecurityContext, check role membership
         Principal userPrincipal = context.getUserPrincipal();
+
         if (userPrincipal != null) {
             token.setUserPrincipal(userPrincipal.getName());
             for (String role : ROLES) {
@@ -272,10 +273,10 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
 
     @GET
-    @Path("/testjaas/groomer")
-    @RolesAllowed("groomer")
+    @Path("/testjaas/user")
+    @RolesAllowed("user")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response echoJaasUserPrincipalGroomer() {
+    public Response echoJaasUserPrincipalUser() {
 
         Token token = new Token("jaas test");
 
@@ -304,13 +305,13 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
     @GET
     @Path("/testjaas/admin")
-    @RolesAllowed("admin")
+    @RolesAllowed("admin") // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response echoJaasUserPrincipalAdmin() {
 
         Token token = new Token("jaas test");
 
-        // get access @RolesAllowedto subject via container, and get user principal from subject principles
+        // get access @RolesAllowed to subject via container, and get user principal from subject principles
         // (cannot check role membership without a JaxRs SecurityContext)
         AccessControlContext acc = AccessController.getContext();
         if (acc == null) {
@@ -320,9 +321,10 @@ public class AlarmRestServiceImpl implements AlarmRestService {
         if (subject == null) {
             token.setError("subject is null");
         } else {
-            Optional<Principal> anyPrincipal = subject.getPrincipals().stream().filter(p-> (p instanceof UserPrincipal)).findAny();
-            if (anyPrincipal.isPresent()) {
-                Principal userPrincipal = anyPrincipal.get();
+            Set<Principal> allPrincipals = subject.getPrincipals();
+            Optional<Principal> anyUserPrincipal = allPrincipals.stream().filter(p-> (p instanceof UserPrincipal)).findAny();
+            if (anyUserPrincipal.isPresent()) {
+                Principal userPrincipal = anyUserPrincipal.get();
                 token.setUserPrincipal(userPrincipal.getName());
             }
         }
