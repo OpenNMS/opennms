@@ -30,7 +30,9 @@ package org.opennms.features.config.service.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 
 import org.json.JSONObject;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -51,8 +53,23 @@ public class PropertiesConversionUtil {
         return map;
     }
 
+    /**
+     * We expect to have a flat json with only simple data types as children.
+     * Will remove null values since Properties don't support them.
+     */
+    public static Properties jsonToProperties(String json) {
+        Objects.requireNonNull(json);
+        Properties props = new Properties();
+        jsonToMap(json.toString())
+                .entrySet()
+                .stream()
+                .filter(e -> e.getValue()!=null) // remove null values => not allowed in dictionary
+                .forEach(e -> props.put(e.getKey(), e.getValue()));
+        return props;
+    }
+
     /** We return a JSonString object, otherwise Osgi wil fail, see details at JsonAsString */
-    public static JsonAsString propertiesToJsonString(Map<String,?> map) {
+    public static JsonAsString mapToJsonString(Map<String,?> map) {
         JSONObject json = new JSONObject();
         for(Map.Entry<?,?> entry : map.entrySet()) {
             Object value = entry.getValue();
