@@ -56,12 +56,14 @@
               <name>alarm-application-it-image</name>
               <alias>application</alias>
               <build>
-                <from>artnaseef/karaf:4.3.3</from>  <!-- 4.3.2 again -->
+                <from>apache/karaf:4.3.2</from>
+                <!-- <from>artnaseef/karaf:4.3.3</from> -->
+                <!-- <from>artnaseef/karaf:4.3.3</from>  4.3.2 shouldn't be necessary since hotdeploy works locally -->
                 <!-- 4.3.3 checks for stdin (tty) it shuts down shell, which shuts down the container: entryPoint -->
                 <!-- <from>mkroli/karaf:4.3</from>  4.2 in case hotdeploy is broken -->
 
                 <assembly>
-                  <user>karaf:users:karaf</user> <!-- still better than running as root -->
+                  <!-- <user>karaf:users:karaf</user> -->
                   <targetDir>/</targetDir>
 
                   <inline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -70,42 +72,55 @@
                                              http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2
                                              http://maven.apache.org/xsd/assembly-1.1.2.xsd
                                              ">
-                    <files>
+                    <files> <!-- ~~~~~~~~~~CONFIG~~~~~~~~~~~ -->
+                      <file>
+                        <source> <!-- use the local dkcer karaf mounted .m2 -->
+                          ${project.build.testOutputDirectory}/org.ops4j.pax.url.mvn.cfg
+                        </source>
+                        <outputDirectory>/opt/karaf/etc</outputDirectory>
+                        <!-- <outputDirectory>/opt/apache-karaf/etc</outputDirectory> -->
+                        <destName>org.ops4j.pax.url.mvn.cfg</destName>
+                      </file>
                       <file>
                         <source> <!-- config for alarm rest service is currently empty -->
                           ${project.build.testOutputDirectory}/custom.system.properties
                         </source>
                         <outputDirectory>/opt/karaf/etc</outputDirectory>
+                        <!-- <outputDirectory>/opt/apache-karaf/etc</outputDirectory> -->
                         <destName>custom.system.properties</destName>
                       </file>
                     </files>
 
                   </inline>
                 </assembly>
+                <!--
                 <entryPoint>
                   <exec>
-                    <arg>/opt/karaf/apache-karaf/bin/karaf</arg>
+                    <arg>/opt/karaf/bin/karaf</arg>
                     <arg>run</arg>
                   </exec>
                 </entryPoint>
+                -->
               </build>
               <run>
                 <ports>
                   <port>karaf-ssh-port:8101</port>
                   <port>karaf-http-port:8181</port>
                 </ports>
-                <wait> <!-- not a test: just to make sure container is up before proceeding to tests -->
+                <wait>
                   <http>
                     <!-- // curl -X GET http://localhost:8181/cxf/alarmservice/alarms/list -->
                     <url>http://localhost:${karaf-http-port}/cxf/alarmservice</url>
                     <method>GET</method>
                   </http>
-                  <time>200000</time> <!-- karaf should finish hotdeploy in 12000 -->
+                  <time>100000</time> <!-- local hotdeploy takes about 10000 -->
                 </wait>
-                <volumes>
+                <volumes> <!-- ~~~~~~~~~~DEPLOY~~~~~~~~~~~ -->
                   <bind>
-                    <volume>${user.home}/.m2:/opt/karaf/.m2</volume>
-                    <volume>${project.build.testOutputDirectory}/deploy:/opt/karaf/apache-karaf/deploy</volume>
+                    <!--<volume>${user.home}/.m2:/opt/karaf/.m2</volume>-->
+                    <volume>${user.home}/.m2:/opt/apache-karaf/.m2</volume>
+                    <!--<volume>${project.build.testOutputDirectory}/deploy:/opt/karaf/deploy</volume>-->
+                    <volume>${project.build.testOutputDirectory}/deploy:/opt/apache-karaf/deploy</volume>
                   </bind>
                 </volumes>
                 <network>
