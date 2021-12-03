@@ -166,7 +166,7 @@
         </adapter>
     </queue>
 
-    <!-- Multi-port listener for Netflow v5, Netflow v9, IPFIX and SFlow -->
+    <!-- Multi-protocol listener for Netflow v5, Netflow v9, IPFIX and SFlow -->
     <listener name="Multi-UDP-9999" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
         <parameter key="port" value="9999"/>
 
