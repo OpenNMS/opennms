@@ -56,8 +56,9 @@
     <bean id="init-wmiPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.WmiPeerFactory.init</value></property>
 	</bean>
+    <bean name="forceUpgradeExecutor" class="org.opennms.config.upgrade.ForceUpgradeExecutor"/>
 
-	<bean id="wmiPeerFactory" class="org.opennms.netmgt.config.WmiPeerFactory" depends-on="init-wmiPeerFactory" factory-method="getInstance"/>
+	<bean id="wmiPeerFactory" class="org.opennms.netmgt.config.WmiPeerFactory" depends-on="forceUpgradeExecutor" factory-method="getInstance"/>
 
 	<!-- This is shared by eventd and trapd. -->
 	<bean id="eventConfResourceLocation" class="java.lang.String">
