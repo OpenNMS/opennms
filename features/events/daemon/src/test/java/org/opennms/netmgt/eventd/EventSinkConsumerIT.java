@@ -72,6 +72,7 @@ import com.google.protobuf.ByteString;
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockWmiConfigManager.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml" })
 @JUnitConfigurationEnvironment
 public class EventSinkConsumerIT {
