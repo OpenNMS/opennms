@@ -28,37 +28,35 @@
 
 package org.opennms.features.config.osgi.cm;
 
+import static org.junit.Assert.*;
+import static org.opennms.features.config.osgi.cm.DictionaryUtil.createFromJson;
+import static org.opennms.features.config.osgi.cm.DictionaryUtil.writeToJson;
+
 import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Objects;
 import java.util.Properties;
 
-import org.json.JSONObject;
+import org.junit.Test;
 import org.opennms.features.config.service.api.JsonAsString;
 
-public class DictionaryUtil {
+public class DictionaryUtilTest {
 
-    public static Dictionary createFromJson(JsonAsString json) {
-        Objects.requireNonNull(json);
+    @Test
+    public void shouldDoRoundTrip() {
         Properties props = new Properties();
-        new JSONObject(json.toString())
-                .toMap()
-                .entrySet()
-                .stream()
-                .filter(e -> e.getValue()!=null) // remove null values => not allowed in dictionary
-                .forEach(e -> props.put(e.getKey(), e.getValue()));
-        return props;
+        props.put("attribute1", "value1");
+        props.put("attribute2", Boolean.TRUE);
+        props.put("attribute3", 42);
+        JsonAsString json = writeToJson(props);
+        Dictionary propsConverted = createFromJson(json);
+        assertEquals(props, propsConverted);
     }
 
-    public static JsonAsString writeToJson(final Dictionary dictionary) {
-        Objects.requireNonNull(dictionary);
-        JSONObject json = new JSONObject();
-        Enumeration keys = dictionary.keys();
-        while (keys.hasMoreElements()) {
-            Object key = keys.nextElement();
-            Object value = dictionary.get(key);
-            json.put(key.toString(), value);
-        }
-        return new JsonAsString(json.toString());
+    @Test
+    public void shouldBeNullValueTolerant() {
+        // A Dictionary doesn't allow null values. They might come from CM => Lets make sure we can handle that
+        Dictionary propsConverted = createFromJson(new JsonAsString("{\"a1\":null, \"a2\":\"\"}"));
+        assertEquals(1, propsConverted.size());
+        assertEquals("", propsConverted.get("a2"));
     }
+
 }
