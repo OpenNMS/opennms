@@ -76,7 +76,7 @@
 <table class="table table-sm">
   <tr>
     <th>Version:</th>
-    <td><a href="http://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/releasenotes/releasenotes.html" target="_blank" title="Release Notes"><%=Vault.getProperty("version.display")%></a></td>
+    <td><a href="https://docs.opennms.com/horizon/<%=Vault.getProperty("version.display")%>/releasenotes/whatsnew.html" target="_blank" title="Release Notes"><%=Vault.getProperty("version.display")%></a></td>
   </tr>
 
   <tr>
