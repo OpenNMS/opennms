@@ -100,9 +100,9 @@ public class PropertiesCacheWithCm {
     }
 
     private void write() throws IOException {
-      Map<String, String> entries = new HashMap<>();
+      Map<String, Object> entries = new HashMap<>();
       for(Entry<?, ?> entry : this.m_properties.entrySet()) {
-        entries.put(entry.getKey().toString(), entry.getValue().toString());
+        entries.put(entry.getKey().toString(), entry.getValue());
       }
       this.cm.updateConfiguration(this.configKey.getConfigName(), this.configKey.getConfigId(), mapToJsonString(entries));
     }

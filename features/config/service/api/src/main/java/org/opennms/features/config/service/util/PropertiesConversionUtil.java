@@ -40,13 +40,12 @@ import org.opennms.features.config.service.api.JsonAsString;
 public class PropertiesConversionUtil {
     // We expect to have a flat json with only simple data types as children.
     // Returns an immutable map.
-    public static Map<String, String> jsonToMap(String jsonString) {
+    public static Map<String, Object> jsonToMap(String jsonString) {
         JSONObject  json = new JSONObject(jsonString);
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         for(String key : json.keySet()) {
-            String value = Optional.of(json.get(key))
+            Object value = Optional.of(json.get(key))
                     .map(o -> JSONObject.NULL.equals(o) ? null : o) // map back to Java null
-                    .map(Object::toString)
                     .orElse(null);
             map.put(key, value);
         }
