@@ -1,0 +1,75 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+        xmlns:cxf="http://cxf.apache.org/blueprint/core"
+        xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
+        xmlns:jaas="http://karaf.apache.org/xmlns/jaas/v1.0.0"
+        xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0
+        http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs.xsd
+        http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/core.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
+
+
+    <!-- GENERIC BUS WITH JAASAUTHENTICATIONFEATURE AS FEATURE -->
+    <cxf:bus>
+        <cxf:features>
+            <cxf:logging/>
+            <!-- authentication bus feature necessary , and must have karaf as contextName -->
+            <bean class="org.apache.cxf.interceptor.security.JAASAuthenticationFeature">
+                <property name="contextName" value="karaf" /> <!-- karaf later  _customize for opennms -->
+                <property name="reportFault" value="true" />
+            </bean>
+            -->
+        </cxf:features>
+        <!-- authentication bus interceptor not necessary?
+        <cxf:inInterceptors>
+            <bean class="org.apache.cxf.transport.http.HttpAuthenticationFaultHandler">
+                <property name="realm" value="TEST JAAS_customize for opennms" />
+            </bean>
+        </cxf:inInterceptors>
+        -->
+    </cxf:bus>
+
+
+
+    <!-- IMPLEMENTATION OF ALERT REST SERVICE -->
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" />
+    <reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" />
+    <!--  <reference id="troubleTicketProxy" interface="org.opennms.web.svclayer.TroubleTicketProxy" /> -->
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
+    <bean id="alarmRestServiceImpl" class="org.opennms.netmgt.alarmd.rest.internal.AlarmRestServiceImpl">
+        <property name="alarmDao" ref="alarmDao" />
+        <property name="alarmRepository" ref="alarmRepository" />
+        <!-- <property name="troubleTicketProxy" ref="troubleTicketProxy" /> --> <!-- Exanble after working up TicketD -->
+        <property name="sessionUtils" ref="sessionUtils" />
+    </bean>
+    <!--
+    <service id="alarmRestService" ref="alarmRestServiceImpl" interface="org.opennms.netmgt.alarmd.rest.AlarmRestService" />
+    -->
+
+
+
+    <!-- WEB SERVER RUNNING ALERT REST SERVICE AND JAASAUTHENTICATION FILTER AS PROVIDER -->
+    <!-- authentication filter provider necessary not necessary
+    <bean id="authenticationFilter" class="org.apache.cxf.jaxrs.security.JAASAuthenticationFilter">
+        <property name="contextName" value="karaf_CustomizeForOpenNMS" />
+        <property name="realmName" value="TEST JAAS_CustomizeForOpenNMS" />
+        <property name="useDoAs" value="true" />
+    </bean>
+    -->
+    <jaxrs:server id="alarmRest" address="/alarmservice">
+        <jaxrs:serviceBeans>
+            <ref component-id="alarmRestServiceImpl" />
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+            <!--  <ref component-id="authenticationFilter" />  -->
+        </jaxrs:providers>
+    </jaxrs:server>
+
+
+</blueprint>

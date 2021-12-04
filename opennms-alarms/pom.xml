@@ -16,6 +16,7 @@
   <modules>
     <module>api</module>
     <module>daemon</module>
+    <module>rest</module>
     <module>email-northbounder</module>
     <module>http-northbounder</module>
     <module>integration-tests</module>

@@ -38,7 +38,6 @@ import org.opennms.web.api.Authentication;
 public class SecurityHelper {
 
     public static void assertUserReadCredentials(SecurityContext securityContext) {
-        final String currentUser = securityContext.getUserPrincipal().getName();
 
         if (securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
             // admin can do anything
@@ -49,7 +48,12 @@ public class SecurityHelper {
                 securityContext.isUserInRole(Authentication.ROLE_MOBILE)) {
             return;
         }
+
         // otherwise
+        if (securityContext.getUserPrincipal()==null) {
+            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("There is no user. Unauthenticated.").type(MediaType.TEXT_PLAIN).build());
+        }
+        final String currentUser = securityContext.getUserPrincipal().getName();
         throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("User '" + currentUser + "', is not allowed to read alarms.").type(MediaType.TEXT_PLAIN).build());
     }
 

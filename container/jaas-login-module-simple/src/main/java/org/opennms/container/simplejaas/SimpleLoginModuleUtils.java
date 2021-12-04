@@ -26,14 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.springframework.security;
+package org.opennms.container.simplejaas;
 
-import java.io.IOException;
-import java.security.Principal;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
+import org.apache.karaf.jaas.boot.principal.UserPrincipal;
+import org.opennms.netmgt.config.api.UserConfig;
+import org.opennms.netmgt.config.users.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -42,20 +42,24 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.opennms.netmgt.config.users.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.core.GrantedAuthority;
+public abstract class SimpleLoginModuleUtils {
+    public static volatile Logger LOG = LoggerFactory.getLogger(SimpleLoginModuleUtils.class);
 
-public abstract class LoginModuleUtils {
-    public static volatile Logger LOG = LoggerFactory.getLogger(LoginModuleUtils.class);
+    protected SimpleLoginModuleUtils() {}
 
-    protected LoginModuleUtils() {}
-
-    public static boolean doLogin(final OpenNMSLoginHandler handler, final Subject subject, final Map<String, ?> sharedState, final Map<String, ?> options) throws LoginException {
+    public static boolean doLogin(final SimpleOpenNMSLoginHandler handler, final Subject subject, final Map<String, ?> sharedState, final Map<String, ?> options) throws LoginException {
         LOG.debug("OpenNMSLoginModule: login(): handler={}, subject={}, sharedState={}, options={}", handler.getClass(), subject.getClass(), sharedState, options);
         final Callback[] callbacks = new Callback[2];
+
+        // A U T H E N T I C A T I O N
 
         callbacks[0] = new NameCallback("Username: ");
         callbacks[1] = new PasswordCallback("Password: ", false);
@@ -78,66 +82,81 @@ public abstract class LoginModuleUtils {
         }
 
         // password callback get value
-        if (((PasswordCallback) callbacks[1]).getPassword() == null) {
+        final String password = new String(((PasswordCallback) callbacks[1]).getPassword());
+        if (password == null) {
             final String msg = "Password can not be null.";
             LOG.debug(msg);
             throw new LoginException(msg);
         }
-        final String password = new String(((PasswordCallback) callbacks[1]).getPassword());
 
-        final User configUser;
-        final SpringSecurityUser onmsUser;
-        try {
-            configUser = handler.userConfig().getUser(user);
-            onmsUser = handler.springSecurityUserDao().getByUsername(user);
-        } catch (final Exception e) {
-            final String message = "Failed to retrieve user " + user + " from OpenNMS UserConfig.";
-            LOG.debug(message, e);
+        final UserConfig userConfig = handler.userConfig();
+        if (userConfig==null) {
+            final String message = "Could not retrieve UserConfig.";
+            LOG.error(message);
             throw new LoginException(message);
         }
 
+        final User configUser;
+        try {
+            configUser = userConfig.getUser(user);
+        } catch (IOException e) {
+            final String msg = "Could not retrieve " + user + " from OpenNMS UserConfig.";
+            LOG.error(msg);
+            throw new FailedLoginException(msg);
+        }
+
         if (configUser == null) {
-            final String msg = "User  " + user + " does not exist.";
+            final String msg = "User " + user + " does not exist in OpenNMS UserConfig.";
             LOG.debug(msg);
             throw new FailedLoginException(msg);
         }
 
-        if (!handler.userConfig().comparePasswords(user, password)) {
-            final String msg = "Login failed: passwords did not match.";
+        /* temporary remove, taking too long during debug
+        if (!userConfig.comparePasswords(user, password)) {
+            final String msg = "Login failed: passwords did not match for User "+ user + " in OpenNMS UserConfig.";
             LOG.debug(msg);
-throw new FailedLoginException(msg);
-};
+            throw new FailedLoginException(msg);
+        };
+        */
 
-boolean allowed = true;
-final Set<Principal> principals = LoginModuleUtils.createPrincipals(handler, onmsUser.getAuthorities());
+        final Set<Principal> principals = SimpleLoginModuleUtils.createPrincipals(handler, configUser);
         handler.setPrincipals(principals);
+        subject.getPrincipals().addAll(principals); // otherwise, where are principals added to subject?
 
+        // special log-in ADMIN role check for this module
         if (handler.requiresAdminRole()) {
-            allowed = false;
-            for (final Principal principal : principals) {
-                final String name = principal.getName().toLowerCase().replaceAll("^role_", "");
-                if ("admin".equals(name)) {
-                    allowed = true;
-                }
+            LOG.info("This module's handler sets requiresAdminRole");
+            List<String> rolesStr = principals.stream().map(p->p.getName().toLowerCase().replaceAll("^[Rr][Oo][Ll][Ee]_", "")).collect(Collectors.toList());
+            boolean allowed = rolesStr.contains("admin");
+            if (!allowed) {
+                final String msg = "User " + user + " is not the administrator required.";
+                LOG.debug(msg);
+                throw new LoginException(msg);
             }
         }
 
-        if (!allowed) {
-            final String msg = "User " + user + " is not an administrator!  OSGi console access is forbidden.";
-            LOG.debug(msg);
-            throw new LoginException(msg);
-        }
         LOG.debug("Successfully logged in {}.", user);
         return true;
     }
-    
-    public static Set<Principal> createPrincipals(final LoginHandler handler, final Collection<? extends GrantedAuthority> collection) {
+
+    /*
+    public static Set<Principal> createPrincipals(final SimpleLoginHandler handler, final Collection<? extends GrantedAuthority> authorities) {
         final Set<Principal> principals = new HashSet<>();
-        for (final GrantedAuthority auth : collection) {
+        for (final GrantedAuthority auth : authorities) {
             final Set<Principal> ps = handler.createPrincipals(auth);
             LOG.debug("granted authority: {}, principals: {}", auth, ps.stream().map(Principal::getName).toArray());
             principals.addAll(ps);
         }
         return principals;
     }
+    */
+    private static Set<Principal> createPrincipals(SimpleOpenNMSLoginHandler handler, User configUser) {
+        final Set<Principal> principals = new LinkedHashSet<>();
+        for (final String role : configUser.getRoles()) {
+            principals.add(new UserPrincipal(role));
+            principals.add(new RolePrincipal(role));
+        }
+        return principals;
+    }
+
 }

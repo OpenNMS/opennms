@@ -3,7 +3,7 @@
 The order in which these services are specified is important - for example, Eventd
 will need to come up last so that none of the event topic subcribers loose any event.
 
-When splitting services to run on mutiple VMs, the order of the services should be
+When splitting services to run on multiple VMs, the order of the services should be
 maintained
 -->
 <service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
