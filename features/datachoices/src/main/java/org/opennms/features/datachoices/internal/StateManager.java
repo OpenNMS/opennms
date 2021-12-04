@@ -78,12 +78,11 @@ public class StateManager {
     }
 
     public Boolean isEnabled() throws IOException {
-        final String enabled = m_propertiesCache.getProperty(configKey, ENABLED_KEY);
-        return enabled == null ? null : Boolean.valueOf(enabled);
+        return (Boolean) m_propertiesCache.getProperty(configKey, ENABLED_KEY);
     }
 
     public void setEnabled(boolean enabled, String user) throws Exception {
-        m_propertiesCache.setProperty(configKey, ENABLED_KEY, Boolean.valueOf(enabled).toString());
+        m_propertiesCache.setProperty(configKey, ENABLED_KEY, enabled);
         m_propertiesCache.setProperty(configKey, ACKNOWLEDGED_BY_KEY, user == null ? "" : user);
         m_propertiesCache.setProperty(configKey, ACKNOWLEDGED_AT_KEY, new Date().toString());
         for (StateChangeHandler listener : m_listeners) {
@@ -92,7 +91,7 @@ public class StateManager {
     }
 
     public String getOrGenerateSystemId() throws IOException {
-        String systemId = m_propertiesCache.getProperty(configKey, SYSTEM_ID_KEY);
+        String systemId = (String)m_propertiesCache.getProperty(configKey, SYSTEM_ID_KEY);
         if (systemId == null) {
             LOG.debug("No existing system id was found. Generating a new system id.");
             systemId = UUID.randomUUID().toString();

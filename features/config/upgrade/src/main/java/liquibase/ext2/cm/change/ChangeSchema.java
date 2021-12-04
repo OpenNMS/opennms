@@ -118,7 +118,7 @@ public class ChangeSchema extends AbstractCmChange {
                     }
 
                     // 3.) write definition
-                    definition.setSchema(builder.build(true));
+                    definition.setSchema(builder.build(false));
                     try {
                         cm.changeConfigDefinition(this.schemaId, definition);
                     } catch (IOException e) {

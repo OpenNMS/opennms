@@ -150,12 +150,12 @@ public class PropertiesCacheWithCm {
       }
     }
 
-    public void update(final Map<String, String> props) throws IOException {
+    public void update(final Map<String, Object> props) throws IOException {
       if (props == null) return;
       lock.lock();
       try {
         boolean save = false;
-        for(Entry<String, String> e : props.entrySet()) {
+        for(Entry<String, Object> e : props.entrySet()) {
           if (!e.getValue().equals(get().get(e.getKey()))) {
             get().put(e.getKey(), e.getValue());
             save = true;
@@ -169,7 +169,7 @@ public class PropertiesCacheWithCm {
       }
     }
 
-    public void setProperty(final String key, final String value) throws IOException {
+    public void setProperty(final String key, final Object value) throws IOException {
       lock.lock();
       try {
         // first we do get to make sure the properties are loaded
@@ -195,7 +195,7 @@ public class PropertiesCacheWithCm {
       }
     }
 
-    public String getProperty(final String key) throws IOException {
+    public Object getProperty(final String key) throws IOException {
       lock.lock();
       try {
         return get().getProperty(key);
@@ -246,22 +246,22 @@ public class PropertiesCacheWithCm {
     getHolder(configKey).put(properties);
   }
 
-  public void saveProperties(final ConfigUpdateInfo configKey, final Map<String, String> attributeMappings) throws IOException {
+  public void saveProperties(final ConfigUpdateInfo configKey, final Map<String, Object> attributeMappings) throws IOException {
     if (attributeMappings == null) return;
     final Properties properties = new Properties();
     properties.putAll(attributeMappings);
     saveProperties(configKey, properties);
   }
 
-  public void updateProperties(final ConfigUpdateInfo configKey, final Map<String, String> props) throws IOException {
+  public void updateProperties(final ConfigUpdateInfo configKey, final Map<String, Object> props) throws IOException {
     getHolder(configKey).update(props);
   }
 
-  public void setProperty(final ConfigUpdateInfo configKey, final String key, final String value) throws IOException {
+  public void setProperty(final ConfigUpdateInfo configKey, final String key, final Object value) throws IOException {
     getHolder(configKey).setProperty(key, value);
   }
 
-  public String getProperty(final ConfigUpdateInfo configKey, final String key) throws IOException {
+  public Object getProperty(final ConfigUpdateInfo configKey, final String key) throws IOException {
     return getHolder(configKey).getProperty(key);
   }
 }
