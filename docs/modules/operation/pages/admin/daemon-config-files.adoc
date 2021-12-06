@@ -37,6 +37,27 @@ cd ${OPENNMS_HOME}/bin
 docker exec -it horizon /opt/opennms/bin/send-event.pl  uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName NAME'
 ----
 
+== Reload daemons by REST event
+[source, console]
+----
+curl -u admin:admin \ <1>
+-X POST 'http://HOSTNAME:8980/opennms/rest/events' \ <2>
+--header 'Content-Type: application/xml' \
+--data-raw '<event>
+    <parms>
+        <parm>
+            <parmName>daemonName</parmName>
+            <value>trapd</value> <3>
+        </parm>
+    </parms>
+    <uei>uei.opennms.org/internal/reloadDaemonConfig</uei>
+</event>'
+----
+<1> Replace with credentials for accessing the {page-component-title} instance.
+<2> Replace with the hostname of the {page-component-title} instance.
+<3> Replace with the daemon name to reload.
+
+
 == Check daemon reload results
 
 A daemon reload generates the following events:
