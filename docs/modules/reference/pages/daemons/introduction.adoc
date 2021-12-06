@@ -1,6 +1,13 @@
 [[ref-daemons]]
 = Daemons
 
+The {page-component-title} service is composed of several daemon "sub-services" that each perform a specific set of tasks.
+They can be enabled/disabled via `$\{OPENNMS_HOME}/etc/service-configuration.xml`.
+
+See the xref:operation:admin/daemon-config-files.adoc[system administration] section for details on sending daemon reload commands.
+
+== List of daemons
+
 [options="header"]
 [cols="1,3"]
 |===
@@ -53,6 +60,9 @@
 | Notification daemon can send notifications to other systems based on event UEIs.
 
 | PassiveStatusd
+|
+
+| PerspectivePoller
 |
 
 | xref:daemons/daemon-config-files/pollerd.adoc[Pollerd]
