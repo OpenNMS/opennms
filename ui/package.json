@@ -23,7 +23,7 @@
     "@featherds/input": "0.9.1",
     "@featherds/list": "0.9.1",
     "@featherds/navigation-rail": "0.9.1",
-    "@featherds/pagination": "0.9.1",
+    "@featherds/pagination": "0.9.2",
     "@featherds/progress": "0.9.1",
     "@featherds/protected-input": "0.9.1",
     "@featherds/select": "0.9.1",
