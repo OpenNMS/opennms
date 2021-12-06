@@ -9,14 +9,6 @@
 
 	<context:annotation-config/>
 
-	<bean id="mockSnmpConfig" class="org.opennms.core.test.ConfigurationTestUtils" factory-method="getInputStreamForConfigFile">
-		<constructor-arg value="snmp-config.xml"/>
-	</bean>
-
-	<bean id="snmpPeerFactory" class="org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory">
-		<constructor-arg ref="mockSnmpConfig"/>
-	</bean>
-
     <bean id="init-snmpPeerFactory" depends-on="snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
       <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.setInstance</value></property>
       <property name="arguments">
@@ -25,7 +17,12 @@
         </list>
       </property>      
     </bean>
+    <bean id="snmpPeerFactory" class="org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory"/>
 
+
+    <bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
+        <property name="configFile" value="snmp-config.xml"/>
+    </bean>
     <import resource="classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml" />
     <import resource="classpath:/META-INF/opennms/applicationContext-rpc-snmp.xml" />
 </beans>
