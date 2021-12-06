@@ -10,6 +10,7 @@ sudo vi etc/featuresBoot.d/disable-activemq.boot
 !minion-jms
 !opennms-core-ipc-rpc-jms
 !opennms-core-ipc-sink-camel
+!opennms-core-ipc-twin-jms
 ----
 
 .Create a file to install Kafka features on Minion start-up
@@ -18,11 +19,12 @@ sudo vi etc/featuresBoot.d/disable-activemq.boot
 sudo vi etc/featuresBoot.d/kafka.boot
 ----
 
-.Add the following lines to install the remote producer call (RPC) and sink feature for Kafka on Minion start-up and save the file
+.Add the following lines to install the remote producer call (RPC), sink, and twin feature for Kafka on Minion start-up and save the file
 [source, kafka.boot]
 ----
 opennms-core-ipc-rpc-kafka
 opennms-core-ipc-sink-kafka
+opennms-core-ipc-twin-kafka
 ----
 
 .Configure the Kafka features and the Minion location via the Karaf shell
@@ -36,26 +38,15 @@ ssh -p 8201 admin@localhost
 ----
 config:edit org.opennms.minion.controller<1>
 config:property-set location my-location<2>
-config:property-set http-url http://core-instance-ip:8980/opennms<3>
-config:update<4>
+config:update<3>
 ----
 
 <1> Edit the Minion configuration.
 <2> Replace my-location with a location name that represents the remote location where the Minion is running.
-<3> Replace the example `http-url` with the URL of your {page-component-title} Core instance.
-<4> Save the configuration.
+<3> Save the configuration.
 
 By default, the Minion generates a unique ID.
 Provide a human-readable Minion identifier yourself with `config:property-set id my-minion-name`.
-
-.Configure the credentials for the REST endpoint and exit Karaf shell
-[source, karaf]
-----
-opennms:scv-set opennms.http my-minion-user my-minion-password<1>
-----
-<1> Set the credentials for the REST endpoint created in your {page-component-title} Core instance.
-
-NOTE: The credentials are encrypted on disk in `$\{MINION_HOME}/etc/scv.jce`.
 
 .Configure the Kafka endpoints for RPC feature
 [source, karaf]
@@ -71,6 +62,16 @@ config:update
 [source, karaf]
 ----
 config:edit org.opennms.core.ipc.sink.kafka
+config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<1>
+config:update
+----
+
+<1> Connect to the specified Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
+
+.Configure the Kafka endpoints for twin feature
+[source, karaf]
+----
+config:edit org.opennms.core.ipc.twin.kafka
 config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<1>
 config:update
 ----
@@ -108,7 +109,6 @@ opennms:health-check
 ----
 Verifying the health of the container
 
-Connecting to OpenNMS ReST API           [ Success  ]
 Verifying installed bundles              [ Success  ]
 Connecting to Kafka from RPC             [ Success  ]
 Connecting to Kafka from Sink Producer   [ Success  ]

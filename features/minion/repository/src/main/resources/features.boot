@@ -6,12 +6,13 @@ spring/${springVersion}
 spring-jms/${springVersion}
 opennms-core-ipc-rpc-jms
 opennms-core-ipc-sink-camel
+opennms-core-ipc-twin-jms
+opennms-core-ipc-twin-shell
 opennms-syslogd-listener-camel-netty
 opennms-trapd-listener
 opennms-events-sink-dispatcher
 opennms-send-event-command
 opennms-dnsresolver-netty
-minion-rest-client
 minion-shell
 minion-heartbeat-producer
 minion-snmp-proxy
@@ -27,3 +28,4 @@ scv-jceks-impl
 scv-shell
 minion-rest-service
 minion-health-check
+minion-api-layer

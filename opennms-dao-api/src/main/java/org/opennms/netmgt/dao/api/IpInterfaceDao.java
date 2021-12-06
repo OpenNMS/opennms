@@ -90,6 +90,14 @@ public interface IpInterfaceDao extends LegacyOnmsDao<OnmsIpInterface, Integer> 
     List<OnmsIpInterface> findByNodeId(Integer nodeId);
 
     /**
+     * Finds all {@link OnmsIpInterface} instances that have an {@code ipAddress} that is related to a physical
+     * address that is equal to the mac address of a {@code BridgeMacLink} of the addressed {@code node}.
+     * @param nodeId
+     * @return
+     */
+    List<OnmsIpInterface> findByMacLinksOfNode(Integer nodeId);
+
+    /**
      * <p>findByServiceType</p>
      *
      * @param svcName a {@link java.lang.String} object.

@@ -169,6 +169,7 @@
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.subscriber/${project.version}</bundle>
+        <feature>json-patch</feature>
     </feature>
 
     <feature name="dominion-grpc-client" description="Dominion :: GRPC :: Client" version="${project.version}">
@@ -183,16 +184,6 @@
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.dominion-grpc-impl/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-rest-client" description="Minion :: ReST Client" version="${project.version}">
-        <feature>opennms-health</feature>
-        <feature>scv-api</feature>
-
-        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
-        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
-        <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
-        <bundle>mvn:org.opennms.features.minion/minion-rest-client/${project.version}</bundle>
-    </feature>
-
   <feature name="minion-rest-service" version="${project.version}" description="Minion :: Rest :: Service">
     <feature>opennms-health-rest</feature>
     <feature version="${cxfVersion}">cxf-core</feature>
@@ -200,9 +191,21 @@
     <bundle>mvn:org.opennms.features.minion/minion-rest-service/${project.version}</bundle>
   </feature>
 
-  <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
-    <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
-    <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
-  </feature>
+    <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
+        <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+        <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
+        <feature>commons-lang3</feature>
+        <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-api-layer" version="${project.version}" description="Minion :: API Layer">
+        <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
+        <feature>minion-health-check</feature>
+        <feature>opennms-provisioning</feature>
+        <feature>opennms-dao-api</feature>
+        <bundle dependency="true">mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.minion/${project.version}</bundle>
+    </feature>
 
 </features>

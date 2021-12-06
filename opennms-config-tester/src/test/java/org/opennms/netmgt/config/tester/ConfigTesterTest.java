@@ -467,6 +467,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testGeoIpConfiguration() {
+        testConfigFile("geoip-adapter-configuration.xml");
+    }
+
+    @Test
     /**
      * FIXME: Not part of the standard build?
      */

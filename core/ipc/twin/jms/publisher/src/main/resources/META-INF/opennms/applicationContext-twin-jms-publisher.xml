@@ -23,7 +23,12 @@
         <constructor-arg ref="localTwinSubscriber"/>
     </bean>
 
-    <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl"/>
+    <bean id="identity" class="org.opennms.features.distributed.identity.impl.OpenNMSIdentityImpl"/>
+    <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl">
+        <constructor-arg ref="identity"/>
+    </bean>
+
+    <onmsgi:service ref="localTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
 
     <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
     <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
@@ -48,7 +53,7 @@
             <from uri="direct:sendTwinUpdate" />
             <setExchangePattern pattern="InOnly"/>
             <recipientList>
-                <simple>queuingservice:${header.JmsQueueName}</simple>
+                <simple>queuingservice:topic:${header.JmsQueueName}</simple>
             </recipientList>
         </route>
     </camelContext>

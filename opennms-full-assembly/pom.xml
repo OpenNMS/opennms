@@ -484,6 +484,7 @@
                 <feature>opennms-core-db</feature>
                 <feature>opennms-core-ipc-rpc-commands</feature>
                 <feature>opennms-core-ipc-kafka-shell</feature>
+                <feature>opennms-core-ipc-twin-shell</feature>
                 <feature>opennms-core</feature>
                 <feature>opennms-core-web</feature>
                 <feature>opennms-dao-api</feature>
@@ -815,6 +816,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-snmp-metadata-provisioning-adapter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-geoip-provisioning-adapter</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>

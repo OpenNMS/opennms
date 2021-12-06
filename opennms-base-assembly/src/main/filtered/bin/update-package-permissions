@@ -19,12 +19,11 @@ fi
 if [ -e "${OPENNMS_HOME}/etc/opennms.conf" ]; then
   # shellcheck disable=SC1090,SC1091
   . "${OPENNMS_HOME}/etc/opennms.conf"
-else
-  [ -z "$RUNAS" ] && RUNAS=opennms
 fi
+[ -z "$RUNAS" ] && RUNAS=opennms
 
-if [ -z "${RUNAS}" ]; then
-  echo "Something is very wrong, \$RUNAS is not set. Bailing."
+if ! id -u "${RUNAS}" >/dev/null 2>&1; then
+  echo "Something is very wrong, \$RUNAS=${RUNAS} but that user does not exist. Bailing."
   exit 1
 fi
 
@@ -43,19 +42,25 @@ if [ -z "${RUNAS_UID}" ] || [ -z "${RUNAS_GID}" ]; then
 fi
 
 SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
-CHOWN="chown ${RUNAS_UID}:${RUNAS_GID}"
-if [ -x "$SUDO" ]; then
-  CHOWN="$SUDO $CHOWN"
-fi
+
+do_sudo() {
+  if [ -x "$SUDO" ]; then
+    "$SUDO" "$@"
+  else
+    # if no sudo, fall back to running as the current user
+    if [ "$(id -u -n)" != "root" ]; then
+      echo "WARNING: sudo was not located, but this script is not being run as root. This will probably fail."
+    fi
+    "$@"
+  fi
+}
 
 # shellcheck disable=SC2086
 (if [ -e /etc/debian_version ]; then
   dpkg --listfiles "$PACKAGE";
 elif [ -e /etc/redhat-release ]; then
   rpm -ql "$PACKAGE";
-fi) | grep /opennms | while read -r FILE; do
-  $CHOWN "$FILE"
-done
+fi) | grep /opennms | do_sudo xargs chown "${RUNAS_UID}:${RUNAS_GID}"
 
 if [ ! -e /etc/debian_version ] && [ ! -e /etc/redhat-release ]; then
   echo "WARNING: not a Debian/Ubuntu or RedHat system -- check the contents of $OPENNMS_HOME is owned by $RUNAS."

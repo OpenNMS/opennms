@@ -22,6 +22,9 @@ executors:
   component-map-executor:
     docker:
       - image: opennms/build-env:debian-jdk11-b7291
+  ui-executor:
+    docker:
+      - image: cimg/node:16.3.0
 
 # NOTE: the "_label" versions of these are for the case when your source or target
 # branches have slashes in them, that way the merge branch gets created properly
@@ -34,11 +37,11 @@ defaults: &defaults
     previous_branch:
       description: the previous branch, if any
       type: string
-      default: release-28.x
+      default: release-29.x
     previous_branch_label:
       description: the previous branch, if any (escaped, no slashes)
       type: string
-      default: release-28.x
+      default: release-29.x
     main_branch:
       description: the auto-merge main branch
       type: string
@@ -601,6 +604,11 @@ workflows:
             branches:
               ignore:
                 - /^from-foundation.*/
+      - build-ui:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
       - tarball-assembly:
           requires:
             - build
@@ -610,8 +618,15 @@ workflows:
               architecture: [linux/amd64,linux/arm64,linux/arm/v7]
           context: "docker-content-trust"
           requires:
-            - tarball-assembly
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
+            - smoke-test-minimal
+            - smoke-test-sentinel
           filters:
             branches:
               only:
@@ -658,8 +673,9 @@ workflows:
                 - /^merge-foundation.*/
       - smoke-test-core:
           requires:
-            - horizon-rpm-build
             - tarball-assembly
+            - horizon-rpm-build
+            - minion-rpm-build
             - sentinel-rpm-build
           filters:
             branches:
@@ -673,8 +689,9 @@ workflows:
                 - /^dependabot.*/
       - smoke-test-flaky:
           requires:
-            - horizon-rpm-build
             - tarball-assembly
+            - horizon-rpm-build
+            - minion-rpm-build
             - sentinel-rpm-build
           filters:
             branches:
@@ -688,8 +705,9 @@ workflows:
                 - /^dependabot.*/
       - smoke-test-minion:
           requires:
-            - horizon-rpm-build
             - tarball-assembly
+            - horizon-rpm-build
+            - minion-rpm-build
             - sentinel-rpm-build
           filters:
             branches:
@@ -703,6 +721,7 @@ workflows:
                 - /^dependabot.*/
       - smoke-test-sentinel:
           requires:
+            - tarball-assembly
             - horizon-rpm-build
             - tarball-assembly
             - sentinel-rpm-build
@@ -718,6 +737,7 @@ workflows:
                 - /^dependabot.*/
       - smoke-test-minimal:
           requires:
+            - tarball-assembly
             - horizon-rpm-build
             - tarball-assembly
             - sentinel-rpm-build
@@ -734,7 +754,15 @@ workflows:
                 - /^dependabot.*/
       - horizon-publish-oci:
           requires:
-            - horizon-rpm-build
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+            - smoke-test-minimal
+            - smoke-test-sentinel
           filters:
             branches:
               only:
@@ -743,7 +771,15 @@ workflows:
                 - /^release-.*/
       - sentinel-publish-oci:
           requires:
-            - sentinel-rpm-build
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - integration-test
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
+            - smoke-test-minimal
+            - smoke-test-sentinel
           filters:
             branches:
               only:
@@ -780,12 +816,12 @@ workflows:
             - horizon-deb-build
             - minion-deb-build
             - sentinel-deb-build
+            - integration-test
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-sentinel
             - smoke-test-minimal
-            - integration-test
+            - smoke-test-sentinel
           filters:
             branches:
               only: << parameters.main_branch >>
@@ -802,12 +838,14 @@ workflows:
           # if everything passes
           requires:
             - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - integration-test
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-sentinel
             - smoke-test-minimal
-            - integration-test
+            - smoke-test-sentinel
           filters:
             branches:
               only: /^foundation.*/
@@ -833,12 +871,12 @@ workflows:
             - horizon-deb-build
             - minion-deb-build
             - sentinel-deb-build
+            - integration-test
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-sentinel
             - smoke-test-minimal
-            - integration-test
+            - smoke-test-sentinel
           filters:
             branches:
               only:
@@ -861,6 +899,14 @@ jobs:
     steps:
       - run-component-mapping:
           number-vcpu: 1
+  build-ui:
+    executor: ui-executor
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: |
+            cd ui && yarn install && yarn test && yarn build
   build-docs:
     executor: docs-executor
     steps:

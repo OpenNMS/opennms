@@ -10,6 +10,7 @@ sudo vi etc/featuresBoot.d/disable-activemq.boot
 !minion-jms
 !opennms-core-ipc-rpc-jms
 !opennms-core-ipc-sink-camel
+!opennms-core-ipc-twin-jms
 ----
 
 .Create a file to install gRPC features on start-up

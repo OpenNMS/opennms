@@ -686,7 +686,7 @@ fi
 ulimit -s $MAXIMUM_SIZE_STACK_SEGMENT > /dev/null 2>&1
 ulimit -n $MAXIMUM_FILE_DESCRIPTORS > /dev/null 2>&1
 if [ "$(uname)" = "Darwin" ]; then
-	for flag in "-d" "-f" "-l" "-m" "-n" "-s" "-u" "-v"; do
+	for flag in "-d" "-f" "-l" "-m" "-n" "-u" "-v"; do
 		ulimit $flag unlimited >/dev/null 2>&1
 	done
 fi

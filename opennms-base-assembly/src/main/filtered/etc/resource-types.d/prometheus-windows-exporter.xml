@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<resource-types>
+    <resourceType name="winExporterCPU" label="Windows Exporter CPU" resourceLabel="CPU (${cpu})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+       <parameter key="replace-all" value="s/,/_/" />
+    </resourceType>
+
+    <resourceType name="winExporterDisk" label="Windows Exporter Logical Disk" resourceLabel="Disk (${volume})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+       <parameter key="sibling-column-name" value="volume" />
+       <parameter key="replace-all" value="s/://" />
+       <parameter key="replace-all" value="s/\s/_/" />
+       <parameter key="replace-all" value="s/[+]/-/" />
+     </storageStrategy>
+    </resourceType>
+
+    <resourceType name="winExporterIface" label="Windows Exporter Interface" resourceLabel="Interface (${interface})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+</resource-types>
