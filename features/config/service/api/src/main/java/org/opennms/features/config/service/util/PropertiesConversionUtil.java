@@ -28,11 +28,10 @@
 
 package org.opennms.features.config.service.util;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.JSONObject;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -42,12 +41,12 @@ public class PropertiesConversionUtil {
     // Returns an immutable map.
     public static Map<String, Object> jsonToMap(String jsonString) {
         JSONObject  json = new JSONObject(jsonString);
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new ConcurrentHashMap<>();
         for(String key : json.keySet()) {
-            Object value = Optional.of(json.get(key))
-                    .map(o -> JSONObject.NULL.equals(o) ? null : o) // map back to Java null
-                    .orElse(null);
-            map.put(key, value);
+            Object value = json.get(key);
+            if(value != null && !JSONObject.NULL.equals(value)) {
+                map.put(key, value);
+            }
         }
         return map;
     }
@@ -59,11 +58,7 @@ public class PropertiesConversionUtil {
     public static Properties jsonToProperties(String json) {
         Objects.requireNonNull(json);
         Properties props = new Properties();
-        jsonToMap(json.toString())
-                .entrySet()
-                .stream()
-                .filter(e -> e.getValue()!=null) // remove null values => not allowed in dictionary
-                .forEach(e -> props.put(e.getKey(), e.getValue()));
+        props.putAll(jsonToMap(json));
         return props;
     }
 

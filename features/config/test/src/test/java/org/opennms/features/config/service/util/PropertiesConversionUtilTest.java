@@ -30,12 +30,10 @@ package org.opennms.features.config.service.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.opennms.features.config.service.util.PropertiesConversionUtil.jsonToMap;
-import static org.opennms.features.config.service.util.PropertiesConversionUtil.jsonToProperties;
 import static org.opennms.features.config.service.util.PropertiesConversionUtil.mapToJsonString;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.junit.Test;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -45,7 +43,7 @@ public class PropertiesConversionUtilTest {
     public void testRoundtrip() {
         Map<String, Object> originalMap = new HashMap<>();
         originalMap.put("key1", "value1");
-        originalMap.put("key2", null);
+        originalMap.put("key2", Boolean.TRUE);
 
         Map<String, Object> convertedMap = new HashMap<>(jsonToMap(mapToJsonString(originalMap).toString()));
         assertEquals(originalMap, convertedMap);
@@ -57,8 +55,8 @@ public class PropertiesConversionUtilTest {
         originalMap.put("key1", "value1");
         originalMap.put("key2", null);
         JsonAsString json = mapToJsonString(originalMap);
-        Properties properties = jsonToProperties(json.toString());
+        Map<String, Object> properties = jsonToMap(json.toString());
         assertEquals(1, properties.size());
-        assertEquals("value1", properties.getProperty("key1"));
+        assertEquals("value1", properties.get("key1"));
     }
 }
