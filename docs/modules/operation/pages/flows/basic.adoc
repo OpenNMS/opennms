@@ -4,85 +4,26 @@
 
 This section describes how to get started with flows in a basic setup to collect, enrich (classify), persist, and visualize flows.
 
-== Before you begin
+== Requirements
 
-Configure your devices to send flows.
-Refer to the manufacturer's documentation.
-You will need to set up the flow receiver, which is OpenNMS {page-component-title}, and enable sending flows per interface on the firewall.
+Make sure you have the following before you set up flows:
 
-Set up an Elasticsearch cluster with the link:https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin] installed on every Elasticsearch node.
-The Drift plugin persists and queries flows that {page-component-title} collects.
+* OpenNMS up and running.
+* Device(s) that sends flows visible to OpenNMS and monitored with SNMP.
+* Elasticsearch cluster set up with the link:https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin] installed on every Elasticsearch node.
+** The Drift plugin persists and queries flows that {page-component-title} collects.
 The Drift version must match the targeted Elasticsearch version.
-
-== Elasticsearch setup
-
-Set the following environment variables in Elasticsearch:
-
-[source, xml]
-----
-
-  es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTICSEARCH_VERSION:-7.6.2}
-    container_name: es01
-    hostname: es01
-    environment:
-     TZ: ${TIMEZONE:-America/New_York}
-     discovery.type: single-node
-     node.name: es-node-01
-    ports:
-      - "9200:9200/tcp"
-      - "9300:9300/tcp"
-    volumes:
-      - data-es01:/usr/share/elasticsearch/data
-      - ./plugins:/usr/share/elasticsearch/plugins
-    healthcheck:
-      test: curl http://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
-      interval: 30s
-      timeout: 10s
-      retries: 5
-----
-
-=== Tips
-
-You may also want to set the following:
-
-[source, xml]
-----
-ELASTIC_CONTAINER 	true
-ES_JAVA_OPTS 	-Xms12g -Xmx12g <1>
-PATH 	/usr/share/elasticsearch/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin <2>
-search.max_buckets 	30000 <3>
-----
-
-<1> The RAM that JVM is allowed to consume.
-<2> TBD
-<3> Search bucket size.
-You may want to increase the default value.
-
-You may also want to create a job to clean the jobs so that the disk does not fill up, for example, keep X days of flows.
+** (optional) Configure Elasticsearch variables like `search.max_buckets` if the default values are not sufficient.
+** (optional) Create a job to clean the jobs so that the disk does not fill up; for example, keep X days of flows.
 Filled disks are a challenging problem to address for non-Elasticsearch experts.
 We recommend the Elasticsearch https://www.elastic.co/guide/en/elasticsearch/client/curator/current/index.html[Curator tool] to do this.
+** Monitor the Elasticsearch stack in OpenNMS to get an alarm if it goes down.
+* Set up xref:helm/ROOT/index.adoc#welcome-index[OpenNMS Helm] with Grafana (to visualize flows)
+** Configure the xref:getting_started/basic_walkthrough.adoc#bw-ds-setup[flow and performance data sources]
 
-[source, xml]
-----
+== Configure OpenNMS to communicate with Elasticsearch
 
-#!/bin/bash -eux
-
-KEEP=15
-
-docker run --rm -i \
-    --entrypoint=/usr/bin/curator_cli bobrik/curator:5.8.1 \
-    --host 10.10.3.218 \
-    --timeout 600 \
-    delete_indices \
-    --ignore_empty_list \
-    --filter_list '[{"filtertype":"pattern","kind":"prefix","value":"netflow"},{"filtertype":"count","count":'${KEEP}',"source":"creation_date"}]'
-
-----
-
-monitor the stack ... to get an alarm if these are down (see M. docs)
-
-== Configure Elasticsearch persistence
+OpenNMS needs to talk to Elasticsearch and know where to store the flows data it collects (persistence).
 
 From a Karaf shell on your {page-component-title} instance, update `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to configure the flow persistence to use your Elasticsearch cluster:
 
@@ -113,9 +54,10 @@ See <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration
 
 == Enable protocols
 
-Update `$OPENNMS_HOME/etc/telemetryd-configuration.xml` to enable one or more of the protocols you would like to handle.
+Update `$OPENNMS_HOME/etc/telemetryd-configuration.xml` to enable one or more of the protocols you want to handle.
 
-In this example we enable the NetFlow v5 protocol, but you can repeat the same process for any of the other flow-related protocols.
+This example enables the NetFlow v5 protocol.
+Use the same process for any of the other flow-related protocols.
 
 [source, xml]
 ----
@@ -142,9 +84,16 @@ This opens a UDP socket bound to `0.0.0.0:8877` to which NetFlow v5 messages are
 
 === Multi-port listener
 
-By default, make sure you are using the Multi-port listener
+If you are monitoring multiple flow protocols, you normally need to set up a flow listener for each one, on its own UDP port.
 
-edit `etc/telemetryd-configuration.xml` to specify multi-port listener.
+By default, OpenNMS enables its multi-port listener option, which monitors multiple protocols on a single UDP port (9999).
+If required, edit `etc/telemetryd-configuration.xml` to change the port number or add/remove protocols.
+
+== Enable flows on your device(s)
+
+Configure your devices to send flows.
+Refer to the manufacturer's documentation.
+You will need to set up the flow receiver, which is OpenNMS {page-component-title}, and enable sending flows per interface on the firewall.
 
 == Link the web UI to Helm
 
@@ -161,14 +110,18 @@ admin@opennms()> config:update
 NOTE: This URL can optionally point to other tools as well.
 It supports placeholders for `$nodeId`, `$ifIndex`, `$start`, and `$end`.
 
-Once configured, an icon will appear on the top-right corner of a resource graph for an SNMP interface if there is flow data for that interface.
+Once configured, an icon appears on the top-right corner of a resource graph for an SNMP interface if there is flow data for that interface.
 
-== OpenNMS configuration
+*You have completed a basic flows set up.*
+If you have issues, refer to the troubleshooting flows section.
 
-**etc/org.opennms.features.flows.persistence.elastic.cfg**
+== Beyond basic flows setup
 
+You may want to do the following:
 
+* *Classify data flows*
+** OpenNMS resolves flows to application names.
+Create rules to override the default classifications, to customize for your preference.
+See xref:flows/classification-engine.adoc#ga-flow-support-classification-engine[Application Classification].
 
-**etc/telemetryd-configuration.xml**
-
-->
+* *Enable remote flows data collection* (Add cross-reference to Minion section.)
