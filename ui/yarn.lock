@@ -50,12 +50,12 @@
     "@featherds/styles" "^0.9.1"
     vue "^3.1.0-0"
 
-"@featherds/app-layout@0.9.1":
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/@featherds/app-layout/-/app-layout-0.9.1.tgz#57faff34fea4ef346c2979a1a898b66d81408406"
-  integrity sha512-02U9O4NfR2AJ2xy07A8luCJpWInmQCL0SLrHWHgsD3gifibWkxmEIQ/ap4j0bRAskRY5Tct5rRBotFr8MVh7+Q==
+"@featherds/app-layout@0.9.2":
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/@featherds/app-layout/-/app-layout-0.9.2.tgz#900a1b59b780c561f54feeb9cf4fa695bac347d9"
+  integrity sha512-ZG8LyA9DVoprdWP1HiWgDk1KEzxH+hA/YiTcb4n3NWCOnQdRaOGXKHzgTDXeVyL+GiaWk4Q/npBxaTH7UdRZdQ==
   dependencies:
-    "@featherds/styles" "^0.9.1"
+    "@featherds/styles" "^0.9.2"
     vue "^3.1.0-0"
 
 "@featherds/autocomplete@0.9.1":
@@ -282,10 +282,15 @@
     "@featherds/utils" "^0.9.1"
     vue "^3.1.0-0"
 
-"@featherds/styles@0.9.1", "@featherds/styles@^0.9.1":
+"@featherds/styles@0.9.1":
   version "0.9.1"
   resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.9.1.tgz#bb6336d3814ea71c030a7a704ebc8a1be5e36b07"
   integrity sha512-bkCi7h/uZiys+rDR0bFkHFqrulJvr/rJ1oA5dVQiybq3enbIFdLbky2kTP0vwzg6dIEldaiJdWMQUfGVfgz2rg==
+
+"@featherds/styles@^0.9.1", "@featherds/styles@^0.9.2":
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.9.2.tgz#512540f0796a6e51ee646a264c5581de50e2854c"
+  integrity sha512-+PwG6uBA+xUWdHhOpr/0gfzjyaNRP3XGEpNuRbT0UiLDDWF60qSnYLerJh+EA3iQxk0RxtRMHql4qIDqoIT/XQ==
 
 "@featherds/switch@^0.9.1":
   version "0.9.1"
