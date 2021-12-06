@@ -2,11 +2,6 @@
 # yarn lockfile v1
 
 
-"@ag-grid-community/vue3@^26.2.0":
-  version "26.2.0"
-  resolved "https://registry.yarnpkg.com/@ag-grid-community/vue3/-/vue3-26.2.0.tgz#093ce65f79cf3adcc2351d90a3306069e256aa3b"
-  integrity sha512-c+yJGfZ5FYaSpryRcDjjFWr1zqRIC8mU39Ke6ZvRiEN4/ggjfZaKNI+rEK0s/WfNXF4pxyLWpCRaUC8i3SCaig==
-
 "@babel/helper-validator-identifier@^7.15.7":
   version "7.15.7"
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.15.7.tgz#220df993bfe904a4a6b02ab4f3385a5ebf6e2389"
@@ -336,7 +331,14 @@
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.8.tgz#30744afdb385e2945e22f3b033f897f76b1f12ca"
   integrity sha512-1rkryxURpr6aWP7R786/UQOkJ3PcpQiWkAXBmdWc7ryFWqN6a4xfK7BtjXvFBKO9LjQ+MWQSWxYeZX1OApnArA==
 
-"@types/leaflet@^1.7.6":
+"@types/leaflet.markercluster@^1.4.6":
+  version "1.4.6"
+  resolved "https://registry.yarnpkg.com/@types/leaflet.markercluster/-/leaflet.markercluster-1.4.6.tgz#1159460b374ba5e329cb678d0e427f99dca75be5"
+  integrity sha512-MD+bUDzxHznY0zOlSBUAMNQUGB2+xpJPKrR2MNEoBAAKa3QTKJJySBtCqWyGLvYNNO+Cdyc2c64aF2IFwe4fcQ==
+  dependencies:
+    "@types/leaflet" "*"
+
+"@types/leaflet@*", "@types/leaflet@^1.7.6":
   version "1.7.6"
   resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.7.6.tgz#6580f4babb648972c5af3abc3d66866753fa9311"
   integrity sha512-Emkz3V08QnlelSbpT46OEAx+TBZYTOX2r1yM7W+hWg5+djHtQ1GbEXBDRLaqQDOYcDI51Ss0ayoqoKD4CtLUDA==
@@ -546,16 +548,6 @@ acorn@^7.1.1:
   version "7.4.1"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-7.4.1.tgz#feaed255973d2e77555b83dbc08851a6c63520fa"
   integrity sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==
-
-ag-grid-community@^26.2.0:
-  version "26.2.0"
-  resolved "https://registry.yarnpkg.com/ag-grid-community/-/ag-grid-community-26.2.0.tgz#f561d5b6d9ca9510275961079c74cfa0f6e1069c"
-  integrity sha512-YkNQUJ7EsmXbwfSrT4sIBYp1MbFku+ebEiqKc4+YFVZ5+nniHFzvSomHzFqbbkOtEfb42Gmo8cMNvBz9aPnZsQ==
-
-ag-grid-vue3@26.2.0:
-  version "26.2.0"
-  resolved "https://registry.yarnpkg.com/ag-grid-vue3/-/ag-grid-vue3-26.2.0.tgz#2b391111e542b7d6b60e5dc66725eb2c2bd5d4ae"
-  integrity sha512-m9Y67x4JbekltU/IijnlJlSt2dplRhH1Oz+VXmB5Tx1i5uTv1Pk+i1R31tFZb4DUU4aW1GGIIIliOIbOfY+3WQ==
 
 anymatch@~3.1.2:
   version "3.1.2"
@@ -1541,11 +1533,6 @@ vscode-vue-languageservice@0.29.8:
     vscode-languageserver-textdocument "^1.0.1"
     vscode-pug-languageservice "0.29.8"
     vscode-typescript-languageservice "0.29.8"
-
-vue-class-component@^8.0.0-rc.1:
-  version "8.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-8.0.0-rc.1.tgz#db692cd97656eb9a08206c03d0b7398cdb1d9420"
-  integrity sha512-w1nMzsT/UdbDAXKqhwTmSoyuJzUXKrxLE77PCFVuC6syr8acdFDAq116xgvZh9UCuV0h+rlCtxXolr3Hi3HyPQ==
 
 vue-router@4:
   version "4.0.12"

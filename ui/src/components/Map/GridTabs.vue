@@ -2,7 +2,7 @@
   <FeatherTabContainer class="tabs">
     <template v-slot:tabs>
       <FeatherTab ref="alarmTab" @click="goToAlarms">Alarms({{ alarms.length }})</FeatherTab>
-      <FeatherTab ref="nodesTab" @click="goToNodes">Nodes({{ interestedNodesID.length }})</FeatherTab>
+      <FeatherTab ref="nodesTab" @click="goToNodes">Nodes({{ nodes.length }})</FeatherTab>
     </template>
   </FeatherTabContainer>
   <router-view />
@@ -12,15 +12,13 @@ import { ref, onActivated } from 'vue'
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import {
-  FeatherTab,
-  FeatherTabContainer,
-} from "@featherds/tabs"
+import { FeatherTab, FeatherTabContainer } from "@featherds/tabs"
+import { Alarm, Node } from '@/types'
 
 const store = useStore()
 const router = useRouter()
-const interestedNodesID = computed<string[]>(() => store.state.mapModule.interestedNodesID)
-const alarms = computed(() => store.getters['mapModule/getAlarmsFromSelectedNodes'])
+const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
+const alarms = computed<Alarm[]>(() => store.getters['mapModule/getAlarms'])
 const alarmTab = ref()
 const nodesTab = ref()
 
@@ -38,7 +36,8 @@ onActivated(() => {
 
 <style scoped lang="scss">
 .tabs {
-  margin-bottom: -35px;
-  background: var(--feather-background);
+  padding-bottom: 10px;
+  margin-bottom: -15px;
+  background: var(--feather-surface);
 }
 </style>

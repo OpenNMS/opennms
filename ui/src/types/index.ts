@@ -110,7 +110,7 @@ export interface Alarm {
   nodeLabel: string
   uei: string
   count: number
-  lastEvent: any
+  lastEventTime: number,
   logMessage: string
 }
 
@@ -268,8 +268,8 @@ export interface Edge {
 }
 
 export interface Coordinates {
-  latitude: number,
-  longitude: number
+  latitude: number | string,
+  longitude: number | string
 }
 
 export interface AlarmQueryParameters {

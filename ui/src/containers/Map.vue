@@ -2,12 +2,12 @@
   <div class="feather-row">
     <div class="feather-col-12">
       <splitpanes class="default-theme" horizontal style="height: calc(100vh - 80px)">
-        <pane min-size="1" max-size="100" size="62">
+        <pane min-size="1" max-size="100" size="68">
           <div class="leaflet-map">
             <LeafletMap />
           </div>
         </pane>
-        <pane min-size="1" max-size="100" size="38" id="map-pane-under">
+        <pane min-size="1" max-size="100" size="32" class="bottom-pane">
           <GridTabs />
         </pane>
       </splitpanes>
@@ -17,7 +17,7 @@
 
 <!-- used to keep map alive once loaded -->
 <script lang="ts">
-  export default {name: 'MapKeepAlive'}
+export default { name: 'MapKeepAlive' }
 </script>
 
 <script setup lang="ts">
@@ -31,16 +31,8 @@ import GridTabs from '@/components/Map/GridTabs.vue'
 const store = useStore()
 
 onMounted(() => {
-  store.dispatch("mapModule/getNodes", {
-    limit: 5000,
-    offset: 0,
-  })
-
-  store.dispatch("mapModule/getAlarms", {
-    limit: 5000,
-    offset: 0,
-  })
-
+  store.dispatch("mapModule/getNodes")
+  store.dispatch("mapModule/getAlarms")
   store.dispatch("mapModule/getNodesGraphEdges")
 })
 
@@ -48,19 +40,21 @@ onActivated(() => store.dispatch('appModule/setNavRailOpen', false))
 onDeactivated(() => store.dispatch('appModule/setNavRailOpen', true))
 </script>
 
+<style scoped lang="scss">
+.bottom-pane {
+  position: relative;
+}
+</style>
+
 <style lang="scss">
-.ag-row,
-.ag-header-row,
-.ag-paging-panel,
-.ag-center-cols-viewport,
-.ag-header-viewport {
-  background: var(--feather-background) !important;
-  color: var(--feather-primary-text-on-surface) !important;
-}
-.ag-icon {
-  color: var(--feather-primary-text-on-surface) !important;
-}
-.ag-input-field-input {
-  color: black !important;
+.default-theme {
+  .splitpanes__splitter {
+    height: 10px !important;
+    background: var(--feather-shade-3) !important;
+  }
+  .splitpanes__splitter::after,
+  .splitpanes__splitter::before {
+    background: var(--feather-primary-text-on-surface) !important;
+  }
 }
 </style>

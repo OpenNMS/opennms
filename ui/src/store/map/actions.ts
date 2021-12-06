@@ -3,7 +3,8 @@ import { QueryParameters, VuexContext, Coordinates, AlarmModificationQueryVariab
 import { LatLngBounds } from 'leaflet'
 
 const getNodes = async (context: VuexContext, queryParameters?: QueryParameters) => {
-  const resp = await API.getNodes(queryParameters)
+  const defaultParams = queryParameters || { limit: 5000, offset: 0 }
+  const resp = await API.getNodes(defaultParams)
   if (resp) {
     const nodes = resp.node.filter(
       (node) =>
@@ -22,7 +23,8 @@ const getNodes = async (context: VuexContext, queryParameters?: QueryParameters)
 }
 
 const getAlarms = async (context: VuexContext, queryParameters?: QueryParameters) => {
-  const resp = await API.getAlarms(queryParameters)
+  const defaultParams = queryParameters || { limit: 5000, offset: 0 }
+  const resp = await API.getAlarms(defaultParams)
   if (resp) {
     context.commit("SAVE_ALARMS_TO_STATE", resp.alarm)
   }
