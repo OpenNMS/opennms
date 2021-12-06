@@ -28,13 +28,12 @@
 
 package org.opennms.web.enlinkd;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface EnLinkdElementFactoryInterface {
 
 	List<BridgeElementNode> getBridgeElements(int nodeId);
-	Collection<BridgeLinkNode> getBridgeLinks(int nodeId);
+	List<BridgeLinkNode> getBridgeLinks(int nodeId);
 
 	IsisElementNode getIsisElement(int nodeId);
 	List<IsisLinkNode> getIsisLinks(int nodeId);
@@ -45,7 +44,35 @@ public interface EnLinkdElementFactoryInterface {
 	OspfElementNode getOspfElement(int nodeId);
 	List<OspfLinkNode> getOspfLinks(int nodeId);
 
-        CdpElementNode getCdpElement(int nodeId);
+    CdpElementNode getCdpElement(int nodeId);
 	List<CdpLinkNode> getCdpLinks(int nodeId);
 
+	ElementsAndLinks getAll(int nodeId);
+
+	class ElementsAndLinks {
+
+		public final List<BridgeElementNode> bridgeElements;
+		public final List<BridgeLinkNode> bridgeLinks;
+		public final IsisElementNode isisElement;
+		public final List<IsisLinkNode> isisLinks;
+		public final LldpElementNode lldpElement;
+		public final List<LldpLinkNode> lldpLinks;
+		public final OspfElementNode ospfElement;
+		public final List<OspfLinkNode> ospfLinks;
+		public final CdpElementNode cdpElement;
+		public final List<CdpLinkNode> cdpLinks;
+
+		public ElementsAndLinks(List<BridgeElementNode> bridgeElements, List<BridgeLinkNode> bridgeLinks, IsisElementNode isisElement, List<IsisLinkNode> isisLinks, LldpElementNode lldpElement, List<LldpLinkNode> lldpLinks, OspfElementNode ospfElement, List<OspfLinkNode> ospfLinks, CdpElementNode cdpElement, List<CdpLinkNode> cdpLinks) {
+			this.bridgeElements = bridgeElements;
+			this.bridgeLinks = bridgeLinks;
+			this.isisElement = isisElement;
+			this.isisLinks = isisLinks;
+			this.lldpElement = lldpElement;
+			this.lldpLinks = lldpLinks;
+			this.ospfElement = ospfElement;
+			this.ospfLinks = ospfLinks;
+			this.cdpElement = cdpElement;
+			this.cdpLinks = cdpLinks;
+		}
+	}
 }
