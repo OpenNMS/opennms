@@ -30,6 +30,7 @@ package org.opennms.web.rest.v2;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -77,20 +78,25 @@ public class NodeLinkRestService implements NodeLinkRestApi {
         this.m_nodeDao = m_nodeDao;
     }
 
+    private static <F, T> List<T> map(List<F> from, Function<F, T> f) {
+        return from.stream().map(f).collect(Collectors.toList());
+    }
+
     @Override
     public EnlinkdDTO getEnlinkd(String nodeCriteria) {
         int nodeId = getNodeIdInDB(nodeCriteria);
+        var r = enLinkdElementFactory.getAll(nodeId);
         return new EnlinkdDTO()
-                .withLldpLinkNodeDTOs(getLldpLinks(nodeId))
-                .withBridgeLinkNodeDTOS(getBridgeLinks(nodeId))
-                .withCdpLinkNodeDTOS(getCdpLinks(nodeId))
-                .withOspfLinkNodeDTOS(getOspfLinks(nodeId))
-                .withIsisLinkNodeDTOS(getIsisLinks(nodeId))
-                .withLldpElementNodeDTO(getLldpElem(nodeId))
-                .withBridgeElementNodeDTOS(getBridgeElem(nodeId))
-                .withCdpElementNodeDTO(getCdpElem(nodeId))
-                .withOspfElementNodeDTO(getOspfelem(nodeId))
-                .withIsisElementNodeDTO(getIsisElem(nodeId));
+                .withLldpLinkNodeDTOs(map(r.lldpLinks, this::mapLldpLindNodeToDTO))
+                .withBridgeLinkNodeDTOS(map(r.bridgeLinks, this::mapBridgeLinkNodeToDTO))
+                .withCdpLinkNodeDTOS(map(r.cdpLinks, this::mapCdpLinkNodeToDTO))
+                .withOspfLinkNodeDTOS(map(r.ospfLinks, this::mapOspfLinkNodeToDTO))
+                .withIsisLinkNodeDTOS(map(r.isisLinks, this::mapIsisLinkNodeToDTO))
+                .withLldpElementNodeDTO(mapLldElementNodeToDTO(r.lldpElement))
+                .withBridgeElementNodeDTOS(map(r.bridgeElements, this::mapBridgeElementNodeToDTO))
+                .withCdpElementNodeDTO(mapCdpElementNodeToDTO(r.cdpElement))
+                .withOspfElementNodeDTO(mapOspfElementNodeToDTO(r.ospfElement))
+                .withIsisElementNodeDTO(mapIsisElementNodeToDTO(r.isisElement));
     }
 
     @Override

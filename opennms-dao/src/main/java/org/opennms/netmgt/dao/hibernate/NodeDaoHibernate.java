@@ -557,6 +557,11 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     @Override
+    public List<OnmsNode> findBySysNameOfLldpLinksOfNode(int nodeId) {
+        return find("from OnmsNode as n where n.sysName in (select l.lldpRemSysname from LldpLink l where l.node.id = ?)", nodeId);
+    }
+
+    @Override
     public OnmsNode getDefaultFocusPoint() {
         // getting the node which has the most ifspeed
         final String query2 = "select node.id from OnmsSnmpInterface as snmp join snmp.node as node group by node order by sum(snmp.ifSpeed) desc";
