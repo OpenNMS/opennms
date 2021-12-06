@@ -49,6 +49,7 @@
         <artifactId>docker-maven-plugin</artifactId>
         <version>0.23.0</version>
         <configuration>
+          <skip>${skipTests}</skip>
           <showLogs>true</showLogs>
           <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
           <images>
@@ -156,6 +157,9 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>2.18</version>
         <inherited>false</inherited>
+        <configuration>
+            <skipITs>${skipTests}</skipITs>
+        </configuration>
         <executions>
           <execution>
             <goals>
