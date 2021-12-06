@@ -51,12 +51,8 @@ public interface KafkaRpcConstants {
     String MAX_BUFFER_SIZE_PROPERTY = "max.buffer.size";
     String MAX_CONCURRENT_CALLS_PROPERTY = "max.concurrent.calls";
     String MAX_DURATION_BULK_HEAD = "max.wait.time";
-    //Configurable buffer size in system properties but it should always be less than MAX_BUFFER_SIZE_CONFIGURED
-    Integer MAX_BUFFER_SIZE = Math.min(MAX_BUFFER_SIZE_CONFIGURED, SystemProperties.getInteger(String.format("%s%s", KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE_CONFIGURED));
     long DEFAULT_TTL_CONFIGURED = 20000;
     String DEFAULT_TTL_PROPERTY = "ttl";
-    long DEFAULT_TTL = SystemProperties.getLong(String.format("%s%s", KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, DEFAULT_TTL_PROPERTY),
-            DEFAULT_TTL_CONFIGURED);
     int MAX_CONCURRENT_CALLS = 1000;
     int MAX_WAIT_DURATION_BULK_HEAD = 100; // 100msec.
 
@@ -75,7 +71,7 @@ public interface KafkaRpcConstants {
     static int getMaxBufferSize(Properties properties) {
         int maxBufferSize = MAX_BUFFER_SIZE_CONFIGURED;
         try {
-            maxBufferSize = Math.min(MAX_BUFFER_SIZE_CONFIGURED, PropertiesUtils.getProperty(properties, MAX_BUFFER_SIZE_PROPERTY, MAX_BUFFER_SIZE));
+            maxBufferSize = Math.min(MAX_BUFFER_SIZE_CONFIGURED, PropertiesUtils.getProperty(properties, MAX_BUFFER_SIZE_PROPERTY, MAX_BUFFER_SIZE_CONFIGURED));
         } catch (NumberFormatException e) {
             // pass
         }

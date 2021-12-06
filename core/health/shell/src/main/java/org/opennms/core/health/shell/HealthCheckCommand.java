@@ -49,11 +49,14 @@ import org.opennms.core.health.api.HealthCheckService;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Command(scope = "opennms", name = "health-check", description="Verifies that the container is healthy.")
 @Service
 public class HealthCheckCommand implements Action {
 
+    private static final Logger LOG = LoggerFactory.getLogger(HealthCheckCommand.class);
     public static final String SUCCESS_MESSAGE = "=> Everything is awesome";
     public static final String FAILURE_MESSAGE = "=> Oh no, something is wrong";
 
@@ -82,6 +85,7 @@ public class HealthCheckCommand implements Action {
         // Print header
         System.out.println("Verifying the health of the container");
         System.out.println();
+        LOG.info("Verifying the health of the container");
 
         // Perform check
         final Context context = new Context();
@@ -94,6 +98,8 @@ public class HealthCheckCommand implements Action {
                 errorMessage -> {
                     System.out.println(Colorizer.colorize("Error: " + errorMessage, Color.Red));
                     System.out.println("=> Oh no, something is wrong");
+                    LOG.error("Error: {}", errorMessage);
+                    LOG.error("Oh no, something is wrong");
                     return null;
                 },
                 completionStage -> {
@@ -104,6 +110,7 @@ public class HealthCheckCommand implements Action {
                     while ((next = listener.read()) != null) {
                         System.out.print(next);
                         System.out.flush();
+                        LOG.info(next);
                     }
                     return null;
                 });

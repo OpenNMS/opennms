@@ -29,9 +29,11 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
-import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.DEFAULT_TTL;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.DEFAULT_TTL_CONFIGURED;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.DEFAULT_TTL_PROPERTY;
 import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.KAFKA_IPC_CONFIG_SYS_PROP_PREFIX;
-import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.SINGLE_TOPIC_FOR_ALL_MODULES;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.getMaxBufferSize;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_TIMEOUT;
@@ -86,6 +88,7 @@ import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,6 +154,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private MetricRegistry metrics;
     private KafkaTopicProvider topicProvider = new KafkaTopicProvider();
     private JmxReporter metricsReporter = null;
+    private Integer maxBufferSize = KafkaRpcConstants.MAX_BUFFER_SIZE_CONFIGURED;
+    private long defaultTTL = KafkaRpcConstants.DEFAULT_TTL_CONFIGURED;
 
 
     @Autowired
@@ -175,7 +180,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 String rpcId = UUID.randomUUID().toString();
                 // Calculate timeout based on ttl and default timeout.
                 Long ttl = request.getTimeToLiveMs();
-                ttl = (ttl != null && ttl > 0) ? ttl : DEFAULT_TTL;
+                ttl = (ttl != null && ttl > 0) ? ttl : defaultTTL;
                 long expirationTime = System.currentTimeMillis() + ttl;
 
                 // Create a future and add it to response handler which will complete the future when it receives callback.
@@ -187,7 +192,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 rpcResponseMap.put(rpcId, responseHandler);
                 kafkaConsumerRunner.startConsumingForModule(module.getId());
                 byte[] messageInBytes = marshalRequest.getBytes();
-                int totalChunks = IntMath.divide(messageInBytes.length, MAX_BUFFER_SIZE, RoundingMode.UP);
+                int totalChunks = IntMath.divide(messageInBytes.length, maxBufferSize, RoundingMode.UP);
 
                 RpcMessageProto.Builder builder = RpcMessageProto.newBuilder()
                         .setRpcId(rpcId)
@@ -197,8 +202,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 // Divide the message in chunks and send each chunk as a different message with the same key.
                 for (int chunk = 0; chunk < totalChunks; chunk++) {
                     // Calculate remaining bufferSize for each chunk.
-                    int bufferSize = KafkaRpcConstants.getBufferSize(messageInBytes.length, MAX_BUFFER_SIZE, chunk);
-                    ByteString byteString = ByteString.copyFrom(messageInBytes, chunk * MAX_BUFFER_SIZE, bufferSize);
+                    int bufferSize = KafkaRpcConstants.getBufferSize(messageInBytes.length, maxBufferSize, chunk);
+                    ByteString byteString = ByteString.copyFrom(messageInBytes, chunk * maxBufferSize, bufferSize);
                     int chunkNum = chunk;
                     // Add tracing info to message builder.
                     addTracingInfo(request, span, builder);
@@ -321,8 +326,14 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
 
             // Find all of the system properties that start with 'org.opennms.core.ipc.rpc.kafka.' and add them to the config.
-            KafkaConfigProvider kafkaConfigProvider = new OnmsKafkaConfigProvider(KafkaRpcConstants.KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, KAFKA_IPC_CONFIG_SYS_PROP_PREFIX);
+            KafkaConfigProvider kafkaConfigProvider = new OnmsKafkaConfigProvider(KafkaRpcConstants.KAFKA_RPC_CONFIG_SYS_PROP_PREFIX,
+                    KAFKA_IPC_CONFIG_SYS_PROP_PREFIX);
             kafkaConfig.putAll(kafkaConfigProvider.getProperties());
+            maxBufferSize = getMaxBufferSize(kafkaConfig);
+            defaultTTL = PropertiesUtils.getProperty(kafkaConfig, DEFAULT_TTL_PROPERTY, DEFAULT_TTL_CONFIGURED);
+            String singleTopicConfig = kafkaConfig.getProperty(SINGLE_TOPIC_FOR_ALL_MODULES);
+            boolean notASingleTopic = singleTopicConfig != null && singleTopicConfig.equalsIgnoreCase("false");
+            topicProvider = new KafkaTopicProvider(!notASingleTopic);
             producer = new KafkaProducer<>(kafkaConfig);
             LOG.info("initializing the Kafka producer with: {}", kafkaConfig);
             // Start consumer which handles all the responses.

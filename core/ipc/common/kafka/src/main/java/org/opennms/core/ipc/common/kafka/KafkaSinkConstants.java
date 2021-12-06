@@ -40,6 +40,8 @@ public interface KafkaSinkConstants {
 
     String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
 
+    String KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX = KAFKA_COMMON_CONFIG_PID + ".";
+
     // Configurable max buffer size for kafka that should be less than 900KB.
     String MAX_BUFFER_SIZE_PROPERTY = "max.buffer.size";
     //By default, kafka allows 1MB buffer sizes, here message (content in sink-message.proto) is limited to 900KB.

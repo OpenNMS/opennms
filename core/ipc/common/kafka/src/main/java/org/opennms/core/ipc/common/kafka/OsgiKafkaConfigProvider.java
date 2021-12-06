@@ -53,8 +53,8 @@ public class OsgiKafkaConfigProvider implements KafkaConfigProvider {
         this.configAdmin = Objects.requireNonNull(configAdmin);
     }
 
-    public OsgiKafkaConfigProvider(final String groupId, final String specificPID, final  ConfigurationAdmin configAdmin, final String commonPID) {
-        this(groupId, commonPID, configAdmin);
+    public OsgiKafkaConfigProvider(final String groupId, final String pid, final  ConfigurationAdmin configAdmin, final String commonPID) {
+        this(groupId, pid, configAdmin);
         this.commonPID = commonPID;
     }
 
@@ -81,8 +81,9 @@ public class OsgiKafkaConfigProvider implements KafkaConfigProvider {
             if (properties != null && properties.get("bootstrap.servers") != null) {
                 convertFromDictionaryToProperties(properties, kafkaConfig);
             } else {
-                final Dictionary<String, Object> commonPidProperties = configAdmin.getConfiguration(pid).getProperties();
-                if (properties != null && properties.get("bootstrap.servers") != null) {
+                // Fallback to common pid
+                final Dictionary<String, Object> commonPidProperties = configAdmin.getConfiguration(commonPID).getProperties();
+                if (commonPidProperties != null && commonPidProperties.get("bootstrap.servers") != null) {
                     convertFromDictionaryToProperties(commonPidProperties, kafkaConfig);
                 }
             }
