@@ -219,6 +219,26 @@ Since Meridian 2020 is based on Horizon 26.1, it contains all the fixes and upda
 
 For a more complete list of major changes included in this release, see the link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html["What's New" documentation] for Horizon 26.1.3.
 
+=== Changelog
+
+[[releasenotes-changelog-Meridian-2020.1.15]]
+
+==== Release Meridian-2020.1.15
+
+Release 2020.1.15 contains a fix for a Jetty CVE, plus an update to fix a bug in user auth changes,
+and an enhancement to SNMPv3 user authentication.
+
+The codename for 2020.1.15 is link:$$https://wikipedia.org/wiki/Lagoon$$[_Lagoon_].
+
+===== Bug
+
+* Authorization changes not taking immediate effect (Issue http://issues.opennms.org/browse/NMS-13761[NMS-13761])
+* CVE-2021-28164: access to WEB-INF (Issue http://issues.opennms.org/browse/NMS-13832[NMS-13832])
+
+===== Enhancement
+
+* Support multiple auth params for same SNMPV3 username (Issue http://issues.opennms.org/browse/NMS-13490[NMS-13490])
+
 [[releasenotes-changelog-Meridian-2020.1.14]]
 
 ==== Release Meridian-2020.1.14
