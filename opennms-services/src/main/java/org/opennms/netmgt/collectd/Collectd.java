@@ -200,6 +200,8 @@ public class Collectd extends AbstractServiceDaemon implements
     @Autowired
     private ReadablePollOutagesDao pollOutagesDao;
 
+    private AtomicInteger sessionID = new AtomicInteger();
+
     /**
      * Constructor.
      */
@@ -1463,6 +1465,8 @@ public class Collectd extends AbstractServiceDaemon implements
          */
         Collection<Collector> collectors = m_collectdConfigFactory.getCollectdConfig().getCollectors();
 
+        final int currentSessionID = sessionID.incrementAndGet();
+
         for(Collector collector: collectors) {
             String svcName = collector.getService();
             LOG.debug("instantiateCollectors: Loading collector {}, classname {}", svcName, collector.getClassName());
@@ -1476,6 +1480,9 @@ public class Collectd extends AbstractServiceDaemon implements
                     LOG.warn("instantiateCollectors: Failed to load collector {} for service {}", collector.getClassName(), svcName, e);
                 }
             }).whenComplete((Void, ex) -> {
+                if(currentSessionID != sessionID.get()) { //prevent schedule the same collector twice
+                    return;
+                }
                 getScheduler().schedule(0, scheduleCollector(svcName));
                 if(scheduledCounter.incrementAndGet() == collectors.size()) {
                     setSchedulingCompleted(true);

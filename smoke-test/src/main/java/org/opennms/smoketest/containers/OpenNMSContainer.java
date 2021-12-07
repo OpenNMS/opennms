@@ -184,7 +184,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                         "/opt/opennms-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 
         // Help make development/debugging easier
-        DevDebugUtils.setupMavenRepoBind(this, "/root/.m2/repository");
+        DevDebugUtils.setupMavenRepoBind(this, "/opt/opennms/.m2/repository");
     }
 
     private Path writeOverlay() {
