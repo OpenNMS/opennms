@@ -4,7 +4,8 @@
 
 Flows refers to the summary of network traffic sent by network devices (switches, routers, and so on).
 This information includes, but is not limited to, source and destination address, source and destination port, octet count, and duration of activity.
-Collecting and analyzing flows data provides a picture of network use, and helps to diagnose network issues and persist flows for long-term storage and forensic analysis.
+Collecting and analyzing flows data provides a picture of network usage and helps to diagnose network issues.
+Persisting flows for long-term storage can aid in forensic analysis.
 
 {page-component-title} provides the following:
 
