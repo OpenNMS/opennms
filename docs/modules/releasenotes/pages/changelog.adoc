@@ -2,9 +2,42 @@
 
 = Changelog
 
-[releasenotes-changelog-29.0.1]
+[[releasenotes-changelog-29.0.2]]
 
-==== Release 29.0.1
+== Release 29.0.2
+
+Release 29.0.2 contains a fix for a Jetty CVE, plus a number of bug fixes and small enhancements,
+including changes to user auth, Twin API, VMware, and running as non-root.
+
+The codename for Horizon 29.0.2 is https://wikipedia.org/wiki/$$Satanic_nightjar$$[_Satanic Nightjar_].
+
+=== Bug
+
+* Update labelling in Configure Discover screen (Issue http://issues.opennms.org/browse/NMS-12992[NMS-12992])
+* Link to release notes in web Help / About needs updating (Issue http://issues.opennms.org/browse/NMS-13579[NMS-13579])
+* Twin logs doesn't appear in ipc.log (Issue http://issues.opennms.org/browse/NMS-13731[NMS-13731])
+* Authorization changes not taking immediate effect (Issue http://issues.opennms.org/browse/NMS-13761[NMS-13761])
+* VMware sessions not correctly closed in all cases (Issue http://issues.opennms.org/browse/NMS-13774[NMS-13774])
+* Permission check in ./install -dis flags unwriteable files in the .git directory (Issue http://issues.opennms.org/browse/NMS-13778[NMS-13778])
+* Uncatched exception when importing a VMware virtual machine without an IP interface (Issue http://issues.opennms.org/browse/NMS-13781[NMS-13781])
+* opennms-webapp-hawtio %post chown errors (Issue http://issues.opennms.org/browse/NMS-13788[NMS-13788])
+* 29.0.1 minion should be RUNAS=minion (Issue http://issues.opennms.org/browse/NMS-13789[NMS-13789])
+* Missing RRD package definition in BMP persisting adapter (Issue http://issues.opennms.org/browse/NMS-13812[NMS-13812])
+* CVE-2021-28164: access to WEB-INF (Issue http://issues.opennms.org/browse/NMS-13832[NMS-13832])
+
+=== Enhancement
+
+* Dynamic Configuration of Trap Listener (Issue http://issues.opennms.org/browse/NMS-13564[NMS-13564])
+* Tracing support for twin communication (Issue http://issues.opennms.org/browse/NMS-13650[NMS-13650])
+* Document how to install from source (Issue http://issues.opennms.org/browse/NMS-13685[NMS-13685])
+* Improve Related Events box in Alarm detail page (Issue http://issues.opennms.org/browse/NMS-13749[NMS-13749])
+* Optionally include a table of event parameters on the event detail page (Issue http://issues.opennms.org/browse/NMS-13765[NMS-13765])
+* Remove link to wiki from the landing page (Issue http://issues.opennms.org/browse/NMS-13779[NMS-13779])
+* Add support for VMware 7.0.3 performance data collection (Issue http://issues.opennms.org/browse/NMS-13780[NMS-13780])
+
+[[releasenotes-changelog-29.0.1]]
+
+== Release 29.0.1
 
 Release 29.0.1 is a quick release outside of the normal schedule to address some bugs found
 in 29.0.0 mostly related to running as non-root, and Minion communication.
@@ -20,7 +53,7 @@ The codename for Horizon 29.0.1 is https://wikipedia.org/wiki/$$Emu$$[_Emu_].
 * Upgrade to 29: "$RUNAS is not set" (Issue http://issues.opennms.org/browse/NMS-13748[NMS-13748])
 * SNMP Metadata XSD does not allow multiple <config> elements (Issue http://issues.opennms.org/browse/NMS-13752[NMS-13752])
 
-===== Enhancement
+=== Enhancement
 
 * Support  multiple auth params for same SNMPV3 username (Issue http://issues.opennms.org/browse/NMS-13490[NMS-13490])
 * Add retry for RPC calls (Issue http://issues.opennms.org/browse/NMS-13652[NMS-13652])
