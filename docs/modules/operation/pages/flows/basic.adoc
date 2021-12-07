@@ -25,7 +25,7 @@ We recommend the Elasticsearch https://www.elastic.co/guide/en/elasticsearch/cli
 
 OpenNMS needs to talk to Elasticsearch and know where to store the flows data it collects (persistence).
 
-From a Karaf shell on your {page-component-title} instance, update `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to configure the flow persistence to use your Elasticsearch cluster:
+From a Karaf shell on your {page-component-title} instance, update `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg` to configure the flow persistence to use your Elasticsearch cluster:
 
 [source, console]
 ----
