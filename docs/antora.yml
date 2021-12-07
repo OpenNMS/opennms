@@ -1,5 +1,5 @@
 name: horizon
-version: '29.0.2-SNAPSHOT'
+version: '29.0.2'
 title: Horizon
 prerelease: true
 asciidoc:
