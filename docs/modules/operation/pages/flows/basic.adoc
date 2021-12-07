@@ -18,7 +18,7 @@ The Drift version must match the targeted Elasticsearch version.
 Filled disks are a challenging problem to address for non-Elasticsearch experts.
 We recommend the Elasticsearch https://www.elastic.co/guide/en/elasticsearch/client/curator/current/index.html[Curator tool] to do this.
 ** Monitor the Elasticsearch stack in OpenNMS to get an alarm if it goes down.
-* Set up xref:helm:ROOT:index.adoc#welcome-index[OpenNMS Helm] with Grafana (to visualize flows)
+* Set up xref:helm:ROOT:index.adoc#welcome-index[OpenNMS Helm] with Grafana to visualize flows
 ** Configure the xref:helm:getting_started:basic_walkthrough.adoc#bw-ds-setup[flow and performance data sources]
 
 == Configure OpenNMS to communicate with Elasticsearch
