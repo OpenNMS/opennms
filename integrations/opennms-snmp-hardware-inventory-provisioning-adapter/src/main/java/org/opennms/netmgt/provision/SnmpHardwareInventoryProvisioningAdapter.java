@@ -205,6 +205,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
         }
 
         if (ebldr != null) {
+            ebldr.addParam(EventConstants.PARM_METHOD, NAME);
             ebldr.setNodeid(nodeId);
             ebldr.setInterface(ipAddress);
             getEventForwarder().sendNow(ebldr.getEvent());
@@ -239,7 +240,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
      * @param agentConfig the agent configuration
      * @param node the node
      * @return the root entity
-     * @throws HardwareInventoryException the hardware inventory exception
+     * @throws SnmpHardwareInventoryException the hardware inventory exception
      */
     private OnmsHwEntity getRootEntity(SnmpAgentConfig agentConfig, OnmsNode node) throws SnmpHardwareInventoryException {
         LOG.debug("getRootEntity: Getting ENTITY-MIB using {}", agentConfig);
@@ -432,7 +433,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
     /**
      * Sets the hardware inventory adapter configuration DAO.
      *
-     * @param hwInventoryAdapterConfigurationDao the hardware inventory adapter configuration DAO
+     * @param hwInventoryAdapterConfigDao the hardware inventory adapter configuration DAO
      */
     public void setHwInventoryAdapterConfigDao(SnmpHwInventoryAdapterConfigDao hwInventoryAdapterConfigDao) {
         this.m_hwInventoryAdapterConfigDao = hwInventoryAdapterConfigDao;
@@ -476,6 +477,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
                 ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
             }
             if (ebldr != null) {
+                ebldr.addParam(EventConstants.PARM_METHOD, NAME);
                 getEventForwarder().sendNow(ebldr.getEvent());
             }
         }
