@@ -60,7 +60,7 @@
     <argument ref="blueprintBundleContext"/>
     <argument value="${rrdStep}"/>
     <argument value="${rrdHeatBeat}" />
-    <argument value="$rrdRrsStr}" />
+    <argument value="${rrdRrsStr}" />
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.collectors.ServiceCollectorFactory" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="serviceCollectorManager" />
