@@ -5,7 +5,7 @@ The BGP Monitoring Protocol (BMP) provides a convenient interface for obtaining 
 The integration in {page-component-title} lets you use these route views, status updates, and statistics for monitoring and management.
 
 .BMP integration overview
-image:bmp/bmp_integration_overview.png[BMP integration]
+image::bmp/bmp_integration_overview.png[width=70%]
 
 [[telemetryd-bmp-parser]]
 

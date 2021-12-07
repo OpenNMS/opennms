@@ -12,7 +12,7 @@ For example,
 . Scroll through the graphs to find the title of the graph that displays the metric on which you want to threshold.
 For example, "Number of Processes" or "System Uptime":
 +
-image:thresholding/Graphs.png[]
+image::thresholding/Graphs.png[]
 
 . Go to `etc/snmp-graph.properties.d/` and search for the title of the graph (for example, "System Uptime").
 
