@@ -87,7 +87,7 @@ This opens a UDP socket bound to `0.0.0.0:8877` to which NetFlow v5 messages are
 If you are monitoring multiple flow protocols, you normally need to set up a flow listener for each one, on its own UDP port.
 
 By default, OpenNMS enables its multi-port listener option, which monitors multiple protocols on a single UDP port (9999).
-If required, edit `etc/telemetryd-configuration.xml` to change the port number or add/remove protocols.
+If desired, edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` to change the port number or add/remove protocols.
 
 == Enable flows on your device(s)
 
