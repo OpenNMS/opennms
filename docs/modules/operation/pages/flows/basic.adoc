@@ -43,6 +43,7 @@ config:update
 
 We also recommend setting the following:
 
+.Edit (or create) `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`
 [source, xml]
 ----
 # ElasticSearch persistence configuration
