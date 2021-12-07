@@ -28,13 +28,12 @@
 
 package org.opennms.features.config.osgi.cm;
 
-import static org.opennms.features.config.osgi.cm.LogUtil.logInfo;
-
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Optional;
 
 import org.apache.felix.cm.PersistenceManager;
+import org.opennms.features.config.osgi.del.MigratedServices;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.osgi.framework.BundleActivator;
@@ -60,11 +59,9 @@ public class Activator implements BundleActivator {
         final ConfigurationManagerService cm = findService(context, ConfigurationManagerService.class);
         CmPersistenceManager persistenceManager = new CmPersistenceManager(cm);
         registration = context.registerService(PersistenceManager.class, persistenceManager, config);
-
-        final ConfigurationAdmin configurationAdmin = findService(context, ConfigurationAdmin.class);
         registerCallbacks(context, cm, persistenceManager);
 
-        logInfo("{0} started.", CmPersistenceManager.class.getSimpleName());
+        LOG.info("{} started.", CmPersistenceManager.class.getSimpleName());
     }
 
     private void registerCallbacks(BundleContext context, ConfigurationManagerService cm, PersistenceManager persistenceManager) {
@@ -81,7 +78,7 @@ public class Activator implements BundleActivator {
                     .getConfiguration(pid)
                     .update();
         } catch (IOException e) {
-            logInfo("Cannot load configuration for pid=" + pid, e );
+            LOG.info("Cannot load configuration for pid=" + pid, e );
         }
     }
 
@@ -92,10 +89,10 @@ public class Activator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         if (registration != null) {
             registration.unregister();
         }
-        logInfo( "{0} stopped.", CmPersistenceManager.class.getSimpleName());
+        LOG.info( "{} stopped.", CmPersistenceManager.class.getSimpleName());
     }
 }

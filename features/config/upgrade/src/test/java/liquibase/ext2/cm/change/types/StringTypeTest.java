@@ -29,6 +29,7 @@
 package liquibase.ext2.cm.change.types;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 import java.util.List;
@@ -61,7 +62,7 @@ public class StringTypeTest extends AbstractTypeTest {
         attributes.remove("default");
         ConfigItem item = createItem();
         assertEquals(Type.STRING, item.getType());
-        assertEquals(null, item.getDefaultValue());
+        assertNull(item.getDefaultValue());
     }
 
     @Override

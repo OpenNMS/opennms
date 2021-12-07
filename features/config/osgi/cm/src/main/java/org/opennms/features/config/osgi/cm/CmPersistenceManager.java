@@ -38,18 +38,23 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.felix.cm.PersistenceManager;
+import org.opennms.features.config.osgi.del.MigratedServices;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Our own implementation of a PersistenceManager, using the CM system instead of files.
  */
 public class CmPersistenceManager implements PersistenceManager {
 
+    private static final Logger LOG = LoggerFactory.getLogger(CmPersistenceManager.class);
+
     private interface OsgiProperties {
         String SERVICE_PID = "service.pid";
     }
-    private final static String CONFIG_ID = "default"; // TODO: Patrick deal with services with multiple configurations
+    private final static String CONFIG_ID = "default";
 
     private final ConfigurationManagerService configService;
 
@@ -85,7 +90,7 @@ public class CmPersistenceManager implements PersistenceManager {
                     .map(DictionaryUtil::createFromJson)
                     .map(m -> {
                         if(m.get(OsgiProperties.SERVICE_PID) == null) {
-                            m.put(OsgiProperties.SERVICE_PID, pid); // make sure pid is set otherwise we will run into a Nullpointer later
+                            m.put(OsgiProperties.SERVICE_PID, pid); // make sure pid is set, otherwise we will run into a Nullpointer later
                         }
                         return m;
                     });
@@ -104,7 +109,7 @@ public class CmPersistenceManager implements PersistenceManager {
 
     @Override
     public void delete(final String pid) throws IOException {
-        this.configService.unregisterConfiguration(pid, CONFIG_ID); // TODO: Patrick do we want to allow delete?
+        LOG.warn("delete of pid={} not supported.", pid);
     }
 
     public static boolean equalsWithoutRevision(Dictionary<String, Object> a, Dictionary<String, Object> b) {

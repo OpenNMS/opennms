@@ -30,10 +30,9 @@ package org.opennms.features.config.osgi.del;
 
 import java.util.Set;
 
-// TODO: Patrick: find a better solution, e.g. read all available PIDs dynamically from CM.
 public class MigratedServices {
 
-    final static Set<String> PIDS =  Set.of(
+    final public static Set<String> PIDS =  Set.of(
             "org.opennms.features.datachoices"
     );
 

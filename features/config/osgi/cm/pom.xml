@@ -31,6 +31,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.config.osgi</groupId>
+            <artifactId>org.opennms.features.config.osgi.del</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.config.service</groupId>
             <artifactId>org.opennms.features.config.service.api</artifactId>
             <version>${project.version}</version>
@@ -42,11 +47,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>${jsonVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
