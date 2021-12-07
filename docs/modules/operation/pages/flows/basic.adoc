@@ -14,7 +14,7 @@ Make sure you have the following before you set up flows:
 ** The Drift plugin persists and queries flows that {page-component-title} collects.
 The Drift version must match the targeted Elasticsearch version.
 ** (optional) Configure Elasticsearch variables like `search.max_buckets` if the default values are not sufficient.
-** (optional) Create a job to clean the jobs so that the disk does not fill up; for example, keep X days of flows.
+** (optional) Create a job to clean the indices so that the disk does not fill up; for example, keep X days of flows.
 Filled disks are a challenging problem to address for non-Elasticsearch experts.
 We recommend the Elasticsearch https://www.elastic.co/guide/en/elasticsearch/client/curator/current/index.html[Curator tool] to do this.
 ** Monitor the Elasticsearch stack in OpenNMS to get an alarm if it goes down.
