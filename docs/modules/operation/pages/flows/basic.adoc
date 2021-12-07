@@ -61,7 +61,7 @@ See <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration
 
 == Enable protocols
 
-Update `$OPENNMS_HOME/etc/telemetryd-configuration.xml` to enable one or more of the protocols you want to handle.
+Update `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` to enable one or more of the protocols you want to handle.
 
 This example enables the NetFlow v5 protocol.
 Use the same process for any of the other flow-related protocols.
