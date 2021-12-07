@@ -15,7 +15,9 @@
             <tr>
               <FeatherSortHeader
                 v-for="node in tableHeaders"
+                :property="node"
                 scope="col"
+                v-on:sort-changed="sortChanged"
               >
                 {{node.toLocaleUpperCase()}}
               </FeatherSortHeader>
@@ -60,6 +62,7 @@ import { useStore } from 'vuex'
 import router from '@/router';
 import { notify } from "@kyvg/vue3-notification"
 import { putProvisionDService } from "./../../services/configurationService"
+import { FeatherSortObject } from '@/types'
 
 const store = useStore()
 const buttonAction = ref(['ADD NEW', 'BACK'])
@@ -67,7 +70,6 @@ const index = ref(0)
 const icon = ref(markRaw(actionsAdd));
 const isData = ref(false)
 let customData: any = ref([])
-
 const provisionDService = computed(() => { return store.state.configuration.provisionDService })
 
 const tableHeaders = computed(() => {
@@ -75,7 +77,8 @@ const tableHeaders = computed(() => {
     return Object.keys(provisionDService.value["requisition-def"][0]);
   }
 })
-const nodeDataValue = computed(() => {
+
+let nodeDataValue = computed(() => {
   if (provisionDService.value) {
 
     let copyState = [], cronScheduleType: string[], valuePos: number, ele: number
@@ -115,6 +118,12 @@ onMounted(async () => {
   }
 })
 
+const sortChanged = (sortObj: FeatherSortObject) => { 
+  if(sortObj.value === 'asc'){
+    computed(() => nodeDataValue.value.sort((a: any, b: any) => (a[`${sortObj.property}`] > b[`${sortObj.property}`] ? 1 : -1)));
+  }
+  console.log(nodeDataValue.value);
+}
 const onClickHandle = (selectedName: any, data: any, index: any) => {
   //Added one dyanamic property to data for identitify the table position - helps in edit put call
   data['tablePosition'] = index
