@@ -34,6 +34,8 @@ import junit.framework.TestCase;
 
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -56,7 +58,8 @@ public class ConfigureSnmpTest extends TestCase {
     	super.setUp();
     	
         Resource rsrc = ConfigurationTestUtils.getSpringResourceForResource(this, "snmp-config-configureSnmpTest.xml");
-    	SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+        SnmpConfig config = JaxbUtils.unmarshal(SnmpConfig.class, rsrc);
+    	SnmpPeerFactory.setInstance(new SnmpPeerFactory(config));
     }
 
     /**

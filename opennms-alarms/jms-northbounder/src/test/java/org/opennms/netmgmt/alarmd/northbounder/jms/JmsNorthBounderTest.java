@@ -83,7 +83,7 @@ import com.google.common.collect.Lists;
 @ContextConfiguration(locations = { 
         "classpath:/test-context.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+        "classpath:applicationContext-mockJmsNorthDao.xml"
 })
 @JUnitConfigurationEnvironment
 public class JmsNorthBounderTest {
