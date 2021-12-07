@@ -13,7 +13,7 @@ Persisting flows for long-term storage can aid in forensic analysis.
 * inventory enrichment (mapping to OpenNMS nodes)
 * application classification
 * horizontal scaling (tested with 250,000+ flows/second)
-* enterprise reporting (push reports to PDF)
+* enterprise reporting (generate PDFF reports)
 * top K statistics by interface, application, host, conversation with QoS
 
 See the <<reference:telemetryd/protocols/introduction.adoc#ref-protocol, Telemetry>> section for a list of supported protocols.
