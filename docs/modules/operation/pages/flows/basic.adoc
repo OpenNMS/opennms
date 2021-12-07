@@ -1,6 +1,6 @@
 
 [[flows-basic]]
-= Start here: basic flows setup
+= Basic Flows Setup
 
 This section describes how to get started with flows to collect, enrich (classify), persist, and visualize flows.
 

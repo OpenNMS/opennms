@@ -9,12 +9,12 @@ Persisting flows for long-term storage can aid in forensic analysis.
 
 {page-component-title} provides the following:
 
-* a platform to collect, persist, and visualize flows, with support for NetFlow versions 5 and 9, IPFIX, and sFlow
-* inventory enrichment (mapping to OpenNMS nodes)
-* application classification
-* horizontal scaling (tested with 250,000+ flows/second)
-* enterprise reporting (generate PDFF reports)
-* top K statistics by interface, application, host, conversation with QoS
+* A platform to collect, persist, and visualize flows, with support for NetFlow versions 5 and 9, IPFIX, and sFlow
+* Inventory enrichment (mapping to OpenNMS nodes)
+* Application classification
+* Horizontal scaling (tested with 250,000+ flows/second)
+* Enterprise reporting (generate PDFF reports)
+* Top K statistics by interface, application, host, conversation with QoS
 
 See the <<reference:telemetryd/protocols/introduction.adoc#ref-protocol, Telemetry>> section for a list of supported protocols.
 
@@ -36,5 +36,3 @@ At a high level, with a xref:operation:flows/basic.adoc#flows-basic[basic] setup
 ** Metadata related to associated nodes (such as IDs and categories) are also added to the flows.
 * The REST API supports generating both summaries and time series data from the flows stored in the flow repository.
 * OpenNMS Helm visualizes the flow data through the flow datasource, which interfaces with the {page-component-title} REST API.
-
-Add other OpenNMS components for remote/distributed flows data collection (Minion), scaling (Sentinel), and streaming telemetry (Nephron).
