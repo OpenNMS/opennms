@@ -78,7 +78,7 @@ import io.opentracing.util.GlobalTracer;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        //"classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-snmp.xml"
 })
@@ -117,7 +117,7 @@ public class NodeInfoScanIT {
     public void testNodeInfoScanWithDefaultConfig() throws InterruptedException {
         URL url =  getClass().getResource("/snmp-config1.xml");
         try (InputStream configStream = url.openStream()) {
-            snmpPeerFactory = new ProxySnmpAgentConfigFactory(new SnmpConfig());
+            snmpPeerFactory = new ProxySnmpAgentConfigFactory();
             // This is to not override snmp-config from etc
             SnmpPeerFactory.setFile(new File(url.getFile()));
             initializeProvisionService();
@@ -208,8 +208,8 @@ public class NodeInfoScanIT {
      **/
     static class ProxySnmpAgentConfigFactoryExtension extends ProxySnmpAgentConfigFactory {
 
-        ProxySnmpAgentConfigFactoryExtension(SnmpConfig config) throws FileNotFoundException {
-            super(config);
+        ProxySnmpAgentConfigFactoryExtension(SnmpConfig config) throws IOException {
+            super();
         }
 
         @Override
@@ -225,8 +225,8 @@ public class NodeInfoScanIT {
      **/
     class ProxySnmpAgentConfigFactoryExtension2 extends ProxySnmpAgentConfigFactory {
 
-        ProxySnmpAgentConfigFactoryExtension2(SnmpConfig config) throws FileNotFoundException {
-            super(config);
+        ProxySnmpAgentConfigFactoryExtension2(SnmpConfig config) throws IOException {
+            super();
         }
 
         @Override

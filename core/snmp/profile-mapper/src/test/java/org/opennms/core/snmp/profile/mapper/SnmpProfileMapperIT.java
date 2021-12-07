@@ -169,8 +169,8 @@ public class SnmpProfileMapperIT {
         }
     }
 
-    private void setUpProfileMapper(InputStream configStream, URL resourceURL) throws FileNotFoundException {
-        snmpPeerFactory = new ProxySnmpAgentConfigFactory(new SnmpConfig());
+    private void setUpProfileMapper(InputStream configStream, URL resourceURL) throws IOException {
+        snmpPeerFactory = new ProxySnmpAgentConfigFactory();
         // This is to not override snmp-config from etc
         SnmpPeerFactory.setFile(new File(resourceURL.getFile()));
         FilterDao filterDao = Mockito.mock(FilterDao.class);

@@ -139,7 +139,7 @@ public class NodeScanIT {
         // This has profiles with valid config.
         URL url =  getClass().getResource("/snmp-config1.xml");
         try (InputStream configStream = url.openStream()) {
-            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactory(new SnmpConfig());
+            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactory();
             // This is to not override snmp-config from etc
             SnmpPeerFactory.setFile(new File(url.getFile()));
             m_provisioner.setAgentConfigFactory(snmpPeerFactory);

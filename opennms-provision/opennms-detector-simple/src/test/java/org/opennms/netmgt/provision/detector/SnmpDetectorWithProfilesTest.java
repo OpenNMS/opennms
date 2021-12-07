@@ -123,8 +123,8 @@ public class SnmpDetectorWithProfilesTest {
      **/
     static class ProxySnmpAgentConfigFactoryExtension extends ProxySnmpAgentConfigFactory {
 
-        ProxySnmpAgentConfigFactoryExtension(SnmpConfig config) throws FileNotFoundException {
-            super(config);
+        ProxySnmpAgentConfigFactoryExtension(SnmpConfig config) throws IOException {
+            super();
         }
 
         @Override
