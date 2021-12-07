@@ -54,6 +54,7 @@ settings.index.number_of_shards=1
 settings.index.refresh_interval=10s
 elasticIndexStrategy=daily
 ----
+<1> Replace with comma-separated list of Elasticsearch nodes.
 
 See <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch Configuration>> for a complete set of options.
 
