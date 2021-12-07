@@ -28,10 +28,7 @@
 
 package org.opennms.core.ipc.twin.jms.publisher;
 
-import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.AsyncProcessor;
 import org.apache.camel.CamelContext;
@@ -44,11 +41,11 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsEndpoint;
 import org.opennms.core.ipc.twin.common.AbstractTwinPublisher;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
-import org.opennms.core.ipc.twin.common.TwinRequestBean;
-import org.opennms.core.ipc.twin.common.TwinResponseBean;
-import org.opennms.core.ipc.twin.model.TwinRequestProto;
+import org.opennms.core.ipc.twin.common.TwinRequest;
+import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.distributed.core.api.Identity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,38 +85,16 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
     }
 
     @Override
-    protected void handleSinkUpdate(TwinResponseBean sinkUpdate) {
-        TwinResponseProto twinResponseProto = mapTwinResponse(sinkUpdate);
-        Map<String, Object> headers = new HashMap<>();
-        String queueName = String.format(TWIN_QUEUE_NAME_FORMAT, SystemInfoUtils.getInstanceId(), "Twin.Sink");
-        headers.put(JMS_QUEUE_NAME_HEADER, queueName);
-        template.sendBodyAndHeaders(twinResponseProto.toByteArray(), headers);
-    }
-
-    private TwinResponseProto mapTwinResponse(TwinResponseBean twinResponseBean) {
-        TwinResponseProto.Builder builder = TwinResponseProto.newBuilder();
-        if (!Strings.isNullOrEmpty(twinResponseBean.getLocation())) {
-            builder.setLocation(twinResponseBean.getLocation());
-        }
-        builder.setConsumerKey(twinResponseBean.getKey());
-        if (twinResponseBean.getObject() != null) {
-            builder.setTwinObject(ByteString.copyFrom(twinResponseBean.getObject()));
-        }
-        return builder.build();
-    }
-
-    TwinRequestBean mapTwinRequestProto(byte[] twinRequestBytes) {
-        TwinRequestBean twinRequestBean = new TwinRequestBean();
+    protected void handleSinkUpdate(TwinUpdate sinkUpdate) {
         try {
-            TwinRequestProto twinRequestProto = TwinRequestProto.parseFrom(twinRequestBytes);
-            twinRequestBean.setKey(twinRequestProto.getConsumerKey());
-            if (!Strings.isNullOrEmpty(twinRequestProto.getLocation())) {
-                twinRequestBean.setLocation(twinRequestProto.getLocation());
-            }
-        } catch (InvalidProtocolBufferException e) {
-            LOG.warn("Failed to parse protobuf for the request", e);
+            TwinResponseProto twinResponseProto = mapTwinResponse(sinkUpdate);
+            Map<String, Object> headers = new HashMap<>();
+            String queueName = String.format(TWIN_QUEUE_NAME_FORMAT, SystemInfoUtils.getInstanceId(), "Twin.Sink");
+            headers.put(JMS_QUEUE_NAME_HEADER, queueName);
+            template.sendBodyAndHeaders(twinResponseProto.toByteArray(), headers);
+        } catch (Exception e) {
+            LOG.error("Exception while sending update for key {} at location {} ", sinkUpdate.getKey(), sinkUpdate.getLocation());
         }
-        return twinRequestBean;
     }
 
     public void init() throws Exception {
@@ -128,8 +103,6 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
     }
 
     public void close() throws IOException {
-        super.close();
-
         executor.shutdownNow();
         LOG.info("JMS Twin publisher stopped");
     }
@@ -138,11 +111,15 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
     public boolean process(Exchange exchange, AsyncCallback callback) {
         byte[] requestBytes = exchange.getIn().getBody(byte[].class);
         CompletableFuture.runAsync(() -> {
-            TwinRequestBean twinRequestBean = mapTwinRequestProto(requestBytes);
-            TwinResponseBean twinResponseBean = getTwin(twinRequestBean);
-            TwinResponseProto twinResponseProto = mapTwinResponse(twinResponseBean);
-            exchange.getOut().setBody(twinResponseProto.toByteArray());
-            callback.done(false);
+            try {
+                TwinRequest twinRequest = mapTwinRequestProto(requestBytes);
+                TwinUpdate twinUpdate = getTwin(twinRequest);
+                TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
+                exchange.getOut().setBody(twinResponseProto.toByteArray());
+                callback.done(false);
+            } catch (Exception e) {
+                LOG.error("Exception while processing request", e);
+            }
         }, executor);
         return false;
     }

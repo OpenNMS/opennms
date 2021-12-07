@@ -31,7 +31,8 @@ package org.opennms.core.ipc.twin.test;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.io.Closeable;
@@ -46,15 +47,16 @@ import org.junit.Test;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.netmgt.snmp.SnmpV3User;
+import org.opennms.netmgt.snmp.TrapListenerConfig;
 
 public abstract class AbstractTwinBrokerIT {
-
 
     protected abstract TwinPublisher createPublisher() throws Exception;
     protected abstract TwinSubscriber createSubscriber(final MinionIdentity identity) throws Exception;
 
-    private TwinPublisher publisher;
-    private TwinSubscriber subscriber;
+    public TwinPublisher publisher;
+    public TwinSubscriber subscriber;
 
     private final MinionIdentity standardIdentity = new MockMinionIdentity("remote");
 
@@ -80,7 +82,7 @@ public abstract class AbstractTwinBrokerIT {
 
         final var tracker = Tracker.subscribe(this.subscriber, "test", String.class);
 
-        await().until(tracker::getLog, hasItems("Test1"));
+        await().until(tracker::getLog, contains("Test1"));
     }
 
     /**
@@ -93,12 +95,12 @@ public abstract class AbstractTwinBrokerIT {
 
         final var tracker = Tracker.subscribe(this.subscriber, "test", String.class);
         // Ensure Test1 is received.
-        await().until(tracker::getLog, hasItems("Test1"));
+        await().until(tracker::getLog, contains("Test1"));
 
         session.publish("Test2");
         session.publish("Test3");
 
-        await().until(tracker::getLog, hasItems("Test1", "Test2", "Test3"));
+        await().until(tracker::getLog, contains("Test1", "Test2", "Test3"));
     }
 
     /**
@@ -110,10 +112,10 @@ public abstract class AbstractTwinBrokerIT {
 
         final var session = this.publisher.register("test", String.class);
         session.publish("Test1");
-        await().until(tracker::getLog, hasItems("Test1"));
-        session.publish("Test2");
+        await().until(tracker::getLog, contains("Test1"));
 
-        await().until(tracker::getLog, hasItems("Test2"));
+        session.publish("Test2");
+        await().until(tracker::getLog, contains("Test1", "Test2"));
     }
 
     /**
@@ -212,9 +214,12 @@ public abstract class AbstractTwinBrokerIT {
         session.publish("Test3");
 
         final var tracker2 = Tracker.subscribe(this.subscriber, "test", String.class);
-        await().until(tracker2::getLog, hasItems("Test3"));
+        // Maybe contains elements from the `publish`s above.
+        // Due to transport latency, the subscriber receive the elements even if published before subscribe.
+        await().until(tracker2::getLog, hasItem("Test3"));
 
-        assertThat(tracker1.getLog(), contains("Test1"));
+        assertThat(tracker1.getLog(), not(hasItem("Test2")));
+        assertThat(tracker1.getLog(), not(hasItem("Test3")));
     }
 
     /**
@@ -232,6 +237,32 @@ public abstract class AbstractTwinBrokerIT {
         await().until(tracker2::getLog, contains("Test1"));
 
         assertThat(tracker1.getLog(), empty());
+    }
+
+    @Test
+    public void testPublishSubscribeWithTrapdConfig() throws IOException {
+        final var session = this.publisher.register(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class);
+        final var tracker1 = Tracker.subscribe(this.subscriber, TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class);
+        SnmpV3User user = new SnmpV3User("opennmsUser", "MD5", "0p3nNMSv3",
+                "DES", "0p3nNMSv3");
+        TrapListenerConfig trapListenerConfig = new TrapListenerConfig();
+        ArrayList<SnmpV3User> users = new ArrayList<>();
+        users.add(user);
+        trapListenerConfig.setSnmpV3Users(users);
+        session.publish(trapListenerConfig);
+        await().until(tracker1::getLog, hasItem(trapListenerConfig));
+        // Add two users and delete existing one.
+        TrapListenerConfig updatedConfig = new TrapListenerConfig();
+        SnmpV3User user1 = new SnmpV3User("opennmsUser1", "MD5", "0p3nNMSv1",
+                "DES", "0p3nNMSv1");
+        SnmpV3User user2 = new SnmpV3User("opennmsUser2", "MD5", "0p3nNMSv1",
+                "DES", "0p3nNMSv2");
+        users = new ArrayList<>();
+        users.add(user1);
+        users.add(user2);
+        updatedConfig.setSnmpV3Users(users);
+        session.publish(updatedConfig);
+        await().until(tracker1::getLog, hasItem(updatedConfig));
     }
 
     public static class Tracker<T> implements Closeable {

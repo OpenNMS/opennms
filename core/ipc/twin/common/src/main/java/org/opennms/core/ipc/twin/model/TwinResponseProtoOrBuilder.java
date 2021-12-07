@@ -71,11 +71,31 @@ public interface TwinResponseProtoOrBuilder extends
       getLocationBytes();
 
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>bool is_patch_object = 5;</code>
+   */
+  boolean getIsPatchObject();
+
+  /**
+   * <code>string session_id = 6;</code>
+   */
+  java.lang.String getSessionId();
+  /**
+   * <code>string session_id = 6;</code>
+   */
+  com.google.protobuf.ByteString
+      getSessionIdBytes();
+
+  /**
+   * <code>int32 version = 7;</code>
+   */
+  int getVersion();
+
+  /**
+   * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
   int getTracingInfoCount();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
   boolean containsTracingInfo(
       java.lang.String key);
@@ -86,19 +106,19 @@ public interface TwinResponseProtoOrBuilder extends
   java.util.Map<java.lang.String, java.lang.String>
   getTracingInfo();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
   java.util.Map<java.lang.String, java.lang.String>
   getTracingInfoMap();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
 
   java.lang.String getTracingInfoOrDefault(
       java.lang.String key,
       java.lang.String defaultValue);
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
 
   java.lang.String getTracingInfoOrThrow(

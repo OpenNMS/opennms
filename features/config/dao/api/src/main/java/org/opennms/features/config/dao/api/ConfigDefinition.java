@@ -28,14 +28,52 @@
 
 package org.opennms.features.config.dao.api;
 
-/** TODO Patrick: Discuss with Freddy */
-/** This class holds the definition for a configuration.
+import com.atlassian.oai.validator.report.MessageResolver;
+import com.atlassian.oai.validator.report.ValidationReport;
+import com.atlassian.oai.validator.schema.SchemaValidator;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
+import org.opennms.features.config.dao.api.util.OpenAPIDeserializer;
+import org.opennms.features.config.dao.api.util.OpenAPISerializer;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * This class holds the definition for a configuration.
  * It is based on OpenAPI plus Metadata.
  */
+
 public class ConfigDefinition {
+    public static final String TOP_LEVEL_ELEMENT_NAME_TAG = "topLevelElement";
+    public static final String XSD_FILENAME_TAG = "xsdFilename";
+    public static final String ELEMENT_NAME_TO_VALUE_NAME_TAG = "elementNameToValueName";
+
     private String configName;
     private int maxInstances = 1;
-    private ConfigItem schema;
+    private Map<String, Object> meta = new HashMap<>();
+
+    @JsonSerialize(using = OpenAPISerializer.class)
+    @JsonDeserialize(using = OpenAPIDeserializer.class)
+    protected OpenAPI schema;
+
+    @JsonCreator
+    public ConfigDefinition(@JsonProperty("configName") String configName) {
+        this.configName = configName;
+    }
+
+    public OpenAPI getSchema() {
+        return schema;
+    }
+
+    public void setSchema(OpenAPI schema) {
+        this.schema = schema;
+    }
 
     public String getConfigName() {
         return configName;
@@ -53,11 +91,33 @@ public class ConfigDefinition {
         this.maxInstances = maxInstances;
     }
 
-    public ConfigItem getSchema() {
-        return schema;
+    public Map<String, Object> getMeta() {
+        return meta;
     }
 
-    public void setSchema(ConfigItem schema) {
-        this.schema = schema;
+    public void setMeta(Map<String, Object> meta) {
+        this.meta = meta;
+    }
+
+    public Object getMetaValue(String key) {
+        return meta.get(key);
+    }
+
+    public void setMetaValue(String key, Object value) {
+        this.meta.put(key, value);
+    }
+
+    @JsonIgnore
+    public ValidationReport validate(String json) {
+        String topSchemaName = (String) meta.get(TOP_LEVEL_ELEMENT_NAME_TAG);
+        if(topSchemaName == null) {
+            topSchemaName = configName;
+        }
+        if(this.getSchema() == null){
+            throw new RuntimeException("Empty schema!");
+        }
+        SchemaValidator validator = new SchemaValidator(this.getSchema(), new MessageResolver());
+        final Schema<?> schema = new Schema<>().$ref("#/components/schemas/" + topSchemaName);
+        return validator.validate(json, schema, null);
     }
 }

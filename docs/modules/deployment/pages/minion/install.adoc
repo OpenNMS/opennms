@@ -26,6 +26,8 @@ NOTE: If you run Debian, you have to install and configure `sudo` yourself (see 
 
 endif::[]
 
+include::../time-sync.adoc[]
+
 == Install the Minion package
 
 [{tabs}]
@@ -116,12 +118,6 @@ gRPC::
 +
 --
 include::message-broker/grpc.adoc[]
---
-
-AWS SQS::
-+
---
-include::message-broker/aws-sqs.adoc[]
 --
 ====
 

@@ -29,23 +29,22 @@
 package org.opennms.core.ipc.twin.common;
 
 
-import java.io.IOException;
+import org.opennms.distributed.core.api.Identity;
 
 public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements LocalTwinSubscriber {
 
+    public LocalTwinSubscriberImpl(final Identity identity) {
+        super(identity);
+    }
 
     @Override
-    protected void sendRpcRequest(TwinRequestBean twinRequest) {
+    protected void sendRpcRequest(TwinRequest twinRequest) {
         // no need to send any RPC on local subscriber.
     }
 
     @Override
-    public void accept(TwinResponseBean twinResponse) {
-        super.accept(twinResponse);
-    }
-
-    @Override
-    public void close() throws IOException {
+    public void accept(TwinUpdate twinUpdate) {
+        super.accept(twinUpdate);
     }
 }
 

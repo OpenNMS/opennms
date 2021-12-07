@@ -40,18 +40,18 @@ import org.opennms.core.grpc.common.GrpcIpcServer;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.common.AbstractTwinPublisher;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
-import org.opennms.core.ipc.twin.common.TwinRequestBean;
-import org.opennms.core.ipc.twin.common.TwinResponseBean;
+import org.opennms.core.ipc.twin.common.TwinRequest;
+import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.grpc.common.MinionHeader;
 import org.opennms.core.ipc.twin.grpc.common.OpenNMSTwinIpcGrpc;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.core.logging.Logging;
+import org.opennms.distributed.core.api.Identity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.protobuf.ByteString;
 
 import io.grpc.stub.StreamObserver;
 
@@ -72,7 +72,7 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
     }
 
     @Override
-    protected void handleSinkUpdate(TwinResponseBean sinkUpdate) {
+    protected void handleSinkUpdate(TwinUpdate sinkUpdate) {
         sendTwinResponseForSink(mapTwinResponse(sinkUpdate));
     }
 
@@ -109,22 +109,9 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
 
 
     public void close() throws IOException {
-        super.close();
         grpcIpcServer.stopServer();
         LOG.info("Stopped Twin GRPC Server");
         twinRpcExecutor.shutdown();
-    }
-
-    private TwinResponseProto mapTwinResponse(TwinResponseBean twinResponseBean) {
-        TwinResponseProto.Builder builder = TwinResponseProto.newBuilder();
-        if (!Strings.isNullOrEmpty(twinResponseBean.getLocation())) {
-            builder.setLocation(twinResponseBean.getLocation());
-        }
-        builder.setConsumerKey(twinResponseBean.getKey());
-        if (twinResponseBean.getObject() != null) {
-            builder.setTwinObject(ByteString.copyFrom(twinResponseBean.getObject()));
-        }
-        return builder.build();
     }
 
     private class StreamHandler extends OpenNMSTwinIpcGrpc.OpenNMSTwinIpcImplBase {
@@ -137,11 +124,15 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
                 @Override
                 public void onNext(TwinRequestProto twinRequestProto) {
                     CompletableFuture.runAsync(() -> {
-                        TwinRequestBean twinRequestBean = mapTwinRequestProto(twinRequestProto);
-                        TwinResponseBean twinResponseBean = getTwin(twinRequestBean);
-                        TwinResponseProto twinResponseProto = mapTwinResponse(twinResponseBean);
-                        LOG.debug("Sent Twin response for key {} at location {}", twinRequestBean.getKey(), twinRequestBean.getLocation());
-                        sendTwinResponse(twinResponseProto, rpcStream);
+                        try {
+                            TwinRequest twinRequest = mapTwinRequestProto(twinRequestProto.toByteArray());
+                            TwinUpdate twinUpdate = getTwin(twinRequest);
+                            TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
+                            LOG.debug("Sent Twin response for key {} at location {}", twinRequest.getKey(), twinRequest.getLocation());
+                            sendTwinResponse(twinResponseProto, rpcStream);
+                        } catch (Exception e) {
+                            LOG.error("Exception while processing request", e);
+                        }
                     }, twinRpcExecutor);
                 }
 
@@ -170,10 +161,14 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
             }
             sinkStreamsByLocation.put(request.getLocation(), responseObserver);
             sinkStreamsBySystemId.put(request.getSystemId(), responseObserver);
-            getObjMap().forEach(((sessionKey, bytes) -> {
+
+            forEachSession(((sessionKey, twinTracker) -> {
                 if(sessionKey.location == null || sessionKey.location.equals(request.getLocation())) {
-                    TwinResponseBean twinResponseBean = new TwinResponseBean(sessionKey.key, sessionKey.location, bytes);
-                    TwinResponseProto twinResponseProto = mapTwinResponse(twinResponseBean);
+                    TwinUpdate twinUpdate = new TwinUpdate(sessionKey.key, sessionKey.location, twinTracker.getObj());
+                    twinUpdate.setSessionId(twinTracker.getSessionId());
+                    twinUpdate.setVersion(twinTracker.getVersion());
+                    twinUpdate.setPatch(false);
+                    TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
                     responseObserver.onNext(twinResponseProto);
                 }
             }));
@@ -183,15 +178,6 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
         public void sinkStreaming(org.opennms.core.ipc.twin.grpc.common.MinionHeader request,
                                   io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinResponseProto> responseObserver) {
              handleSinkStreamUpdate(request, responseObserver);
-        }
-
-        TwinRequestBean mapTwinRequestProto(TwinRequestProto twinRequestProto) {
-            TwinRequestBean twinRequestBean = new TwinRequestBean();
-            twinRequestBean.setKey(twinRequestProto.getConsumerKey());
-            if (!Strings.isNullOrEmpty(twinRequestProto.getLocation())) {
-                twinRequestBean.setLocation(twinRequestProto.getLocation());
-            }
-            return twinRequestBean;
         }
 
     }

@@ -30,8 +30,6 @@ package org.opennms.core.ipc.twin.jms.subscriber;
 
 import java.io.IOException;
 
-import com.google.common.base.Strings;
-import com.google.protobuf.InvalidProtocolBufferException;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
 import org.apache.camel.Endpoint;
@@ -45,10 +43,9 @@ import org.apache.camel.component.jms.JmsEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.spi.Synchronization;
 import org.opennms.core.ipc.twin.common.AbstractTwinSubscriber;
-import org.opennms.core.ipc.twin.common.TwinRequestBean;
-import org.opennms.core.ipc.twin.common.TwinResponseBean;
+import org.opennms.core.ipc.twin.common.TwinRequest;
+import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
-import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
@@ -81,25 +78,34 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
     }
 
     @Override
-    protected void sendRpcRequest(TwinRequestBean twinRequest) {
-        TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
-        LOG.trace("Sent RPC request for consumer key {} ", twinRequestProto.getConsumerKey());
-        template.asyncCallbackSendBody(endpoint, twinRequestProto.toByteArray(), new Synchronization() {
-            @Override
-            public void onComplete(Exchange exchange) {
-                try {
-                    byte[] response = exchange.getOut().getBody(byte[].class);
-                    accept(mapTwinResponseToProto(response));
-                } catch (Exception e) {
-                    LOG.error("Failed to process response", e);
+    protected void sendRpcRequest(TwinRequest twinRequest) {
+        try {
+            TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
+            LOG.trace("Sent RPC request for consumer key {} ", twinRequestProto.getConsumerKey());
+            template.asyncCallbackSendBody(endpoint, twinRequestProto.toByteArray(), new Synchronization() {
+                @Override
+                public void onComplete(Exchange exchange) {
+                    try {
+                        byte[] response = exchange.getOut().getBody(byte[].class);
+                        TwinUpdate twinUpdate = mapTwinResponseToProto(response);
+                        if (twinUpdate.getLocation() == null ||
+                                twinUpdate.getLocation().equals(getIdentity().getLocation())) {
+                            LOG.trace("Received TwinUpdate as RPC reply {}", twinUpdate);
+                            accept(twinUpdate);
+                        }
+                    } catch (Exception e) {
+                        LOG.error("Failed to process twin update for the key {} ", twinRequest.getKey(), e);
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Exchange exchange) {
-                // Nothing to do when there is a failure as we don't have any timeouts here.
-            }
-        });
+                @Override
+                public void onFailure(Exchange exchange) {
+                    // Nothing to do when there is a failure as we don't have any timeouts here.
+                }
+            });
+        } catch (Exception e) {
+            LOG.error("Exception while sending request with key {}", twinRequest.getKey());
+        }
     }
 
     public void init() throws Exception {
@@ -122,38 +128,15 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
         LOG.info("JMS Twin subscriber stopped");
     }
 
-    private TwinRequestProto mapTwinRequestToProto(TwinRequestBean twinRequest) {
-        TwinRequestProto.Builder builder = TwinRequestProto.newBuilder();
-        builder.setConsumerKey(twinRequest.getKey()).setLocation(getMinionIdentity().getLocation())
-                .setSystemId(getMinionIdentity().getId());
-        return builder.build();
-    }
-
-    private TwinResponseBean mapTwinResponseToProto(byte[] responseBytes) {
-        TwinResponseBean twinResponseBean = new TwinResponseBean();
-        try {
-            TwinResponseProto twinResponseProto = TwinResponseProto.parseFrom(responseBytes);
-
-            if (!Strings.isNullOrEmpty(twinResponseProto.getLocation())) {
-                twinResponseBean.setLocation(twinResponseProto.getLocation());
-            }
-            twinResponseBean.setKey(twinResponseProto.getConsumerKey());
-            if (twinResponseProto.getTwinObject() != null) {
-                twinResponseBean.setObject(twinResponseProto.getTwinObject().toByteArray());
-            }
-            return twinResponseBean;
-        } catch (InvalidProtocolBufferException e) {
-            LOG.error("Failed to parse response from proto", e);
-        }
-        return twinResponseBean;
-    }
-
     @Override
     public void process(Exchange exchange) throws Exception {
         byte[] sinkUpdateBytes = exchange.getIn().getBody(byte[].class);
-        TwinResponseBean twinResponseBean = mapTwinResponseToProto(sinkUpdateBytes);
-        LOG.trace("Received TwinResponse as sink update {}", twinResponseBean);
-        accept(twinResponseBean);
+        TwinUpdate twinUpdate = mapTwinResponseToProto(sinkUpdateBytes);
+        if (twinUpdate.getLocation() == null ||
+                twinUpdate.getLocation().equals(getIdentity().getLocation())) {
+            LOG.trace("Received TwinResponse as sink update {}", twinUpdate);
+            accept(twinUpdate);
+        }
     }
 
     private class SinkRouteBuilder extends RouteBuilder {
@@ -168,7 +151,7 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
         @Override
         public void configure() throws Exception {
             String queueName = String.format(TWIN_QUEUE_NAME_FORMAT, SystemInfoUtils.getInstanceId(), "Twin.Sink");
-            final JmsEndpoint endpoint = getContext().getEndpoint(String.format("queuingservice:%s",
+            final JmsEndpoint endpoint = getContext().getEndpoint(String.format("queuingservice:topic:%s",
                     queueName), JmsEndpoint.class);
             from(endpoint).setExchangePattern(ExchangePattern.InOnly)
                     .process(processor)

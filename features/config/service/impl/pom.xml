@@ -42,12 +42,6 @@
       </dependency>
       <!-- Dependencies used -->
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-config-model</artifactId>
-        <version>${project.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
         <version>${jackson2Version}</version>
@@ -134,10 +128,10 @@
         <type>pom</type>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-config-model</artifactId>
-        <version>${project.version}</version>
-        <scope>provided</scope>
+        <!-- We only need the apache common pool dependency. However, in order to hardcode the version in our side, it seems better to use the global one. -->
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>camel-dependencies</artifactId>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.features.distributed</groupId>
@@ -148,6 +142,11 @@
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
         <version>${jsonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>spring-web-dependencies</artifactId>
+        <type>pom</type>
       </dependency>
     </dependencies>
 </project>

@@ -28,11 +28,9 @@
 
 package org.opennms.core.ipc.twin.grpc;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.opennms.core.grpc.common.GrpcIpcServer;
 import org.opennms.core.grpc.common.GrpcIpcServerBuilder;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
@@ -48,52 +46,64 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Hashtable;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class GrpcTwinIT extends AbstractTwinBrokerIT {
 
-    protected GrpcTwinSubscriber subscriber;
-    protected GrpcTwinPublisher publisher;
     protected ConfigurationAdmin configAdmin;
+
     protected int port;
 
     @Override
     protected TwinPublisher createPublisher() throws IOException {
-        GrpcIpcServer grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, "PT0S");
-        this.publisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(), grpcIpcServer);
+        final var grpcIpcServer = new GrpcIpcServerBuilder(this.configAdmin, this.port, "PT0S");
+
+        final var publisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(new MockMinionIdentity("Default")), grpcIpcServer);
         publisher.start();
+
         return publisher;
     }
 
     @Override
     protected TwinSubscriber createSubscriber(MinionIdentity identity) throws Exception {
-        MinionIdentity minionIdentity = new MockMinionIdentity("remote");
-        subscriber = new GrpcTwinSubscriber(minionIdentity, configAdmin, port);
+        final var minionIdentity = new MockMinionIdentity("remote");
+
+        final var subscriber = new GrpcTwinSubscriber(minionIdentity, this.configAdmin, this.port);
         subscriber.start();
+
         return subscriber;
+    }
+
+    protected Hashtable<String, Object> getServerConfig(final int port) {
+        final Hashtable<String, Object> serverConfig = new Hashtable<>();
+        serverConfig.put(GrpcIpcUtils.GRPC_PORT, String.valueOf(port));
+        serverConfig.put(GrpcIpcUtils.TLS_ENABLED, false);
+
+        return serverConfig;
+    }
+
+    protected Hashtable<String, Object> getClientConfig(final int port) {
+        final Hashtable<String, Object> clientConfig = new Hashtable<>();
+        clientConfig.put(GrpcIpcUtils.GRPC_PORT, String.valueOf(port));
+        clientConfig.put(GrpcIpcUtils.GRPC_HOST, "localhost");
+        clientConfig.put(GrpcIpcUtils.TLS_ENABLED, false);
+
+        return clientConfig;
     }
 
     @Before
     public void setup() throws Exception {
-        Hashtable<String, Object> serverConfig = new Hashtable<>();
-        port = getAvailablePort(new AtomicInteger(GrpcIpcUtils.DEFAULT_TWIN_GRPC_PORT), 9090);
-        serverConfig.put(GrpcIpcUtils.GRPC_PORT, String.valueOf(port));
-        serverConfig.put(GrpcIpcUtils.TLS_ENABLED, false);
-        Hashtable<String, Object> clientConfig = new Hashtable<>();
-        clientConfig.put(GrpcIpcUtils.GRPC_PORT, String.valueOf(port));
+        this.port = getAvailablePort(GrpcIpcUtils.DEFAULT_TWIN_GRPC_PORT, 9090);
 
-        clientConfig.put(GrpcIpcUtils.GRPC_HOST, "localhost");
-        clientConfig.put(GrpcIpcUtils.TLS_ENABLED, false);
-        configAdmin = mock(ConfigurationAdmin.class, Mockito.RETURNS_DEEP_STUBS);
-        when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_SERVER_PID).getProperties()).thenReturn(serverConfig);
-        when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_CLIENT_PID).getProperties()).thenReturn(clientConfig);
-        super.setup();
-    }
+        final Hashtable<String, Object> serverConfig = this.getServerConfig(this.port);
+        final Hashtable<String, Object> clientConfig = this.getClientConfig(this.port);
 
-    public void setupAbstract() throws Exception {
+        this.configAdmin = mock(ConfigurationAdmin.class, Mockito.RETURNS_DEEP_STUBS);
+        when(this.configAdmin.getConfiguration(GrpcIpcUtils.GRPC_SERVER_PID).getProperties()).thenReturn(serverConfig);
+        when(this.configAdmin.getConfiguration(GrpcIpcUtils.GRPC_CLIENT_PID).getProperties()).thenReturn(clientConfig);
+
         super.setup();
     }
 
@@ -104,20 +114,14 @@ public class GrpcTwinIT extends AbstractTwinBrokerIT {
         super.testPublisherRestart();
     }
 
-    @After
-    public void destroy() throws IOException {
-        subscriber.close();
-        publisher.close();
-    }
-
-
-    static int getAvailablePort(final AtomicInteger current, final int max) {
-        while (current.get() < max) {
-            try (final ServerSocket socket = new ServerSocket(current.get())) {
+    static int getAvailablePort(final int min, final int max) {
+        int current = min;
+        while (current < max) {
+            try (final ServerSocket socket = new ServerSocket(current)) {
                 return socket.getLocalPort();
             } catch (final Throwable e) {
+                current++;
             }
-            current.incrementAndGet();
         }
         throw new IllegalStateException("Can't find an available network port");
     }

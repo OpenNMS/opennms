@@ -76,14 +76,15 @@ public final class TwinMessageProto {
       "(\t\022\020\n\010location\030\003 \001(\t\0228\n\014tracing_info\030\004 \003" +
       "(\0132\".TwinRequestProto.TracingInfoEntry\0322" +
       "\n\020TracingInfoEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value" +
-      "\030\002 \001(\t:\0028\001\"\322\001\n\021TwinResponseProto\022\024\n\014cons" +
+      "\030\002 \001(\t:\0028\001\"\220\002\n\021TwinResponseProto\022\024\n\014cons" +
       "umer_key\030\001 \001(\t\022\023\n\013twin_object\030\002 \001(\014\022\021\n\ts" +
-      "ystem_id\030\003 \001(\t\022\020\n\010location\030\004 \001(\t\0229\n\014trac" +
-      "ing_info\030\005 \003(\0132#.TwinResponseProto.Traci" +
-      "ngInfoEntry\0322\n\020TracingInfoEntry\022\013\n\003key\030\001" +
-      " \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B5\n\037org.opennms.c" +
-      "ore.ipc.twin.modelB\020TwinMessageProtoP\001b\006" +
-      "proto3"
+      "ystem_id\030\003 \001(\t\022\020\n\010location\030\004 \001(\t\022\027\n\017is_p" +
+      "atch_object\030\005 \001(\010\022\022\n\nsession_id\030\006 \001(\t\022\017\n" +
+      "\007version\030\007 \001(\005\0229\n\014tracing_info\030\010 \003(\0132#.T" +
+      "winResponseProto.TracingInfoEntry\0322\n\020Tra" +
+      "cingInfoEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(" +
+      "\t:\0028\001B5\n\037org.opennms.core.ipc.twin.model" +
+      "B\020TwinMessageProtoP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -114,7 +115,7 @@ public final class TwinMessageProto {
     internal_static_TwinResponseProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TwinResponseProto_descriptor,
-        new java.lang.String[] { "ConsumerKey", "TwinObject", "SystemId", "Location", "TracingInfo", });
+        new java.lang.String[] { "ConsumerKey", "TwinObject", "SystemId", "Location", "IsPatchObject", "SessionId", "Version", "TracingInfo", });
     internal_static_TwinResponseProto_TracingInfoEntry_descriptor =
       internal_static_TwinResponseProto_descriptor.getNestedTypes().get(0);
     internal_static_TwinResponseProto_TracingInfoEntry_fieldAccessorTable = new

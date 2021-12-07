@@ -12,7 +12,7 @@
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
 
-  <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
+  <bean id="tsEvaluateMetricRegistry" class="com.codahale.metrics.MetricRegistry" />
 
   <bean id="dumpStatsFrequency" class="java.lang.Integer">
         <constructor-arg type="java.lang.String" value="${org.opennms.evaluate.dump_stats_frequency:5}" />
@@ -23,7 +23,7 @@
   </bean>
 
   <bean id="evaluateStats" class="org.opennms.netmgt.collection.persistence.evaluate.EvaluateStats">
-      <constructor-arg index="0" ref="metricRegistry" />
+      <constructor-arg index="0" ref="tsEvaluateMetricRegistry" />
       <constructor-arg index="1" ref="dumpStatsFrequency" />  
       <constructor-arg index="2" ref="dumpCacheFrequency" />  
   </bean>

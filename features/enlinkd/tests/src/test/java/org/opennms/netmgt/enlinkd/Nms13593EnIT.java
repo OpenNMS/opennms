@@ -147,7 +147,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
             printLldpLink(link);
             assertEquals(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, link.getLldpPortIdSubType());
             assertEquals(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
-            if (link.getNode().getId() == zsr001.getId()) {
+            if (link.getNode().getId().intValue() == zsr001.getId().intValue()) {
                 switch (link.getLldpLocalPortNum()) {
                     case 1:
                         assertEquals(104906753,link.getLldpPortIfindex().intValue());
@@ -180,7 +180,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
                         fail();
                         break;
                 }
-            } else if (link.getNode().getId() == zsr002.getId()) {
+            } else if (link.getNode().getId().intValue() == zsr002.getId().intValue()) {
                 switch (link.getLldpLocalPortNum()) {
                     case 1:
                         assertEquals(104906753,link.getLldpPortIfindex().intValue());
@@ -263,25 +263,26 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
         assertEquals(1,j);
 
         for (OnmsTopologyEdge e : topology.getEdges()) {
-            assertEquals("ZHBGO1Zsr001",e.getSource().getVertex().getLabel());
-            assertEquals("ZHBGO1Zsr002",e.getTarget().getVertex().getLabel());
-            assertEquals(e.getSource().getIfname(),e.getTarget().getIfname());
+            System.err.println(e.getSource().getToolTipText());
+            System.err.println(e.getTarget().getToolTipText());
+
+            assertEquals("ZHBGO1Zsr001", e.getSource().getVertex().getLabel());
+            assertEquals("ZHBGO1Zsr002", e.getTarget().getVertex().getLabel());
+            assertEquals(e.getSource().getIfname(), e.getTarget().getIfname());
             assertEquals(e.getSource().getIfindex().intValue(),e.getTarget().getIfindex().intValue());
             switch (e.getSource().getIfindex()) {
                 case 105037825:
-                    assertEquals("3/2/c5/1",e.getSource().getIfname());
+                    assertEquals("3/2/c5/1", e.getSource().getIfname());
+                    assertEquals("3/2/c5/1", e.getTarget().getIfname());
                     break;
                 case 105070593:
-                    assertEquals("3/2/c6/1",e.getSource().getIfname());
+                    assertEquals("3/2/c6/1", e.getSource().getIfname());
+                    assertEquals("3/2/c6/1", e.getTarget().getIfname());
                     break;
                 default:
                     fail();
                     break;
             }
-            System.err.println(e.getSource().getIfindex());
-            System.err.println(e.getTarget().getIfindex());
-            System.err.println(e.getSource().getIfname());
-            System.err.println(e.getTarget().getIfname());
         }
 
 

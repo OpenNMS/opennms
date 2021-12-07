@@ -28,6 +28,19 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
+import org.opennms.features.config.dao.api.ConfigConverter;
+import org.opennms.features.config.dao.api.ConfigData;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -36,21 +49,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
-import org.opennms.features.config.dao.api.ConfigData;
-import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.dao.api.ConfigSchema;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
-import org.opennms.features.config.service.api.ConfigUpdateInfo;
-import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.features.config.service.api.JsonAsString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * It is a minimal mock for CM use. If configFile is passed, it will read and return as configEntity.
@@ -68,17 +66,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public void registerSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException {
-
-    }
-
-    @Override
     public void registerConfigDefinition(String configName, ConfigDefinition configDefinition) {
-
-    }
-
-    @Override
-    public void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException {
 
     }
 
@@ -88,30 +76,19 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public Map<String, ConfigSchema<?>> getAllConfigSchema() {
+    public Map<String, ConfigDefinition> getAllConfigDefinition() {
         return null;
     }
 
     @Override
-    public Optional<ConfigSchema<?>> getRegisteredSchema(String configName) {
-        ConfigSchema schema = null;
-        try {
-            if ("discovery".equals(configName)) {
-                XmlConverter converter = new XmlConverter("discovery-configuration.xsd", "discovery-configuration");
-                schema = new ConfigSchema(configName, XmlConverter.class, converter);
-            } else if ("notifd".equals(configName)) {
-                XmlConverter converter = new XmlConverter("notifd-configuration.xsd", "notifd-configuration");
-                schema = new ConfigSchema(configName, XmlConverter.class, converter);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Optional.of(schema);
-    }
-
-    @Override
     public Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) {
-        return Optional.empty();
+        ConfigDefinition def = null;
+        if ("provisiond".equals(configName)) {
+            def = XsdHelper.buildConfigDefinition("provisiond", "provisiond-configuration.xsd",
+                    "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
+        }
+
+        return Optional.ofNullable(def);
     }
 
     @Override
@@ -129,8 +106,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public void updateConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
-        Optional<ConfigSchema<?>> schema = this.getRegisteredSchema(configName);
-        configOptional = Optional.of(schema.get().getConverter().jsonToXml(configObject.toString()));
+        configOptional = Optional.of(configObject.toString());
     }
 
     @Override
@@ -139,12 +115,13 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public String getJSONStrConfiguration(String configName, String configId) throws IOException {
-        return null;
+    public Optional<String> getJSONStrConfiguration(String configName, String configId) throws IOException {
+        String xmlStr = this.getXmlConfiguration(configName, configId).get();
+        ConfigConverter converter = XsdHelper.getConverter(this.getRegisteredConfigDefinition(configName).get());
+        return Optional.ofNullable(converter.xmlToJson(xmlStr));
     }
 
-    @Override
-    public Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
+    private Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
         if (configOptional != null) {
             return configOptional;
         }
