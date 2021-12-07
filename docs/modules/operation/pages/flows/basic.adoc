@@ -2,7 +2,7 @@
 [[flows-basic]]
 = Start here: basic flows setup
 
-This section describes how to get started with flows in a basic setup to collect, enrich (classify), persist, and visualize flows.
+This section describes how to get started with flows to collect, enrich (classify), persist, and visualize flows.
 
 == Requirements
 
