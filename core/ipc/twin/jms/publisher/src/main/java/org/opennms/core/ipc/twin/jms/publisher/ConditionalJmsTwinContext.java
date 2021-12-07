@@ -29,6 +29,7 @@
 package org.opennms.core.ipc.twin.jms.publisher;
 
 import org.opennms.core.ipc.twin.api.TwinStrategy;
+import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ConditionContext;
@@ -56,7 +57,9 @@ public class ConditionalJmsTwinContext {
         @Override
         public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
             final boolean enabled = JMS.equals(TwinStrategy.getTwinStrategy());
-            LOG.debug("Enable JMS Twin: {}", enabled);
+            try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
+                LOG.debug("Enable Jms Twin : {}", enabled);
+            }
             return enabled;
         }
     }

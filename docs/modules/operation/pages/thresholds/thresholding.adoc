@@ -17,7 +17,7 @@ This is the data against which {page-component-title} applies thresholds.
 Thresholds trigger events when a specified threshold value is met.
 You can further create notifications and alarms for threshold events.
 
-image:thresholding/thresholding-flow.png[]
+image::thresholding/thresholding-flow.png[]
 
 == What triggers a thresholding event?
 

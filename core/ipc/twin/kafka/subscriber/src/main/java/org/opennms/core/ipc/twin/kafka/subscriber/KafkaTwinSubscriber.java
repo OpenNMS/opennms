@@ -51,6 +51,7 @@ import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.kafka.common.KafkaConsumerRunner;
 import org.opennms.core.ipc.twin.kafka.common.Topic;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,8 +72,10 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
     private KafkaProducer<String, byte[]> producer;
     private KafkaConsumerRunner consumer;
 
-    public KafkaTwinSubscriber(final MinionIdentity identity, final KafkaConfigProvider kafkaConfigProvider) {
-        super(identity);
+    public KafkaTwinSubscriber(final MinionIdentity identity,
+                               final KafkaConfigProvider kafkaConfigProvider,
+                               final TracerRegistry tracerRegistry) {
+        super(identity, tracerRegistry);
         this.kafkaConfigProvider = Objects.requireNonNull(kafkaConfigProvider);
     }
 

@@ -33,6 +33,9 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Properties;
 
+import io.opentracing.References;
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -47,13 +50,16 @@ import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.KafkaTwinConstants;
 import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.Utils;
+import org.opennms.core.ipc.twin.api.TwinStrategy;
 import org.opennms.core.ipc.twin.common.AbstractTwinPublisher;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
 import org.opennms.core.ipc.twin.common.TwinRequest;
 import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.kafka.common.KafkaConsumerRunner;
 import org.opennms.core.ipc.twin.kafka.common.Topic;
-import org.opennms.distributed.core.api.Identity;
+import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
+import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,13 +80,14 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     private KafkaProducer<String, byte[]> producer;
     private KafkaConsumerRunner consumerRunner;
 
-    public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber) {
-        this(localTwinSubscriber, new OnmsKafkaConfigProvider(KafkaTwinConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
+    public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber, TracerRegistry tracerRegistry) {
+        this(localTwinSubscriber, new OnmsKafkaConfigProvider(KafkaTwinConstants.KAFKA_CONFIG_SYS_PROP_PREFIX), tracerRegistry);
     }
 
     public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber,
-                              final KafkaConfigProvider kafkaConfigProvider) {
-        super(localTwinSubscriber);
+                              final KafkaConfigProvider kafkaConfigProvider,
+                              final TracerRegistry tracerRegistry) {
+        super(localTwinSubscriber, tracerRegistry);
         this.kafkaConfigProvider = Objects.requireNonNull(kafkaConfigProvider);
     }
 
@@ -94,26 +101,27 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
         kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
         kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
         kafkaConfig.putAll(kafkaConfigProvider.getProperties());
+        try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
+            LOG.debug("Initialized kafka twin publisher with {}", kafkaConfig);
+            this.producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
 
-        LOG.debug("Initialized kafka twin publisher with {}", kafkaConfig);
-        this.producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
+            final KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
+            consumer.subscribe(ImmutableList.<String>builder()
+                    .add(Topic.request())
+                    .build());
 
-        final KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
-        consumer.subscribe(ImmutableList.<String>builder()
-                                        .add(Topic.request())
-                                        .build());
-
-        this.consumerRunner = new KafkaConsumerRunner(consumer, this::handleMessage, "twin-publisher");
+            this.consumerRunner = new KafkaConsumerRunner(consumer, this::handleMessage, "twin-publisher");
+        }
     }
 
     public void close() throws IOException {
-
-        if (this.consumerRunner != null) {
-            this.consumerRunner.close();
-        }
-
-        if (this.producer != null) {
-            this.producer.close();
+        try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
+            if (this.consumerRunner != null) {
+                this.consumerRunner.close();
+            }
+            if (this.producer != null) {
+                this.producer.close();
+            }
         }
     }
 
@@ -140,8 +148,14 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {
         try {
             final TwinRequest request = mapTwinRequestProto(record.value());
-            final var response = this.getTwin(request);
-            this.handleSinkUpdate(response);
+            String tracingOperationKey = generateTracingOperationKey(request.getLocation(), request.getKey());
+            Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
+                    tracingOperationKey, request.getTracingInfo(), References.FOLLOWS_FROM);
+            try (Scope scope = spanBuilder.startActive(true)) {
+                final var response = this.getTwin(request);
+                addTracingInfo(scope.span(), response);
+                this.handleSinkUpdate(response);
+            }
         } catch (Exception e) {
             LOG.error("Exception while processing request", e);
         }

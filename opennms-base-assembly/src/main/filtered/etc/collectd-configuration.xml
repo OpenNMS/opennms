@@ -88,6 +88,21 @@
          <parameter key="thresholding-enabled" value="true"/>
       </service>
    </package>
+   <package name="vmware7" remote="false">
+      <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware7')</filter>
+      <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-VirtualMachine7"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-HostSystem7"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-ESX-HostSystem"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+   </package>
    <package name="example1" remote="false">
       <filter>IPADDR != '0.0.0.0'</filter>
       <include-range begin="1.1.1.1" end="254.254.254.254"/>
@@ -162,3 +177,4 @@
    <collector service="JMX-Cassandra-Newts" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
    <collector service="JMX-Kafka" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
 </collectd-configuration>
+
