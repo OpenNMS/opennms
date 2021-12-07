@@ -28,5 +28,5 @@
   <!-- FIXME: dirty hack for unblock CM2 MUST DELETE depends-on  -->
   <bean name="forceUpgradeExecutor" class="org.opennms.config.upgrade.ForceUpgradeExecutor"/>
   <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" depends-on="forceUpgradeExecutor"/>
-
+  <bean id="wmiPeerFactory" class="org.opennms.netmgt.config.WmiPeerFactory" depends-on="forceUpgradeExecutor" factory-method="getInstance"/>
 </beans>
