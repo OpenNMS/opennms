@@ -216,7 +216,7 @@ public class Definition implements Serializable {
     }
 
     public void setExcludeUrls(final List<ExcludeUrl> excludeUrls) {
-        if (excludeUrls == this.excludeUrls) return;
+        if (excludeUrls.equals(this.excludeUrls)) return;
         this.excludeUrls.clear();
         if (excludeUrls != null) this.excludeUrls.addAll(excludeUrls);
     }

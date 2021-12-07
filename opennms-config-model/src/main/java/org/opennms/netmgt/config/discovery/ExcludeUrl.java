@@ -78,8 +78,8 @@ public class ExcludeUrl implements Serializable {
         m_url = url;
     }
 
-    public Optional<String> getUrl() {
-        return Optional.ofNullable(m_url);
+    public String getUrl() {
+        return m_url;
     }
 
     public void setUrl(final String url) {

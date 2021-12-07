@@ -41,7 +41,12 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.soa.ServiceRegistry;
-import org.opennms.netmgt.config.discovery.*;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.ExcludeRange;
+import org.opennms.netmgt.config.discovery.ExcludeUrl;
+import org.opennms.netmgt.config.discovery.IncludeRange;
+import org.opennms.netmgt.config.discovery.IncludeUrl;
+import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.discovery.DiscoveryTaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
