@@ -33,6 +33,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -42,10 +43,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
+import org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +74,10 @@ public class DiscoveryConfigurationLocationMigratorOfflineTest {
         task.postExecute();
 
         final File configFile = new File(m_tempFolder.getRoot(), "etc/discovery-configuration.xml");
-        final DiscoveryConfiguration discoveryConfiguration = JaxbUtils.unmarshal(DiscoveryConfiguration.class, new FileReader(configFile));
+        ConfigurationManagerServiceMock mock = new ConfigurationManagerServiceMock();
+        mock.setConfigFile(configFile.toString());
+        Optional<String> jsonStr = mock.getJSONStrConfiguration("discovery", "default");
+        final DiscoveryConfiguration discoveryConfiguration = ConfigConvertUtil.jsonToObject(jsonStr.get(), DiscoveryConfiguration.class);
         Assert.assertNotNull(discoveryConfiguration);
         Assert.assertEquals(3, discoveryConfiguration.getIncludeRanges().size());
         Assert.assertEquals(3, discoveryConfiguration.getExcludeRanges().size());

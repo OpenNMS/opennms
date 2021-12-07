@@ -42,9 +42,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
-@XmlRootElement(name = "include-range")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("discovery-configuration.xsd")
 public class IncludeRange implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -52,7 +49,6 @@ public class IncludeRange implements Serializable {
      * The monitoring location where this include range
      *  will be executed.
      */
-    @XmlAttribute(name = "location")
     private String location;
 
     /**
@@ -61,23 +57,19 @@ public class IncludeRange implements Serializable {
      *  address, it is tried again for the specified number of retries. This
      *  retry count overrides the default.
      */
-    @XmlAttribute(name = "retries")
     private Integer retries;
 
     /**
      * The timeout on each poll for this address range. This
      *  timeout overrides the default.
      */
-    @XmlAttribute(name = "timeout")
     private Long timeout;
 
-    @XmlAttribute(name = "foreign-source")
     private String foreignSource;
 
     /**
      * Starting address of the range.
      */
-    @XmlElement(name = "begin", required = true)
     private String begin;
 
     /**
@@ -85,7 +77,6 @@ public class IncludeRange implements Serializable {
      *  address is greater than the ending address, they are
      *  swapped.
      */
-    @XmlElement(name = "end", required = true)
     private String end;
 
     public IncludeRange() {

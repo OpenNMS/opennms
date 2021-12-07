@@ -28,29 +28,38 @@
 
 package org.opennms.netmgt.config.discovery;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.opennms.core.xml.ValidateUsing;
-
-@XmlRootElement(name="definition")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("discovery-configuration.xsd")
 public class Definition implements Serializable {
+//    public class Detectors{
+//        @JsonProperty(value = "detector", required = true)
+//        private List<Detector> detector = new ArrayList<>();
+//        private String tmp = "100";
+//
+//        public String getTmp() {
+//            return tmp;
+//        }
+//
+//        public void setTmp(String tmp) {
+//            this.tmp = tmp;
+//        }
+//
+//        public List<Detector> getDetector() {
+//            return detector;
+//        }
+//
+//        public void setDetector(List<Detector> detector) {
+//            this.detector = detector;
+//        }
+//
+//    }
 
     private static final long serialVersionUID = 5369200192316960658L;
 
-    @XmlAttribute(name = "location")
     private String location;
 
     /**
@@ -59,46 +68,44 @@ public class Definition implements Serializable {
      *  to an address, it is tried again for the specified number of
      *  retries. This retry count overrides the default.
      */
-    @XmlAttribute(name = "retries")
     private Integer retries;
 
     /**
      * The timeout on each poll for this specific
      *  address. This timeout overrides the default.
      */
-    @XmlAttribute(name = "timeout")
     private Long timeout;
 
-    @XmlAttribute(name = "foreign-source")
     private String foreignSource;
 
-    @XmlElementWrapper(name = "detectors")
-    @XmlElement(name = "detector")
-    private List<Detector> detectors = new ArrayList<>();
+    @JsonProperty("detectors")
+    // temp testing for align with xml format
+    private Map<String, List<Detector>> detectorsMap = new HashMap();
+
     /**
      * the specific addresses for discovery
      */
-    @XmlElement(name = "specific")
+    @JsonProperty("specific")
     private List<Specific> specifics = new ArrayList<>();
 
     /**
      * the range of addresses for discovery
      */
-    @XmlElement(name = "include-range")
+    @JsonProperty("include-range")
     private List<IncludeRange> includeRanges = new ArrayList<>();
 
     /**
      * the range of addresses to be excluded from the
      * discovery
      */
-    @XmlElement(name = "exclude-range")
+    @JsonProperty("exclude-range")
     private List<ExcludeRange> excludeRanges = new ArrayList<>();
 
     /**
      * a file URL holding specific addresses to be
      *  polled
      */
-    @XmlElement(name = "include-url")
+    @JsonProperty("include-url")
     private List<IncludeUrl> includeUrls = new ArrayList<>();
 
 
@@ -106,6 +113,7 @@ public class Definition implements Serializable {
         return Optional.ofNullable(location);
     }
 
+    @JsonIgnore
     public String getLocationName() {
         return location;
     }
@@ -174,16 +182,21 @@ public class Definition implements Serializable {
         this.excludeRanges.add(excludeRange);
     }
 
+    @JsonIgnore
     public List<Detector> getDetectors() {
-        return detectors;
+        return detectorsMap.get("detector");
     }
 
+    @JsonIgnore
     public void setDetectors(List<Detector> detectors) {
-        this.detectors = detectors;
+        this.detectorsMap.put("detector", detectors);
     }
 
     public void addDetector(Detector detector) {
-        this.detectors.add(detector);
+        if(!detectorsMap.containsKey("detector"))
+            detectorsMap.put("detector", new ArrayList<>());
+
+        this.detectorsMap.get("detector").add(detector);
     }
 
     public List<IncludeUrl> getIncludeUrls() {
@@ -213,11 +226,11 @@ public class Definition implements Serializable {
                 Objects.equals(specifics, that.specifics) &&
                 Objects.equals(includeRanges, that.includeRanges) &&
                 Objects.equals(excludeRanges, that.excludeRanges) &&
-                Objects.equals(detectors, that.detectors);
+                Objects.equals(detectorsMap.get("detector"), that.detectorsMap.get("detector"));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, specifics, includeRanges, excludeRanges, detectors);
+        return Objects.hash(location, specifics, includeRanges, excludeRanges, detectorsMap.get("detector"));
     }
 }

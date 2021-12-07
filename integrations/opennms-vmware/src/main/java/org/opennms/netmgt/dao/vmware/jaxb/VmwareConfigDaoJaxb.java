@@ -28,17 +28,15 @@
 
 package org.opennms.netmgt.dao.vmware.jaxb;
 
-import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.PostConstruct;
 
 /**
  * The Class VmwareConfigDaoJaxb

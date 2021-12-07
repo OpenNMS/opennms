@@ -26,18 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.discovery;
+package org.opennms.features.config.convert;
+
+import org.junit.runners.Parameterized;
+import org.opennms.netmgt.config.discovery.*;
 
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
-
-public class DefinitionTest extends XmlTestNoCastor<Definition> {
-    public DefinitionTest(Definition sampleObject, Object sampleXml) {
-        super(sampleObject, sampleXml, "src/main/resources/xsds/discovery-configuration.xsd");
+public class DefinitionTest extends CmConfigTest<Definition> {
+    public DefinitionTest(Definition sampleObject, String sampleXml) {
+        super(sampleObject, sampleXml, "discovery-configuration.xsd", "definition");
     }
 
     @Parameterized.Parameters

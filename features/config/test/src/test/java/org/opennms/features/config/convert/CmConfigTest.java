@@ -30,12 +30,11 @@ package org.opennms.features.config.convert;
 
 import com.atlassian.oai.validator.report.ValidationReport;
 import org.eclipse.persistence.jpa.jpql.Assert;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.beans.SamePropertyValuesAs;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
@@ -43,8 +42,6 @@ import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Parameterized.class)
 abstract public class CmConfigTest<T> {
@@ -68,13 +65,13 @@ abstract public class CmConfigTest<T> {
     @Test
     public void xmlToObjectWithCompare() throws IOException {
         Object object = ConfigConvertUtil.jsonToObject(getJsonStr(), objectClass);
-        assertThat(simpleObject, new SamePropertyValuesAs(object));
+        MatcherAssert.assertThat(simpleObject, new SamePropertyValuesAs(object));
     }
 
     @Test
     public void jsonValidation() throws IOException {
         ValidationReport report = configDefinition.validate(getJsonStr());
-        Assert.isFalse(report.hasErrors(), "It should pass validation.");
+        Assert.isFalse(report.hasErrors(), "It should pass validation. JSON: " + getJsonStr() + " \nMessages: " + report.getMessages());
     }
 
     @Test

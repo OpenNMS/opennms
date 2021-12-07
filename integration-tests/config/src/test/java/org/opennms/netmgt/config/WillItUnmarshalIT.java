@@ -218,11 +218,9 @@ public class WillItUnmarshalIT {
         addFile(Source.CLASSPATH, "/database-schema.xml", DatabaseSchema.class, true, null);
         addFile(Source.CONFIG, "datacollection-config.xml", DatacollectionConfig.class, true, null);
         addFile(Source.CONFIG, "destinationPaths.xml", DestinationPaths.class, true, null);
-        addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, false, null);
         addFile(Source.CONFIG, "drools-northbounder-configuration.xml", DroolsNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "elastic-credentials.xml", ElasticCredentials.class, true, null);
         addFile(Source.CONFIG, "email-northbounder-configuration.xml", EmailNorthbounderConfig.class, true, null);
-        addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, false, null);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, true, null);
         addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, true, null);
         addFile(Source.CONFIG, "geoip-adapter-configuration.xml", GeoIpConfig.class, false, null);
@@ -233,7 +231,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "javamail-configuration.xml", JavamailConfiguration.class, false, null);
         addFile(Source.CONFIG, "jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class, true, null);
         addFile(Source.CONFIG, "jms-northbounder-configuration.xml", JmsNorthbounderConfig.class, true, null);
-        addFile(Source.CONFIG, "jmx-config.xml", JmxConfig.class, true, null);
         addFile(Source.CONFIG, "jmx-datacollection-config.xml", JmxDatacollectionConfig.class, true, null);
         addFile(Source.CONFIG, "ksc-performance-reports.xml", ReportsList.class, true, null);
         addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, false, null);
@@ -243,8 +240,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, false, null);
         addFile(Source.CONFIG, "poll-outages.xml", Outages.class, true, null);
         addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, true, null);
-        // moved to CmWillItUnmarshalIT
-        //addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, false, null);
         addFile(Source.CONFIG, "rancid-configuration.xml", RancidConfiguration.class, true, null);
         addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, true, null);
         addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, false, null);
@@ -275,17 +270,14 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, false, null);
         addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, false, null);
         addFile(Source.CONFIG, "vmware-cim-datacollection-config.xml", VmwareCimDatacollectionConfig.class, true, null);
-        addFile(Source.CONFIG, "vmware-config.xml", VmwareConfig.class, false, null);
         addFile(Source.CONFIG, "vmware-datacollection-config.xml", VmwareDatacollectionConfig.class, false, null);
         addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, true, null);
         addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, false, null);
         addFile(Source.CONFIG, "wsman-asset-adapter-configuration.xml", WsManAssetAdapterConfiguration.class, true, null);
         addFile(Source.CONFIG, "wsman-config.xml", WsmanConfig.class, true, null);
-
         addFile(Source.EXAMPLE, "collectd-configuration.xml", CollectdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "destinationPaths.xml", DestinationPaths.class, false, null);
         addFile(Source.EXAMPLE, "devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class, false, null);
-        addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class, false, null);
@@ -313,7 +305,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "rancid-configuration.xml", RancidConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "rws-configuration.xml", RwsConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "scriptd-configuration.xml", ScriptdConfiguration.class, false, null);
-        addFile(Source.EXAMPLE, "snmp-config.xml", SnmpConfig.class, false, null);
         addFile(Source.EXAMPLE, "surveillance-views.xml", SurveillanceViewConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "threshd-configuration.xml", ThreshdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "thresholds.xml", ThresholdingConfig.class, false, null);

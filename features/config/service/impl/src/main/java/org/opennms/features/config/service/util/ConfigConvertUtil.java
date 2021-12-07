@@ -28,6 +28,7 @@
 
 package org.opennms.features.config.service.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -46,6 +47,7 @@ public class ConfigConvertUtil {
         public ObjectMapper makeObject() {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.registerModule(new Jdk8Module())
+                    .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
                     .setPropertyNamingStrategy(new PropertyNamingStrategies.KebabCaseStrategy());
         }
     }

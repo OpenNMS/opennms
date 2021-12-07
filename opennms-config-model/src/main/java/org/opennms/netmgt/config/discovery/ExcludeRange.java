@@ -44,29 +44,23 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 
 import com.google.common.base.MoreObjects;
 
-@XmlRootElement(name = "exclude-range")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("discovery-configuration.xsd")
 public class ExcludeRange implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
      * Starting address of the range.
      */
-    @XmlElement(name = "begin", required = true)
     private String begin;
 
     /**
      * Ending address of the range.
      */
-    @XmlElement(name = "end", required = true)
     private String end;
 
     /**
      * The monitoring location where this exclude range
      *  will be excluded
      */
-    @XmlAttribute(name = "location")
     private String location;
 
 

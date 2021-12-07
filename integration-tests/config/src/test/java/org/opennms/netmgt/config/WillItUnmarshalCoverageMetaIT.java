@@ -28,18 +28,9 @@
 
 package org.opennms.netmgt.config;
 
-import static org.junit.Assert.assertTrue;
-import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -48,9 +39,13 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableList;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.*;
+
+import static org.junit.Assert.assertTrue;
+import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory;
 
 /**
  * This is a meta test, testing the coverage of {@link WillItUnmarshalIT}.
@@ -134,6 +129,15 @@ public class WillItUnmarshalCoverageMetaIT {
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/Sudo.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "log4j2.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "opennms-activemq.xml"));
+
+        // list of config file moved to CmWillItUnmarshalIT
+        ignoreFile(new File(getDaemonEtcDirectory(), "examples/discovery-configuration.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "discovery-configuration.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "enlinkd-configuration.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "examples/snmp-config.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "jmx-config.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "vmware-config.xml"));
+
         LOG.debug("FILES.size() = {}", FILES.size());
     }
     

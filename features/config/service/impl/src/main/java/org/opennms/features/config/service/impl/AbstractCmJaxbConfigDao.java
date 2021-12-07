@@ -28,7 +28,6 @@
 
 package org.opennms.features.config.service.impl;
 
-import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;

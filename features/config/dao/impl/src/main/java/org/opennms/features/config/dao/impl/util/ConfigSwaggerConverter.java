@@ -147,7 +147,8 @@ public class ConfigSwaggerConverter {
                             if (resV.getContent() != null) {
                                 resV.getContent().forEach((ck, cv) -> {
                                     if (cv.getSchema().get$ref() != null) {
-                                        cv.getSchema().set$ref(prefix + "schema/" + configName + cv.getSchema().get$ref());
+
+                                        cv.getSchema().set$ref(prefix + "/schema/" + configName + cv.getSchema().get$ref());
                                     }
                                 });
                             }
@@ -156,7 +157,7 @@ public class ConfigSwaggerConverter {
                     if (oper.getRequestBody() != null && oper.getRequestBody().getContent() != null) {
                         oper.getRequestBody().getContent().forEach((ck, cv) -> {
                             if (cv.getSchema().get$ref() != null) {
-                                cv.getSchema().set$ref(prefix + "schema/" + configName + cv.getSchema().get$ref());
+                                cv.getSchema().set$ref(prefix + "/schema/" + configName + cv.getSchema().get$ref());
                             }
                         });
                     }
