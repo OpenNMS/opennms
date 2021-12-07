@@ -75,7 +75,6 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Export-Package>org.opennms.features.config.osgi.cm*;version=${project.version};-noimport:=true</Export-Package>
-                        <Karaf-Commands>org.opennms.features.config.osgi.cm*</Karaf-Commands>
                         <Bundle-Activator>org.opennms.features.config.osgi.cm.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>

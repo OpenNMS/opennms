@@ -30,6 +30,13 @@ package org.opennms.features.config.osgi.del;
 
 import java.util.Set;
 
+/**
+ * We hard code here the migrated services.
+ * This is necessary since we don't have access to CM when we need to make a decision about to whom to delegate to.
+ * We can't use the start of the pid name ("org.opennms") since features might be started from fileinstall before
+ * cm is available.
+ * This class can be deleted once we have moved all opennms plugins to cm.
+ */
 public class MigratedServices {
 
     final public static Set<String> PIDS =  Set.of(

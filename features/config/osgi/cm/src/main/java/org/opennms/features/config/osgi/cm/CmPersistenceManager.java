@@ -64,7 +64,8 @@ public class CmPersistenceManager implements PersistenceManager {
 
     @Override
     public boolean exists(final String pid) {
-        return loadInternal(pid).isPresent();
+        return MigratedServices.PIDS.contains(pid)
+            && loadInternal(pid).isPresent();
     }
 
     @Override

@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.configadmin</artifactId>
-            <version>1.9.14</version><!-- TODO: Patrick move Felix version somewhere? -->
+            <version>${felixConfigadminVersion}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

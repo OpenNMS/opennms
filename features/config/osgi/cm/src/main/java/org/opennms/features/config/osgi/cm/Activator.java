@@ -55,6 +55,7 @@ public class Activator implements BundleActivator {
         // Register CmPersistenceManager
         Hashtable<String, Object> config = new Hashtable<>();
         config.put("name", CmPersistenceManager.class.getName());
+
         LOG.info( "Registering service {}.", CmPersistenceManager.class.getSimpleName() );
         final ConfigurationManagerService cm = findService(context, ConfigurationManagerService.class);
         CmPersistenceManager persistenceManager = new CmPersistenceManager(cm);

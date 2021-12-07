@@ -28,9 +28,9 @@
 
 package org.opennms.features.config.osgi.del;
 
-import static org.opennms.features.config.osgi.del.LogUtil.logInfo;
-
 import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.felix.cm.PersistenceManager;
 import org.osgi.framework.BundleActivator;
@@ -38,6 +38,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 public class Activator implements BundleActivator {
+
+    private final static Logger LOG = Logger.getLogger(Activator.class.getName());
     private ServiceRegistration<PersistenceManager> registration;
 
     @Override
@@ -45,19 +47,19 @@ public class Activator implements BundleActivator {
         Hashtable<String, Object> config = new Hashtable<>();
         config.put("name", CmPersistenceManagerDelegator.class.getName());
 
-        logInfo( "Registering service {0}.", CmPersistenceManagerDelegator.class.getSimpleName());
+        LOG.log(Level.INFO, "Registering service {0}.", CmPersistenceManagerDelegator.class.getSimpleName());
 
         CmPersistenceManagerDelegator persistenceManager = new CmPersistenceManagerDelegator(context);
         registration = context.registerService(PersistenceManager.class, persistenceManager, config);
 
-        logInfo( "{0} started.", CmPersistenceManagerDelegator.class.getSimpleName());
+        LOG.log(Level.INFO, "{0} started.", CmPersistenceManagerDelegator.class.getSimpleName());
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         if (registration != null) {
             registration.unregister();
         }
-        logInfo("{0} stopped.", CmPersistenceManagerDelegator.class.getSimpleName());
+        LOG.log(Level.INFO,"{0} stopped.", CmPersistenceManagerDelegator.class.getSimpleName());
     }
 }
