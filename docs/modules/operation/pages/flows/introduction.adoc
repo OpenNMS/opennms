@@ -12,7 +12,7 @@ Persisting flows for long-term storage can aid in forensic analysis.
 * A platform to collect, persist, and visualize flows, with support for NetFlow versions 5 and 9, IPFIX, and sFlow
 * Inventory enrichment (mapping to OpenNMS nodes)
 * Application classification
-* Horizontal scaling (tested with 250,000+ flows/second)
+* Horizontal scaling
 * Enterprise reporting (generate PDF reports)
 * Top K statistics by interface, application, host, conversation with QoS
 
