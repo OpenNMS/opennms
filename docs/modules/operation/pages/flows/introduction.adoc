@@ -25,6 +25,9 @@ This section presents a set of procedures to set up flows that progress from a b
 * Processing large volume of flows data (add Sentinel to scale)
 * Issues with flows at scale and queries taking too long (add Nephron for aggregation and streaming analytics)
 
+.Flow integration overview
+image::flows/flow_integration_overview.png[width=70%]
+
 == How it works
 
 At a high level, with a xref:operation:flows/basic.adoc#flows-basic[basic] setup, OpenNMS processes flows as follows:
