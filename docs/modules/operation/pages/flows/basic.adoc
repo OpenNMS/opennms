@@ -101,12 +101,18 @@ You will need to set up the flow receiver, which is OpenNMS {page-component-titl
 
 To access flow-related graphs from the {page-component-title} web interface, you must configure a link to your instance of OpenNMS Helm.
 
+.Connect to Karaf shell
+[source, console]
 ----
-$ ssh -p 8101 admin@localhost
-...
-admin@opennms()> config:edit org.opennms.netmgt.flows.rest
-admin@opennms()> config:property-set flowGraphUrl 'http://grafana:3000/dashboard/flows?node=$nodeId&interface=$ifIndex'
-admin@opennms()> config:update
+ssh -p 8101 admin@localhost
+----
+
+.Configure Helm settings within Karaf
+[source, karaf]
+----
+config:edit org.opennms.netmgt.flows.rest
+config:property-set flowGraphUrl 'http://grafana:3000/dashboard/flows?node=$nodeId&interface=$ifIndex'
+config:update
 ----
 
 NOTE: This URL can optionally point to other tools as well.
