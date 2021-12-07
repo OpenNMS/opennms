@@ -65,6 +65,14 @@ const modifyAlarm = async (context: VuexContext, alarmQueryVariable: AlarmModifi
   return resp
 }
 
+const setSelectedSeverity = (context: VuexContext, selectedSeverity: string) => {
+  context.commit("SAVE_SELECTED_SEVERITY", selectedSeverity)
+}
+
+const setSearchedNodeLabels = (context: VuexContext, nodeLabels: string[]) => {
+  context.commit("SAVE_SEARCHED_NODE_LABELS", nodeLabels)
+}
+
 export default {
   getNodes,
   getAlarms,
@@ -73,5 +81,7 @@ export default {
   setInterestedNodesId,
   setMapCenter,
   modifyAlarm,
-  setMapBounds
+  setMapBounds,
+  setSelectedSeverity,
+  setSearchedNodeLabels
 }

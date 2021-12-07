@@ -1,14 +1,38 @@
 import { Node, Alarm } from '@/types'
 import { latLng } from 'leaflet'
 import { State } from './state'
+import { numericSeverityLevel } from '@/components/Map/utils'
 
 const getNodes = (state: State): Node[] => {
-  return state.nodesWithCoordinates.filter((node: Node) => {
+  const severityMap = getNodeAlarmSeverityMap(state)
+  const selectedNumericSeverityLevel = numericSeverityLevel(state.selectedSeverity)
+  
+  // copy the vuex nodes
+  let nodes: Node[] = JSON.parse(JSON.stringify(state.nodesWithCoordinates))
+
+  // filter for nodes within map view-port
+  nodes = nodes.filter((node) => {
     const lat = Number(node.assetRecord.latitude)
-    const lng = Number (node.assetRecord.longitude)
+    const lng = Number(node.assetRecord.longitude)
     const nodeLatLng = latLng(lat, lng)
+
     return state.mapBounds.contains(nodeLatLng)
   })
+
+  // filter for nodes that meet selected severity
+  if (state.selectedSeverity !== 'NORMAL') {
+    nodes = nodes.filter((node) => {
+      const nodeNumericSeverityLevel = numericSeverityLevel(severityMap[node.label])
+      return state.selectedSeverity === 'NORMAL' || nodeNumericSeverityLevel >= selectedNumericSeverityLevel
+    })
+  }
+
+  // filter for nodes that have been searched for
+  if (state.searchedNodeLabels.length) {
+    nodes = nodes.filter((node) => state.searchedNodeLabels.includes(node.label))
+  }
+
+  return nodes
 }
 
 const getNodeLabels = (state: State) => getNodes(state).map((node: Node) => node.label)
@@ -18,7 +42,20 @@ const getAlarms = (state: State): Alarm[] => {
   return state.alarms.filter((alarm: Alarm) => nodeLabels.includes(alarm.nodeLabel))
 }
 
+const getNodeAlarmSeverityMap = (state: State) => {
+  const map: { [x: string]: string } = {}
+
+  state.alarms.forEach((alarm: Alarm) => {
+    if (numericSeverityLevel(alarm.severity) > numericSeverityLevel(map[alarm.nodeLabel])) {
+      map[alarm.nodeLabel] = alarm.severity.toUpperCase()
+    }
+  })
+
+  return map
+}
+
 export default {
   getNodes,
-  getAlarms
+  getAlarms,
+  getNodeAlarmSeverityMap
 }

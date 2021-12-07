@@ -1,6 +1,8 @@
 <template>
   <div class="leaflet">
     <div class="geo-map">
+      <MapSearch class="search-bar" />
+      <SeverityFilter />
       <LMap
         ref="map"
         :center="center"
@@ -11,7 +13,6 @@
         @moveend="onMoveEnd"
       >
         <template v-if="leafletReady">
-          <MapSearch class="search-bar" />
           <LControlLayers />
           <LTileLayer
             v-for="tileProvider in tileProviders"
@@ -34,13 +35,14 @@
               <LPopup>{{ node.label }}</LPopup>
               <LIcon :icon-url="setIcon(node)" :icon-size="iconSize" />
             </LMarker>
-            <LPolyline
+            <!-- Disable polylines until they work -->
+            <!-- <LPolyline
               v-if="zoom > 5"
               v-for="coordinatePair of edges"
               :key="coordinatePair[0].toString()"
               :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
               color="green"
-            />
+            /> -->
           </MarkerCluster>
         </template>
       </LMap>
@@ -61,7 +63,7 @@ import {
 } from "@vue-leaflet/vue-leaflet"
 import MarkerCluster from "./MarkerCluster.vue"
 import { useStore } from "vuex"
-import { Node, Alarm } from "@/types"
+import { Node } from "@/types"
 import NormalIcon from '@/assets/Normal-icon.png'
 import WarninglIcon from '@/assets/Warning-icon.png'
 import MinorIcon from '@/assets/Minor-icon.png'
@@ -69,6 +71,8 @@ import MajorIcon from '@/assets/Major-icon.png'
 import CriticalIcon from '@/assets/Critical-icon.png'
 import { Map as LeafletMap, divIcon, MarkerCluster as Cluster } from 'leaflet'
 import MapSearch from './MapSearch.vue'
+import { numericSeverityLevel } from './utils'
+import SeverityFilter from './SeverityFilter.vue'
 
 const store = useStore()
 const map = ref()
@@ -80,21 +84,12 @@ const iconHeight = 42
 const iconSize = [iconWidth, iconHeight]
 const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => store.state.mapModule.mapCenter[k]))
 const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
-const nodeLabelAlarmServerityMap = computed(() => {
-  const alarms: Alarm[] = store.getters["mapModule/getAlarms"]
-  const map: Map<string, string> = new Map<string, string>()
-  alarms.forEach((alarm: Alarm) => {
-    if (getServerityLevel(alarm.severity) > getServerityLevel(map.get(alarm.nodeLabel))) {
-      map.set(alarm.nodeLabel, alarm.severity.toUpperCase())
-    }
-  })
-  return map
-})
+const nodeLabelAlarmServerityMap = computed(() => store.getters["mapModule/getNodeAlarmSeverityMap"])
 
 const getHighestSeverity = (severitites: string[]) => {
   let highestSeverity = 'NORMAL'
   for (const severity of severitites) {
-    if (getServerityLevel(severity) > getServerityLevel(highestSeverity)) {
+    if (numericSeverityLevel(severity) > numericSeverityLevel(highestSeverity)) {
       highestSeverity = severity
     }
   }
@@ -107,7 +102,7 @@ const iconCreateFunction = (cluster: Cluster) => {
   // find highest level of severity
   const severitites = []
   for (const marker of childMarkers) {
-    const markerSeverity = nodeLabelAlarmServerityMap.value.get((marker as any).options.name)
+    const markerSeverity = nodeLabelAlarmServerityMap.value[(marker as any).options.name]
     if (markerSeverity) {
       severitites.push(markerSeverity)
     }
@@ -116,27 +111,7 @@ const iconCreateFunction = (cluster: Cluster) => {
   return divIcon({ html: `<span class=${highestSeverity}>` + cluster.getChildCount() + '</span>' })
 }
 
-const getServerityLevel = (severity: string | undefined) => {
-  if (severity) {
-    switch (severity.toUpperCase()) {
-      case "NORMAL":
-        return 11
-      case "WARNING":
-        return 22
-      case "MINOR":
-        return 33
-      case "MAJOR":
-        return 44
-      case "CRITICAL":
-        return 55
-      default:
-        return 0
-    }
-  }
-  return 0
-}
-
-const setIcon = (node: Node) => setMarkerColor(nodeLabelAlarmServerityMap.value.get(node.label))
+const setIcon = (node: Node) => setMarkerColor(nodeLabelAlarmServerityMap.value[node.label])
 
 const setMarkerColor = (severity: string | undefined) => {
   if (severity) {
@@ -213,7 +188,8 @@ const tileProviders = [
 
 <style scoped>
 .search-bar {
-  margin-left: 5px;
+  position: absolute;
+  margin-left: 10px;
   margin-bottom: 23px;
   margin-top: -5px;
 }

@@ -8,6 +8,8 @@ export interface State {
   edges: [number, number][]
   mapCenter: Coordinates
   mapBounds: LatLngBounds
+  selectedSeverity: string
+  searchedNodeLabels: string[]
 }
 
 const getDefaultBounds = (): LatLngBounds => {
@@ -22,7 +24,9 @@ const state: State = {
   interestedNodesID: [],
   edges: [],
   mapCenter: { latitude: 37.776603506225115, longitude: -33.43824554266541 },
-  mapBounds: getDefaultBounds()
+  mapBounds: getDefaultBounds(),
+  selectedSeverity: 'NORMAL',
+  searchedNodeLabels: []
 }
 
 export default state
