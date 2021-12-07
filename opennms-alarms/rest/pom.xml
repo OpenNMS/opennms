@@ -40,6 +40,13 @@
               org.apache.karaf.jaas.config;resolution:=optional,
               *
             </Import-Package>
+            <Export-Package>
+              org.opennms.netmgt.alarmd.rest;version="${project.version}"
+            </Export-Package>
+            <Private-Package>
+              org.opennms.web.rest.support,
+              org.opennms.netmgt.alarmd.rest.internal
+            </Private-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -191,12 +198,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-webapp-rest</artifactId>
-      <version>30.0.0-SNAPSHOT</version>
     </dependency>
 
     <!-- needed for pulling the principle from the container -->
