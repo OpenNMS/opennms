@@ -70,6 +70,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -191,10 +192,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             assertEquals(Boolean.FALSE, schema.getChildren().get(1).getDefaultValue());
 
             // check for org.opennms.features.datachoices.cfg
-            Optional<JSONObject> config = this.cm.getJSONConfiguration("datachoices", "default");
+            Optional<JSONObject> config = this.cm.getJSONConfiguration("org.opennms.features.datachoices", "default");
             assertEquals(2, config.get().keySet().size());
-            assertEquals(false, config.get().get("enabled"));
-            assertEquals("admin", config.get().get("acknowledged-by"));
+            assertNull(config.get().get("enabled"));
+            assertNull(config.get().get("acknowledged-by"));
         } finally {
             this.db.cleanUp();
         }

@@ -51,6 +51,7 @@ import com.google.common.cache.CacheBuilder;
 /**
  * A direct replacement for org.opennms.core.utils.PropertiesCache.
  * It operates on cm instead of a file.
+ * TODO: Patrick: refactor
  */
 public class PropertiesCacheWithCm {
 
@@ -61,17 +62,17 @@ public class PropertiesCacheWithCm {
   protected static class PropertiesHolder {
     private Map<String, Object> properties;
     private final ConfigurationManagerService cm;
-    private final ConfigUpdateInfo configKey;
+    private final ConfigUpdateInfo configIdentifier;
     private final Lock lock = new ReentrantLock();
     private boolean needReload = false;
 
-    PropertiesHolder(final ConfigurationManagerService cm, ConfigUpdateInfo configKey) {
+    PropertiesHolder(final ConfigurationManagerService cm, ConfigUpdateInfo configIdentifier) {
       this.cm = cm;
-      this.configKey = configKey;
+      this.configIdentifier = configIdentifier;
       boolean shouldListenToConfigChanges = Boolean.getBoolean(CHECK_LAST_MODIFY_STRING);
       if(shouldListenToConfigChanges) {
         // we want to be notified when config has changed
-        cm.registerReloadConsumer(configKey, (ConfigUpdateInfo key) -> this.needReload = true);
+        cm.registerReloadConsumer(configIdentifier, (ConfigUpdateInfo key) -> this.needReload = true);
       }
       properties = null;
     }
@@ -79,7 +80,7 @@ public class PropertiesCacheWithCm {
     private Optional<Map<String, Object>> read() {
       Optional<Map<String, Object>> result;
       try {
-        result = this.cm.getJSONStrConfiguration(configKey.getConfigName(), configKey.getConfigId())
+        result = this.cm.getJSONStrConfiguration(configIdentifier.getConfigName(), configIdentifier.getConfigId())
                 .map(PropertiesConversionUtil::jsonToMap);
       } catch (IOException e) {
         throw new RuntimeException(e);
@@ -93,7 +94,7 @@ public class PropertiesCacheWithCm {
       for(Entry<?, ?> entry : this.properties.entrySet()) {
         entries.put(entry.getKey().toString(), entry.getValue());
       }
-      this.cm.updateConfiguration(this.configKey.getConfigName(), this.configKey.getConfigId(), mapToJsonString(entries));
+      this.cm.updateConfiguration(this.configIdentifier.getConfigName(), this.configIdentifier.getConfigId(), mapToJsonString(entries));
     }
 
     public Map<String, Object> get() throws IOException {
@@ -149,20 +150,20 @@ public class PropertiesCacheWithCm {
     this.cm = cm;
   }
 
-  private PropertiesHolder getHolder(final ConfigUpdateInfo configKey) throws IOException {
+  private PropertiesHolder getHolder(final ConfigUpdateInfo configIdentifier) throws IOException {
 
     try {
-      return m_cache.get(configKey, () -> new PropertiesHolder(this.cm, configKey));
+      return m_cache.get(configIdentifier, () -> new PropertiesHolder(this.cm, configIdentifier));
     } catch (final ExecutionException e) {
       throw new IOException("Error creating PropertyHolder instance", e);
     }
   }
 
-  public void setProperty(final ConfigUpdateInfo configKey, final String key, final Object value) throws IOException {
-    getHolder(configKey).setProperty(key, value);
+  public void setProperty(final ConfigUpdateInfo configIdentifier, final String key, final Object value) throws IOException {
+    getHolder(configIdentifier).setProperty(key, value);
   }
 
-  public Object getProperty(final ConfigUpdateInfo configKey, final String key) throws IOException {
-    return getHolder(configKey).getProperty(key);
+  public Object getProperty(final ConfigUpdateInfo configIdentifier, final String key) throws IOException {
+    return getHolder(configIdentifier).getProperty(key);
   }
 }
