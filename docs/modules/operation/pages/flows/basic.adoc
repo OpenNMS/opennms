@@ -46,7 +46,7 @@ We also recommend setting the following:
 [source, xml]
 ----
 # ElasticSearch persistence configuration
-elasticUrl = http://10.10.3.218:9200
+elasticUrl = http://10.10.3.218:9200 <1>
 connTimeout = 30000
 readTimeout = 300000
 settings.index.number_of_replicas = 0
