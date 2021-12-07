@@ -606,16 +606,16 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 excludeUrlList.addAll(def.getExcludeUrls());
             });
             for (final ExcludeUrl excludeUrl : excludeUrlList) {
-                if (excludeUrl.getUrl().isPresent()) {
+                if (excludeUrl.getUrl() != null) {
                     final List<IPPollAddress> specifics = new LinkedList<IPPollAddress>();
                     List<String> ipAddressList = addToSpecificsFromURL(specifics,
-                            excludeUrl.getUrl().get(),
+                            excludeUrl.getUrl(),
                             excludeUrl.getForeignSource().orElse(null),
                             excludeUrl.getLocation().orElse(null),
                             0,
                             0);
 
-                    m_excludeUrlsMap.put(excludeUrl.getUrl().get(), Pair.of(excludeUrl.getLocation(), ipAddressList));
+                    m_excludeUrlsMap.put(excludeUrl.getUrl(), Pair.of(excludeUrl.getLocation(), ipAddressList));
                 }
             }
 

@@ -366,7 +366,6 @@ public class Package implements Serializable {
         result = prime * result + ((m_filter == null) ? 0 : m_filter.hashCode());
         result = prime * result + ((m_includeRanges == null) ? 0 : m_includeRanges.hashCode());
         result = prime * result + ((m_includeUrls == null) ? 0 : m_includeUrls.hashCode());
-        result = prime * result + ((m_excludeUrls == null) ? 0 : m_excludeUrls.hashCode());
         result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
         result = prime * result + ((m_outageCalendars == null) ? 0 : m_outageCalendars.hashCode());
         result = prime * result + ((m_remote == null) ? 0 : m_remote.hashCode());
@@ -421,13 +420,6 @@ public class Package implements Serializable {
                 return false;
             }
         } else if (!m_includeUrls.equals(other.m_includeUrls)) {
-            return false;
-        }
-        if (m_excludeUrls == null) {
-            if (other.m_excludeUrls != null) {
-                return false;
-            }
-        } else if (!m_excludeUrls.equals(other.m_excludeUrls)) {
             return false;
         }
         if (m_name == null) {
