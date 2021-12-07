@@ -317,6 +317,21 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+=== Changelog
+
+[[releasenotes-changelog-Meridian-2019.1.26]]
+
+==== Release Meridian-2019.1.26
+
+Release 2019.1.26 contains a fix for a Jetty CVE, and an update to fix a bug in user auth changes.
+
+The codename for 2019.1.26 is link:$$https://wikipedia.org/wiki/HD_136418_b$$[_Awasis_].
+
+===== Bug
+
+* Authorization changes not taking immediate effect (Issue http://issues.opennms.org/browse/NMS-13761[NMS-13761])
+* CVE-2021-28164: access to WEB-INF (Issue http://issues.opennms.org/browse/NMS-13832[NMS-13832])
+
 [[releasenotes-changelog-Meridian-2019.1.25]]
 
 ==== Release Meridian-2019.1.25
