@@ -209,6 +209,7 @@ categories:
   - name: "karaf"
     label: "Karaf"
     description: "Karaf configuration"
+    hidden: true
     categories:
       # Karaf :: Management
       - name: "management"
@@ -293,6 +294,7 @@ categories:
   - name: "ipc"
     label: "IPC"
     description: "Core, Minion, and Sentinel distributed inter-process communication (IPC) settings"
+    hidden: true
     categories:
       # IPC Configuration :: gRPC
       - name: "grpc"
@@ -350,36 +352,36 @@ categories:
                 description: "Additional Kafka configuration properties"
                 key: "/ipc/rpc/kafka"
                 example: "compression.type: gzip"
-       # IPC Configuration :: Twin
-            - name: "twin"
-              label: "Twin"
-              description: "Configuration settings for Twin"
-              categories:
-                # IPC Configuration :: Twin :: Kafka
-                - name: "kafka"
-                  label: "Kafka"
-                  description: "Configuration for Twin using Apache Kafka as message broker"
-                  config:
-                    - name: "bootstrap-servers"
-                      type:
-                        name: "collection"
-                        strategy: "concat"
-                        items:
-                          label: "Server"
-                          type:
-                            name: "host-with-port"
-                          separator: ","
-                      label: "Bootstrap Servers"
-                      description: "Kafka bootstrap servers"
-                      key: "/ipc/twin/kafka/bootstrap.servers"
-                      example: "kafka-01-ip:9092, kafka-02-ip:9092"
-                    - name: "properties"
-                      type:
-                        name: "properties"
-                      label: "Properties"
-                      description: "Additional Kafka configuration properties"
-                      key: "/ipc/twin/kafka"
-                      example: "compression.type: gzip"
+      # IPC Configuration :: Twin
+      - name: "twin"
+        label: "Twin"
+        description: "Configuration settings for Twin"
+        categories:
+          # IPC Configuration :: Twin :: Kafka
+          - name: "kafka"
+            label: "Kafka"
+            description: "Configuration for Twin using Apache Kafka as message broker"
+            config:
+              - name: "bootstrap-servers"
+                type:
+                  name: "collection"
+                  strategy: "concat"
+                  items:
+                    label: "Server"
+                    type:
+                      name: "host-with-port"
+                    separator: ","
+                label: "Bootstrap Servers"
+                description: "Kafka bootstrap servers"
+                key: "/ipc/twin/kafka/bootstrap.servers"
+                example: "kafka-01-ip:9092, kafka-02-ip:9092"
+              - name: "properties"
+                type:
+                  name: "properties"
+                label: "Properties"
+                description: "Additional Kafka configuration properties"
+                key: "/ipc/twin/kafka"
+                example: "compression.type: gzip"
       # IPC Configuration :: Sink
       - name: "sink"
         label: "Sink"
@@ -472,10 +474,11 @@ categories:
             label: "Properties"
             description: "Set Syslog daemon properties."
             key: "/netmgt/syslog"
-            example: "syslog.listen.interface: 0.0.0.0, syslog.listen.port: 1514" 
+            example: "syslog.listen.interface: 0.0.0.0, syslog.listen.port: 1514"
   # Web
   - name: "web"
     label: "Web"
+    hidden: true
     description: "Configuration for the core instance web server"
     categories:
       # Web :: Jetty
