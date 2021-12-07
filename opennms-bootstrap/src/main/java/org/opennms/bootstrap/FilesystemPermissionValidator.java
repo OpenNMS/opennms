@@ -35,7 +35,6 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.UserPrincipal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -47,13 +46,13 @@ public class FilesystemPermissionValidator {
     public static String OPENNMS_HOME = System.getProperty("opennms.home", null);
     public static String DEFAULT_USER = System.getProperty("user.name");
 
-    // directories that should be checked in full
-    public String[] FULLDIRS = { "bin", "contrib", "etc", "jetty-webapps", "lib", "logs", "system" };
+    // directories that should always be fully checked
+    public static final String[] FULLDIRS = { "bin", "etc", "jetty-webapps", "logs" };
 
-    // directories that could contain loads of user data, and should be spot checked
-    public String[] SPOTDIRS = { "data", "deploy", "share" };
+    // directories that could contain loads of user data, or might be empty
+    public static final String[] SPOTDIRS = { "data", "deploy", "share" };
 
-    private static FileFilter ONLY_DIRECTORIES = new FileFilter() {
+    private static final FileFilter ONLY_DIRECTORIES = new FileFilter() {
         @Override
         public boolean accept(final File pathname) {
             return pathname.isDirectory();
@@ -133,16 +132,20 @@ public class FilesystemPermissionValidator {
             }
         }
 
+        final Path git = Path.of(".git");
+
         final List<Path> failures;
         try (final Stream<Path> stream = Files.walk(dirPath, FileVisitOption.FOLLOW_LINKS)) {
-            failures = stream.filter(file -> {
-                try {
-                    validateFile(user, file);
-                } catch (final FilesystemPermissionException e) {
-                    return true;
-                }
-                return false;
-            }).collect(Collectors.toList());
+            failures = stream
+                    .filter(file -> ! file.getFileName().equals(git))
+                    .filter(file -> {
+                        try {
+                            validateFile(user, file);
+                        } catch (final FilesystemPermissionException e) {
+                            return true;
+                        }
+                        return false;
+                    }).collect(Collectors.toList());
         } catch (final IOException e) {
             throw new FilesystemPermissionException(dirPath, user, e);
         }
