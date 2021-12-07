@@ -2,6 +2,33 @@
 
 = Changelog
 
+[[releasenotes-changelog-Meridian-2021.1.7]]
+
+== Release Meridian-2021.1.7
+
+Release 2021.1.7 contains a fix for a Jetty CVE, plus a number of bug fixes and small enhancements,
+including an update to fix a bug in user auth changes and enhancements to SNMPv3 auth and Trapd
+configuration.
+
+The codename for 2021.1.7 is link:https://wikipedia.org/wiki/$$Mars_Orbiter_Mission_2$$[_MOM 2_].
+
+=== Bug
+
+* Update labelling in Configure Discover screen (Issue http://issues.opennms.org/browse/NMS-12992[NMS-12992])
+* Link to release notes in web Help / About needs updating (Issue http://issues.opennms.org/browse/NMS-13579[NMS-13579])
+* Remove reference to DHCP plugin from docs (Issue http://issues.opennms.org/browse/NMS-13727[NMS-13727])
+* Authorization changes not taking immediate effect (Issue http://issues.opennms.org/browse/NMS-13761[NMS-13761])
+* Missing RRD package definition in BMP persisting adapter (Issue http://issues.opennms.org/browse/NMS-13812[NMS-13812])
+* CVE-2021-28164: access to WEB-INF (Issue http://issues.opennms.org/browse/NMS-13832[NMS-13832])
+
+=== Enhancement
+
+* Support multiple auth params for same SNMPV3 username (Issue http://issues.opennms.org/browse/NMS-13490[NMS-13490])
+* Dynamic Configuration of Trap Listener (Issue http://issues.opennms.org/browse/NMS-13564[NMS-13564])
+* Document how to install from source (Issue http://issues.opennms.org/browse/NMS-13685[NMS-13685])
+* Migrate Discovery settings from wiki into docs (Issue http://issues.opennms.org/browse/NMS-13730[NMS-13730])
+* Remove link to wiki from the landing page (Issue http://issues.opennms.org/browse/NMS-13779[NMS-13779])
+
 [[releasenotes-changelog-Meridian-2021.1.6]]
 
 == Release Meridian-2021.1.6
