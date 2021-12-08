@@ -38,87 +38,81 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
-@XmlRootElement(name = "auto-acknowledge")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("notifd-configuration.xsd")
 public class AutoAcknowledge implements java.io.Serializable {
     private static final long serialVersionUID = 2L;
 
     private static final String DEFAULT_RESOLUTION_PREFIX = "RESOLVED: ";
 
-    @XmlAttribute(name = "resolution-prefix")
-    private String m_resolutionPrefix;
+    private String resolutionPrefix;
 
-    @XmlAttribute(name = "uei", required = true)
-    private String m_uei;
+    private String uei;
 
-    @XmlAttribute(name = "acknowledge", required = true)
-    private String m_acknowledge;
+    private String acknowledge;
 
-    @XmlAttribute(name = "notify")
-    private Boolean m_notify;
+    private Boolean notify;
 
-    @XmlElement(name = "match", required = true)
-    private List<String> m_matches = new ArrayList<>();
+    @JsonProperty("match")
+    private List<String> matches = new ArrayList<>();
 
     public AutoAcknowledge() { }
 
     public String getResolutionPrefix() {
-        return m_resolutionPrefix != null ? m_resolutionPrefix : DEFAULT_RESOLUTION_PREFIX;
+        return resolutionPrefix != null ? resolutionPrefix : DEFAULT_RESOLUTION_PREFIX;
     }
 
     public void setResolutionPrefix(final String resolutionPrefix) {
-        m_resolutionPrefix = ConfigUtils.normalizeString(resolutionPrefix);
+        this.resolutionPrefix = ConfigUtils.normalizeString(resolutionPrefix);
     }
 
     public String getUei() {
-        return m_uei;
+        return uei;
     }
 
     public void setUei(final String uei) {
-        m_uei = ConfigUtils.assertNotEmpty(uei, "uei");
+        this.uei = ConfigUtils.assertNotEmpty(uei, "uei");
     }
 
     public String getAcknowledge() {
-        return m_acknowledge;
+        return acknowledge;
     }
 
     public void setAcknowledge(final String acknowledge) {
-        m_acknowledge = ConfigUtils.assertNotEmpty(acknowledge, "acknowledge");
+        this.acknowledge = ConfigUtils.assertNotEmpty(acknowledge, "acknowledge");
     }
 
     public Boolean getNotify() {
-        return m_notify != null ? m_notify : Boolean.TRUE;
+        return notify != null ? notify : Boolean.TRUE;
     }
 
     public void setNotify(final Boolean notify) {
-        m_notify = notify;
+        this.notify = notify;
     }
 
     public List<String> getMatches() {
-        return m_matches;
+        return matches;
     }
 
     public void setMatches(final List<String> matches) {
-        if (matches == m_matches) return;
-        m_matches.clear();
-        if (matches != null) m_matches.addAll(matches);
+        if (matches == matches) return;
+        this.matches.clear();
+        if (matches != null) this.matches.addAll(matches);
     }
 
     public void addMatch(final String match) {
-        m_matches.add(match);
+        this.matches.add(match);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_resolutionPrefix, 
-                            m_uei, 
-                            m_acknowledge, 
-                            m_notify, 
-                            m_matches);
+        return Objects.hash(resolutionPrefix, 
+                            uei, 
+                            acknowledge, 
+                            notify, 
+                            matches);
     }
 
     @Override
@@ -129,13 +123,12 @@ public class AutoAcknowledge implements java.io.Serializable {
 
         if (obj instanceof AutoAcknowledge) {
             final AutoAcknowledge that = (AutoAcknowledge)obj;
-            return Objects.equals(this.m_resolutionPrefix, that.m_resolutionPrefix)
-                    && Objects.equals(this.m_uei, that.m_uei)
-                    && Objects.equals(this.m_acknowledge, that.m_acknowledge)
-                    && Objects.equals(this.m_notify, that.m_notify)
-                    && Objects.equals(this.m_matches, that.m_matches);
+            return Objects.equals(this.resolutionPrefix, that.resolutionPrefix)
+                    && Objects.equals(this.uei, that.uei)
+                    && Objects.equals(this.acknowledge, that.acknowledge)
+                    && Objects.equals(this.notify, that.notify)
+                    && Objects.equals(this.matches, that.matches);
         }
         return false;
     }
-
 }

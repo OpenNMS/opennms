@@ -35,28 +35,6 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Definition implements Serializable {
-//    public class Detectors{
-//        @JsonProperty(value = "detector", required = true)
-//        private List<Detector> detector = new ArrayList<>();
-//        private String tmp = "100";
-//
-//        public String getTmp() {
-//            return tmp;
-//        }
-//
-//        public void setTmp(String tmp) {
-//            this.tmp = tmp;
-//        }
-//
-//        public List<Detector> getDetector() {
-//            return detector;
-//        }
-//
-//        public void setDetector(List<Detector> detector) {
-//            this.detector = detector;
-//        }
-//
-//    }
 
     private static final long serialVersionUID = 5369200192316960658L;
 
@@ -79,8 +57,10 @@ public class Definition implements Serializable {
     private String foreignSource;
 
     @JsonProperty("detectors")
-    // temp testing for align with xml format
+    // align with xsd format
     private Map<String, List<Detector>> detectorsMap = new HashMap();
+    @JsonIgnore
+    private static final String DETECTOR_KEY = "detector";
 
     /**
      * the specific addresses for discovery
@@ -184,19 +164,17 @@ public class Definition implements Serializable {
 
     @JsonIgnore
     public List<Detector> getDetectors() {
-        return detectorsMap.get("detector");
+        return detectorsMap.get(DETECTOR_KEY);
     }
 
     @JsonIgnore
     public void setDetectors(List<Detector> detectors) {
-        this.detectorsMap.put("detector", detectors);
+        this.detectorsMap.put(DETECTOR_KEY, detectors);
     }
 
     public void addDetector(Detector detector) {
-        if(!detectorsMap.containsKey("detector"))
-            detectorsMap.put("detector", new ArrayList<>());
-
-        this.detectorsMap.get("detector").add(detector);
+        detectorsMap.computeIfAbsent(DETECTOR_KEY, value -> new ArrayList<>());
+        this.detectorsMap.get(DETECTOR_KEY).add(detector);
     }
 
     public List<IncludeUrl> getIncludeUrls() {
@@ -226,11 +204,11 @@ public class Definition implements Serializable {
                 Objects.equals(specifics, that.specifics) &&
                 Objects.equals(includeRanges, that.includeRanges) &&
                 Objects.equals(excludeRanges, that.excludeRanges) &&
-                Objects.equals(detectorsMap.get("detector"), that.detectorsMap.get("detector"));
+                Objects.equals(detectorsMap.get(DETECTOR_KEY), that.detectorsMap.get(DETECTOR_KEY));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, specifics, includeRanges, excludeRanges, detectorsMap.get("detector"));
+        return Objects.hash(location, specifics, includeRanges, excludeRanges, detectorsMap.get(DETECTOR_KEY));
     }
 }

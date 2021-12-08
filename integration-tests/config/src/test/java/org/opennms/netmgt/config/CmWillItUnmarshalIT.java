@@ -43,8 +43,10 @@ import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.config.jmx.JmxConfig;
+import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -114,6 +116,9 @@ public class CmWillItUnmarshalIT {
         addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, "discovery-configuration.xsd","discovery-configuration", false, null);
         addFile(Source.CONFIG, "jmx-config.xml", JmxConfig.class, "jmx-config.xsd","jmx-config", true, null);
         addFile(Source.CLASSPATH, "/defaults/xmp-config.xml", XmpConfig.class, "xmp-config.xsd","xmp-config", true, null);
+        addFile(Source.CLASSPATH, "/defaults/trapd-configuration.xml", TrapdConfiguration.class, "trapd-configuration.xsd", "trapd-configuration",true, null);
+        // since notifd have default values, the checkFormat will never right.
+        addFile(Source.CLASSPATH, "/defaults/notifd-configuration.xml", NotifdConfiguration.class,  "notifd-configuration.xsd", "notifd-configuration", false, null);
     }
 
     /**

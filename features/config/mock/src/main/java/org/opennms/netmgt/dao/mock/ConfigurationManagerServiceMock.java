@@ -61,13 +61,13 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     public static final String JSON_EXTENSION = ".json";
     public static final String XML_EXTENSION = ".xml";
 
-    private String configFile;
-
     // It is Map<configName, Map<configId, json>>
     private Map<String, Map<String, String>> configStore = new HashMap<>();
 
-    public void setConfigFile(String configFile) {
-        this.configFile = configFile;
+    // It store override path for configs Map<configName, filePath>
+    private Map<String, String> configFileMap;
+    public void setConfigFileMap(Map<String, String> configFileMap) {
+        this.configFileMap = configFileMap;
     }
 
     @Override
@@ -104,9 +104,15 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
         } else if ("jmx".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("jmx", "jmx-config.xsd",
                     "jmx-config", ConfigurationManagerService.BASE_PATH);
+        } else if ("trapd".equals(configName)) {
+            def = XsdHelper.buildConfigDefinition("trapd", "trapd-configuration.xsd",
+                    "trapd-configuration", ConfigurationManagerService.BASE_PATH);
         } else if ("xmp".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("xmp", "xmp-config.xsd",
                     "xmp-config", ConfigurationManagerService.BASE_PATH);
+        } else if ("notifd".equals(configName)) {
+            def = XsdHelper.buildConfigDefinition("notifd", "notifd-configuration.xsd",
+                    "notifd-configuration", ConfigurationManagerService.BASE_PATH);
         }
         return Optional.ofNullable(def);
     }
@@ -174,21 +180,23 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
         }
         // try get json from file
         List<String> paths = new ArrayList<>();
-        paths.add(configFile);
+        if(configFileMap != null && configFileMap.containsKey(configName))
+            paths.add(configFileMap.get(configName));
         paths.add("etc/" + configName + "-" + configId + JSON_EXTENSION);
         paths.add("mock/" + configName + "-" + configId + JSON_EXTENSION);
-        configFile = this.findConfigFile(paths);
-        if (configFile != null && configFile.endsWith(JSON_EXTENSION)) {
+        String tmpConfigFile = this.findConfigFile(paths);
+        if (tmpConfigFile != null && tmpConfigFile.endsWith(JSON_EXTENSION)) {
             jsonStr = IOUtils.toString(
-                    ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(configFile), StandardCharsets.UTF_8);
+                    ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(tmpConfigFile), StandardCharsets.UTF_8);
         }
 
         // fall back to old xml file
         if (jsonStr == null) {
             String xmlStr = this.getXmlConfiguration(configName, configId);
             if (xmlStr == null) {
-                LOG.error("Cannot found config !!! configName: {}, configId: {}", configName, configId);
-                return Optional.empty();
+                LOG.error("Cannot found config !!! configName: {}, configId: {}. Returning empty config.", configName, configId);
+                // return empty json if nothing found.
+                return Optional.of("{}");
             }
             Optional<ConfigDefinition> def = this.getRegisteredConfigDefinition(configName);
             if (def.isEmpty()) {
@@ -202,7 +210,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
         if (jsonStr != null) {
             this.putConfig(configName, configId, jsonStr);
         }
-        return Optional.ofNullable(jsonStr);
+        return Optional.of(jsonStr);
     }
 
     /**
@@ -222,21 +230,29 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
      * @throws IOException
      */
     private String getXmlConfiguration(String configName, String configId) throws IOException {
+        String tmpConfigFile = null;
+        String configFile = (configFileMap != null) ?configFileMap.get(configName): null;
         if (configFile == null) {
             List<String> paths = new ArrayList<>();
             // if configFile is null, assume config file in opennms-dao-mock resource etc directly
             paths.add("etc/" + configName + "-" + configId + XML_EXTENSION);
             paths.add("default/" + configName + "-configuration.xml");
             paths.add("default/" + configName + "-config.xml");
-            configFile = this.findConfigFile(paths);
+            tmpConfigFile = this.findConfigFile(paths);
+        } else {
+            tmpConfigFile = configFile;
+        }
+
+        if(tmpConfigFile == null){
+            return null;
         }
 
         try {
             InputStream in;
-            if (configFile.startsWith("/")) {
-                in = new FileInputStream(configFile);
+            if (tmpConfigFile.startsWith("/")) {
+                in = new FileInputStream(tmpConfigFile);
             } else {
-                in = ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(configFile);
+                in = ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(tmpConfigFile);
             }
             String xmlStr = IOUtils.toString(in, StandardCharsets.UTF_8);
             LOG.debug("xmlStr: {}", xmlStr);
@@ -294,4 +310,5 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
         }
         return new HashSet<>();
     }
+
 }

@@ -137,6 +137,8 @@ public class WillItUnmarshalCoverageMetaIT {
         ignoreFile(new File(getDaemonEtcDirectory(), "examples/snmp-config.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "jmx-config.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "vmware-config.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "trapd-configuration.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "notifd-configuration.xml"));
 
         LOG.debug("FILES.size() = {}", FILES.size());
     }

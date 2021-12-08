@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 
-// FIXME: temp solution to unblock other developers (MUST DELETE IT BEFORE MERGE TO DEVELOP)
+// FIXME: temp solution to unblock other developers (MUST BE REVIEWED BEFORE MERGE TO DEVELOP)
 @Component
 public class ForceUpgradeExecutor implements InitializingBean {
 

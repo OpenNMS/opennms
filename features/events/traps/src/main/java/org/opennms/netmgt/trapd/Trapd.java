@@ -105,7 +105,7 @@ public class Trapd extends AbstractServiceDaemon {
      *
      * @see org.opennms.protocols.snmp.SnmpTrapSession
      */
-    public Trapd() {
+    public Trapd() throws IOException {
         super(LOG4J_CATEGORY);
 
         m_config = TrapdConfigFactory.getInstance();
