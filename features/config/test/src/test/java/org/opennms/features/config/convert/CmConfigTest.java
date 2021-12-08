@@ -48,7 +48,7 @@ abstract public class CmConfigTest<T> {
     private Class<?> objectClass;
     private T simpleObject;
     private String simpleXml;
-    private ConfigDefinition configDefinition;
+    protected ConfigDefinition configDefinition;
 
     public CmConfigTest(final T sampleObject, final String sampleXml, final String schemaFile, String topLevelElement) {
         this.objectClass = sampleObject.getClass();
@@ -65,7 +65,10 @@ abstract public class CmConfigTest<T> {
     @Test
     public void xmlToObjectWithCompare() throws IOException {
         Object object = ConfigConvertUtil.jsonToObject(getJsonStr(), objectClass);
-        MatcherAssert.assertThat(simpleObject, new SamePropertyValuesAs(object));
+        // try match with equals if fail back to use SamePropertyValuesAs
+        if(!simpleObject.equals(object)){
+            MatcherAssert.assertThat(simpleObject, new SamePropertyValuesAs(object));
+        }
     }
 
     @Test

@@ -97,7 +97,7 @@ public class AutoAcknowledge implements java.io.Serializable {
     }
 
     public void setMatches(final List<String> matches) {
-        if (matches == matches) return;
+        if (this.matches == matches) return;
         this.matches.clear();
         if (matches != null) this.matches.addAll(matches);
     }

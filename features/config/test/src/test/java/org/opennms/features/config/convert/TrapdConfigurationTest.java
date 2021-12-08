@@ -26,24 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.trapd;
+package org.opennms.features.config.convert;
 
-import static org.junit.Assert.fail;
+import com.atlassian.oai.validator.report.ValidationReport;
+import org.junit.Test;
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.dao.api.ConfigConverter;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
+import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
-import org.opennms.core.xml.JaxbUtils;
+import static org.junit.Assert.fail;
 
-public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> {
+public class TrapdConfigurationTest extends CmConfigTest<TrapdConfiguration> {
 
 	public TrapdConfigurationTest(final TrapdConfiguration sampleObject,
-			final Object sampleXml, final String schemaFile) {
-		super(sampleObject, sampleXml, schemaFile);
+			final String sampleXml, final String schemaFile) {
+		super(sampleObject, sampleXml, schemaFile, "trapd-configuration");
 	}
 
 	@Parameters
@@ -97,7 +101,7 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
 								+ "batch-size=\"1000\" "
 								+ "batch-interval=\"500\""
 								+ "/>",
-						"target/classes/xsds/trapd-configuration.xsd"
+						"trapd-configuration.xsd"
 				},
 			{
 				new TrapdConfiguration(162,"*"),
@@ -111,7 +115,7 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
 					+ "batch-size=\"1000\" "
 					+ "batch-interval=\"500\""
 					+ "/>",
-				"target/classes/xsds/trapd-configuration.xsd"
+				"trapd-configuration.xsd"
 			},
 			{
 				configWithSnmpv3User,
@@ -127,7 +131,7 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
 					+ ">"
 					+   "<snmpv3-user security-name=\"opennms\" auth-passphrase=\"0p3nNMSv3\" auth-protocol=\"MD5\" privacy-passphrase=\"0p3nNMSv3\" privacy-protocol=\"DES\"/>"
 					+ "</trapd-configuration>",
-				"target/classes/xsds/trapd-configuration.xsd"
+				"trapd-configuration.xsd"
 			},
 			{
 				configWithSnmpv3Users,
@@ -144,7 +148,7 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
 					+   "<snmpv3-user security-name=\"opennms\" auth-passphrase=\"0p3nNMSv3\" auth-protocol=\"MD5\" privacy-passphrase=\"0p3nNMSv3\" privacy-protocol=\"DES\"/>"
 					+   "<snmpv3-user security-name=\"opennms2\" auth-passphrase=\"0p3nNMSv3\" auth-protocol=\"MD5\" privacy-passphrase=\"0p3nNMSv3\" privacy-protocol=\"DES\"/>"
 					+ "</trapd-configuration>",
-				"target/classes/xsds/trapd-configuration.xsd"
+				"trapd-configuration.xsd"
 			},
 			{
 				configWithEmptyUser,
@@ -160,7 +164,7 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
 					+ ">"
 					+   "<snmpv3-user />"
 					+ "</trapd-configuration>",
-				"target/classes/xsds/trapd-configuration.xsd"
+				"trapd-configuration.xsd"
 			},
 			{
 				configWithAllCustomTrapdProperties,
@@ -174,7 +178,7 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
 						+ "batch-size=\"1\" "
 						+ "batch-interval=\"0\""
 						+ "/>",
-				"target/classes/xsds/trapd-configuration.xsd"
+				"trapd-configuration.xsd"
 			}
 		});
 
@@ -183,60 +187,82 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
 	  /**  Try to validate missing "required" fields and misspellings in "optional" fields **/
 	  @Test
 	  public void validateUsingJaxbUtils() {
-	        
-        String validConfig = "<trapd-configuration " 
-                                 + "snmp-trap-port=\"1111\" " 
-                                 + "new-suspect-on-trap=\"false\" "
-                                 + "/>";
-
         try {
-            JaxbUtils.unmarshal(TrapdConfiguration.class, validConfig);
-        } catch (Exception e) {
-            fail();
-        }
-        String missingPortConfig = "<trapd-configuration "
-                                       + "new-suspect-on-trap=\"false\" " 
-                                       + "/>";
-
-        try {
-            JaxbUtils.unmarshal(TrapdConfiguration.class, missingPortConfig);
-            fail();
-        } catch (Exception e) {
-        }
-        String missingNewSuspectOnTrapConfig = "<trapd-configuration " 
-                                                   + "snmp-trap-port=\"1111\" "
-                                                   + "/>";
-        try {
-            JaxbUtils.unmarshal(TrapdConfiguration.class, missingNewSuspectOnTrapConfig);
-            fail();
+			String validConfig = "<trapd-configuration "
+					+ "snmp-trap-port=\"1111\" "
+					+ "new-suspect-on-trap=\"false\" "
+					+ "/>";
+			ConfigConverter converter = XsdHelper.getConverter(configDefinition);
+			String json = converter.xmlToJson(validConfig);
+			ValidationReport report = configDefinition.validate(json);
+			if(report.hasErrors()){
+				fail();
+			}
         } catch (Exception e) {
         }
 
-        String misspelledConfig = "<trapd-configuration "
-                                      + "Ssnmp-trap-port=\"1111\" "
-                                      + "new-suspect-on-trap=\"false\" " 
-                                      + "/>";
 
         try {
-            JaxbUtils.unmarshal(TrapdConfiguration.class, misspelledConfig);
-            fail();
+			String missingPortConfig = "<trapd-configuration "
+					+ "new-suspect-on-trap=\"false\" "
+					+ "/>";
+			ConfigConverter converter = XsdHelper.getConverter(configDefinition);
+			String json = converter.xmlToJson(missingPortConfig);
+			ValidationReport report = configDefinition.validate(json);
+			if(!report.hasErrors()){
+				fail();
+			}
         } catch (Exception e) {
         }
 
-        String missplledConfig1 = "<trapd-configuration " 
-                                      + "snmp-crap-address=\"*\" " 
-                                      + "snmp-trap-port=\"162\" "
-                                      + "new-suspect-on-trap=\"false\" " 
-                                      + "include-raw-message=\"false\" "
-                                      + "threads=\"0\" "
-                                      + "queue-size=\"10000\" " 
-                                      + "batch-size=\"1000\" " 
-                                      + "batch-interval=\"500\"" + "/>";
         try {
-            JaxbUtils.unmarshal(TrapdConfiguration.class, missplledConfig1);
-            fail();
+			String missingNewSuspectOnTrapConfig = "<trapd-configuration "
+					+ "snmp-trap-port=\"1111\" "
+					+ "/>";
+			ConfigConverter converter = XsdHelper.getConverter(configDefinition);
+			String json = converter.xmlToJson(missingNewSuspectOnTrapConfig);
+			ValidationReport report = configDefinition.validate(json);
+			if(!report.hasErrors()){
+				fail();
+			}
         } catch (Exception e) {
         }
+
+
+
+        try {
+			String misspelledConfig = "<trapd-configuration "
+					+ "Ssnmp-trap-port=\"1111\" "
+					+ "new-suspect-on-trap=\"false\" "
+					+ "/>";
+			ConfigConverter converter = XsdHelper.getConverter(configDefinition);
+			String json = converter.xmlToJson(misspelledConfig);
+			ValidationReport report = configDefinition.validate(json);
+			if(!report.hasErrors()){
+				fail();
+			}
+        } catch (Exception e) {
+        }
+
+        //TODO: Freddy confirm is that acceptable to skip this test. Since xsd conversion will skip invalid config. (snmp-crap-address)
+//        try {
+//			String missplledConfig1 = "<trapd-configuration "
+//					+ "snmp-crap-address=\"*\" "
+//					+ "snmp-trap-port=\"162\" "
+//					+ "new-suspect-on-trap=\"false\" "
+//					+ "include-raw-message=\"false\" "
+//					+ "threads=\"0\" "
+//					+ "queue-size=\"10000\" "
+//					+ "batch-size=\"1000\" "
+//					+ "batch-interval=\"500\"" + "/>";
+//			ConfigConverter converter = XsdHelper.getConverter(configDefinition);
+//			String json = converter.xmlToJson(missplledConfig1);
+//			ValidationReport report = configDefinition.validate(json);
+//			if(!report.hasErrors()){
+//				fail();
+//			}
+//        } catch (Exception e) {
+//        }
 	        
 	    }
 

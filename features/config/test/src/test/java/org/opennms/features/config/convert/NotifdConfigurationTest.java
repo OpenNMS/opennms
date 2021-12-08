@@ -26,19 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.notifd;
+package org.opennms.features.config.convert;
+
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.netmgt.config.notifd.*;
 
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+public class NotifdConfigurationTest extends CmConfigTest<NotifdConfiguration> {
 
-public class NotifdConfigurationTest extends XmlTestNoCastor<NotifdConfiguration> {
-
-    public NotifdConfigurationTest(NotifdConfiguration sampleObject, Object sampleXml) {
-        super(sampleObject, sampleXml, "src/main/resources/xsds/notifd-configuration.xsd");
+    public NotifdConfigurationTest(NotifdConfiguration sampleObject, String sampleXml) {
+        super(sampleObject, sampleXml, "notifd-configuration.xsd", "notifd-configuration");
     }
 
     @Parameters

@@ -6,7 +6,5 @@
         <parameter key="factory" value="PASSWORD-CLEAR"/>
         <parameter key="username" value="admin"/>
         <parameter key="password" value="admin"/>
-        <parameter key="ds-name" value="opennms-jvm"/>
-        <parameter key="friendly-name" value="opennms-jvm"/>
     </mbean-server>
 </jmx-config>
