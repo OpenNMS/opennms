@@ -44,7 +44,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xbill.DNS.Address;
 
 import com.google.common.net.InetAddresses;
 
@@ -164,7 +163,7 @@ public class EifParser {
             String hostname = eifSlotMap.get("hostname");
             LOG.debug("Trying hostname for fqdn: {}",hostname);
             try {
-                fqdn = Address.getHostName(InetAddress.getByName(hostname));
+                fqdn = InetAddress.getByName(hostname).getHostName();
                 LOG.debug("Using hostname for fqdn: {}",fqdn);
             } catch (UnknownHostException uhe) {
                 LOG.error("UnknownHostException while resolving hostname {}",hostname);
