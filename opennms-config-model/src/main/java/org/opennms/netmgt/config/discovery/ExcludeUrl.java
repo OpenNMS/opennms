@@ -43,7 +43,7 @@ import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
- * A file URL holding specific addresses to be polled. Each
+ * A file URL holding specific addresses to be excluded. Each
  *  line in the URL file can be one of:
  *  "<IP><space>#<comments>", "<IP>", or
  *  "#<comments>". Lines starting with a '#' are ignored and so are

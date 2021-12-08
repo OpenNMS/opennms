@@ -139,8 +139,7 @@ public class DiscoveryConfiguration implements Serializable {
     private List<IncludeUrl> m_includeUrls = new ArrayList<>();
 
     /**
-     * a file URL holding specific addresses to be excluded from being polled
-     *  polled
+     * a file URL holding specific addresses to be excluded
      */
     @XmlElement(name = "exclude-url")
     private List<ExcludeUrl> m_excludeUrls = new ArrayList<>();
