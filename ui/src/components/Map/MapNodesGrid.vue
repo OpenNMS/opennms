@@ -88,7 +88,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="node in nodes" :key="node.id">
+      <tr v-for="node in nodes" :key="node.id" @dblclick="doubleClickHandler(node)">
         <td class="first-td" :class="nodeLabelAlarmServerityMap[node.label]">{{ node.id }}</td>
         <td>{{ node.foreignSource }}</td>
         <td>{{ node.foreignId }}</td>
@@ -115,7 +115,7 @@ const store = useStore()
 const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
 const nodeLabelAlarmServerityMap = computed(() => store.getters["mapModule/getNodeAlarmSeverityMap"])
 
-const rowDoubleClicked = (node: Node) => {
+const doubleClickHandler = (node: Node) => {
   const coordinate: Coordinates = { latitude: node.assetRecord.latitude, longitude: node.assetRecord.longitude }
   store.dispatch("mapModule/setMapCenter", coordinate)
 }

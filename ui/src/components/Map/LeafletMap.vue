@@ -32,7 +32,16 @@
               :lat-lng="[node.assetRecord.latitude, node.assetRecord.longitude]"
               :name="node.label"
             >
-              <LPopup>{{ node.label }}</LPopup>
+              <LPopup>
+                Node:
+                <router-link :to="`/node/${node.id}`" target="_blank">
+                  {{ node.label }}
+                </router-link>
+                <br />
+                Severity: {{ nodeLabelAlarmServerityMap[node.label] || 'NORMAL' }}
+                <br />
+                Category: {{ node.categories.length ? node.categories[0].name : 'N/A' }}
+              </LPopup>
               <LIcon :icon-url="setIcon(node)" :icon-size="iconSize" />
             </LMarker>
             <!-- Disable polylines until they work -->
@@ -42,7 +51,7 @@
               :key="coordinatePair[0].toString()"
               :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
               color="green"
-            /> -->
+            />-->
           </MarkerCluster>
         </template>
       </LMap>
