@@ -1,3 +1,13 @@
+opennms (29.0.1-1) stable; urgency=high
+
+  * New minor release. It addresses some bugs found in 29.0.0 mostly related
+    to running as non-root, and Minion communication.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/29.0.1/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Fri, 19 Nov 2021 10:26:00 -0400
+ 
 opennms (29.0.0-1) stable; urgency=medium
 
   * New major release. It contains a number of updates including

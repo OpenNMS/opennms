@@ -45,6 +45,7 @@
 ** xref:performance-data-collection/collectd/configuration.adoc[]
 ** xref:performance-data-collection/data-types.adoc[]
 ** xref:performance-data-collection/resource-types.adoc[]
+*** xref:performance-data-collection/snmp-index.adoc[]
 ** xref:performance-data-collection/collectors.adoc[]
 ** xref:performance-data-collection/property-extenders.adoc[]
 ** xref:performance-data-collection/collectd/collect-admin.adoc[]

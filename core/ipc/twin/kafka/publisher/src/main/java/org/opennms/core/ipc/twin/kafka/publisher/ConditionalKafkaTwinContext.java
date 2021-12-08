@@ -31,6 +31,7 @@ package org.opennms.core.ipc.twin.kafka.publisher;
 import static org.opennms.core.ipc.twin.api.TwinStrategy.Strategy.KAFKA;
 
 import org.opennms.core.ipc.twin.api.TwinStrategy;
+import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ConditionContext;
@@ -56,7 +57,9 @@ public class ConditionalKafkaTwinContext {
         @Override
         public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
             final boolean enabled = KAFKA.equals(TwinStrategy.getTwinStrategy());
-            LOG.debug("Enable Kafka Twin: {}", enabled);
+            try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
+                LOG.debug("Enable Kafka Twin : {}", enabled);
+            }
             return enabled;
         }
     }

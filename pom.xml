@@ -1455,7 +1455,7 @@
     <log4j2Version>2.13.2</log4j2Version>
     <logbackClassicVersion>1.2.3</logbackClassicVersion>
     <mapstructVersion>1.4.1.Final</mapstructVersion>
-    <minaVersion>2.1.4</minaVersion>
+    <minaVersion>2.1.5</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
     <netty4Version>4.1.69.Final</netty4Version>
     <newtsVersion>1.5.5</newtsVersion>
@@ -1522,7 +1522,7 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
-    <vaadinVersion>8.12.4</vaadinVersion>
+    <vaadinVersion>8.13.0</vaadinVersion>
     <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <vaadinAddonContextMenuVersion>3.1.0</vaadinAddonContextMenuVersion>
