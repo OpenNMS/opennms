@@ -57,6 +57,7 @@ import org.springframework.util.FileSystemUtils;
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -193,9 +194,11 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
             // check for org.opennms.features.datachoices.cfg
             Optional<JSONObject> config = this.cm.getJSONConfiguration("org.opennms.features.datachoices", "default");
-            assertEquals(2, config.get().keySet().size());
-            assertNull(config.get().get("enabled"));
-            assertNull(config.get().get("acknowledged-by"));
+            assertEquals(7, config.get().keySet().size());
+            assertEquals(JSONObject.NULL, config.get().get("enabled"));
+            assertEquals(JSONObject.NULL, config.get().get("acknowledged-by"));
+            assertEquals(BigDecimal.valueOf(86400000), config.get().get("interval"));
+            assertEquals("http://stats.opennms.org/datachoices/", config.get().get("url"));
         } finally {
             this.db.cleanUp();
         }
