@@ -144,6 +144,7 @@
         <argument ref="flowRepositoryMetricRegistry" />
         <argument ref="classificationEngine" />
         <argument ref="nodeDao" />
+        <argument ref="ipInterfaceDao" />
         <argument ref="interfaceToNodeCache" />
         <argument ref="sessionUtils" />
         <argument ref="nodeCacheConfig" />
