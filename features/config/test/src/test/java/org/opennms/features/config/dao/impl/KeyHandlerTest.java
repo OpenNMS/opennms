@@ -33,11 +33,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
 
@@ -47,10 +43,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.KeyHandler;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.features.config.service.impl.ProvisiondCmJaxbConfigTestDao;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -79,7 +73,8 @@ public class KeyHandlerTest {
 
     @Before
     public void init() throws IOException, JAXBException {
-        configurationManagerService.registerSchema(provisiondCmJaxbConfigTestDao.getConfigName(),
+
+        /*configurationManagerService.registerSchema(provisiondCmJaxbConfigTestDao.getConfigName(),
                 "provisiond-configuration.xsd", "provisiond-configuration");
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
         Optional<ConfigSchema<?>> configSchema = configurationManagerService.getRegisteredSchema(provisiondCmJaxbConfigTestDao.getConfigName());
@@ -87,6 +82,7 @@ public class KeyHandlerTest {
         JsonAsString configObject = new JsonAsString(configSchema.get().getConverter().xmlToJson(xmlStr));
         configurationManagerService.registerConfiguration(provisiondCmJaxbConfigTestDao.getConfigName(),
                 provisiondCmJaxbConfigTestDao.getDefaultConfigId(), configObject);
+         */
     }
 
     @After

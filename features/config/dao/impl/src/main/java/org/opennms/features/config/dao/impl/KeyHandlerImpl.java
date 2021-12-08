@@ -45,8 +45,8 @@ import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
+import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
-import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.KeyHandler;
 
 import com.google.common.base.Strings;
@@ -74,14 +74,14 @@ public class KeyHandlerImpl implements KeyHandler {
         Set<String> matches = new LinkedHashSet<>();
         for (String configName : matchingConfigNames) {
             try {
-                final Optional<ConfigSchema<?>> maybeSchema = configStoreDao.getConfigSchema(configName);
-                if (maybeSchema.isEmpty()) {
+                final Optional<ConfigDefinition> maybeDefinition = configStoreDao.getConfigDefinition(configName);
+                if (maybeDefinition.isEmpty()) {
                     // silently skip configs for which we don't have a schema
                     continue;
                 }
-                final ConfigSchema<?> schema = maybeSchema.get();
+                final ConfigDefinition configDef = maybeDefinition.get();
 
-                KeyGenerator keyGenerator = new KeyGenerator(configName, schema);
+                KeyGenerator keyGenerator = new KeyGenerator(configName, configDef);
                 keyGenerator.getKeys().stream().filter(path -> path.startsWith(prefix)).forEach(matches::add);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to get schema for: " + configName, e);
@@ -105,19 +105,19 @@ public class KeyHandlerImpl implements KeyHandler {
         // First part is the "configName", find the corresponding schema
         final String configName = parts[1];
 
-        final ConfigSchema<?> schema;
+        final ConfigDefinition configDefinition;
         try {
-            final Optional<ConfigSchema<?>> maybeSchema = configStoreDao.getConfigSchema(configName);
-            if (maybeSchema.isEmpty()) {
+            final Optional<ConfigDefinition> maybeDefinition = configStoreDao.getConfigDefinition(configName);
+            if (maybeDefinition.isEmpty()) {
                 throw new RuntimeException("No schema for: " + configName);
             }
-            schema = maybeSchema.get();
+            configDefinition = maybeDefinition.get();
         } catch (IOException e) {
             throw new RuntimeException("Failed to get schema for: " + configName, e);
         }
 
         // Grab the configItem for the corresponding key and validate the path
-        KeyWalker keyWalker = new KeyWalker(configName, schema.getConverter().getValidationSchema().getConfigItem());
+        KeyWalker keyWalker = new KeyWalker(configName, configDefinition);
         ConfigItem item = keyWalker.getItemForKey(parts);
         if (item == null) {
             throw new RuntimeException("No known element for key: " + key);
@@ -264,14 +264,14 @@ public class KeyHandlerImpl implements KeyHandler {
     }
 
     private static class KeyWalker {
-        private final ConfigItem schema;
+        private final ConfigDefinition configDefinition;
 
-        public KeyWalker(String configName, ConfigItem schema) {
-            this.schema = Objects.requireNonNull(schema);
+        public KeyWalker(String configName, ConfigDefinition configDefinition) {
+            this.configDefinition = Objects.requireNonNull(configDefinition);
         }
 
         public ConfigItem getItemForKey(String[] parts) {
-            ConfigItem parent = schema;
+            ConfigItem parent = null;
             for (String part : Arrays.stream(parts).skip(2).collect(Collectors.toList())) {
                 if (ConfigItem.Type.ARRAY.equals(parent.getType())) {
                     // Validate the index
@@ -311,9 +311,11 @@ public class KeyHandlerImpl implements KeyHandler {
         private final Map<ConfigItem, String> pathsToLeafs = new LinkedHashMap<>();
         private final Map<String, ConfigItem> itemsByPath = new LinkedHashMap<>();
 
-        public KeyGenerator(String configName, ConfigSchema<?> schema) {
+        public KeyGenerator(String configName, ConfigDefinition configDefinition) {
             this.root = "/" + configName;
-            walk(null, schema.getConverter().getValidationSchema().getConfigItem(), this::generatePathsForItems);
+            // configDefinition.getSchema()
+            // schema.getConverter().getValidationSchema().getConfigItem()
+            walk(null, null, this::generatePathsForItems);
         }
 
         private void generatePathsForItems(ConfigItem parent, ConfigItem item) {
