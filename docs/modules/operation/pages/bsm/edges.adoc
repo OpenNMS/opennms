@@ -22,7 +22,7 @@ The editor changing the edge attributes is shown in figure <<ga-bsm-edge-edit, E
 
 [[ga-bsm-edge-edit]]
 .Editor to add Business Service Edges
-image:bsm/02_bsm-edge-edit.png[Business Service Edge edit,400,199]
+image::bsm/02_bsm-edge-edit.png[Business Service Edge edit,400,199]
 
 == Child Services
 

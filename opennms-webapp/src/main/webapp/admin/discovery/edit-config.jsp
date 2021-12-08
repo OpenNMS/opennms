@@ -228,7 +228,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
           <input type="text" class="form-control col-md-8" id="retries" name="retries" value="<%=currConfig.getRetries().orElse(DiscoveryConfigFactory.DEFAULT_RETRIES)%>"/>
         </div> <!-- form-group -->
         <div class="form-group form-row">
-          <label for="foreignsource" class="col-form-label col-md-4">Foreign Source</label>
+          <label for="foreignsource" class="col-form-label col-md-4">Requisition</label>
           <select id="foreignsource" class="form-control custom-select col-md-8" name="foreignsource">
             <option value="" <%if (!currConfig.getForeignSource().isPresent()) out.print("selected");%>>None selected</option>
             <% for (String key : foreignsources.keySet()) { %>

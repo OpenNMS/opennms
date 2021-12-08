@@ -3,7 +3,7 @@
 
 This section describes all available built-in xref:operation:provisioning/introduction.adoc[provisioning] detectors.
 You can configure them to allow complex detection to meet the needs of your environment.
-For information on how to extend the functionality of these detectors, see the xref:development:overview/overview.adoc#overview[Development section] to contribute to the project.
+For information on how to extend the functionality of these detectors, see the xref:development:development.adoc#development[Development section] to contribute to the project.
 
 [[ref-detector-provisioning-meta-data]]
 == Metadata DSL

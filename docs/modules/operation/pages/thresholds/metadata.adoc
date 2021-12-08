@@ -43,10 +43,10 @@ Before using metadata in a threshold, you need to add the metadata context pair,
 
 +
 
-image:metadata/meta-expression1.png[]
+image::metadata/meta-expression1.png[]
 
 . Click *Save*.
 
 This expression will trigger an event when the number of logged-in users exceeds 1.
 
-image:metadata/meta-expression2.png[]
+image::metadata/meta-expression2.png[]
