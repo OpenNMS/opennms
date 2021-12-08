@@ -42,10 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class DiscoveryConfigurationMigratorOfflineTest {
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryConfigurationMigratorOfflineTest.class);
@@ -70,7 +67,8 @@ public class DiscoveryConfigurationMigratorOfflineTest {
 
         final File configFile = new File(m_tempFolder.getRoot(), "etc/discovery-configuration.xml");
         ConfigurationManagerServiceMock mock = new ConfigurationManagerServiceMock();
-        mock.setConfigFile(configFile.toString());
+        Map<String,String> configFileMap = new HashMap<>();
+        configFileMap.put("discovery", configFile.toString());
         Optional<String> jsonStr = mock.getJSONStrConfiguration("discovery", "default");
         final DiscoveryConfiguration config = ConfigConvertUtil.jsonToObject(jsonStr.get(), DiscoveryConfiguration.class);
         Assert.assertNotNull(config);

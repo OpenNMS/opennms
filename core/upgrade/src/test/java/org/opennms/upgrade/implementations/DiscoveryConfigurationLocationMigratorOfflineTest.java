@@ -30,10 +30,7 @@ package org.opennms.upgrade.implementations;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -75,7 +72,8 @@ public class DiscoveryConfigurationLocationMigratorOfflineTest {
 
         final File configFile = new File(m_tempFolder.getRoot(), "etc/discovery-configuration.xml");
         ConfigurationManagerServiceMock mock = new ConfigurationManagerServiceMock();
-        mock.setConfigFile(configFile.toString());
+        Map<String,String> configFileMap = new HashMap<>();
+        configFileMap.put("discovery", configFile.toString());
         Optional<String> jsonStr = mock.getJSONStrConfiguration("discovery", "default");
         final DiscoveryConfiguration discoveryConfiguration = ConfigConvertUtil.jsonToObject(jsonStr.get(), DiscoveryConfiguration.class);
         Assert.assertNotNull(discoveryConfiguration);
