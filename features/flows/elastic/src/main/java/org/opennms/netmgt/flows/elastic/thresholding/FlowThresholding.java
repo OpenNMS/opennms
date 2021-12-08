@@ -41,6 +41,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -157,6 +158,7 @@ public class FlowThresholding implements Closeable {
 
                     final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(session.collectionAgent)
                             .withTimestamp(timerTaskDate)
+                            .withSequenceNumber(session.sequenceNumber.getAndIncrement())
                             .withCounter(appResource,
                                          RESOURCE_GROUP,
                                          application.getKey().direction == Direction.INGRESS
@@ -238,6 +240,7 @@ public class FlowThresholding implements Closeable {
         // This is not synchronized as reference updates are always atomic.
         // See https://docs.oracle.com/javase/specs/jls/se7/html/jls-17.html#jls-17.7
         private volatile Instant lastUpdate = null;
+        private AtomicLong sequenceNumber = new AtomicLong(ThreadLocalRandom.current().nextLong(0, Integer.MAX_VALUE));
 
         private Session(final ThresholdingSession thresholdingSession,
                         final CollectionAgent collectionAgent) {
