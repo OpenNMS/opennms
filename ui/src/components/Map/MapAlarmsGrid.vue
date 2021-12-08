@@ -13,21 +13,63 @@
   <table class="tl1 tl2 tl3" summary="Alarms">
     <thead>
       <tr>
-        <th class="checkbox-cell">
+        <th class="first-th">
           <FeatherCheckbox v-model="all" label="All" />
         </th>
-        <th scope="col">ID</th>
-        <th scope="col">SEVERITY</th>
-        <th scope="col">NODE LABEL</th>
-        <th scope="col">UEI</th>
-        <th scope="col">COUNT</th>
-        <th scope="col">LAST EVENT</th>
-        <th scope="col">LOG MESSAGE</th>
+
+        <FeatherSortHeader
+          scope="col"
+          property="id"
+          :sort="sortStates.id"
+          @sort-changed="sortChanged"
+        >ID</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="severity"
+          :sort="sortStates.severity"
+          @sort-changed="sortChanged"
+        >SEVERITY</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="nodeLabel"
+          :sort="sortStates.nodeLabel"
+          @sort-changed="sortChanged"
+        >NODE LABEL</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="uei"
+          :sort="sortStates.uei"
+          @sort-changed="sortChanged"
+        >UEI</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="count"
+          :sort="sortStates.count"
+          @sort-changed="sortChanged"
+        >COUNT</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="lastEvent"
+          :sort="sortStates.lastEvent"
+          @sort-changed="sortChanged"
+        >LAST EVENT</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="logMessage"
+          :sort="sortStates.logMessage"
+          @sort-changed="sortChanged"
+        >LOG MESSAGE</FeatherSortHeader>
       </tr>
     </thead>
     <tbody>
       <tr v-for="alarm in alarms" :key="alarm.id">
-        <td class="checkbox-cell">
+        <td :class="alarm.severity" class="first-td">
           <FeatherCheckbox
             @update:modelValue="selectCheckbox(alarm)"
             :modelValue="all || alarmCheckboxes[alarm.id]"
@@ -46,12 +88,13 @@
   </table>
 </template>
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, reactive } from "vue"
 import { useStore } from "vuex"
 import { computed } from 'vue'
-import { Alarm, AlarmQueryParameters } from "@/types"
+import { Alarm, AlarmQueryParameters, FeatherSortObject } from "@/types"
 import { FeatherSelect } from '@featherds/select'
 import { FeatherCheckbox } from '@featherds/checkbox'
+import { FeatherSortHeader, SORT } from "@featherds/table"
 
 const store = useStore()
 const alarms = computed<Alarm[]>(() => store.getters['mapModule/getAlarms'])
@@ -126,6 +169,24 @@ const selectAlarmAck = async () => {
   all.value = false
   alarmCheckboxes.value = {}
 }
+
+const sortStates: any = reactive({
+  id: SORT.DESCENDING,
+  severity: SORT.NONE,
+  nodeLabel: SORT.NONE,
+  uei: SORT.NONE,
+  count: SORT.NONE,
+  lastEventTime: SORT.NONE,
+  logMessage: SORT.NONE
+})
+
+const sortChanged = (sortObj: FeatherSortObject) => {
+  for (const key in sortStates) {
+    sortStates[key] = SORT.NONE
+  }
+  sortStates[`${sortObj.property}`] = sortObj.value
+  store.dispatch('mapModule/setAlarmSortObject', sortObj)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -147,5 +208,20 @@ table {
   position: absolute;
   right: 30px;
   top: -15px;
+}
+.first-th {
+  padding-left: 20px;
+}
+.first-td {
+  border-left: 4px solid var(--feather-success);
+}
+.WARNING,
+.MINOR,
+.MAJOR {
+  border-left: 4px solid var(--feather-warning);
+}
+
+.CRITICAL {
+  border-left: 4px solid var(--feather-error);
 }
 </style>

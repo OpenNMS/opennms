@@ -2,30 +2,101 @@
   <table class="tl1 tl2 tl3" summary="Nodes">
     <thead>
       <tr>
-        <th scope="col">ID</th>
-        <th scope="col">FOREIGN SOURCE</th>
-        <th scope="col">FOREIGN ID</th>
-        <th scope="col">LABEL</th>
-        <th scope="col">LABEL SOURCE</th>
-        <th scope="col">LAST CAPABILITIES SCAN</th>
-        <th scope="col">PRIMARY INTERFACE</th>
-        <th scope="col">SYS OBJECT ID</th>
-        <th scope="col">SYS NAME</th>
-        <th scope="col">SYS DESCRIPTION</th>
-        <th scope="col">SYS CONTACT</th>
-        <th scope="col">SYS LOCATION</th>
+        <FeatherSortHeader
+          scope="col"
+          property="id"
+          :sort="sortStates.id"
+          @sort-changed="sortChanged"
+        >ID</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="foreignSource"
+          :sort="sortStates.foreignSource"
+          @sort-changed="sortChanged"
+        >FOREIGN SOURCE</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="foreignId"
+          :sort="sortStates.foreignId"
+          @sort-changed="sortChanged"
+        >FOREIGN ID</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="label"
+          :sort="sortStates.label"
+          @sort-changed="sortChanged"
+        >LABEL</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="labelSource"
+          :sort="sortStates.labelSource"
+          @sort-changed="sortChanged"
+        >LABEL SOURCE</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="lastCapabilitiesScan"
+          :sort="sortStates.lastCapabilitiesScan"
+          @sort-changed="sortChanged"
+        >LAST CAP SCAN</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="primaryInterface"
+          :sort="sortStates.primaryInterface"
+          @sort-changed="sortChanged"
+        >PRIMARY INTERFACE</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="sysObjectId"
+          :sort="sortStates.sysObjectId"
+          @sort-changed="sortChanged"
+        >SYSOBJECTID</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="sysName"
+          :sort="sortStates.sysName"
+          @sort-changed="sortChanged"
+        >SYSNAME</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="sysDescription"
+          :sort="sortStates.sysDescription"
+          @sort-changed="sortChanged"
+        >SYSDESCRIPTION</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="sysContact"
+          :sort="sortStates.sysContact"
+          @sort-changed="sortChanged"
+        >SYSCONTACT</FeatherSortHeader>
+
+        <FeatherSortHeader
+          scope="col"
+          property="sysLocation"
+          :sort="sortStates.sysLocation"
+          @sort-changed="sortChanged"
+        >SYSLOCATION</FeatherSortHeader>
       </tr>
     </thead>
     <tbody>
       <tr v-for="node in nodes" :key="node.id">
-        <td>{{ node.id }}</td>
+        <td class="first-td" :class="nodeLabelAlarmServerityMap[node.label]">{{ node.id }}</td>
         <td>{{ node.foreignSource }}</td>
         <td>{{ node.foreignId }}</td>
         <td>{{ node.label }}</td>
         <td>{{ node.labelSource }}</td>
         <td>{{ node.lastCapabilitiesScan }}</td>
         <td>{{ node.primaryInterface }}</td>
-        <td>{{ node.sysObjectid }}</td>
+        <td>{{ node.sysObjectId }}</td>
         <td>{{ node.sysName }}</td>
         <td>{{ node.sysDescription }}</td>
         <td>{{ node.sysContact }}</td>
@@ -35,17 +106,41 @@
   </table>
 </template>
 <script setup lang="ts">
+import { reactive, computed } from 'vue'
 import { useStore } from "vuex"
-import { computed } from 'vue'
 import { Coordinates, Node, FeatherSortObject } from "@/types"
 import { FeatherSortHeader, SORT } from "@featherds/table"
 
 const store = useStore()
 const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
+const nodeLabelAlarmServerityMap = computed(() => store.getters["mapModule/getNodeAlarmSeverityMap"])
 
 const rowDoubleClicked = (node: Node) => {
   const coordinate: Coordinates = { latitude: node.assetRecord.latitude, longitude: node.assetRecord.longitude }
   store.dispatch("mapModule/setMapCenter", coordinate)
+}
+
+const sortStates: any = reactive({
+  label: SORT.ASCENDING,
+  id: SORT.NONE,
+  foreignSource: SORT.NONE,
+  foreignId: SORT.NONE,
+  labelSource: SORT.NONE,
+  lastCapabilitiesScan: SORT.NONE,
+  primaryInterface: SORT.NONE,
+  sysObjectId: SORT.NONE,
+  sysName: SORT.NONE,
+  sysDescription: SORT.NONE,
+  sysContact: SORT.NONE,
+  sysLocation: SORT.NONE
+})
+
+const sortChanged = (sortObj: FeatherSortObject) => {
+  for (const key in sortStates) {
+    sortStates[key] = SORT.NONE
+  }
+  sortStates[`${sortObj.property}`] = sortObj.value
+  store.dispatch('mapModule/setNodeSortObject', sortObj)
 }
 </script>
 
@@ -62,5 +157,18 @@ table {
   overflow-y: scroll;
   padding-top: 4px;
   margin-top: 15px;
+}
+.first-td {
+  padding-left: 12px;
+  border-left: 4px solid var(--feather-success);
+}
+.WARNING,
+.MINOR,
+.MAJOR {
+  border-left: 4px solid var(--feather-warning);
+}
+
+.CRITICAL {
+  border-left: 4px solid var(--feather-error);
 }
 </style>

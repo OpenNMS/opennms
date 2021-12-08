@@ -1,5 +1,5 @@
 import API from "@/services"
-import { QueryParameters, VuexContext, Coordinates, AlarmModificationQueryVariable, Node } from '@/types'
+import { QueryParameters, VuexContext, Coordinates, AlarmModificationQueryVariable, Node, FeatherSortObject } from '@/types'
 import { LatLngBounds } from 'leaflet'
 
 const getNodes = async (context: VuexContext, queryParameters?: QueryParameters) => {
@@ -73,6 +73,14 @@ const setSearchedNodeLabels = (context: VuexContext, nodeLabels: string[]) => {
   context.commit("SAVE_SEARCHED_NODE_LABELS", nodeLabels)
 }
 
+const setNodeSortObject = (context: VuexContext, sortObj: FeatherSortObject) => {
+  context.commit("SAVE_NODE_SORT_OBJECT", sortObj)
+}
+
+const setAlarmSortObject = (context: VuexContext, sortObj: FeatherSortObject) => {
+  context.commit("SAVE_ALARM_SORT_OBJECT", sortObj)
+}
+
 export default {
   getNodes,
   getAlarms,
@@ -83,5 +91,7 @@ export default {
   modifyAlarm,
   setMapBounds,
   setSelectedSeverity,
-  setSearchedNodeLabels
+  setSearchedNodeLabels,
+  setNodeSortObject,
+  setAlarmSortObject
 }

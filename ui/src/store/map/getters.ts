@@ -2,13 +2,17 @@ import { Node, Alarm } from '@/types'
 import { latLng } from 'leaflet'
 import { State } from './state'
 import { numericSeverityLevel } from '@/components/Map/utils'
+import { orderBy } from 'lodash'
 
 const getNodes = (state: State): Node[] => {
   const severityMap = getNodeAlarmSeverityMap(state)
   const selectedNumericSeverityLevel = numericSeverityLevel(state.selectedSeverity)
-  
+
   // copy the vuex nodes
   let nodes: Node[] = JSON.parse(JSON.stringify(state.nodesWithCoordinates))
+
+  // sort the nodes
+  nodes = orderBy(nodes, state.nodeSortObject.property, state.nodeSortObject.value)
 
   // filter for nodes within map view-port
   nodes = nodes.filter((node) => {
@@ -39,7 +43,10 @@ const getNodeLabels = (state: State) => getNodes(state).map((node: Node) => node
 
 const getAlarms = (state: State): Alarm[] => {
   const nodeLabels = getNodeLabels(state)
-  return state.alarms.filter((alarm: Alarm) => nodeLabels.includes(alarm.nodeLabel))
+  const alarms = state.alarms.filter((alarm: Alarm) => nodeLabels.includes(alarm.nodeLabel))
+
+  // sort and return the alarms
+  return orderBy(alarms, state.alarmSortObject.property, state.alarmSortObject.value)
 }
 
 const getNodeAlarmSeverityMap = (state: State) => {

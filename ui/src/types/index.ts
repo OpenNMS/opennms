@@ -79,7 +79,7 @@ export interface Node {
   labelSource: string
   lastCapabilitiesScan: string
   primaryInterface: number
-  sysObjectid: string
+  sysObjectId: string
   sysDescription: string
   sysName: string
   sysContact: string
@@ -95,7 +95,7 @@ export interface MapNode {
   labelSource: any
   lastCapabilitiesScan: string
   primaryInterface: number
-  sysObjectid: string
+  sysObjectId: string
   sysDescription: string
   sysName: string
   sysContact: any
@@ -212,7 +212,7 @@ export interface QueryParameters {
 
 export interface FeatherSortObject {
   property: string
-  value: SORT
+  value: SORT | any
 }
 
 export interface SortProps extends FeatherSortObject {
