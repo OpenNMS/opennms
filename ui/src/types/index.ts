@@ -280,7 +280,7 @@ export interface AlarmQueryParameters {
 
 export interface AlarmModificationQueryVariable {
   pathVariable: string
-  queryParameters:  AlarmQueryParameters
+  queryParameters: AlarmQueryParameters
 }
 export interface WhoAmIResponse {
   fullName: string
@@ -292,4 +292,20 @@ export interface WhoAmIResponse {
 export interface FileEditorResponseLog {
   success: boolean,
   msg: string
+}
+
+export interface AppInfo {
+  datetimeformatConfig: {
+    zoneId: string,
+    datetimeformat: string
+  }
+  displayVersion: string
+  packageDescription: string
+  packageName: string
+  services: object
+  ticketerConfig: {
+    plugin: string | null,
+    enabled: boolean
+  }
+  version: string
 }

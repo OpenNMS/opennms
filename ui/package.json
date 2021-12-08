@@ -32,6 +32,8 @@
     "@featherds/tabs": "0.9.1",
     "@featherds/utils": "0.9.1",
     "axios": "^0.21.2",
+    "date-fns": "^2.27.0",
+    "date-fns-tz": "^1.1.6",
     "dayjs": "^1.10.7",
     "leaflet": "^1.7.1",
     "leaflet.markercluster": "^1.5.3",

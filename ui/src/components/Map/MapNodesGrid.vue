@@ -94,7 +94,7 @@
         <td>{{ node.foreignId }}</td>
         <td>{{ node.label }}</td>
         <td>{{ node.labelSource }}</td>
-        <td>{{ node.lastCapabilitiesScan }}</td>
+        <td v-date>{{ node.lastCapabilitiesScan }}</td>
         <td>{{ node.primaryInterface }}</td>
         <td>{{ node.sysObjectId }}</td>
         <td>{{ node.sysName }}</td>

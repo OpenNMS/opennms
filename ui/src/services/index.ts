@@ -20,9 +20,11 @@ import { getWhoAmI } from './whoAmIService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { search } from './searchService'
+import { getInfo } from './infoService'
 
 export default {
   search,
+  getInfo,
   getNodes,
   getAlarms,
   getEvents,

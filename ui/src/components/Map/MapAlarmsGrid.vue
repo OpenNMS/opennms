@@ -55,7 +55,7 @@
         <FeatherSortHeader
           scope="col"
           property="lastEvent"
-          :sort="sortStates.lastEvent"
+          :sort="sortStates.lastEventTime"
           @sort-changed="sortChanged"
         >LAST EVENT</FeatherSortHeader>
 
@@ -81,7 +81,7 @@
         <td>{{ alarm.nodeLabel }}</td>
         <td>{{ alarm.uei }}</td>
         <td>{{ alarm.count }}</td>
-        <td>{{ alarm.lastEventTime }}</td>
+        <td v-date>{{ alarm.lastEventTime }}</td>
         <td>{{ alarm.logMessage }}</td>
       </tr>
     </tbody>

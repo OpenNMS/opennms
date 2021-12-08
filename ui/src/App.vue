@@ -32,7 +32,10 @@ const store = useStore()
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const contentMargin = computed(() => navRailOpen.value ? '218px' : '0px')
 const ease = computed(() => navRailOpen.value ? '10ms' : '80ms')
-onMounted(() => store.dispatch('authModule/getWhoAmI'))
+onMounted(() => {
+  store.dispatch('authModule/getWhoAmI')
+  store.dispatch('infoModule/getInfo')
+})
 </script>
   
 <style lang="scss">

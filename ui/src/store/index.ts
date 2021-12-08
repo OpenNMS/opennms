@@ -11,6 +11,7 @@ import fileEditorModule from './fileEditor'
 import authModule from './auth'
 import logsModule from './logs'
 import appModule from './app'
+import infoModule from './info'
 
 export default createStore({
   modules: {
@@ -23,6 +24,7 @@ export default createStore({
     fileEditorModule,
     logsModule,
     authModule,
-    appModule
+    appModule,
+    infoModule
   }
 })
