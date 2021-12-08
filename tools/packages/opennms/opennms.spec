@@ -880,18 +880,10 @@ if [ -e "${ROOT_INST}/etc/users.xml" ]; then
 fi
 
 if ! getent group opennms >/dev/null 2>&1; then \
-	if ! id -g 1000 >/dev/null 2>&1; then
-		groupadd --system --gid 1000 opennms
-	else
-		groupadd --system opennms;
-	fi
+	groupadd --system opennms;
 fi
 if ! getent passwd opennms >/dev/null 2>&1; then
-	if ! id 1000 >/dev/null 2>&1; then
-		useradd --system --uid 1000 --gid opennms --home-dir "$RPM_INSTALL_PREFIX0" --shell /sbin/nologin --comment "OpenNMS service account" opennms
-	else
-		useradd --system --gid opennms --home-dir "$RPM_INSTALL_PREFIX0" --shell /sbin/nologin --comment "OpenNMS service account" opennms
-	fi
+	useradd --system --gid opennms --home-dir "$RPM_INSTALL_PREFIX0" --shell /sbin/nologin --comment "OpenNMS service account" opennms
 fi
 
 %post -p /bin/bash core

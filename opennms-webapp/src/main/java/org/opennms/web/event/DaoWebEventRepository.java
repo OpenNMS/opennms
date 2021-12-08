@@ -31,6 +31,7 @@ package org.opennms.web.event;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -203,7 +204,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         event.operatorAction = onmsEvent.getEventOperAction();
         event.operatorActionMenuText = onmsEvent.getEventOperActionMenuText();
         event.operatorInstruction = onmsEvent.getEventOperInstruct();
-        event.parms = onmsEvent.getEventParameters()==null ? Maps.newHashMap() : onmsEvent.getEventParameters().stream().collect(Collectors.toMap(OnmsEventParameter::getName, OnmsEventParameter::getValue));
+        event.parms = onmsEvent.getEventParameters()==null ? Maps.newLinkedHashMap() : onmsEvent.getEventParameters().stream().collect(Collectors.toMap(OnmsEventParameter::getName, OnmsEventParameter::getValue, (u, v) -> u, LinkedHashMap::new));
         event.serviceID = onmsEvent.getServiceType() != null ? onmsEvent.getServiceType().getId() : 0;
         event.serviceName = onmsEvent.getServiceType() != null ? onmsEvent.getServiceType().getName() : "";
         event.severity = OnmsSeverity.get(onmsEvent.getEventSeverity());

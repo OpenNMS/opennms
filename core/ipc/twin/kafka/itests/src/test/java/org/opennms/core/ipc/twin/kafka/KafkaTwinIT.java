@@ -28,19 +28,28 @@
 
 package org.opennms.core.ipc.twin.kafka;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.contains;
+
 import java.util.Properties;
 
+import io.opentracing.util.GlobalTracer;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.kafka.publisher.KafkaTwinPublisher;
 import org.opennms.core.ipc.twin.kafka.subscriber.KafkaTwinSubscriber;
 import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
+import org.opennms.core.ipc.twin.test.MockMinionIdentity;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -64,8 +73,10 @@ public class KafkaTwinIT extends AbstractTwinBrokerIT {
             properties.put("group.id", SystemInfoUtils.getInstanceId());
             return properties;
         };
-
-        final var kafkaTwinPublisher = new KafkaTwinPublisher(new LocalTwinSubscriberImpl(), config);
+        TracerRegistry tracerRegistry = Mockito.mock(TracerRegistry.class);
+        Mockito.when(tracerRegistry.getTracer()).thenReturn(GlobalTracer.get());
+        LocalTwinSubscriber localTwinSubscriber = new LocalTwinSubscriberImpl(new MockMinionIdentity("Default"), tracerRegistry);
+        final var kafkaTwinPublisher = new KafkaTwinPublisher(localTwinSubscriber, config, tracerRegistry);
         kafkaTwinPublisher.init();
 
         try {
@@ -84,8 +95,9 @@ public class KafkaTwinIT extends AbstractTwinBrokerIT {
             properties.put("bootstrap.servers", kafkaServer.getKafkaConnectString());
             return properties;
         };
-
-        final var kafkaTwinSubscriber = new KafkaTwinSubscriber(identity, config);
+        TracerRegistry tracerRegistry = Mockito.mock(TracerRegistry.class);
+        Mockito.when(tracerRegistry.getTracer()).thenReturn(GlobalTracer.get());
+        final var kafkaTwinSubscriber = new KafkaTwinSubscriber(identity, config, tracerRegistry);
         kafkaTwinSubscriber.init();
 
         try {
@@ -95,5 +107,25 @@ public class KafkaTwinIT extends AbstractTwinBrokerIT {
         }
 
         return kafkaTwinSubscriber;
+    }
+
+    @Test
+    public void retryTest() throws Exception {
+        // This test is kafka-specific for now.
+        // There is no generic way to stop/break other message brokers.
+
+        final var session = this.publisher.register("test", String.class);
+        session.publish("Test1");
+
+        this.kafkaServer.stopKafkaServer();
+
+        Thread.sleep(5000);
+
+        final var tracker = Tracker.subscribe(this.createSubscriber(new MockMinionIdentity("Default")), "test", String.class);
+
+        this.kafkaServer.startKafkaServer();
+
+        // Ensure Test1 is received.
+        await().until(tracker::getLog, contains("Test1"));
     }
 }

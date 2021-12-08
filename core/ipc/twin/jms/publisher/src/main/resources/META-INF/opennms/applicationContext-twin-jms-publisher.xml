@@ -21,9 +21,15 @@
           init-method="init" destroy-method="close" >
         <constructor-arg ref="twinRpcServer"/>
         <constructor-arg ref="localTwinSubscriber"/>
+        <constructor-arg ref="tracerRegistry"/>
     </bean>
 
-    <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl"/>
+    <bean id="identity" class="org.opennms.features.distributed.identity.impl.OpenNMSIdentityImpl"/>
+    <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl">
+        <constructor-arg ref="identity"/>
+        <constructor-arg ref="tracerRegistry"/>
+    </bean>
+
     <onmsgi:service ref="localTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
 
     <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->

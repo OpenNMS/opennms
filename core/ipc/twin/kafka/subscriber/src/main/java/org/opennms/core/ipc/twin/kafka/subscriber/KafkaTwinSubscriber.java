@@ -51,6 +51,7 @@ import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.kafka.common.KafkaConsumerRunner;
 import org.opennms.core.ipc.twin.kafka.common.Topic;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,14 +72,16 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
     private KafkaProducer<String, byte[]> producer;
     private KafkaConsumerRunner consumer;
 
-    public KafkaTwinSubscriber(final MinionIdentity identity, final KafkaConfigProvider kafkaConfigProvider) {
-        super(identity);
+    public KafkaTwinSubscriber(final MinionIdentity identity,
+                               final KafkaConfigProvider kafkaConfigProvider,
+                               final TracerRegistry tracerRegistry) {
+        super(identity, tracerRegistry);
         this.kafkaConfigProvider = Objects.requireNonNull(kafkaConfigProvider);
     }
 
     public void init() {
         final var kafkaConfig = new Properties();
-        kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, this.getMinionIdentity().getId());
+        kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, this.getIdentity().getId());
         kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         kafkaConfig.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -93,7 +96,7 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
 
         final KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
         consumer.subscribe(ImmutableList.<String>builder()
-                                        .add(Topic.responseForLocation(this.getMinionIdentity().getLocation()))
+                                        .add(Topic.responseForLocation(this.getIdentity().getLocation()))
                                         .add(Topic.responseGlobal())
                                         .build());
 
