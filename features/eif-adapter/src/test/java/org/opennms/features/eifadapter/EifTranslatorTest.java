@@ -48,6 +48,8 @@ import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.xbill.DNS.Address;
@@ -59,7 +61,7 @@ import org.xbill.DNS.Address;
 })
 @JUnitConfigurationEnvironment
 public class EifTranslatorTest {
-
+    private static Logger LOG = LoggerFactory.getLogger(EifTranslatorTest.class);
     @Autowired
     private MockMonitoringLocationDao m_locationDao;
 
@@ -78,7 +80,9 @@ public class EifTranslatorTest {
         try {
             final InetAddress localAddr = Address.getByName("localhost");
             System.err.println("localAddr=" + localAddr);
-            localhostIpNode = new OnmsNode(m_locationDao.getDefaultLocation(), Address.getHostName(localAddr));
+            String label = Address.getHostName(localAddr);
+            LOG.debug("The label for localhostIpNode is {}", label);
+            localhostIpNode = new OnmsNode(m_locationDao.getDefaultLocation(), label);
         } catch (final Exception e) {
             localhostIpNode = new OnmsNode(m_locationDao.getDefaultLocation(), "127.0.0.1");
         }
