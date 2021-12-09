@@ -36,8 +36,9 @@ onActivated(() => {
 
 <style scoped lang="scss">
 .tabs {
+  z-index: 2;
   padding-bottom: 10px;
-  margin-bottom: -15px;
+  margin-bottom: -29px;
   background: var(--feather-surface);
 }
 </style>

@@ -1,13 +1,20 @@
 <template>
   <div class="feather-row">
     <div class="feather-col-12">
-      <splitpanes class="default-theme" horizontal style="height: calc(100vh - 80px)">
-        <pane min-size="1" max-size="100" size="68">
+      <splitpanes
+        :dbl-click-splitter="false"
+        class="default-theme"
+        horizontal
+        style="height: calc(100vh - 80px)"
+        @dblclick="minimizeBottomPane"
+        ref="split"
+      >
+        <pane min-size="1" max-size="100" :size="72">
           <div class="leaflet-map">
             <LeafletMap />
           </div>
         </pane>
-        <pane min-size="1" max-size="100" size="32" class="bottom-pane">
+        <pane min-size="1" max-size="100" :size="28" class="bottom-pane">
           <GridTabs />
         </pane>
       </splitpanes>
@@ -21,7 +28,7 @@ export default { name: 'MapKeepAlive' }
 </script>
 
 <script setup lang="ts">
-import { onMounted, onActivated, onDeactivated } from 'vue'
+import { onMounted, onActivated, onDeactivated, ref } from 'vue'
 import { useStore } from "vuex"
 import { Splitpanes, Pane } from "splitpanes"
 import "splitpanes/dist/splitpanes.css"
@@ -29,6 +36,12 @@ import LeafletMap from "../components/Map/LeafletMap.vue"
 import GridTabs from '@/components/Map/GridTabs.vue'
 
 const store = useStore()
+const split = ref()
+
+const minimizeBottomPane = () => {
+  split.value.panes[0].size = 96
+  split.value.panes[1].size = 4
+}
 
 onMounted(() => {
   store.dispatch("mapModule/getNodes")

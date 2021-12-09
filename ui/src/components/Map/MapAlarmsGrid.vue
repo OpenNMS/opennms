@@ -10,85 +10,87 @@
     @update:modelValue="selectAlarmAck"
     label="Alarm Action"
   />
-  <table class="tl1 tl2 tl3" summary="Alarms">
-    <thead>
-      <tr>
-        <th class="first-th">
-          <FeatherCheckbox v-model="all" label="All" />
-        </th>
+  <div id="wrap">
+    <table class="tl1 tl2 tl3" summary="Alarms">
+      <thead>
+        <tr>
+          <th class="first-th">
+            <FeatherCheckbox v-model="all" label="All" />
+          </th>
 
-        <FeatherSortHeader
-          scope="col"
-          property="id"
-          :sort="sortStates.id"
-          @sort-changed="sortChanged"
-        >ID</FeatherSortHeader>
+          <FeatherSortHeader
+            scope="col"
+            property="id"
+            :sort="sortStates.id"
+            @sort-changed="sortChanged"
+          >ID</FeatherSortHeader>
 
-        <FeatherSortHeader
-          scope="col"
-          property="severity"
-          :sort="sortStates.severity"
-          @sort-changed="sortChanged"
-        >SEVERITY</FeatherSortHeader>
+          <FeatherSortHeader
+            scope="col"
+            property="severity"
+            :sort="sortStates.severity"
+            @sort-changed="sortChanged"
+          >SEVERITY</FeatherSortHeader>
 
-        <FeatherSortHeader
-          scope="col"
-          property="nodeLabel"
-          :sort="sortStates.nodeLabel"
-          @sort-changed="sortChanged"
-        >NODE LABEL</FeatherSortHeader>
+          <FeatherSortHeader
+            scope="col"
+            property="nodeLabel"
+            :sort="sortStates.nodeLabel"
+            @sort-changed="sortChanged"
+          >NODE LABEL</FeatherSortHeader>
 
-        <FeatherSortHeader
-          scope="col"
-          property="uei"
-          :sort="sortStates.uei"
-          @sort-changed="sortChanged"
-        >UEI</FeatherSortHeader>
+          <FeatherSortHeader
+            scope="col"
+            property="uei"
+            :sort="sortStates.uei"
+            @sort-changed="sortChanged"
+          >UEI</FeatherSortHeader>
 
-        <FeatherSortHeader
-          scope="col"
-          property="count"
-          :sort="sortStates.count"
-          @sort-changed="sortChanged"
-        >COUNT</FeatherSortHeader>
+          <FeatherSortHeader
+            scope="col"
+            property="count"
+            :sort="sortStates.count"
+            @sort-changed="sortChanged"
+          >COUNT</FeatherSortHeader>
 
-        <FeatherSortHeader
-          scope="col"
-          property="lastEvent"
-          :sort="sortStates.lastEventTime"
-          @sort-changed="sortChanged"
-        >LAST EVENT</FeatherSortHeader>
+          <FeatherSortHeader
+            scope="col"
+            property="lastEvent"
+            :sort="sortStates.lastEventTime"
+            @sort-changed="sortChanged"
+          >LAST EVENT</FeatherSortHeader>
 
-        <FeatherSortHeader
-          scope="col"
-          property="logMessage"
-          :sort="sortStates.logMessage"
-          @sort-changed="sortChanged"
-        >LOG MESSAGE</FeatherSortHeader>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="alarm in alarms" :key="alarm.id">
-        <td :class="alarm.severity" class="first-td">
-          <FeatherCheckbox
-            @update:modelValue="selectCheckbox(alarm)"
-            :modelValue="all || alarmCheckboxes[alarm.id]"
-            label="Alarm"
-          />
-        </td>
-        <td>{{ alarm.id }}</td>
-        <td>{{ alarm.severity }}</td>
-        <td>{{ alarm.nodeLabel }}</td>
-        <td>{{ alarm.uei }}</td>
-        <td>{{ alarm.count }}</td>
-        <td v-date>{{ alarm.lastEventTime }}</td>
-        <td>{{ alarm.logMessage }}</td>
-      </tr>
-    </tbody>
-  </table>
+          <FeatherSortHeader
+            scope="col"
+            property="logMessage"
+            :sort="sortStates.logMessage"
+            @sort-changed="sortChanged"
+          >LOG MESSAGE</FeatherSortHeader>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="alarm in alarms" :key="alarm.id">
+          <td :class="alarm.severity" class="first-td">
+            <FeatherCheckbox
+              @update:modelValue="selectCheckbox(alarm)"
+              :modelValue="all || alarmCheckboxes[alarm.id]"
+              label="Alarm"
+            />
+          </td>
+          <td>{{ alarm.id }}</td>
+          <td>{{ alarm.severity }}</td>
+          <td>{{ alarm.nodeLabel }}</td>
+          <td>{{ alarm.uei }}</td>
+          <td>{{ alarm.count }}</td>
+          <td v-date>{{ alarm.lastEventTime }}</td>
+          <td>{{ alarm.logMessage }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive } from "vue"
+import { ref, reactive, onMounted } from "vue"
 import { useStore } from "vuex"
 import { computed } from 'vue'
 import { Alarm, AlarmQueryParameters, FeatherSortObject } from "@/types"
@@ -187,23 +189,42 @@ const sortChanged = (sortObj: FeatherSortObject) => {
   sortStates[`${sortObj.property}`] = sortObj.value
   store.dispatch('mapModule/setAlarmSortObject', sortObj)
 }
+
+onMounted(() => {
+  const wrap = document.getElementById("wrap")
+  const thead = document.querySelector("thead")
+
+  if (wrap && thead) {
+    wrap.addEventListener("scroll", function () {
+      let translate = "translate(0," + this.scrollTop + "px)"
+      thead.style.transform = translate
+    })
+  }
+})
 </script>
 
 <style lang="scss" scoped>
 @import "@featherds/table/scss/table";
+#wrap {
+  height: calc(100% - 29px);
+  overflow: auto;
+  background: var(--feather-surface);
+}
 table {
   @include table();
   @include table-condensed();
   background: var(--feather-surface);
   color: var(--feather-primary-text-on-surface);
-  display: block;
-  height: calc(100% - 58px);
-  width: 100%;
-  overflow-y: scroll;
   padding-top: 4px;
   margin-top: 15px;
 }
+thead {
+  z-index: 2;
+  position: relative;
+  background: var(--feather-surface);
+}
 .select-ack {
+  z-index: 3;
   width: 300px;
   position: absolute;
   right: 30px;
