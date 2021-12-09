@@ -13,13 +13,13 @@ Make sure you have the following before you set up flows:
 * Elasticsearch cluster set up with the link:https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin] installed on every Elasticsearch node.
 ** The Drift plugin persists and queries flows that {page-component-title} collects.
 The Drift version must match the targeted Elasticsearch version.
-** (optional) Configure Elasticsearch variables like `search.max_buckets` if the default values are not sufficient.
+** (optional) Configure Elasticsearch variables like `search.max_buckets` or maximum heap size `ES-JAVA_OPTS`if the default values are not sufficient for your volume of flows or number of nodes.
 ** (optional) Create a job to clean the indices so that the disk does not fill up; for example, keep X days of flows.
 Filled disks are a challenging problem to address for non-Elasticsearch experts.
 We recommend the Elasticsearch https://www.elastic.co/guide/en/elasticsearch/client/curator/current/index.html[Curator tool] to do this.
 ** Monitor the Elasticsearch stack in OpenNMS to get an alarm if it goes down.
-* Set up OpenNMS Helm with Grafana to visualize flows
-** Configure the flow and performance data sources
+* Set up OpenNMS Helm with Grafana to visualize flows.
+** Configure the flow and performance data sources.
 
 == Configure OpenNMS to communicate with Elasticsearch
 
@@ -88,6 +88,7 @@ $\{OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/in
 ----
 
 This opens a UDP socket bound to `0.0.0.0:8877` to which NetFlow v5 messages are forwarded.
+(See also xref:operation:admin/daemon-config-files.adoc#daemon-reload[Reload daemons by CLI].)
 
 === Multi-port listener
 
@@ -102,7 +103,7 @@ IMPORTANT: Make sure any ports you configure for receiving flow data are added t
 
 Configure your devices to send flows.
 Refer to the manufacturer's documentation.
-You will need to set up the flow receiver, which is OpenNMS {page-component-title}, and enable sending flows per interface on the firewall.
+You may need to set up the flow receiver, which is OpenNMS {page-component-title}, and enable sending flows per interface on the firewall.
 
 == Link the web UI to Helm
 
