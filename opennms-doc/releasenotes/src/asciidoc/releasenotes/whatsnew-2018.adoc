@@ -33,7 +33,7 @@ Meridian 2018 roughly matches the feature set available in Horizon 21 and parts 
   Otherwise unused event definitions are also cleaned up and removed from the code and configurations.
   For a detailed list of all removed events see link:https://issues.opennms.org/browse/NMS-9303[NMS-9303].
 * *Elasticsearch 1 API*: The old Elasticsearch API has been removed in favor of the Elasticsearch ReST plugin, which should support most Elasticsearch API versions.
-  Instructions on configuring the Elasticsearch ReST plugin are available in link:http://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#_elasticsearch_rest_plugin[the Administrators Guide].
+  Instructions on configuring the Elasticsearch ReST plugin are available in link:http://vault.opennms.com/docs/opennms/releases/latest/guide-admin/guide-admin.html#_elasticsearch_rest_plugin[the Administrators Guide].
 * Property format change of `opennms.alarmTroubleTicketLinkTemplate`:
   Originally the `opennms.alarmTroubleTicketLinkTemplate` defined in `$OPENNMS_HOME/etc/opennms.properties` requires the full `<a href="...">${id}</a>` link to be configured.
   This is changed to the ticketer system url, e.g. `https://issues.opennms.org/browse/${id}` instead of `<a href="https://issues.opennms.org/browse/${id}">${id}</a>`.
@@ -50,13 +50,13 @@ Meridian 2018 roughly matches the feature set available in Horizon 21 and parts 
 
 * *Minion*: OpenNMS Meridian now supports running Minions.
 * *IBM Tivoli Event Integration Facility*: Support has been added to bridge EIF events into OpenNMS Horizon.
-  link:https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-events-sources-eif[(more details)]
+  link:https://vault.opennms.com/docs/opennms/releases/latest/guide-admin/guide-admin.html#ga-events-sources-eif[(more details)]
 * *Asset Topology Provider*: The Asset Topology Provider generates a GraphML topology based on node metadata including asset fields.
-  link:http://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#_asset_topology_provider[(more details)].
+  link:http://vault.opennms.com/docs/opennms/releases/latest/guide-admin/guide-admin.html#_asset_topology_provider[(more details)].
 * *Alarm Sounds*: The web UI can now optionally flash and play an alert sound when alarms are created and optionally updated.
-  link:http://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-alarm-sounds[(more details)].
+  link:http://vault.opennms.com/docs/opennms/releases/latest/guide-admin/guide-admin.html#ga-alarm-sounds[(more details)].
 * *ReST Updates*: A new experimental ReST API (`/opennms/api/v2`) has been enabled which supports https://commons.apache.org/proper/commons-jexl/[JEXL].
-* The topology UI now supports link:http://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html#gd-topology-graphml-vertex-status-provider[scriptable vertex status].
+* The topology UI now supports link:http://vault.opennms.com/docs/opennms/releases/latest/guide-development/guide-development.html#gd-topology-graphml-vertex-status-provider[scriptable vertex status].
 * *Alarm Northbounders*: There are link:https://issues.opennms.org/browse/NMS-9513[new alarm northbounders] for running arbitrary BSF scripts or forwarding to Drools.
 * *Web UI*: It is now possible to link:https://issues.opennms.org/browse/NMS-10072[customize the date format] used in the UI.
   You can configure it by overriding the `org.opennms.ui.datettimeformat` property in `opennms.properties`.
