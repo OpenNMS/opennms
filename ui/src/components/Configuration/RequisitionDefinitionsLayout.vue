@@ -16,7 +16,7 @@
               <FeatherSortHeader
                 v-for="node in tableHeaders"
                 :property="node"
-                scope="col"
+                scope="col"                
                 v-on:sort-changed="sortChanged"
               >
                 {{node.toLocaleUpperCase()}}
@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 
-import { computed, onMounted, ref, watchEffect } from 'vue'
+import { computed, onMounted, ref} from 'vue'
 import { FeatherButton }   from '@featherds/button'
 import { FeatherIcon }   from '@featherds/icon'
 import { FeatherSortHeader, SORT } from "@featherds/table";
@@ -68,7 +68,9 @@ const store = useStore()
 const buttonAction = ref(['ADD NEW', 'BACK'])
 const index = ref(0)
 const icon = ref(markRaw(actionsAdd));
-const isData = ref(false)
+const isData = ref(false);
+const sortObj = ref({'value':'asc','property':'import-name'});
+const sortableColms = ref([{'value':'asc','property':'import-name'}, {'value':'none','property':'cron-schedule'}, {'value':'none','property':'import-url-resource'}, {'value':'none','property':'rescan-existing'}]);
 let customData: any = ref([])
 const provisionDService = computed(() => { return store.state.configuration.provisionDService })
 
@@ -78,9 +80,8 @@ const tableHeaders = computed(() => {
   }
 })
 
-let nodeDataValue = computed(() => {
+const nodeDataValue = computed(() => {
   if (provisionDService.value) {
-
     let copyState = [], cronScheduleType: string[], valuePos: number, ele: number
     cronScheduleType = ['minute', 'hour', 'day of month', 'month', 'day of week']
     copyState = JSON.parse(JSON.stringify(provisionDService.value))
@@ -104,6 +105,11 @@ let nodeDataValue = computed(() => {
       //return updated data
       console.log('copydata');
       console.log(copydata);
+      if(sortObj.value.value === 'asc'){
+        copydata.sort((a: any, b: any) => (a[`${sortObj.value.property}`] > b[`${sortObj.value.property}`] ? 1 : -1));
+      }else{
+        copydata.sort((a: any, b: any) => (a[`${sortObj.value.property}`] < b[`${sortObj.value.property}`] ? 1 : -1));
+      }
       return copydata
     }
   }
@@ -118,11 +124,21 @@ onMounted(async () => {
   }
 })
 
-const sortChanged = (sortObj: FeatherSortObject) => { 
-  if(sortObj.value === 'asc'){
-    computed(() => nodeDataValue.value.sort((a: any, b: any) => (a[`${sortObj.property}`] > b[`${sortObj.property}`] ? 1 : -1)));
-  }
-  console.log(nodeDataValue.value);
+const sortChanged = (sortObjIn: FeatherSortObject) => { 
+  //sortObj.value = sortObjIn;
+  sortableColms.value.forEach((element: any) => {
+          if (element.property === sortObjIn.property) {
+              if(element.value === 'none' || element.value === 'desc'){
+                  element.value = 'asc';
+              }else if(element.value === 'asc'){
+                  element.value = 'desc';
+              }
+              sortObj.value.value = element.value;
+              sortObj.value.property = element.property;
+          }else{
+            element.value === 'none';
+          }
+        });
 }
 const onClickHandle = (selectedName: any, data: any, index: any) => {
   //Added one dyanamic property to data for identitify the table position - helps in edit put call
