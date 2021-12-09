@@ -37,7 +37,10 @@ import java.util.concurrent.CompletableFuture;
  * @author jwhite
  */
 public interface ServiceCollectorRegistry {
-
+    /**
+     * @deprecated use {@link #getCollectorFutureByClassName(String)} instead.
+     */
+    @Deprecated
     ServiceCollector getCollectorByClassName(String className);
 
     CompletableFuture<ServiceCollector> getCollectorFutureByClassName(String className);
