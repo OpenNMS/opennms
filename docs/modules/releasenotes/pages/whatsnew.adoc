@@ -115,3 +115,10 @@ Documentation improvements and additions have been made in a number of areas:
 == Important Internal Changes
 
 * Sink internals have been updated to use Protobuf 3.
+
+== Other Improvements
+
+Since Miridian 2021 is based on Horizon 27.1, it contains all the fixes and updates that have occurred since Meridian 2020 was created from the Horizon 26 codebase.
+
+For a more complete list of major changes included in this release, see the
+link:https://vault.opennms.com/docs/opennms/releases/27.1.1/releasenotes/releasenotes.html["What’s New" documentation for Horizon 27.1.1].
