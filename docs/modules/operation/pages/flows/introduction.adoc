@@ -30,7 +30,7 @@ image::flows/flow_integration_overview.png[width=70%]
 
 == How it works
 
-At a high level, with a xref:operation:flows/basic.adoc#flows-basic[basic] setup, OpenNMS processes flows as follows:
+At a high level, with a xref:operation:flows/basic.adoc#flows-basic[basic setup], OpenNMS processes flows as follows:
 
 * <<telemetryd/introduction.adoc#ga-telemetryd, Telemetryd>> receives and decodes flows on {page-component-title}.
 * Telemetryd adapters convert the flows to a canonical flow model and dispatch these to the flow repository.
