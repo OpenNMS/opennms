@@ -124,7 +124,7 @@ WARNING: Before _OpenNMS Horizon 17_ and _OpenNMS Meridian 2016_, it was possibl
          This is no longer possible; you must use the _Measurements Datasource_.
 
 To access performance data within reports, we created a custom _Measurement Datasource_ that allows you to query the _Measurements API_ and process the returned data in your reports.
-Please refer to the link:http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurements API documentation] on how to use the _Measurements API_.
+Please refer to the link:http://vault.opennms.com/docs/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurements API documentation] on how to use the _Measurements API_.
 
 NOTE:  When using the _Measurements Datasource_ within a report a `HTTP` connection to the _Measurements API_ is only established if the report is NOT running within {opennms-product-name}, e.g. when used with _Jaspersoft Studio_.
 
@@ -157,7 +157,7 @@ The _Measurement Datasource_ supports the following fields:
 | `end`       | `java.lang.Long`   | The `End` timestamp in milliseconds of the `Response`. Returns the same value for all rows.
 |===
 
-For more details about the `Response`, please refer to the link:http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurement API documentation].
+For more details about the `Response`, please refer to the link:http://vault.opennms.com/docs/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurement API documentation].
 
 [[ga-database-reports-parameters]]
 ==== Parameters
@@ -295,7 +295,7 @@ image:database-reports/Dashboard-pdf.png[PDF report]
 
 ==== Before You Begin
 
-This feature requires {opennms-product-name} and an instance of Grafana with at least one dashboard and panel. OpenNMS allows you to create a report for any Grafana dashboard, not just those created using link:http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
+This feature requires {opennms-product-name} and an instance of Grafana with at least one dashboard and panel. OpenNMS allows you to create a report for any Grafana dashboard, not just those created using link:http://vault.opennms.com/docs/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
 
 You must set up Grafana as a datasource by xref:grafana-ednpoint[configuring the Grafana endpoint] in {opennms-product-name}. 
 
