@@ -20,7 +20,7 @@ See the <<reference:telemetryd/protocols/introduction.adoc#ref-protocol, Telemet
 
 This section presents a set of procedures to set up flows that progress from a basic environment to more complex:
 
-* xref:operation:flows/basic.adoc#flows-basic[Basic] (out-of-the-box) setup
+* xref:operation:flows/basic.adoc#flows-basic[Basic setup] (out-of-the-box)
 * Flows data in a distributed/remote network (add a Minion)
 * Processing large volume of flows data (add Sentinel to scale)
 * Issues with flows at scale and queries taking too long (add Nephron for aggregation and streaming analytics)
