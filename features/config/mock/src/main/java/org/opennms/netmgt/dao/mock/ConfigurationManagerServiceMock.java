@@ -236,8 +236,8 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
             List<String> paths = new ArrayList<>();
             // if configFile is null, assume config file in opennms-dao-mock resource etc directly
             paths.add("etc/" + configName + "-" + configId + XML_EXTENSION);
-            paths.add("default/" + configName + "-configuration.xml");
-            paths.add("default/" + configName + "-config.xml");
+            paths.add("defaults/" + configName + "-configuration.xml");
+            paths.add("defaults/" + configName + "-config.xml");
             tmpConfigFile = this.findConfigFile(paths);
         } else {
             tmpConfigFile = configFile;
@@ -284,6 +284,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
                 }
             }
         });
+        LOG.info("Config file find. path: {}", fileFound.get());
         return fileFound.get();
     }
 

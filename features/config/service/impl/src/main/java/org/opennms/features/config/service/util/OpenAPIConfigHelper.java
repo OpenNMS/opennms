@@ -80,7 +80,9 @@ public class OpenAPIConfigHelper {
         if (propertySchema instanceof ArraySchema) {
             configJsonObj.put(key, new JSONArray());
         } else if (isSimpleDataType(propertySchema)) {
-            configJsonObj.put(key, propertySchema.getDefault() == null ? JSONObject.NULL : propertySchema.getDefault());
+            // only fill with default value
+            if(propertySchema.getDefault() != null)
+                configJsonObj.put(key, propertySchema.getDefault());
         } else if (propertySchema instanceof Schema && propertySchema.get$ref() != null) {
             String schemaName = propertySchema.get$ref().replaceAll("^" + OpenAPIBuilder.SCHEMA_REF_TAG, "");
             if(isNewObject)

@@ -65,7 +65,7 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
     /**
      * The singleton instance of this factory
      */
-    private static TrapdConfig m_singleton = null;
+    private static TrapdConfigFactory m_singleton = null;
 
     /**
      * The config class loaded from the config file
@@ -127,10 +127,11 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
      *             Thrown if the factory has not yet been initialized.
      */
     public static synchronized TrapdConfigFactory getInstance() throws IOException {
-        TrapdConfigFactory configFactory = BeanUtils.getBean("commonContext", "trapdConfig", TrapdConfigFactory.class);
+        if(m_singleton == null)
+            m_singleton = BeanUtils.getBean("commonContext", "trapdConfig", TrapdConfigFactory.class);
         if(!m_loaded)
-            configFactory.reload();
-        return configFactory;
+            m_singleton.reload();
+        return m_singleton;
     }
     
     /**
@@ -138,7 +139,7 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
      *
      * @param config a {@link org.opennms.netmgt.config.TrapdConfig} object.
      */
-    public static synchronized void setInstance(TrapdConfig config) {
+    public static synchronized void setInstance(TrapdConfigFactory config) {
         m_singleton = config;
         m_loaded = true;
     }

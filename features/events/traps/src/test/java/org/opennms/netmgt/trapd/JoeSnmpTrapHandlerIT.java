@@ -29,15 +29,7 @@
 package org.opennms.netmgt.trapd;
 
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * {@link TrapHandlerITCase} which uses the snmp strategy {@link org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy}.
@@ -46,23 +38,9 @@ import java.util.Map;
  */
 public class JoeSnmpTrapHandlerIT extends TrapHandlerITCase {
 
-    @Autowired
-    private ConfigurationManagerService cm ;
-
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         System.setProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
-    }
-
-    @After
-    public void afterTest() {
-        Map<String, ConfigDefinition> defs = cm.getAllConfigDefinition();
-        defs.forEach((configName, def)->{
-            try {
-                cm.unregisterSchema(configName);
-            } catch (IOException e) {
-            }
-        });
     }
 
 }
