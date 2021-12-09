@@ -16,7 +16,7 @@ The Drift version must match the targeted Elasticsearch version.
 ** (optional) Configure Elasticsearch variables like `search.max_buckets` or maximum heap size `ES-JAVA_OPTS`if the default values are not sufficient for your volume of flows or number of nodes.
 ** (optional) Create a job to clean the indices so that the disk does not fill up; for example, keep X days of flows.
 Filled disks are a challenging problem to address for non-Elasticsearch experts.
-We recommend the Elasticsearch https://www.elastic.co/guide/en/elasticsearch/client/curator/current/index.html[Curator tool] to do this.
+We recommend the Elasticsearch link:https://www.elastic.co/guide/en/elasticsearch/client/curator/current/index.html[Curator tool] to do this.
 ** Monitor the Elasticsearch stack in OpenNMS to get an alarm if it goes down.
 * Set up OpenNMS Helm with Grafana to visualize flows.
 ** Configure the flow and performance data sources.
