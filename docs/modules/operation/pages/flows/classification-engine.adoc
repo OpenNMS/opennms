@@ -1,6 +1,6 @@
 
 [[ga-flow-support-classification-engine]]
-= Classification Engine
+= Application Classification
 
 The Classification Engine applies a set of user- and/or system-defined rules to each flow to classify it.
 This lets users group flows by applications, for example, if all flows to port 80 are marked as `http`.
