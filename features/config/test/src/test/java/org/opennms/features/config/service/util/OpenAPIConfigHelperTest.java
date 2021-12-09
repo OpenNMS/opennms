@@ -48,19 +48,19 @@ public class OpenAPIConfigHelperTest {
                 .addArray("arr1", ConfigItem.Type.INTEGER, null, 100L, 20L, null, 10L, null, null, true, "test array")
                 .addObject("obj1", OpenAPIBuilder.createBuilder()
                         .addStringAttribute("name", 3L, 10L, null, "name", true, "val1")
-                        .addNumberAttribute("digit", ConfigItem.Type.INTEGER, 3L, 10L, null, null, true, "digit")
+                        .addNumberAttribute("digit", ConfigItem.Type.INTEGER, 3L, 10L, null, 1, true, "digit")
                         , true, "test array")
                 .build(false);
 
         JSONObject emptyJson = new JSONObject();
         OpenAPIConfigHelper.fillWithDefaultValue(openapi, elementName, emptyJson);
 
-        Assert.assertEquals("It should contain att1", emptyJson.get("att1"), "val1");
-        Assert.assertEquals("It should contain bool1", emptyJson.get("bool1"), false);
-        Assert.assertEquals("It should contain empty arr1", ((JSONArray)emptyJson.get("arr1")).length(), 0);
+        Assert.assertEquals("It should contain att1", "val1", emptyJson.get("att1"));
+        Assert.assertEquals("It should contain bool1", false, emptyJson.get("bool1"));
+        Assert.assertEquals("It should contain empty arr1", 0, ((JSONArray)emptyJson.get("arr1")).length());
         JSONObject subObject = (JSONObject)emptyJson.get("obj1");
         Assert.assertNotNull("It should contain obj1", subObject);
-        Assert.assertEquals("obj1 should contain name", subObject.get("name"), "name");
-        Assert.assertEquals("obj1 should contain digit", subObject.get("digit"), null);
+        Assert.assertEquals("obj1 should contain name", "name", subObject.get("name"));
+        Assert.assertEquals("obj1 should contain digit", 1, subObject.get("digit"));
     }
 }
