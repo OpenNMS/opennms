@@ -20,23 +20,18 @@
             <FeatherDropdown>
               <template v-slot:trigger :right="right" :cover="cover" :standard="standard">
                 <FeatherButton link href="#" menu-trigger>
-                  {{typeDropDownValue==="" ? "Select type": typeDropDownValue}}
-                  <!-- {{model.reqDef.type.$model.name}} -->
+                  {{model.reqDef.type.$model === "" ? "Select type": model.reqDef.type.$model}}
                 </FeatherButton>
               </template>
-              <FeatherDropdownItem v-for="state in stateTypes" :key="state" @click="typeDropdownChange(state)">
+              <FeatherDropdownItem 
+                v-for="state in stateTypes" 
+                :key="state" 
+                @click="typeDropdownChange(state)"
+              >
                 {{ state.name }}
               </FeatherDropdownItem>
             </FeatherDropdown>
           </div>
-          <!-- <DropDown
-            v-model="model.reqDef.type.$model"
-            :options="stateTypes"
-            optionLabel="name"
-            optionValue="value"
-            :filter="true"
-            @change="generateURL"
-          ></DropDown> -->
         </div>
 
         <div class="p-field">
@@ -77,25 +72,16 @@
                 <FeatherIcon :icon="navigationCancelIcon"> </FeatherIcon>
               </FeatherButton>
             </p>
-            <!-- <DropDown
-              v-model="add.dropdownVal"
-              :options="stateAdvancedDropdown"
-              optionLabel="name"
-              optionValue="value"
-              @change="generateURL"
-            ></DropDown> -->
-
             <FeatherDropdown>
               <template v-slot:trigger :right="right" :cover="cover" :standard="standard">
                 <FeatherButton link href="#" menu-trigger>
-                  {{advanceOptionDropDownValue==="" ? "Select type": advanceOptionDropDownValue}}
-                  <!-- {{model.reqDef.type.$model.name}} -->
+                  {{add.dropdownVal ==="" ? "Select advance option": add.dropdownVal}}
                 </FeatherButton>
               </template>
               <FeatherDropdownItem 
                 v-for="advanceOption in stateAdvancedDropdown" 
                 :key="advanceOption" 
-                @click="advanceOptionDropdownChange(advanceOption)"
+                @click="advanceOptionDropdownChange(add, advanceOption)"
               >
                 {{ advanceOption.name }}
               </FeatherDropdownItem>
@@ -130,18 +116,11 @@
 
         <div class="p-field">
           <label for="type" class="required">Schedule Period</label>
-          <!-- <DropDown
-            v-model="model.reqDef.schedulePeriod.$model"
-            :options="stateSchedulePeriod"
-            optionLabel="name"
-            optionValue="value"
-            :filter="true"
-          ></DropDown> -->
           <div>
             <FeatherDropdown>
               <template v-slot:trigger :right="right" :cover="cover" :standard="standard">
                 <FeatherButton link href="#" menu-trigger>
-                  {{schedulePeriodDropDownValue==="" ? "Select Period": schedulePeriodDropDownValue}}
+                  {{model.reqDef.schedulePeriod.$model==="" ? "Select Period": model.reqDef.schedulePeriod.$model}}
                 </FeatherButton>
               </template>
               <FeatherDropdownItem 
@@ -161,7 +140,7 @@
                 :min="minVal"
               />
             </span>
-            {{ schedulePeriodDropDownValue }}
+            {{ model.reqDef.schedulePeriod.$model }}
           </p>
         </div>
 
@@ -186,11 +165,9 @@ import { useStore } from 'vuex'
 import { FeatherButton }   from '@featherds/button'
 import { FeatherIcon }   from '@featherds/icon'
 import { FeatherInput }   from '@featherds/input'
-// import { FeatherDropdown, FeatherDropdownItem }   from '@featherds/dropdown'
 import actionsAdd from "@featherds/icon/action/Add";
 import navigationCancel from "@featherds/icon/navigation/Cancel";
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
-// import InputNumber from '../Common/InputNumber.vue'
 import State from './formState'
 import router from '@/router'
 import {
@@ -216,9 +193,6 @@ const model = State.toModel()
 const right = ref(false)
 const cover = ref(false)
 const standard = ref(false)
-const typeDropDownValue = ref('')
-const advanceOptionDropDownValue = ref('')
-const schedulePeriodDropDownValue = ref('')
 const props = defineProps({
   title: {
     type: String,
@@ -267,7 +241,6 @@ onMounted(async () => {
       putDataPosition.value = data['tablePosition']   //Helps in edit save
       reqDefinition.reqDef.name = data['import-name']
       reqDefinition.reqDef.type = url[0].split(':')[0]
-      typeDropDownValue.value = reqDefinition.reqDef.type
       reqDefinition.reqDef.host = url[2]
       generatedURL.value = data['import-url-resource']
 
@@ -307,10 +280,8 @@ const setCronSchedule = (data: any) => {
   reqDefinition.reqDef.schedulePeriodNumber = parseInt(values[1])
   if (values.length > 3) {
     reqDefinition.reqDef.schedulePeriod = values.slice(2, values.length + 1).join(' ')
-    schedulePeriodDropDownValue.value = values.slice(2, values.length + 1).join(' ')
   } else {
     reqDefinition.reqDef.schedulePeriod = values[2]
-    schedulePeriodDropDownValue.value = values[2]
   }
 }
 
@@ -319,7 +290,6 @@ const setAdvDropDowndata = (patchVal: any) => {
   const dropVal = (dropdownVal: any, advTextVal: any, index: any) => {
     if (index == 1) {
       addAnotherArr.value[0]['dropdownVal'] = dropdownVal
-      advanceOptionDropDownValue.value = dropdownVal
       addAnotherArr.value[0]['advTextVal'] = advTextVal
     } else {
       let addObj = { "id": index - 1, "dropdownVal": dropdownVal, "advTextVal": advTextVal }
@@ -449,22 +419,24 @@ const paylod1 =
 
 const saveCronSchedule = () => {
   let cronSchedule = ['minute', 'hour', 'day of month', 'month', 'day of week']
-  let findPosition = cronSchedule.indexOf(reqDefinition.reqDef.schedulePeriod)
+  let findPosition = cronSchedule.indexOf(model.value.reqDef.schedulePeriod.$model)
   let expression = ['*', '*', '*', '*', '*']
   expression.splice(findPosition, 1, String(reqDefinition.reqDef.schedulePeriodNumber))
   return expression.join(' ')
 }
 
 const typeDropdownChange = (val: any) => {
-  typeDropDownValue.value = val.name
+  model.value.reqDef.type.$model = val.value
+  generateURL()
 }
 
-const advanceOptionDropdownChange = (val: any) => {
-  advanceOptionDropDownValue.value = val.name
+const advanceOptionDropdownChange = (addModel: any, val: any) => {
+  addModel.dropdownVal = val.name
+  generateURL()
 }
 
 const schedulePeriodDropdownChange = (val: any) => {
-  schedulePeriodDropDownValue.value =  val.name
+  model.value.reqDef.schedulePeriod.$model = val.value
 }
 
 </script>
