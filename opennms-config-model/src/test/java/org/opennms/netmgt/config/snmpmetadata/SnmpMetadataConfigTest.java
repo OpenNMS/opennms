@@ -56,6 +56,9 @@ public class SnmpMetadataConfigTest  extends XmlTestNoCastor<SnmpMetadataConfig>
                                 "            <entry tree=\".2\" name=\"entry2_2\" index=\"false\"/>\n" +
                                 "        </entry>\n" +
                                 "    </config>\n" +
+                                "    <config name=\"another\" sysObjectId=\".5.4.3.2.1\" tree=\".1.2.3.4.5\">\n" +
+                                "        <entry tree=\".1\" name=\"another1\" index=\"false\"/>\n" +
+                                "    </config>\n" +
                                 "</snmp-metadata-config>"
                 }
         });
@@ -93,6 +96,20 @@ public class SnmpMetadataConfigTest  extends XmlTestNoCastor<SnmpMetadataConfig>
         config.setEntries(Lists.newArrayList(entry1, entry2));
 
         snmpMetadataConfig.getConfigs().add(config);
+
+        final Config anotherConfig = new Config();
+        anotherConfig.setTree(".1.2.3.4.5");
+        anotherConfig.setSysObjectId(".5.4.3.2.1");
+        anotherConfig.setName("another");
+
+        final Entry anotherEntry = new Entry();
+        anotherEntry.setName("another1");
+        anotherEntry.setTree(".1");
+        anotherEntry.setIndex(false);
+
+        anotherConfig.setEntries(Lists.newArrayList(anotherEntry));
+
+        snmpMetadataConfig.getConfigs().add(anotherConfig);
 
         return snmpMetadataConfig;
     }

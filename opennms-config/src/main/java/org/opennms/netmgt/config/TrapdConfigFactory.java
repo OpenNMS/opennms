@@ -28,26 +28,16 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
-import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.snmp.SnmpV3User;
-import org.springframework.core.io.FileSystemResource;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -65,7 +55,7 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
     /**
      * The singleton instance of this factory
      */
-    private static TrapdConfig m_singleton = null;
+    private static TrapdConfigFactory m_singleton = null;
 
     /**
      * The config class loaded from the config file
@@ -106,7 +96,24 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
         reload();
     }
 
+    /**
+     * Load the config from the default config file and create the singleton
+     * instance of this factory.
+     *
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @throws java.io.IOException if any.
+     */
+    public static synchronized void init() throws IOException {
+        if (m_loaded) {
+            // init already called - return
+            // to reload, reload() will need to be called
+            return;
+        }
 
+        m_singleton = new TrapdConfigFactory();
+        m_loaded = true;
+    }
 
     /**
      * Reload the config from the default config file
@@ -115,8 +122,8 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
      *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
      */
-    public synchronized void reload() throws IOException {
-        this.m_config = this.loadConfig(this.getDefaultConfigId());
+    public static synchronized void reload() throws IOException {
+        m_singleton.m_config = m_singleton.loadConfig(m_singleton.getDefaultConfigId());
     }
 
     /**
@@ -127,10 +134,10 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
      *             Thrown if the factory has not yet been initialized.
      */
     public static synchronized TrapdConfigFactory getInstance() throws IOException {
-        TrapdConfigFactory configFactory = BeanUtils.getBean("commonContext", "trapdConfig", TrapdConfigFactory.class);
-        if(!m_loaded)
-            configFactory.reload();
-        return configFactory;
+        if (!m_loaded)
+            throw new IllegalStateException("The factory has not been initialized");
+
+        return m_singleton;
     }
     
     /**
@@ -138,7 +145,7 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
      *
      * @param config a {@link org.opennms.netmgt.config.TrapdConfig} object.
      */
-    public static synchronized void setInstance(TrapdConfig config) {
+    public static synchronized void setInstance(TrapdConfigFactory config) {
         m_singleton = config;
         m_loaded = true;
     }

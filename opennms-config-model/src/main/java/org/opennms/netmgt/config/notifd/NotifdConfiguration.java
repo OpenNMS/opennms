@@ -40,6 +40,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
@@ -47,252 +49,245 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
  * Top-level element for the notifd-configuration.xml
  *  configuration file.
  */
-@XmlRootElement(name = "notifd-configuration")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("notifd-configuration.xsd")
 public class NotifdConfiguration implements Serializable {
     private static final long serialVersionUID = 2L;
 
+    @JsonIgnore
     private static final String DEFAULT_PAGES_SENT = "SELECT * FROM notifications";
+    @JsonIgnore
     private static final String DEFAULT_NEXT_NOTIFID = "SELECT nextval('notifynxtid')";
+    @JsonIgnore
     private static final String DEFAULT_NEXT_USER_NOTIFID = "SELECT nextval('userNotifNxtId')";
+    @JsonIgnore
     private static final String DEFAULT_NEXT_GROUP_ID = "SELECT nextval('notifygrpid')";
+    @JsonIgnore
     private static final String DEFAULT_SERVICEID_SQL = "SELECT serviceID from service where serviceName = ?";
+    @JsonIgnore
     private static final String DEFAULT_OUTSTANDING_NOTICES_SQL = "SELECT notifyid FROM notifications where notifyId = ? AND respondTime is not null";
+    @JsonIgnore
     private static final String DEFAULT_ACKNOWLEDGEID_SQL = "SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?";
+    @JsonIgnore
     private static final String DEFAULT_ACKNOWLEDGE_UPDATE_SQL = "UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?";
+    @JsonIgnore
     private static final String DEFAULT_EMAIL_ADDRESS_COMMAND = "javaEmail";
+    @JsonIgnore
     private static final Integer DEFAULT_MAX_THREADS = 100;
 
-    @XmlAttribute(name = "status", required = true)
-    private String m_status;
+    private String status;
 
-    @XmlAttribute(name = "pages-sent")
-    private String m_pagesSent;
+    private String pagesSent;
 
-    @XmlAttribute(name = "next-notif-id")
-    private String m_nextNotifId;
+    private String nextNotifId;
 
-    @XmlAttribute(name = "next-user-notif-id")
-    private String m_nextUserNotifId;
+    private String nextUserNotifId;
 
-    @XmlAttribute(name = "next-group-id")
-    private String m_nextGroupId;
+    private String nextGroupId;
 
-    @XmlAttribute(name = "service-id-sql")
-    private String m_serviceIdSql;
+    private String serviceIdSql;
 
-    @XmlAttribute(name = "outstanding-notices-sql")
-    private String m_outstandingNoticesSql;
+    private String outstandingNoticesSql;
 
-    @XmlAttribute(name = "acknowledge-id-sql")
-    private String m_acknowledgeIdSql;
+    private String acknowledgeIdSql;
 
-    @XmlAttribute(name = "acknowledge-update-sql")
-    private String m_acknowledgeUpdateSql;
+    private String acknowledgeUpdateSql;
 
-    @XmlAttribute(name = "match-all", required = true)
-    private Boolean m_matchAll;
+    private Boolean matchAll;
 
-    @XmlAttribute(name = "email-address-command")
-    private String m_emailAddressCommand;
+    private String emailAddressCommand;
 
-    @XmlAttribute(name = "numeric-skip-resolution-prefix")
-    private Boolean m_numericSkipResolutionPrefix;
+    private Boolean numericSkipResolutionPrefix;
 
-    @XmlAttribute(name = "max-threads")
-    private Integer m_maxThreads;
+    private Integer maxThreads;
 
-    @XmlElement(name = "auto-acknowledge-alarm")
-    private AutoAcknowledgeAlarm m_autoAcknowledgeAlarm;
+    private AutoAcknowledgeAlarm autoAcknowledgeAlarm;
 
-    @XmlElement(name = "auto-acknowledge")
-    private List<AutoAcknowledge> m_autoAcknowledges = new ArrayList<>();
+    @JsonProperty("auto-acknowledge")
+    private List<AutoAcknowledge> autoAcknowledges = new ArrayList<>();
 
-    @XmlElement(name = "queue", required = true)
-    private List<Queue> m_queues = new ArrayList<>();
+    @JsonProperty("queue")
+    private List<Queue> queues = new ArrayList<>();
 
-    @XmlElement(name = "outage-calendar")
-    private List<String> m_outageCalendars = new ArrayList<>();
+    @JsonProperty("outage-calendar")
+    private List<String> outageCalendars = new ArrayList<>();
 
     public NotifdConfiguration() { }
 
     public String getStatus() {
-        return m_status;
+        return status;
     }
 
     public void setStatus(final String status) {
-        m_status = ConfigUtils.assertNotEmpty(status, "status");
+        this.status = ConfigUtils.assertNotEmpty(status, "status");
     }
 
     public String getPagesSent() {
-        return m_pagesSent != null ? m_pagesSent : DEFAULT_PAGES_SENT;
+        return pagesSent != null ? pagesSent : DEFAULT_PAGES_SENT;
     }
 
     public void setPagesSent(final String pagesSent) {
-        m_pagesSent = ConfigUtils.normalizeString(pagesSent);
+        this.pagesSent = ConfigUtils.normalizeString(pagesSent);
     }
 
     public String getNextNotifId() {
-        return m_nextNotifId != null ? m_nextNotifId : DEFAULT_NEXT_NOTIFID;
+        return nextNotifId != null ? nextNotifId : DEFAULT_NEXT_NOTIFID;
     }
 
     public void setNextNotifId(final String nextNotifId) {
-        m_nextNotifId = ConfigUtils.normalizeString(nextNotifId);
+        this.nextNotifId = ConfigUtils.normalizeString(nextNotifId);
     }
 
     public String getNextUserNotifId() {
-        return m_nextUserNotifId != null ? m_nextUserNotifId : DEFAULT_NEXT_USER_NOTIFID;
+        return nextUserNotifId != null ? nextUserNotifId : DEFAULT_NEXT_USER_NOTIFID;
     }
 
     public void setNextUserNotifId(final String nextUserNotifId) {
-        m_nextUserNotifId = ConfigUtils.normalizeString(nextUserNotifId);
+        this.nextUserNotifId = ConfigUtils.normalizeString(nextUserNotifId);
     }
 
     public String getNextGroupId() {
-        return m_nextGroupId != null ? m_nextGroupId : DEFAULT_NEXT_GROUP_ID;
+        return nextGroupId != null ? nextGroupId : DEFAULT_NEXT_GROUP_ID;
     }
 
     public void setNextGroupId(final String nextGroupId) {
-        m_nextGroupId = ConfigUtils.normalizeString(nextGroupId);
+        this.nextGroupId = ConfigUtils.normalizeString(nextGroupId);
     }
 
     public String getServiceIdSql() {
-        return m_serviceIdSql != null ? m_serviceIdSql : DEFAULT_SERVICEID_SQL;
+        return serviceIdSql != null ? serviceIdSql : DEFAULT_SERVICEID_SQL;
     }
 
     public void setServiceIdSql(final String serviceIdSql) {
-        m_serviceIdSql = ConfigUtils.normalizeString(serviceIdSql);
+        this.serviceIdSql = ConfigUtils.normalizeString(serviceIdSql);
     }
 
     public String getOutstandingNoticesSql() {
-        return m_outstandingNoticesSql != null ? m_outstandingNoticesSql : DEFAULT_OUTSTANDING_NOTICES_SQL;
+        return outstandingNoticesSql != null ? outstandingNoticesSql : DEFAULT_OUTSTANDING_NOTICES_SQL;
     }
 
     public void setOutstandingNoticesSql(final String outstandingNoticesSql) {
-        m_outstandingNoticesSql = ConfigUtils.normalizeString(outstandingNoticesSql);
+        this.outstandingNoticesSql = ConfigUtils.normalizeString(outstandingNoticesSql);
     }
 
     public String getAcknowledgeIdSql() {
-        return m_acknowledgeIdSql != null ? m_acknowledgeIdSql : DEFAULT_ACKNOWLEDGEID_SQL;
+        return acknowledgeIdSql != null ? acknowledgeIdSql : DEFAULT_ACKNOWLEDGEID_SQL;
     }
 
     public void setAcknowledgeIdSql(final String acknowledgeIdSql) {
-        m_acknowledgeIdSql = ConfigUtils.normalizeString(acknowledgeIdSql);
+        this.acknowledgeIdSql = ConfigUtils.normalizeString(acknowledgeIdSql);
     }
 
     public String getAcknowledgeUpdateSql() {
-        return m_acknowledgeUpdateSql != null ? m_acknowledgeUpdateSql : DEFAULT_ACKNOWLEDGE_UPDATE_SQL;
+        return acknowledgeUpdateSql != null ? acknowledgeUpdateSql : DEFAULT_ACKNOWLEDGE_UPDATE_SQL;
     }
 
     public void setAcknowledgeUpdateSql(final String acknowledgeUpdateSql) {
-        m_acknowledgeUpdateSql = ConfigUtils.normalizeString(acknowledgeUpdateSql);
+        this.acknowledgeUpdateSql = ConfigUtils.normalizeString(acknowledgeUpdateSql);
     }
 
     public Boolean getMatchAll() {
-        return m_matchAll;
+        return matchAll;
     }
 
     public void setMatchAll(final Boolean matchAll) {
-        m_matchAll = ConfigUtils.assertNotNull(matchAll, "match-all");
+        this.matchAll = ConfigUtils.assertNotNull(matchAll, "match-all");
     }
 
     public String getEmailAddressCommand() {
-        return m_emailAddressCommand != null ? m_emailAddressCommand : DEFAULT_EMAIL_ADDRESS_COMMAND;
+        return emailAddressCommand != null ? emailAddressCommand : DEFAULT_EMAIL_ADDRESS_COMMAND;
     }
 
     public void setEmailAddressCommand(final String emailAddressCommand) {
-        m_emailAddressCommand = ConfigUtils.normalizeString(emailAddressCommand);
+        this.emailAddressCommand = ConfigUtils.normalizeString(emailAddressCommand);
     }
 
     public Boolean getNumericSkipResolutionPrefix() {
-        return m_numericSkipResolutionPrefix != null ? m_numericSkipResolutionPrefix : Boolean.valueOf("false");
+        return numericSkipResolutionPrefix != null ? numericSkipResolutionPrefix : Boolean.valueOf("false");
     }
 
     public void setNumericSkipResolutionPrefix(final Boolean prefix) {
-        m_numericSkipResolutionPrefix = prefix;
+        this.numericSkipResolutionPrefix = prefix;
     }
 
     public Integer getMaxThreads() {
-        return m_maxThreads != null ? m_maxThreads : DEFAULT_MAX_THREADS;
+        return maxThreads != null ? maxThreads : DEFAULT_MAX_THREADS;
     }
 
     public void setMaxThreads(Integer maxThreads) {
-        m_maxThreads = maxThreads;
+        this.maxThreads = maxThreads;
     }
 
     public Optional<AutoAcknowledgeAlarm> getAutoAcknowledgeAlarm() {
-        return Optional.ofNullable(m_autoAcknowledgeAlarm);
+        return Optional.ofNullable(autoAcknowledgeAlarm);
     }
 
     public void setAutoAcknowledgeAlarm(final AutoAcknowledgeAlarm autoAcknowledgeAlarm) {
-        m_autoAcknowledgeAlarm = autoAcknowledgeAlarm;
+        this.autoAcknowledgeAlarm = autoAcknowledgeAlarm;
     }
 
     public List<AutoAcknowledge> getAutoAcknowledges() {
-        return m_autoAcknowledges;
+        return autoAcknowledges;
     }
 
     public void setAutoAcknowledges(final List<AutoAcknowledge> autoAcknowledges) {
-        m_autoAcknowledges.clear();
-        m_autoAcknowledges.addAll(autoAcknowledges);
+        this.autoAcknowledges.clear();
+        this.autoAcknowledges.addAll(autoAcknowledges);
     }
 
     public void addAutoAcknowledge(final AutoAcknowledge autoAcknowledge) throws IndexOutOfBoundsException {
-        m_autoAcknowledges.add(autoAcknowledge);
+        this.autoAcknowledges.add(autoAcknowledge);
     }
 
     public List<String> getOutageCalendars() {
-        return m_outageCalendars;
+        return outageCalendars;
     }
 
     public void setOutageCalendars(final List<String> calendars) {
-        if (calendars == m_outageCalendars) return;
-        m_outageCalendars.clear();
-        if (calendars != null) m_outageCalendars.addAll(calendars);
+        if (calendars == outageCalendars) return;
+        this.outageCalendars.clear();
+        if (calendars != null) this.outageCalendars.addAll(calendars);
     }
 
     public void addOutageCalendar(final String calendar) {
-        m_outageCalendars.add(calendar);
+        this.outageCalendars.add(calendar);
     }
 
     public boolean removeOutageCalendar(final String calendar) {
-        return m_outageCalendars.remove(calendar);
+        return this.outageCalendars.remove(calendar);
     }
 
     public List<Queue> getQueues() {
-        return m_queues;
+        return this.queues;
     }
 
     public void setQueues(final List<Queue> queues) {
-        if (queues == m_queues) return;
-        m_queues.clear();
-        if (queues != null) m_queues.addAll(queues);
+        if (this.queues == queues) return;
+        this.queues.clear();
+        if (queues != null) this.queues.addAll(queues);
     }
 
     public void addQueue(final Queue queue) {
-        m_queues.add(queue);
+        this.queues.add(queue);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_status, 
-                            m_pagesSent, 
-                            m_nextNotifId, 
-                            m_nextUserNotifId, 
-                            m_nextGroupId, 
-                            m_serviceIdSql, 
-                            m_outstandingNoticesSql, 
-                            m_acknowledgeIdSql, 
-                            m_acknowledgeUpdateSql, 
-                            m_matchAll, 
-                            m_emailAddressCommand, 
-                            m_numericSkipResolutionPrefix,
-                            m_maxThreads,
-                            m_autoAcknowledgeAlarm, 
-                            m_autoAcknowledges, 
-                            m_queues, 
-                            m_outageCalendars);
+        return Objects.hash(status, 
+                            pagesSent, 
+                            nextNotifId, 
+                            nextUserNotifId, 
+                            nextGroupId, 
+                            serviceIdSql, 
+                            outstandingNoticesSql, 
+                            acknowledgeIdSql, 
+                            acknowledgeUpdateSql, 
+                            matchAll, 
+                            emailAddressCommand, 
+                            numericSkipResolutionPrefix,
+                            maxThreads,
+                            autoAcknowledgeAlarm, 
+                            autoAcknowledges, 
+                            queues, 
+                            outageCalendars);
     }
 
     @Override
@@ -303,25 +298,24 @@ public class NotifdConfiguration implements Serializable {
 
         if (obj instanceof NotifdConfiguration) {
             final NotifdConfiguration that = (NotifdConfiguration)obj;
-            return Objects.equals(this.m_status, that.m_status)
-                    && Objects.equals(this.m_pagesSent, that.m_pagesSent)
-                    && Objects.equals(this.m_nextNotifId, that.m_nextNotifId)
-                    && Objects.equals(this.m_nextUserNotifId, that.m_nextUserNotifId)
-                    && Objects.equals(this.m_nextGroupId, that.m_nextGroupId)
-                    && Objects.equals(this.m_serviceIdSql, that.m_serviceIdSql)
-                    && Objects.equals(this.m_outstandingNoticesSql, that.m_outstandingNoticesSql)
-                    && Objects.equals(this.m_acknowledgeIdSql, that.m_acknowledgeIdSql)
-                    && Objects.equals(this.m_acknowledgeUpdateSql, that.m_acknowledgeUpdateSql)
-                    && Objects.equals(this.m_matchAll, that.m_matchAll)
-                    && Objects.equals(this.m_emailAddressCommand, that.m_emailAddressCommand)
-                    && Objects.equals(this.m_numericSkipResolutionPrefix, that.m_numericSkipResolutionPrefix)
-                    && Objects.equals(this.m_maxThreads, that.m_maxThreads)
-                    && Objects.equals(this.m_autoAcknowledgeAlarm, that.m_autoAcknowledgeAlarm)
-                    && Objects.equals(this.m_autoAcknowledges, that.m_autoAcknowledges)
-                    && Objects.equals(this.m_queues, that.m_queues)
-                    && Objects.equals(this.m_outageCalendars, that.m_outageCalendars);
+            return Objects.equals(this.status, that.status)
+                    && Objects.equals(this.pagesSent, that.pagesSent)
+                    && Objects.equals(this.nextNotifId, that.nextNotifId)
+                    && Objects.equals(this.nextUserNotifId, that.nextUserNotifId)
+                    && Objects.equals(this.nextGroupId, that.nextGroupId)
+                    && Objects.equals(this.serviceIdSql, that.serviceIdSql)
+                    && Objects.equals(this.outstandingNoticesSql, that.outstandingNoticesSql)
+                    && Objects.equals(this.acknowledgeIdSql, that.acknowledgeIdSql)
+                    && Objects.equals(this.acknowledgeUpdateSql, that.acknowledgeUpdateSql)
+                    && Objects.equals(this.matchAll, that.matchAll)
+                    && Objects.equals(this.emailAddressCommand, that.emailAddressCommand)
+                    && Objects.equals(this.numericSkipResolutionPrefix, that.numericSkipResolutionPrefix)
+                    && Objects.equals(this.maxThreads, that.maxThreads)
+                    && Objects.equals(this.autoAcknowledgeAlarm, that.autoAcknowledgeAlarm)
+                    && Objects.equals(this.autoAcknowledges, that.autoAcknowledges)
+                    && Objects.equals(this.queues, that.queues)
+                    && Objects.equals(this.outageCalendars, that.outageCalendars);
         }
         return false;
     }
-
 }

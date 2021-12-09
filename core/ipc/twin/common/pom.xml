@@ -117,6 +117,11 @@
             <version>${jackson2Version}</version>
         </dependency>
         <dependency>
+            <groupId>com.github.java-json-tools</groupId>
+            <artifactId>json-patch</artifactId>
+            <version>${jsonPatchVersion}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>core-api</artifactId>
             <version>${project.version}</version>

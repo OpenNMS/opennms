@@ -48,6 +48,8 @@ import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.distributed.core.api.SystemType;
+import org.opennms.netmgt.snmp.SnmpV3User;
+import org.opennms.netmgt.snmp.TrapListenerConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -57,6 +59,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
@@ -66,6 +69,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -274,6 +278,32 @@ public class JmsTwinIT extends CamelBlueprintTest {
         final var session3 = publisher.register("test", String.class);
         session3.publish("Test3");
         await().atMost(10, TimeUnit.SECONDS).until(tracker::getLog, hasItems("Test2", "Test3"));
+    }
+
+    @Test
+    public void testPublishSubscribeWithTrapdConfig() throws IOException {
+        final var session = this.publisher.register(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class);
+        final var tracker1 = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class);
+        SnmpV3User user = new SnmpV3User("opennmsUser", "MD5", "0p3nNMSv3",
+                "DES", "0p3nNMSv3");
+        TrapListenerConfig trapListenerConfig = new TrapListenerConfig();
+        ArrayList<SnmpV3User> users = new ArrayList<>();
+        users.add(user);
+        trapListenerConfig.setSnmpV3Users(users);
+        session.publish(trapListenerConfig);
+        await().until(tracker1::getLog, hasItem(trapListenerConfig));
+        // Add two users and delete existing one.
+        TrapListenerConfig updatedConfig = new TrapListenerConfig();
+        SnmpV3User user1 = new SnmpV3User("opennmsUser1", "MD5", "0p3nNMSv1",
+                "DES", "0p3nNMSv1");
+        SnmpV3User user2 = new SnmpV3User("opennmsUser2", "MD5", "0p3nNMSv1",
+                "DES", "0p3nNMSv2");
+        users = new ArrayList<>();
+        users.add(user1);
+        users.add(user2);
+        updatedConfig.setSnmpV3Users(users);
+        session.publish(updatedConfig);
+        await().until(tracker1::getLog, hasItem(updatedConfig));
     }
 
 

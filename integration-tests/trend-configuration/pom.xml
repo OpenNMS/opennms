@@ -48,5 +48,11 @@
       <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${jsonVersion}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

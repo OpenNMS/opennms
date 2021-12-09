@@ -27,6 +27,9 @@
  *******************************************************************************/
 package org.opennms.netmgt.config.jmx;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -43,40 +46,40 @@ import java.util.Map;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-@XmlRootElement(name = "mbean-server")
-@XmlAccessorType(XmlAccessType.PROPERTY)
+
 public class MBeanServer {
-    private String m_ipAddress;
-    private int m_port;
-    private List<Parameter> m_parameters = new LinkedList<>();
+    @JsonProperty("ipAddress")
+    private String ipAddress;
+    @JsonProperty("port")
+    private int port;
+    @JsonProperty("parameter")
+    private List<Parameter> parameters = new LinkedList<>();
 
-    @XmlAttribute(name = "ipAddress", required = true)
     public String getIpAddress() {
-        return m_ipAddress;
+        return this.ipAddress;
     }
 
-    @XmlAttribute(name = "port", required = true)
     public int getPort() {
-        return m_port;
+        return this.port;
     }
 
-    @XmlElement(name = "parameter", required = false)
     public List<Parameter> getParameters() {
-        return m_parameters;
+        return this.parameters;
     }
 
     public void setIpAddress(String ipAddress) {
-        this.m_ipAddress = ipAddress;
+        this.ipAddress = ipAddress;
     }
 
     public void setPort(int port) {
-        this.m_port = port;
+        this.port = port;
     }
 
     public void setParameters(List<Parameter> parameters) {
-        this.m_parameters = parameters;
+        this.parameters = parameters;
     }
 
+    @JsonIgnore
     public Map<String, String> getParameterMap() {
         Map<String, String> parameterMap = new HashMap<>();
         for (Parameter parameter : getParameters()) {

@@ -1,48 +1,41 @@
 <template>
-  <DataTable
-    :value="outages"
-    showGridlines
-    data-key="id"
-    :loading="loading"
-    responsiveLayout="scroll"
-    @sort="sort"
-    :lazy="true"
-  >
-    <template #header>Recent Outages</template>
-
-    <template #empty>There have been no outages on this node in the last 24 hours.</template>
-
-    <template #loading>Loading data. Please wait.</template>
-
-    <template #footer>
-      <Pagination
-        :payload="payload"
-        :parameters="queryParameters"
-        @update-query-parameters="updateQueryParameters"
-        moduleName="nodesModule"
-        functionName="getNodeOutages"
-        totalCountStateName="outagesTotalCount"
-      />
-    </template>
-
-    <Column field="ipAddress" header="IP Address">
-      <template #body="{ data }">{{ data.ipAddress }}</template>
-    </Column>
-
-    <Column field="hostname" header="Host Name">
-      <template #body="{ data }">{{ data.hostname }}</template>
-    </Column>
-
-    <Column field="serviceName" header="Service Name">
-      <template #body="{ data }">{{ data.serviceName }}</template>
-    </Column>
-  </DataTable>
+  <div class="card">
+    <div class="feather-row">
+      <div class="feather-col-12 headline3">Recent Outages</div>
+    </div>
+    <div class="feather-row">
+      <div class="feather-col-12">
+        <table class="tl1 tl2 tl3" summary="Outages">
+          <thead>
+            <tr>
+              <th scope="col">IP Address</th>
+              <th scope="col">Host Name</th>
+              <th scope="col">Service Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="outage in outages" :key="outage.id">
+              <td>{{ outage.ipAddress }}</td>
+              <td>{{ outage.hostname }}</td>
+              <td>{{ outage.serviceName }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <Pagination
+      :payload="payload"
+      :parameters="queryParameters"
+      @update-query-parameters="updateQueryParameters"
+      moduleName="nodesModule"
+      functionName="getNodeOutages"
+      totalCountStateName="outagesTotalCount"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
+import { computed } from 'vue'
 import Pagination from './Pagination.vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
@@ -50,10 +43,23 @@ import useQueryParameters from '@/hooks/useQueryParams'
 const store = useStore()
 const route = useRoute()
 const payload = { id: route.params.id }
-const loading = ref(false)
-const { queryParameters, sort, updateQueryParameters } = useQueryParameters({
-  limit: 5,
+const { queryParameters, updateQueryParameters } = useQueryParameters({
+  limit: 10,
   offset: 0,
 }, 'nodesModule/getNodeOutages', payload)
 const outages = computed(() => store.state.nodesModule.outages)
 </script>
+
+<style lang="scss" scoped>
+@import "@featherds/table/scss/table";
+@import "@featherds/styles/mixins/elevation";
+.card {
+  @include elevation(2);
+  padding: 15px;
+  margin-bottom: 15px;
+}
+table {
+  width: 100%;
+  @include table();
+}
+</style>

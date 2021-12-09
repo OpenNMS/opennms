@@ -24,8 +24,12 @@
         <constructor-arg value="true"/>
     </bean>
 
+    <util:map id="configFileMap" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
+        <entry key="notifd" value="etc/notifd-configuration.xml"/>
+    </util:map>
+
     <bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
-        <property name="configFile" value="etc/notifd-configuration.xml"/>
+        <property name="configFileMap" ref="configFileMap"/>
     </bean>
 
     <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

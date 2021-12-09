@@ -28,11 +28,11 @@
 
 package org.opennms.features.config.service.impl;
 
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.features.config.service.util.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      *
      * @return ConfigName
      */
-    abstract protected String getConfigName();
+    protected abstract String getConfigName();
 
     /**
      * It will provide the default callback for all ConfigDao, override if you needed
@@ -84,7 +84,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      *
      * @return configId
      */
-    abstract protected String getDefaultConfigId();
+    protected abstract String getDefaultConfigId();
 
     /**
      * <p>Constructor for AbstractJaxbConfigDao.</p>
@@ -95,7 +95,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      * @param description a {@link java.lang.String} object.
      * @see #getUpdateCallback()
      */
-    public AbstractCmJaxbConfigDao(final Class<ENTITY_CLASS> entityClass, final String description) {
+    protected AbstractCmJaxbConfigDao(final Class<ENTITY_CLASS> entityClass, final String description) {
         this.entityClass = entityClass;
         this.description = description;
     }
@@ -129,13 +129,13 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
 
         LOG.debug("Loading {} configuration from {}", description, configId);
         Optional<ENTITY_CLASS> configOptional;
+        Optional<String> jsonOptional = null;
 
         try {
-            configOptional = configurationManagerService
-                    .getXmlConfiguration(this.getConfigName(), configId)
-                    .map(s -> JaxbUtils.unmarshal(entityClass, s, false)); // no validation since we validated already at write time
+            jsonOptional = configurationManagerService.getJSONStrConfiguration(this.getConfigName(), configId);
+            configOptional = jsonOptional.map(s -> ConfigConvertUtil.jsonToObject(s, entityClass)); // no validation since we validated already at write time
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ConfigConversionException(e, e.getMessage());
         }
 
         if (configOptional.isEmpty()) {
@@ -178,13 +178,8 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      * @param config
      * @throws IOException
      */
-    public void updateConfig(final String configId, ENTITY_CLASS config) throws IOException {
-        String xmlStr = JaxbUtils.marshal(config);
-        Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(this.getConfigName());
-        if (schema.isEmpty()) {
-            throw new RuntimeException("Schema not found: " + this.getConfigName());
-        }
-        this.updateConfig(configId, schema.get().getConverter().xmlToJson(xmlStr));
+    public void updateConfig(String configId, ENTITY_CLASS config) throws IOException {
+        this.updateConfig(configId, ConfigConvertUtil.objectToJson(config));
     }
 
     /**
@@ -194,7 +189,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      * @param jsonConfigString
      * @throws IOException
      */
-    public void updateConfig(final String configId, String jsonConfigString) throws IOException {
+    public void updateConfig(String configId, String jsonConfigString) throws IOException {
         configurationManagerService.updateConfiguration(this.getConfigName(), configId, new JsonAsString(jsonConfigString));
     }
 

@@ -72,3 +72,104 @@ A definition without any detectors will fall back to ICMP ping for discovery.
 
 </discovery-configuration>
 ----
+
+[[ga-manual-discovery]]
+== Manual discovery configuration
+
+In addition to the configuration above, there are some optional settings you can configure via `$\{OPENNMS_HOME}/etc/discovery-configuration.xml`.
+
+.Discovery configuration parameters
+[options="header" cols="1,1,3"]
+|===
+| Name
+| Default
+| Description
+
+| packets-per-second
+| 1
+| Number of ICMP packets that will be generated each second.
+
+| initial-sleep-time
+| 30000 ms (30 seconds)
+| The time, in milliseconds, before the discovery process begins after OpenNMS has started.
+This delay allows {page-component-title} to fully start before generating new events.
+
+| restart-sleep-time
+| 86400000 ms (1 day)
+| Once the discovery process finishes, the time, in milliseconds, before it will start again.
+
+| timeout
+| 2000 ms
+| The amount of time, in milliseconds, that the discovery process will wait for a response from a given IP address before deciding that there is nothing there.
+
+| retries
+| 1
+| The number of attempts to query a given IP address before deciding that there is nothing there.
+
+| foreign-source
+| not set
+| Adds discovered nodes to the specified foreign source requisition.
+
+| location
+| Default
+| The monitoring location where this discovery batch will be executed.
+Only used when Minions have been deployed.
+
+| chunk-size
+| 100
+| When using a monitoring locations and Minions, defines how many IP addresses are delegated to each Minion for scanning.
+|===
+
+.Discovery range configuration parameters
+[options="header" cols="1,3a"]
+|===
+| Tag
+| Description
+
+| specific
+| Specify individual IP address(es) to discover.
+May be repeated multiple times.
+
+[source, xml]
+----
+<specific>ip-address</specific>
+----
+
+| include-range
+| Specify a range of IP addresses to discover.
+May be repeated multiple times.
+
+[source, xml]
+----
+<include-range>
+    <begin>start-ip-address</begin>
+    <end>end-ip-address</end>
+</include-range>
+----
+
+| exclude-range
+| Specify a range of IP address to exclude from discovery.
+
+[source, xml]
+----
+<exclude-range>
+    <begin>start-ip-address</begin>
+    <end>end-ip-address</end>
+</exclude-range>
+----
+
+NOTE: The exclude-range tag will override addresses only in an include-range.
+It will not override specific IP addresses or addresses included in a file.
+There is no "specific" version of the exclude tag.
+To exclude a specific IP address, use an exclude-range where the beginning and ending IP addresses are the same.
+
+| include-url
+| Specify the full path to a text file containing one IP address per line to include in discovery.
+You can embed comments in this file.
+Any content on a line after a `#` character is ignored.
+
+[source, xml]
+----
+<include-url>file:filename</include-url>
+----
+|===

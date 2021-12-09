@@ -1,36 +1,35 @@
   
 <template>
-  <Menubar />
-  <Sidebar />
-  <div id="view">
-    <router-view />     
-  </div>
-  <notifications position="top center" ignoreDuplicates = true />  
+  <FeatherAppLayout content-layout="full">
+    <template v-slot:header>
+      <Menubar />
+    </template>
+
+    <Sidebar />
+    <Spinner />
+
+    <router-view />
+    <notifications position="top center" ignoreDuplicates = true />  
+  </FeatherAppLayout>
 </template>
   
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useStore } from 'vuex'
+import { FeatherAppLayout } from '@featherds/app-layout'
 import Menubar from './components/Layout/Menubar.vue'
 import Sidebar from './components/Layout/Sidebar.vue'
 import { notify } from "@kyvg/vue3-notification"
+import Spinner from './components/Common/Spinner.vue'
 
+const store = useStore()
+onMounted(() => store.dispatch('authModule/getWhoAmI'))
 </script>
   
 <style lang="scss">
-body {
-  margin: 0px;
-}
-input.p-dropdown-label {
-  cursor: auto !important;
-}
-#view {
-  padding: 30px;
-  height: calc(100vh - 65px);
-  overflow-y: scroll;
-  margin-left: 230px;
-}
-</style>
-
-<style lang="scss">
+@import "@featherds/styles/lib/grid";
+@import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/themes/open-mixins";
 // theme colours
 $primary-blue: rgba(
   $color: #0081ad,
@@ -58,17 +57,6 @@ $tertiary-sky-blue: rgba(
   $alpha: 0.25
 );
 
-// utility classes
-.bg-primary-green {
-  background: $primary-green !important;
-}
-.bg-primary-blue {
-  background: $primary-blue !important;
-}
-.bg-tertiaty-sky-blue {
-  background: $tertiary-sky-blue !important;
-}
-
 h1,
 h2,
 h3,
@@ -81,6 +69,19 @@ a {
   text-decoration: none;
   color: $primary-blue;
 }
+.full-width {
+  padding: 0px !important;
+}
+body {
+  margin: 0px;
+}
+.logo {
+  color: var(--feather-primary-text-on-color) !important;
+}
+a {
+  text-decoration: none;
+  color: var(--feather-primary);
+}
 .flex-container {
   padding: 0;
   margin: 0;
@@ -88,6 +89,7 @@ a {
   display: flex;
 }
 .space-between {
+  display: flex;
   justify-content: space-between;
 }
 .space-evenly {
@@ -102,6 +104,24 @@ a {
 }
 .pointer {
   cursor: pointer !important;
+}
+.feather-secondary {
+  background: var(--feather-secondary);
+}
+.feather-secondary-variant {
+  background: var(--feather-secondary-variant);
+}
+.feather-shade3 {
+  background: var(--feather-shade-3);
+}
+.body-small {
+  @include body-small();
+}
+.subtitle1 {
+  @include subtitle1();
+}
+.subtitle2 {
+  @include subtitle2();
 }
 
 // header theme
@@ -130,5 +150,25 @@ a {
 .p-button-raised,
 .p-button-text {
   color: $primary-dark-blue !important;
+}
+// global feather typography classes
+.headline1 { @include headline1(); }
+.headline2 { @include headline2(); }
+.headline3 { @include headline3(); }
+.headline4 { @include headline4(); }
+.subtitle1 { @include subtitle1(); }
+.subtitle2 { @include subtitle2(); }
+
+body {
+  margin: 0px;
+}
+input.p-dropdown-label {
+  cursor: auto !important;
+}
+#view {
+  padding: 30px;
+  height: calc(100vh - 65px);
+  overflow-y: scroll;
+  margin-left: 230px;
 }
 </style>

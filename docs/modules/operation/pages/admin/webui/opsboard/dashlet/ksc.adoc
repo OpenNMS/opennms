@@ -1,3 +1,6 @@
+[[ksc]]
+= KSC
+
 [options="autowidth", cols="1,2"]
 |===
 | Boost support
@@ -7,7 +10,7 @@
 | Name of the KSC report to show in this dashlet
 |===
 
-= KSC Report Configuration
+== KSC Report Configuration
 
 This dashlet shows an existing link:https://opennms.discourse.group/t/ksc-report-configuration/2209[KSC report].
 The view is exactly the same as the KSC report is built regarding order, columns, and time spans.

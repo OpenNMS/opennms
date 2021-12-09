@@ -62,6 +62,7 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.config.tester.checks.ConfigCheckValidationException;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.test.DaoTestConfigBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 
@@ -194,10 +195,11 @@ public class ConfigTesterTest {
         testConfigFile("destinationPaths.xml");
     }
 
-    @Test
-    public void testDiscoveryConfiguration() {
-        testConfigFile("discovery-configuration.xml");
-    }
+//  migrated to CM
+//    @Test
+//    public void testDiscoveryConfiguration() {
+//        testConfigFile("discovery-configuration.xml");
+//    }
 
     @Test
     public void testDroolsNorthbounderConfiguration() {
@@ -312,10 +314,11 @@ public class ConfigTesterTest {
         ignoreConfigFile("modemConfig.properties");
     }
 
-    @Test
-    public void testNotifdConfiguration() {
-        testConfigFile("notifd-configuration.xml");
-    }
+//  migrated to CM
+//    @Test
+//    public void testNotifdConfiguration() {
+//        testConfigFile("notifd-configuration.xml");
+//    }
 
     @Test
     public void testNotificationCommands() {
@@ -467,6 +470,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testGeoIpConfiguration() {
+        testConfigFile("geoip-adapter-configuration.xml");
+    }
+
+    @Test
     /**
      * FIXME: Not part of the standard build?
      */
@@ -537,10 +545,11 @@ public class ConfigTesterTest {
         testConfigFile("translator-configuration.xml");
     }
 
-    @Test
-    public void testTrapdConfiguration() {
-        testConfigFile("trapd-configuration.xml");
-    }
+//  migrated to CM
+//    @Test
+//    public void testTrapdConfiguration() {
+//        testConfigFile("trapd-configuration.xml");
+//    }
 
     @Test
     public void testTrendConfiguration() {
@@ -577,10 +586,11 @@ public class ConfigTesterTest {
         testConfigFile("vmware-cim-datacollection-config.xml");
     }
 
-    @Test
-    public void testVMwareConfigConfig() {
-        testConfigFile("vmware-config.xml");
-    }
+//  migrated to CM
+//    @Test
+//    public void testVMwareConfigConfig() {
+//        testConfigFile("vmware-config.xml");
+//    }
 
     @Test
     public void testVMwareDatacollectionConfig() {
@@ -657,9 +667,9 @@ public class ConfigTesterTest {
 
     @Test
     public void zz002testCheckAllDaemonXmlConfigFilesTested() {
-        File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");
-        File configDir = someConfigFile.getParentFile();
-        assertTrue("daemon configuration directory exists at " + configDir.getAbsolutePath(), configDir.exists());
+        ClassPathResource resource = new ClassPathResource("/defaults/discovery-configuration.xml", ConfigTesterTest.class);
+        File configDir = ConfigurationTestUtils.getDaemonEtcDirectory();
+        assertTrue("daemon configuration directory exists at " + resource, resource.exists());
         assertTrue("daemon configuration directory is a directory at " + configDir.getAbsolutePath(), configDir.isDirectory());
 
         String[] configFiles = configDir.list(new FilenameFilter() {

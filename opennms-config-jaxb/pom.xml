@@ -83,5 +83,10 @@
       <artifactId>org.opennms.core.test-api.xml</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson2Version}</version>
+    </dependency>
   </dependencies>
 </project>
