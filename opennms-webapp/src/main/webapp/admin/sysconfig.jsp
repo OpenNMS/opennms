@@ -84,6 +84,7 @@
 <%
    String trapPort = "Unknown";
    try {
+       TrapdConfigFactory.init();
        trapPort = String.valueOf(TrapdConfigFactory.getInstance().getSnmpTrapPort());
    } catch (Throwable e) {
        // if factory can't be initialized, status is already 'Unknown'

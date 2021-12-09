@@ -37,6 +37,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.snmp.SnmpV3User;
 import org.snmp4j.security.SecurityLevel;
@@ -53,7 +54,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TrapdConfigConfigUpdater {
 
     @Autowired
-    private TrapdConfig m_config;
+    private TrapdConfigFactory m_config;
 
     @Autowired
     private Trapd trapd;

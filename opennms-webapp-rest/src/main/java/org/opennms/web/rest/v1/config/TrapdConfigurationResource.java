@@ -46,7 +46,7 @@ import org.springframework.stereotype.Component;
 @Component("trapdConfigurationResource")
 public class TrapdConfigurationResource {
     @Autowired
-    TrapdConfigFactory m_trapdConfigResource;
+    private TrapdConfigFactory trapdConfigFactory;
 
     @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(TrapdConfigurationResource.class);
@@ -54,7 +54,7 @@ public class TrapdConfigurationResource {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getTrapdConfiguration() throws ConfigurationResourceException {
-        return Response.ok(m_trapdConfigResource.getConfig()).build();
+        return Response.ok(trapdConfigFactory.getConfig()).build();
     }
 
 }

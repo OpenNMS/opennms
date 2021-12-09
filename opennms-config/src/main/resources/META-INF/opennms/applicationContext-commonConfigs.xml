@@ -137,10 +137,14 @@
   <bean id="syslogdConfigFactory" class="org.opennms.netmgt.config.SyslogdConfigFactory" />
   
   <onmsgi:service interface="org.opennms.netmgt.config.SyslogdConfig" ref="syslogdConfigFactory" />
-  
-  <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory"/>
-  
-  <onmsgi:service interface="org.opennms.netmgt.config.TrapdConfig" ref="trapdConfig" />
+
+    <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
+
+    <onmsgi:service interface="org.opennms.netmgt.config.TrapdConfig" ref="trapdConfig" />
   
   <bean id="dataCollectionConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/datacollection-config.xml" />

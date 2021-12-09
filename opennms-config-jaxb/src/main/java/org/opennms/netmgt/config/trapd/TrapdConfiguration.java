@@ -28,19 +28,13 @@
 
 package org.opennms.netmgt.config.trapd;
 
-import java.io.Serializable;
-import java.util.Objects;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opennms.core.xml.ValidateUsing;
+
+import javax.xml.bind.annotation.*;
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Top-level element for the trapd-configuration.xml
@@ -48,6 +42,10 @@ import org.opennms.core.xml.ValidateUsing;
  * 
  * @version $Revision$ $Date$
  */
+// DO NOT REMOVE XML annotation for now. It is needed for TrapdConfigurationResource
+@XmlRootElement(name = "trapd-configuration")
+@XmlAccessorType(XmlAccessType.NONE)
+@ValidateUsing("trapd-configuration.xsd")
 @SuppressWarnings("all") 
 public class TrapdConfiguration implements  Serializable {
 	private static final long serialVersionUID = 2;
@@ -59,44 +57,52 @@ public class TrapdConfiguration implements  Serializable {
      *  If "" is specified, trapd will bind to all addresses. The
      * default is .
      */
+    @XmlAttribute(name="snmp-trap-address")
     private java.lang.String snmpTrapAddress = "*";
 
     /**
      * The port on which trapd listens for SNMP traps. The
      *  standard port is 162.
      */
+    @XmlAttribute(name="snmp-trap-port", required=true)
     private int snmpTrapPort;
 
     /**
      * keeps track of state for field: snmpTrapPort
      */
-	@JsonIgnore
+    @XmlTransient
+    @JsonIgnore
     private boolean hassnmpTrapPort;
 
     /**
      * Whether traps from devices unknown to OpenNMS should
      *  generate newSuspect events.
      */
+    @XmlAttribute(name="new-suspect-on-trap", required=true)
     private boolean newSuspectOnTrap;
 
+    @XmlAttribute(name="include-raw-message", required=false)
     private boolean includeRawMessage;
 
     /**
      * Number of threads used for consuming/dispatching messages.
      * Defaults to 2 x the number of available processors.
      */
+    @XmlAttribute(name="threads", required=false)
     private int threads = 0;
 
     /**
      * Maximum number of messages to keep in memory while waiting
      to be dispatched.
      */
+    @XmlAttribute(name="queue-size", required=false)
     private int queueSize = 10000;
 
     /**
      * Messages are aggregated in batches before being dispatched.
      * When the batch reaches this size, it will be dispatched.
      */
+    @XmlAttribute(name="batch-size", required=false)
     private int batchSize = 1000;
 
     /**
@@ -104,17 +110,20 @@ public class TrapdConfiguration implements  Serializable {
      * When the batch has been created for longer than this interval (ms)
      * it will be dispatched, regardless of the current size.
      */
+    @XmlAttribute(name="batch-interval", required=false)
     private int batchInterval = 500;
 
     /**
      * keeps track of state for field: newSuspectOnTrap
      */
-	@JsonIgnore
+    @XmlTransient
+    @JsonIgnore
     private boolean hasnewSuspectOnTrap;
 
     /**
      * SNMPv3 configuration.
      */
+    @XmlElement(name="snmpv3-user")
 	@JsonProperty("snmpv3-user")
     private java.util.List<Snmpv3User> snmpv3UserList;
 
@@ -124,6 +133,7 @@ public class TrapdConfiguration implements  Serializable {
      * This varbind is appended by certain trap forwarders when forwarding
      * SNMPv2 traps.
 	 */
+    @XmlAttribute(name="use-address-from-varbind", required=false)
     private Boolean useAddressFromVarbind;
 
     public TrapdConfiguration() {
