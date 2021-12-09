@@ -83,7 +83,7 @@ const nodeDataValue = computed(() => {
     copyState = JSON.parse(JSON.stringify(provisionDService.value))
 
     let data = (copyState as any)["requisition-def"]
-    if (data && data.length > 1) {
+    if (data && data.length > 0) {
       customData.value = ['edit', 'delete']
       isData.value = true //show pagination 
 
