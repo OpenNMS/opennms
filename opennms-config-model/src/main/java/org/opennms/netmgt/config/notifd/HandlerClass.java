@@ -28,53 +28,42 @@
 
 package org.opennms.netmgt.config.notifd;
 
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.opennms.core.xml.ValidateUsing;
-import org.opennms.netmgt.config.utils.ConfigUtils;
-
-@XmlRootElement(name = "handler-class")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("notifd-configuration.xsd")
 public class HandlerClass implements java.io.Serializable {
     private static final long serialVersionUID = 2L;
 
-    @XmlElement(name = "name", required = true)
-    private String m_name;
+    private String name;
 
-    @XmlElement(name = "init-params")
-    private List<InitParams> m_initParams = new ArrayList<>();
+    private List<InitParams> initParams = new ArrayList<>();
 
     public HandlerClass() { }
 
     public String getName() {
-        return m_name;
+        return name;
     }
 
     public void setName(final String name) {
-        m_name = ConfigUtils.assertNotEmpty(name, "name");
+        this.name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
     public List<InitParams> getInitParams() {
-        return m_initParams;
+        return initParams;
     }
 
     public void setInitParams(final List<InitParams> params) {
-        if (params == m_initParams) return;
-        m_initParams.clear();
-        if (params != null) m_initParams.addAll(params);
+        if (params == this.initParams) return;
+        this.initParams.clear();
+        if (params != null) this.initParams.addAll(params);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_name, m_initParams);
+        return Objects.hash(name, initParams);
     }
 
     @Override
@@ -85,10 +74,9 @@ public class HandlerClass implements java.io.Serializable {
 
         if (obj instanceof HandlerClass) {
             final HandlerClass that = (HandlerClass)obj;
-            return Objects.equals(this.m_name, that.m_name)
-                    && Objects.equals(this.m_initParams, that.m_initParams);
+            return Objects.equals(this.name, that.name)
+                    && Objects.equals(this.initParams, that.initParams);
         }
         return false;
     }
-
 }

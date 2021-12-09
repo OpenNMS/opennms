@@ -1,25 +1,25 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
- * 
+ *
  * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
- * 
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * 
+ *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
- * 
+ *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *     http://www.gnu.org/licenses/
- * 
+ *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
@@ -28,64 +28,51 @@
 
 package org.opennms.netmgt.config.notifd;
 
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.opennms.core.xml.ValidateUsing;
-import org.opennms.netmgt.config.utils.ConfigUtils;
-
-@XmlRootElement(name = "queue")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("notifd-configuration.xsd")
 public class Queue implements java.io.Serializable {
     private static final long serialVersionUID = 2L;
 
-    @XmlElement(name = "queue-id", required = true)
-    private String m_queueId;
+    private String queueId;
 
-    @XmlElement(name = "interval", required = true)
-    private String m_interval;
+    private String interval;
 
-    @XmlElement(name = "handler-class", required = true)
-    private HandlerClass m_handlerClass;
+    private HandlerClass handlerClass;
 
     public Queue() {
     }
 
     public String getQueueId() {
-        return m_queueId;
+        return queueId;
     }
 
     public void setQueueId(final String queueId) {
-        m_queueId = ConfigUtils.assertNotEmpty(queueId, "queue-id");
+        this.queueId = ConfigUtils.assertNotEmpty(queueId, "queue-id");
     }
 
     public String getInterval() {
-        return m_interval;
+        return interval;
     }
 
     public void setInterval(final String interval) {
-        m_interval = ConfigUtils.assertNotEmpty(interval, "interval");
+        this.interval = ConfigUtils.assertNotEmpty(interval, "interval");
     }
 
     public HandlerClass getHandlerClass() {
-        return m_handlerClass;
+        return handlerClass;
     }
 
     public void setHandlerClass(final HandlerClass handlerClass) {
-        m_handlerClass = ConfigUtils.assertNotNull(handlerClass, "handler-class");
+        this.handlerClass = ConfigUtils.assertNotNull(handlerClass, "handler-class");
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_queueId, 
-                            m_interval, 
-                            m_handlerClass);
+        return Objects.hash(queueId,
+                            interval,
+                            handlerClass);
     }
 
     @Override
@@ -96,11 +83,10 @@ public class Queue implements java.io.Serializable {
 
         if (obj instanceof Queue) {
             final Queue that = (Queue)obj;
-            return Objects.equals(this.m_queueId, that.m_queueId)
-                    && Objects.equals(this.m_interval, that.m_interval)
-                    && Objects.equals(this.m_handlerClass, that.m_handlerClass);
+            return Objects.equals(this.queueId, that.queueId)
+                    && Objects.equals(this.interval, that.interval)
+                    && Objects.equals(this.handlerClass, that.handlerClass);
         }
         return false;
     }
-
 }

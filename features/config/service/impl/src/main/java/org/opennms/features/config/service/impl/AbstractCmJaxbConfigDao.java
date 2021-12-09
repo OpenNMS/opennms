@@ -129,14 +129,13 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
 
         LOG.debug("Loading {} configuration from {}", description, configId);
         Optional<ENTITY_CLASS> configOptional;
+        Optional<String> jsonOptional = null;
 
         try {
-            configOptional = configurationManagerService.getJSONStrConfiguration(this.getConfigName(), configId)
-                    .map(s -> ConfigConvertUtil.jsonToObject(s, entityClass)); // no validation since we validated already at write time
-        } catch (ConfigConversionException e) {
-            throw e;
+            jsonOptional = configurationManagerService.getJSONStrConfiguration(this.getConfigName(), configId);
+            configOptional = jsonOptional.map(s -> ConfigConvertUtil.jsonToObject(s, entityClass)); // no validation since we validated already at write time
         } catch (IOException e) {
-            throw new ConfigConversionException(e);
+            throw new ConfigConversionException(e, e.getMessage());
         }
 
         if (configOptional.isEmpty()) {

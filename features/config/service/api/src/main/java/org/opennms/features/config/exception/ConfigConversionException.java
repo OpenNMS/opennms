@@ -28,11 +28,17 @@
 
 package org.opennms.features.config.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This exception is mainly about config conversion
  */
 public class ConfigConversionException extends RuntimeException {
-    public ConfigConversionException(Exception e) {
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigConversionException.class);
+
+    public ConfigConversionException(Exception e, Object object) {
         super(e);
+        LOG.error("{} message: {}", this.getClass().getSimpleName(), (object != null) ? object.toString() : null);
     }
 }

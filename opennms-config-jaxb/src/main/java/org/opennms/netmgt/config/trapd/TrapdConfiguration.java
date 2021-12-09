@@ -359,6 +359,7 @@ public class TrapdConfiguration implements  Serializable {
     }
 
     // for test SamePropertyValuesAs use
+    @JsonIgnore
     public Boolean getUseAddressFromVarbind() {
         return shouldUseAddressFromVarbind();
     }

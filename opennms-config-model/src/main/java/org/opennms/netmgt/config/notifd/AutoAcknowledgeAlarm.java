@@ -73,8 +73,8 @@ public class AutoAcknowledgeAlarm implements java.io.Serializable {
 
     public void setUei(final List<String> ueis) {
         if (this.ueis == ueis) return;
-        ueis.clear();
-        if (ueis != null) ueis.addAll(ueis);
+        this.ueis.clear();
+        if (ueis != null) this.ueis.addAll(ueis);
     }
 
     public void addUei(final String uei) {

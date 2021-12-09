@@ -36,8 +36,12 @@ import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.opennms.features.config.exception.ConfigConversionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConfigConvertUtil {
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigConvertUtil.class);
+
     // use object pool to prevent global locking issue
     private static final ObjectPool<ObjectMapper> pool = new GenericObjectPool<>(new ObjectMapperFactory());
 
@@ -57,18 +61,19 @@ public class ConfigConvertUtil {
     }
 
     public static <ENTITY> ENTITY jsonToObject(String jsonStr, Class<ENTITY> entityClass) {
+        LOG.debug("class: {} jsonStr: {} ", entityClass, jsonStr);
         ObjectMapper mapper = null;
         try {
             mapper = pool.borrowObject();
             return mapper.readValue(jsonStr, entityClass);
         } catch (Exception e) {
-            throw new ConfigConversionException(e);
+            throw new ConfigConversionException(e, jsonStr);
         } finally {
             if (mapper != null) {
                 try {
                     pool.returnObject(mapper);
                 } catch (Exception e) {
-                    throw new ConfigConversionException(e);
+                    throw new ConfigConversionException(e, jsonStr);
                 }
             }
         }
@@ -80,13 +85,13 @@ public class ConfigConvertUtil {
             mapper = pool.borrowObject();
             return mapper.writeValueAsString(object);
         } catch (Exception e) {
-            throw new ConfigConversionException(e);
+            throw new ConfigConversionException(e, object);
         } finally {
             if (mapper != null) {
                 try {
                     pool.returnObject(mapper);
                 } catch (Exception e) {
-                    throw new ConfigConversionException(e);
+                    throw new ConfigConversionException(e, object);
                 }
             }
         }

@@ -69,6 +69,7 @@ public class DiscoveryConfigurationMigratorOfflineTest {
         ConfigurationManagerServiceMock mock = new ConfigurationManagerServiceMock();
         Map<String,String> configFileMap = new HashMap<>();
         configFileMap.put("discovery", configFile.toString());
+        mock.setConfigFileMap(configFileMap);
         Optional<String> jsonStr = mock.getJSONStrConfiguration("discovery", "default");
         final DiscoveryConfiguration config = ConfigConvertUtil.jsonToObject(jsonStr.get(), DiscoveryConfiguration.class);
         Assert.assertNotNull(config);

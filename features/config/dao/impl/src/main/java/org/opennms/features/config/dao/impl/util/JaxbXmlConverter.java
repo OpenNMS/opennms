@@ -146,6 +146,7 @@ public class JaxbXmlConverter implements ConfigConverter {
                 return jsonStr;
             }
         } catch (JAXBException | SAXException e) {
+            LOG.warn("Exception: {} {}\nSource XML: {}", e.getClass(), e.getMessage(), sourceXml);
             throw new RuntimeException(e);
         }
     }
