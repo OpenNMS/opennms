@@ -244,7 +244,8 @@ public class TrapdConfigurationTest extends CmConfigTest<TrapdConfiguration> {
         } catch (Exception e) {
         }
 
-        //TODO: Freddy confirm is that acceptable to skip this test. Since xsd conversion will skip invalid config. (snmp-crap-address)
+        // It is kind of acceptable to skip this test. Since xsd conversion will skip invalid config. (snmp-crap-address)
+		// This type of conversion will only happen once during upgrade. We assume they will either run from a working OPNMS ver. or from our default config.
 //        try {
 //			String missplledConfig1 = "<trapd-configuration "
 //					+ "snmp-crap-address=\"*\" "
