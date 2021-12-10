@@ -55,8 +55,7 @@ import io.opentracing.util.GlobalTracer;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockSnmpDao.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-jms.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-echo.xml",
