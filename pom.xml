@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>29.0.1-SNAPSHOT</version>
+  <version>29.0.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1282,7 +1282,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>29.0.1.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>29.0.3.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1452,7 +1452,7 @@
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.13.2</log4j2Version>
+    <log4j2Version>2.15.0</log4j2Version>
     <logbackClassicVersion>1.2.3</logbackClassicVersion>
     <mapstructVersion>1.4.1.Final</mapstructVersion>
     <minaVersion>2.1.5</minaVersion>
