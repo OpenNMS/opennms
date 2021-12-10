@@ -314,6 +314,10 @@ public abstract class InetAddressUtils {
         }
     }
 
+    public static boolean areSameInetAddress(final byte[] leftInetAddr, final byte[] rightInetAddr){
+        return s_BYTE_ARRAY_COMPARATOR.compare(leftInetAddr, rightInetAddr) == 0;
+    }
+
     public static boolean inSameScope(final InetAddress addr1, final InetAddress addr2) {
         if (addr1 instanceof Inet4Address) {
             return (addr2 instanceof Inet4Address);
