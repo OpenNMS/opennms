@@ -15,6 +15,7 @@ The file `$\{OPENNMS_HOME}/etc/snmp-metadata-adapter-configuration.xml` is used 
             <entry tree=".1" name="anEntryIndex" index="true"/>
             <entry tree=".2" name="anEntryValue"/>
             <entry tree=".3" name="anotherEntryValue"/>
+            <entry tree=".4.999" name="anExactOIDValue" exact="true"/>
         </entry>
     </config>
 </snmp-metadata-config>

@@ -33,4 +33,5 @@ import java.util.List;
 public interface Container {
     List<Entry> getEntries();
     String getName();
+    boolean isExact();
 }

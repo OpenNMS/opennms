@@ -15,9 +15,10 @@
                         <xs:complexType>
                           <xs:simpleContent>
                             <xs:extension base="xs:string">
-                              <xs:attribute type="xs:float" name="tree" use="required"/>
+                              <xs:attribute type="xs:string" name="tree" use="required"/>
                               <xs:attribute type="xs:string" name="name" use="required"/>
                               <xs:attribute type="xs:string" name="index" use="optional"/>
+                              <xs:attribute type="xs:string" name="exact" use="optional"/>
                             </xs:extension>
                           </xs:simpleContent>
                         </xs:complexType>
@@ -26,6 +27,7 @@
                     <xs:attribute type="xs:string" name="tree" use="required"/>
                     <xs:attribute type="xs:string" name="name" use="required"/>
                     <xs:attribute type="xs:string" name="index" use="optional"/>
+                    <xs:attribute type="xs:string" name="exact" use="optional"/>
                   </xs:complexType>
                 </xs:element>
               </xs:sequence>
