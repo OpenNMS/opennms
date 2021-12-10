@@ -61,14 +61,11 @@ def addModuleToTree(top, module, missing):
     if not module._is_root:
       if len(module.componentName) > 0:
         for i, cname in enumerate(module.componentName):
-            # JER: Need to go through all the component names
             subcomponentList = top.get(cname)
             if subcomponentList == None:
               subcomponentList = dict()
-              # Need to iterate on this above
               top[cname] = subcomponentList
 
-            # JER - make sure to map to matching subcomponent for the component above
             subname = module.subcomponentName[i]
             if subname == '':
               subname='none'
