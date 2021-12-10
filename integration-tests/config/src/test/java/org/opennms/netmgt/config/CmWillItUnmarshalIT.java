@@ -26,10 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.convert;
+package org.opennms.netmgt.config;
 
 import junit.framework.AssertionFailedError;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -98,7 +99,7 @@ public class CmWillItUnmarshalIT {
     }
 
     static {
-        addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, "provisiond-configuration.xsd", "provisiond-configuration", false, null);
+        addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, "provisiond-configuration.xsd", "provisiond-configuration", false, null);
     }
 
     /**
@@ -185,7 +186,7 @@ public class CmWillItUnmarshalIT {
     }
 
     @Test
-    public void testJaxbFormat() throws IOException {
+    public void testJaxbFormat() throws IOException, JSONException {
         if (!checkFormat) {
             return;
         }
