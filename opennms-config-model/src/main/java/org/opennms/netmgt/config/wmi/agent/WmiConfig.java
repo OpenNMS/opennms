@@ -34,59 +34,53 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This is the top-level element for wmi-config.xml
  */
-@XmlRootElement(name = "wmi-config")
-@XmlAccessorType(XmlAccessType.NONE)
-@ValidateUsing("wmi-config.xsd")
+
 public class WmiConfig implements Serializable {
     private static final long serialVersionUID = 2L;
 
     /**
      * Default timeout (in milliseconds).
      */
-    @XmlAttribute(name = "timeout")
+    @JsonProperty("timeout")
     private Integer m_timeout;
 
     /**
      * Default number of retries.
      */
-    @XmlAttribute(name = "retry")
+    @JsonProperty("retry")
     private Integer m_retry;
 
     /**
      * Default username.
      */
-    @XmlAttribute(name = "username")
+    @JsonProperty("username")
     private String m_username;
 
     /**
      * Default Windows Domain.
      */
-    @XmlAttribute(name = "domain")
+    @JsonProperty("domain")
     private String m_domain;
 
     /**
      * Default user password.
      */
-    @XmlAttribute(name = "password")
+    @JsonProperty("password")
     private String m_password;
 
     /**
      * Maps IP addresses to specific SNMP parmeters
      *  (retries, timeouts...)
      */
-    @XmlElement(name = "definition")
+    @JsonProperty("definition")
     private List<Definition> m_definitions = new ArrayList<>();
 
     public Optional<Integer> getTimeout() {
@@ -97,18 +91,8 @@ public class WmiConfig implements Serializable {
         m_timeout = timeout;
     }
 
-    public void setTimeout(final Optional<Integer> timeout){
-        if(timeout.isPresent())
-            this.setTimeout(timeout.get());
-    }
-
     public Optional<Integer> getRetry() {
         return Optional.ofNullable(m_retry);
-    }
-
-    public void setRetry(final Optional<Integer> retry){
-        if(retry.isPresent())
-            this.setRetry(retry.get());
     }
 
     public void setRetry(final Integer retry) {
@@ -117,11 +101,6 @@ public class WmiConfig implements Serializable {
 
     public Optional<String> getUsername() {
         return Optional.ofNullable(m_username);
-    }
-
-    public void setUsername(final Optional<String> username){
-        if(username.isPresent())
-            this.setUsername(username.get());
     }
 
     public void setUsername(final String username) {
@@ -136,22 +115,12 @@ public class WmiConfig implements Serializable {
         m_domain = ConfigUtils.normalizeString(domain);
     }
 
-    public void setDomain(final Optional<String> domain){
-        if(domain.isPresent())
-            this.setDomain(domain.get());
-    }
-
     public Optional<String> getPassword() {
         return Optional.ofNullable(m_password);
     }
 
     public void setPassword(final String password) {
         m_password = ConfigUtils.normalizeString(password);
-    }
-
-    public void setPassword(final Optional<String> password){
-        if(password.isPresent())
-            this.setPassword(password.get());
     }
 
     public List<Definition> getDefinitions() {
@@ -174,11 +143,11 @@ public class WmiConfig implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_timeout, 
-                            m_retry, 
-                            m_username, 
-                            m_domain, 
-                            m_password, 
+        return Objects.hash(m_timeout,
+                            m_retry,
+                            m_username,
+                            m_domain,
+                            m_password,
                             m_definitions);
     }
 

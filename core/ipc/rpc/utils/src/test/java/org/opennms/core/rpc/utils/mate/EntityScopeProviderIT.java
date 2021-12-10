@@ -30,6 +30,7 @@ package org.opennms.core.rpc.utils.mate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import org.opennms.core.rpc.utils.mate.Scope;
 
 import java.util.Optional;
 
@@ -45,8 +46,6 @@ import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-
-import com.sun.source.tree.Scope;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={

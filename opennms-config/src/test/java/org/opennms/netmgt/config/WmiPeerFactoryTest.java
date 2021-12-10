@@ -35,13 +35,12 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.util.Optional;
 
+import org.apache.camel.converter.jaxp.XmlConverter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.dao.api.ConfigSchema;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
-import org.opennms.features.config.dao.impl.util.XmlMapper;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +83,7 @@ public class WmiPeerFactoryTest  {
 
     private void updateConfig(String amiConfigXml) throws IOException, JAXBException {
         try {
-            XmlConverter converter = new XmlConverter("wmi-config.xsd", "wmi-config");
+            JaxbXmlConverter converter = new JaxbXmlConverter("wmi-config.xsd", "wmi-config",null);
             String json = converter.xmlToJson(amiConfigXml);
             LOG.warn(json);
             factory.updateConfig(json);
