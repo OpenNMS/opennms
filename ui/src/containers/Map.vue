@@ -10,9 +10,7 @@
         ref="split"
       >
         <pane min-size="1" max-size="100" :size="72">
-          <div class="leaflet-map">
-            <LeafletMap />
-          </div>
+          <LeafletMap />
         </pane>
         <pane min-size="1" max-size="100" :size="28" class="bottom-pane">
           <GridTabs />

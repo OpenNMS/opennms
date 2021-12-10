@@ -1,61 +1,57 @@
 <template>
-  <div class="leaflet">
-    <div class="geo-map">
-      <MapSearch class="search-bar" />
-      <SeverityFilter />
-      <LMap
-        ref="map"
-        :center="center"
-        :max-zoom="19"
-        :min-zoom="2"
-        :zoomAnimation="true"
-        @ready="onLeafletReady"
-        @moveend="onMoveEnd"
-      >
-        <template v-if="leafletReady">
-          <LControlLayers />
-          <LTileLayer
-            v-for="tileProvider in tileProviders"
-            :key="tileProvider.name"
-            :name="tileProvider.name"
-            :visible="tileProvider.visible"
-            :url="tileProvider.url"
-            :attribution="tileProvider.attribution"
-            layer-type="base"
-          />
-          <MarkerCluster
-            :options="{ showCoverageOnHover: false, chunkedLoading: true, iconCreateFunction }"
+  <div class="geo-map">
+    <MapSearch class="search-bar" />
+    <SeverityFilter />
+    <LMap
+      ref="map"
+      :center="center"
+      :max-zoom="19"
+      :min-zoom="2"
+      :zoomAnimation="true"
+      @ready="onLeafletReady"
+      @moveend="onMoveEnd"
+    >
+      <template v-if="leafletReady">
+        <LControlLayers />
+        <LTileLayer
+          v-for="tileProvider in tileProviders"
+          :key="tileProvider.name"
+          :name="tileProvider.name"
+          :visible="tileProvider.visible"
+          :url="tileProvider.url"
+          :attribution="tileProvider.attribution"
+          layer-type="base"
+        />
+        <MarkerCluster
+          :options="{ showCoverageOnHover: false, chunkedLoading: true, iconCreateFunction }"
+        >
+          <LMarker
+            v-for="node of nodes"
+            :key="node.label"
+            :lat-lng="[node.assetRecord.latitude, node.assetRecord.longitude]"
+            :name="node.label"
           >
-            <LMarker
-              v-for="node of nodes"
-              :key="node.label"
-              :lat-lng="[node.assetRecord.latitude, node.assetRecord.longitude]"
-              :name="node.label"
-            >
-              <LPopup>
-                Node:
-                <router-link :to="`/node/${node.id}`" target="_blank">
-                  {{ node.label }}
-                </router-link>
-                <br />
-                Severity: {{ nodeLabelAlarmServerityMap[node.label] || 'NORMAL' }}
-                <br />
-                Category: {{ node.categories.length ? node.categories[0].name : 'N/A' }}
-              </LPopup>
-              <LIcon :icon-url="setIcon(node)" :icon-size="iconSize" />
-            </LMarker>
-            <!-- Disable polylines until they work -->
-            <!-- <LPolyline
+            <LPopup>
+              Node:
+              <router-link :to="`/node/${node.id}`" target="_blank">{{ node.label }}</router-link>
+              <br />
+              Severity: {{ nodeLabelAlarmServerityMap[node.label] || 'NORMAL' }}
+              <br />
+              Category: {{ node.categories.length ? node.categories[0].name : 'N/A' }}
+            </LPopup>
+            <LIcon :icon-url="setIcon(node)" :icon-size="iconSize" />
+          </LMarker>
+          <!-- Disable polylines until they work -->
+          <!-- <LPolyline
               v-if="zoom > 5"
               v-for="coordinatePair of edges"
               :key="coordinatePair[0].toString()"
               :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
               color="green"
-            />-->
-          </MarkerCluster>
-        </template>
-      </LMap>
-    </div>
+          />-->
+        </MarkerCluster>
+      </template>
+    </LMap>
   </div>
 </template>
 <script setup lang ="ts">
@@ -93,6 +89,10 @@ const iconHeight = 42
 const iconSize = [iconWidth, iconHeight]
 const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => store.state.mapModule.mapCenter[k]))
 const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
+const bounds = computed(() => {
+  const coordinatedMap = getInterestedNodesCoordinateMap()
+  return nodes.value.map((node) => coordinatedMap.get(node.id))
+})
 const nodeLabelAlarmServerityMap = computed(() => store.getters["mapModule/getNodeAlarmSeverityMap"])
 
 const getHighestSeverity = (severitites: string[]) => {
@@ -166,6 +166,7 @@ const onLeafletReady = async () => {
   await nextTick()
   leafletObject.value = map.value.leafletObject
   leafletObject.value.zoomControl.setPosition('topright')
+  leafletObject.value.fitBounds(bounds.value)
   if (leafletObject.value != undefined && leafletObject.value != null) {
     leafletReady.value = true
   }
@@ -203,7 +204,7 @@ const tileProviders = [
   margin-top: -5px;
 }
 .geo-map {
-  height: 80vh;
+  height: calc(100vh - 60px);
 }
 </style>
 
