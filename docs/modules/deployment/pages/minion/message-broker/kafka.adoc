@@ -60,6 +60,9 @@ The other entries are used only if the connection to the first entry fails.
 
 IMPORTANT: Ensure you use the FQDN or IP for your Kafka nodes as configured as advertised listener.
 
+NOTE: You can still configure module specific config for sink IPC at `org.opennms.core.ipc.sink.kafka.cfg`, similarly for rpc and twin.
+      Module specific config takes precedence over common config specified on `org.opennms.core.ipc.kafka.cfg`.
+
 Exit the Karaf shell with kbd:[Ctrl+d]
 
 .Restart the Minion to apply the configuration
@@ -88,6 +91,7 @@ Verifying the health of the container
 Verifying installed bundles              [ Success  ]
 Connecting to Kafka from RPC             [ Success  ]
 Connecting to Kafka from Sink Producer   [ Success  ]
+Connecting to Kafka from Twin            [ Success  ]
 
 => Everything is awesome
 ----

@@ -85,7 +85,7 @@ public class HealthCheckCommand implements Action {
         // Print header
         System.out.println("Verifying the health of the container");
         System.out.println();
-        LOG.info("Verifying the health of the container");
+        LOG.debug("Verifying the health of the container");
 
         // Perform check
         final Context context = new Context();
@@ -98,8 +98,8 @@ public class HealthCheckCommand implements Action {
                 errorMessage -> {
                     System.out.println(Colorizer.colorize("Error: " + errorMessage, Color.Red));
                     System.out.println("=> Oh no, something is wrong");
-                    LOG.error("Error: {}", errorMessage);
-                    LOG.error("Oh no, something is wrong");
+                    LOG.debug("Error: {}", errorMessage);
+                    LOG.debug("Oh no, something is wrong");
                     return null;
                 },
                 completionStage -> {
@@ -110,7 +110,7 @@ public class HealthCheckCommand implements Action {
                     while ((next = listener.read()) != null) {
                         System.out.print(next);
                         System.out.flush();
-                        LOG.info(next);
+                        LOG.debug(next);
                     }
                     return null;
                 });

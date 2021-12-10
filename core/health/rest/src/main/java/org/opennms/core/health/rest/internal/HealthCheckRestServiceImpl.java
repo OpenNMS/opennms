@@ -107,7 +107,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
                     return Pair.of(health.isSuccess(), jsonHealth);
                 }
         );
-        LOG.info("Rest response : {}", flagAndResponse.getRight().toString());
+        LOG.debug("Rest response : {}", flagAndResponse.getRight().toString());
         // Return response
         return Response.ok()
                 .header("Health", flagAndResponse.getLeft() ? SUCCESS_MESSAGE : ERROR_MESSAGE)

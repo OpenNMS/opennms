@@ -32,12 +32,15 @@ import java.util.Properties;
 
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.PropertiesUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This handles all the configuration specific to RPC and some utils common to OpenNMS/Minion.
  */
 public interface KafkaRpcConstants {
 
+    static final Logger LOG = LoggerFactory.getLogger(KafkaRpcConstants.class);
     String KAFKA_RPC_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka";
     String KAFKA_IPC_CONFIG_PID = "org.opennms.core.ipc.kafka";
     String KAFKA_RPC_CONFIG_SYS_PROP_PREFIX = KAFKA_RPC_CONFIG_PID + ".";
@@ -74,6 +77,7 @@ public interface KafkaRpcConstants {
             maxBufferSize = Math.min(MAX_BUFFER_SIZE_CONFIGURED, PropertiesUtils.getProperty(properties, MAX_BUFFER_SIZE_PROPERTY, MAX_BUFFER_SIZE_CONFIGURED));
         } catch (NumberFormatException e) {
             // pass
+            LOG.warn("Configured max buffered size at {} is invalid", MAX_BUFFER_SIZE_PROPERTY);
         }
         return maxBufferSize;
     }

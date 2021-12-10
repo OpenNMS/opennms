@@ -37,10 +37,11 @@ public class OnmsKafkaConfigProvider implements KafkaConfigProvider {
 
     private final String kafkaSysPropPrefix;
 
-    private String commonKafkaSysPropPrefix;
+    private final String commonKafkaSysPropPrefix;
 
     public OnmsKafkaConfigProvider(String kafkaSysPropPrefix) {
         this.kafkaSysPropPrefix = kafkaSysPropPrefix;
+        commonKafkaSysPropPrefix = null;
     }
 
     public OnmsKafkaConfigProvider(String kafkaSysPropPrefix, String commonKafkaSysPropPrefix) {
@@ -52,9 +53,9 @@ public class OnmsKafkaConfigProvider implements KafkaConfigProvider {
         final Properties kafkaConfig = new Properties();
         kafkaConfig.put("group.id", SystemInfoUtils.getInstanceId());
         Properties config = loadKafkaConfigFromSysPropPrefix(kafkaSysPropPrefix);
-        if(config.containsKey("bootstrap.servers")) {
+        if (config.containsKey("bootstrap.servers")) {
             kafkaConfig.putAll(config);
-        } else if (commonKafkaSysPropPrefix != null){
+        } else if (commonKafkaSysPropPrefix != null) {
             Properties fallbackConfig = loadKafkaConfigFromSysPropPrefix(commonKafkaSysPropPrefix);
             kafkaConfig.putAll(fallbackConfig);
         }

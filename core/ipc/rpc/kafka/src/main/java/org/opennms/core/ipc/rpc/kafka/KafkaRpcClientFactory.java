@@ -332,8 +332,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             maxBufferSize = getMaxBufferSize(kafkaConfig);
             defaultTTL = PropertiesUtils.getProperty(kafkaConfig, DEFAULT_TTL_PROPERTY, DEFAULT_TTL_CONFIGURED);
             String singleTopicConfig = kafkaConfig.getProperty(SINGLE_TOPIC_FOR_ALL_MODULES);
-            boolean notASingleTopic = singleTopicConfig != null && singleTopicConfig.equalsIgnoreCase("false");
-            topicProvider = new KafkaTopicProvider(!notASingleTopic);
+            boolean singleTopicDisabled = singleTopicConfig != null && singleTopicConfig.equalsIgnoreCase("false");
+            topicProvider = new KafkaTopicProvider(!singleTopicDisabled);
             producer = new KafkaProducer<>(kafkaConfig);
             LOG.info("initializing the Kafka producer with: {}", kafkaConfig);
             // Start consumer which handles all the responses.

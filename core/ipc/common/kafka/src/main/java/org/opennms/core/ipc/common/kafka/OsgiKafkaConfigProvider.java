@@ -42,29 +42,28 @@ public class OsgiKafkaConfigProvider implements KafkaConfigProvider {
 
     private final String pid;
 
-    private String commonPID;
+    private final String commonPID;
 
     private final ConfigurationAdmin configAdmin;
 
 
     public OsgiKafkaConfigProvider(final String groupId, final String pid, final  ConfigurationAdmin configAdmin) {
-        this.groupId = groupId;
-        this.pid = pid;
-        this.configAdmin = Objects.requireNonNull(configAdmin);
+        this(groupId, pid, configAdmin, null);
     }
 
     public OsgiKafkaConfigProvider(final String groupId, final String pid, final  ConfigurationAdmin configAdmin, final String commonPID) {
-        this(groupId, pid, configAdmin);
+        this.groupId = groupId;
+        this.pid = pid;
+        this.configAdmin = configAdmin;
         this.commonPID = commonPID;
     }
 
     public OsgiKafkaConfigProvider(final String pid, final  ConfigurationAdmin configAdmin) {
-        this(null, pid, configAdmin);
+        this(null, pid, configAdmin, null);
     }
 
     public OsgiKafkaConfigProvider(final String pid, final  ConfigurationAdmin configAdmin, final  String commonPID) {
-        this(null, pid, configAdmin);
-        this.commonPID = commonPID;
+        this(null, pid, configAdmin, commonPID);
     }
 
     @Override
