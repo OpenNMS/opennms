@@ -30,7 +30,6 @@ package org.opennms.netmgt.collection.api;
 
 import java.util.Map;
 
-import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 /**
@@ -101,10 +100,10 @@ public interface ServiceCollector {
      *
      * This call will be performed in both OpenNMS and Minion.
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param parameters a {@link java.util.Map} object.
-     * @return a {@link org.opennms.netmgt.config.collector.CollectionSet} object.
-     * @throws org.opennms.netmgt.collectd.CollectionException if any.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionSet} object.
+     * @throws org.opennms.netmgt.collection.api.CollectionException if any.
      */
     CollectionSet collect(CollectionAgent agent, Map<String, Object> parameters) throws CollectionException;
 
@@ -119,7 +118,7 @@ public interface ServiceCollector {
     RrdRepository getRrdRepository(String collectionName);
 
     /**
-    * Invoked before every call to {@link #collect(CollectionAgent, EventProxy, Map)} in order
+    * Invoked before every call to {@link #collect(CollectionAgent, Map)} in order
     * to retrieve state/runtime information required for perform the collection.
     *
     * This call will always be performed in OpenNMS.
@@ -128,7 +127,7 @@ public interface ServiceCollector {
     *            Includes details about to the agent from which we wish to collect.
     * @param parameters
     *            Includes the service parameters defined in <em>collectd-configuration.xml</em>.
-    * @return Additional attributes, which should be added to the parameter map before calling {@link #collect(CollectionAgent, EventProxy, Map)}.
+    * @return Additional attributes, which should be added to the parameter map before calling {@link #collect(CollectionAgent, Map)}.
     */
    Map<String, Object> getRuntimeAttributes(CollectionAgent agent, Map<String, Object> parameters);
 
