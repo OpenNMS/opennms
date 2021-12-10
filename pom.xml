@@ -1414,7 +1414,7 @@
     <liquibaseVersion>2.0.5-ONMS20160524b</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.5</log4j2Version>
+    <log4j2Version>2.15.0</log4j2Version>
     <minaVersion>2.0.16</minaVersion>
     <mapstructVersion>1.2.0.CR1</mapstructVersion>
     <minionKarafVersion>4.0.5</minionKarafVersion>
