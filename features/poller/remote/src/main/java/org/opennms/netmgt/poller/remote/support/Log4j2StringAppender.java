@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller.remote.support;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.io.IOException;
