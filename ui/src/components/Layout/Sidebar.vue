@@ -25,10 +25,11 @@ const isAdmin = computed(() => store.getters['authModule/isAdmin'])
   float: left;
   background: var(--feather-secondary);
   z-index: 1;
+
+  .link a:hover{
+    text-decoration: none;
+  }
 }
 
-.feather-styles a:hover{
-    text-decoration: none !important;
-}
 </style>
   
