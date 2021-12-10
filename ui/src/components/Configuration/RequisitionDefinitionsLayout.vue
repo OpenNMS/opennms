@@ -70,7 +70,12 @@ const index = ref(0)
 const icon = ref(markRaw(actionsAdd));
 const isData = ref(false);
 const sortObj = ref({'value':'asc','property':'import-name'});
-const sortableColms = ref([{'value':'asc','property':'import-name'}, {'value':'none','property':'cron-schedule'}, {'value':'none','property':'import-url-resource'}, {'value':'none','property':'rescan-existing'}]);
+const sortableColms = ref(  [
+  {'value':'asc','property':'import-name'}, 
+  {'value':'none','property':'cron-schedule'}, 
+  {'value':'none','property':'import-url-resource'}, 
+  {'value':'none','property':'rescan-existing'}
+  ]);
 let customData: any = ref([])
 const provisionDService = computed(() => { return store.state.configuration.provisionDService })
 
