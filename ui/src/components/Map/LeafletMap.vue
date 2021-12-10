@@ -21,13 +21,14 @@
             :attribution="tileProvider.attribution"
             layer-type="base"
           />
-          <marker-cluster :options="{ showCoverageOnHover: false, chunkedLoading: true }">
+          <marker-cluster :options="{ showCoverageOnHover: false, chunkedLoading: true, zoomToBoundsOnClick: false }">
             <l-marker
               v-for="(node, index) in interestedNodes"
               :key="index"
               :lat-lng="getCoordinateFromNode(node)"
+              ref ="marker"
             >
-              <l-popup>{{ node.label }}</l-popup>
+              <l-popup ref="popup">{{ node.label }}</l-popup>
               <l-icon :icon-url="setIcon(node)" :icon-size="iconSize" />
             </l-marker>
             <l-polyline
@@ -156,7 +157,16 @@ const onLeafletReady = async () => {
   if (leafletObject.value != undefined && leafletObject.value != null) {
     leafletReady.value = true
   }
-}
+};
+
+// LMarker.on('clusterclick', function (a) {
+// 	a.layer.zoomToBounds({padding: [20, 20]});
+// });
+
+//  LMarker.on('clusterclick', (a:any) => {
+//   console.log("Childcount");
+//  });
+
 
 /*****Tile Layer*****/
 const tileProviders = [
