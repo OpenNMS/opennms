@@ -102,9 +102,7 @@ const nodeDataValue = computed(() => {
         })
         return rowData['cron-schedule'] = `Every ${ele} ${cronScheduleType[valuePos]}`
       })
-      //return updated data
-      console.log('copydata');
-      console.log(copydata);
+      //return updated data     
       if(sortObj.value.value === 'asc'){
         copydata.sort((a: any, b: any) => (a[`${sortObj.value.property}`] > b[`${sortObj.value.property}`] ? 1 : -1));
       }else{
@@ -124,8 +122,7 @@ onMounted(async () => {
   }
 })
 
-const sortChanged = (sortObjIn: FeatherSortObject) => { 
-  //sortObj.value = sortObjIn;
+const sortChanged = (sortObjIn: FeatherSortObject) => {   
   sortableColms.value.forEach((element: any) => {
           if (element.property === sortObjIn.property) {
               if(element.value === 'none' || element.value === 'desc'){
