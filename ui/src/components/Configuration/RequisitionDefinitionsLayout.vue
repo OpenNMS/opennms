@@ -116,6 +116,7 @@ const nodeDataValue = computed(() => {
       return copydata
     }
   }
+  
   return []
 })
 
