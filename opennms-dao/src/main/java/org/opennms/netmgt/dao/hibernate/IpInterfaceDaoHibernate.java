@@ -84,6 +84,13 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
     /** {@inheritDoc} */
     @Override
+    public List<OnmsIpInterface> findByMacLinksOfNode(Integer nodeId) {
+        Assert.notNull(nodeId, "nodeId cannot be null");
+        return find("from OnmsIpInterface ipInterface where ipInterface.ipAddress in (select ipNetToMedia.netAddress from IpNetToMedia ipNetToMedia where ipNetToMedia.physAddress in (select l.macAddress from BridgeMacLink l where l.node.id = ?))", nodeId);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public OnmsIpInterface findByNodeIdAndIpAddress(Integer nodeId, String ipAddress) {
         return findUnique("select ipInterface from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.ipAddress = ?", 
                           nodeId, 

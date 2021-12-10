@@ -33,7 +33,7 @@ opennms-core-ipc-twin-kafka
 ssh -p 8201 admin@localhost
 ----
 
-.Configure the Minion location and REST endpoint
+.Configure the Minion location
 [source, karaf]
 ----
 config:edit org.opennms.minion.controller<1>

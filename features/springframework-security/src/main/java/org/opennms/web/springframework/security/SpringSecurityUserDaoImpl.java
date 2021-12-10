@@ -177,6 +177,11 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         if (m_users == null) {
             return true;
         } else {
+            try {
+                m_userManager.update();
+            } catch (final Throwable t) {
+                LOG.warn("Attempting to update users failed because: {}. Continuing with previous cache of users.", t.getLocalizedMessage());
+            }
             return m_usersLastModified != m_userManager.getLastModified();
         }
     }

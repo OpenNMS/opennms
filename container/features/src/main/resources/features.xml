@@ -129,7 +129,7 @@
         <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
     </feature>
     <feature name="commons-net" version="${commonsNetVersion}" description="Apache :: commons-net">
-        <bundle>mvn:commons-net/commons-net/3.6</bundle>
+        <bundle>mvn:commons-net/commons-net/${commonsNetVersion}</bundle>
     </feature>
     <feature name="dnsjava" version="${dnsjavaVersion}" description="dnsjava">
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dnsjava/${dnsjavaVersion}</bundle>
@@ -671,6 +671,11 @@
     <feature name="opennms-provisioning-api" version="${project.version}" description="OpenNMS :: Provisioning :: API">
         <bundle dependency="true">mvn:org.apache.mina/mina-core/${minaVersion}</bundle>
         <bundle dependency="true">mvn:io.netty/netty/3.9.4.Final</bundle>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
+        <feature>opentracing-api</feature>
+        <feature>commons-lang</feature>
+        <feature>opennms-core</feature>
+        <feature>opennms-model</feature>
         <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
     </feature>
     <feature name="opennms-rrd-api" version="${project.version}" description="OpenNMS :: RRD :: API">
@@ -1137,7 +1142,8 @@
         <feature>opennms-situation-feedback-api</feature>
         <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
         <bundle dependency="true">mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
-        <bundle>mvn:org.opennms.features/org.opennms.features.api-layer/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.core/${project.version}</bundle>
     </feature>
     <feature name="opennms-enlinkd-shell" version="${project.version}" description="OpenNMS :: Features :: Enlinkd :: Shell">
         <feature>opennms-dao</feature>

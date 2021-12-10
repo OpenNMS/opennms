@@ -9,7 +9,7 @@ The figure <<ga-alarm-notes-ui, Alarm Detail View>> shows the component to add t
 
 [[ga-alarm-notes-ui]]
 .Alarm Detail View
-image:alarms/01_alarm-notes.png[]
+image::alarms/01_alarm-notes.png[]
 
 Alarm notes let you add two types of notes on an existing alarm or alarm class:
 

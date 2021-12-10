@@ -213,11 +213,8 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
         final String vmwareManagementServer = (String) parameters.get(VmwareImporter.METADATA_MANAGEMENT_SERVER);
         final String vmwareManagedObjectId = (String) parameters.get(VmwareImporter.METADATA_MANAGED_OBJECT_ID);
         final VmwareServer vmwareServer = (VmwareServer) parameters.get(VmwareImporter.VMWARE_SERVER_KEY);
-
-        CollectionSetBuilder builder = new CollectionSetBuilder(agent);
+        final CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         builder.withStatus(CollectionStatus.FAILED);
-
-        VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareServer);
 
         if (collection.getVmwareGroup().length < 1) {
             logger.info("No groups to collect. Returning empty collection set.");
@@ -225,8 +222,71 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
             return builder.build();
         }
 
-        try {
+        try (final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareServer)) {
             vmwareViJavaAccess.connect(ParameterMap.getKeyedInteger(parameters, "timeout", VmwareViJavaAccess.DEFAULT_TIMEOUT));
+            final ManagedEntity managedEntity = vmwareViJavaAccess.getManagedEntityByManagedObjectId(vmwareManagedObjectId);
+            VmwarePerformanceValues vmwarePerformanceValues = null;
+            try {
+                vmwarePerformanceValues = vmwareViJavaAccess.queryPerformanceValues(managedEntity);
+            } catch (RemoteException e) {
+                logger.warn("Error retrieving performance values from VMware management server '" + vmwareManagementServer + "' for managed object '" + vmwareManagedObjectId + "'", e.getMessage());
+                return builder.build();
+            }
+            for (final VmwareGroup vmwareGroup : collection.getVmwareGroup()) {
+                final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
+                if ("node".equalsIgnoreCase(vmwareGroup.getResourceType())) {
+                    // single instance value
+                    for (final Attrib attrib : vmwareGroup.getAttrib()) {
+                        if (!vmwarePerformanceValues.hasSingleValue(attrib.getName())) {
+                            // warning
+                            logger.debug("Warning! No single value for '{}' defined as single instance attribute for node {}", attrib.getName(), agent.getNodeId());
+                        } else {
+                            final Long value = vmwarePerformanceValues.getValue(attrib.getName());
+                            logger.debug("Storing single instance value {}='{}' for node {}",
+                                    attrib.getName(), value, agent.getNodeId());
+                            final AttributeType type = attrib.getType();
+                            if (type.isNumeric()) {
+                                builder.withNumericAttribute(nodeResource, vmwareGroup.getName(), attrib.getAlias(), value, type);
+                            } else {
+                                builder.withStringAttribute(nodeResource, vmwareGroup.getName(), attrib.getAlias(), String.valueOf(value));
+                            }
+                        }
+                    }
+                } else {
+                    // multi instance value
+                    final Set<String> instanceSet = new TreeSet<>();
+                    final HashMap<String, Resource> resources = new HashMap<>();
+                    for (final Attrib attrib : vmwareGroup.getAttrib()) {
+                        if (!vmwarePerformanceValues.hasInstances(attrib.getName())) {
+                            // warning
+                            logger.debug("Warning! No multi instance value for '{}' defined as multi instance attribute for node {}", attrib.getName(), agent.getNodeId());
+                        } else {
+                            final Set<String> newInstances = vmwarePerformanceValues.getInstances(attrib.getName());
+                            for (final String instance : newInstances) {
+                                if (!instanceSet.contains(instance)) {
+                                    resources.put(instance, new DeferredGenericTypeResource(nodeResource, vmwareGroup.getResourceType(), instance));
+                                    instanceSet.add(instance);
+                                }
+                                final AttributeType type = attrib.getType();
+                                final Long value = vmwarePerformanceValues.getValue(attrib.getName(), instance);
+                                logger.debug("Storing multi instance value {}[{}='{}' for node {}",
+                                        attrib.getName(), instance, value, agent.getNodeId());
+                                if (type.isNumeric()) {
+                                    builder.withNumericAttribute(resources.get(instance), vmwareGroup.getName(), attrib.getAlias(), value, type);
+                                } else {
+                                    builder.withStringAttribute(resources.get(instance), vmwareGroup.getName(), attrib.getAlias(), Long.toString(value));
+                                }
+                            }
+                        }
+                    }
+                    for (final String instance : instanceSet) {
+                        logger.debug("Storing multi instance value {}[{}='{}' for node {}",
+                                vmwareGroup.getResourceType() + "Name", instance, instance, agent.getNodeId());
+                        builder.withStringAttribute(resources.get(instance), vmwareGroup.getName(), vmwareGroup.getResourceType() + "Name", instance);
+                    }
+                }
+            }
+            builder.withStatus(CollectionStatus.SUCCEEDED);
         } catch (MalformedURLException e) {
             logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
             return builder.build();
@@ -234,91 +294,6 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
             logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
             return builder.build();
         }
-
-        ManagedEntity managedEntity = vmwareViJavaAccess.getManagedEntityByManagedObjectId(vmwareManagedObjectId);
-
-        VmwarePerformanceValues vmwarePerformanceValues = null;
-
-        try {
-            vmwarePerformanceValues = vmwareViJavaAccess.queryPerformanceValues(managedEntity);
-        } catch (RemoteException e) {
-            logger.warn("Error retrieving performance values from VMware management server '" + vmwareManagementServer + "' for managed object '" + vmwareManagedObjectId + "'", e.getMessage());
-
-            vmwareViJavaAccess.disconnect();
-
-            return builder.build();
-        }
-
-        for (final VmwareGroup vmwareGroup : collection.getVmwareGroup()) {
-            final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
-
-            if ("node".equalsIgnoreCase(vmwareGroup.getResourceType())) {
-                // single instance value
-
-                for (Attrib attrib : vmwareGroup.getAttrib()) {
-                    if (!vmwarePerformanceValues.hasSingleValue(attrib.getName())) {
-                        // warning
-                        logger.debug("Warning! No single value for '{}' defined as single instance attribute for node {}", attrib.getName(), agent.getNodeId());
-                    } else {
-                        final Long value = vmwarePerformanceValues.getValue(attrib.getName());
-                        logger.debug("Storing single instance value {}='{}' for node {}",
-                                attrib.getName(), value, agent.getNodeId());
-
-                        final AttributeType type = attrib.getType();
-                        if (type.isNumeric()) {
-                            builder.withNumericAttribute(nodeResource, vmwareGroup.getName(), attrib.getAlias(), value, type);
-                        } else {
-                            builder.withStringAttribute(nodeResource, vmwareGroup.getName(), attrib.getAlias(), String.valueOf(value));
-                        }
-                    }
-                }
-            } else {
-                // multi instance value
-
-                final Set<String> instanceSet = new TreeSet<>();
-
-                final HashMap<String, Resource> resources = new HashMap<>();
-
-                for (Attrib attrib : vmwareGroup.getAttrib()) {
-
-                    if (!vmwarePerformanceValues.hasInstances(attrib.getName())) {
-                        // warning
-                        logger.debug("Warning! No multi instance value for '{}' defined as multi instance attribute for node {}", attrib.getName(), agent.getNodeId());
-                    } else {
-
-                        Set<String> newInstances = vmwarePerformanceValues.getInstances(attrib.getName());
-
-                        for (String instance : newInstances) {
-                            if (!instanceSet.contains(instance)) {
-                                resources.put(instance, new DeferredGenericTypeResource(nodeResource, vmwareGroup.getResourceType(), instance));
-                                instanceSet.add(instance);
-                            }
-
-                            final AttributeType type = attrib.getType();
-                            final Long value = vmwarePerformanceValues.getValue(attrib.getName(), instance);
-                            logger.debug("Storing multi instance value {}[{}='{}' for node {}",
-                                    attrib.getName(), instance, value, agent.getNodeId());
-                            if (type.isNumeric()) {
-                                builder.withNumericAttribute(resources.get(instance), vmwareGroup.getName(), attrib.getAlias(), value, type);
-                            } else {
-                                builder.withStringAttribute(resources.get(instance), vmwareGroup.getName(), attrib.getAlias(), Long.toString(value));
-                            }
-                        }
-                    }
-                }
-
-                for (String instance : instanceSet) {
-                    logger.debug("Storing multi instance value {}[{}='{}' for node {}",
-                            vmwareGroup.getResourceType() + "Name", instance, instance, agent.getNodeId());
-                    builder.withStringAttribute(resources.get(instance), vmwareGroup.getName(), vmwareGroup.getResourceType() + "Name", instance);
-                }
-            }
-        }
-
-        builder.withStatus(CollectionStatus.SUCCEEDED);
-
-        vmwareViJavaAccess.disconnect();
-
         return builder.build();
     }
 
