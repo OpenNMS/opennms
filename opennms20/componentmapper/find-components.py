@@ -22,7 +22,7 @@ def load_maven_project(maven_project_root):
     return MavenProject.load(structure_graph_file)
 
 def is_module_missing_component_names(module):
-    return (module.componentName == '' or module.subcomponentName == '' \
+    return (len(module.componentName) == 0 or len(module.subcomponentName) == 0 \
             or module.stability == '')
 
 def apply_component_inheritance(maven_module, maven_project):
@@ -38,10 +38,10 @@ def apply_component_inheritance(maven_module, maven_project):
       # If this parent has inheritance disabled, stop
       if parent.componentInheritance == 'false':
         return
-      if maven_module.componentName == '' and parent.componentName != '':
-        maven_module.componentName = parent.componentName
-      if maven_module.subcomponentName == '' and parent.subcomponentName != '':
-        maven_module.subcomponentName = parent.subcomponentName
+      if len(maven_module.componentName) == 0 and len(parent.componentName) > 0:
+        maven_module.componentName.extend(parent.componentName)
+      if len(maven_module.subcomponentName) == 0 and len(parent.subcomponentName) > 0:
+        maven_module.subcomponentName.extend(parent.subcomponentName)
       if maven_module.stability == '' and parent.stability != '':
         maven_module.stability = parent.stability
 
@@ -53,28 +53,33 @@ def generate_csv_file(project):
       print('Path,Group,Artifact,Component,Subcomponent,Stability', file=f)
       modules = project.modules
       for module in modules:
-        print(module.path + ',' + module.group_id + ',' + module.artifact_id + ',' + module.componentName + \
-              ',' + module.subcomponentName + ',' + module.stability, file=f)
+        for i, cname in enumerate(module.componentName):
+            print(module.path + ',' + module.group_id + ',' + module.artifact_id + ',' + cname + \
+              ',' + module.subcomponentName[i] + ',' + module.stability, file=f)
 
 def addModuleToTree(top, module, missing):
     if not module._is_root:
-      if module.componentName != '':
-        subcomponentList = top.get(module.componentName)
-        if subcomponentList == None:
-          subcomponentList = dict()
-          top[module.componentName] = subcomponentList
+      if len(module.componentName) > 0:
+        for i, cname in enumerate(module.componentName):
+            # JER: Need to go through all the component names
+            subcomponentList = top.get(cname)
+            if subcomponentList == None:
+              subcomponentList = dict()
+              # Need to iterate on this above
+              top[cname] = subcomponentList
 
-        subname = module.subcomponentName
-        if subname == '':
-          subname='none'
+            # JER - make sure to map to matching subcomponent for the component above
+            subname = module.subcomponentName[i]
+            if subname == '':
+              subname='none'
 
-        moduleList = subcomponentList.get(subname)
-        if moduleList == None:
-          moduleList = dict()
-          moduleList[subname] = dict()
-          subcomponentList[subname] = moduleList
+            moduleList = subcomponentList.get(subname)
+            if moduleList == None:
+              moduleList = dict()
+              moduleList[subname] = dict()
+              subcomponentList[subname] = moduleList
 
-        moduleList[module.artifact_id] = module
+            moduleList[module.artifact_id] = module
       else:
         missing.append(module)
 
@@ -206,9 +211,9 @@ def generate_stats(project, f):
       # Ignore the root module
       if not module._is_root:
         total += 1
-        if module.componentName != '':
+        if len(module.componentName) > 0:
           withComponent += 1
-        if module.subcomponentName != '':
+        if len(module.subcomponentName) > 0 and module.subcomponentName[0] != '':
           withSub += 1
         if module.stability != '':
           withStability += 1
