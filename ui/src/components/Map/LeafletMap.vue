@@ -1,6 +1,6 @@
 <template>
   <div class="geo-map">
-    <MapSearch class="search-bar" />
+    <MapSearch class="search-bar" @fly-to-node="flyToNode" />
     <SeverityFilter />
     <LMap
       ref="map"
@@ -89,8 +89,9 @@ const iconHeight = 42
 const iconSize = [iconWidth, iconHeight]
 const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => store.state.mapModule.mapCenter[k]))
 const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
+const allNodes = computed<Node[]>(() => store.state.mapModule.nodesWithCoordinates)
 const bounds = computed(() => {
-  const coordinatedMap = getInterestedNodesCoordinateMap()
+  const coordinatedMap = getNodeCoordinateMap()
   return nodes.value.map((node) => coordinatedMap.get(node.id))
 })
 const nodeLabelAlarmServerityMap = computed(() => store.getters["mapModule/getNodeAlarmSeverityMap"])
@@ -144,7 +145,7 @@ const setMarkerColor = (severity: string | undefined) => {
 
 const edges = computed(() => {
   const ids: string[] = nodes.value.map((node: Node) => node.id)
-  const interestedNodesCoordinateMap = getInterestedNodesCoordinateMap()
+  const interestedNodesCoordinateMap = getNodeCoordinateMap()
   return store.state.mapModule.edges.filter((edge: [number, number]) => ids.includes(edge[0].toString()) && ids.includes(edge[1].toString()))
     .map((edge: [number, number]) => {
       let edgeCoordinatesPair = []
@@ -154,10 +155,11 @@ const edges = computed(() => {
     })
 })
 
-const getInterestedNodesCoordinateMap = () => {
+const getNodeCoordinateMap = () => {
   const map = new Map()
-  nodes.value.forEach((node: Node) => {
+  allNodes.value.forEach((node: Node) => {
     map.set(node.id, [node.assetRecord.latitude, node.assetRecord.longitude])
+    map.set(node.label, [node.assetRecord.latitude, node.assetRecord.longitude])
   })
   return map
 }
@@ -167,6 +169,8 @@ const onLeafletReady = async () => {
   leafletObject.value = map.value.leafletObject
   leafletObject.value.zoomControl.setPosition('topright')
   leafletObject.value.fitBounds(bounds.value)
+  // save the bounds to state
+  store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
   if (leafletObject.value != undefined && leafletObject.value != null) {
     leafletReady.value = true
   }
@@ -175,6 +179,14 @@ const onLeafletReady = async () => {
 const onMoveEnd = () => {
   zoom.value = leafletObject.value.getZoom()
   store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
+}
+
+const flyToNode = (nodeLabel: string) => {
+  const coordinateMap = getNodeCoordinateMap()
+  const nodeCoordinates = coordinateMap.get(nodeLabel)
+  if (nodeCoordinates) {
+    leafletObject.value.flyTo(nodeCoordinates, 4)
+  }
 }
 
 /*****Tile Layer*****/

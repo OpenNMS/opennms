@@ -2,11 +2,11 @@
   <div class="feather-row">
     <div class="feather-col-12">
       <splitpanes
-        :dbl-click-splitter="false"
+        :dbl-click-splitter="true"
+        @pane-maximize="minimizeBottomPane"
         class="default-theme"
         horizontal
         style="height: calc(100vh - 80px)"
-        @dblclick="minimizeBottomPane"
         ref="split"
       >
         <pane min-size="1" max-size="100" :size="72">
@@ -37,6 +37,7 @@ const store = useStore()
 const split = ref()
 
 const minimizeBottomPane = () => {
+  // override splitpane event
   split.value.panes[0].size = 96
   split.value.panes[1].size = 4
 }
