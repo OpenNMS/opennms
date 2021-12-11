@@ -99,9 +99,10 @@ public class IntegrationAPIIT {
                         for (String line : shellOutput.split("\\r?\\n")) {
                             if (line.contains(healthCheckDescription)) {
                                 LOG.info("Health check result: {}", line);
-                            }
-                            if (line.contains("Success")) {
-                                healthCheckSuccess = true;
+                                if (line.contains("Success")) {
+                                    healthCheckSuccess = true;
+                                    break;
+                                }
                             }
                         }
                         return healthCheckSuccess;
