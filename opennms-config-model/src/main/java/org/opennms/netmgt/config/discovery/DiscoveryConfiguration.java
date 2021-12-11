@@ -229,7 +229,7 @@ public class DiscoveryConfiguration implements Serializable {
 
     public void setSpecifics(final List<Specific> specifics) {
         if (specifics != null) {
-            if (specifics.equals(specifics)) return;
+            if (specifics.equals(this.specifics)) return;
             this.specifics.clear();
             this.specifics.addAll(specifics);
         }
@@ -255,7 +255,7 @@ public class DiscoveryConfiguration implements Serializable {
 
     public void setIncludeRanges(final List<IncludeRange> includeRanges) {
         if (includeRanges != null) {
-            if (includeRanges.equals(includeRanges)) return;
+            if (includeRanges.equals(this.includeRanges)) return;
             this.includeRanges.clear();
             this.includeRanges.addAll(includeRanges);
         }
