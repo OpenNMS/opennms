@@ -143,6 +143,12 @@ public class DiscoveryConfiguration implements Serializable {
     @JsonProperty("include-url")
     private List<IncludeUrl> includeUrls = new ArrayList<>();
 
+    /**
+     * a file URL holding specific addresses to be excluded
+     */
+    @XmlElement(name = "exclude-url")
+    private List<ExcludeUrl> m_excludeUrls = new ArrayList<>();
+
     @XmlElement(name = "definition")
     @JsonProperty("definition")
     private List<Definition> definitions = new ArrayList<>();
@@ -313,6 +319,30 @@ public class DiscoveryConfiguration implements Serializable {
         this.includeUrls.clear();
     }
 
+    public List<ExcludeUrl> getExcludeUrls() {
+        return m_excludeUrls;
+    }
+
+    public void setExcludeUrls(final List<ExcludeUrl> excludeUrls) {
+        if (excludeUrls == m_excludeUrls) return;
+        m_excludeUrls.clear();
+        if (excludeUrls != null) m_excludeUrls.addAll(excludeUrls);
+    }
+
+    public void addExcludeUrl(final ExcludeUrl excludeUrl) {
+        m_excludeUrls.add(excludeUrl);
+    }
+
+    public boolean removeExcludeUrl(final ExcludeUrl excludeUrl) {
+        return m_excludeUrls.remove(excludeUrl);
+    }
+
+    /**
+     */
+    public void clearExcludeUrls() {
+        m_excludeUrls.clear();
+    }
+
     public List<Definition> getDefinitions() {
         return this.definitions;
     }
@@ -339,7 +369,8 @@ public class DiscoveryConfiguration implements Serializable {
                             this.specifics, 
                             this.includeRanges, 
                             this.excludeRanges, 
-                            this.includeUrls);
+                            m_includeUrls,
+                            m_excludeUrls);
     }
 
     @Override
@@ -361,7 +392,8 @@ public class DiscoveryConfiguration implements Serializable {
                     && Objects.equals(this.specifics, that.specifics)
                     && Objects.equals(this.includeRanges, that.includeRanges)
                     && Objects.equals(this.excludeRanges, that.excludeRanges)
-                    && Objects.equals(this.includeUrls, that.includeUrls);
+                    && Objects.equals(this.m_includeUrls, that.m_includeUrls)
+                    && Objects.equals(this.m_excludeUrls, that.m_excludeUrls);
         }
         return false;
     }
@@ -377,7 +409,8 @@ public class DiscoveryConfiguration implements Serializable {
                 + this.chunkSize + ", specifics=" + this.specifics
                 + ", includeRanges=" + this.includeRanges
                 + ", excludeRanges=" + this.excludeRanges + ", includeUrls="
-                + this.includeUrls + "]";
+                + m_includeUrls + ", excludeUrls="
+                + m_excludeUrls + "]";
     }
 
 }
