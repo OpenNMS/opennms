@@ -80,6 +80,7 @@ If the index value will be cleaned up, then it will have all whitespace, colons,
 All equal signs are removed.
 
 To extend this class to create custom storage strategies, override the `updateContext` method to set additional key/value pairs to use in your `index-format` template.
+
 [source, java]
 ----
 public class ExampleStorageStrategy extends JexlIndexStorageStrategy {

@@ -23,10 +23,13 @@
     <!-- Provided by minion-core -->
     <reference id="identity" interface="org.opennms.distributed.core.api.MinionIdentity"/>
 
+    <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
+
     <bean id="kafkaTwinSubscriber" class="org.opennms.core.ipc.twin.kafka.subscriber.KafkaTwinSubscriber"
           init-method="init" destroy-method="close">
         <argument ref="identity"/>
         <argument ref="kafkaConfigProvider" />
+        <argument ref="tracerRegistry"/>
     </bean>
 
     <service ref="kafkaTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>

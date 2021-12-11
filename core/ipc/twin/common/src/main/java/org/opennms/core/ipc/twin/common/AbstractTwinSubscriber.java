@@ -40,14 +40,20 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import io.opentracing.References;
+import io.opentracing.Scope;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
+import org.opennms.core.tracing.api.TracerConstants;
+import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.distributed.core.api.Identity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
@@ -57,9 +63,15 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.TAG_PATCH;
+import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.TAG_SESSION_ID;
+import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.TAG_VERSION;
+import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.generateTracingOperationKey;
+
 public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTwinSubscriber.class);
+    protected static final String TAG_TWIN_RPC_REQUEST = "TwinRpcRequest";
 
     private final Identity identity;
 
@@ -67,13 +79,20 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private final TracerRegistry tracerRegistry;
+
+    private final Tracer tracer;
+
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(
             new ThreadFactoryBuilder()
                     .setNameFormat("abstract-twin-subscriber-%d")
                     .build());
 
-    protected AbstractTwinSubscriber(final Identity identity) {
+    protected AbstractTwinSubscriber(final Identity identity, TracerRegistry tracerRegistry) {
         this.identity = Objects.requireNonNull(identity);
+        this.tracerRegistry = tracerRegistry;
+        this.tracerRegistry.init(identity.getLocation() + "@" + identity.getId());
+        this.tracer = this.tracerRegistry.getTracer();
     }
 
     protected abstract void sendRpcRequest(TwinRequest twinRequest);
@@ -99,12 +118,15 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         if (twinUpdate.getObject() == null || twinUpdate.getSessionId() == null) {
             return;
         }
-
+        String tracingOperationKey = generateTracingOperationKey(twinUpdate.getLocation(), twinUpdate.getKey());
+        Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
+                tracingOperationKey, twinUpdate.getTracingInfo(), References.FOLLOWS_FROM);
         // Consume in thread instead of using broker's callback thread.
         this.executorService.execute(() -> {
             final var subscription = this.subscriptions.computeIfAbsent(twinUpdate.getKey(), Subscription::new);
 
-            try {
+            try (Scope scope = spanBuilder.startActive(true)){
+                addTracingTags(scope.span(), twinUpdate);
                 subscription.update(twinUpdate);
             } catch (final IOException e) {
                 LOG.error("Processing update failed: {}", twinUpdate.getKey(), e);
@@ -113,6 +135,11 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         });
     }
 
+    private void addTracingTags(Span span, TwinUpdate twinUpdate) {
+        span.setTag(TAG_VERSION, twinUpdate.getVersion());
+        span.setTag(TAG_SESSION_ID, twinUpdate.getSessionId());
+        span.setTag(TAG_PATCH, twinUpdate.isPatch());
+    }
 
     protected TwinUpdate mapTwinResponseToProto(byte[] responseBytes) {
         TwinUpdate twinUpdate = new TwinUpdate();
@@ -131,6 +158,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             }
             twinUpdate.setPatch(twinResponseProto.getIsPatchObject());
             twinUpdate.setVersion(twinResponseProto.getVersion());
+            twinResponseProto.getTracingInfoMap().forEach(twinUpdate::addTracingInfo);
             return twinUpdate;
         } catch (InvalidProtocolBufferException e) {
             LOG.error("Failed to parse response from proto", e);
@@ -143,12 +171,21 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         builder.setConsumerKey(twinRequest.getKey())
                .setLocation(getIdentity().getLocation())
                .setSystemId(getIdentity().getId());
+        twinRequest.getTracingInfo().forEach(builder::putTracingInfo);
         return builder.build();
     }
 
     public void close() throws IOException {
         this.executorService.shutdown();
         this.subscriptions.clear();
+    }
+
+    public Tracer getTracer() {
+        return tracer;
+    }
+
+    public TracerRegistry getTracerRegistry() {
+        return tracerRegistry;
     }
 
     public Identity getIdentity() {
@@ -249,11 +286,21 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
         private synchronized void request() {
             // Send a request
+            String tracingOperationKey = generateTracingOperationKey(getIdentity().getLocation(), this.key);
+            Span span = tracer.buildSpan(tracingOperationKey).start();
             final var request = new TwinRequest(this.key, AbstractTwinSubscriber.this.identity.getLocation());
+            updateTracingTags(span, request);
             AbstractTwinSubscriber.this.sendRpcRequest(request);
-
+            span.finish();
             // Schedule a retry
             this.retry = AbstractTwinSubscriber.this.executorService.schedule(this::request, 5, TimeUnit.SECONDS);
+        }
+
+        private void updateTracingTags(Span span, TwinRequest twinRequest) {
+            TracingInfoCarrier.updateTracingMetadata(getTracer(), span, twinRequest::addTracingInfo);
+            span.setTag(TAG_TWIN_RPC_REQUEST, true);
+            span.setTag(TracerConstants.TAG_LOCATION, twinRequest.getLocation());
+            span.setTag(TracerConstants.TAG_SYSTEM_ID, getIdentity().getId());
         }
 
         public synchronized void update(final TwinUpdate update) throws IOException {

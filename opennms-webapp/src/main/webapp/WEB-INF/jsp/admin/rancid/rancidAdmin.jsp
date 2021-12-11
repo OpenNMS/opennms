@@ -335,7 +335,6 @@
             Set to <em>true</em> the opennms.rancidIntegrationUseOnlyRancidAdapter property in <em>opennms.properties</em> 
             if you want use only the RancidAdapter to provision nodes to Rancid.
         </p>
-        <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
         </p>
           <p><b>Select Group </b>: select the <em>Rancid group</em> to work on</p>
         
