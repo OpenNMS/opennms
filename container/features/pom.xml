@@ -168,6 +168,18 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.config.osgi</groupId>
+      <artifactId>org.opennms.features.config.osgi.del</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config.osgi</groupId>
+      <artifactId>org.opennms.features.config.osgi.cm</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.discovery</artifactId>
       <version>${project.version}</version>
