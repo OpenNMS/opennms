@@ -28,6 +28,10 @@ The example above will query nodes with System Object Ids matching the regular e
 The data will be searched in the SNMP sub-tree `.1.2.3.4` and be stored in the node's metadata context `snmp`.
 The top-level element will be named `myHardware`.
 
+The provisioning adapter automatically appends the `.0` value to single entry OIDs per normal SNMP specification.
+There are edge cases where we will need to specify the entire OID statically to retrieve a single piece of data.
+Specifying the attribute `exact="true"` allows you to specify the entire OID.
+
 Based on this example and under the assumption that a node provides corresponding data, the following metadata entries will be produced:
 
 [options="header", cols="1,3,2"]

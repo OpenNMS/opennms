@@ -105,7 +105,7 @@ public class Entry implements Container {
                 ", name='" + name + '\'' +
                 ", index='" + index + '\'' +
                 ", exact='" + exact + '\'' +
-                ", entries=" + entries + '\'' +
+                ", entries=" + entries +
                 '}';
     }
 

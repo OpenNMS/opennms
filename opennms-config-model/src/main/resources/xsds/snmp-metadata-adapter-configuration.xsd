@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-
-
     <xs:element name="snmp-metadata-config">
       <xs:complexType>
         <xs:sequence>
@@ -40,40 +38,3 @@
       </xs:complexType>
     </xs:element>
   </xs:schema>
-
-  <!--
-
-
-<xs:element name="snmp-metadata-adapter-configuration" type="snmpMetadataConfigurationDefinition"/>
-
-  <xs:complexType name="entryDefinition">
-    <xs:sequence>
-      <xs:element ref="entry" maxOccurs="unbounded" minOccurs="0"/>
-    </xs:sequence>
-    <xs:attribute name="name" type="xs:string" use="required"/>
-    <xs:attribute name="tree" type="xs:string"  use="required"/>
-    <xs:attribute name="index" type="xs:string"/>
-  </xs:complexType>
-
-  <xs:complexType name="configDefinition">
-  <xs:sequence>
-    <xs:element ref="entry" maxOccurs="unbounded" minOccurs="0"/>
-  </xs:sequence>
-    <xs:attribute name="name" type="xs:string" use="required"/>
-    <xs:attribute name="tree" type="xs:string"  use="required"/>
-    <xs:attribute name="index" type="xs:string"/>
-    <xs:attribute name="context" type="xs:string" use="required"/>
-    <xs:attribute name="sysObjectId" type="xs:string" use="required"/>
-  </xs:complexType>
-
-<xs:complexType name="snmpMetadataConfigurationDefinition">
-  <xs:sequence>
-    <xs:element ref="config" maxOccurs="unbounded" minOccurs="0"/>
-  </xs:sequence>
-</xs:complexType>
-
-  <xs:element name="config" type="configDefinition"/>
-  <xs:element name="entry" type="entryDefinition"/>
--->
-
-
