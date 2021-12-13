@@ -221,6 +221,18 @@ For a more complete list of major changes included in this release, see the link
 
 === Changelog
 
+[[releasenotes-changelog-Meridian-2020.1.16]]
+
+==== Release Meridian-2020.1.16
+
+Release 2020.1.16 is an out-of-band release with a fix for the Log4j2 security issue.
+
+The codename for 2020.1.16 is link:$$https://wikipedia.org/wiki/Stack_(geology)$$[_Stack_].
+
+===== Bug
+
+* Log4j2 0-day: CVE-2021-44228 (Issue http://issues.opennms.org/browse/NMS-13850[NMS-13850])
+
 [[releasenotes-changelog-Meridian-2020.1.15]]
 
 ==== Release Meridian-2020.1.15
