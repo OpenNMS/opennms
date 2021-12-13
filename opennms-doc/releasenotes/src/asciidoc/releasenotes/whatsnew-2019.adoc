@@ -319,6 +319,18 @@ For a more complete list of changes included in this release, see the "What's Ne
 
 === Changelog
 
+[[releasenotes-changelog-Meridian-2019.1.27]]
+
+==== Release Meridian-2019.1.27
+
+Release 2019.1.27 is an out-of-band release with a fix for the Log4j2 security issue.
+
+The codename for 2019.1.27 is link:$$https://wikipedia.org/wiki/HD_98219_b$$[_Ixbalanqué_].
+
+===== Bug
+
+* Log4j2 0-day: CVE-2021-44228 (Issue http://issues.opennms.org/browse/NMS-13850[NMS-13850])
+
 [[releasenotes-changelog-Meridian-2019.1.26]]
 
 ==== Release Meridian-2019.1.26
