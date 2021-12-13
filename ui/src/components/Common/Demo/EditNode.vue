@@ -1,5 +1,5 @@
 <template>
-  <p>
+  <p class="btn-back-to-requisition">
     <FeatherBackButton @click="onBackClick">Back To Node Table</FeatherBackButton>
   </p>
   <p>
@@ -19,3 +19,8 @@ const onBackClick = () => {
 }
 
 </script>
+<style scoped>
+.btn-back-to-requisition {
+  margin: 10px 0 10px 0;
+}
+</style>
