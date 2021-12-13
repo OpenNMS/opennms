@@ -228,11 +228,9 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setSpecifics(final List<Specific> specifics) {
-        if (specifics != null) {
-            if (specifics.equals(this.specifics)) return;
-            this.specifics.clear();
-            this.specifics.addAll(specifics);
-        }
+        if (specifics != null && specifics.equals(this.specifics)) return;
+        this.specifics.clear();
+        if (specifics != null) this.specifics.addAll(specifics);
     }
 
     public void addSpecific(final Specific specific) {
@@ -254,11 +252,9 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setIncludeRanges(final List<IncludeRange> includeRanges) {
-        if (includeRanges != null) {
-            if (includeRanges.equals(this.includeRanges)) return;
-            this.includeRanges.clear();
-            this.includeRanges.addAll(includeRanges);
-        }
+        if (includeRanges != null && includeRanges.equals(this.includeRanges)) return;
+        this.includeRanges.clear();
+        if (includeRanges != null) this.includeRanges.addAll(includeRanges);
     }
 
     public void addIncludeRange(final IncludeRange includeRange) {
@@ -280,11 +276,9 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setExcludeRanges(final List<ExcludeRange> excludeRanges) {
-        if (excludeRanges != null) {
-            if (excludeRanges.equals(this.excludeRanges)) return;
-            this.excludeRanges.clear();
-            this.excludeRanges.addAll(excludeRanges);
-        }
+        if (excludeRanges != null && excludeRanges.equals(this.excludeRanges)) return;
+        this.excludeRanges.clear();
+        if (excludeRanges != null) this.excludeRanges.addAll(excludeRanges);
     }
 
     public void addExcludeRange(final ExcludeRange excludeRange) {
@@ -306,11 +300,9 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setIncludeUrls(final List<IncludeUrl> includeUrls) {
-        if (includeUrls != null) {
-            if (includeUrls.equals(this.includeUrls)) return;
-            this.includeUrls.clear();
-            this.includeUrls.addAll(includeUrls);
-        }
+        if (includeUrls != null && includeUrls.equals(this.includeUrls)) return;
+        this.includeUrls.clear();
+        if (includeUrls != null) this.includeUrls.addAll(includeUrls);
     }
 
     public void addIncludeUrl(final IncludeUrl includeUrl) {
@@ -332,11 +324,9 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setExcludeUrls(final List<ExcludeUrl> excludeUrls) {
-        if (excludeUrls != null) {
-            if (excludeUrls.equals(this.excludeUrls)) return;
-            this.excludeUrls.clear();
-            this.excludeUrls.addAll(excludeUrls);
-        }
+        if (excludeUrls != null && excludeUrls.equals(this.excludeUrls)) return;
+        this.excludeUrls.clear();
+        if (excludeUrls != null) this.excludeUrls.addAll(excludeUrls);
     }
 
     public void addExcludeUrl(final ExcludeUrl excludeUrl) {
