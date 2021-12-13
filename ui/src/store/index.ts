@@ -5,7 +5,6 @@ import searchModule from './search'
 import nodesModule from './nodes'
 import eventsModule from './events'
 import ifServicesModule from './ifServices'
-import configuration from './configuration'
 import spinnerModule from './spinner'
 import fileEditorModule from './fileEditor'
 import authModule from './auth'
@@ -18,7 +17,6 @@ export default createStore({
     nodesModule,
     eventsModule,
     ifServicesModule,
-    configuration,
     spinnerModule,
     fileEditorModule,
     logsModule,

@@ -13,7 +13,6 @@ import { getWhoAmI } from './whoAmIService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { search } from './searchService'
-import { getDropdownTypes, getSchedulePeriod, getAdvancedDropdown, getProvisionDService } from './configurationService'
 
 export default {
   search,
@@ -25,10 +24,6 @@ export default {
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage,
-  getDropdownTypes,
-  getSchedulePeriod,
-  getAdvancedDropdown,
-  getProvisionDService,
   getLog,
   getLogs,
   getFile,

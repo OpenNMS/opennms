@@ -2,7 +2,6 @@
 <template>
   <div class="sidebar">
     <Link to="/">Nodes</Link>
-    <Link to="/provisionDConfig">Configuration</Link>
     <Link v-if="isAdmin" to="/file-editor">File Editor</Link>
     <Link v-if="isAdmin" to="/logs">Logs</Link>
   </div>
@@ -25,11 +24,6 @@ const isAdmin = computed(() => store.getters['authModule/isAdmin'])
   float: left;
   background: var(--feather-secondary);
   z-index: 1;
-
-  .link a:hover{
-    text-decoration: none;
-  }
 }
-
 </style>
   
