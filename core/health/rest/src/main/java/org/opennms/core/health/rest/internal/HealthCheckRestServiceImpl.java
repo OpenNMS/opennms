@@ -45,9 +45,12 @@ import org.opennms.core.health.api.HealthCheckService;
 import org.opennms.core.health.rest.HealthCheckRestService;
 
 import io.vavr.control.Either;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HealthCheckRestServiceImpl implements HealthCheckRestService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(HealthCheckRestServiceImpl.class);
     private static final String SUCCESS_MESSAGE = "Everything is awesome";
     private static final String ERROR_MESSAGE = "Oh no, something is wrong";
 
@@ -104,7 +107,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
                     return Pair.of(health.isSuccess(), jsonHealth);
                 }
         );
-
+        LOG.debug("Rest response : {}", flagAndResponse.getRight().toString());
         // Return response
         return Response.ok()
                 .header("Health", flagAndResponse.getLeft() ? SUCCESS_MESSAGE : ERROR_MESSAGE)

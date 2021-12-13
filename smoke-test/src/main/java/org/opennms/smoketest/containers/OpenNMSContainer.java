@@ -314,15 +314,9 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     public Properties getSystemProperties() {
         final Properties props = new Properties();
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
-            props.put("org.opennms.core.ipc.sink.strategy", "kafka");
-            props.put("org.opennms.core.ipc.sink.kafka.bootstrap.servers", KAFKA_ALIAS + ":9092");
-            props.put("org.opennms.core.ipc.sink.kafka.compression.type", model.getKafkaCompressionStrategy().getCodec());
-            props.put("org.opennms.core.ipc.rpc.strategy", "kafka");
-            props.put("org.opennms.core.ipc.rpc.kafka.bootstrap.servers", KAFKA_ALIAS + ":9092");
-            props.put("org.opennms.core.ipc.rpc.kafka.compression.type", model.getKafkaCompressionStrategy().getCodec());
-            props.put("org.opennms.core.ipc.twin.strategy", "kafka");
-            props.put("org.opennms.core.ipc.twin.kafka.bootstrap.servers", KAFKA_ALIAS + ":9092");
-            props.put("org.opennms.core.ipc.twin.kafka.compression.type", model.getKafkaCompressionStrategy().getCodec());
+            props.put("org.opennms.core.ipc.strategy", "kafka");
+            props.put("org.opennms.core.ipc.kafka.bootstrap.servers", KAFKA_ALIAS + ":9092");
+            props.put("org.opennms.core.ipc.kafka.compression.type", model.getKafkaCompressionStrategy().getCodec());
         }
         if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             props.put("org.opennms.core.ipc.strategy", "osgi");

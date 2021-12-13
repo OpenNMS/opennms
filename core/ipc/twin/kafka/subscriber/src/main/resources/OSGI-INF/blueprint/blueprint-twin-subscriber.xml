@@ -18,6 +18,8 @@
     <bean id="kafkaConfigProvider" class="org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider" >
         <argument value="org.opennms.core.ipc.twin.kafka"/>
         <argument ref="configurationAdmin" />
+        <!-- common pid for kafka config on IPC-->
+        <argument value="org.opennms.core.ipc.kafka"/>
     </bean>
 
     <!-- Provided by minion-core -->
