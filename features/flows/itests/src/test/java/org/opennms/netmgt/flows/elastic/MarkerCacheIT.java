@@ -65,6 +65,7 @@ import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
@@ -184,7 +185,7 @@ public class MarkerCacheIT {
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
 
-            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.INGRESS)), getMockFlowSource());
+            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.INGRESS)), getMockFlowSource(), ProcessingOptions.builder().build());
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), contains(hasProperty("id", is(1))));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), contains(
@@ -228,7 +229,7 @@ public class MarkerCacheIT {
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
 
-            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.EGRESS)), getMockFlowSource());
+            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.EGRESS)), getMockFlowSource(), ProcessingOptions.builder().build());
 
             assertEquals(0, snmpInterfaceDao.findAllHavingIngressFlows(2).size());
             assertEquals(0, snmpInterfaceDao.findAllHavingEgressFlows(2).size());
@@ -280,13 +281,13 @@ public class MarkerCacheIT {
             expectEgressInterfaces();
 
             // persist ingress flow
-            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.INGRESS)), getMockFlowSource());
+            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.INGRESS)), getMockFlowSource(), ProcessingOptions.builder().build());
             expectAllInterfaces(ingress);
             expectIngressInterfaces(ingress);
             expectEgressInterfaces();
 
             // persist egress flow
-            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.EGRESS)), getMockFlowSource());
+            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.EGRESS)), getMockFlowSource(), ProcessingOptions.builder().build());
             expectAllInterfaces(ingress, egress);
             expectEgressInterfaces(egress);
             expectIngressInterfaces(ingress);

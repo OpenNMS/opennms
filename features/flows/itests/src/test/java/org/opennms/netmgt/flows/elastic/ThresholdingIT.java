@@ -67,6 +67,7 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
@@ -269,7 +270,10 @@ public class ThresholdingIT {
         // Sending just one flow, so that counters are initialized before starting the run
         this.transactionTemplate.execute((tx) -> {
             try {
-                this.flowRepository.persist(createMockedFlows(1), source);
+                this.flowRepository.persist(createMockedFlows(1), source,
+                                            ProcessingOptions.builder()
+                                                             .setEnableAggregation(true)
+                                                             .build());
             } catch (FlowException e) {
                 throw new RuntimeException(e);
             }
@@ -286,7 +290,10 @@ public class ThresholdingIT {
         // Now, send the all the flows for triggering the threshold
         this.transactionTemplate.execute((tx) -> {
             try {
-                this.flowRepository.persist(createMockedFlows(1000), source);
+                this.flowRepository.persist(createMockedFlows(1000), source,
+                                            ProcessingOptions.builder()
+                                                             .setEnableAggregation(true)
+                                                             .build());
             } catch (FlowException e) {
                 throw new RuntimeException(e);
             }
@@ -308,7 +315,10 @@ public class ThresholdingIT {
 
         this.transactionTemplate.execute((tx) -> {
             try {
-                this.flowRepository.persist(createMockedFlows(1), source);
+                this.flowRepository.persist(createMockedFlows(1), source,
+                                            ProcessingOptions.builder()
+                                                             .setEnableAggregation(true)
+                                                             .build());
             } catch (FlowException e) {
                 throw new RuntimeException(e);
             }

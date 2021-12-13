@@ -83,6 +83,7 @@ import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.LimitedCardinalityField;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
 import org.opennms.netmgt.flows.filter.api.DscpFilter;
@@ -1050,7 +1051,7 @@ public class FlowQueryIT {
 
     private void loadFlows(final List<FlowDocument> flowDocuments) throws FlowException {
         final List<Flow> flows = flowDocuments.stream().map(TestFlow::new).collect(Collectors.toList());
-        flowRepository.persist(flows, new FlowSource("test", "127.0.0.1", null));
+        flowRepository.persist(flows, new FlowSource("test", "127.0.0.1", null), ProcessingOptions.builder().build());
 
         // Retrieve all the flows we just persisted
         await().atMost(60, TimeUnit.SECONDS).until(() -> smartQueryService.getFlowCount(Collections.singletonList(

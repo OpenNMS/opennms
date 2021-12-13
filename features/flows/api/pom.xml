@@ -42,5 +42,10 @@
       <version>5.3.3</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.config</groupId>
+      <artifactId>org.opennms.features.telemetry.config.jaxb</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>

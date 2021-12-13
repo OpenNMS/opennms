@@ -42,6 +42,7 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.api.UnrecoverableFlowException;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
@@ -82,6 +83,9 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
     private final Meter entriesParsed;
 
     private final Meter entriesConverted;
+
+    private boolean applicationThresholding;
+    private boolean applicationDataCollection;
 
     public AbstractFlowAdapter(final AdapterDefinition adapterConfig,
                                final MetricRegistry metricRegistry,
@@ -132,7 +136,10 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
             final FlowSource source = new FlowSource(messageLog.getLocation(),
                     messageLog.getSourceAddress(),
                     contextKey);
-            flowRepository.persist(flows, source);
+            flowRepository.persist(flows, source, ProcessingOptions.builder()
+                                                                   .setApplicationThresholding(this.applicationThresholding)
+                                                                   .setApplicationDataCollection(this.applicationDataCollection)
+                                                                   .build());
         } catch (DetailedFlowException ex) {
             LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
             for (final String logMessage: ex.getDetailedLogMessages()) {
@@ -167,5 +174,21 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
         } else {
             this.contextKey = null;
         }
+    }
+
+    public boolean isApplicationThresholding() {
+        return this.applicationThresholding;
+    }
+
+    public void setApplicationThresholding(final boolean applicationThresholding) {
+        this.applicationThresholding = applicationThresholding;
+    }
+
+    public boolean isApplicationDataCollection() {
+        return this.applicationDataCollection;
+    }
+
+    public void setApplicationDataCollection(final boolean applicationDataCollection) {
+        this.applicationDataCollection = applicationDataCollection;
     }
 }

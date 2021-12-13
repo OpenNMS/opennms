@@ -41,6 +41,7 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.api.UnrecoverableFlowException;
 import org.osgi.framework.BundleContext;
 
@@ -72,10 +73,10 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public void persist(Collection<Flow> flows, FlowSource source) throws FlowException {
+    public void persist(Collection<Flow> flows, FlowSource source, final ProcessingOptions options) throws FlowException {
         try {
             ensureInitialized();
-            delegate.persist(flows, source);
+            delegate.persist(flows, source, options);
         } catch (ConnectionPoolShutdownException ex) {
             throw new UnrecoverableFlowException(ex.getMessage(), ex);
         }

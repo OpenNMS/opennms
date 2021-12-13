@@ -61,6 +61,7 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -286,7 +287,7 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public void persist(final Collection<Flow> flows, final FlowSource source) throws FlowException {
+    public void persist(final Collection<Flow> flows, final FlowSource source, final ProcessingOptions options) throws FlowException {
         // Track the number of flows per call
         flowsPerLog.update(flows.size());
         if (flows.isEmpty()) {
@@ -303,13 +304,10 @@ public class ElasticFlowRepository implements FlowRepository {
             throw new FlowException("Failed to enrich one or more flows.", e);
         }
 
-        if (this.thresholding != null) {
-            // TODO: add flag to disable/enable
-            try {
-                this.thresholding.threshold(flowDocuments, source);
-            } catch (final ExecutionException | ThresholdInitializationException e) {
-                throw new FlowException("Failed to evaluate thresholds", e);
-            }
+        try {
+            this.thresholding.threshold(flowDocuments, source, options);
+        } catch (final ExecutionException | ThresholdInitializationException e) {
+            throw new FlowException("Failed to evaluate thresholds", e);
         }
 
         if(enableFlowForwarding) {

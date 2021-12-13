@@ -84,6 +84,7 @@ import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.NodeInfo;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
@@ -833,7 +834,8 @@ public class AggregatedFlowQueryIT {
             flow.setFlow(testFlow);
             flows.add(testFlow);
         }
-        flowRepository.persist(flows, new FlowSource("test", "127.0.0.1", null));
+        flowRepository.persist(flows, new FlowSource("test", "127.0.0.1", null),
+                               ProcessingOptions.builder().build());
 
         // Retrieve all the flows we just persisted
         await().atMost(60, TimeUnit.SECONDS).until(() -> rawFlowQueryService.getFlowCount(Collections.singletonList(
