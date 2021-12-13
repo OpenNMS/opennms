@@ -11,13 +11,13 @@ sudo vi etc/featuresBoot.d/disable-activemq.boot
 !opennms-core-ipc-jms
 ----
 
-.Create a file to install Kafka features on Minion start-up
+.Create a file to install Kafka features on Minion startup
 [source, console]
 ----
 sudo vi etc/featuresBoot.d/kafka.boot
 ----
 
-.Add the following lines to install the remote producer call (RPC), sink, and twin feature for Kafka on Minion start-up and save the file
+.Add the following lines to install the remote producer call (RPC), sink, and twin feature for Kafka on Minion startup and save the file
 [source, kafka.boot]
 ----
 opennms-core-ipc-kafka
@@ -60,8 +60,8 @@ The other entries are used only if the connection to the first entry fails.
 
 IMPORTANT: Ensure you use the FQDN or IP for your Kafka nodes as configured as advertised listener.
 
-NOTE: You can still configure module specific config for sink IPC at `org.opennms.core.ipc.sink.kafka.cfg`, similarly for rpc and twin.
-      Module specific config takes precedence over common config specified on `org.opennms.core.ipc.kafka.cfg`.
+NOTE: You can still configure module-specific config for sink IPC at `org.opennms.core.ipc.sink.kafka.cfg`; similarly for RPC and twin.
+      Module-specific config takes precedence over common config specified on `org.opennms.core.ipc.kafka.cfg`.
 
 Exit the Karaf shell with kbd:[Ctrl+d]
 

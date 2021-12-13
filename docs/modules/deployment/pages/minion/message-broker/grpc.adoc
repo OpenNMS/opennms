@@ -11,7 +11,7 @@ sudo vi etc/featuresBoot.d/disable-activemq.boot
 !opennms-core-ipc-jms
 ----
 
-.Create a file to install gRPC features on start-up
+.Create a file to install gRPC features on startup
 [source, shell]
 ----
 sudo vi etc/featuresBoot.d/grpc.boot
