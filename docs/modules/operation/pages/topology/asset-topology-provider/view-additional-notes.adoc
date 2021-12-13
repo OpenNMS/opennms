@@ -1,0 +1,16 @@
+== View the topology
+
+After installing the topology and refreshing your screen, you should see a new topology display option in the {page-component-title} topology page.
+The label field provides the displayed name of this topology.
+
+The label field does not need to be the same as the providerId that the REST API uses for the installation or removal of a topology.
+However, the label field must be unique across all installed topologies.
+
+It is possible to have several topologies installed that have been generated using different configurations.
+You must ensure that the providerId and label field used for each installation command are different.
+
+== Additional notes
+
+You must first uninstall a {page-component-title} GraphML topology before installing an updated version of the same topology.
+You will have to log out and log back into the UI to see the new topology file.
+If you uninstall a topology while viewing it, the UI throws an error and you will have to log out and back in to see the remaining topologies.

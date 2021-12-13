@@ -100,7 +100,16 @@
 
 * xref:topology/introduction.adoc[]
 ** xref:topology/topology.adoc[]
-** xref:topology/graphml-asset-topology-provider.adoc[]
+** xref:topology/asset-topology-provider/introduction.adoc[]
+*** xref:topology/asset-topology-provider/asset-layers.adoc[]
+*** xref:topology/asset-topology-provider/node-filtering.adoc[]
+*** xref:topology/asset-topology-provider/configuration.adoc[]
+*** xref:topology/asset-topology-provider/create-asset-based-topologies-karaf.adoc[]
+*** xref:topology/asset-topology-provider/create-asset-based-topologies-events.adoc[]
+*** xref:topology/asset-topology-provider/view-additional-notes.adoc[]
+
+
+
 ** xref:topology/enlinkd/introduction.adoc[]
 *** xref:topology/enlinkd/layer-2-discovery.adoc[]
 **** xref:topology/enlinkd/layer-2/lldp-discovery.adoc[]
@@ -129,7 +138,7 @@
 ** xref:elasticsearch/features/alarm-history.adoc[]
 
 * xref:flows/introduction.adoc[]
-** xref:flows/basic.adoc[]
+** xref:flows/setup.adoc[]
 ** xref:flows/classification-engine.adoc[]
 ** xref:flows/aggregation.adoc[]
 

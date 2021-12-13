@@ -1,0 +1,51 @@
+= Configuration
+
+The Asset Topology Provider persists both the asset topology graph definitions and the generated GraphML graphs.
+The persisted definitions mean that it is possible to regenerate graphs without reentering the configuration if the asset table changes.
+
+The Asset Topology Provider persists GraphML graphs alongside any other GraphML graphs in the directory.
+
+[source, path]
+----
+${OPENNMS_HOME}/etc/graphml
+----
+
+Note that if you use REST or any other means to generate other GraphML graphs, you should ensure that the providerIds and labels are distinct from those the Asset Topology Provider uses.
+
+The asset graph definitions for the Asset Topology Provider are persisted to the following xml configuration file:
+
+[source, path]
+----
+${OPENNMS_HOME}/etc/org.opennms.features.topology.plugins.topo.asset.xml
+----
+
+Normally you should not edit this file directly but use the Karaf console or events to define new graphs.
+
+The configuration file contains each of the graph definitions as properties in the form:
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configs>
+    <config>
+        <label>Asset Topology Provider</label><1>
+        <breadcrumb-strategy>SHORTEST_PATH_TO_ROOT</breadcrumb-strategy><2>
+        <provider-id>asset</provider-id><3>
+        <preferred-layout>Grid Layout</preferred-layout><4>
+        <filters><5>
+            <filter>asset-region=South</filter>
+        </filters>
+        <layers><6>
+            <layer>asset-region</layer>
+            <layer>asset-building</layer>
+            <layer>asset-rack</layer>
+        </layers>
+    </config>
+</configs>
+----
+<1> The name that shows up on the topology menu (must be unique).
+<2> Breadcrumb strategy used to display breadcrumbs above each graph.
+<3> The unique name of the provider - used as a handle to install and remove the topology.
+<4> Preferred node layout in generated graphs.
+<5> List of filters to apply. Filters determine the nodes to include in the graph. See xref:operation:topology/asset-topology-provider/node-filtering.adoc[node filtering].
+<6> List of asset layers (in order). See xref:operation:topology/asset-topology-provider/asset-layers.adoc[asset layers].

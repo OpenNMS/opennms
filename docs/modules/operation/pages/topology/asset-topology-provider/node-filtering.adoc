@@ -1,0 +1,49 @@
+[[node-filtering]]
+= Node Filtering
+
+In many cases, it is desirable to control which nodes a topology includes or excludes.
+For instance, it is useful to be able to generate customized topologies for specific customers that include only regions/buildings, and so on, relevant to their filtered node set.
+To this end, it is possible to define a node filter that chooses which nodes are included in a generated topology.
+
+Define filters using the same asset table keys that are available for the `assetLayers` field.
+
+[options="header"]
+[cols="1,3,2"]
+|===
+| Operation  | Definition                                               | Example
+| OR         | key1=value1,value2 alternatively key1=value1;key1=value2 | asset-region=north,south
+| AND        | key1=val1;key2=val2                                      | asset-region=north;asset-building=23
+| NOT        | key1=!val1                                               | asset-building=!23
+|===
+
+Thus, the following configuration means include only nodes with region north or south but exclude all nodes with building 23.
+
+[source, properties]
+----
+filter=asset-region=north,south;asset-building=!23
+----
+The filters treat comma-separated key values as an OR search.
+Thus we can select based on multiple separate node categories.
+
+The following configuration means show routers and servers on all buildings except building 23.
+
+[source, properties]
+----
+filter=node-categories=routers,servers;asset-building=!23
+----
+
+The filters treat all asset table entries as comma-separated variables (csv).
+This also means that, for instance, asset-displaycategory could also contain several values separated by commas (for example, customer1, customer2, customer3).
+
+NOTE: Make sure that asset addresses and other free-format asset text fields do not contain commas if you want an exact match on the whole field.
+
+Regular expressions are also allowed.
+Regular expressions start with the ~ character.
+You can also negate a regular expression by preceding it with !~.
+
+The following example matches against regions "Stuttgart" and "Isengard" and any building name that ends in 4.
+
+[source, properties]
+----
+filter=asset-region=~.*gar(t|d);asset-building=~.*4
+----
