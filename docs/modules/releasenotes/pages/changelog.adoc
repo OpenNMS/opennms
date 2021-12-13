@@ -9,6 +9,8 @@
 Release 2021.1.8 is an out-of-band release with a fix for the Log4j2 security issue,
 plus an enhancement to support `exclude-url` in discovery's configuration.
 
+The codename for 2021.1.8 is link:https://wikipedia.org/wiki/$$Cassini–Huygens$$[_Cassini_].
+
 === Bug
 
 * Log4j2 0-day: CVE-2021-44228 (Issue http://issues.opennms.org/browse/NMS-13850[NMS-13850])
