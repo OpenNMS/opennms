@@ -272,7 +272,7 @@ public class ThresholdingIT {
             try {
                 this.flowRepository.persist(createMockedFlows(1), source,
                                             ProcessingOptions.builder()
-                                                             .setEnableAggregation(true)
+                                                             .setApplicationThresholding(true)
                                                              .build());
             } catch (FlowException e) {
                 throw new RuntimeException(e);
@@ -292,7 +292,7 @@ public class ThresholdingIT {
             try {
                 this.flowRepository.persist(createMockedFlows(1000), source,
                                             ProcessingOptions.builder()
-                                                             .setEnableAggregation(true)
+                                                             .setApplicationThresholding(true)
                                                              .build());
             } catch (FlowException e) {
                 throw new RuntimeException(e);
@@ -317,7 +317,7 @@ public class ThresholdingIT {
             try {
                 this.flowRepository.persist(createMockedFlows(1), source,
                                             ProcessingOptions.builder()
-                                                             .setEnableAggregation(true)
+                                                             .setApplicationThresholding(true)
                                                              .build());
             } catch (FlowException e) {
                 throw new RuntimeException(e);
