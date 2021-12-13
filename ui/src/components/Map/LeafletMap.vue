@@ -197,7 +197,7 @@ const flyToNode = (nodeLabelOrId: string) => {
   const nodeCoordinates = coordinateMap.get(nodeLabelOrId)
 
   if (nodeCoordinates) {
-    leafletObject.value.flyTo(nodeCoordinates, 4)
+    leafletObject.value.flyTo(nodeCoordinates, 7)
   }
 }
 
