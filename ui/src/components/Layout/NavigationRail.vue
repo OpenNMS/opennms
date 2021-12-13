@@ -8,6 +8,13 @@
       title="Nodes"
     />
     <FeatherRailItem
+      :class="{ selected: isSelected('/provisionDConfig') }"
+      slot="main"
+      href="#/provisionDConfig"
+      :icon="LoggerConfigs"
+      title="Configuration"
+    />
+    <FeatherRailItem
       :class="{ selected: isSelected('/file-editor') }"
       v-if="isAdmin"
       slot="main"
@@ -32,6 +39,7 @@ import { useRoute } from 'vue-router'
 import Instances from "@featherds/icon/hardware/Instances"
 import AddNote from "@featherds/icon/action/AddNote"
 import MarkComplete from "@featherds/icon/action/MarkComplete"
+import LoggerConfigs from "@featherds/icon/action/LoggerConfigs"
 import {
   FeatherNavigationRail,
   FeatherRailItem,
