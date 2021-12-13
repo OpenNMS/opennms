@@ -42,6 +42,7 @@ import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
 
 import com.codahale.metrics.MetricRegistry;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -82,7 +83,7 @@ public class ElasticFlowRepositoryIT {
 
             // It does not matter what we persist here, as the response is fixed.
             // We only have to ensure that the list is not empty
-            elasticFlowRepository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource());
+            elasticFlowRepository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
         }
     }
 }

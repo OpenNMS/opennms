@@ -54,6 +54,7 @@ import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +103,7 @@ public class DefaultDirectionIT {
                             new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), null), jestClient);
             // persist data
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()),
-                    FlowDocumentTest.getMockFlowSource());
+                                          FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build());
 
             // wait for entries to show up
             with().pollInterval(5, SECONDS).await().atMost(1, MINUTES).until(() -> {

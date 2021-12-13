@@ -53,6 +53,7 @@ import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.elastic.Direction;
 import org.opennms.netmgt.flows.elastic.FlowDocument;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -178,9 +179,9 @@ public class FlowThresholding implements Closeable {
                                                  "interface",
                                                  Integer.toString(application.getKey().iface)); // TODO cpape: Find interface name
 
-                    // TODO fooker: Set sequence number from flow to aid distributed thresholding
-
-                    session.thresholdingSession.accept(collectionSetBuilder.build());
+                    if (session.thresholding) {
+                        session.thresholdingSession.accept(collectionSetBuilder.build());
+                    }
                 } catch (ThresholdInitializationException e) {
                     LOG.warn("Error initializing thresholding session", e);
                 }
@@ -195,7 +196,12 @@ public class FlowThresholding implements Closeable {
     }
 
     public void threshold(final List<FlowDocument> documents,
-                          final FlowSource source) throws ExecutionException, ThresholdInitializationException {
+                          final FlowSource source,
+                          final ProcessingOptions options) throws ExecutionException, ThresholdInitializationException {
+
+        if (!(options.applicationThresholding || options.applicationDataCollection)) {
+            return;
+        }
 
         final var now = Instant.now();
 
@@ -223,7 +229,9 @@ public class FlowThresholding implements Closeable {
 
                     return new Session(thresholdingSession,
                                        collectionAgent,
-                                       systemIdHash);
+                                       systemIdHash,
+                                       options.applicationThresholding,
+                                       options.applicationDataCollection);
                 });
 
                 session.process(now, document);
@@ -236,7 +244,10 @@ public class FlowThresholding implements Closeable {
     }
 
     private static class Session {
-        public final Map<ApplicationKey, AtomicLong> applications;
+        public final Map<ApplicationKey, AtomicLong> applications = Maps.newConcurrentMap();
+
+        public final boolean thresholding;
+        public final boolean dataCollection;
 
         public final ThresholdingSession thresholdingSession;
         public final CollectionAgent collectionAgent;
@@ -245,17 +256,21 @@ public class FlowThresholding implements Closeable {
         // This is not synchronized as reference updates are always atomic.
         // See https://docs.oracle.com/javase/specs/jls/se7/html/jls-17.html#jls-17.7
         private volatile Instant lastUpdate = null;
+
         private final AtomicLong sequenceNumber;
 
         private Session(final ThresholdingSession thresholdingSession,
                         final CollectionAgent collectionAgent,
-                        final long systemIdHash) {
-            this.applications = Maps.newConcurrentMap();
-
+                        final long systemIdHash,
+                        final boolean thresholding,
+                        final boolean dataCollection) {
             this.sequenceNumber = new AtomicLong(systemIdHash | ThreadLocalRandom.current().nextInt());
 
             this.thresholdingSession = Objects.requireNonNull(thresholdingSession);
             this.collectionAgent = Objects.requireNonNull(collectionAgent);
+
+            this.thresholding = thresholding;
+            this.dataCollection = dataCollection;
         }
 
         public void process(final Instant now, final FlowDocument document) {
