@@ -47,6 +47,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
 import com.google.common.collect.Maps;
+import org.springframework.transaction.annotation.Transactional;
 
 public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
@@ -94,26 +95,27 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
     }
 
     @Override
+    @Transactional
     public Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider,
             Collection<EdgeRef> edges, Criteria[] criteria) {
         Map<EdgeRef, Status> retVal = new LinkedHashMap<EdgeRef, Status>();
 EDGES:        for (EdgeRef edgeRef : edges) {
                 LinkdEdge edge = (LinkdEdge) edgeProvider.getEdge(edgeRef);
                 for (OnmsAlarm alarm: getLinkdEdgeDownAlarms()) {
-                    if (alarm.getNode().getId() == null)
+                    if (alarm.getNode() == null)
                         continue;
                     if (alarm.getIfIndex() == null)
                         continue;
-                    int alarmnodeid = alarm.getNode().getId().intValue();
+                    int alarmnodeid = alarm.getNode().getId();
                     if ( edge.getSourcePort().getVertex().getNodeID() != null 
-                            && edge.getSourcePort().getVertex().getNodeID().intValue() == alarmnodeid
+                            && edge.getSourcePort().getVertex().getNodeID() == alarmnodeid
                             && edge.getSourcePort().getIfIndex() != null
                             && edge.getSourcePort().getIfIndex().intValue() == alarm.getIfIndex().intValue()) {
                         retVal.put(edgeRef, new LinkdEdgeStatus(alarm));
                         continue EDGES;
                     }
                     if ( edge.getTargetPort().getVertex().getNodeID() != null 
-                            && edge.getTargetPort().getVertex().getNodeID().intValue() == alarmnodeid
+                            && edge.getTargetPort().getVertex().getNodeID() == alarmnodeid
                             && edge.getTargetPort().getIfIndex() != null
                             && edge.getTargetPort().getIfIndex().intValue() == alarm.getIfIndex().intValue()) {
                         retVal.put(edgeRef, new LinkdEdgeStatus(alarm));
