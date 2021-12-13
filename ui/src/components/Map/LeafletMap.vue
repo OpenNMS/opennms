@@ -23,7 +23,7 @@
           layer-type="base"
         />
         <MarkerCluster
-          :options="{ showCoverageOnHover: false, chunkedLoading: true, iconCreateFunction }"
+          :options="{ showCoverageOnHover: false, chunkedLoading: true, zoomToBoundsOnClick: false, iconCreateFunction }"
         >
           <LMarker
             v-for="node of nodes"
@@ -118,7 +118,12 @@ const iconCreateFunction = (cluster: Cluster) => {
     }
   }
   const highestSeverity = getHighestSeverity(severitites)
-  return divIcon({ html: `<span class=${highestSeverity}>` + cluster.getChildCount() + '</span>' })
+  // return divIcon({ html: `<span class=${highestSeverity}>` + cluster.getChildCount() + '</span>' })
+  const clusterMarker = divIcon({ html: `<span class=${highestSeverity}>` + cluster.getChildCount() + '</span>' })
+
+  // clusterMarker.bindPopup("test");
+
+  return clusterMarker
 }
 
 const setIcon = (node: Node) => setMarkerColor(nodeLabelAlarmServerityMap.value[node.label])
