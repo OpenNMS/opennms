@@ -196,7 +196,6 @@ public class FlowThresholding implements Closeable {
     }
 
     public void threshold(final List<FlowDocument> documents,
-                          final FlowSource source,
                           final ProcessingOptions options) throws ExecutionException, ThresholdInitializationException {
 
         if (!(options.applicationThresholding || options.applicationDataCollection)) {

@@ -113,6 +113,8 @@ public class ElasticFlowRepository implements FlowRepository {
      */
     private final Timer logEnrichementTimer;
 
+    private final Timer logThresholdingTimer;
+
     /**
      * Time taken to persist the flows in a log
      */
@@ -199,6 +201,7 @@ public class ElasticFlowRepository implements FlowRepository {
         this.emptyFlows = metricRegistry.counter("emptyFlows");
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logEnrichementTimer = metricRegistry.timer("logEnrichment");
+        logThresholdingTimer = metricRegistry.timer("logThresholding");
         logPersistingTimer = metricRegistry.timer("logPersisting");
         logMarkingTimer = metricRegistry.timer("logMarking");
         flowsPerLog = metricRegistry.histogram("flowsPerLog");
@@ -304,8 +307,8 @@ public class ElasticFlowRepository implements FlowRepository {
             throw new FlowException("Failed to enrich one or more flows.", e);
         }
 
-        try {
-            this.thresholding.threshold(flowDocuments, source, options);
+        try (final Timer.Context ctx = logThresholdingTimer.time()) {
+            this.thresholding.threshold(flowDocuments, options);
         } catch (final ExecutionException | ThresholdInitializationException e) {
             throw new FlowException("Failed to evaluate thresholds", e);
         }
