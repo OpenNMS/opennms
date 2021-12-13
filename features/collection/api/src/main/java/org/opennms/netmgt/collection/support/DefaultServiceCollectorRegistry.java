@@ -113,16 +113,7 @@ public class DefaultServiceCollectorRegistry implements ServiceCollectorRegistry
 
     @Override
     public synchronized ServiceCollector getCollectorByClassName(String className) {
-        ServiceCollector collector = null;
-        CompletableFuture<ServiceCollector> future = m_collectorsByClassName.get(className);
-        if(future != null) {
-            try {
-                collector = future.get(100, TimeUnit.MILLISECONDS);
-            } catch (Exception e) {
-                //do nothing
-            }
-        }
-        return collector;
+        return getCollectorFutureByClassName(className).completeOnTimeout(null, 100, TimeUnit.MILLISECONDS).join();
     }
 
     @Override
