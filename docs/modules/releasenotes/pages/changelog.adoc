@@ -2,6 +2,22 @@
 
 = Changelog
 
+[[releasenotes-changelog-Meridian-2021.1.8]]
+
+== Release Meridian-2021.1.8
+
+Release 2021.1.8 is an out-of-band release with a fix for the Log4j2 security issue,
+plus an enhancement to support `exclude-url` in discovery's configuration.
+
+=== Bug
+
+* Log4j2 0-day: CVE-2021-44228 (Issue http://issues.opennms.org/browse/NMS-13850[NMS-13850])
+
+=== Enhancement
+
+* Update VMWare import documentation regarding multiple parameters (Issue http://issues.opennms.org/browse/NMS-9889[NMS-9889])
+* Add "exclude-url" to Discoverd's configuration (Issue http://issues.opennms.org/browse/NMS-13718[NMS-13718])
+
 [[releasenotes-changelog-Meridian-2021.1.7]]
 
 == Release Meridian-2021.1.7
