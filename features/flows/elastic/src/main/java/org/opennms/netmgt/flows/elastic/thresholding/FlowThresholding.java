@@ -41,6 +41,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.elastic.Direction;
@@ -79,6 +81,8 @@ public class FlowThresholding implements Closeable {
 
     private final IpInterfaceDao ipInterfaceDao;
 
+    public final long systemIdHash;
+
     private final ConcurrentMap<ExporterKey, Session> sessions = Maps.newConcurrentMap();
 
     private long stepSizeMs = 0;
@@ -88,10 +92,11 @@ public class FlowThresholding implements Closeable {
 
     public FlowThresholding(final ThresholdingService thresholdingService,
                             final CollectionAgentFactory collectionAgentFactory,
-                            final IpInterfaceDao ipInterfaceDao) {
+                            final IpInterfaceDao ipInterfaceDao,
+                            final DistPollerDao distPollerDao) {
         this.thresholdingService = Objects.requireNonNull(thresholdingService);
         this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
-
+        this.systemIdHash = (long) distPollerDao.whoami().getId().hashCode() << 32;
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
     }
 
@@ -157,6 +162,7 @@ public class FlowThresholding implements Closeable {
 
                     final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(session.collectionAgent)
                             .withTimestamp(timerTaskDate)
+                            .withSequenceNumber(session.sequenceNumber.getAndIncrement())
                             .withCounter(appResource,
                                          RESOURCE_GROUP,
                                          application.getKey().direction == Direction.INGRESS
@@ -216,7 +222,8 @@ public class FlowThresholding implements Closeable {
                     }
 
                     return new Session(thresholdingSession,
-                                       collectionAgent);
+                                       collectionAgent,
+                                       systemIdHash);
                 });
 
                 session.process(now, document);
@@ -238,10 +245,14 @@ public class FlowThresholding implements Closeable {
         // This is not synchronized as reference updates are always atomic.
         // See https://docs.oracle.com/javase/specs/jls/se7/html/jls-17.html#jls-17.7
         private volatile Instant lastUpdate = null;
+        private final AtomicLong sequenceNumber;
 
         private Session(final ThresholdingSession thresholdingSession,
-                        final CollectionAgent collectionAgent) {
+                        final CollectionAgent collectionAgent,
+                        final long systemIdHash) {
             this.applications = Maps.newConcurrentMap();
+
+            this.sequenceNumber = new AtomicLong(systemIdHash | ThreadLocalRandom.current().nextInt());
 
             this.thresholdingSession = Objects.requireNonNull(thresholdingSession);
             this.collectionAgent = Objects.requireNonNull(collectionAgent);

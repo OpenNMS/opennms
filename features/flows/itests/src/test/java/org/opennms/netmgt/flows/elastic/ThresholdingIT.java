@@ -188,7 +188,8 @@ public class ThresholdingIT {
 
         this.thresholding = new FlowThresholding(this.thresholdingService,
                                                  collectionAgentFactory,
-                                                 this.databasePopulator.getIpInterfaceDao());
+                                                 this.databasePopulator.getIpInterfaceDao(),
+                                                 this.databasePopulator.getDistPollerDao());
 
         this.thresholding.setStepSizeMs(1000);
 
