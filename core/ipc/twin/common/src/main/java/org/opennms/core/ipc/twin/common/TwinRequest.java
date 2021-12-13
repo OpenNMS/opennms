@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.twin.common;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class TwinRequest {
@@ -35,6 +37,8 @@ public class TwinRequest {
     protected String key;
 
     protected String location;
+
+    private Map<String, String> tracingInfo = new HashMap<>();
 
     public TwinRequest(String key, String location) {
         this.key = key;
@@ -58,6 +62,14 @@ public class TwinRequest {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public Map<String, String> getTracingInfo() {
+        return tracingInfo;
+    }
+
+    public void addTracingInfo(String key, String value) {
+        this.tracingInfo.put(key, value);
     }
 
     @Override

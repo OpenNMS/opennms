@@ -76,14 +76,17 @@ Do not forget to restart services after making changes to the `provisiond-config
 
 | importIPv4Only
 | Imports only IPv4 interfaces.
+Cannot be true if `importIPv6Only` is true.
 | false
 
 | importIPv6Only
 | Imports only IPv6 interfaces.
+Cannot be true if `importIPv4Only` is true.
 | false
 
 | topologyNetworks
 | Add the network information to the VMWare topology.
+If set to false, port group information will not be added to {page-component-title} topology maps.
 | true
 
 | topologyDatastores
@@ -112,6 +115,7 @@ Do not forget to restart services after making changes to the `provisiond-config
 
 | importVMOnly
 | Imports only virtual machines and ignores hosts.
+Cannot be true if `importHostOnly` is true.
 | false
 
 | importHostPoweredOn
@@ -136,17 +140,21 @@ Do not forget to restart services after making changes to the `provisiond-config
 
 | importHostOnly
 | Imports only host systems and ignores VMs.
+Cannot be true if `importVMOnly` is true.
 | false
 
 | virtualMachineServices
 | Monitor services to assign to imported virtual machines.
 Multiple values should be comma separated.
-| VMware-ManagedEntity, VMware-VirtualMachine
+| VMware-ManagedEntity +
+VMware-VirtualMachine
 
 | hostSystemServices
 | Monitor services to assign to imported host systems.
 Multiple values should be comma separated.
-| VMware-ManagedEntity, VMware-HostSystem, VMwareCim-HostSystem
+| VMware-ManagedEntity +
+VMware-HostSystem +
+VMwareCim-HostSystem
 
 | timeout
 | VMware connection timeout, in milliseconds.
@@ -158,14 +166,21 @@ Increase this value only if you have problems discovering CIM services on host s
 | 3000
 |===
 
-IMPORTANT: `importVMOnly` and `importHostOnly` cannot both be true simultaneously. +
-`importIPv4Only` and `importIPv6Only` cannot both be true simultaneously.
+When including multiple parameters in your import request, use a semicolon (`;`) for concatenation.
+
+.Examples for `import-url-resource`
+[source, provisiond.properties]
+----
+vmware://vcenter.mydomain.org?importHostPoweredOff=true
+vmware://172.16.123.100/vCenterImport?key=shouldImport;value=1
+vmware://172.16.123.100/vCenterImport?_shouldImport=1
+vmware://172.16.123.100/vCenterImport?_shouldImport=1;username=opennms;password=secret
+vmware://[2001:db8:0:8d3:0:8a2e:70:7344]?virtualMachineServices=VM-SERVICE1,VM-SERVICE2
+----
 
 NOTE: If you do not import powered-off or standby entities, they will be removed and re-added to {page-component-title} based on their power state.
 This can cause their database ID to change over time.
 Enabling the https://opennms.discourse.group/t/storing-data-with-foreign-sources/2057[storeByForeignSource] setting can help make sure collected metrics are kept properly.
-
-
 
 == Provision a subset of VMware entities
 

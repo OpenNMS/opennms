@@ -44,7 +44,7 @@ public class StringType extends AbstractPropertyType {
         getAttributeValue(Attribute.PATTERN)
                 .map(this::validateRegex)
                 .ifPresent(configItem::setPattern);
-        configItem.setDefaultValue(defaultValueOpt.orElse(""));
+        configItem.setDefaultValue(defaultValueOpt.orElse(null));
     }
 
     private String validateRegex(String regex) {

@@ -143,6 +143,12 @@ public class DiscoveryConfiguration implements Serializable {
     @JsonProperty("include-url")
     private List<IncludeUrl> includeUrls = new ArrayList<>();
 
+    /**
+     * a file URL holding specific addresses to be excluded
+     */
+    @XmlElement(name = "exclude-url")
+    private List<ExcludeUrl> excludeUrls = new ArrayList<>();
+
     @XmlElement(name = "definition")
     @JsonProperty("definition")
     private List<Definition> definitions = new ArrayList<>();
@@ -222,9 +228,11 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setSpecifics(final List<Specific> specifics) {
-        if (specifics == this.specifics) return;
-        this.specifics.clear();
-        if (specifics != null) this.specifics.addAll(specifics);
+        if (specifics != null) {
+            if (specifics.equals(this.specifics)) return;
+            this.specifics.clear();
+            this.specifics.addAll(specifics);
+        }
     }
 
     public void addSpecific(final Specific specific) {
@@ -246,9 +254,11 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setIncludeRanges(final List<IncludeRange> includeRanges) {
-        if (includeRanges == this.includeRanges) return;
-        this.includeRanges.clear();
-        if (includeRanges != null) this.includeRanges.addAll(includeRanges);
+        if (includeRanges != null) {
+            if (includeRanges.equals(this.includeRanges)) return;
+            this.includeRanges.clear();
+            this.includeRanges.addAll(includeRanges);
+        }
     }
 
     public void addIncludeRange(final IncludeRange includeRange) {
@@ -270,9 +280,11 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setExcludeRanges(final List<ExcludeRange> excludeRanges) {
-        if (excludeRanges == this.excludeRanges) return;
-        this.excludeRanges.clear();
-        if (excludeRanges != null) this.excludeRanges.addAll(excludeRanges);
+        if (excludeRanges != null) {
+            if (excludeRanges.equals(this.excludeRanges)) return;
+            this.excludeRanges.clear();
+            this.excludeRanges.addAll(excludeRanges);
+        }
     }
 
     public void addExcludeRange(final ExcludeRange excludeRange) {
@@ -294,9 +306,11 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setIncludeUrls(final List<IncludeUrl> includeUrls) {
-        if (includeUrls == this.includeUrls) return;
-        this.includeUrls.clear();
-        if (includeUrls != null) this.includeUrls.addAll(includeUrls);
+        if (includeUrls != null) {
+            if (includeUrls.equals(this.includeUrls)) return;
+            this.includeUrls.clear();
+            this.includeUrls.addAll(includeUrls);
+        }
     }
 
     public void addIncludeUrl(final IncludeUrl includeUrl) {
@@ -311,6 +325,32 @@ public class DiscoveryConfiguration implements Serializable {
      */
     public void clearIncludeUrls() {
         this.includeUrls.clear();
+    }
+
+    public List<ExcludeUrl> getExcludeUrls() {
+        return excludeUrls;
+    }
+
+    public void setExcludeUrls(final List<ExcludeUrl> excludeUrls) {
+        if (excludeUrls != null) {
+            if (excludeUrls.equals(this.excludeUrls)) return;
+            this.excludeUrls.clear();
+            this.excludeUrls.addAll(excludeUrls);
+        }
+    }
+
+    public void addExcludeUrl(final ExcludeUrl excludeUrl) {
+        excludeUrls.add(excludeUrl);
+    }
+
+    public boolean removeExcludeUrl(final ExcludeUrl excludeUrl) {
+        return excludeUrls.remove(excludeUrl);
+    }
+
+    /**
+     */
+    public void clearExcludeUrls() {
+        excludeUrls.clear();
     }
 
     public List<Definition> getDefinitions() {
@@ -339,7 +379,8 @@ public class DiscoveryConfiguration implements Serializable {
                             this.specifics, 
                             this.includeRanges, 
                             this.excludeRanges, 
-                            this.includeUrls);
+                            this.includeUrls,
+                            this.excludeUrls);
     }
 
     @Override
@@ -361,7 +402,8 @@ public class DiscoveryConfiguration implements Serializable {
                     && Objects.equals(this.specifics, that.specifics)
                     && Objects.equals(this.includeRanges, that.includeRanges)
                     && Objects.equals(this.excludeRanges, that.excludeRanges)
-                    && Objects.equals(this.includeUrls, that.includeUrls);
+                    && Objects.equals(this.includeUrls, that.includeUrls)
+                    && Objects.equals(this.excludeUrls, that.excludeUrls);
         }
         return false;
     }
@@ -377,7 +419,8 @@ public class DiscoveryConfiguration implements Serializable {
                 + this.chunkSize + ", specifics=" + this.specifics
                 + ", includeRanges=" + this.includeRanges
                 + ", excludeRanges=" + this.excludeRanges + ", includeUrls="
-                + this.includeUrls + "]";
+                + includeUrls + ", excludeUrls="
+                + excludeUrls + "]";
     }
 
 }

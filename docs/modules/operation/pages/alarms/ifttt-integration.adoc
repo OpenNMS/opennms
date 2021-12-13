@@ -19,14 +19,14 @@ After this step you can combine this trigger with any of the possible supported 
 
 [[ga-ifttt-trigger-definition]]
 .Webhooks service trigger definition
-image:alarms/trigger-definition-small.png[]
+image::alarms/trigger-definition-small.png[]
 
 In your account service settings for the Webhooks service you find your key in the given service URL.
 In the following example this key is `X71dfUZsH4Wkl6cjsLjdV`.
 
 [[ga-ifttt-webhooks-settings]]
 .Webhooks service settings
-image:alarms/webhooks-settings-small.png[]
+image::alarms/webhooks-settings-small.png[]
 
 On the side of {page-component-title}, you need a configuration that defines which event names to send on an alarm count or severity change.
 The configuration file `ifttt-config.xml` contains trigger packages.

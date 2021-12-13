@@ -36,8 +36,12 @@ import java.util.concurrent.*;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.opentracing.References;
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
 import org.opennms.core.grpc.common.GrpcIpcServer;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
+import org.opennms.core.ipc.twin.api.TwinStrategy;
 import org.opennms.core.ipc.twin.common.AbstractTwinPublisher;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
 import org.opennms.core.ipc.twin.common.TwinRequest;
@@ -47,7 +51,8 @@ import org.opennms.core.ipc.twin.grpc.common.OpenNMSTwinIpcGrpc;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.core.logging.Logging;
-import org.opennms.distributed.core.api.Identity;
+import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,9 +114,11 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
 
 
     public void close() throws IOException {
-        grpcIpcServer.stopServer();
-        LOG.info("Stopped Twin GRPC Server");
-        twinRpcExecutor.shutdown();
+        try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
+            grpcIpcServer.stopServer();
+            twinRpcExecutor.shutdown();
+            LOG.info("Stopped Twin GRPC Server");
+        }
     }
 
     private class StreamHandler extends OpenNMSTwinIpcGrpc.OpenNMSTwinIpcImplBase {
@@ -126,10 +133,16 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
                     CompletableFuture.runAsync(() -> {
                         try {
                             TwinRequest twinRequest = mapTwinRequestProto(twinRequestProto.toByteArray());
-                            TwinUpdate twinUpdate = getTwin(twinRequest);
-                            TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
-                            LOG.debug("Sent Twin response for key {} at location {}", twinRequest.getKey(), twinRequest.getLocation());
-                            sendTwinResponse(twinResponseProto, rpcStream);
+                            String tracingOperationKey = generateTracingOperationKey(twinRequest.getLocation(), twinRequest.getKey());
+                            Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
+                                    tracingOperationKey, twinRequest.getTracingInfo(), References.FOLLOWS_FROM);
+                            try (Scope scope = spanBuilder.startActive(true)){
+                                TwinUpdate twinUpdate = getTwin(twinRequest);
+                                addTracingInfo(scope.span(), twinUpdate);
+                                TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
+                                LOG.debug("Sent Twin response for key {} at location {}", twinRequest.getKey(), twinRequest.getLocation());
+                                sendTwinResponse(twinResponseProto, rpcStream);
+                            }
                         } catch (Exception e) {
                             LOG.error("Exception while processing request", e);
                         }

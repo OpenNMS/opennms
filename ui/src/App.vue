@@ -5,11 +5,16 @@
       <Menubar />
     </template>
 
-    <Sidebar />
-    <Spinner />
+    <template v-slot:rail>
+      <NavigationRail :modelValue="true" />
+    </template>
 
-    <router-view />
-    <notifications position="top center" ignoreDuplicates = true />  
+    <div class="main-content">
+      <Spinner />
+      <router-view />
+    </div>
+
+    <notifications position="top center" ignoreDuplicates="true" />
   </FeatherAppLayout>
 </template>
   
@@ -18,9 +23,9 @@ import { onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Menubar from './components/Layout/Menubar.vue'
-import Sidebar from './components/Layout/Sidebar.vue'
 import { notify } from "@kyvg/vue3-notification"
 import Spinner from './components/Common/Spinner.vue'
+import NavigationRail from './components/Layout/NavigationRail.vue'
 
 const store = useStore()
 onMounted(() => store.dispatch('authModule/getWhoAmI'))
@@ -72,8 +77,11 @@ a {
 .full-width {
   padding: 0px !important;
 }
-body {
-  margin: 0px;
+html {
+  overflow: hidden;
+}
+.main-content {
+  margin-left: 218px;
 }
 .logo {
   color: var(--feather-primary-text-on-color) !important;
@@ -152,12 +160,24 @@ a {
   color: $primary-dark-blue !important;
 }
 // global feather typography classes
-.headline1 { @include headline1(); }
-.headline2 { @include headline2(); }
-.headline3 { @include headline3(); }
-.headline4 { @include headline4(); }
-.subtitle1 { @include subtitle1(); }
-.subtitle2 { @include subtitle2(); }
+.headline1 {
+  @include headline1();
+}
+.headline2 {
+  @include headline2();
+}
+.headline3 {
+  @include headline3();
+}
+.headline4 {
+  @include headline4();
+}
+.subtitle1 {
+  @include subtitle1();
+}
+.subtitle2 {
+  @include subtitle2();
+}
 
 body {
   margin: 0px;

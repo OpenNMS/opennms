@@ -86,7 +86,7 @@ public abstract class CollectorComplianceTest {
 
     public CollectionAgent createAgent(Integer ifaceId, IpInterfaceDao ifaceDao, PlatformTransactionManager transMgr) {
         return DefaultCollectionAgent.create(ifaceId, ifaceDao, transMgr);
-    };
+    }
 
     public void beforeMinion() { }
 

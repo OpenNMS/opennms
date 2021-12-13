@@ -16,6 +16,8 @@ To upgrade our container to use a new base Karaf version, follow these steps.
 6. Update the list of repo features inside ```$SRC_DIR/container/features/pom.xml```, ```$SRC_DIR/core/test-api/karaf/pom.xml```, and ```$SRC_DIR/opennms-full-assembly/pom.xml```.
 7. Update the Karaf version inside ```$SRC_DIR/core/test-api/karaf/src/main/java/org/opennms/core/test/karaf/KarafTestCase.java```.
 8. Update ```$SRC_DIR/pom.xml``` with new value for ```<karafVersion>``` property.
-9. Update ```$SRC_DIR/smoke-test/pom.xml``` with new value for ```<karafVersion>``` property.
+9. Update ```$SRC_DIR/pom.xml``` with new value for ```<felixConfigadminVersion>``` property.
+10. Update ```$SRC_DIR/smoke-test/pom.xml``` with new value for ```<karafVersion>``` property.
+11. Update ```$SRC_DIR/features/config/osgi/del/pom.xml``` with new value for ```pax-logging-apifeatures``` property.
 
 See commit dea910701c3f48e367636b507fc575b59e70b843 for an example of an upgrade.

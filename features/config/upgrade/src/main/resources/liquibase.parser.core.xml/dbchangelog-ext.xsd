@@ -24,8 +24,8 @@
                 <xsd:element name="put" minOccurs="0">
                     <xsd:complexType>
                         <xsd:attribute name="name" type="xsd:string" use="required"/>
-                        <xsd:attribute name="type" type="xsd:string" use="required"/>
-                        <xsd:attribute name="default" type="xsd:string" use="required"/>
+                        <xsd:attribute name="type" type="propertyType" use="required"/>
+                        <xsd:attribute name="default" type="xsd:string"/><!-- if not defined it will be null -->
                         <xsd:attribute name="pattern" type="xsd:string"/>
                         <xsd:attribute name="min" type="xsd:string"/>
                         <xsd:attribute name="max" type="xsd:string"/>
@@ -40,6 +40,14 @@
             <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>
+    <xsd:simpleType name="propertyType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="string" />
+            <xsd:enumeration value="number" />
+            <xsd:enumeration value="boolean" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
 
     <xsd:element name="importConfig">
         <xsd:complexType>

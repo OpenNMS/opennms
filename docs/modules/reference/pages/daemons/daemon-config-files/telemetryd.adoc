@@ -1,0 +1,43 @@
+
+[[ref-daemon-config-files-telemetryd]]
+= Telemetryd
+
+.Telemetryd configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| telemetryd-configuration.xml
+| Configure telemetry listeners and adapters.
+| yes
+| no
+
+| telemetryd-adapters/*.groovy
+| Groovy scripts for processing telemetry data.
+| yes
+| no
+
+| org.opennms.features.flows.classification.cfg
+| Rules for classifying flow data.
+| yes
+| no
+
+| org.opennms.features.flows.persistence.elastic.cfg
+| Configuration for offloading flow data to Elasticsearch.
+| no
+| yes
+
+| org.opennms.features.flows.persistence.kafka.cfg
+| Optional configuration for forwarding flow data to a Kafka topic.
+| no
+| yes
+
+| elastic-credentials.xml
+| Credentials for connecting to Elasticsearch nodes.
+| no
+| no
+|===

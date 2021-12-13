@@ -9,7 +9,7 @@ The figure <<ga-alarm-sounds-ui, Alarm Sounds View>> shows the alarm list page w
 
 [[ga-alarm-sounds-ui]]
 .Alarm Sounds View
-image:alarms/01_alarm-sound.png[]
+image::alarms/01_alarm-sound.png[]
 
 By default the alarm sound feature is disabled.
 System administrators must activate the sound feature and also set the default sound setting for all users.

@@ -30,6 +30,7 @@ package org.opennms.web.rest.v2;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -47,10 +48,9 @@ import org.opennms.web.enlinkd.LldpLinkNode;
 import org.opennms.web.enlinkd.OspfElementNode;
 import org.opennms.web.enlinkd.OspfLinkNode;
 import org.opennms.web.rest.model.v2.BridgeElementNodeDTO;
-import org.opennms.web.rest.model.v2.CdpElementNodeDTO;
-import org.opennms.web.rest.v2.api.NodeLinkRestApi;
 import org.opennms.web.rest.model.v2.BridgeLinkNodeDTO;
 import org.opennms.web.rest.model.v2.BridgeLinkRemoteNodeDTO;
+import org.opennms.web.rest.model.v2.CdpElementNodeDTO;
 import org.opennms.web.rest.model.v2.CdpLinkNodeDTO;
 import org.opennms.web.rest.model.v2.EnlinkdDTO;
 import org.opennms.web.rest.model.v2.IsisElementNodeDTO;
@@ -59,12 +59,13 @@ import org.opennms.web.rest.model.v2.LldpElementNodeDTO;
 import org.opennms.web.rest.model.v2.LldpLinkNodeDTO;
 import org.opennms.web.rest.model.v2.OspfElementNodeDTO;
 import org.opennms.web.rest.model.v2.OspfLinkNodeDTO;
+import org.opennms.web.rest.v2.api.NodeLinkRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Transactional
+@Transactional(readOnly = true)
 public class NodeLinkRestService implements NodeLinkRestApi {
 
     private EnLinkdElementFactoryInterface enLinkdElementFactory;
@@ -77,20 +78,25 @@ public class NodeLinkRestService implements NodeLinkRestApi {
         this.m_nodeDao = m_nodeDao;
     }
 
+    private static <F, T> List<T> map(List<F> from, Function<F, T> f) {
+        return from.stream().map(f).collect(Collectors.toList());
+    }
+
     @Override
     public EnlinkdDTO getEnlinkd(String nodeCriteria) {
         int nodeId = getNodeIdInDB(nodeCriteria);
+        var r = enLinkdElementFactory.getAll(nodeId);
         return new EnlinkdDTO()
-                .withLldpLinkNodeDTOs(getLldpLinks(nodeId))
-                .withBridgeLinkNodeDTOS(getBridgeLinks(nodeId))
-                .withCdpLinkNodeDTOS(getCdpLinks(nodeId))
-                .withOspfLinkNodeDTOS(getOspfLinks(nodeId))
-                .withIsisLinkNodeDTOS(getIsisLinks(nodeId))
-                .withLldpElementNodeDTO(getLldpElem(nodeId))
-                .withBridgeElementNodeDTOS(getBridgeElem(nodeId))
-                .withCdpElementNodeDTO(getCdpElem(nodeId))
-                .withOspfElementNodeDTO(getOspfelem(nodeId))
-                .withIsisElementNodeDTO(getIsisElem(nodeId));
+                .withLldpLinkNodeDTOs(map(r.lldpLinks, this::mapLldpLindNodeToDTO))
+                .withBridgeLinkNodeDTOS(map(r.bridgeLinks, this::mapBridgeLinkNodeToDTO))
+                .withCdpLinkNodeDTOS(map(r.cdpLinks, this::mapCdpLinkNodeToDTO))
+                .withOspfLinkNodeDTOS(map(r.ospfLinks, this::mapOspfLinkNodeToDTO))
+                .withIsisLinkNodeDTOS(map(r.isisLinks, this::mapIsisLinkNodeToDTO))
+                .withLldpElementNodeDTO(mapLldElementNodeToDTO(r.lldpElement))
+                .withBridgeElementNodeDTOS(map(r.bridgeElements, this::mapBridgeElementNodeToDTO))
+                .withCdpElementNodeDTO(mapCdpElementNodeToDTO(r.cdpElement))
+                .withOspfElementNodeDTO(mapOspfElementNodeToDTO(r.ospfElement))
+                .withIsisElementNodeDTO(mapIsisElementNodeToDTO(r.isisElement));
     }
 
     @Override
