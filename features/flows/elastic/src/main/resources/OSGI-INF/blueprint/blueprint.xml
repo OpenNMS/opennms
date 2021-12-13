@@ -219,6 +219,7 @@
         <argument ref="collectionAgentFactory"/>
         <argument ref="ipInterfaceDao"/>
         <argument ref="distPollerDao"/>
+        <argument ref="snmpInterfaceDao"/>
 
         <property name="stepSizeMs" value="${flowThreshold.stepSizeMs}"/>
         <property name="idleTimeoutMs" value="${flowThreshold.idleTimeoutMs}"/>

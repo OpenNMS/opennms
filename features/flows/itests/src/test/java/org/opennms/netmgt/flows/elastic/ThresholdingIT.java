@@ -190,7 +190,8 @@ public class ThresholdingIT {
         this.thresholding = new FlowThresholding(this.thresholdingService,
                                                  collectionAgentFactory,
                                                  this.databasePopulator.getIpInterfaceDao(),
-                                                 this.databasePopulator.getDistPollerDao());
+                                                 this.databasePopulator.getDistPollerDao(),
+                                                 this.databasePopulator.getSnmpInterfaceDao());
 
         this.thresholding.setStepSizeMs(1000);
 
@@ -231,8 +232,8 @@ public class ThresholdingIT {
             final FlowDocument flowDocument = new FlowDocument();
             flowDocument.setTimestamp(now + i * 1000L);
             flowDocument.setIpProtocolVersion(4);
-            flowDocument.setInputSnmp(10);
-            flowDocument.setOutputSnmp(20);
+            flowDocument.setInputSnmp(1);
+            flowDocument.setOutputSnmp(2);
             flowDocument.setSrcAddr(String.format("192.168.%d.%d", i % 256, 255 - (i % 256)));
             flowDocument.setDstAddr(String.format("192.168.%d.%d", 255 - (i % 256), i % 256));
             flowDocument.setSrcPort(1);
