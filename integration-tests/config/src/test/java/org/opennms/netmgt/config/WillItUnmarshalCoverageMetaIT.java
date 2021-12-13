@@ -135,6 +135,10 @@ public class WillItUnmarshalCoverageMetaIT {
         ignoreFile(new File(getDaemonEtcDirectory(), "log4j2.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "opennms-activemq.xml"));
         LOG.debug("FILES.size() = {}", FILES.size());
+
+        // list of config file moved to CmWillItUnmarshalIT
+        ignoreFile(new File(getDaemonEtcDirectory(), "examples/discovery-configuration.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "discovery-configuration.xml"));
     }
     
     /**
