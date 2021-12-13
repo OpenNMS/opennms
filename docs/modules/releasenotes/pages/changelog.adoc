@@ -2,6 +2,24 @@
 
 = Changelog
 
+[[releasenotes-changelog-29.0.3]]
+
+==== Release 29.0.3
+
+Release 29.0.3 is an out-of-band release with a fix for the Log4j2 security issue,
+plus an enhancement to support `exclude-url` in discovery's configuration.
+
+The codename for Horizon 29.0.3 is https://wikipedia.org/wiki/$$Penguin$$[_Penguin_].
+
+===== Bug
+
+* Log4j2 0-day: CVE-2021-44228 (Issue http://issues.opennms.org/browse/NMS-13850[NMS-13850])
+
+===== Enhancement
+
+* Update VMWare import documentation regarding multiple parameters (Issue http://issues.opennms.org/browse/NMS-9889[NMS-9889])
+* Add "exclude-url" to Discoverd's configuration (Issue http://issues.opennms.org/browse/NMS-13718[NMS-13718])
+
 [[releasenotes-changelog-29.0.2]]
 
 == Release 29.0.2
