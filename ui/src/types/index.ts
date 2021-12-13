@@ -79,7 +79,7 @@ export interface Node {
   labelSource: string
   lastCapabilitiesScan: string
   primaryInterface: number
-  sysObjectid: string
+  sysObjectId: string
   sysDescription: string
   sysName: string
   sysContact: string
@@ -95,7 +95,7 @@ export interface MapNode {
   labelSource: any
   lastCapabilitiesScan: string
   primaryInterface: number
-  sysObjectid: string
+  sysObjectId: string
   sysDescription: string
   sysName: string
   sysContact: any
@@ -110,7 +110,7 @@ export interface Alarm {
   nodeLabel: string
   uei: string
   count: number
-  lastEvent: any
+  lastEventTime: number,
   logMessage: string
 }
 
@@ -212,7 +212,7 @@ export interface QueryParameters {
 
 export interface FeatherSortObject {
   property: string
-  value: SORT
+  value: SORT | any
 }
 
 export interface SortProps extends FeatherSortObject {
@@ -268,8 +268,8 @@ export interface Edge {
 }
 
 export interface Coordinates {
-  latitude: number,
-  longitude: number
+  latitude: number | string,
+  longitude: number | string
 }
 
 export interface AlarmQueryParameters {
@@ -280,5 +280,32 @@ export interface AlarmQueryParameters {
 
 export interface AlarmModificationQueryVariable {
   pathVariable: string
-  queryParameters:  AlarmQueryParameters
+  queryParameters: AlarmQueryParameters
+}
+export interface WhoAmIResponse {
+  fullName: string
+  id: string
+  internal: boolean
+  roles: string[]
+}
+
+export interface FileEditorResponseLog {
+  success: boolean,
+  msg: string
+}
+
+export interface AppInfo {
+  datetimeformatConfig: {
+    zoneId: string,
+    datetimeformat: string
+  }
+  displayVersion: string
+  packageDescription: string
+  packageName: string
+  services: object
+  ticketerConfig: {
+    plugin: string | null,
+    enabled: boolean
+  }
+  version: string
 }

@@ -1468,8 +1468,8 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
-    <opennmsApiVersion>0.6.0</opennmsApiVersion>
-    <opennmsApiVersionOsgi>0.6.0</opennmsApiVersionOsgi>
+    <opennmsApiVersion>0.7.0-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersionOsgi>0.7.0</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
@@ -1535,6 +1535,8 @@
     <!-- nodejs development -->
     <frontendPluginVersion>1.12.0</frontendPluginVersion>
     <nodeVersion>v12.19.0</nodeVersion>
+    <!-- used for the new UI -->
+    <nodeNewUIVersion>v16.3.0</nodeNewUIVersion>
     <npmVersion>6.13.4</npmVersion>
     <yarnVersion>v1.22.10</yarnVersion>
 

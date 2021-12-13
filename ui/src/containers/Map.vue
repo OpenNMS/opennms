@@ -1,13 +1,18 @@
 <template>
-  <div class="feather-row map">
+  <div class="feather-row">
     <div class="feather-col-12">
-      <splitpanes class="default-theme" horizontal style="height: calc(100vh - 80px)">
-        <pane min-size="1" max-size="60">
-          <div class="leaflet-map">
-            <LeafletMap />
-          </div>
+      <splitpanes
+        :dbl-click-splitter="true"
+        @pane-maximize="minimizeBottomPane"
+        class="default-theme"
+        horizontal
+        style="height: calc(100vh - 80px)"
+        ref="split"
+      >
+        <pane min-size="1" max-size="100" :size="72">
+          <LeafletMap />
         </pane>
-        <pane id="map-pane-under">
+        <pane min-size="1" max-size="100" :size="28" class="bottom-pane">
           <GridTabs />
         </pane>
       </splitpanes>
@@ -17,11 +22,11 @@
 
 <!-- used to keep map alive once loaded -->
 <script lang="ts">
-  export default {name: 'MapKeepAlive'}
+export default { name: 'MapKeepAlive' }
 </script>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, onActivated, onDeactivated, ref } from 'vue'
 import { useStore } from "vuex"
 import { Splitpanes, Pane } from "splitpanes"
 import "splitpanes/dist/splitpanes.css"
@@ -29,41 +34,39 @@ import LeafletMap from "../components/Map/LeafletMap.vue"
 import GridTabs from '@/components/Map/GridTabs.vue'
 
 const store = useStore()
+const split = ref()
+
+const minimizeBottomPane = () => {
+  // override splitpane event
+  split.value.panes[0].size = 96
+  split.value.panes[1].size = 4
+}
 
 onMounted(() => {
-  store.dispatch("mapModule/getNodes", {
-    limit: 5000,
-    offset: 0,
-  })
-
-  store.dispatch("mapModule/getAlarms", {
-    limit: 5000,
-    offset: 0,
-  })
-
+  store.dispatch("mapModule/getNodes")
+  store.dispatch("mapModule/getAlarms")
   store.dispatch("mapModule/getNodesGraphEdges")
 })
+
+onActivated(() => store.dispatch('appModule/setNavRailOpen', false))
+onDeactivated(() => store.dispatch('appModule/setNavRailOpen', true))
 </script>
 
-<style lang="scss" scoped>
-.map {
-  padding: 10px;
+<style scoped lang="scss">
+.bottom-pane {
+  position: relative;
 }
 </style>
 
 <style lang="scss">
-.ag-row,
-.ag-header-row,
-.ag-paging-panel,
-.ag-center-cols-viewport,
-.ag-header-viewport {
-  background: var(--feather-background) !important;
-  color: var(--feather-primary-text-on-surface) !important;
-}
-.ag-icon {
-  color: var(--feather-primary-text-on-surface) !important;
-}
-.ag-input-field-input {
-  color: black !important;
+.default-theme {
+  .splitpanes__splitter {
+    height: 10px !important;
+    background: var(--feather-shade-3) !important;
+  }
+  .splitpanes__splitter::after,
+  .splitpanes__splitter::before {
+    background: var(--feather-primary-text-on-surface) !important;
+  }
 }
 </style>

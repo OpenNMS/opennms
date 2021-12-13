@@ -10,4 +10,12 @@ const rest = axios.create({
   withCredentials: true
 })
 
-export { v2, rest }
+const restFile = axios.create({
+  baseURL: import.meta.env.VITE_BASE_REST_URL?.toString() || '/opennms/rest',
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'multipart/form-data'
+  }
+})
+
+export { v2, rest, restFile }

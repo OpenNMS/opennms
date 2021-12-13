@@ -1,8 +1,10 @@
 import API from "@/services"
-import { QueryParameters, VuexContext, Coordinates, AlarmModificationQueryVariable, Node } from '@/types'
+import { QueryParameters, VuexContext, Coordinates, AlarmModificationQueryVariable, Node, FeatherSortObject } from '@/types'
+import { LatLngBounds } from 'leaflet'
 
 const getNodes = async (context: VuexContext, queryParameters?: QueryParameters) => {
-  const resp = await API.getNodes(queryParameters)
+  const defaultParams = queryParameters || { limit: 5000, offset: 0 }
+  const resp = await API.getNodes(defaultParams)
   if (resp) {
     const nodes = resp.node.filter(
       (node) =>
@@ -21,7 +23,8 @@ const getNodes = async (context: VuexContext, queryParameters?: QueryParameters)
 }
 
 const getAlarms = async (context: VuexContext, queryParameters?: QueryParameters) => {
-  const resp = await API.getAlarms(queryParameters)
+  const defaultParams = queryParameters || { limit: 5000, offset: 0 }
+  const resp = await API.getAlarms(defaultParams)
   if (resp) {
     context.commit("SAVE_ALARMS_TO_STATE", resp.alarm)
   }
@@ -53,9 +56,29 @@ const setMapCenter = (context: VuexContext, center: Coordinates) => {
   context.commit("SAVE_MAP_CENTER", center)
 }
 
+const setMapBounds = (context: VuexContext, bounds: LatLngBounds) => {
+  context.commit("SAVE_MAP_BOUNDS", bounds)
+}
+
 const modifyAlarm = async (context: VuexContext, alarmQueryVariable: AlarmModificationQueryVariable) => {
   const resp = await API.modifyAlarm(alarmQueryVariable.pathVariable, alarmQueryVariable.queryParameters)
   return resp
+}
+
+const setSelectedSeverity = (context: VuexContext, selectedSeverity: string) => {
+  context.commit("SAVE_SELECTED_SEVERITY", selectedSeverity)
+}
+
+const setSearchedNodeLabels = (context: VuexContext, nodeLabels: string[]) => {
+  context.commit("SAVE_SEARCHED_NODE_LABELS", nodeLabels)
+}
+
+const setNodeSortObject = (context: VuexContext, sortObj: FeatherSortObject) => {
+  context.commit("SAVE_NODE_SORT_OBJECT", sortObj)
+}
+
+const setAlarmSortObject = (context: VuexContext, sortObj: FeatherSortObject) => {
+  context.commit("SAVE_ALARM_SORT_OBJECT", sortObj)
 }
 
 export default {
@@ -65,5 +88,10 @@ export default {
   getNodesGraphEdges,
   setInterestedNodesId,
   setMapCenter,
-  modifyAlarm
+  modifyAlarm,
+  setMapBounds,
+  setSelectedSeverity,
+  setSearchedNodeLabels,
+  setNodeSortObject,
+  setAlarmSortObject
 }
