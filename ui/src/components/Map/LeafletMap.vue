@@ -68,6 +68,7 @@ import {
 } from "@vue-leaflet/vue-leaflet"
 import MarkerCluster from "./MarkerCluster.vue"
 import { useStore } from "vuex"
+import { useRoute } from 'vue-router'
 import { Node } from "@/types"
 import NormalIcon from '@/assets/Normal-icon.png'
 import WarninglIcon from '@/assets/Warning-icon.png'
@@ -81,6 +82,7 @@ import SeverityFilter from './SeverityFilter.vue'
 
 const store = useStore()
 const map = ref()
+const route = useRoute()
 const leafletReady = ref<boolean>(false)
 const leafletObject = ref({} as LeafletMap)
 const zoom = ref<number>(2)
@@ -91,7 +93,7 @@ const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => store
 const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
 const allNodes = computed<Node[]>(() => store.state.mapModule.nodesWithCoordinates)
 const bounds = computed(() => {
-  const coordinatedMap = getNodeCoordinateMap()
+  const coordinatedMap = getNodeCoordinateMap.value
   return nodes.value.map((node) => coordinatedMap.get(node.id))
 })
 const nodeLabelAlarmServerityMap = computed(() => store.getters["mapModule/getNodeAlarmSeverityMap"])
@@ -145,7 +147,7 @@ const setMarkerColor = (severity: string | undefined) => {
 
 const edges = computed(() => {
   const ids: string[] = nodes.value.map((node: Node) => node.id)
-  const interestedNodesCoordinateMap = getNodeCoordinateMap()
+  const interestedNodesCoordinateMap = getNodeCoordinateMap.value
   return store.state.mapModule.edges.filter((edge: [number, number]) => ids.includes(edge[0].toString()) && ids.includes(edge[1].toString()))
     .map((edge: [number, number]) => {
       let edgeCoordinatesPair = []
@@ -155,24 +157,33 @@ const edges = computed(() => {
     })
 })
 
-const getNodeCoordinateMap = () => {
+const getNodeCoordinateMap = computed(() => {
   const map = new Map()
   allNodes.value.forEach((node: Node) => {
     map.set(node.id, [node.assetRecord.latitude, node.assetRecord.longitude])
     map.set(node.label, [node.assetRecord.latitude, node.assetRecord.longitude])
   })
   return map
-}
+})
 
 const onLeafletReady = async () => {
   await nextTick()
   leafletObject.value = map.value.leafletObject
-  leafletObject.value.zoomControl.setPosition('topright')
-  leafletObject.value.fitBounds(bounds.value)
-  // save the bounds to state
-  store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
   if (leafletObject.value != undefined && leafletObject.value != null) {
+    // set default map view port
+    leafletObject.value.fitBounds(bounds.value)
+    leafletObject.value.zoomControl.setPosition('topright')
     leafletReady.value = true
+
+    await nextTick()
+
+    // save the bounds to state
+    store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
+
+    // if nodeid query param, fly to it
+    if (route.query.nodeid) {
+      flyToNode(route.query.nodeid as string)
+    }
   }
 }
 
@@ -181,9 +192,10 @@ const onMoveEnd = () => {
   store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
 }
 
-const flyToNode = (nodeLabel: string) => {
-  const coordinateMap = getNodeCoordinateMap()
-  const nodeCoordinates = coordinateMap.get(nodeLabel)
+const flyToNode = (nodeLabelOrId: string) => {
+  const coordinateMap = getNodeCoordinateMap.value
+  const nodeCoordinates = coordinateMap.get(nodeLabelOrId)
+
   if (nodeCoordinates) {
     leafletObject.value.flyTo(nodeCoordinates, 4)
   }
