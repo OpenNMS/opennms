@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <prometheus-datacollection-config>
-   <collection name="node_exporter">
+   <collection name="node-exporter">
      <rrd step="300">
        <rra>RRA:AVERAGE:0.5:1:2016</rra>
        <rra>RRA:AVERAGE:0.5:12:1488</rra>
@@ -10,10 +10,12 @@
      </rrd>
 
      <group-ref>node_exporter_cpu</group-ref> 
+     <group-ref>node_exporter_cpu_new</group-ref>
      <group-ref>node_exporter_disks</group-ref>
      <group-ref>node_exporter_filesystems</group-ref>
      <group-ref>node_exporter_loadavg</group-ref>
      <group-ref>node_exporter_memory</group-ref>
+     <group-ref>node_exporter_interface</group-ref>
    </collection>
 
    <!--
@@ -50,9 +52,18 @@
       node_cpu{cpu="cpu1",mode="guest"} 0
       node_cpu{cpu="cpu1",mode="idle"} 17790.51
    -->
-   <group name="node_exporter_cpus"
+   <group name="node_exporter_cpu"
      resource-type="nodeExporterCPU"
      filter-exp="name matches 'node_cpu'"
+     group-by-exp="labels[cpu]">
+
+     <numeric-attribute alias-exp="labels[mode]"/>
+   </group>
+
+   <!-- newer versions of the node exporter a different metric name, otherwise the same -->
+   <group name="node_exporter_cpu_new"
+     resource-type="nodeExporterCPU"
+     filter-exp="name matches 'node_cpu_seconds_total'"
      group-by-exp="labels[cpu]">
 
      <numeric-attribute alias-exp="labels[mode]"/>
@@ -87,5 +98,32 @@
 
      <numeric-attribute alias-exp="name.substring('node_filesystem_'.length())"/>
      <string-attribute alias="device" value-exp="labels[device]"/>
+     <string-attribute alias="mountpoint" value-exp="labels[mountpoint]"/>
    </group>
+
+
+   <!--
+     node_network_address_assign_type{device="eth0"} 0
+     node_network_address_assign_type{device="lo"} 0
+     # HELP node_network_carrier carrier value of /sys/class/net/<iface>.
+     # TYPE node_network_carrier gauge
+     node_network_carrier{device="eth0"} 1
+     node_network_carrier{device="lo"} 1
+     # HELP node_network_carrier_changes_total carrier_changes_total value of /sys/class/net/<iface>.
+     # TYPE node_network_carrier_changes_total counter
+     node_network_carrier_changes_total{device="eth0"} 2
+     node_network_carrier_changes_total{device="lo"} 0
+   -->
+
+   <group name="node_exporter_interface"
+     resource-type="nodeExporterIface"
+     filter-exp="name matches 'node_network_.*'"
+     group-by-exp="labels[device]">
+
+     <numeric-attribute filter-exp="name matches 'node_network_rec.*'" alias-exp="name.substring('node_network_'.length())" type="counter"/>
+     <numeric-attribute filter-exp="name matches 'node_network_trans.*'" alias-exp="name.substring('node_network_'.length())" type="counter"/>
+     <numeric-attribute filter-exp="name matches 'node_network_.*' and !(name matches 'node_network_trans.*') and !(name matches 'node_network_rec.*')" alias-exp="name.substring('node_network_'.length())" type="gauge"/>
+     <string-attribute alias="netiface" value-exp="labels[device]"/>
+   </group>
+
 </prometheus-datacollection-config>

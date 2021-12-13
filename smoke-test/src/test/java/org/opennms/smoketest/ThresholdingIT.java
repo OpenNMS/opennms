@@ -86,6 +86,7 @@ import com.google.common.collect.ImmutableList;
  *
  * @author jwhite
  */
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class ThresholdingIT {
     private static final Logger LOG = LoggerFactory.getLogger(ThresholdingIT.class);
 

@@ -36,6 +36,8 @@ public class TwinStrategy {
 
     public static final String TWIN_STRATEGY_PROPERTY = "org.opennms.core.ipc.twin.strategy";
 
+    public static final String LOG_PREFIX = "ipc";
+
     private static final String JMS_TWIN_STRATEGY_NAME = "jms";
 
     private static final String KAFKA_TWIN_STRATEGY_NAME = "kafka";

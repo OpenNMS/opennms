@@ -322,7 +322,7 @@ The PDF report displays each of the panels from the specified dashboard, with on
 
 Dashboard to PDF:
 
-image:database-reports/Dashboard-pdf.png[PDF report]
+image::database-reports/Dashboard-pdf.png[PDF report]
 
 === Before you begin
 
@@ -346,13 +346,13 @@ Configuring the Grafana endpoint sets up Grafana as the data source for the dash
 .. Leave the time to live blank so that the key never expires.
 . Copy the key so that you can paste it into the {page-component-title} UI.
 +
-image:database-reports/API-Key.png[Grafana API, 400]
+image::database-reports/API-Key.png[Grafana API, 400]
 
 .. If desired, use the cURL command provided in the API key dialog to test the key.
 . In OpenNMS, click *Please add a Grafana endpoint*:
 
 +
-image:database-reports/grafana-endpoint.png[Endpoint, 400]
+image::database-reports/grafana-endpoint.png[Endpoint, 400]
 
 . In the *Endpoint Configuration* screen click the plus sign on the right to add a new endpoint.
 . Fill in the information and click *Test Connection*.
