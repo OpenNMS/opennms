@@ -1,197 +1,194 @@
 <template>
-  <div class="mapnodes">
-    <div class="button-group">
-      <span class="buttons">
-        <feather-button primary @click="clearFilters()">Clear Filters</feather-button>
-        <feather-button primary @click="confirmFilters()">Filter Map</feather-button>
-        <feather-button primary @click="reset()">Reset</feather-button>
-      </span>
-    </div>
-    <div class="map-nodes-grid">
-      <ag-grid-vue
-        style="width: 100%; height: 100%"
-        class="ag-theme-alpine"
-        rowSelection="multiple"
-        :columnDefs="columnDefs"
-        @grid-ready="onGridReady"
-        :rowData="rowData"
-        :defaultColDef="defaultColDef"
-        :pagination="true"
-        @rowDoubleClicked="rowDoubleClicked"
-      ></ag-grid-vue>
-    </div>
+  <div id="wrap">
+    <table class="tl1 tl2 tl3" summary="Nodes">
+      <thead>
+        <tr>
+          <FeatherSortHeader
+            scope="col"
+            property="id"
+            :sort="sortStates.id"
+            @sort-changed="sortChanged"
+          >ID</FeatherSortHeader>
+
+          <FeatherSortHeader
+            scope="col"
+            property="foreignSource"
+            :sort="sortStates.foreignSource"
+            @sort-changed="sortChanged"
+          >FOREIGN SOURCE</FeatherSortHeader>
+
+          <FeatherSortHeader
+            scope="col"
+            property="foreignId"
+            :sort="sortStates.foreignId"
+            @sort-changed="sortChanged"
+          >FOREIGN ID</FeatherSortHeader>
+
+          <FeatherSortHeader
+            scope="col"
+            property="label"
+            :sort="sortStates.label"
+            @sort-changed="sortChanged"
+          >LABEL</FeatherSortHeader>
+
+          <FeatherSortHeader
+            scope="col"
+            property="labelSource"
+            :sort="sortStates.labelSource"
+            @sort-changed="sortChanged"
+          >LABEL SOURCE</FeatherSortHeader>
+
+          <FeatherSortHeader
+            scope="col"
+            property="lastCapabilitiesScan"
+            :sort="sortStates.lastCapabilitiesScan"
+            @sort-changed="sortChanged"
+          >LAST CAP SCAN</FeatherSortHeader>
+
+          <FeatherSortHeader
+            scope="col"
+            property="primaryInterface"
+            :sort="sortStates.primaryInterface"
+            @sort-changed="sortChanged"
+          >PRIMARY INTERFACE</FeatherSortHeader>
+
+          <FeatherSortHeader
+            scope="col"
+            property="sysObjectId"
+            :sort="sortStates.sysObjectId"
+            @sort-changed="sortChanged"
+          >SYSOBJECTID</FeatherSortHeader>
+
+          <FeatherSortHeader
+            scope="col"
+            property="sysName"
+            :sort="sortStates.sysName"
+            @sort-changed="sortChanged"
+          >SYSNAME</FeatherSortHeader>
+
+          <FeatherSortHeader
+            scope="col"
+            property="sysDescription"
+            :sort="sortStates.sysDescription"
+            @sort-changed="sortChanged"
+          >SYSDESCRIPTION</FeatherSortHeader>
+
+          <FeatherSortHeader
+            scope="col"
+            property="sysContact"
+            :sort="sortStates.sysContact"
+            @sort-changed="sortChanged"
+          >SYSCONTACT</FeatherSortHeader>
+
+          <FeatherSortHeader
+            scope="col"
+            property="sysLocation"
+            :sort="sortStates.sysLocation"
+            @sort-changed="sortChanged"
+          >SYSLOCATION</FeatherSortHeader>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="node in nodes" :key="node.id" @dblclick="doubleClickHandler(node)">
+          <td class="first-td" :class="nodeLabelAlarmServerityMap[node.label]">{{ node.id }}</td>
+          <td>{{ node.foreignSource }}</td>
+          <td>{{ node.foreignId }}</td>
+          <td>{{ node.label }}</td>
+          <td>{{ node.labelSource }}</td>
+          <td v-date>{{ node.lastCapabilitiesScan }}</td>
+          <td>{{ node.primaryInterface }}</td>
+          <td>{{ node.sysObjectId }}</td>
+          <td>{{ node.sysName }}</td>
+          <td>{{ node.sysDescription }}</td>
+          <td>{{ node.sysContact }}</td>
+          <td>{{ node.sysLocation }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onDeactivated } from "vue"
-import "ag-grid-community/dist/styles/ag-grid.css"
-import "ag-grid-community/dist/styles/ag-theme-alpine.css"
-import { AgGridVue } from "ag-grid-vue3"
+import { reactive, computed, onMounted } from 'vue'
 import { useStore } from "vuex"
-import { computed } from 'vue'
-import { Coordinates, Node } from "@/types"
-import { FeatherButton } from "@featherds/button"
-import { ColumnApi, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { Coordinates, Node, FeatherSortObject } from "@/types"
+import { FeatherSortHeader, SORT } from "@featherds/table"
 
 const store = useStore()
+const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
+const nodeLabelAlarmServerityMap = computed(() => store.getters["mapModule/getNodeAlarmSeverityMap"])
 
-const defaultColDef = {
-  floatingFilter: true,
-  resizable: true,
-  enableBrowserTooltips: true,
-  filter: "agTextColumnFilter",
-  sortable: true,
-  suppressMenu: true
-}
-
-const rowData = computed(() => {
-  return store.getters['mapModule/getInterestedNodes'].map((node: any) => ({
-    id: +node.id,
-    foreignSource: node.foreignSource,
-    foreignId: node.foreignId,
-    label: node.label,
-    labelSource: node.labelSource,
-    lastCapabilitiesScan: node.lastCapsdPoll,
-    primaryInterface: node.primaryInterface,
-    sysObjectid: node.sysObjectId,
-    sysName: node.sysName,
-    sysDescription: node.sysDescription,
-    sysContact: node.sysContact,
-    sysLocation: node.sysLocation
-  }))
-})
-
-let gridApi: GridApi
-let gridColumnApi: ColumnApi
-
-const autoSizeAll = (skipHeader: boolean) => {
-  const columns = gridColumnApi.getAllColumns() || []
-  const allColumnIds = columns.map((column) => column.getColId())
-  gridColumnApi.autoSizeColumns(allColumnIds, skipHeader)
-}
-
-const onGridReady = (params: GridReadyEvent) => {
-  gridApi = params.api
-  gridColumnApi = params.columnApi
-  autoSizeAll(false)
-}
-
-const clearFilters = () => gridApi.setFilterModel(null)
-
-const confirmFilters = () => {
-  const ids: string[] = []
-  gridApi.forEachNodeAfterFilter((node: any) => ids.push(node.data.id.toString()))
-  store.dispatch("mapModule/setInterestedNodesId", ids)
-}
-
-const reset = () => store.dispatch("mapModule/resetInterestedNodesID")
-
-const rowDoubleClicked = () => {
-  const id = gridApi.getSelectedNodes().map((node: any) => node.data)[0].id
-  const node = store.getters['mapModule/getInterestedNodes'].filter((n: Node) => n.id == id)
-
-  const coordinate: Coordinates = { latitude: node[0].assetRecord.latitude, longitude: node[0].assetRecord.longitude }
+const doubleClickHandler = (node: Node) => {
+  const coordinate: Coordinates = { latitude: node.assetRecord.latitude, longitude: node.assetRecord.longitude }
   store.dispatch("mapModule/setMapCenter", coordinate)
 }
 
-const columnDefs = [
-  {
-    headerName: "ID",
-    field: "id",
-    headerTooltip: "ID",
-    width: 100,
-    filter: "agNumberColumnFilter",
-    comparator: (valueA: number, valueB: number) => {
-      return valueA - valueB
-    },
-  },
-  {
-    headerName: "FOREIGN SOURCE",
-    field: "foreignSource",
-    headerTooltip: "Foreign Source",
-  },
-  {
-    headerName: "FOREIGN ID",
-    field: "foreignId",
-    headerTooltip: "Foreign ID",
-  },
-  {
-    headerName: "LABEL",
-    field: "label",
-    headerTooltip: "Label",
-    sort: "asc"
-  },
-  {
-    headerName: "LABEL SOURCE",
-    field: "labelSource",
-    headerTooltip: "Label Source",
-  },
-  {
-    headerName: "LATEST NODE SCAN",
-    field: "latestNodeScan",
-    headerTooltip: "Latest Nodes Scan",
-    filter: "agDateColumnFilter",
-    cellRenderer: (data: any) => {
-      return data.value ? new Date(data.value).toLocaleDateString() : ""
-    },
-  },
-  {
-    headerName: "PRIMARY INTERFACE",
-    field: "primaryInterface",
-    headerTooltip: "Primary Interface",
-  },
-  {
-    headerName: "SYSOBJECTID",
-    field: "sysObjectid",
-    headerTooltip: "Sys Object ID",
-  },
-  {
-    headerName: "SYSNAME",
-    field: "sysName",
-    headerTooltip: "Sys Name",
-  },
-  {
-    headerName: "SYSDESCRIPTION",
-    field: "sysDescription",
-    headerTooltip: "Sys Description",
-  },
-  {
-    headerName: "SYSCONTACT",
-    field: "sysContact",
-    headerTooltip: "Sys Contact",
-  },
-  {
-    headerName: "SYSLOCATION",
-    field: "sysLocation",
-    headerTooltip: "Sys Location",
-  },
-]
-onDeactivated(() => reset())
+const sortStates: any = reactive({
+  label: SORT.ASCENDING,
+  id: SORT.NONE,
+  foreignSource: SORT.NONE,
+  foreignId: SORT.NONE,
+  labelSource: SORT.NONE,
+  lastCapabilitiesScan: SORT.NONE,
+  primaryInterface: SORT.NONE,
+  sysObjectId: SORT.NONE,
+  sysName: SORT.NONE,
+  sysDescription: SORT.NONE,
+  sysContact: SORT.NONE,
+  sysLocation: SORT.NONE
+})
+
+const sortChanged = (sortObj: FeatherSortObject) => {
+  for (const key in sortStates) {
+    sortStates[key] = SORT.NONE
+  }
+  sortStates[`${sortObj.property}`] = sortObj.value
+  store.dispatch('mapModule/setNodeSortObject', sortObj)
+}
+
+onMounted(() => {
+  const wrap = document.getElementById("wrap")
+  const thead = document.querySelector("thead")
+
+  if (wrap && thead) {
+    wrap.addEventListener("scroll", function () {
+      let translate = "translate(0," + this.scrollTop + "px)"
+      thead.style.transform = translate
+    })
+  }
+})
 </script>
+
 <style lang="scss" scoped>
-.mapnodes {
-  background: var(--feather-background);
+@import "@featherds/table/scss/table";
+#wrap {
+  height: calc(100% - 29px);
+  overflow: auto;
+  background: var(--feather-surface);
+}
+table {
+  @include table();
+  @include table-condensed();
+  background: var(--feather-surface);
   color: var(--feather-primary-text-on-surface);
-  height: calc(100% - 54px);
+  padding-top: 4px;
+  margin-top: 15px;
 }
-.button-group {
-  width: 100%;
-  height: 40px;
+thead {
+  z-index: 2;
+  position: relative;
+  background: var(--feather-surface);
 }
-.map-nodes-grid {
-  width: 100%;
-  height: 100%;
+.first-td {
+  padding-left: 12px;
+  border-left: 4px solid var(--feather-success);
 }
-.buttons {
-  float: right;
-  margin-top: -5px;
+.WARNING,
+.MINOR,
+.MAJOR {
+  border-left: 4px solid var(--feather-warning);
 }
-.btn {
-  margin-top: 0px;
-  margin-bottom: 0px;
-  margin-right: 10px;
-}
-.btn-primary {
-  margin-left: 10px;
+
+.CRITICAL {
+  border-left: 4px solid var(--feather-error);
 }
 </style>

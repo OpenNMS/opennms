@@ -6,7 +6,7 @@
     </template>
 
     <template v-slot:right>
-      <Search />
+      <Search v-if="!route.fullPath.includes('/map')" />
       <FeatherButton @click="returnHandler" class="return-btn">Return to previous UI</FeatherButton>
       <FeatherIcon
         :icon="LightDarkMode"
@@ -26,8 +26,10 @@ import LightDarkMode from "@featherds/icon/action/LightDarkMode"
 import Logo from '@/assets/Logo.vue'
 import Search from './Search.vue'
 import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
 
 const store = useStore()
+const route = useRoute()
 const returnHandler = () => window.location.href = '/opennms/'
 const logo = Logo
 const theme = ref('')

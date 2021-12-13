@@ -1,4 +1,5 @@
-import { Node, Alarm, Coordinates } from '@/types'
+import { Node, Alarm, Coordinates, FeatherSortObject } from '@/types'
+import { SORT } from '@featherds/table'
 import { latLng, LatLngBounds } from 'leaflet'
 
 export interface State {
@@ -8,6 +9,10 @@ export interface State {
   edges: [number, number][]
   mapCenter: Coordinates
   mapBounds: LatLngBounds
+  selectedSeverity: string
+  searchedNodeLabels: string[]
+  nodeSortObject: FeatherSortObject
+  alarmSortObject: FeatherSortObject
 }
 
 const getDefaultBounds = (): LatLngBounds => {
@@ -22,7 +27,11 @@ const state: State = {
   interestedNodesID: [],
   edges: [],
   mapCenter: { latitude: 37.776603506225115, longitude: -33.43824554266541 },
-  mapBounds: getDefaultBounds()
+  mapBounds: getDefaultBounds(),
+  selectedSeverity: 'NORMAL',
+  searchedNodeLabels: [],
+  nodeSortObject: { property: 'label', value: SORT.ASCENDING },
+  alarmSortObject: { property: 'id', value: SORT.DESCENDING }
 }
 
 export default state

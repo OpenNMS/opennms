@@ -21,9 +21,11 @@ import { scanIPRanges, detectSNMPAvailable, provision } from './inventoryService
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
+import { getInfo } from './infoService'
 
 export default {
   search,
+  getInfo,
   getNodes,
   getAlarms,
   getEvents,

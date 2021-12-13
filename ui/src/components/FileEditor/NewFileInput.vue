@@ -53,7 +53,6 @@ const addNewFile = () => {
 
   // check if it is a duplicated file name
   if (fileNames.value.includes(fullPath)) {
-    console.log('ran')
     store.dispatch('fileEditorModule/addLog', { success: false, msg: `File not added: Duplicate file names are not allowed.` })
     store.dispatch('fileEditorModule/setIsConsoleOpen', true)
     item.isHidden = true

@@ -32,7 +32,11 @@ const store = useStore()
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const contentMargin = computed(() => navRailOpen.value ? '218px' : '0px')
 const ease = computed(() => navRailOpen.value ? '10ms' : '80ms')
-onMounted(() => store.dispatch('authModule/getWhoAmI'))
+const maxWidth = computed(() => navRailOpen.value ? '223px' : '0px')
+onMounted(() => {
+  store.dispatch('authModule/getWhoAmI')
+  store.dispatch('infoModule/getInfo')
+})
 </script>
   
 <style lang="scss">
@@ -45,6 +49,7 @@ html {
 .main-content {
   transform: translate(v-bind(contentMargin));
   transition: transform 0.28s ease-in-out v-bind(ease);
+  max-width: calc(100% - v-bind(maxWidth));
 }
 .logo {
   color: var(--feather-primary-text-on-color) !important;
