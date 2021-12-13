@@ -73,10 +73,12 @@ import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SecurityHelper;
 //import org.opennms.web.svclayer.TroubleTicketProxy;
 
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * Basic Web Service using REST for {@link OnmsAlarm} entity, but from Karaf container.
@@ -84,7 +86,8 @@ import org.springframework.stereotype.Component;
  * @author Mark Bordelon
  */
 @Path("/alarms")
-@Component
+//@Component(service = AlarmRestServiceImpl.class, scope = ServiceScope.SINGLETON)
+//@JaxrsResource
 public class AlarmRestServiceImpl implements AlarmRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlarmRestServiceImpl.class);
