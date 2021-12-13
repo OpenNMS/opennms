@@ -115,6 +115,8 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         opennmsHomeOrg = System.getProperty(SYSTEM_PROP_OPENNMS_HOME);
         System.setProperty(SYSTEM_PROP_OPENNMS_HOME, this.opennmsHome.toString());
         Path etcDir = Files.createDirectories(Paths.get(this.opennmsHome + "/etc"));
+        Files.copy(Path.of("../../../opennms-base-assembly/src/main/filtered/etc/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"),
+                Path.of(etcDir + "/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"));
         Files.copy(Path.of("../../../opennms-base-assembly/src/main/filtered/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"),
                 Path.of(etcDir + "/" + SCHEMA_NAME_EVENTD + "-configuration.xml"));
         Files.copy(Path.of("../../../opennms-config-model/src/main/resources/defaults/org.opennms.features.datachoices.cfg"),
@@ -177,7 +179,8 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             // check if xml file was moved into archive folder
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"))); // should be gone since we moved the file
             assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_EVENTD + "-configuration.xml")));
-            assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"))); // should not be copied since it is the default one
+            assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"))); // should be gone since we moved the file
+            assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml")));
 
             // check if schema changes work properly
             Optional<ConfigDefinition> configDefinition = this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROPERTIES);
