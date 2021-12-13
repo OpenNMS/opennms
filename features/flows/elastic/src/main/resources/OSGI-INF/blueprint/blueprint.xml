@@ -217,6 +217,7 @@
         <argument ref="thresholdingService"/>
         <argument ref="collectionAgentFactory"/>
         <argument ref="ipInterfaceDao"/>
+        <argument ref="distPollerDao"/>
 
         <property name="stepSizeMs" value="${flowThreshold.stepSizeMs}"/>
         <property name="idleTimeoutMs" value="${flowThreshold.idleTimeoutMs}"/>
