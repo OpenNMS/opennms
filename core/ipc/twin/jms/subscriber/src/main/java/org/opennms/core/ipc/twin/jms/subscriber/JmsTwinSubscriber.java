@@ -46,6 +46,7 @@ import org.opennms.core.ipc.twin.common.AbstractTwinSubscriber;
 import org.opennms.core.ipc.twin.common.TwinRequest;
 import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
@@ -71,8 +72,9 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
      */
     private final CamelContext sinkCamelContext = new DefaultCamelContext();
 
-    public JmsTwinSubscriber(MinionIdentity minionIdentity, Component queuingservice, String debugMaxChar) {
-        super(minionIdentity);
+    public JmsTwinSubscriber(MinionIdentity minionIdentity, Component queuingservice,
+                             TracerRegistry tracerRegistry, String debugMaxChar) {
+        super(minionIdentity, tracerRegistry);
         this.queuingservice = queuingservice;
         this.debugMaxChar = debugMaxChar;
     }

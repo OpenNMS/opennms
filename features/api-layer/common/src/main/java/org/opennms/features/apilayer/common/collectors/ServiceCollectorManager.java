@@ -28,23 +28,35 @@
 
 package org.opennms.features.apilayer.common.collectors;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.apilayer.common.utils.InterfaceMapper;
 import org.opennms.integration.api.v1.collectors.ServiceCollectorFactory;
 import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.osgi.framework.BundleContext;
 
 public class ServiceCollectorManager extends InterfaceMapper<ServiceCollectorFactory, ServiceCollector> {
+    private int rrdStep;
+    private int rrdHeartBeat;
+    private String rrdRraStr;
 
-    public ServiceCollectorManager(BundleContext bundleContext) {
+    public ServiceCollectorManager(BundleContext bundleContext, int rrdStep, int rrdHeartBeat, String rrdRrsStr) {
         super(ServiceCollector.class, bundleContext);
+        this.rrdStep = rrdStep;
+        this.rrdHeartBeat = rrdHeartBeat;
+        this.rrdRraStr = rrdRrsStr;
     }
 
     @Override
     public ServiceCollector map(ServiceCollectorFactory ext) {
-        return new ServiceCollectorImpl(ext);
+        RrdRepository rrdRepository = new RrdRepository();
+        rrdRepository.setStep(rrdStep);
+        rrdRepository.setHeartBeat(rrdHeartBeat);
+        rrdRepository.setRraList(Arrays.asList(rrdRraStr.split(",")));
+        return new ServiceCollectorImpl(ext, rrdRepository);
     }
 
     // override as registry needs collector class name in properties.

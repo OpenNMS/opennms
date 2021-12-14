@@ -1,7 +1,19 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+  <!-- Configuration properties for the API layer -->
+  <cm:property-placeholder id="org.opennms.features.apilayer"
+                           persistent-id="org.opennms.features.apilayer"
+                           update-strategy="reload">
+    <cm:default-properties>
+      <!-- RRD repository settings applicable to all Integration API based collectors -->
+      <cm:property name="rrdStep" value="300"/>
+      <cm:property name="rrdHeartbeat" value="600"/>
+      <cm:property name="rrdRraStr" value="RRA:AVERAGE:0.5:1:2016,RRA:AVERAGE:0.5:12:1488,RRA:AVERAGE:0.5:288:366,RRA:MAX:0.5:288:366,RRA:MIN:0.5:288:366"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
 
   <reference id="identity" interface="org.opennms.distributed.core.api.Identity" availability="mandatory"/>
 
@@ -46,6 +58,9 @@
   <!-- Service Collectors -->
   <bean id="serviceCollectorManager" class="org.opennms.features.apilayer.common.collectors.ServiceCollectorManager">
     <argument ref="blueprintBundleContext"/>
+    <argument value="${rrdStep}"/>
+    <argument value="${rrdHeartbeat}" />
+    <argument value="${rrdRraStr}" />
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.collectors.ServiceCollectorFactory" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="serviceCollectorManager" />

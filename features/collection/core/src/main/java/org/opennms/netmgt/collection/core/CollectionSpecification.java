@@ -45,6 +45,7 @@ import org.opennms.netmgt.collection.api.CollectionInstrumentation;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.CollectionUnknown;
+import org.opennms.netmgt.collection.api.CollectorRequestBuilder;
 import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -76,15 +77,16 @@ public class CollectionSpecification {
     private final CollectionInstrumentation m_instrumentation;
     private final LocationAwareCollectorClient m_locationAwareCollectorClient;
     private final ReadablePollOutagesDao m_pollOutagesDao;
+    private final String collectorImplClassName;
 
-    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao) {
+    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao, String collectorImplClassName) {
         m_package = Objects.requireNonNull(wpkg);
         m_svcName = Objects.requireNonNull(svcName);
         m_collector = Objects.requireNonNull(collector);
         m_instrumentation = Objects.requireNonNull(instrumentation);
         m_locationAwareCollectorClient = Objects.requireNonNull(locationAwareCollectorClient);
         m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
-
+        this.collectorImplClassName = collectorImplClassName;
         initializeParameters();
     }
 
@@ -273,14 +275,16 @@ public class CollectionSpecification {
     public CollectionSet collect(CollectionAgent agent) throws CollectionException {
         m_instrumentation.beginCollectorCollect(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
-            final CollectionSet set = m_locationAwareCollectorClient.collect()
-                .withAgent(agent)
-                .withAttributes(getPropertyMap())
-                .withCollector(getCollector())
-                // Use the service interval as the TTL
-                .withTimeToLive(getService().getInterval())
-                .execute()
-                .get();
+            CollectorRequestBuilder requestBuilder = m_locationAwareCollectorClient.collect();
+            requestBuilder.withAgent(agent)
+                    .withAttributes(getPropertyMap())
+                    .withTimeToLive(getService().getInterval());
+            if(!getCollector().getClass().getCanonicalName().equals(collectorImplClassName)) {
+                requestBuilder.withCollectorClassName(collectorImplClassName);
+            } else {
+                requestBuilder.withCollector(getCollector());
+            }
+            final CollectionSet set = requestBuilder.execute().get();
 
             // There are collector implementations that never throw an exception just return a collection failed
             if (CollectionStatus.FAILED.equals(set.getStatus())) {

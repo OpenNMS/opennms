@@ -28,6 +28,7 @@
 
 package org.opennms.core.ipc.twin.grpc;
 
+import io.opentracing.util.GlobalTracer;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -35,11 +36,13 @@ import org.opennms.core.grpc.common.GrpcIpcServerBuilder;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher;
 import org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber;
 import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
 import org.opennms.core.ipc.twin.test.MockMinionIdentity;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
@@ -60,7 +63,10 @@ public class GrpcTwinIT extends AbstractTwinBrokerIT {
     protected TwinPublisher createPublisher() throws IOException {
         final var grpcIpcServer = new GrpcIpcServerBuilder(this.configAdmin, this.port, "PT0S");
 
-        final var publisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(new MockMinionIdentity("Default")), grpcIpcServer);
+        TracerRegistry tracerRegistry = Mockito.mock(TracerRegistry.class);
+        Mockito.when(tracerRegistry.getTracer()).thenReturn(GlobalTracer.get());
+        LocalTwinSubscriber localTwinSubscriber = new LocalTwinSubscriberImpl(new MockMinionIdentity("Default"), tracerRegistry);
+        final var publisher = new GrpcTwinPublisher(localTwinSubscriber, grpcIpcServer);
         publisher.start();
 
         return publisher;
@@ -70,7 +76,9 @@ public class GrpcTwinIT extends AbstractTwinBrokerIT {
     protected TwinSubscriber createSubscriber(MinionIdentity identity) throws Exception {
         final var minionIdentity = new MockMinionIdentity("remote");
 
-        final var subscriber = new GrpcTwinSubscriber(minionIdentity, this.configAdmin, this.port);
+        TracerRegistry tracerRegistry = Mockito.mock(TracerRegistry.class);
+        Mockito.when(tracerRegistry.getTracer()).thenReturn(GlobalTracer.get());
+        final var subscriber = new GrpcTwinSubscriber(minionIdentity, this.configAdmin, tracerRegistry, this.port);
         subscriber.start();
 
         return subscriber;

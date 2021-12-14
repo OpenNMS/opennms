@@ -145,13 +145,13 @@ org.opennms.alarmd.newIfClearedAlarmExists = true
 
 Now, with this property set, when a repeat incident occurs and the current state of the Alarm tracking the problem is "Cleared", instead of restating the current Alarm to it's default severity and incrementing the counter, a new instance of the Alarm will be created.
 .New node down Alarm with existing cleared Alarm
-image:alarms/new_after_clear_3.png[]
+image::alarms/new_after_clear_3.png[]
 
 What happens is that Alarmd will alter the existing alarm's reductionKey to be unique.
 Thus preventing it from ever again being reused for a reoccurring problem in the Network (the literal ":ID:" and the alarm ID is appended to the reductionKey).
 
 .Altered reductionKey
-image:alarms/new_after_clear_4.png[]
+image::alarms/new_after_clear_4.png[]
 
 .Re-enable legacy dual Alarm state behavior
 NOTE: You can set a global property setting to re-enable the legacy (pre-H 23) dual alarm behavior.

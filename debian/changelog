@@ -1,3 +1,35 @@
+opennms (29.0.3-1) stable; urgency=high
+
+  * New minor release. It is an out-of-band release with a fix for the
+    Log4j2 security issue, plus an enhancement to support `exclude-url`
+    in discovery's configuration.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/29.0.3/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 13 Dec 2021 10:07:00 -0400
+ 
+opennms (29.0.2-1) stable; urgency=high
+
+  * New minor release. It contains a fix for a Jetty CVE, plus a number of bug
+    fixes and small enhancements, including changes to user auth, Twin API,
+    VMware, and running as non-root.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/29.0.2/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Dec 2021 12:41:00 -0400
+ 
+opennms (29.0.1-1) stable; urgency=high
+
+  * New minor release. It addresses some bugs found in 29.0.0 mostly related
+    to running as non-root, and Minion communication.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/29.0.1/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Fri, 19 Nov 2021 10:26:00 -0400
+ 
 opennms (29.0.0-1) stable; urgency=medium
 
   * New major release. It contains a number of updates including
