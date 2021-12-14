@@ -42,7 +42,6 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.DetectorRequestBuilder;
 import org.opennms.netmgt.provision.PreDetectCallback;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,11 +98,8 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
     @Override
     public DetectorRequestBuilder withServiceName(String serviceName) {
-        final ServiceDetector detector = client.getRegistry().getDetectorByServiceName(serviceName);
-        if (detector == null) {
-            throw new IllegalArgumentException("No detector found with service name '" + serviceName + "'.");
-        }
-        this.className = client.getRegistry().getDetectorClassNameFromServiceName(serviceName);
+        client.getRegistry().getDetectorClassNameFutureFromServiceName(serviceName)
+                        .whenComplete((name, ex) -> this.className = name );
         return this;
     }
 
@@ -161,55 +157,74 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         ));
 
         // Retrieve the factory associated with the requested detector
-        final ServiceDetectorFactory<?> factory = client.getRegistry().getDetectorFactoryByClassName(className);
-        if (factory == null) {
-            // Fail immediately if no suitable factory was found
-            throw new IllegalArgumentException("No factory found for detector with class name '" + className + "'.");
+        return client.getRegistry().getDetectorFactoryFutureByClassName(className)
+                .thenApplyAsync(factory -> {
+                    // Store all of the request details in the DTO
+                    final DetectorRequestDTO detectorRequestDTO = new DetectorRequestDTO();
+                    detectorRequestDTO.setLocation(location);
+                    detectorRequestDTO.setSystemId(systemId);
+                    detectorRequestDTO.setClassName(className);
+                    detectorRequestDTO.setAddress(address);
+                    // Update ttl from metadata
+                    String timeToLive = interpolatedAttributes.get(MetadataConstants.TTL);
+                    if (!Strings.isNullOrEmpty(timeToLive)) {
+                        Long ttlFromMetadata = ParameterMap.getLongValue(MetadataConstants.TTL, interpolatedAttributes.get(MetadataConstants.TTL), null);
+                        detectorRequestDTO.setTimeToLiveMs(ttlFromMetadata);
+                        //Remove ttl from attributes as it is not a detector attribute.
+                        interpolatedAttributes.remove(MetadataConstants.TTL);
+                    }
+                    detectorRequestDTO.addDetectorAttributes(interpolatedAttributes);
+                    detectorRequestDTO.addTracingInfo(RpcRequest.TAG_CLASS_NAME, className);
+                    detectorRequestDTO.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(address));
+                    detectorRequestDTO.setSpan(span);
+                    detectorRequestDTO.setPreDetectCallback(preDetectCallback);
+                    // Attempt to extract the port from the list of attributes
+                    Integer port = null;
+                    final String portString = interpolatedAttributes.get(PORT);
+                    if (portString != null) {
+                        try {
+                            port = Integer.parseInt(portString);
+                        } catch (NumberFormatException nfe) {
+                            LOG.warn("Failed to parse port as integer from: ", portString);
+                        }
+                    }
+
+                    // Build the DetectRequest and store the runtime attributes in the DTO
+                    final DetectRequest request = factory.buildRequest(location, address, port, interpolatedAttributes);
+                    detectorRequestDTO.addRuntimeAttributes(request.getRuntimeAttributes());
+                    return new FactoryResponseRequestDTO(factory, detectorRequestDTO, request);
+                }).thenComposeAsync(frDTO -> client.getDelegate().execute(frDTO.getDetectorRequestDTO()).thenApplyAsync(response -> {
+                    // Execute the request
+                    try {
+                        frDTO.getFactory().afterDetect(frDTO.getRequest(), response, nodeId);
+                    } catch (Throwable t) {
+                        LOG.error("Error while processing detect callback.", t);
+                    }
+                    return response.isDetected();
+                }));
+    }
+
+    private static class FactoryResponseRequestDTO {
+        private ServiceDetectorFactory<?> factory;
+        private DetectorRequestDTO detectorRequestDTO;
+        private DetectRequest request;
+
+        public FactoryResponseRequestDTO(ServiceDetectorFactory<?> factory, DetectorRequestDTO detectorRequestDTO, DetectRequest request) {
+            this.factory = factory;
+            this.detectorRequestDTO = detectorRequestDTO;
+            this.request = request;
         }
 
-        // Store all of the request details in the DTO
-        final DetectorRequestDTO detectorRequestDTO = new DetectorRequestDTO();
-        detectorRequestDTO.setLocation(location);
-        detectorRequestDTO.setSystemId(systemId);
-        detectorRequestDTO.setClassName(className);
-        detectorRequestDTO.setAddress(address);
-        // Update ttl from metadata
-        String timeToLive = interpolatedAttributes.get(MetadataConstants.TTL);
-        if (!Strings.isNullOrEmpty(timeToLive)) {
-            Long ttlFromMetadata = ParameterMap.getLongValue(MetadataConstants.TTL, interpolatedAttributes.get(MetadataConstants.TTL), null);
-            detectorRequestDTO.setTimeToLiveMs(ttlFromMetadata);
-            //Remove ttl from attributes as it is not a detector attribute.
-            interpolatedAttributes.remove(MetadataConstants.TTL);
-        }
-        detectorRequestDTO.addDetectorAttributes(interpolatedAttributes);
-        detectorRequestDTO.addTracingInfo(RpcRequest.TAG_CLASS_NAME, className);
-        detectorRequestDTO.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(address));
-        detectorRequestDTO.setSpan(span);
-        detectorRequestDTO.setPreDetectCallback(preDetectCallback);
-        // Attempt to extract the port from the list of attributes
-        Integer port = null;
-        final String portString = interpolatedAttributes.get(PORT);
-        if (portString != null) {
-            try {
-                port = Integer.parseInt(portString);
-            } catch (NumberFormatException nfe) {
-                LOG.warn("Failed to parse port as integer from: ", portString);
-            }
+        public ServiceDetectorFactory<?> getFactory() {
+            return factory;
         }
 
-        // Build the DetectRequest and store the runtime attributes in the DTO
-        final DetectRequest request = factory.buildRequest(location, address, port, interpolatedAttributes);
-        detectorRequestDTO.addRuntimeAttributes(request.getRuntimeAttributes());
-        // Execute the request
-        return client.getDelegate().execute(detectorRequestDTO)
-            .thenApply(response -> {
-                // Notify the factory that a request was successfully executed
-                try {
-                    factory.afterDetect(request, response, nodeId);
-                } catch (Throwable t) {
-                    LOG.error("Error while processing detect callback.", t);
-                }
-                return response.isDetected();
-            });
+        public DetectorRequestDTO getDetectorRequestDTO() {
+            return detectorRequestDTO;
+        }
+
+        public DetectRequest getRequest() {
+            return request;
+        }
     }
 }
