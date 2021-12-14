@@ -47,7 +47,6 @@ import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
-import org.opennms.core.ipc.common.kafka.KafkaTwinConstants;
 import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.twin.api.TwinStrategy;
@@ -67,6 +66,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
+import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX;
+import static org.opennms.core.ipc.common.kafka.KafkaTwinConstants.KAFKA_CONFIG_SYS_PROP_PREFIX;
+
 public class KafkaTwinPublisher extends AbstractTwinPublisher {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaTwinPublisher.class);
 
@@ -81,7 +83,7 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     private KafkaConsumerRunner consumerRunner;
 
     public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber, TracerRegistry tracerRegistry) {
-        this(localTwinSubscriber, new OnmsKafkaConfigProvider(KafkaTwinConstants.KAFKA_CONFIG_SYS_PROP_PREFIX), tracerRegistry);
+        this(localTwinSubscriber, new OnmsKafkaConfigProvider(KAFKA_CONFIG_SYS_PROP_PREFIX, KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX), tracerRegistry);
     }
 
     public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber,
