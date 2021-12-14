@@ -5,6 +5,6 @@
 
     <bean id="factory" class="org.opennms.netmgt.config.WmiPeerFactory" />
     <bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
-        <property name="configFile" value="etc/wmi-config.xml"/>
+        <property name="configFileMap" ref="configFileMap"/>
     </bean>
 </beans>
