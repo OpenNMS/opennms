@@ -44,7 +44,7 @@ public interface IsIsElementDao extends OnmsDao<IsIsElement, Integer> {
     public IsIsElement findByIsIsSysId(String isisSysId);
 
     /**
-     * Returns all IsIsElements that a have an isisSysID that matches an isisISAdjNeighSysID of an IsIsLink related to the given
+     * Returns all IsIsElements that have an isisSysID that matches an isisISAdjNeighSysID of an IsIsLink related to the given
      * node. Used to retrieve all IsIsElements that need to be accessed when finding IsIs links of a node.
      */
     List<IsIsElement> findBySysIdOfIsIsLinksOfNode(int nodeId);
