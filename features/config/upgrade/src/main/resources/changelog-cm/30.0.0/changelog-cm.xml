@@ -83,7 +83,12 @@
         <cm:importConfig schemaId="wmi" filePath="wmi-config.xml"/>
     </changeSet>
 
-    <!--TODO check which schemas can have multiple configurations-->
+    <changeSet author="dherdt" id="1.0-register-wsman">
+        <cm:registerSchema id="wsman"/>
+        <cm:importSchemaFromXsd id="wsman" xsdFileName="wsman-config.xsd" xsdFileHash="fe36eb86fac7d54f0078559d0b3c5d5edcb6ae04cbf378dc13f0d40b2ed96c01" rootElement="wsman-config"/>
+        <cm:importConfig schemaId="wsman" filePath="wsman-config.xml"/>
+    </changeSet>
+    
     <!-- to create schema with multiple configurations use allowMultiple="true" in  <cm:registerSchema ...>
     <changeSet author="..." id="...">
         <cm:registerSchema id="???" allowMultiple="true"/>
