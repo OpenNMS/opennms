@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container">  
     <div class="btnAction">
       <FeatherButton primary @click="clickAction(index)">
         <template v-slot:icon>
@@ -38,11 +38,18 @@
             </tr>
           </tbody>
         </table>
+        <FeatherPagination
+          v-model="page"
+          :pageSize="pageSize"
+          :total="total"
+          @update:pageSize="updatePageSize"
+        >
+        </FeatherPagination>
       </div>
       <div v-else>
         <ReqDefinitionForm></ReqDefinitionForm>
       </div>
-    </div>
+    </div>   
   </div>
 </template>
 
@@ -52,6 +59,7 @@ import { computed, onMounted, ref, watchEffect } from 'vue'
 import { FeatherButton }   from '@featherds/button'
 import { FeatherIcon }   from '@featherds/icon'
 import { FeatherSortHeader, SORT } from "@featherds/table";
+import { FeatherPagination } from "@featherds/pagination";
 import actionsAdd from "@featherds/icon/action/Add";
 import navigationArrowBack from "@featherds/icon/navigation/ArrowBack";
 import { markRaw } from "vue";
@@ -67,6 +75,9 @@ const index = ref(0)
 const icon = ref(markRaw(actionsAdd));
 const isData = ref(false)
 let customData: any = ref([])
+const page = ref(1)
+const pageSize = ref(2)
+const total = ref()
 
 const provisionDService = computed(() => { return store.state.configuration.provisionDService })
 
@@ -98,6 +109,13 @@ const nodeDataValue = computed(() => {
         })
         return rowData['cron-schedule'] = `Every ${ele} ${cronScheduleType[valuePos]}`
       })
+
+      total.value = copydata.length;
+      if(total.value > pageSize.value){        
+        var index = page.value * pageSize.value - pageSize.value      
+        return copydata.slice(index, index + pageSize.value);
+      }
+      
       //return updated data
       console.log('copydata');
       console.log(copydata);
@@ -114,7 +132,9 @@ onMounted(async () => {
     console.error("Error in API - Inside datatableDemo")
   }
 })
-
+const updatePageSize = (val: any) => {
+  pageSize.value = val;
+}
 const onClickHandle = (selectedName: any, data: any, index: any) => {
   //Added one dyanamic property to data for identitify the table position - helps in edit put call
   data['tablePosition'] = index
