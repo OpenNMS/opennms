@@ -26,22 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-<<<<<<<< HEAD:features/config/service/api/src/main/java/org/opennms/features/config/exception/ConfigConversionException.java
-package org.opennms.features.config.exception;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-/**
- * This exception is mainly about config conversion
- */
-public class ConfigConversionException extends RuntimeException {
-    private static final Logger LOG = LoggerFactory.getLogger(ConfigConversionException.class);
-
-    public ConfigConversionException(Exception e, Object object) {
-        super(e);
-        LOG.error("{} message: {}", this.getClass().getSimpleName(), (object != null) ? object.toString() : null);
-========
 package org.opennms.features.config.osgi.del;
 
 import java.util.Set;
@@ -61,6 +45,5 @@ public class MigratedServices {
 
     public static boolean isMigrated(final String pid) {
         return PIDS.contains(pid);
->>>>>>>> features/CM-Phase1:features/config/osgi/del/src/main/java/org/opennms/features/config/osgi/del/MigratedServices.java
     }
 }
