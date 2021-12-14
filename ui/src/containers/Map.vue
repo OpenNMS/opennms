@@ -33,6 +33,7 @@ import { Splitpanes, Pane } from "splitpanes"
 import "splitpanes/dist/splitpanes.css"
 import LeafletMap from "../components/Map/LeafletMap.vue"
 import GridTabs from '@/components/Map/GridTabs.vue'
+import { debounce } from 'lodash'
 
 const store = useStore()
 const split = ref()
@@ -43,11 +44,11 @@ const minimizeBottomPane = () => {
   // override splitpane event
   split.value.panes[0].size = 96
   split.value.panes[1].size = 4
-  setTimeout(() => resize(), 200)
+  setTimeout(() => leafletComponent.value.invalidateSizeFn(), 200)
 }
 
 // resize the map when splitter dragged
-const resize = () => leafletComponent.value.invalidateSizeFn()
+const resize = debounce(() => leafletComponent.value.invalidateSizeFn(), 100)
 
 onMounted(async () => {
   store.dispatch('spinnerModule/setSpinnerState', true)
