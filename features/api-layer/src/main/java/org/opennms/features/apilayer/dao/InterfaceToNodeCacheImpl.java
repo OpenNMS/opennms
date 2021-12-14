@@ -44,7 +44,7 @@ public class InterfaceToNodeCacheImpl implements InterfaceToNodeCache {
         this.cache = Objects.requireNonNull(cache);
     }
 
-    @Override
+//    @Override
     public Stream<Integer> getNodeIds(String location, InetAddress ipAddr) {
         return StreamSupport.stream(cache.getNodeId(location, ipAddr).spliterator(), false);
     }
