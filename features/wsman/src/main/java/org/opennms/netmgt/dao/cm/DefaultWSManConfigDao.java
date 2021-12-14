@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.jaxb;
+package org.opennms.netmgt.dao.cm;
 
 import java.net.InetAddress;
 import java.util.Objects;
