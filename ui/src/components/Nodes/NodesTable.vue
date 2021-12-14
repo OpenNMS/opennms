@@ -107,7 +107,6 @@ const nodes = computed(() => store.state.nodesModule.nodes)
   @include elevation(2);
   background: var(--feather-surface);
   padding: 15px;
-  margin: 20px;
 }
 table {
   width: 100%;

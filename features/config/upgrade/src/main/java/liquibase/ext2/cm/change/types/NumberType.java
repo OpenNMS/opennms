@@ -48,7 +48,7 @@ public class NumberType extends AbstractPropertyType {
         Double defaultValue = defaultValueOpt
                 .map(this::validateNumber)
                 .map(Double::valueOf)
-                .orElse(0.0);
+                .orElse(null);
         this.configItem.setDefaultValue(defaultValue);
         final Optional<String> min = getAttributeValue(Attribute.MIN)
                 .map(this::validateNumber);

@@ -1,0 +1,9 @@
+{{- /* Upon updating this file please ensure that the schema minion-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+<<<<<<<< HEAD:opennms-container/minion/container-fs/confd/templates/org.opennms.core.ipc.twin.kafka.cfg.tmpl
+{{range gets "/ipc/twin/kafka/*" -}}
+========
+{{range gets "/ipc/kafka/*" -}}
+>>>>>>>> features/CM-Phase1:opennms-container/minion/container-fs/confd/templates/org.opennms.core.ipc.kafka.cfg.tmpl
+{{base .Key}} = {{.Value}}
+{{end -}}

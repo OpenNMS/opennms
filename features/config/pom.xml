@@ -11,13 +11,14 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Config</name>
   <modules>
-    <module>service</module>
     <module>dao</module>
+    <module>mock</module>
+    <module>osgi</module>
     <module>rest</module>
-    <module>upgrade</module>
+    <module>service</module>
     <!-- to store service & dao's unit test to prevent circular dependency problem -->
     <module>test</module>
-    <module>mock</module>
+    <module>upgrade</module>
   </modules>
   <properties>
     <!-- Misc. -->

@@ -22,6 +22,8 @@
         <!-- same as persistent-id -->
         <argument value="org.opennms.core.ipc.sink.kafka"/>
         <argument ref="configAdmin" />
+        <!-- common pid for kafka config on IPC-->
+        <argument value="org.opennms.core.ipc.kafka"/>
     </bean>
 
     <!-- Provided by minion-core or Sentinel -->

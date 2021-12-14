@@ -97,7 +97,7 @@
             <attrib name="MaxFileDescriptorCount" alias="OsMaxFDCount" type="gauge"/>
             <attrib name="OpenFileDescriptorCount" alias="OsOpenFDCount" type="gauge"/>
          </mbean>
-	 <mbean name="Heap Memory" objectname="java.lang:type=Memory">
+         <mbean name="Heap Memory" objectname="java.lang:type=Memory">
             <comp-attrib name="HeapMemoryUsage" alias="HeapUsed" type="Composite">
                <comp-member name="init" alias="HeapUsageInit" type="gauge"/>
                <comp-member name="max" alias="HeapUsageMax" type="gauge"/>
@@ -333,7 +333,7 @@
             <attrib name="TempLimit" alias="TempLimit" type="gauge"/>
             <attrib name="TempPercentUsage" alias="TempPctUsage" type="gauge"/>
          </mbean>
-	 <mbean name="org.apache.activemq" resource-type="queueMetrics" objectname="org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=*">
+         <mbean name="org.apache.activemq" resource-type="queueMetrics" objectname="org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=*">
             <attrib name="DequeueCount" alias="DequeCnt" type="counter"/>
             <attrib name="EnqueueCount" alias="EnqueCnt" type="counter"/>
             <attrib name="BlockedSends" alias="BlkdSends" type="gauge"/>
@@ -493,6 +493,7 @@
          </mbean>
          <mbean name="drools.alarmd.actions.queued" objectname="org.opennms.features.drools.alarmd:name=atomicActionsQueued">
             <attrib name="OneMinuteRate" alias="DroolsAlarmdActQu1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="DroolsAlarmdActQu5m" type="gauge"/>
             <attrib name="Count" alias="DroolsAlarmdActQu" type="counter"/>
          </mbean>
          <mbean name="drools.alarmd.alarms" objectname="org.opennms.features.drools.alarmd:name=numAlarmsFromLastSnapshot">
@@ -508,6 +509,24 @@
             <attrib name="98thPercentile" alias="DroolsAlarmdLv98" type="gauge"/>
             <attrib name="99thPercentile" alias="DroolsAlarmdLv99" type="gauge"/>
             <attrib name="999thPercentile" alias="DroolsAlarmdLv999" type="gauge"/>
+         </mbean>
+
+         <!-- ALEC -->
+         <mbean name="ALEC Graph Stats" resource-type="ALECgraph" objectname="org.opennms.alec.driver.main.Driver.dbscan:name=*,type=gauges">
+            <attrib name="Value" alias="ALECgraphStat" type="gauge"/>
+         </mbean>
+         <mbean name="ALEC Tick Stats" objectname="org.opennms.alec.driver.main.Driver.dbscan:name=ticks,type=timers">
+            <attrib name="50thPercentile" alias="ALECtick50" type="gauge"/>
+            <attrib name="75thPercentile" alias="ALECtick75" type="gauge"/>
+            <attrib name="95thPercentile" alias="ALECtick95" type="gauge"/>
+            <attrib name="98thPercentile" alias="ALECtick98" type="gauge"/>
+            <attrib name="99thPercentile" alias="ALECtick99" type="gauge"/>
+            <attrib name="999thPercentile" alias="ALECtick999" type="gauge"/>
+            <attrib name="OneMinuteRate" alias="ALECtickRate1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="ALECtickRate5m" type="gauge"/>
+            <attrib name="Max" alias="ALECtickMax" type="gauge"/>
+            <attrib name="Min" alias="ALECtickMin" type="gauge"/>
+            <attrib name="Count" alias="ALECtickCounter" type="counter"/>
          </mbean>
 
       </mbeans>

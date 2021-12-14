@@ -35,6 +35,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.Serializable;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
@@ -57,13 +58,8 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
     }
 
     @Override
-    public ServiceMonitor getServiceMonitor(ServiceMonitorRegistry registry) {
-        final ServiceMonitor sm = registry.getMonitorByClassName(m_serviceClass.getCanonicalName());
-        if (sm == null) {
-            throw new ConfigObjectRetrievalFailureException("Could not find monitor for service "
-                    +m_serviceName+" with class-name "+m_serviceClass.getName(), null);
-        }
-        return sm;
+    public CompletableFuture<ServiceMonitor> getServiceMonitor(ServiceMonitorRegistry registry) {
+        return registry.getMonitorFutureByClassName(m_serviceClass.getCanonicalName());
     }
 
     /**

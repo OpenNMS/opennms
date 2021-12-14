@@ -44,7 +44,7 @@ public class BooleanType extends AbstractPropertyType {
         this.configItem.setType(ConfigItem.Type.BOOLEAN);
         Boolean defaultValue = defaultValueOpt
                 .map(Boolean::valueOf)
-                .orElse(Boolean.FALSE);
+                .orElse(null);
         this.configItem.setDefaultValue(defaultValue);
     }
 }

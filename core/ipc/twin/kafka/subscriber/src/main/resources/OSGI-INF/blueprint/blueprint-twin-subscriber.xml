@@ -18,15 +18,20 @@
     <bean id="kafkaConfigProvider" class="org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider" >
         <argument value="org.opennms.core.ipc.twin.kafka"/>
         <argument ref="configurationAdmin" />
+        <!-- common pid for kafka config on IPC-->
+        <argument value="org.opennms.core.ipc.kafka"/>
     </bean>
 
     <!-- Provided by minion-core -->
     <reference id="identity" interface="org.opennms.distributed.core.api.MinionIdentity"/>
 
+    <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
+
     <bean id="kafkaTwinSubscriber" class="org.opennms.core.ipc.twin.kafka.subscriber.KafkaTwinSubscriber"
           init-method="init" destroy-method="close">
         <argument ref="identity"/>
         <argument ref="kafkaConfigProvider" />
+        <argument ref="tracerRegistry"/>
     </bean>
 
     <service ref="kafkaTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
