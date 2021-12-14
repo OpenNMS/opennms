@@ -34,21 +34,34 @@ import java.util.Objects;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.wsman.WSManEndpoint;
-import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.wsman.credentials.Definition;
 import org.opennms.netmgt.config.wsman.credentials.Range;
 import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 
-public class WSManConfigDaoJaxb extends AbstractJaxbConfigDao<WsmanConfig, WsmanConfig> implements WSManConfigDao {
+public class DefaultWSManConfigDao extends AbstractCmJaxbConfigDao<WsmanConfig> implements WSManConfigDao {
 
-    public WSManConfigDaoJaxb() {
+    private static final String CONFIG_NAME = "wsman";
+    private static final String DEFAULT_CONFIG_ID = "default";
+
+    public DefaultWSManConfigDao() {
         super(WsmanConfig.class, "WS-Man Configuration");
     }
 
     @Override
+    protected String getConfigName() {
+        return CONFIG_NAME;
+    }
+
+    @Override
+    protected String getDefaultConfigId() {
+        return DEFAULT_CONFIG_ID;
+    }
+
+    @Override
     public WsmanConfig getConfig() {
-        return getContainer().getObject();
+        return this.getConfig(this.getDefaultConfigId());
     }
 
     @Override
@@ -88,8 +101,4 @@ public class WSManConfigDaoJaxb extends AbstractJaxbConfigDao<WsmanConfig, Wsman
         return WSManConfigDao.getEndpoint(getAgentConfig(agentInetAddress), agentInetAddress);
     }
 
-    @Override
-    protected WsmanConfig translateConfig(WsmanConfig config) {
-        return config;
-    }
 }

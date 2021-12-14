@@ -204,5 +204,10 @@
       <artifactId>org.opennms.features.collection.test-api</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config.service</groupId>
+      <artifactId>org.opennms.features.config.service.impl</artifactId>
+      <version>30.0.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>
