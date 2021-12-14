@@ -92,7 +92,7 @@ public class Definition implements Serializable {
      * a file URL holding specific addresses to be
      *  excluded
      */
-    @XmlElement(name = "exclude-url")
+    @JsonProperty("exclude-url")
     private List<ExcludeUrl> excludeUrls = new ArrayList<>();
 
 
