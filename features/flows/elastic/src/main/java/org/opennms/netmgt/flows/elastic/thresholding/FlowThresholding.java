@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.elastic.thresholding;
 
 import java.io.Closeable;
+import java.io.File;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
@@ -46,6 +47,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
+import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
@@ -54,12 +56,14 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.elastic.Direction;
 import org.opennms.netmgt.flows.elastic.FlowDocument;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
@@ -81,10 +85,13 @@ public class FlowThresholding implements Closeable {
 
     private final ThresholdingService thresholdingService;
     private final CollectionAgentFactory collectionAgentFactory;
+    private final PersisterFactory persisterFactory;
 
     private final IpInterfaceDao ipInterfaceDao;
 
     private final SnmpInterfaceDao snmpInterfaceDao;
+
+    private final FilterDao filterDao;
 
     public final long systemIdHash;
 
@@ -97,14 +104,18 @@ public class FlowThresholding implements Closeable {
 
     public FlowThresholding(final ThresholdingService thresholdingService,
                             final CollectionAgentFactory collectionAgentFactory,
+                            final PersisterFactory persisterFactory,
                             final IpInterfaceDao ipInterfaceDao,
                             final DistPollerDao distPollerDao,
-                            final SnmpInterfaceDao snmpInterfaceDao) {
+                            final SnmpInterfaceDao snmpInterfaceDao,
+                            final FilterDao filterDao) {
         this.thresholdingService = Objects.requireNonNull(thresholdingService);
         this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
+        this.persisterFactory = Objects.requireNonNull(persisterFactory);
         this.systemIdHash = (long) distPollerDao.whoami().getId().hashCode() << 32;
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
+        this.filterDao = Objects.requireNonNull(filterDao);
     }
 
     public long getStepSizeMs() {
@@ -169,7 +180,7 @@ public class FlowThresholding implements Closeable {
                                                                                                                   ifName,
                                                                                                                   application.getKey().application));
 
-                    final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(session.collectionAgent)
+                    final var collectionSet = new CollectionSetBuilder(session.collectionAgent)
                             .withTimestamp(timerTaskDate)
                             .withSequenceNumber(session.sequenceNumber.getAndIncrement())
                             .withCounter(appResource,
@@ -185,10 +196,25 @@ public class FlowThresholding implements Closeable {
                             .withStringAttribute(appResource,
                                                  RESOURCE_GROUP,
                                                  "ifName",
-                                                 ifName);
+                                                 ifName)
+                            .build();
 
                     if (session.thresholding) {
-                        session.thresholdingSession.accept(collectionSetBuilder.build());
+                        session.thresholdingSession.accept(collectionSet);
+                    }
+
+                    if (session.dataCollection) {
+                        final var repository = new RrdRepository();
+                        repository.setStep(session.packageDefinition.getRrd().getStep());
+                        repository.setHeartBeat(repository.getStep() * 2);
+                        repository.setRraList(session.packageDefinition.getRrd().getRras());
+                        repository.setRrdBaseDir(new File(session.packageDefinition.getRrd().getBaseDir()));
+
+                        collectionSet.visit(this.persisterFactory.createPersister(new ServiceParameters(Collections.emptyMap()),
+                                                                                  repository,
+                                                                                  false,
+                                                                                  false,
+                                                                                  true));
                     }
                 } catch (ThresholdInitializationException e) {
                     LOG.warn("Error initializing thresholding session", e);
@@ -244,11 +270,21 @@ public class FlowThresholding implements Closeable {
                         throw new RuntimeException("Error initializing thresholding session", e);
                     }
 
+                    // Find the collection package for this exporter
+                    PackageDefinition packageDefinition = null;
+                    for (final PackageDefinition pkg : options.packages) {
+                        if (pkg.getFilterRule() == null || FlowThresholding.this.filterDao.isValid(collectionAgent.getHostAddress(), pkg.getFilterRule())) {
+                            packageDefinition = pkg;
+                            break;
+                        }
+                    }
+
                     return new Session(thresholdingSession,
                                        collectionAgent,
                                        systemIdHash,
                                        options.applicationThresholding,
-                                       options.applicationDataCollection);
+                                       options.applicationDataCollection,
+                                       packageDefinition);
                 });
 
                 session.process(now, document);
@@ -266,6 +302,8 @@ public class FlowThresholding implements Closeable {
         public final boolean thresholding;
         public final boolean dataCollection;
 
+        public final PackageDefinition packageDefinition;
+
         public final ThresholdingSession thresholdingSession;
         public final CollectionAgent collectionAgent;
 
@@ -280,7 +318,8 @@ public class FlowThresholding implements Closeable {
                         final CollectionAgent collectionAgent,
                         final long systemIdHash,
                         final boolean thresholding,
-                        final boolean dataCollection) {
+                        final boolean dataCollection,
+                        final PackageDefinition packageDefinition) {
             this.sequenceNumber = new AtomicLong(systemIdHash | ThreadLocalRandom.current().nextInt());
 
             this.thresholdingSession = Objects.requireNonNull(thresholdingSession);
@@ -288,6 +327,8 @@ public class FlowThresholding implements Closeable {
 
             this.thresholding = thresholding;
             this.dataCollection = dataCollection;
+
+            this.packageDefinition =  packageDefinition;
         }
 
         public void process(final Instant now, final FlowDocument document) {

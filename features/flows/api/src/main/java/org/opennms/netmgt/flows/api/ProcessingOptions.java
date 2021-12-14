@@ -28,19 +28,30 @@
 
 package org.opennms.netmgt.flows.api;
 
+import java.util.List;
+
+import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
+
+import com.google.common.collect.Lists;
+
 public class ProcessingOptions {
 
     public final boolean applicationThresholding;
     public final boolean applicationDataCollection;
 
+    public final List<? extends PackageDefinition> packages;
+
     private ProcessingOptions(final Builder builder) {
         this.applicationThresholding = builder.applicationThresholding;
         this.applicationDataCollection = builder.applicationDataCollection;
+        this.packages = builder.packages;
     }
 
     public static class Builder {
         private boolean applicationThresholding;
         private boolean applicationDataCollection;
+
+        private List<? extends PackageDefinition> packages = Lists.newArrayList();
 
         private Builder() {}
 
@@ -54,10 +65,14 @@ public class ProcessingOptions {
             return this;
         }
 
+        public Builder setPackages(final List<? extends PackageDefinition> packages) {
+            this.packages = packages;
+            return this;
+        }
+
         public ProcessingOptions build() {
             return new ProcessingOptions(this);
         }
-
     }
 
     public static Builder builder() {

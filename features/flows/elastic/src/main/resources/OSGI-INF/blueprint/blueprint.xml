@@ -212,14 +212,19 @@
 
     <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
     <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"/>
+    <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
+    <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao"/>
 
     <!-- Thresholding -->
     <bean id="flowThresholding" class="org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding" destroy-method="close">
         <argument ref="thresholdingService"/>
         <argument ref="collectionAgentFactory"/>
+        <argument ref="persisterFactory"/>
         <argument ref="ipInterfaceDao"/>
         <argument ref="distPollerDao"/>
         <argument ref="snmpInterfaceDao"/>
+        <argument ref="filterDao"/>
 
         <property name="stepSizeMs" value="${flowThreshold.stepSizeMs}"/>
         <property name="idleTimeoutMs" value="${flowThreshold.idleTimeoutMs}"/>

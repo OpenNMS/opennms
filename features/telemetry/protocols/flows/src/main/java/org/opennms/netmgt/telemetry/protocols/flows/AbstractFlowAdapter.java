@@ -48,6 +48,7 @@ import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +88,8 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
     private boolean applicationThresholding;
     private boolean applicationDataCollection;
 
+    private final List<? extends PackageDefinition> packages;
+
     public AbstractFlowAdapter(final AdapterDefinition adapterConfig,
                                final MetricRegistry metricRegistry,
                                final FlowRepository flowRepository,
@@ -102,6 +105,8 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
         this.entriesReceived = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesReceived"));
         this.entriesParsed = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesParsed"));
         this.entriesConverted = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesConverted"));
+
+        this.packages = Objects.requireNonNull(adapterConfig.getPackages());
     }
 
     @Override
@@ -139,6 +144,7 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
             flowRepository.persist(flows, source, ProcessingOptions.builder()
                                                                    .setApplicationThresholding(this.applicationThresholding)
                                                                    .setApplicationDataCollection(this.applicationDataCollection)
+                                                                   .setPackages(this.packages)
                                                                    .build());
         } catch (DetailedFlowException ex) {
             LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);

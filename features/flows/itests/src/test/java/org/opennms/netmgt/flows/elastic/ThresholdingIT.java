@@ -53,6 +53,7 @@ import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.collectd.DefaultResourceTypeMapper;
+import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.core.DefaultCollectionAgentFactory;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDao;
@@ -63,6 +64,7 @@ import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
@@ -132,6 +134,12 @@ public class ThresholdingIT {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private PersisterFactory persisterFactory;
+
+    @Autowired
+    private FilterDao filterDao;
+
     private JestClient restClient;
     private FlowThresholding thresholding;
     private FlowRepository flowRepository;
@@ -189,9 +197,11 @@ public class ThresholdingIT {
 
         this.thresholding = new FlowThresholding(this.thresholdingService,
                                                  collectionAgentFactory,
+                                                 this.persisterFactory,
                                                  this.databasePopulator.getIpInterfaceDao(),
                                                  this.databasePopulator.getDistPollerDao(),
-                                                 this.databasePopulator.getSnmpInterfaceDao());
+                                                 this.databasePopulator.getSnmpInterfaceDao(),
+                                                 this.filterDao);
 
         this.thresholding.setStepSizeMs(1000);
 
