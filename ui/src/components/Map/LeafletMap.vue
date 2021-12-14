@@ -1,6 +1,6 @@
 <template>
   <div class="geo-map">
-    <MapSearch class="search-bar" @fly-to-node="flyToNode" />
+    <MapSearch class="search-bar" @fly-to-node="flyToNode" @set-bounding-box="setBoundingBox" />
     <SeverityFilter />
     <LMap
       ref="map"
@@ -10,6 +10,7 @@
       :zoomAnimation="true"
       @ready="onLeafletReady"
       @moveend="onMoveEnd"
+      @zoom="invalidateSizeFn"
     >
       <template v-if="leafletReady">
         <LControlLayers />
@@ -171,7 +172,6 @@ const onLeafletReady = async () => {
   leafletObject.value = map.value.leafletObject
   if (leafletObject.value != undefined && leafletObject.value != null) {
     // set default map view port
-    leafletObject.value.fitBounds(bounds.value)
     leafletObject.value.zoomControl.setPosition('topright')
     leafletReady.value = true
 
@@ -179,6 +179,12 @@ const onLeafletReady = async () => {
 
     // save the bounds to state
     store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
+
+    try {
+      leafletObject.value.fitBounds(bounds.value)
+    } catch (err) {
+      console.log(err, `Invalid bounds array: ${bounds.value}`)
+    }
 
     // if nodeid query param, fly to it
     if (route.query.nodeid) {
@@ -201,6 +207,16 @@ const flyToNode = (nodeLabelOrId: string) => {
   }
 }
 
+const setBoundingBox = (nodeLabels: string[]) => {
+  const coordinateMap = getNodeCoordinateMap.value
+  const bounds = nodeLabels.map((nodeLabel) => coordinateMap.get(nodeLabel))
+  if (bounds.length) {
+    leafletObject.value.fitBounds(bounds)
+  }
+}
+
+const invalidateSizeFn = () => leafletObject.value.invalidateSize()
+
 /*****Tile Layer*****/
 const tileProviders = [
   {
@@ -218,6 +234,8 @@ const tileProviders = [
       'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
   },
 ]
+
+defineExpose({ invalidateSizeFn })
 </script>
 
 <style scoped>
@@ -228,7 +246,7 @@ const tileProviders = [
   margin-top: -5px;
 }
 .geo-map {
-  height: calc(100vh - 60px);
+  height: 100%;
 }
 </style>
 
