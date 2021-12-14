@@ -230,13 +230,13 @@ public class Definition implements Serializable {
                 Objects.equals(specifics, that.specifics) &&
                 Objects.equals(includeRanges, that.includeRanges) &&
                 Objects.equals(excludeRanges, that.excludeRanges) &&
-                Objects.equals(detectors, that.detectors) &&
+                Objects.equals(detectorsMap, that.detectorsMap) &&
                 Objects.equals(includeUrls, that.includeUrls) &&
                 Objects.equals(excludeUrls, that.excludeUrls);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, specifics, includeRanges, excludeRanges, detectors, includeUrls, excludeUrls);
+        return Objects.hash(location, specifics, includeRanges, excludeRanges, detectorsMap, includeUrls, excludeUrls);
     }
 }
