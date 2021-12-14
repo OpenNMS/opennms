@@ -607,7 +607,7 @@
       </sql>
     </changeSet>-->
 
-  <changeSet author="cgorantla" id="27.1.0.bmp-ip-rib-log-create-hypertable">
+  <changeSet author="cgorantla" id="27.1.0.1-bmp-ip-rib-log-create-hypertable" runAlways="true">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -693,7 +693,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="cgorantla" id="27.1.0.bmp-stats_by-peer-create-hypertable">
+  <changeSet author="cgorantla" id="27.1.0.1-bmp-stats_by-peer-create-hypertable" runAlways="true">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -761,7 +761,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="cgorantla" id="27.1.0.bmp-stats_by-asn-create-hypertable">
+  <changeSet author="cgorantla" id="27.1.0.1-bmp-stats_by-asn-create-hypertable" runAlways="true">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -832,7 +832,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="cgorantla" id="27.1.0.bmp-stats_by-prefix-create-hypertable">
+  <changeSet author="cgorantla" id="27.1.0.1-bmp-stats_by-prefix-create-hypertable" runAlways="true">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -894,7 +894,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="cgorantla" id="27.1.0.bmp-stats-peer-rib-create-hypertable">
+  <changeSet author="cgorantla" id="27.1.0.1-bmp-stats-peer-rib-create-hypertable" runAlways="true">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -964,7 +964,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="cgorantla" id="27.1.0.bmp-stats-ip-origins-create-hypertable">
+  <changeSet author="cgorantla" id="27.1.0.1-bmp-stats-ip-origins-create-hypertable" runAlways="true">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
