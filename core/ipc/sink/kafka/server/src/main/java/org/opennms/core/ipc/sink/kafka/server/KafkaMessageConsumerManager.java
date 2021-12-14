@@ -29,6 +29,7 @@
 package org.opennms.core.ipc.sink.kafka.server;
 
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.DEFAULT_MESSAGEID_CONFIG;
+import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX;
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.MESSAGEID_CACHE_CONFIG;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
 
@@ -117,7 +118,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
 
 
     public KafkaMessageConsumerManager() {
-        this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
+        this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX, KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX));
     }
 
     public KafkaMessageConsumerManager(KafkaConfigProvider configProvider, Identity identity,

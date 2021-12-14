@@ -8,23 +8,19 @@ sudo vi etc/featuresBoot.d/disable-activemq.boot
 [source, disable-activemq.boot]
 ----
 !minion-jms
-!opennms-core-ipc-rpc-jms
-!opennms-core-ipc-sink-camel
-!opennms-core-ipc-twin-jms
+!opennms-core-ipc-jms
 ----
 
-.Create a file to install Kafka features on Minion start-up
+.Create a file to install Kafka features on Minion startup
 [source, console]
 ----
 sudo vi etc/featuresBoot.d/kafka.boot
 ----
 
-.Add the following lines to install the remote producer call (RPC), sink, and twin feature for Kafka on Minion start-up and save the file
+.Add the following lines to install the remote producer call (RPC), sink, and twin feature for Kafka on Minion startup and save the file
 [source, kafka.boot]
 ----
-opennms-core-ipc-rpc-kafka
-opennms-core-ipc-sink-kafka
-opennms-core-ipc-twin-kafka
+opennms-core-ipc-kafka
 ----
 
 .Configure the Kafka features and the Minion location via the Karaf shell
@@ -48,30 +44,10 @@ config:update<3>
 By default, the Minion generates a unique ID.
 Provide a human-readable Minion identifier yourself with `config:property-set id my-minion-name`.
 
-.Configure the Kafka endpoints for RPC feature
+.Configure the Kafka endpoints for IPC feature
 [source, karaf]
 ----
-config:edit org.opennms.core.ipc.rpc.kafka
-config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<1>
-config:update
-----
-
-<1> Connect to the specified Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
-
-.Configure the Kafka endpoints for sink feature
-[source, karaf]
-----
-config:edit org.opennms.core.ipc.sink.kafka
-config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<1>
-config:update
-----
-
-<1> Connect to the specified Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
-
-.Configure the Kafka endpoints for twin feature
-[source, karaf]
-----
-config:edit org.opennms.core.ipc.twin.kafka
+config:edit org.opennms.core.ipc.kafka
 config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<1>
 config:update
 ----
@@ -83,6 +59,9 @@ If that is successful, the whole broker topology will be discovered and will be 
 The other entries are used only if the connection to the first entry fails.
 
 IMPORTANT: Ensure you use the FQDN or IP for your Kafka nodes as configured as advertised listener.
+
+NOTE: You can still configure module-specific config for sink IPC at `org.opennms.core.ipc.sink.kafka.cfg`; similarly for RPC and twin.
+      Module-specific config takes precedence over common config specified on `org.opennms.core.ipc.kafka.cfg`.
 
 Exit the Karaf shell with kbd:[Ctrl+d]
 
@@ -112,6 +91,7 @@ Verifying the health of the container
 Verifying installed bundles              [ Success  ]
 Connecting to Kafka from RPC             [ Success  ]
 Connecting to Kafka from Sink Producer   [ Success  ]
+Connecting to Kafka from Twin            [ Success  ]
 
 => Everything is awesome
 ----

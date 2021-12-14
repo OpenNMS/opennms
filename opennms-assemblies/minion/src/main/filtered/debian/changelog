@@ -1,3 +1,14 @@
+opennms-minion (29.0.3-1) stable; urgency=high
+
+  * New minor release. It is an out-of-band release with a fix for the
+    Log4j2 security issue, plus an enhancement to support `exclude-url`
+    in discovery's configuration.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/29.0.3/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 13 Dec 2021 10:07:00 -0400
+ 
 opennms-minion (29.0.2-1) stable; urgency=high
 
   * New minor release. It contains a fix for a Jetty CVE, plus a number of bug
