@@ -28,6 +28,7 @@
 
 package org.opennms.features.apilayer.common.collectors;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.Map;
@@ -42,6 +43,7 @@ import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,10 +53,12 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
     private static final Logger LOG = LoggerFactory.getLogger(ServiceCollectorImpl.class);
 
     private final ServiceCollectorFactory<T> serviceCollectorFactory;
+    private final RrdRepository rrdRepo;
 
 
-    public ServiceCollectorImpl(ServiceCollectorFactory<T> serviceCollectorFactory) {
+    public ServiceCollectorImpl(ServiceCollectorFactory<T> serviceCollectorFactory, RrdRepository rrdRepo) {
         this.serviceCollectorFactory = serviceCollectorFactory;
+        this.rrdRepo = rrdRepo;
     }
 
     @Override
@@ -94,7 +98,10 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
 
     @Override
     public RrdRepository getRrdRepository(String collectionName) {
-        return null;
+        ResourcePath opennmsHome = ResourcePath.fromString(System.getProperty("opennms.home"));
+        String path = ResourcePath.get(opennmsHome, "share", "rrd", collectionName.toLowerCase()).toString();
+        rrdRepo.setRrdBaseDir(new File(path));
+        return rrdRepo;
     }
 
     @Override

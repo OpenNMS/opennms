@@ -32,9 +32,9 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 
 
 public class IpNetToMediaDaoHibernate extends AbstractDaoHibernate<IpNetToMedia, Integer> implements IpNetToMediaDao {
@@ -79,6 +79,8 @@ public class IpNetToMediaDaoHibernate extends AbstractDaoHibernate<IpNetToMedia,
 		return find("from IpNetToMedia rec where rec.netAddress = ? ", netAddress);
 	}
 
-
-
+	@Override
+	public List<IpNetToMedia> findByMacLinksOfNode(Integer nodeId) {
+		return find("from IpNetToMedia m where m.physAddress in (select l.macAddress from BridgeMacLink l where l.node.id = ?)",  nodeId);
+	}
 }

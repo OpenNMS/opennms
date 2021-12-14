@@ -21,10 +21,13 @@
 
     <reference id="minionIdentity" interface="org.opennms.distributed.core.api.MinionIdentity"/>
 
+    <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
+
     <bean id="grpcTwinSubscriber" class="org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber"
           init-method="start" destroy-method="close">
         <argument ref="minionIdentity"/>
         <argument ref="configAdmin"/>
+        <argument ref="tracerRegistry"/>
         <argument value="${port}"/>
     </bean>
 

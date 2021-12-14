@@ -44,6 +44,7 @@ import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.grpc.common.*;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -73,8 +74,8 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     private final ScheduledExecutorService twinRequestSenderExecutor = Executors.newScheduledThreadPool(TWIN_REQUEST_POOL_SIZE,
             twinRequestSenderThreadFactory);
 
-    public GrpcTwinSubscriber(MinionIdentity minionIdentity, ConfigurationAdmin configAdmin, int port) {
-        super(minionIdentity);
+    public GrpcTwinSubscriber(MinionIdentity minionIdentity, ConfigurationAdmin configAdmin, TracerRegistry tracerRegistry,  int port) {
+        super(minionIdentity, tracerRegistry);
         this.configAdmin = configAdmin;
         this.port = port;
     }

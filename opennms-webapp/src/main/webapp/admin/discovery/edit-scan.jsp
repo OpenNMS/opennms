@@ -78,6 +78,10 @@ function addIncludeUrl(){
 	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-url.jsp?mode=scan&nobreadcrumbs=true" )%>', 'AddIncludeUrl', 'toolbar=0,width=750 ,height=500, left=0, top=0, resizable=1, scrollbars=1')
 }
 
+function addExcludeUrl(){
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-ex-url.jsp?mode=scan&nobreadcrumbs=true" )%>', 'AddExcludeUrl', 'toolbar=0,width=750 ,height=500, left=0, top=0, resizable=1, scrollbars=1')
+}
+
 function addExcludeRange(){
 	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-er.jsp?mode=scan&nobreadcrumbs=true" )%>', 'AddExcludeRange', 'toolbar=0,width=600 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
 }
@@ -100,6 +104,13 @@ function deleteIR(i){
 function deleteIncludeUrl(i){
 	if(confirm("Are you sure you want to delete this include URL?")){
 	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeIncludeUrlAction%>&index="+i;
+	document.modifyDiscoveryConfig.submit();
+	}
+}
+
+function deleteExcludeUrl(i){
+	if(confirm("Are you sure you want to delete this include URL?")){
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeExcludeUrlAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
@@ -172,6 +183,10 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 <input type="hidden" id="iuretries" name="iuretries" value=""/>
 <input type="hidden" id="iuforeignsource" name="iuforeignsource" value=""/>
 <input type="hidden" id="iulocation" name="iulocation" value=""/>
+
+<input type="hidden" id="euurl" name="euurl" value=""/>
+<input type="hidden" id="euforeignsource" name="euforeignsource" value=""/>
+<input type="hidden" id="eulocation" name="eulocation" value=""/>
 
 <input type="hidden" id="irbase" name="irbase" value=""/>
 <input type="hidden" id="irend" name="irend" value=""/>
@@ -307,6 +322,43 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       <% } %>
       <div class="card-footer">
         <button type="button" class="btn btn-secondary pull-right" onclick="addIncludeUrl();">Add New</button>
+      </div>
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
+
+<div class="row">
+  <div class="col-sm-12 col-md-10 col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <span>Exclude URLs</span>
+      </div>
+			    <%if(currConfig.getExcludeUrls().size()>0){
+			        ExcludeUrl[] urls = currConfig.getExcludeUrls().toArray(new ExcludeUrl[0]);
+			    %>
+				    <table class="table table-sm">
+				      <tr>
+					<th>URL</th>
+					<th>Foreign&nbsp;Source</th>
+					<th>Location</th>
+					<th>Action</th>
+				      </tr>
+				      <%for(int i=0; i<urls.length; i++){%>
+					 <tr class="text-center">
+					  <td><%=urls[i].getUrl()%></td>
+					  <td><%=urls[i].getForeignSource().isPresent() ? urls[i].getForeignSource().get() : "<i>Use Default</i>" %></td>
+					  <td><%=urls[i].getLocation().isPresent() ? urls[i].getLocation().get() : "<i>Use Default</i>" %></td>
+					  <td width="1%"><button type="button" class="btn btn-sm btn-secondary" onclick="deleteExcludeUrl(<%=i%>);">Delete</button></td>
+					</tr>
+				      <%} // end for%>
+				     </table>
+      <% } else { // end if currConfig.getExcludeUrlCount()>0 %>
+      <div class="card-body">
+        <strong>No exclude URLs found.</strong>
+      </div>
+      <% } %>
+      <div class="card-footer">
+        <button type="button" class="btn btn-secondary pull-right" onclick="addExcludeUrl();">Add New</button>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
