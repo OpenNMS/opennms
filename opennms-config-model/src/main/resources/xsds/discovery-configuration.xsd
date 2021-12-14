@@ -298,7 +298,7 @@
     
   </element>
 
-  <element name="exclude-url">
+  <element name="exclude-url" ejaxb:body-name="url">
     <annotation>
       <documentation>A file URL holding specific addresses to be excluded from being polled. Each
         line in the URL file can be one of:
