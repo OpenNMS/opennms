@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.detector.registry.api;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetectorFactory;
@@ -46,20 +47,12 @@ public interface ServiceDetectorRegistry {
 
     Set<String> getClassNames();
 
-    ServiceDetector getDetectorByClassName(String className);
+    CompletableFuture<ServiceDetector> getDetectorFutureByClassName(String className, Map<String, String> properties);
 
-    ServiceDetector getDetectorByClassName(String className, Map<String, String> properties);
-
-    ServiceDetectorFactory<?> getDetectorFactoryByClassName(String className);
+    CompletableFuture<ServiceDetectorFactory<?>> getDetectorFactoryFutureByClassName(String className);
 
     Set<String> getServiceNames();
 
-    ServiceDetector getDetectorByServiceName(String serviceName);
-
-    ServiceDetector getDetectorByServiceName(String serviceName, Map<String, String> properties);
-
-    ServiceDetectorFactory<?> getDetectorFactoryByServiceName(String serviceName);
-
-    String getDetectorClassNameFromServiceName(String serviceName);
+    CompletableFuture<String> getDetectorClassNameFutureFromServiceName(String serviceName);
 
 }

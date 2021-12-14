@@ -71,11 +71,8 @@ public class DetectorClientRpcModule extends AbstractXmlRpcModule<DetectorReques
     public CompletableFuture<DetectorResponseDTO> execute(DetectorRequestDTO request) {
         String className = request.getClassName();
         Map<String, String> attributes = request.getAttributeMap();
-        ServiceDetector detector = serviceDetectorRegistry.getDetectorByClassName(className, attributes);
-        if (detector == null) {
-            throw new IllegalArgumentException("No detector found with class name '" + className + "'.");
-        }
-        return detectService(detector, request);
+        return serviceDetectorRegistry.getDetectorFutureByClassName(className, attributes)
+                .thenComposeAsync((detector) -> detectService(detector, request));
     }
 
     private CompletableFuture<DetectorResponseDTO> detectService(ServiceDetector detector, DetectRequest detectRequest) {
@@ -130,10 +127,6 @@ public class DetectorClientRpcModule extends AbstractXmlRpcModule<DetectorReques
     @Override
     public String getId() {
         return RPC_MODULE_ID;
-    }
-
-    public void setServiceDetectorRegistry(ServiceDetectorRegistry serviceDetectorRegistry) {
-        this.serviceDetectorRegistry = serviceDetectorRegistry;
     }
 
     public void setExecutor(Executor executor) {
