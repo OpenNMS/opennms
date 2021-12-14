@@ -541,7 +541,7 @@
 
   <bean id="wsManDataCollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.WSManDataCollectionConfigDaoJaxb" />
 
-  <bean id="wsManConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultWSManConfigDao" />
+  <bean id="wsManConfigDao" class="org.opennms.netmgt.dao.cm.DefaultWSManConfigDao" />
 
   <bean id="snmpMetadataConfigDao" class="org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/snmp-metadata-adapter-configuration.xml" />
