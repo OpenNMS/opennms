@@ -29,10 +29,7 @@
 package org.opennms.features.config.convert;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
-import org.opennms.netmgt.config.discovery.ExcludeRange;
-import org.opennms.netmgt.config.discovery.IncludeRange;
-import org.opennms.netmgt.config.discovery.IncludeUrl;
+import org.opennms.netmgt.config.discovery.*;
 
 import java.text.ParseException;
 import java.util.Arrays;
