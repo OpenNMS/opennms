@@ -269,7 +269,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, false, null);
         addFile(Source.CONFIG, "vmware-cim-datacollection-config.xml", VmwareCimDatacollectionConfig.class, true, null);
         addFile(Source.CONFIG, "vmware-datacollection-config.xml", VmwareDatacollectionConfig.class, false, null);
-        addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, true, null);
         addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, false, null);
         addFile(Source.CONFIG, "wsman-asset-adapter-configuration.xml", WsManAssetAdapterConfiguration.class, true, null);
         addFile(Source.CONFIG, "wsman-config.xml", WsmanConfig.class, true, null);

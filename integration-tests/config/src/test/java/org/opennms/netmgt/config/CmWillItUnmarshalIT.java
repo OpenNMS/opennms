@@ -47,6 +47,7 @@ import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
+import org.opennms.netmgt.config.wmi.agent.WmiConfig;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.core.io.ClassPathResource;
@@ -116,6 +117,7 @@ public class CmWillItUnmarshalIT {
         addFile(Source.CLASSPATH, "/defaults/trapd-configuration.xml", TrapdConfiguration.class, "trapd-configuration.xsd", "trapd-configuration",true, null);
         // since notifd have default values, the checkFormat will never right.
         addFile(Source.CLASSPATH, "/defaults/notifd-configuration.xml", NotifdConfiguration.class,  "notifd-configuration.xsd", "notifd-configuration", false, null);
+        addFile(Source.CLASSPATH, "/defaults/wmi-config.xml", WmiConfig.class,"wmi-config.xsd","wmi-config",true, null);
     }
 
     /**

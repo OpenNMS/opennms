@@ -33,12 +33,12 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.features.config.convert.CmConfigTest;
 
-public class WmiConfigTest extends XmlTestNoCastor<WmiConfig> {
+public class WmiConfigTest extends CmConfigTest<WmiConfig> {
 
-    public WmiConfigTest(WmiConfig sampleObject, Object sampleXml) {
-        super(sampleObject, sampleXml, "src/main/resources/xsds/wmi-config.xsd");
+    public WmiConfigTest(WmiConfig sampleObject, String sampleXml) {
+        super(sampleObject, sampleXml, "wmi-config.xsd","wmi-config");
     }
 
     @Parameters

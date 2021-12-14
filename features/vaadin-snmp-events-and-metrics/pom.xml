@@ -87,6 +87,12 @@
             <groupId>org.opennms</groupId>
             <artifactId>opennms-config</artifactId>
             <scope>provided</scope>
+            <exclusions>
+            <exclusion>
+                <groupId>org.opennms.features.config.service</groupId>
+                <artifactId>org.opennms.features.config.service.impl</artifactId>
+            </exclusion>
+        </exclusions>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>

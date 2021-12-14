@@ -133,6 +133,13 @@
       <artifactId>jackson-annotations</artifactId>
       <version>${jackson2Version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>org.opennms.features.config.test</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>

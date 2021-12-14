@@ -44,51 +44,51 @@ import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Provides a mechanism for associating one or more
  *  specific IP addresses and/or IP address ranges with a
  *  set of WMI parms which will be used in place of the
  *  default values during WMI data collection.
  */
-@XmlRootElement(name = "definition")
-@XmlAccessorType(XmlAccessType.NONE)
-@ValidateUsing("wmi-config.xsd")
+
 public class Definition implements Serializable {
     private static final long serialVersionUID = 2L;
 
-    @XmlAttribute(name = "retry")
+    @JsonProperty("retry")
     private Integer m_retry;
 
-    @XmlAttribute(name = "timeout")
+    @JsonProperty("timeout")
     private Integer m_timeout;
 
-    @XmlAttribute(name = "username")
+    @JsonProperty("username")
     private String m_username;
 
-    @XmlAttribute(name = "domain")
+    @JsonProperty("domain")
     private String m_domain;
 
-    @XmlAttribute(name = "password")
+    @JsonProperty("password")
     private String m_password;
 
     /**
      * IP address range to which this definition
      *  applies.
      */
-    @XmlElement(name = "range")
+    @JsonProperty("range")
     private List<Range> m_ranges = new ArrayList<>();
 
     /**
      * Specific IP address to which this definition
      *  applies.
      */
-    @XmlElement(name = "specific")
+    @JsonProperty("specific")
     private List<String> m_specifics = new ArrayList<>();
 
     /**
      * Match Octets (as in IPLIKE)
      */
-    @XmlElement(name = "ip-match")
+    @JsonProperty("ip-match")
     private List<String> m_ipMatches = new ArrayList<>();
 
     public Integer getRetry() {
