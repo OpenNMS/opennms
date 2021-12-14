@@ -47,6 +47,7 @@ import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.ProcessingOptions;
+import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +90,7 @@ public class BulkingIT {
     private FlowRepository createFlowRepository(final JestClient jestClient, final DocumentEnricher documentEnricher, int bulkSize, int bulkFlushMs) {
         final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(), jestClient,
                 IndexStrategy.MONTHLY, documentEnricher, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), null);
+                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class));
         elasticFlowRepository.setBulkSize(bulkSize);
         elasticFlowRepository.setBulkFlushMs(bulkFlushMs);
         return new InitializingFlowRepository(elasticFlowRepository, jestClient);
