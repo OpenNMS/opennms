@@ -20,7 +20,11 @@ const getNodes = (state: State): Node[] => {
     const lng = Number(node.assetRecord.longitude)
     const nodeLatLng = latLng(lat, lng)
 
-    return state.mapBounds.contains(nodeLatLng)
+    if (state.mapBounds) {
+      return state.mapBounds.contains(nodeLatLng)
+    }
+
+    return false
   })
 
   // filter for nodes that meet selected severity

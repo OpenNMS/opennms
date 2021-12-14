@@ -8,17 +8,11 @@ export interface State {
   interestedNodesID: string[]
   edges: [number, number][]
   mapCenter: Coordinates
-  mapBounds: LatLngBounds
+  mapBounds: LatLngBounds | undefined
   selectedSeverity: string
   searchedNodeLabels: string[]
   nodeSortObject: FeatherSortObject
   alarmSortObject: FeatherSortObject
-}
-
-const getDefaultBounds = (): LatLngBounds => {
-  const southWest = latLng(-68, -202)
-  const northEast = latLng(84, 135)
-  return new LatLngBounds(southWest, northEast)
 }
 
 const state: State = {
@@ -27,7 +21,7 @@ const state: State = {
   interestedNodesID: [],
   edges: [],
   mapCenter: { latitude: 37.776603506225115, longitude: -33.43824554266541 },
-  mapBounds: getDefaultBounds(),
+  mapBounds: undefined,
   selectedSeverity: 'NORMAL',
   searchedNodeLabels: [],
   nodeSortObject: { property: 'label', value: SORT.ASCENDING },

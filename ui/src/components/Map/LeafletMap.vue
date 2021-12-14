@@ -171,7 +171,6 @@ const onLeafletReady = async () => {
   leafletObject.value = map.value.leafletObject
   if (leafletObject.value != undefined && leafletObject.value != null) {
     // set default map view port
-    leafletObject.value.fitBounds(bounds.value)
     leafletObject.value.zoomControl.setPosition('topright')
     leafletReady.value = true
 
@@ -179,6 +178,13 @@ const onLeafletReady = async () => {
 
     // save the bounds to state
     store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
+
+    try {
+      leafletObject.value.fitBounds(bounds.value)
+    } catch(err) {
+      console.log(err)
+      console.log("Invalid bounds array: ", bounds.value)
+    }
 
     // if nodeid query param, fly to it
     if (route.query.nodeid) {
