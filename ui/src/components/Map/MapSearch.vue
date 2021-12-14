@@ -20,7 +20,7 @@ import { debounce } from 'lodash'
 import { useStore } from 'vuex'
 import { FeatherAutocomplete } from "@featherds/autocomplete"
 
-const emit = defineEmits(['fly-to-node'])
+const emit = defineEmits(['fly-to-node', 'set-bounding-box'])
 
 const store = useStore()
 const searchStr = ref()
@@ -32,9 +32,13 @@ const selectItem = (items: { label: string }[]) => {
   const nodeLabels = items.map((item) => item.label)
   store.dispatch('mapModule/setSearchedNodeLabels', nodeLabels)
   if (nodeLabels.length) {
-    // fly to last selected node
-    const lastSelectedNode = nodeLabels.slice(-1)[0]
-    emit('fly-to-node', lastSelectedNode)
+    if (nodeLabels.length === 1) {
+      // fly to last selected node
+      emit('fly-to-node', nodeLabels[0])
+    } else {
+      // set bounding box for all searched nodes
+      emit('set-bounding-box', nodeLabels)
+    }
   }
 }
 

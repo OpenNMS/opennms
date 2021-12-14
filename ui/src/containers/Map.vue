@@ -8,9 +8,10 @@
         horizontal
         style="height: calc(100vh - 80px)"
         ref="split"
+        @resize="resize"
       >
         <pane min-size="1" max-size="100" :size="72">
-          <LeafletMap />
+          <LeafletMap v-if="nodesReady" ref="leafletComponent" />
         </pane>
         <pane min-size="1" max-size="100" :size="28" class="bottom-pane">
           <GridTabs />
@@ -35,17 +36,27 @@ import GridTabs from '@/components/Map/GridTabs.vue'
 
 const store = useStore()
 const split = ref()
+const nodesReady = ref(false)
+const leafletComponent = ref()
 
 const minimizeBottomPane = () => {
   // override splitpane event
   split.value.panes[0].size = 96
   split.value.panes[1].size = 4
+  setTimeout(() => resize(), 200)
 }
 
-onMounted(() => {
-  store.dispatch("mapModule/getNodes")
-  store.dispatch("mapModule/getAlarms")
-  store.dispatch("mapModule/getNodesGraphEdges")
+// resize the map when splitter dragged
+const resize = () => leafletComponent.value.invalidateSizeFn()
+
+onMounted(async () => {
+  store.dispatch('spinnerModule/setSpinnerState', true)
+  await store.dispatch('mapModule/getNodes')
+  await store.dispatch('mapModule/getAlarms')
+  store.dispatch('spinnerModule/setSpinnerState', false)
+  nodesReady.value = true
+  // commented out until we do topology
+  // store.dispatch('mapModule/getNodesGraphEdges')
 })
 
 onActivated(() => store.dispatch('appModule/setNavRailOpen', false))
