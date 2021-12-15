@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container">  
     <div class="btnAction">
       <FeatherButton primary @click="clickAction(index)">
         <template v-slot:icon>
@@ -40,11 +40,18 @@
             </tr>
           </tbody>
         </table>
+        <FeatherPagination
+          v-model="page"
+          :pageSize="pageSize"
+          :total="total"
+          @update:pageSize="updatePageSize"
+        >
+        </FeatherPagination>
       </div>
       <div v-else>
         <ReqDefinitionForm></ReqDefinitionForm>
       </div>
-    </div>
+    </div>   
   </div>
 </template>
 
@@ -54,6 +61,7 @@ import { computed, onMounted, ref} from 'vue'
 import { FeatherButton }   from '@featherds/button'
 import { FeatherIcon }   from '@featherds/icon'
 import { FeatherSortHeader, SORT } from "@featherds/table";
+import { FeatherPagination } from "@featherds/pagination";
 import actionsAdd from "@featherds/icon/action/Add";
 import navigationArrowBack from "@featherds/icon/navigation/ArrowBack";
 import { markRaw } from "vue";
@@ -77,6 +85,10 @@ const sortableColms = ref(  [
   {'value':'none','property':'rescan-existing'}
   ]);
 let customData: any = ref([])
+const page = ref(1)
+const pageSize = ref(2)
+const total = ref()
+
 const provisionDService = computed(() => { return store.state.configuration.provisionDService })
 
 const tableHeaders = computed(() => {
@@ -106,12 +118,17 @@ const nodeDataValue = computed(() => {
           }
         })
         return rowData['cron-schedule'] = `Every ${ele} ${cronScheduleType[valuePos]}`
-      })
-      //return updated data     
+      })     
+      
       if(sortObj.value.value === 'asc'){
         copydata.sort((a: any, b: any) => (a[`${sortObj.value.property}`] > b[`${sortObj.value.property}`] ? 1 : -1));
       }else{
         copydata.sort((a: any, b: any) => (a[`${sortObj.value.property}`] < b[`${sortObj.value.property}`] ? 1 : -1));
+      }
+      total.value = copydata.length;
+      if(total.value > pageSize.value){        
+        var index = page.value * pageSize.value - pageSize.value      
+        return copydata.slice(index, index + pageSize.value);
       }
       return copydata
     }
@@ -127,7 +144,9 @@ onMounted(async () => {
     console.error("Error in API - Inside datatableDemo")
   }
 })
-
+const updatePageSize = (val: any) => {
+  pageSize.value = val;
+}
 const sortChanged = (sortObjIn: FeatherSortObject) => {   
   sortableColms.value.forEach((element: any) => {
           if (element.property === sortObjIn.property) {

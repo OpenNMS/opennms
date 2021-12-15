@@ -82,6 +82,8 @@ html {
 }
 .main-content {
   margin-left: 218px;
+  height: calc(100vh - 65px);
+  overflow-y: scroll;
 }
 .logo {
   color: var(--feather-primary-text-on-color) !important;
@@ -185,10 +187,5 @@ body {
 input.p-dropdown-label {
   cursor: auto !important;
 }
-#view {
-  padding: 30px;
-  height: calc(100vh - 65px);
-  overflow-y: scroll;
-  margin-left: 230px;
-}
+
 </style>
