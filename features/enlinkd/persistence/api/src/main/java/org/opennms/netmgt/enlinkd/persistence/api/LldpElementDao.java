@@ -43,6 +43,13 @@ public interface LldpElementDao extends OnmsDao<LldpElement, Integer> {
 
     public List<LldpElement> findByChassisId(String chassisId, LldpChassisIdSubType type);
 
+    /**
+     * Returns all LldpElements that have a chassisId/chassisIdSubType that match the corresponding fields of a
+     * LldpElement that is related to the given node. Used to retrieve all LldpElements that need to be accessed when
+     * finding lldp links of a node.
+     */
+    List<LldpElement> findByChassisOfLldpLinksOfNode(int nodeId);
+
     public LldpElement findBySysname(String sysname);
 
     public void deleteByNodeId(Integer nodeid);

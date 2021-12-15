@@ -141,6 +141,9 @@ public class WillItUnmarshalCoverageMetaIT {
         ignoreFile(new File(getDaemonEtcDirectory(), "notifd-configuration.xml"));
 
         LOG.debug("FILES.size() = {}", FILES.size());
+
+        // list of config file moved to CmWillItUnmarshalIT
+        ignoreFile(new File(getDaemonEtcDirectory(), "provisiond-configuration.xml"));
     }
     
     /**

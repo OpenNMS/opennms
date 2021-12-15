@@ -45,7 +45,6 @@ import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
-import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
@@ -104,11 +103,10 @@ public class CmWillItUnmarshalIT {
      */
     private static void addFile(final Source source, final String file, final Class<?> clazz, String schemaFile, String topLevelElement, boolean checkFormat, final String exceptionMessage) {
         FILES.add(new Object[] {source, file, clazz, schemaFile, topLevelElement, checkFormat, exceptionMessage});
-
     }
 
     static {
-        addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, "provisiond-configuration.xsd", "provisiond-configuration", false, null);
+        addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, "provisiond-configuration.xsd", "provisiond-configuration", false, null);
         addFile(Source.CLASSPATH, "/defaults/enlinkd-configuration.xml", EnlinkdConfiguration.class, "enlinkd-configuration.xsd", "enlinkd-configuration",  false, null);
         addFile(Source.CLASSPATH, "/defaults/vmware-config.xml", VmwareConfig.class, "vmware-config.xsd", "vmware-config", false, null);
         addFile(Source.CLASSPATH, "/defaults/discovery-configuration.xml", DiscoveryConfiguration.class, "discovery-configuration.xsd","discovery-configuration", false, null);

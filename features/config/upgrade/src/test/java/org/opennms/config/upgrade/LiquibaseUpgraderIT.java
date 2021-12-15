@@ -57,6 +57,7 @@ import org.springframework.util.FileSystemUtils;
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -70,6 +71,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -113,9 +115,11 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         opennmsHomeOrg = System.getProperty(SYSTEM_PROP_OPENNMS_HOME);
         System.setProperty(SYSTEM_PROP_OPENNMS_HOME, this.opennmsHome.toString());
         Path etcDir = Files.createDirectories(Paths.get(this.opennmsHome + "/etc"));
+        Files.copy(Path.of("../../../opennms-base-assembly/src/main/filtered/etc/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"),
+                Path.of(etcDir + "/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"));
         Files.copy(Path.of("../../../opennms-base-assembly/src/main/filtered/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"),
                 Path.of(etcDir + "/" + SCHEMA_NAME_EVENTD + "-configuration.xml"));
-        Files.copy(Path.of("../../../smoke-test/src/main/resources/opennms-overlay/etc/org.opennms.features.datachoices.cfg"),
+        Files.copy(Path.of("../../../opennms-config-model/src/main/resources/defaults/org.opennms.features.datachoices.cfg"),
                 Path.of(etcDir + "/org.opennms.features.datachoices.cfg"));
 
 
@@ -175,7 +179,8 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             // check if xml file was moved into archive folder
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"))); // should be gone since we moved the file
             assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_EVENTD + "-configuration.xml")));
-            assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"))); // should not be copied since it is the default one
+            assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"))); // should be gone since we moved the file
+            assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml")));
 
             // check if schema changes work properly
             Optional<ConfigDefinition> configDefinition = this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROPERTIES);
@@ -191,10 +196,13 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             assertEquals(Boolean.FALSE, schema.getChildren().get(1).getDefaultValue());
 
             // check for org.opennms.features.datachoices.cfg
-            Optional<JSONObject> config = this.cm.getJSONConfiguration("datachoices", "default");
-            assertEquals(2, config.get().keySet().size());
+            Optional<JSONObject> config = this.cm.getJSONConfiguration("org.opennms.features.datachoices", "default");
+            assertEquals(7, config.get().keySet().size());
+            // boolean in openable is impossible to be null
             assertEquals(false, config.get().get("enabled"));
-            assertEquals("admin", config.get().get("acknowledged-by"));
+            assertEquals(JSONObject.NULL, config.get().get("acknowledged-by"));
+            assertEquals(BigDecimal.valueOf(86400000), config.get().get("interval"));
+            assertEquals("http://stats.opennms.org/datachoices/", config.get().get("url"));
         } finally {
             this.db.cleanUp();
         }

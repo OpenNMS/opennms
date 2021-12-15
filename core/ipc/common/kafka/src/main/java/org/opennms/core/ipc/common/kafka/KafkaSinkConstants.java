@@ -34,9 +34,13 @@ public interface KafkaSinkConstants {
 
     String KAFKA_CONFIG_PID = "org.opennms.core.ipc.sink.kafka";
 
+    String KAFKA_COMMON_CONFIG_PID = "org.opennms.core.ipc.kafka";
+
     String KAFKA_CONFIG_CONSUMER_PID = KAFKA_CONFIG_PID + ".consumer";
 
     String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
+
+    String KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX = KAFKA_COMMON_CONFIG_PID + ".";
 
     // Configurable max buffer size for kafka that should be less than 900KB.
     String MAX_BUFFER_SIZE_PROPERTY = "max.buffer.size";

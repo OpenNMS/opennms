@@ -29,6 +29,7 @@
 package liquibase.ext2.cm.change.types;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 import java.util.List;
@@ -56,11 +57,11 @@ public class BooleanTypeTest extends AbstractTypeTest {
     }
 
     @Test
-    public void shouldDefaultToFalseForNoDefaultValue() {
+    public void shouldDefaultToNullForNoDefaultValue() {
         attributes.remove("default");
         ConfigItem item = createItem();
         assertEquals(Type.BOOLEAN, item.getType());
-        assertEquals(Boolean.FALSE, item.getDefaultValue());
+        assertNull(item.getDefaultValue());
     }
 
     @Override

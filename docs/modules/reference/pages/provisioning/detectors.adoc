@@ -1,0 +1,17 @@
+[[ref-detectors]]
+= Detectors
+
+This section describes all available built-in xref:operation:provisioning/introduction.adoc[provisioning] detectors.
+You can configure them to allow complex detection to meet the needs of your environment.
+For information on how to extend the functionality of these detectors, see the xref:development:development.adoc#development[Development section] to contribute to the project.
+
+[[ref-detector-provisioning-meta-data]]
+== Metadata DSL
+Service detectors can use <<operation:meta-data.adoc#ga-meta-data-dsl, MetaData DSL>> (domain specific language) to leverage dynamic configuration in parameter values to interpolate metadata into the parameter.
+
+The syntax lets you use patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+
+During evaluation of an expression, the following scopes are available:
+
+* Node metadata
+* Interface metadata

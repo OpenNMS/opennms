@@ -28,11 +28,38 @@
 
 package org.opennms.web.admin.discovery;
 
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addExcludeRangeAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addIncludeRangeAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addIncludeUrlAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addExcludeUrlAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addSpecificAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeExcludeRangeAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeIncludeRangeAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeIncludeUrlAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeExcludeUrlAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeSpecificAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.saveAndRestartAction;
+
+import java.io.IOException;
+import java.io.StringWriter;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
-import org.opennms.netmgt.config.discovery.*;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.ExcludeRange;
+import org.opennms.netmgt.config.discovery.IncludeRange;
+import org.opennms.netmgt.config.discovery.IncludeUrl;
+import org.opennms.netmgt.config.discovery.ExcludeUrl;
+import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -228,6 +255,39 @@ public class ActionDiscoveryServlet extends HttpServlet {
             IncludeUrl iu = config.getIncludeUrls().get(index1);
             boolean result = config.removeIncludeUrl(iu);
             LOG.debug("Removing Include URL result = {}", result);
+        }
+
+        //add an 'Exclude URL'
+        if(action.equals(addExcludeUrlAction)){
+            LOG.debug("Adding Exclude URL");
+            String url = request.getParameter("euurl");
+            String foreignSource = request.getParameter("euforeignsource");
+            String location = request.getParameter("eulocation");
+
+            ExcludeUrl eu = new ExcludeUrl();
+            eu.setUrl(url);
+
+            if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource().orElse(null))){
+                eu.setForeignSource(foreignSource);
+            }
+
+            if (!LocationUtils.doesLocationsMatch(location,
+                    config.getLocation().orElse(LocationUtils.DEFAULT_LOCATION_NAME))) {
+                eu.setLocation(location);
+            }
+
+            config.addExcludeUrl(eu);
+        }
+
+        //remove 'Exclude URL' from configuration
+        if(action.equals(removeExcludeUrlAction)){
+            LOG.debug("Removing Exclude URL");
+            String specificIndex = request.getParameter("index");
+            int index = WebSecurityUtils.safeParseInt(specificIndex);
+            final int index1 = index;
+            ExcludeUrl eu = config.getExcludeUrls().get(index1);
+            boolean result = config.removeExcludeUrl(eu);
+            LOG.debug("Removing Exclude URL result = {}", result);
         }
 
         //add an 'Exclude Range'

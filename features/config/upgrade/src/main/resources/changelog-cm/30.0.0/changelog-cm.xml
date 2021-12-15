@@ -12,6 +12,20 @@
         <cm:importConfig schemaId="provisiond" configId="default" filePath="provisiond-configuration.xml"/>
     </changeSet>
 
+    <changeSet author="pschweizer" id="register-schema-datachoices">
+        <cm:registerSchema id="org.opennms.features.datachoices"/>
+        <cm:changeSchema schemaId="org.opennms.features.datachoices">
+            <cm:put name="enabled" type="boolean"/>
+            <cm:put name="acknowledged-by" type="string"/>
+            <cm:put name="acknowledged-at" type="string"/>
+            <cm:put name="url" type="string" default="http://stats.opennms.org/datachoices/"/>
+            <cm:put name="interval" type="number" default="86400000"/> <!-- 24 hours -->
+            <cm:put name="useSystemProxy" type="boolean" default="false"/>
+            <cm:put name="systemid" type="string" />
+        </cm:changeSchema>
+        <cm:importConfig schemaId="org.opennms.features.datachoices" configId="default" filePath="org.opennms.features.datachoices.cfg"/>
+    </changeSet>
+
     <changeSet author="ssuman" id="1.0-register-schema-enlinkd">
         <cm:registerSchema id="enlinkd"/>
         <cm:importSchemaFromXsd id="enlinkd" xsdFileName="enlinkd-configuration.xsd" xsdFileHash="cf03a578f483997efbbd931700a2946bb08157352f802cf39be954aa84856471" rootElement="enlinkd-configuration"/>
@@ -26,7 +40,7 @@
 
     <changeSet author="tmohanta" id="1.0-register-schema-discovery">
         <cm:registerSchema id="discovery"/>
-        <cm:importSchemaFromXsd id="discovery" xsdFileName="discovery-configuration.xsd" xsdFileHash="3d2a2703d371a5b4826d15dbc34782b099e6141cc3266ade4026840b4642dec2" rootElement="discovery-configuration"/>
+        <cm:importSchemaFromXsd id="discovery" xsdFileName="discovery-configuration.xsd" xsdFileHash="83ae4c573fe8023f3b8ddcbbd1eb50a1bdeb26b5041347d2038e20db53edf31e" rootElement="discovery-configuration"/>
         <cm:importConfig schemaId="discovery" configId="default" filePath="discovery-configuration.xml"/>
     </changeSet>
 

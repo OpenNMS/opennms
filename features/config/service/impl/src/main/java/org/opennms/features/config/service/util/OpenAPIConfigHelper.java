@@ -83,6 +83,11 @@ public class OpenAPIConfigHelper {
             // only fill with default value
             if(propertySchema.getDefault() != null)
                 configJsonObj.put(key, propertySchema.getDefault());
+            else if(propertySchema instanceof BooleanSchema){
+                configJsonObj.put(key, false);
+            } else {
+                configJsonObj.put(key, JSONObject.NULL);
+            }
         } else if (propertySchema instanceof Schema && propertySchema.get$ref() != null) {
             String schemaName = propertySchema.get$ref().replaceAll("^" + OpenAPIBuilder.SCHEMA_REF_TAG, "");
             if(isNewObject)
