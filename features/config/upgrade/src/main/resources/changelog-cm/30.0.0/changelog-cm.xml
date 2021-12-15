@@ -40,7 +40,7 @@
 
     <changeSet author="tmohanta" id="1.0-register-schema-discovery">
         <cm:registerSchema id="discovery"/>
-        <cm:importSchemaFromXsd id="discovery" xsdFileName="discovery-configuration.xsd" xsdFileHash="3d2a2703d371a5b4826d15dbc34782b099e6141cc3266ade4026840b4642dec2" rootElement="discovery-configuration"/>
+        <cm:importSchemaFromXsd id="discovery" xsdFileName="discovery-configuration.xsd" xsdFileHash="83ae4c573fe8023f3b8ddcbbd1eb50a1bdeb26b5041347d2038e20db53edf31e" rootElement="discovery-configuration"/>
         <cm:importConfig schemaId="discovery" configId="default" filePath="discovery-configuration.xml"/>
     </changeSet>
 

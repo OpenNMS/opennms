@@ -106,7 +106,7 @@ public class CmWillItUnmarshalIT {
     }
 
     static {
-        addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, "provisiond-configuration.xsd", "provisiond-configuration", false, null);
+        addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, "provisiond-configuration.xsd", "provisiond-configuration", false, null);
         addFile(Source.CLASSPATH, "/defaults/enlinkd-configuration.xml", EnlinkdConfiguration.class, "enlinkd-configuration.xsd", "enlinkd-configuration",  false, null);
         addFile(Source.CLASSPATH, "/defaults/vmware-config.xml", VmwareConfig.class, "vmware-config.xsd", "vmware-config", false, null);
         addFile(Source.CLASSPATH, "/defaults/discovery-configuration.xml", DiscoveryConfiguration.class, "discovery-configuration.xsd","discovery-configuration", false, null);
