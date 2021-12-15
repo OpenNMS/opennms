@@ -41,6 +41,7 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -50,7 +51,7 @@ import com.google.common.collect.Maps;
 
 public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
-    public static class LinkdEdgeStatus implements Status{
+    public static class LinkdEdgeStatus implements Status {
 
         private final String m_status;
 
@@ -87,6 +88,7 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
     }
 
     private AlarmDao m_alarmDao;
+    private SessionUtils m_sessionUtils;
 
     @Override
     public String getNamespace() {
@@ -100,20 +102,20 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 EDGES:        for (EdgeRef edgeRef : edges) {
                 LinkdEdge edge = (LinkdEdge) edgeProvider.getEdge(edgeRef);
                 for (OnmsAlarm alarm: getLinkdEdgeDownAlarms()) {
-                    if (alarm.getNode().getId() == null)
+                    if (alarm.getNode() == null)
                         continue;
                     if (alarm.getIfIndex() == null)
                         continue;
-                    int alarmnodeid = alarm.getNode().getId().intValue();
+                    int alarmnodeid = alarm.getNode().getId();
                     if ( edge.getSourcePort().getVertex().getNodeID() != null 
-                            && edge.getSourcePort().getVertex().getNodeID().intValue() == alarmnodeid
+                            && edge.getSourcePort().getVertex().getNodeID() == alarmnodeid
                             && edge.getSourcePort().getIfIndex() != null
                             && edge.getSourcePort().getIfIndex().intValue() == alarm.getIfIndex().intValue()) {
                         retVal.put(edgeRef, new LinkdEdgeStatus(alarm));
                         continue EDGES;
                     }
                     if ( edge.getTargetPort().getVertex().getNodeID() != null 
-                            && edge.getTargetPort().getVertex().getNodeID().intValue() == alarmnodeid
+                            && edge.getTargetPort().getVertex().getNodeID() == alarmnodeid
                             && edge.getTargetPort().getIfIndex() != null
                             && edge.getTargetPort().getIfIndex().intValue() == alarm.getIfIndex().intValue()) {
                         retVal.put(edgeRef, new LinkdEdgeStatus(alarm));
@@ -135,14 +137,23 @@ EDGES:        for (EdgeRef edgeRef : edges) {
     }
 
     protected List<OnmsAlarm> getLinkdEdgeDownAlarms() {
-        org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsAlarm.class);
-        criteria.addRestriction(new EqRestriction("uei", EventConstants.TOPOLOGY_LINK_DOWN_EVENT_UEI));
-        criteria.addRestriction(new NeRestriction("severity", OnmsSeverity.CLEARED));
-        return getAlarmDao().findMatching(criteria);
+        return getSessionUtils().withReadOnlyTransaction(() -> {
+            org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsAlarm.class);
+            criteria.addRestriction(new EqRestriction("uei", EventConstants.TOPOLOGY_LINK_DOWN_EVENT_UEI));
+            criteria.addRestriction(new NeRestriction("severity", OnmsSeverity.CLEARED));
+            return getAlarmDao().findMatching(criteria);
+        });
     }
 
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
 
+    public SessionUtils getSessionUtils() {
+        return m_sessionUtils;
+    }
+
+    public void setSessionUtils(SessionUtils m_sessionUtils) {
+        this.m_sessionUtils = m_sessionUtils;
+    }
 }
