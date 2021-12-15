@@ -1452,7 +1452,7 @@
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.15.0</log4j2Version>
+    <log4j2Version>2.16.0</log4j2Version>
     <logbackClassicVersion>1.2.3</logbackClassicVersion>
     <mapstructVersion>1.4.1.Final</mapstructVersion>
     <minaVersion>2.1.5</minaVersion>
@@ -1460,6 +1460,7 @@
     <netty4Version>4.1.48.Final</netty4Version>
     <newtsVersion>1.5.5</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
+    <paxLoggingVersion>2.0.12</paxLoggingVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>7.3.16</paxWebVersion>
     <protobufVersion>3.12.0</protobufVersion>
