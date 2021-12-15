@@ -357,6 +357,14 @@ feature:install scv-jceks-impl
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
     </feature>
 
+    <feature name="sentinel-jackson">
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson2Version}</bundle>
+    </feature>
 
     <!-- factor out hard-coded versions -->
     <feature name="sentinel-alarmd" description="OpenNMS :: Alarms :: Daemon" version="${project.version}">
@@ -389,6 +397,10 @@ feature:install scv-jceks-impl
 
         <bundle>mvn:org.opennms/opennms-alarm-api/30.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson2Version}</bundle>
+        <bundle>mvn:org.opennms.features.rest/org.opennms.features.rest.model/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.rest/org.opennms.features.rest.mapper/${project.version}</bundle>
+
     </feature>
 
     <!--
