@@ -200,6 +200,12 @@
       <artifactId>opennms-web-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.opennms.features.rest</groupId>
+      <artifactId>org.opennms.features.rest.mapper</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- needed for pulling the principle from the container -->
     <dependency>
       <groupId>org.apache.karaf.jaas</groupId>

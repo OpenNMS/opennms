@@ -20,11 +20,26 @@
     <reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" />
     <!--  <reference id="troubleTicketProxy" interface="org.opennms.web.svclayer.TroubleTicketProxy" /> -->
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
+    <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" />
+
+    <!-- TODO: provide a service via the Rest Mapper module? -->
+    <bean id="eventMapper" class="org.opennms.web.rest.mapper.v2.EventMapperImpl">
+        <property name="eventConfDao" ref="eventConfDao" />
+    </bean>
+
+    <!-- TODO: provide a service via the Rest Mapper module? -->
+    <bean id="alarmMapper" class="org.opennms.web.rest.mapper.v2.AlarmMapperImpl">
+        <argument ref="eventMapper"/>
+
+        <property name="eventConfDao" ref="eventConfDao" />
+    </bean>
+
     <bean id="alarmRestServiceImpl" class="org.opennms.netmgt.alarmd.rest.internal.AlarmRestServiceImpl" scope="singleton">
         <property name="alarmDao" ref="alarmDao" />
         <property name="alarmRepository" ref="alarmRepository" />
         <!-- <property name="troubleTicketProxy" ref="troubleTicketProxy" /> --> <!-- Exanble after working up TicketD -->
         <property name="sessionUtils" ref="sessionUtils" />
+        <property name="alarmMapper" ref="alarmMapper" />
     </bean>
 
 

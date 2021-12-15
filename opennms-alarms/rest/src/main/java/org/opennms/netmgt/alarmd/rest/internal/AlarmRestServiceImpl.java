@@ -61,21 +61,18 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.resource.Vault;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.alarmd.rest.AlarmRestService;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsAlarmCollection;
+import org.opennms.web.rest.mapper.v2.AlarmMapper;
+import org.opennms.web.rest.model.v2.AlarmCollectionDTO;
+import org.opennms.web.rest.model.v2.AlarmDTO;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SecurityHelper;
-//import org.opennms.web.svclayer.TroubleTicketProxy;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ServiceScope;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,8 +83,6 @@ import org.slf4j.LoggerFactory;
  * @author Mark Bordelon
  */
 @Path("/alarms")
-//@Component(service = AlarmRestServiceImpl.class, scope = ServiceScope.SINGLETON)
-//@JaxrsResource
 public class AlarmRestServiceImpl implements AlarmRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlarmRestServiceImpl.class);
@@ -95,11 +90,42 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
     private AlarmDao alarmDao;
 
+    private AlarmMapper m_alarmMapper;
+
     private AlarmRepository alarmRepository;
 
     //private TroubleTicketProxy troubleTicketProxy;
 
     private SessionUtils sessionUtils;
+
+//========================================
+// Getters and Setters
+//========================================
+
+
+    public void setAlarmDao(AlarmDao alarmDao) {
+        this.alarmDao = alarmDao;
+    }
+
+    public void setAlarmRepository(AlarmRepository alarmRepository) {
+        this.alarmRepository = alarmRepository;
+    }
+
+//    public void setTroubleTicketProxy(TroubleTicketProxy troubleTicketProxy) {
+//        this.troubleTicketProxy = troubleTicketProxy;
+//    }
+
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
+    }
+
+    public void setAlarmMapper(AlarmMapper m_alarmMapper) {
+        this.m_alarmMapper = m_alarmMapper;
+    }
+
+//========================================
+//
+//========================================
 
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass(), Aliases.alarm.toString());
@@ -148,6 +174,10 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     }
 
 
+//========================================
+// Interface
+//========================================
+
     /**
      * <p>
      * getAlarms
@@ -163,13 +193,22 @@ public class AlarmRestServiceImpl implements AlarmRestService {
         SecurityHelper.assertUserReadCredentials(securityContext);
 
         return this.sessionUtils.withReadOnlyTransaction(() -> {
-            final CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
+            CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
             builder.distinct();
-            final OnmsAlarmCollection coll = new OnmsAlarmCollection(alarmDao.findMatching(builder.toCriteria()));
-            coll.getObjects().stream().forEach(a -> { JaxbUtils.marshal(a);});
-            // For getting totalCount
-            coll.setTotalCount(alarmDao.countMatching(builder.count().toCriteria()));
-            return Response.status(Status.ACCEPTED).entity(coll).build();
+
+            List<OnmsAlarm> matchingAlarms = this.alarmDao.findMatching(builder.toCriteria());
+
+            List<AlarmDTO> dtoAlarmList =
+                matchingAlarms
+                        .stream()
+                        .map(this.m_alarmMapper::alarmToAlarmDTO)
+                        .collect(Collectors.toList())
+                        ;
+
+            AlarmCollectionDTO alarmsCollection = new AlarmCollectionDTO(dtoAlarmList);
+            alarmsCollection.setTotalCount(dtoAlarmList.size());
+
+            return Response.status(Status.ACCEPTED).entity(alarmsCollection).build();
         });
 
     }
@@ -340,21 +379,5 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
 
 
-
-    public void setAlarmDao(AlarmDao alarmDao) {
-        this.alarmDao = alarmDao;
-    }
-
-    public void setAlarmRepository(AlarmRepository alarmRepository) {
-        this.alarmRepository = alarmRepository;
-    }
-
-//    public void setTroubleTicketProxy(TroubleTicketProxy troubleTicketProxy) {
-//        this.troubleTicketProxy = troubleTicketProxy;
-//    }
-
-    public void setSessionUtils(SessionUtils sessionUtils) {
-        this.sessionUtils = sessionUtils;
-    }
 }
 
