@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.persistence.impl;
 
+import java.util.List;
+
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
@@ -61,7 +63,12 @@ public class IsIsElementDaoHibernate extends AbstractDaoHibernate<IsIsElement, I
         return findUnique("from IsIsElement rec where rec.isisSysID = ?",
                           isisSysId);
     }
-  
+
+    @Override
+    public List<IsIsElement> findBySysIdOfIsIsLinksOfNode(int nodeId) {
+        return find("from IsIsElement rec where rec.isisSysID in (select l.isisISAdjNeighSysID from IsIsLink l where l.node.id = ?)", nodeId);
+    }
+
     @Override
     public void deleteByNodeId(Integer nodeId) {
         getHibernateTemplate().bulkUpdate("delete from IsIsElement rec where rec.node.id = ? ",

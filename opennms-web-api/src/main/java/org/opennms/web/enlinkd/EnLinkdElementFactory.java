@@ -30,6 +30,7 @@ package org.opennms.web.enlinkd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +46,6 @@ import java.util.stream.Collectors;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
@@ -192,8 +192,9 @@ public class EnLinkdElementFactory implements InitializingBean,
 
     private List<OspfLinkNode> getOspfLinks(int nodeId, SnmpInterfaceCache snmpInterfaceCache) {
         List<OspfLinkNode> nodelinks = new ArrayList<OspfLinkNode>();
+        var remRouterIdToOspfElement = uniqueMapCache(() -> m_ospfElementDao.findByRouterIdOfRelatedOspfLink(nodeId), OspfElement::getOspfRouterId, OspfElement::getId);
         for (OspfLink link : m_ospfLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
-            nodelinks.add(convertFromModel(nodeId, link, snmpInterfaceCache));
+            nodelinks.add(convertFromModel(nodeId, link, snmpInterfaceCache, remRouterIdToOspfElement));
         }
         return nodelinks;
     }
@@ -245,7 +246,12 @@ public class EnLinkdElementFactory implements InitializingBean,
 
     }
 
-    public OspfLinkNode convertFromModel(int nodeid, OspfLink link, SnmpInterfaceCache snmpInterfaceCache) {
+    public OspfLinkNode convertFromModel(
+            int nodeid,
+            OspfLink link,
+            SnmpInterfaceCache snmpInterfaceCache,
+            UniqueMapCache<InetAddress, OspfElement> remRouterIdToOspfElement
+    ) {
         OspfLinkNode linknode = create(nodeid, link, snmpInterfaceCache);
 
         Integer remNodeid = null;
@@ -253,9 +259,8 @@ public class EnLinkdElementFactory implements InitializingBean,
 
         // set rem info
 
-        List<OspfElement> remOspfElements = m_ospfElementDao.findAllByRouterId(link.getOspfRemRouterId());
-        if (remOspfElements.size() == 1) {
-            OspfElement remOspfElement = remOspfElements.iterator().next();
+        OspfElement remOspfElement = remRouterIdToOspfElement.get(link.getOspfRemRouterId());
+        if (remOspfElement != null) {
             remNodeid = remOspfElement.getNode().getId();
             remNodeLabel = remOspfElement.getNode().getLabel();
         }
@@ -523,19 +528,29 @@ public class EnLinkdElementFactory implements InitializingBean,
 
     private List<IsisLinkNode> getIsisLinks(int nodeId, SnmpInterfaceCache snmpInterfaceCache) {
         List<IsisLinkNode> nodelinks = new ArrayList<IsisLinkNode>();
+        var sysIdToElement = uniqueMapCache(() -> m_isisElementDao.findBySysIdOfIsIsLinksOfNode(nodeId), IsIsElement::getIsisSysID, IsIsElement::getId);
+        var adjAndCircIdxToLink = uniqueMapCache(() -> m_isisLinkDao.findBySysIdAndAdjAndCircIndex(nodeId), l -> Pair.of(l.getIsisISAdjIndex(), l.getIsisCircIndex()), IsIsLink::getId);
+        var adjNeighSnpaAddressToInterface = uniqueMapCache(() -> m_snmpInterfaceDao.findBySnpaAddressOfRelatedIsIsLink(nodeId), OnmsSnmpInterface::getPhysAddr, OnmsSnmpInterface::getId);
         for (IsIsLink link : m_isisLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
-            nodelinks.add(convertFromModel(nodeId, link, snmpInterfaceCache));
+            nodelinks.add(convertFromModel(nodeId, link, snmpInterfaceCache, sysIdToElement, adjAndCircIdxToLink, adjNeighSnpaAddressToInterface));
         }
         Collections.sort(nodelinks);
         return nodelinks;
     }
 
-    private IsisLinkNode convertFromModel(int nodeid, IsIsLink link, SnmpInterfaceCache snmpInterfaceCache) {
+    private IsisLinkNode convertFromModel(
+            int nodeid,
+            IsIsLink link,
+            SnmpInterfaceCache snmpInterfaceCache,
+            UniqueMapCache<String, IsIsElement> sysIdToElement,
+            UniqueMapCache<Pair<Integer, Integer>, IsIsLink> adjAndCircIdxToLink,
+            UniqueMapCache<String, OnmsSnmpInterface> adjNeighSnpaAddressToInterface
+    ) {
         IsisLinkNode linknode = new IsisLinkNode();
         linknode.setIsisCircIfIndex(link.getIsisCircIfIndex());
         linknode.setIsisCircAdminState(IsisAdminState.getTypeString(link.getIsisCircAdminState().getValue()));
 
-        IsIsElement isiselement = m_isisElementDao.findByIsIsSysId(link.getIsisISAdjNeighSysID());
+        IsIsElement isiselement = sysIdToElement.get(link.getIsisISAdjNeighSysID());
         if (isiselement != null) {
             linknode.setIsisISAdjNeighSysID(getHostString(isiselement.getNode().getLabel(), 
                                                           "ISSysID", 
@@ -553,15 +568,13 @@ public class EnLinkdElementFactory implements InitializingBean,
 
         OnmsSnmpInterface remiface = null;
         if (isiselement != null) {
-            IsIsLink adjLink = m_isisLinkDao.get(isiselement.getNode().getId(),
-                                                 link.getIsisISAdjIndex(),
-                                                 link.getIsisCircIndex());
+            IsIsLink adjLink = adjAndCircIdxToLink.get(Pair.of(link.getIsisISAdjIndex(), link.getIsisCircIndex()));
             if (adjLink != null) {
                 remiface = snmpInterfaceCache.get(isiselement.getNode().getId(), adjLink.getIsisCircIfIndex());
             }
         }
         if (remiface == null) {
-            remiface = getFromPhysAddress(link.getIsisISAdjNeighSNPAAddress());
+            remiface = adjNeighSnpaAddressToInterface.get(link.getIsisISAdjNeighSNPAAddress());
         }
 
         if (remiface != null) {
@@ -902,18 +915,6 @@ public class EnLinkdElementFactory implements InitializingBean,
             return nodes.size() == 1 ? nodes.get(0) : null;
     }
 
-    private OnmsSnmpInterface getFromPhysAddress(String physAddress) {
-        final CriteriaBuilder builder = new CriteriaBuilder(
-                                                            OnmsSnmpInterface.class);
-        builder.eq("physAddr", physAddress);
-        final List<OnmsSnmpInterface> nodes = m_snmpInterfaceDao.findMatching(builder.toCriteria());
-
-        if (nodes.size() == 1)
-            return nodes.get(0);
-        return null;
-    }
-
-    
     private String getPortString(OnmsSnmpInterface snmpiface, String addrtype, String addr) {
         StringBuffer sb = new StringBuffer("");
         if (snmpiface != null) {

@@ -43,6 +43,13 @@ public interface IsIsLinkDao extends OnmsDao<IsIsLink, Integer> {
     
     List<IsIsLink> findByNodeId(Integer nodeId);
 
+    /**
+     * Returns all IsIsLinks related by the sysId of an intermediary IsIsElement and the
+     * adj/circ indexes of some other IsIsLink that is directly related to the given node.
+     * Used to retrieve all IsIsLinks that need to be accessed when finding IsIsLinks of a node.
+     */
+    List<IsIsLink> findBySysIdAndAdjAndCircIndex(int nodeId);
+
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
     
     public void deleteByNodeId(Integer nodeId);

@@ -56,6 +56,12 @@ public interface SnmpInterfaceDao extends LegacyOnmsDao<OnmsSnmpInterface, Integ
     List<OnmsSnmpInterface> findByMacLinksOfNode(Integer nodeId);
 
     /**
+     * Returns all OnmsSnmpInterfaces that have a physAddr that matches an isisISAdjNeighSNPAAddress of an IsIsLink related to the given
+     * node. Used to retrieve all OnmsSnmpInterfaces that need to be accessed when finding IsIs links of a node.
+     */
+    List<OnmsSnmpInterface> findBySnpaAddressOfRelatedIsIsLink(int nodeId);
+
+    /**
      * <p>findByForeignKeyAndIfIndex</p>
      *
      * @param foreignSource a {@link java.lang.String} object.

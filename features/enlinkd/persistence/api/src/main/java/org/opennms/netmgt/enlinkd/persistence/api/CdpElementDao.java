@@ -43,7 +43,7 @@ public interface CdpElementDao extends OnmsDao<CdpElement, Integer> {
     public CdpElement findByGlobalDeviceId(String deviceId);
 
     /**
-     * Returns all CdpElements that a have globalDeviceId that matches a cacheDeviceId of a CdpLink related to the given
+     * Returns all CdpElements that have a globalDeviceId that matches a cacheDeviceId of a CdpLink related to the given
      * node. Used to retrieve all CdpElements that need to be accessed when finding cdp links of a node.
      */
     List<CdpElement> findByCacheDeviceIdOfCdpLinksOfNode(int nodeId);

@@ -70,6 +70,12 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
     }
 
     @Override
+    public List<OnmsSnmpInterface> findBySnpaAddressOfRelatedIsIsLink(int nodeId) {
+        return find("from OnmsSnmpInterface snmpIf where snmpIf.physAddr in (select l.isisISAdjNeighSNPAAddress from IsIsLink l where l.node.id = ?)",
+                nodeId);
+    }
+
+    @Override
     public OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex) {
         Assert.notNull(foreignSource, "foreignSource may not be null");
         Assert.notNull(foreignId, "foreignId may not be null");
