@@ -31,7 +31,7 @@ export const hostAndIPValidator = {
       const ipRegex = new RegExp(
         '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
       )
-      const hostRegex = new RegExp('^(?:[-A-Za-z0-9]+.)+[A-Za-z]{2,6}$')
+      const hostRegex = new RegExp('^(?!-)[A-Za-z0-9-]+([\\-\\.]{1}[a-z0-9]+)*\\.[A-Za-z]{2,6}$')
       validHost = hostRegex.test(value) || ipRegex.test(value)
       if (validHost) return validHost
     } else {
