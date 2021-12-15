@@ -28,14 +28,6 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -46,6 +38,8 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
@@ -54,12 +48,21 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+
 public class LinkdEdgeStatusProviderTest {
 
     public LinkdEdgeStatusProviderTest() {
     }
 
     private AlarmDao m_alarmDao;
+    private SessionUtils sessionUtils;
     private LinkdEdgeStatusProvider m_statusProvider;
     private EdgeProvider m_edgeProvider;
     private OnmsNode m_node1;
@@ -161,6 +164,7 @@ public class LinkdEdgeStatusProviderTest {
         m_edgeProvider = EasyMock.createMock(EdgeProvider.class);
         m_statusProvider = new LinkdEdgeStatusProvider();
         m_statusProvider.setAlarmDao(m_alarmDao);
+        m_statusProvider.setSessionUtils(new MockSessionUtils());
 
     }
 
