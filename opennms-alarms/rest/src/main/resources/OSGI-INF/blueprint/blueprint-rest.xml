@@ -70,20 +70,4 @@
 
     <!-- TODO: Use SecureAnnotationInterceptor (check for alternative via the JAX-RS Whiteboard) -->
 
-    <bean id="jacksonJsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-
-    <service ref="jacksonJsonProvider" interface="javax.ws.rs.ext.MessageBodyReader">
-        <service-properties>
-            <entry key="cxf.extension" value="true"/>
-            <entry key="osgi.jaxrs.media.type" value="osgi.jaxrs.media.type"/>
-        </service-properties>
-    </service>
-
-    <service ref="jacksonJsonProvider" interface="javax.ws.rs.ext.MessageBodyWriter">
-        <service-properties>
-            <entry key="cxf.extension" value="true"/>
-            <entry key="osgi.jaxrs.media.type" value="osgi.jaxrs.media.type"/>
-        </service-properties>
-    </service>
-
 </blueprint>
