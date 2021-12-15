@@ -33,11 +33,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,17 +42,11 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LocationUtils;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
-import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-
-import junit.framework.TestCase;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -74,7 +65,7 @@ public class SnmpPeerFactoryTest {
     private void updateConfig(String amiConfigXml) throws IOException {
         try {
             System.out.println("XML Content-----------::::: " + amiConfigXml);
-            XmlConverter converter = new XmlConverter("snmp-config.xsd", "snmp-config");
+            JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config", null);
             //this.config = JaxbUtils.unmarshal(SnmpConfig.class, amiConfigXml);
             String json = converter.xmlToJson(amiConfigXml);
             snmpPeerFactory.updateConfig(json);

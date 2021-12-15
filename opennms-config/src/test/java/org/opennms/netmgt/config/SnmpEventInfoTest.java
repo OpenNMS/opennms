@@ -51,7 +51,7 @@ import org.junit.Test;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.network.IPAddressRangeSet;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -77,7 +77,7 @@ public class SnmpEventInfoTest {
     SnmpPeerFactory snmpPeerFactory;
     private void updateConfig(String amiConfigXml) throws IOException {
         try {
-            XmlConverter converter = new XmlConverter("snmp-config.xsd", "snmp-config");
+            JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
             String json = converter.xmlToJson(amiConfigXml);
             snmpPeerFactory.updateConfig(json);
             snmpPeerFactory.reload();
