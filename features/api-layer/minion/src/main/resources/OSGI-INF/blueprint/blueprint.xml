@@ -12,6 +12,8 @@
       <cm:property name="rrdStep" value="300"/>
       <cm:property name="rrdHeartbeat" value="600"/>
       <cm:property name="rrdRraStr" value="RRA:AVERAGE:0.5:1:2016,RRA:AVERAGE:0.5:12:1488,RRA:AVERAGE:0.5:288:366,RRA:MAX:0.5:288:366,RRA:MIN:0.5:288:366"/>
+      <!--The rrdBaseDir will append after opennms.home folder -->
+      <cm:property name="rrdBaseDir" value="/share/rrd/snmp" />
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -61,6 +63,7 @@
     <argument value="${rrdStep}"/>
     <argument value="${rrdHeartbeat}" />
     <argument value="${rrdRraStr}" />
+    <argument value="${rrdBaseDir}" />
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.collectors.ServiceCollectorFactory" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="serviceCollectorManager" />
