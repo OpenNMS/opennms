@@ -71,8 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockSnmpDao.xml",
         "classpath:/applicationContext-test-ipc-sink-kafka.xml",
         "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
         "classpath:/META-INF/opennms/applicationContext-opennms-identity.xml"
