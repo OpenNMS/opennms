@@ -44,6 +44,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
@@ -161,12 +162,12 @@ abstract public class PollerConfigManager implements PollerConfig {
      * A mapping of the configured package to a list of IPs selected via filter
      * rules, so as to avoid repetitive database access.
      */
-    private AtomicReference<Map<Package, List<InetAddress>>> m_pkgIpMap = new AtomicReference<Map<Package, List<InetAddress>>>();;
+    private AtomicReference<Map<Package, List<InetAddress>>> m_pkgIpMap = new AtomicReference<>();
     /**
      * A mapp of service names to service monitors. Constructed based on data in
      * the configuration file.
      */
-    private Map<String, ServiceMonitor> m_svcMonitors = new ConcurrentSkipListMap<String, ServiceMonitor>();
+    private Map<String, ServiceMonitor> m_svcMonitors = new ConcurrentSkipListMap<>();
 
     /**
      * Go through the poller configuration and build a mapping of each
@@ -174,7 +175,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * time so that repeated file reads can be avoided
      */
     private void createUrlIpMap() {
-        m_urlIPMap = new HashMap<String, List<String>>();
+        m_urlIPMap = new HashMap<>();
     
         for(final Package pkg : packages()) {
             for(final String url : includeURLs(pkg)) {
@@ -242,7 +243,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public ServiceSelector getServiceSelectorForPackage(final Package pkg) {
         try {
             getReadLock().lock();
-            final List<String> svcNames = new LinkedList<String>();
+            final List<String> svcNames = new LinkedList<>();
             for(Service svc : services(pkg)) {
                 svcNames.add(svc.getName());
             }
@@ -449,7 +450,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         getReadLock().lock();
         
         try {
-            Map<Package, List<InetAddress>> pkgIpMap = new HashMap<Package, List<InetAddress>>();
+            Map<Package, List<InetAddress>> pkgIpMap = new HashMap<>();
             
             for(final Package pkg : packages()) {
         
@@ -704,7 +705,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     @Override
     public List<String> getAllPackageMatches(final String ipaddr) {
-        List<String> matchingPkgs = new ArrayList<String>();
+        List<String> matchingPkgs = new ArrayList<>();
 
         try {
             getReadLock().lock();
@@ -981,10 +982,12 @@ abstract public class PollerConfigManager implements PollerConfig {
         final Collection<ServiceMonitorLocator> locators = getServiceMonitorLocators();
         
         for (final ServiceMonitorLocator locator : locators) {
-            try {
-                m_svcMonitors.put(locator.getServiceName(), locator.getServiceMonitor(s_serviceMonitorRegistry));
-            } catch (Throwable t) {
-                LOG.warn("start: Failed to create monitor {} for service {}", locator.getServiceLocatorKey(), locator.getServiceName(), t);
+            CompletableFuture<ServiceMonitor> monitorFuture = locator.getServiceMonitor(s_serviceMonitorRegistry);
+            monitorFuture.whenComplete((monitor, ex) -> {
+                m_svcMonitors.put(locator.getServiceName(), monitor);
+            });
+            if(!monitorFuture.isDone()) {
+                LOG.warn("The monitor {} with class not available.", locator.getServiceName());
             }
         }
     }
@@ -1027,7 +1030,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     /** {@inheritDoc} */
     @Override
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators() {
-        List<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
+        List<ServiceMonitorLocator> locators = new ArrayList<>();
 
         try {
             getReadLock().lock();

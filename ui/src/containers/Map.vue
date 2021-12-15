@@ -48,7 +48,7 @@ const minimizeBottomPane = () => {
 }
 
 // resize the map when splitter dragged
-const resize = debounce(() => leafletComponent.value.invalidateSizeFn(), 100)
+const resize = debounce(() => leafletComponent.value.invalidateSizeFn(), 200)
 
 onMounted(async () => {
   store.dispatch('spinnerModule/setSpinnerState', true)
