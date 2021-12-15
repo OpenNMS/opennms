@@ -161,21 +161,13 @@ public class FlowThresholding implements Closeable {
 
             for (final Map.Entry<ApplicationKey, AtomicLong> application : session.applications.entrySet()) {
                 try {
+                    final String ifName = getIfNameForNodeIdAndIfIndex(session.collectionAgent.getNodeId(), application.getKey().iface);
+
                     final DeferredGenericTypeResource appResource = new DeferredGenericTypeResource(nodeResource,
                                                                                                     RESOURCE_TYPE_NAME,
                                                                                                     String.format("%s:%s",
-                                                                                                                  application.getKey().iface,
+                                                                                                                  ifName,
                                                                                                                   application.getKey().application));
-
-                    final OnmsSnmpInterface snmpInterface = snmpInterfaceDao.findByNodeIdAndIfIndex(session.collectionAgent.getNodeId(), application.getKey().iface);
-
-                    final String ifName;
-
-                    if (snmpInterface != null && !Strings.isNullOrEmpty(snmpInterface.getIfName())) {
-                        ifName = snmpInterface.getIfName();
-                    } else {
-                        ifName = Integer.toString(application.getKey().iface);
-                    }
 
                     final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(session.collectionAgent)
                             .withTimestamp(timerTaskDate)
@@ -208,6 +200,16 @@ public class FlowThresholding implements Closeable {
         for (ExporterKey exporterKey : idleSessions) {
             LOG.debug("Dropping session for {}", exporterKey);
             this.sessions.remove(exporterKey);
+        }
+    }
+
+    private String getIfNameForNodeIdAndIfIndex(final int nodeId, final int ifIndex) {
+        final OnmsSnmpInterface snmpInterface = snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, ifIndex);
+
+        if (snmpInterface != null && !Strings.isNullOrEmpty(snmpInterface.getIfName())) {
+            return snmpInterface.getIfName();
+        } else {
+            return Integer.toString(ifIndex);
         }
     }
 
