@@ -41,10 +41,10 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.osgi.framework.BundleContext;
 
 public class ServiceCollectorManager extends InterfaceMapper<ServiceCollectorFactory, ServiceCollector> {
-    private int rrdStep;
-    private int rrdHeartBeat;
-    private String rrdRraStr;
-    private String rrdBaseDir;
+    private final int rrdStep;
+    private final int rrdHeartBeat;
+    private final String rrdRraStr;
+    private final String rrdBaseDir;
 
     public ServiceCollectorManager(BundleContext bundleContext, int rrdStep, int rrdHeartBeat, String rrdRrsStr, String rrdBaseDir) {
         super(ServiceCollector.class, bundleContext);
