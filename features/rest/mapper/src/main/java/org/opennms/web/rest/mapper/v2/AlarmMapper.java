@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import org.mapstruct.AfterMapping;
 import org.mapstruct.InheritInverseConfiguration;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -50,7 +51,7 @@ import org.opennms.web.rest.model.v2.AlarmSummaryDTO;
 import org.opennms.web.rest.model.v2.EventParameterDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Mapper(componentModel = "spring", uses = {EventMapper.class})
+@Mapper(componentModel = "spring", uses = {EventMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public abstract class AlarmMapper {
 
     private String ticketUrlTemplate = System.getProperty("opennms.alarmTroubleTicketLinkTemplate");
