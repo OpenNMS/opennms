@@ -134,6 +134,7 @@ public class TrapdConfiguration implements  Serializable {
      * SNMPv2 traps.
 	 */
     @XmlAttribute(name="use-address-from-varbind", required=false)
+    @JsonProperty("use-address-from-varbind")
     private Boolean useAddressFromVarbind;
 
     public TrapdConfiguration() {
