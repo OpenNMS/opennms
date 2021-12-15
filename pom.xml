@@ -1460,7 +1460,7 @@
     <netty4Version>4.1.48.Final</netty4Version>
     <newtsVersion>1.5.5</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
-    <paxLoggingVersion>1.11.11</paxLoggingVersion>
+    <paxLoggingVersion>2.0.12</paxLoggingVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>7.3.16</paxWebVersion>
     <protobufVersion>3.12.0</protobufVersion>
