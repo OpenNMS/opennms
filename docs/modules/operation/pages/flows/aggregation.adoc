@@ -1,13 +1,26 @@
 
 [[ga-flow-support-aggregation]]
-= Aggregation
+= Aggregation and Streaming Analytics
 
-The flow query engine supports rendering Top-N metrics from pre-aggregated documents stored in Elasticsearch.
-Use these to help alleviate compute load on the Elasticsearch cluster, particularly for environments with large volumes of flows (>10,000 flows/sec).
+Large amounts of flows data may result in slow generation of dashboard visualizations, particularly with longer time ranges (last day/week).
+A lot of calculations must occur to render these dashboards, which is challenging to do in real-time with large volumes of flow data.
+
+OpenNMS Nephron is a component that enables aggregation and streaming analytics for flows.
+It pre-computes data as it flows through the pipeline, and stores it in Elasticsearch.
+Queries from dashboards are significantly faster (under 10 seconds vs. 30 minutes on 4 billion documents), as the flow query engine renders Top-N metrics from these pre-aggregated documents stored in Elasticsearch.
+Nephron also helps alleviate compute load on the Elasticsearch cluster, particularly for environments with large volumes of flows (>10,000 flows/sec).
+
+== Before you begin
+
+Make sure you do the following:
+
+* Set up a xref:operation:flows/basic.adoc#flows-basic[basic] flows environment
+* xref:operation:flows/distributed.adoc#flows-remote[add Minion to your flows environment]]
+* xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[add Sentinel to your flows environment]
+* Set up an link:https://flink.apache.org/[Apache Flink] cluster to deploy the job.
 
 To use this functionality you must enable the Kafka forwarder as described in <<flows/setup.adoc#kafka-forwarder-config, Configure Kafka forwarder>> and set up link:https://github.com/OpenNMS/nephron[Nephron] to process the flows.
 
-NOTE: Nephron currently requires an link:https://flink.apache.org/[Apache Flink] cluster to deploy the job.
 
 Set the following properties in `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to control the query engine to use aggregated flows:
 

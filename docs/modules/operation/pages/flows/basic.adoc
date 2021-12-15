@@ -140,4 +140,5 @@ You may want to do the following:
 Create rules to override the default classifications, to customize for your preference.
 See xref:flows/classification-engine.adoc#ga-flow-support-classification-engine[Application Classification].
 
-* *Enable remote flows data collection* (Add cross-reference to Minion section.)
+* xref:operation:flows/distributed.adoc#flows-remote[Enable remote flows data collection]
+* xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[Scale to manage large volumes of flows data]
