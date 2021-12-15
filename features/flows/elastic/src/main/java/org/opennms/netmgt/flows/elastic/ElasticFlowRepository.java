@@ -196,7 +196,7 @@ public class ElasticFlowRepository implements FlowRepository {
         this.tracerRegistry = tracerRegistry;
         this.enrichedFlowForwarder = enrichedFlowForwarder;
         this.indexSettings = Objects.requireNonNull(indexSettings);
-        this.thresholding = thresholding;
+        this.thresholding = Objects.requireNonNull(thresholding);
 
         this.emptyFlows = metricRegistry.counter("emptyFlows");
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");

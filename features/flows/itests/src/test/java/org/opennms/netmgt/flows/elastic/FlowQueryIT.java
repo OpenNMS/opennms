@@ -86,6 +86,7 @@ import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
+import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 import org.opennms.netmgt.flows.filter.api.DscpFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
@@ -128,7 +129,7 @@ public class FlowQueryIT {
         smartQueryService.setAlwaysUseRawForQueries(true); // Always use RAW values for these tests
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
                 new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings, null, 0, 0);
+                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings, mock(FlowThresholding.class), 0, 0);
 
         final RawIndexInitializer initializer = new RawIndexInitializer(client, settings);
 

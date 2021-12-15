@@ -35,6 +35,7 @@ import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.mock;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -88,6 +89,7 @@ import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
+import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
@@ -157,7 +159,7 @@ public class AggregatedFlowQueryIT {
 
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
             new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-            new MockIdentity(), new MockTracerRegistry(), documentForwarder, rawIndexSettings, null, 0, 0);
+            new MockIdentity(), new MockTracerRegistry(), documentForwarder, rawIndexSettings, mock(FlowThresholding.class), 0, 0);
         flowRepository.setEnableFlowForwarding(true);
 
         // The repository should be empty

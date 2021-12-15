@@ -70,6 +70,7 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
+import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -180,7 +181,7 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), null);
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class));
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
@@ -224,7 +225,7 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), null);
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class));
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
@@ -270,7 +271,7 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), null);
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class));
 
             final int ingress = 2;
             final int egress = 3;

@@ -52,11 +52,13 @@ import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.elastic.Direction;
 import org.opennms.netmgt.flows.elastic.FlowDocument;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
@@ -82,6 +84,8 @@ public class FlowThresholding implements Closeable {
 
     private final IpInterfaceDao ipInterfaceDao;
 
+    private final SnmpInterfaceDao snmpInterfaceDao;
+
     public final long systemIdHash;
 
     private final ConcurrentMap<ExporterKey, Session> sessions = Maps.newConcurrentMap();
@@ -94,11 +98,13 @@ public class FlowThresholding implements Closeable {
     public FlowThresholding(final ThresholdingService thresholdingService,
                             final CollectionAgentFactory collectionAgentFactory,
                             final IpInterfaceDao ipInterfaceDao,
-                            final DistPollerDao distPollerDao) {
+                            final DistPollerDao distPollerDao,
+                            final SnmpInterfaceDao snmpInterfaceDao) {
         this.thresholdingService = Objects.requireNonNull(thresholdingService);
         this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
         this.systemIdHash = (long) distPollerDao.whoami().getId().hashCode() << 32;
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
+        this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
     }
 
     public long getStepSizeMs() {
@@ -155,10 +161,12 @@ public class FlowThresholding implements Closeable {
 
             for (final Map.Entry<ApplicationKey, AtomicLong> application : session.applications.entrySet()) {
                 try {
+                    final String ifName = getIfNameForNodeIdAndIfIndex(session.collectionAgent.getNodeId(), application.getKey().iface);
+
                     final DeferredGenericTypeResource appResource = new DeferredGenericTypeResource(nodeResource,
                                                                                                     RESOURCE_TYPE_NAME,
                                                                                                     String.format("%s:%s",
-                                                                                                                  application.getKey().iface, // TODO cpape: Find interface name
+                                                                                                                  ifName,
                                                                                                                   application.getKey().application));
 
                     final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(session.collectionAgent)
@@ -176,8 +184,8 @@ public class FlowThresholding implements Closeable {
                                                  application.getKey().application)
                             .withStringAttribute(appResource,
                                                  RESOURCE_GROUP,
-                                                 "interface",
-                                                 Integer.toString(application.getKey().iface)); // TODO cpape: Find interface name
+                                                 "ifName",
+                                                 ifName);
 
                     if (session.thresholding) {
                         session.thresholdingSession.accept(collectionSetBuilder.build());
@@ -192,6 +200,16 @@ public class FlowThresholding implements Closeable {
         for (ExporterKey exporterKey : idleSessions) {
             LOG.debug("Dropping session for {}", exporterKey);
             this.sessions.remove(exporterKey);
+        }
+    }
+
+    private String getIfNameForNodeIdAndIfIndex(final int nodeId, final int ifIndex) {
+        final OnmsSnmpInterface snmpInterface = snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, ifIndex);
+
+        if (snmpInterface != null && !Strings.isNullOrEmpty(snmpInterface.getIfName())) {
+            return snmpInterface.getIfName();
+        } else {
+            return Integer.toString(ifIndex);
         }
     }
 
