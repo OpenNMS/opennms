@@ -330,7 +330,8 @@ The codename for Horizon 2019.1.28 is https://wikipedia.org/wiki/$$HD_4208_b$$[_
 
 ===== Bug
 
-* Log4j2 0-day: CVE-2021-44228 (Issue http://issues.opennms.org/browse/NMS-13850[NMS-13850])
+* CVE-2021-45046: incomplete Log4j2 vulnerability mitigation (Issue http://issues.opennms.org/browse/NMS-13858[NMS-13858])
+
 [[releasenotes-changelog-Meridian-2019.1.27]]
 
 ==== Release Meridian-2019.1.27
