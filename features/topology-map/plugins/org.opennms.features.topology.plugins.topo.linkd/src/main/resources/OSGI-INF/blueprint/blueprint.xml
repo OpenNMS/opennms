@@ -59,9 +59,12 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         </service-properties>
     </service>
 
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
+
     <!-- EnhancedLinkd StatusProviders Service and CheckedOperation -->
     <bean id="linkdEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdEdgeStatusProvider">
         <property name="alarmDao" ref="alarmDao"/>
+        <property name="sessionUtils" ref="sessionUtils"/>
     </bean>
 
 	<bean id="linkdWrappedEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdWrappedEdgeStatusProviders" init-method="init">
