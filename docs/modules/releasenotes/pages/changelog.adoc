@@ -2,6 +2,19 @@
 
 = Changelog
 
+[[releasenotes-changelog-Meridian-2021.1.9]]
+
+== Release Meridian-2021.1.9
+
+Release 2021.1.9 is a re-release of 2021.1.8 with additional fixes relating to
+Log4j2 vulnerabilities.
+
+The codename for 2021.1.9 is link:https://wikipedia.org/wiki/$$Venera_6$$[_Venera 6_].
+
+=== Bug
+
+* CVE-2021-45046: incomplete Log4j2 vulnerability mitigation (Issue http://issues.opennms.org/browse/NMS-13858[NMS-13858])
+
 [[releasenotes-changelog-Meridian-2021.1.8]]
 
 == Release Meridian-2021.1.8
