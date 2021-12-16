@@ -2,6 +2,19 @@
 
 = Changelog
 
+[[releasenotes-changelog-29.0.4]]
+
+==== Release 29.0.4
+
+Release 29.0.4 is a re-release of 29.0.3 with additional fixes relating to
+Log4j2 vulnerabilities.
+
+The codename for Horizon 29.0.4 is https://wikipedia.org/wiki/$$Bird_(gesture)$$[_The Bird_].
+
+===== Bug
+
+* CVE-2021-45046: incomplete Log4j2 vulnerability mitigation (Issue http://issues.opennms.org/browse/NMS-13858[NMS-13858])
+
 [[releasenotes-changelog-29.0.3]]
 
 ==== Release 29.0.3
