@@ -57,7 +57,7 @@ public class JUnitSnmpAgentExecutionListenerIT {
     @Before
     public void setUp() throws Exception {
     	MockLogAppender.setupLogging();
-    	SnmpPeerFactory.setInstance(new SnmpPeerFactory());
+		SnmpPeerFactory.setInstance(new ProxySnmpAgentConfigFactory());
     }
 
     @Test
