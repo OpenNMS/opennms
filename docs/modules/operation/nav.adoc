@@ -132,6 +132,7 @@
 ** xref:flows/basic.adoc[]
 ** xref:flows/distributed.adoc[]
 ** xref:flows/sentinel/sentinel.adoc[]
+** xref:flows/nephron.adoc[]
 ** xref:flows/classification-engine.adoc[]
 ** xref:flows/aggregation.adoc[]
 
