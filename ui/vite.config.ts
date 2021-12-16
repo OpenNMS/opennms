@@ -9,7 +9,13 @@ export default defineConfig({
       '~@featherds': '@featherds'
     }
   },
-  plugins: [vue(), svgLoader()],
+  plugins: [vue({
+    template: {
+      compilerOptions: {
+        isCustomElement: tag => tag.includes('rapi-doc')
+      }
+    }
+  }), svgLoader()],
   define: {
     'process.env': process.env
   }
