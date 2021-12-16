@@ -29,6 +29,7 @@
 package org.opennms.config.upgrade;
 
 import java.sql.Connection;
+import java.util.Objects;
 
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 
@@ -52,10 +53,10 @@ public class LiquibaseUpgrader {
     public final static String TABLE_NAME_DATABASECHANGELOG = "cm_databasechangelog";
     public final static String TABLE_NAME_DATABASECHANGELOGLOCK = TABLE_NAME_DATABASECHANGELOG + "lock";
 
-    final ConfigurationManagerService cm;
+    final private ConfigurationManagerService cm;
 
     public LiquibaseUpgrader(final ConfigurationManagerService cm) {
-        this.cm = cm;
+        this.cm = Objects.requireNonNull(cm);
     }
 
     public void runChangelog(final String changelog, final Connection sqlConnection) throws LiquibaseException {

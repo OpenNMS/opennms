@@ -33,6 +33,7 @@ import static org.opennms.features.config.service.util.PropertiesConversionUtil.
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -57,8 +58,8 @@ public class CmProperties {
     private boolean needReload = false;
 
     public CmProperties(final ConfigurationManagerService cm, ConfigUpdateInfo configIdentifier) {
-        this.cm = cm;
-        this.configIdentifier = configIdentifier;
+        this.cm = Objects.requireNonNull(cm);
+        this.configIdentifier = Objects.requireNonNull(configIdentifier);
         boolean shouldListenToConfigChanges = Boolean.getBoolean(CHECK_LAST_MODIFY_STRING);
         if (shouldListenToConfigChanges) {
             // we want to be notified when config has changed
