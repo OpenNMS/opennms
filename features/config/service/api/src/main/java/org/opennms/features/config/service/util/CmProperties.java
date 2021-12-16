@@ -102,8 +102,6 @@ public class CmProperties {
     public void setProperty(final String key, final Object value) throws IOException {
         lock.lock();
         try {
-            // first we do get to make sure the properties are loaded
-            get();
             if (!value.equals(get().get(key))) {
                 get().put(key, value);
                 write();
