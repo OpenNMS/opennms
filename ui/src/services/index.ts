@@ -22,6 +22,7 @@ import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtens
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
+import { getOpenApi } from './helpService'
 
 export default {
   search,
@@ -50,4 +51,5 @@ export default {
   getSnippets,
   getFileNames,
   getFileExtensions,
+  getOpenApi
 }

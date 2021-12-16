@@ -14,6 +14,7 @@ import authModule from './auth'
 import logsModule from './logs'
 import appModule from './app'
 import infoModule from './info'
+import helpModule from './help'
 
 export default createStore({
   modules: {
@@ -29,6 +30,7 @@ export default createStore({
     logsModule,
     authModule,
     appModule,
-    infoModule
+    infoModule,
+    helpModule
   }
 })

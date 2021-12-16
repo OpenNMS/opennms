@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import FileEditor from '@/containers/FileEditor.vue'
 import Logs from '@/containers/Logs.vue'
+import OpenAPI from '@/containers/OpenAPI.vue'
 
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
@@ -64,6 +65,11 @@ const router = createRouter({
           component: () => import('@/components/Map/MapNodesGrid.vue')
         },
       ],
+    },
+    {
+      path: '/open-api',
+      name: 'OpenAPI',
+      component: OpenAPI
     },
   ]
 })

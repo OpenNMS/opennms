@@ -33,6 +33,12 @@
         :icon="MarkComplete"
         title="Logs"
       />
+      <FeatherRailItem
+        :class="{ selected: isSelected('/open-api') }"
+        href="#/open-api"
+        :icon="MarkComplete"
+        title="OpenAPI"
+      />
     </template>
   </FeatherNavigationRail>
 </template>
