@@ -221,13 +221,26 @@ For a more complete list of major changes included in this release, see the link
 
 === Changelog
 
+[[releasenotes-changelog-Meridian-2020.1.17]]
+
+==== Release Meridian-2020.1.17
+
+Release 2020.1.17 is a re-release of 2020.1.16 with additional fixes relating to
+Log4j2 vulnerabilities.
+
+The codename for 2020.1.17 is link:https://wikipedia.org/wiki/$$Blowhole_(geology)$$[_Blowhole_].
+
+===== Bug
+
+* CVE-2021-45046: incomplete Log4j2 vulnerability mitigation (Issue http://issues.opennms.org/browse/NMS-13858[NMS-13858])
+
 [[releasenotes-changelog-Meridian-2020.1.16]]
 
 ==== Release Meridian-2020.1.16
 
 Release 2020.1.16 is an out-of-band release with a fix for the Log4j2 security issue.
 
-The codename for 2020.1.16 is link:$$https://wikipedia.org/wiki/Stack_(geology)$$[_Stack_].
+The codename for 2020.1.16 is link:https://wikipedia.org/wiki/$$Stack_(geology)$$[_Stack_].
 
 ===== Bug
 
@@ -240,7 +253,7 @@ The codename for 2020.1.16 is link:$$https://wikipedia.org/wiki/Stack_(geology)$
 Release 2020.1.15 contains a fix for a Jetty CVE, plus an update to fix a bug in user auth changes,
 and an enhancement to SNMPv3 user authentication.
 
-The codename for 2020.1.15 is link:$$https://wikipedia.org/wiki/Lagoon$$[_Lagoon_].
+The codename for 2020.1.15 is link:https://wikipedia.org/wiki/$$Lagoon$$[_Lagoon_].
 
 ===== Bug
 
@@ -257,7 +270,7 @@ The codename for 2020.1.15 is link:$$https://wikipedia.org/wiki/Lagoon$$[_Lagoon
 
 Release 2020.1.14 contains a few small features updates and a number of bug fixes, including an XSS security issue in the notifications wizard.
 
-The codename for 2020.1.14 is link:$$https://wikipedia.org/wiki/Tessellated_pavement$$[_Tessellated Pavement_].
+The codename for 2020.1.14 is link:https://wikipedia.org/wiki/$$Tessellated_pavement$$[_Tessellated Pavement_].
 
 ===== Bug
 
@@ -279,7 +292,7 @@ The codename for 2020.1.14 is link:$$https://wikipedia.org/wiki/Tessellated_pave
 
 Release 2020.1.13 contains a couple of small bug fixes.
 
-The codename for 2020.1.13 is link:$$https://wikipedia.org/wiki/Strait$$[_Strait_].
+The codename for 2020.1.13 is link:https://wikipedia.org/wiki/$$Strait$$[_Strait_].
 
 ===== Bug
 
@@ -292,7 +305,7 @@ The codename for 2020.1.13 is link:$$https://wikipedia.org/wiki/Strait$$[_Strait
 
 Release 2020.1.12 contains a few small bug fixes, including a CVE dependency update.
 
-The codename for 2020.1.12 is link:$$https://wikipedia.org/wiki/Atoll$$[_Atoll_].
+The codename for 2020.1.12 is link:https://wikipedia.org/wiki/$$Atoll$$[_Atoll_].
 
 ===== Bug
 
@@ -306,7 +319,7 @@ The codename for 2020.1.12 is link:$$https://wikipedia.org/wiki/Atoll$$[_Atoll_]
 
 Release 2020.1.11 contains an update for a Jetty CVE plus a couple of XSS fixes and a Minion OOM bug.
 
-The codename for 2020.1.11 is link:$$https://wikipedia.org/wiki/Ayre_(landform)$$[_Ayre_].
+The codename for 2020.1.11 is link:https://wikipedia.org/wiki/$$Ayre_(landform)$$[_Ayre_].
 
 ===== Bug
 
@@ -321,7 +334,7 @@ The codename for 2020.1.11 is link:$$https://wikipedia.org/wiki/Ayre_(landform)$
 
 Release 2020.1.10 contains a few dependency security updates and an enhancement to the Kafka producer.
 
-The codename for 2020.1.10 is link:$$https://wikipedia.org/wiki/Calanque$$[_Calanque_].
+The codename for 2020.1.10 is link:https://wikipedia.org/wiki/$$Calanque$$[_Calanque_].
 
 ===== Enhancement
 
@@ -338,7 +351,7 @@ The codename for 2020.1.10 is link:$$https://wikipedia.org/wiki/Calanque$$[_Cala
 
 Release 2020.1.9 contains a few bug fixes and enhancements.
 
-The codename for 2020.1.9 is link:$$https://wikipedia.org/wiki/Wave-cut_platform$$[_Wave-Cut Platform_].
+The codename for 2020.1.9 is link:https://wikipedia.org/wiki/$$Wave-cut_platform$$[_Wave-Cut Platform_].
 
 ===== Bug
 
@@ -358,7 +371,7 @@ The codename for 2020.1.9 is link:$$https://wikipedia.org/wiki/Wave-cut_platform
 
 Release 2020.1.8 contains a number of security fixes, as well as fixes for a few other bugs.
 
-The codename for 2020.1.8 is link:$$https://wikipedia.org/wiki/Isthmus$$[_Isthmus_].
+The codename for 2020.1.8 is link:https://wikipedia.org/wiki/$$Isthmus$$[_Isthmus_].
 
 ===== Bug
 
@@ -378,7 +391,7 @@ The codename for 2020.1.8 is link:$$https://wikipedia.org/wiki/Isthmus$$[_Isthmu
 Release 2020.1.7 contains an enhancement to event forwarding performance in the Kafka
 producer, plus a number of bug fixes including a Jetty DoS CVE.
 
-The codename for 2020.1.7 is link:$$https://wikipedia.org/wiki/Firth$$[_Firth_].
+The codename for 2020.1.7 is link:https://wikipedia.org/wiki/$$Firth$$[_Firth_].
 
 ===== Bug
 
@@ -406,7 +419,7 @@ The codename for 2020.1.7 is link:$$https://wikipedia.org/wiki/Firth$$[_Firth_].
 Release 2020.1.6 contains a number of small bug fixes and enhancements, including some
 UI cleanups, Newts fixes, and a security update to Apache POI.
 
-The codename for 2020.1.6 is link:$$https://wikipedia.org/wiki/Bight_(geography)$$[_Bight_].
+The codename for 2020.1.6 is link:https://wikipedia.org/wiki/$$Bight_(geography)$$[_Bight_].
 
 ===== Bug
 
@@ -429,7 +442,7 @@ The codename for 2020.1.6 is link:$$https://wikipedia.org/wiki/Bight_(geography)
 
 Release 2020.1.5 contains a few bugfixes and a log verbosity enhancement.
 
-The codename for 2020.1.5 is link:$$https://wikipedia.org/wiki/Strandflat$$[_Strandflat_].
+The codename for 2020.1.5 is link:https://wikipedia.org/wiki/$$Strandflat$$[_Strandflat_].
 
 ===== Bug
 
@@ -448,7 +461,7 @@ The codename for 2020.1.5 is link:$$https://wikipedia.org/wiki/Strandflat$$[_Str
 
 Release 2020.1.4 contains an SNMP poller fix and a small enhancement to package dependencies.
 
-The codename for 2020.1.4 is link:$$https://wikipedia.org/wiki/Machair$$[_Machair_].
+The codename for 2020.1.4 is link:https://wikipedia.org/wiki/$$Machair$$[_Machair_].
 
 ===== Bug
 
@@ -458,7 +471,7 @@ The codename for 2020.1.4 is link:$$https://wikipedia.org/wiki/Machair$$[_Machai
 
 * Depend on haveged (and supply it in our repo) (Issue http://issues.opennms.org/browse/NMS-8959[NMS-8959])
 
-The codename for 2020.1.4 is _link:$$https://wikipedia.org/wiki/Ria$$[Ria]_.
+The codename for 2020.1.4 is _link:https://wikipedia.org/wiki/$$Ria$$[Ria]_.
 
 [[releasenotes-changelog-Meridian-2020.1.3]]
 
@@ -472,7 +485,7 @@ OpenNMS to fail to start.
 BREAKING: If you created reports in 2020.1.2, they will need to be
 recreated in 2020.1.3.
 
-The codename for 2020.1.3 is _link:$$https://wikipedia.org/wiki/Fjord$$[Fjord]_.
+The codename for 2020.1.3 is _link:https://wikipedia.org/wiki/$$Fjord$$[Fjord]_.
 
 ===== Bug
 
@@ -486,7 +499,7 @@ Release 2020.1.2 is the third release in the Meridian 2020 series.
 
 It contains a number of bug fixes including a fix for a critical Jetty CVE.
 
-The codename for 2020.1.2 is _link:$$https://wikipedia.org/wiki/Skerry$$[Skerry]_.
+The codename for 2020.1.2 is _link:https://wikipedia.org/wiki/$$Skerry$$[Skerry]_.
 
 ===== Bug
 
@@ -505,7 +518,7 @@ Release 2020.1.1 is the second release in the Meridian 2020 series.
 
 It contains a number of bug fixes and enhancements.
 
-The codename for 2020.1.1 is _link:$$https://wikipedia.org/wiki/Tombolo$$[Tombolo]_.
+The codename for 2020.1.1 is _link:https://wikipedia.org/wiki/$$Tombolo$$[Tombolo]_.
 
 ===== Bug
 
@@ -524,7 +537,7 @@ The codename for 2020.1.1 is _link:$$https://wikipedia.org/wiki/Tombolo$$[Tombol
 
 Release 2020.1.0 is the first release in the Meridian 2020 series, based on Horizon 26.1.x.
 
-The codename for 2020.1.0 is _link:$$https://wikipedia.org/wiki/Archipelago$$[Archipelago]_.
+The codename for 2020.1.0 is _link:https://wikipedia.org/wiki/$$Archipelago$$[Archipelago]_.
 
 ===== Bug
 
