@@ -319,6 +319,19 @@ For a more complete list of changes included in this release, see the "What's Ne
 
 === Changelog
 
+[[releasenotes-changelog-Meridian-2019.1.28]]
+
+==== Release Meridian-2019.1.28
+
+Release 2019.1.28 is a re-release of 2019.1.27 with additional fixes relating to
+Log4j2 vulnerabilities.
+
+The codename for Horizon 2019.1.28 is https://wikipedia.org/wiki/$$HD_4208_b$$[_Xolotlan_].
+
+===== Bug
+
+* CVE-2021-45046: incomplete Log4j2 vulnerability mitigation (Issue http://issues.opennms.org/browse/NMS-13858[NMS-13858])
+
 [[releasenotes-changelog-Meridian-2019.1.27]]
 
 ==== Release Meridian-2019.1.27
