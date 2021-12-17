@@ -36,7 +36,7 @@ import java.util.Map;
 import org.opennms.features.apilayer.common.utils.InterfaceMapper;
 import org.opennms.integration.api.v1.collectors.ServiceCollectorFactory;
 import org.opennms.netmgt.collection.api.ServiceCollector;
-import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.osgi.framework.BundleContext;
 
@@ -44,25 +44,21 @@ public class ServiceCollectorManager extends InterfaceMapper<ServiceCollectorFac
     private final int rrdStep;
     private final int rrdHeartBeat;
     private final String rrdRraStr;
-    private final String rrdBaseDir;
 
-    public ServiceCollectorManager(BundleContext bundleContext, int rrdStep, int rrdHeartBeat, String rrdRrsStr, String rrdBaseDir) {
+    public ServiceCollectorManager(BundleContext bundleContext, int rrdStep, int rrdHeartBeat, String rrdRrsStr) {
         super(ServiceCollector.class, bundleContext);
         this.rrdStep = rrdStep;
         this.rrdHeartBeat = rrdHeartBeat;
         this.rrdRraStr = rrdRrsStr;
-        this.rrdBaseDir = rrdBaseDir;
-
     }
 
     @Override
     public ServiceCollector map(ServiceCollectorFactory ext) {
-        String path = ResourcePath.fromString(System.getProperty("opennms.home") + rrdBaseDir).toString();
         RrdRepository rrdRepository = new RrdRepository();
         rrdRepository.setStep(rrdStep);
         rrdRepository.setHeartBeat(rrdHeartBeat);
         rrdRepository.setRraList(Arrays.asList(rrdRraStr.split(",")));
-        rrdRepository.setRrdBaseDir(new File(path));
+        rrdRepository.setRrdBaseDir(new File(ResourceTypeUtils.DEFAULT_RRD_ROOT, ResourceTypeUtils.SNMP_DIRECTORY));
         return new ServiceCollectorImpl(ext, rrdRepository);
     }
 
