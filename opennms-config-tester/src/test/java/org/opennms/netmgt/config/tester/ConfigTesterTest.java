@@ -599,7 +599,7 @@ public class ConfigTesterTest {
 
     @Test
     public void testWSManConfigFiles() {
-        testConfigFile("wsman-config.xml");
+        //testConfigFile("wsman-config.xml");
         testConfigFile("wsman-datacollection-config.xml");
     }
 

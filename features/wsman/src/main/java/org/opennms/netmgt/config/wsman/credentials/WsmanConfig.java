@@ -32,14 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
-import org.opennms.core.xml.ValidateUsing;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * <p>Java class for anonymous complex type.
@@ -69,39 +62,33 @@ import org.opennms.core.xml.ValidateUsing;
  * 
  * 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "definition"
-})
-@XmlRootElement(name = "wsman-config")
-@ValidateUsing("wsman-config.xsd")
 public class WsmanConfig implements WsmanAgentConfig {
 
-    @XmlElement
-    protected List<Definition> definition;
-    @XmlAttribute(name = "timeout")
+    @JsonProperty("definition")
+    protected List<Definition> definitions;
+    @JsonProperty("timeout")
     protected Integer timeout;
-    @XmlAttribute(name = "retry")
+    @JsonProperty("retry")
     protected Integer retry;
-    @XmlAttribute(name = "username")
+    @JsonProperty("username")
     protected String username;
-    @XmlAttribute(name = "password")
+    @JsonProperty("password")
     protected String password;
-    @XmlAttribute(name = "port")
+    @JsonProperty("port")
     protected Integer port;
-    @XmlAttribute(name = "max-elements")
+    @JsonProperty("max-elements")
     protected Integer maxElements;
-    @XmlAttribute(name = "ssl")
+    @JsonProperty("ssl")
     protected Boolean ssl;
-    @XmlAttribute(name = "strict-ssl")
+    @JsonProperty("strict-ssl")
     protected Boolean strictSsl;
-    @XmlAttribute(name = "path")
+    @JsonProperty("path")
     protected String path;
-    @XmlAttribute(name = "product-vendor")
+    @JsonProperty("product-vendor")
     protected String productVendor;
-    @XmlAttribute(name = "product-version")
+    @JsonProperty("product-version")
     protected String productVersion;
-    @XmlAttribute(name = "gss-auth")
+    @JsonProperty("gss-auth")
     protected Boolean gssAuth;
 
     /**
@@ -126,11 +113,11 @@ public class WsmanConfig implements WsmanAgentConfig {
      * 
      * 
      */
-    public List<Definition> getDefinition() {
-        if (definition == null) {
-            definition = new ArrayList<>();
+    public List<Definition> getDefinitions() {
+        if (definitions == null) {
+            definitions = new ArrayList<>();
         }
-        return this.definition;
+        return this.definitions;
     }
 
     /**
@@ -387,7 +374,7 @@ public class WsmanConfig implements WsmanAgentConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hash(definition, timeout, retry, username, password, port,
+        return Objects.hash(definitions, timeout, retry, username, password, port,
                 maxElements, ssl, strictSsl, path, productVendor, productVersion, gssAuth);
     }
 
@@ -400,7 +387,7 @@ public class WsmanConfig implements WsmanAgentConfig {
         if (getClass() != obj.getClass())
             return false;
         WsmanConfig other = (WsmanConfig) obj;
-        return Objects.equals(this.definition, other.definition) &&
+        return Objects.equals(this.definitions, other.definitions) &&
                 Objects.equals(this.timeout, other.timeout) &&
                 Objects.equals(this.retry, other.retry) &&
                 Objects.equals(this.username, other.username) &&
