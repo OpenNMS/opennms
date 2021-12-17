@@ -209,5 +209,12 @@
       <artifactId>org.opennms.features.config.service.impl</artifactId>
       <version>30.0.0-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>org.opennms.features.config.test</artifactId>
+      <scope>test</scope>
+      <type>test-jar</type>
+      <version>30.0.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>
