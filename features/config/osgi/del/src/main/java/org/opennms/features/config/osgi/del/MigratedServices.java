@@ -40,7 +40,8 @@ import java.util.Set;
 public class MigratedServices {
 
     final public static Set<String> PIDS =  Set.of(
-            "org.opennms.features.datachoices"
+            "org.opennms.features.datachoices",
+            "org.opennms.features.topology.app.icons.application"
     );
 
     public static boolean isMigrated(final String pid) {
