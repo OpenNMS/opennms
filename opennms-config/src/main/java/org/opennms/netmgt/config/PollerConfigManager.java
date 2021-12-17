@@ -56,7 +56,6 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.poller.CriticalService;
 import org.opennms.netmgt.config.poller.ExcludeRange;
 import org.opennms.netmgt.config.poller.IncludeRange;
@@ -1036,12 +1035,9 @@ abstract public class PollerConfigManager implements PollerConfig {
             getReadLock().lock();
             for(final Monitor monitor : monitors()) {
                 try {
-                    final Class<? extends ServiceMonitor> mc = findServiceMonitorClass(monitor);
-                    final ServiceMonitorLocator locator = new DefaultServiceMonitorLocator(monitor.getService(), mc);
+                    final ServiceMonitorLocator locator = new DefaultServiceMonitorLocator(monitor.getService(), monitor.getClassName());
                     locators.add(locator);
                     LOG.debug("Loaded monitor for service: {}, class-name: {}", monitor.getService(), monitor.getClassName());
-                } catch (final ClassNotFoundException e) {
-                    LOG.warn("Unable to load monitor for service: {}, class-name: {}: {}", monitor.getService(), monitor.getClassName(), e.getMessage());
                 } catch (ConfigObjectRetrievalFailureException e) {
                     LOG.warn("{} {}", e.getMessage(), e.getRootCause(), e);
                 }
@@ -1052,14 +1048,6 @@ abstract public class PollerConfigManager implements PollerConfig {
 
         return locators;
         
-    }
-
-    private Class<? extends ServiceMonitor> findServiceMonitorClass(final Monitor monitor) throws ClassNotFoundException {
-        final Class<? extends ServiceMonitor> mc = Class.forName(monitor.getClassName()).asSubclass(ServiceMonitor.class);
-        if (!ServiceMonitor.class.isAssignableFrom(mc)) {
-            throw new MarshallingResourceFailureException("The monitor for service: "+monitor.getService()+" class-name: "+monitor.getClassName()+" must implement ServiceMonitor");
-        }
-        return mc;
     }
 
     @Override
@@ -1082,4 +1070,8 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
+    @Override
+    public List<Monitor> getConfiguredMonitors() {
+        return m_config.getMonitors();
+    }
 }

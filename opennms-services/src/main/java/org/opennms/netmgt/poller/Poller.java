@@ -36,6 +36,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.InRestriction;
@@ -43,6 +45,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
+import org.opennms.netmgt.config.poller.Monitor;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -394,7 +397,9 @@ public class Poller extends AbstractServiceDaemon {
 
     private void scheduleExistingServices() throws Exception {
         scheduleServices();
+    }
 
+    private void postScheduled() {
         getNetwork().recalculateStatus();
         getNetwork().propagateInitialCause();
         getNetwork().resetStatusChanged();
@@ -467,13 +472,30 @@ public class Poller extends AbstractServiceDaemon {
     private int scheduleServices() {
         final Criteria criteria = new Criteria(OnmsMonitoredService.class);
         criteria.addRestriction(new InRestriction("status", Arrays.asList("A", "N")));
-
         return m_transactionTemplate.execute(new TransactionCallback<Integer>() {
             @Override
             public Integer doInTransaction(TransactionStatus arg0) {
                 final List<OnmsMonitoredService> services =  m_monitoredServiceDao.findMatching(criteria);
-                for (OnmsMonitoredService service : services) {
-                    scheduleService(service);
+                List<Monitor> monitors = m_pollerConfig.getConfiguredMonitors();
+                ServiceMonitorRegistry registry = m_pollerConfig.getServiceMonitorRegistry();
+                AtomicInteger counter = new AtomicInteger();
+                for(OnmsMonitoredService service: services) {
+                    Monitor monitor = monitors.stream().filter(m -> m.getService().equals(service.getServiceType().getName())).findFirst().orElse(null);
+                    if(monitor == null) {
+                        LOG.warn("Monitor service {} is not configured correctly.", service.getServiceType().getName());
+                        continue;
+                    }
+                    CompletableFuture<ServiceMonitor> future = registry.getMonitorFutureByClassName(monitor.getClassName());
+                    future.whenComplete((m, ex) -> {
+                        scheduleService(service);
+                        int scheduled = counter.incrementAndGet();
+                        if(scheduled == services.size()) {
+                            postScheduled();
+                        }
+                    });
+                    if(!future.isDone()) {
+                        LOG.warn("The monitor {} not initialized", monitor.getService());
+                    }
                 }
                 return services.size();
             }
