@@ -128,7 +128,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
             CompletableFuture<PollerResponse> future = m_locationAwarePollerClient.poll()
                 .withService(m_service)
-                .withMonitor(m_serviceMonitor)
+                .withMonitor(m_pollerConfig.getServiceMonitor(m_configService.getName()))
                 .withTimeToLive(ttlInMs)
                 .withAttributes(getParameters())
                 .withAdaptor(m_latencyStoringServiceMonitorAdaptor)
