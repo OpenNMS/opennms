@@ -30,14 +30,16 @@ package org.opennms.netmgt.poller;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.InRestriction;
@@ -144,7 +146,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventIpcManager(EventIpcManager eventIpcManager) {
         m_eventMgr = eventIpcManager;
@@ -153,7 +155,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>getEventIpcManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventIpcManager() {
         return m_eventMgr;
@@ -469,37 +471,56 @@ public class Poller extends AbstractServiceDaemon {
         }
     }
 
-    private int scheduleServices() {
+    private void scheduleServices() {
         final Criteria criteria = new Criteria(OnmsMonitoredService.class);
         criteria.addRestriction(new InRestriction("status", Arrays.asList("A", "N")));
-        return m_transactionTemplate.execute(new TransactionCallback<Integer>() {
+        final List<OnmsMonitoredService> services =  m_monitoredServiceDao.findMatching(criteria);
+        List<Monitor> monitors = m_pollerConfig.getConfiguredMonitors();
+        ServiceMonitorRegistry registry = m_pollerConfig.getServiceMonitorRegistry();
+        Map<CompletableFuture<ServiceMonitor>, OnmsMonitoredService> delayedMonitors = new HashMap<>();
+        List<OnmsMonitoredService> readyToSchedule = new ArrayList<>();
+        for(OnmsMonitoredService service: services) {
+            Monitor monitor = monitors.stream().filter(m -> m.getService().equals(service.getServiceType().getName())).findFirst().orElse(null);
+            if(monitor == null) {
+                LOG.warn("Monitor service {} is not configured correctly.", service.getServiceType().getName());
+                continue;
+            }
+            CompletableFuture<ServiceMonitor> future =  registry.getMonitorFutureByClassName(monitor.getClassName());
+            if(future.isDone()) {
+                readyToSchedule.add(service);
+            } else {
+                LOG.warn("The monitor {} with class {}, hasn't been initialized.", monitor.getService(), monitor.getClassName());
+                delayedMonitors.put(future, service);
+            }
+        }
+        m_transactionTemplate.execute(new TransactionCallback<Integer>() {
             @Override
             public Integer doInTransaction(TransactionStatus arg0) {
-                final List<OnmsMonitoredService> services =  m_monitoredServiceDao.findMatching(criteria);
-                List<Monitor> monitors = m_pollerConfig.getConfiguredMonitors();
-                ServiceMonitorRegistry registry = m_pollerConfig.getServiceMonitorRegistry();
-                AtomicInteger counter = new AtomicInteger();
-                for(OnmsMonitoredService service: services) {
-                    Monitor monitor = monitors.stream().filter(m -> m.getService().equals(service.getServiceType().getName())).findFirst().orElse(null);
-                    if(monitor == null) {
-                        LOG.warn("Monitor service {} is not configured correctly.", service.getServiceType().getName());
-                        continue;
-                    }
-                    CompletableFuture<ServiceMonitor> future = registry.getMonitorFutureByClassName(monitor.getClassName());
-                    future.whenComplete((m, ex) -> {
-                        scheduleService(service);
-                        int scheduled = counter.incrementAndGet();
-                        if(scheduled == services.size()) {
-                            postScheduled();
-                        }
-                    });
-                    if(!future.isDone()) {
-                        LOG.warn("The monitor {} not initialized", monitor.getService());
-                    }
+                for(OnmsMonitoredService service: readyToSchedule) {
+                    scheduleService(m_monitoredServiceDao.load(service.getId()));
                 }
-                return services.size();
+                return readyToSchedule.size();
             }
         });
+        postScheduled();
+
+        scheduleDelayedService(delayedMonitors);
+    }
+
+    private void scheduleDelayedService(Map<CompletableFuture<ServiceMonitor>, OnmsMonitoredService> delayedServices) {
+        for (CompletableFuture<ServiceMonitor> future: delayedServices.keySet()) {
+            future.whenComplete((sm, ex) -> {
+                OnmsMonitoredService service = delayedServices.get(future);
+                m_transactionTemplate.execute(new TransactionCallback<Integer>() {
+                    @Override
+                    public Integer doInTransaction(TransactionStatus transactionStatus) {
+                        scheduleService(m_monitoredServiceDao.load(service.getId()));
+                        postScheduled();
+                        return 1;
+                    }
+                });
+            });
+        }
     }
 
     private boolean scheduleService(OnmsMonitoredService service) {
