@@ -28,7 +28,8 @@
 
 package org.opennms.features.config.convert;
 
-import com.atlassian.oai.validator.report.ValidationReport;
+import java.io.IOException;
+
 import org.eclipse.persistence.jpa.jpql.Assert;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.beans.SamePropertyValuesAs;
@@ -41,7 +42,7 @@ import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import java.io.IOException;
+import com.atlassian.oai.validator.report.ValidationReport;
 
 @RunWith(Parameterized.class)
 abstract public class CmConfigTest<T> {

@@ -32,12 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 /**
@@ -70,42 +65,37 @@ import javax.xml.bind.annotation.XmlType;
  * 
  * 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "range",
-    "specific",
-    "ipMatch"
-})
-@XmlRootElement(name = "definition")
 public class Definition implements WsmanAgentConfig {
 
+    @JsonProperty("range")
     protected List<Range> range;
+    @JsonProperty("specific")
     protected List<String> specific;
-    @XmlElement(name = "ip-match")
+    @JsonProperty("ip-match")
     protected List<String> ipMatch;
-    @XmlAttribute(name = "retry")
+    @JsonProperty("retry")
     protected Integer retry;
-    @XmlAttribute(name = "timeout")
+    @JsonProperty("timeout")
     protected Integer timeout;
-    @XmlAttribute(name = "username")
+    @JsonProperty("username")
     protected String username;
-    @XmlAttribute(name = "password")
+    @JsonProperty("password")
     protected String password;
-    @XmlAttribute(name = "port")
+    @JsonProperty("port")
     protected Integer port;
-    @XmlAttribute(name = "max-elements")
+    @JsonProperty("max-elements")
     protected Integer maxElements;
-    @XmlAttribute(name = "ssl")
+    @JsonProperty("ssl")
     protected Boolean ssl;
-    @XmlAttribute(name = "strict-ssl")
+    @JsonProperty("strict-ssl")
     protected Boolean strictSsl;
-    @XmlAttribute(name = "path")
+    @JsonProperty("path")
     protected String path;
-    @XmlAttribute(name = "product-vendor")
+    @JsonProperty("product-vendor")
     protected String productVendor;
-    @XmlAttribute(name = "product-version")
+    @JsonProperty("product-version")
     protected String productVersion;
-    @XmlAttribute(name = "gss-auth")
+    @JsonProperty("gss-auth")
     protected Boolean gssAuth;
 
     public Definition() { }

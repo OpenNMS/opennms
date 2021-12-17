@@ -28,38 +28,32 @@
 
 package org.opennms.netmgt.config.wsman.credentials;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.features.config.convert.CmConfigTest;
 
-public class WsmanConfigTest extends XmlTestNoCastor<WsmanConfig> {
+public class WsmanConfigTest extends CmConfigTest<WsmanConfig> {
 
-    public WsmanConfigTest(WsmanConfig sampleObject, Object sampleXml, String schemaFile) {
-        super(sampleObject, sampleXml, schemaFile);
+
+    public WsmanConfigTest(WsmanConfig sampleObject, String sampleXml) {
+        super(sampleObject, sampleXml, "wsman-config.xsd", "wsman-config");
     }
 
     @Parameters
-    public static Collection<Object[]> data() throws Exception {
+    public static Collection<Object[]> data() throws ParseException {
         return Arrays.asList(new Object[][] {
                 {
-                    getWsmanConfig(),
-                    new File("src/test/resources/wsman-config.xml"),
-                    "target/classes/xsds/wsman-config.xsd"
+                        getWsmanConfig(),
+                        "<wsman-config xmlns=\"http://xmlns.opennms.org/xsd/config/wsman\" retry=\"2\" timeout=\"1500\" gss-auth=\"true\">\n" +
+                                "  <definition ssl=\"false\" port=\"5985\" path=\"ws-man\" username=\"Administrator\" password=\"!Administrator#\" product-vendor=\"Microsoft\" product-version=\"OS: Vista\">\n" +
+                                "    <specific>172.23.1.2</specific>\n" +
+                                "  </definition>\n" +
+                                "</wsman-config>"
                 }
         });
-    }
-
-
-    @Test(expected = Exception.class)
-    public void badConfigFailsValidation() throws IOException, Exception {
-        validateXmlString(Files.readString(Path.of("src/test/resources/wsman-config-bad.xml")));
     }
 
     private static WsmanConfig getWsmanConfig() {
@@ -77,8 +71,9 @@ public class WsmanConfigTest extends XmlTestNoCastor<WsmanConfig> {
         definition.getSpecific().add("172.23.1.2");
         definition.setProductVendor("Microsoft");
         definition.setProductVersion("OS: Vista");
-        wsmanConfig.getDefinition().add(definition);
+        wsmanConfig.getDefinitions().add(definition);
 
         return wsmanConfig;
     }
+
 }

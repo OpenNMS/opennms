@@ -28,9 +28,18 @@
 
 package org.opennms.netmgt.config;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableList;
+import static org.junit.Assert.assertTrue;
+import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,13 +48,9 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.*;
-
-import static org.junit.Assert.assertTrue;
-import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
 
 /**
  * This is a meta test, testing the coverage of {@link WillItUnmarshalIT}.
@@ -71,7 +76,7 @@ public class WillItUnmarshalCoverageMetaIT {
     /**
      * Adds all .xml files in the given directory to the list of files to test
      * coverage for.
-     * 
+     * setUpClass
      * @param directory the directory to scan for .xml files
      * 
      * @param recursive iff true, the directory is scanned recursively

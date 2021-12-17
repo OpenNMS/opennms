@@ -68,7 +68,7 @@ public class DefaultWSManConfigDao extends AbstractCmJaxbConfigDao<WsmanConfig> 
     public Definition getAgentConfig(InetAddress agentInetAddress) {
         Objects.requireNonNull(agentInetAddress);
 
-        for (Definition def : getConfig().getDefinition()) {
+        for (Definition def : getConfig().getDefinitions()) {
             // Check the specifics first
             for (String saddr : def.getSpecific()) {
                 InetAddress addr = InetAddressUtils.addr(saddr);
