@@ -52,10 +52,10 @@ Use the following command line argument to configure Kafka persistence:
 
 == Monitoring
 
-Nephron provides a number of metrics that can be used to monitor its operation. 
+Nephron provides a number of metrics that can be used to monitor its operation.
 If you use Prometheus to monitor Nephron, you must enable the link:https://ci.apache.org/projects/flink/flink-docs-master/docs/deployment/metric_reporters/#prometheus[Prometheus metric reporter] by adding the following lines to `flink-conf.yaml`:
 
-[source, console]
+[source, yml]
 ----
 metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusReporter
 metrics.reporter.prom.port: 9250-9260
@@ -63,7 +63,7 @@ metrics.reporter.prom.port: 9250-9260
 
 You must add a corresponding scrape configuration to `prometheus.yml`:
 
-[source, console]
+[source, yml]
 ----
 scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
