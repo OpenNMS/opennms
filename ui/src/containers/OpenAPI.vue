@@ -36,8 +36,8 @@ onMounted(async () => {
 
   if (protocol === https) {
     const openApiSpecString = JSON.stringify(openApiSpec)
-    openApiSpecString.replaceAll(http, https)
-    openApiSpec = JSON.parse(openApiSpecString)
+    const modifiedOpenApiSpecString = openApiSpecString.replaceAll(http, https)
+    openApiSpec = JSON.parse(modifiedOpenApiSpecString)
   }
 
   doc.value.loadSpec(openApiSpec)
