@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,15 +50,6 @@ public interface ConfigManagerRestService {
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
     Response listConfigs();
-
-    /**
-     * get raw OpenApi schema (for debug use, <b>SHOULD REMOVE BEFORE PRODUCTION</b>)
-     * @param configName
-     * @return
-     */
-    @GET
-    @Path("/schema/raw/{configName}")
-    Response getRawSchema(@PathParam("configName") String configName);
 
     @GET
     @Path("/schema/all")

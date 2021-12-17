@@ -81,7 +81,6 @@ public class ConfigSwaggerConverterAllTest {
     public void canConvertAllXsd() throws Exception {
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
         Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinition();
-        Map<String, ConfigItem> items = new HashMap<>();
         Map<String, OpenAPI> apis = new HashMap<>(defs.size());
         defs.forEach((key, def) -> {
             OpenAPI api = def.getSchema();
@@ -90,7 +89,7 @@ public class ConfigSwaggerConverterAllTest {
             }
         });
 
-        OpenAPI openapi = configSwaggerConverter.mergeAllPathsWithRemoteRef(apis, "/opennms/rest/cm/");
+        OpenAPI openapi = configSwaggerConverter.mergeAllPathsWithRemoteRef(apis, "/opennms/rest/cm");
         String yaml = configSwaggerConverter.convertOpenAPIToString(openapi, "application/yaml");
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());

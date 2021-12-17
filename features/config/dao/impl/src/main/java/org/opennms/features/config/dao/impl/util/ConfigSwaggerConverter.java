@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -44,6 +44,7 @@ import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.servers.Server;
 import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.exception.SchemaConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +81,7 @@ public class ConfigSwaggerConverter {
      * @return
      * @throws JsonProcessingException
      */
-    public String convertOpenAPIToString(OpenAPI openapi, String acceptType) throws JsonProcessingException {
+    public String convertOpenAPIToString(OpenAPI openapi, String acceptType) throws SchemaConversionException {
         ObjectMapper objectMapper;
         try {
             if (APPLICATION_JSON.equals(acceptType)) {
@@ -94,7 +95,11 @@ public class ConfigSwaggerConverter {
         }
 
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        return objectMapper.writeValueAsString(openapi);
+        try {
+            return objectMapper.writeValueAsString(openapi);
+        } catch (JsonProcessingException e) {
+            throw new SchemaConversionException("Fail to convertOpenAPIToString. ", e);
+        }
     }
 
     private Info genInfo() {
@@ -147,7 +152,7 @@ public class ConfigSwaggerConverter {
                             if (resV.getContent() != null) {
                                 resV.getContent().forEach((ck, cv) -> {
                                     if (cv.getSchema().get$ref() != null) {
-                                        cv.getSchema().set$ref(prefix + "schema/" + configName + cv.getSchema().get$ref());
+                                        cv.getSchema().set$ref(prefix + "/schema/" + configName + cv.getSchema().get$ref());
                                     }
                                 });
                             }
@@ -156,7 +161,7 @@ public class ConfigSwaggerConverter {
                     if (oper.getRequestBody() != null && oper.getRequestBody().getContent() != null) {
                         oper.getRequestBody().getContent().forEach((ck, cv) -> {
                             if (cv.getSchema().get$ref() != null) {
-                                cv.getSchema().set$ref(prefix + "schema/" + configName + cv.getSchema().get$ref());
+                                cv.getSchema().set$ref(prefix + "/schema/" + configName + cv.getSchema().get$ref());
                             }
                         });
                     }

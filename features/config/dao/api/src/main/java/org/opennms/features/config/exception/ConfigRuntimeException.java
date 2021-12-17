@@ -29,10 +29,18 @@
 package org.opennms.features.config.exception;
 
 /**
- * This exception is mainly about config conversion
+ * It is the base exception use in CM
  */
-public class ConfigConversionException extends RuntimeException {
-    public ConfigConversionException(Exception e) {
-        super(e);
+public class ConfigRuntimeException extends RuntimeException {
+    public ConfigRuntimeException() {
+        super();
+    }
+
+    public ConfigRuntimeException(String message) {
+        super(message);
+    }
+
+    public ConfigRuntimeException(String message, Throwable e) {
+        super(message, e);
     }
 }

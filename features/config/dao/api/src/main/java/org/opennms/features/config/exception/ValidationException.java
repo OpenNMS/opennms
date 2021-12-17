@@ -24,32 +24,23 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- ******************************************************************************/
-package org.opennms.features.config.dao.api.util;
+ *******************************************************************************/
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.core.util.Json;
-import io.swagger.v3.oas.models.OpenAPI;
+package org.opennms.features.config.exception;
 
-import java.io.IOException;
+import com.atlassian.oai.validator.report.ValidationReport;
 
 /**
- * OpenAPI have its own deserializer, ObjectMapper may have problem
- */
-public class OpenAPIDeserializer extends JsonDeserializer<OpenAPI> {
+ * This exception is about config validation.
+ **/
+public class ValidationException extends ConfigRuntimeException {
+    private ValidationReport report;
 
-    private ObjectMapper mapper;
-
-    public OpenAPIDeserializer() {
-        mapper = Json.mapper();
+    public ValidationException(ValidationReport report) {
+        this.report = report;
     }
 
-    @Override
-    public OpenAPI deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-        String json = jsonParser.getCodec().readTree(jsonParser).toString();
-        return mapper.readValue(json, OpenAPI.class);
+    public ValidationReport getReport() {
+        return report;
     }
 }

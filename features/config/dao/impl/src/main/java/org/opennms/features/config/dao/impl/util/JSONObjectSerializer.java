@@ -34,12 +34,12 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class JSONObjectSerialIzer extends StdSerializer<JSONObject> {
-    public JSONObjectSerialIzer() {
+public class JSONObjectSerializer extends StdSerializer<JSONObject> {
+    public JSONObjectSerializer() {
         this(null);
     }
 
-    public JSONObjectSerialIzer(Class<JSONObject> t) {
+    public JSONObjectSerializer(Class<JSONObject> t) {
         super(t);
     }
 

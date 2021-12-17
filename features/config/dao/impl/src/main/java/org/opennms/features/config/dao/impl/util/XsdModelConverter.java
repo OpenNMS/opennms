@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -33,6 +33,7 @@ import org.apache.ws.commons.schema.walker.XmlSchemaRestriction;
 import org.apache.ws.commons.schema.walker.XmlSchemaTypeInfo;
 import org.apache.ws.commons.schema.walker.XmlSchemaWalker;
 import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.exception.SchemaConversionException;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
@@ -186,6 +187,7 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         }
     }
 
+    // TODO: not only string support pattern
     private void handleStringRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
         List<XmlSchemaRestriction> patternFacets = facets.get(XmlSchemaRestriction.Type.PATTERN);
         if (patternFacets != null && !patternFacets.isEmpty()) {
@@ -217,6 +219,21 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
                 item.setMax(Long.valueOf((String) maxVal));
             }
         }
+
+        // openapi do not support exclusive
+        List<XmlSchemaRestriction> maxExclusiveFacets = facets.get(XmlSchemaRestriction.Type.EXCLUSIVE_MAX);
+        if ((maxExclusiveFacets != null) && !maxExclusiveFacets.isEmpty()) {
+            throw new SchemaConversionException("maxExclusive are not supported!", null);
+        }
+
+        List<XmlSchemaRestriction> minExclusiveFacets = facets.get(XmlSchemaRestriction.Type.EXCLUSIVE_MIN);
+        if ((minExclusiveFacets != null) && !minExclusiveFacets.isEmpty()) {
+            throw new SchemaConversionException("minExclusive are not supported!", null);
+        }
+
+        // TODO: enumeration !!! opennms-alarms/api/target/classes/xsds/northbound-alarm.xsd
+        List<XmlSchemaRestriction> enumation = facets.get(XmlSchemaRestriction.Type.ENUMERATION);
+
     }
 
     private void setRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {

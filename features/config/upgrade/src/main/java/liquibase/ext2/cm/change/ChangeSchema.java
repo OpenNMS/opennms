@@ -42,6 +42,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
+import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,23 +90,13 @@ public class ChangeSchema extends AbstractCmChange {
                 new GenericCmStatement((ConfigurationManagerService cm) -> {
                     // 1.) find schema
                     Optional<ConfigDefinition> definitionOpt = null;
-                    try {
-                        definitionOpt = ((CmDatabase) database).getConfigurationManager().getRegisteredConfigDefinition(this.schemaId);
-                    } catch (JsonProcessingException e) {
-                        LOG.error("Fail to get config definition.", e);
-                        throw new RuntimeException(e);
-                    }
+                    definitionOpt = ((CmDatabase) database).getConfigurationManager().getRegisteredConfigDefinition(this.schemaId);
                     ConfigDefinition definition;
                     if (definitionOpt.isEmpty()) {
                         // Create a new one
                         definition = new ConfigDefinition(this.schemaId);
                         definition.setConfigName(this.schemaId);
-                        try {
-                            cm.registerConfigDefinition(this.schemaId, definition);
-                        } catch (JsonProcessingException e) {
-                            LOG.error("Fail to register config definition.", e);
-                            throw new RuntimeException(e);
-                        }
+                        cm.registerConfigDefinition(this.schemaId, definition);
                     } else {
                         definition = definitionOpt.get();
                     }
@@ -121,7 +112,7 @@ public class ChangeSchema extends AbstractCmChange {
                     definition.setSchema(builder.build(false));
                     try {
                         cm.changeConfigDefinition(this.schemaId, definition);
-                    } catch (IOException e) {
+                    } catch (ValidationException e) {
                         LOG.error("Fail to change config definition.", e);
                         throw new RuntimeException(e);
                     }

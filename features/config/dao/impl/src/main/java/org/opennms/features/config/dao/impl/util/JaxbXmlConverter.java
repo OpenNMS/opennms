@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -157,7 +157,8 @@ public class JaxbXmlConverter implements ConfigConverter {
      * @return json without empty value tag
      */
     private JSONObject removeEmptyValueTag(JSONObject json) {
-        json.toMap().forEach((key, value) -> {
+        json.keySet().forEach(key -> {
+            Object value = json.get(key);
             if (VALUE_TAG.equals(key) && value instanceof String && ((String) value).trim().length() == 0) {
                 json.remove(key);
             } else if (value instanceof JSONObject) {

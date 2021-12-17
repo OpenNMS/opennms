@@ -85,19 +85,15 @@ public class CmPersistenceManager implements PersistenceManager {
     }
 
     private Optional<Dictionary<String, Object>> loadInternal(String pid) {
-        try {
-            return configService.getJSONStrConfiguration(pid, CONFIG_ID)
-                    .map(s -> new JsonAsString(s))
-                    .map(DictionaryUtil::createFromJson)
-                    .map(m -> {
-                        if(m.get(OsgiProperties.SERVICE_PID) == null) {
-                            m.put(OsgiProperties.SERVICE_PID, pid); // make sure pid is set, otherwise we will run into a Nullpointer later
-                        }
-                        return m;
-                    });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return configService.getJSONStrConfiguration(pid, CONFIG_ID)
+                .map(s -> new JsonAsString(s))
+                .map(DictionaryUtil::createFromJson)
+                .map(m -> {
+                    if(m.get(OsgiProperties.SERVICE_PID) == null) {
+                        m.put(OsgiProperties.SERVICE_PID, pid); // make sure pid is set, otherwise we will run into a Nullpointer later
+                    }
+                    return m;
+                });
     }
 
     @Override
