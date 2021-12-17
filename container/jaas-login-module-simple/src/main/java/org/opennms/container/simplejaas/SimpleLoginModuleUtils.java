@@ -111,13 +111,11 @@ public abstract class SimpleLoginModuleUtils {
             throw new FailedLoginException(msg);
         }
 
-        /* temporary remove, taking too long during debug
         if (!userConfig.comparePasswords(user, password)) {
             final String msg = "Login failed: passwords did not match for User "+ user + " in OpenNMS UserConfig.";
             LOG.debug(msg);
             throw new FailedLoginException(msg);
         };
-        */
 
         final Set<Principal> principals = SimpleLoginModuleUtils.createPrincipals(handler, configUser);
         handler.setPrincipals(principals);
@@ -152,11 +150,26 @@ public abstract class SimpleLoginModuleUtils {
     */
     private static Set<Principal> createPrincipals(SimpleOpenNMSLoginHandler handler, User configUser) {
         final Set<Principal> principals = new LinkedHashSet<>();
+
+        principals.add(new UserPrincipal(configUser.getUserId()));
+
         for (final String role : configUser.getRoles()) {
-            principals.add(new UserPrincipal(role));
             principals.add(new RolePrincipal(role));
+
+            //
+            // ALSO add the normalized role name (e.g. ROLE_ADMIN => admin) unless it is the same.  This may eventually
+            //  be reworked to only support one or the other (that is either [A] support ROLE_* in config with * in
+            //  code, or [B] require the config and code IDs to match).
+            //
+            String normalizedRoleName = SimpleLoginModuleUtils.normalizeRoleName(role);
+            if (! normalizedRoleName.equals(role)) {
+                principals.add(new RolePrincipal(normalizedRoleName));
+            }
         }
         return principals;
     }
 
+    private static String normalizeRoleName(String role) {
+        return role.toLowerCase().replaceAll("^role_", "");
+    }
 }
