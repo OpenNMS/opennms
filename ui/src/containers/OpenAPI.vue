@@ -34,7 +34,7 @@ onMounted(async () => {
   let openApiSpec = await store.dispatch('helpModule/getOpenApi')
   const protocol = window.location.protocol.slice(0, -1)
 
-  if (protocol === http) {
+  if (protocol === https) {
     const openApiSpecString = JSON.stringify(openApiSpec)
     openApiSpecString.replaceAll(http, https)
     openApiSpec = JSON.parse(openApiSpecString)
