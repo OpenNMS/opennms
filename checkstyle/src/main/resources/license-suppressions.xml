@@ -26,6 +26,8 @@
     <suppress files="org[\\/]opennms[\\/]netmgt[\\/]collectd[\\/]VmwareCimCollector.java" checks=".*"/>
     <suppress files="org[\\/]opennms[\\/]netmgt[\\/]poller[\\/]monitors[\\/]VmwareCimMonitor.java" checks=".*"/>
     <suppress files="org[\\/]opennms[\\/]netmgt[\\/]collectd[\\/]vmware[\\/]VmwareViJavaAccessTest.java" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]netmgt[\\/]alarmd[\\/]rest[\\/]jaxrs[\\/]AnnotatedMethod.java" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]netmgt[\\/]alarmd[\\/]rest[\\/]jaxrs[\\/]RolesAllowedDynamicFeature.java" checks=".*"/>
     <!-- LGPLv3 -->
     <suppress files="org[\\/]opennms[\\/]reporting[\\/]jasperreports[\\/]compiler[\\/]CustomJRJdtCompiler.java" checks=".*"/>
 </suppressions>

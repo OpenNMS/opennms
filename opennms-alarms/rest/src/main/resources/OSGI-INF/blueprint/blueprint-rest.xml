@@ -68,6 +68,12 @@
         </service-properties>
     </service>
 
-    <!-- TODO: Use SecureAnnotationInterceptor (check for alternative via the JAX-RS Whiteboard) -->
+    <bean id="rolesAllowedDynamicFeature" class="org.opennms.netmgt.alarmd.rest.jaxrs.RolesAllowedDynamicFeature" />
+    
+    <service ref="rolesAllowedDynamicFeature" interface="javax.ws.rs.container.DynamicFeature">
+        <service-properties>
+            <entry key="osgi.jaxrs.extension" value="true"/>
+        </service-properties>
+    </service>
 
 </blueprint>

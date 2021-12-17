@@ -45,7 +45,9 @@
             </Export-Package>
             <Private-Package>
               org.opennms.web.rest.support,
-              org.opennms.netmgt.alarmd.rest.internal
+              org.opennms.netmgt.alarmd.rest.internal,
+              org.opennms.netmgt.alarmd.rest.cxf,
+              org.opennms.netmgt.alarmd.rest.jaxrs
             </Private-Package>
           </instructions>
         </configuration>

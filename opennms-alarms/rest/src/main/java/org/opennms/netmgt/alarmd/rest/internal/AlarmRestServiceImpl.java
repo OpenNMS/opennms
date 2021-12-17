@@ -316,7 +316,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
     @GET
     @Path("/testjaas/user")
-    @RolesAllowed("user")
+    @RolesAllowed({"user", "ROLE_USER"})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response echoJaasUserPrincipalUser() {
 
@@ -347,7 +347,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
     @GET
     @Path("/testjaas/admin")
-    @RolesAllowed("admin") // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    @RolesAllowed({"admin", "ROLE_ADMIN"}) // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response echoJaasUserPrincipalAdmin() {
 
