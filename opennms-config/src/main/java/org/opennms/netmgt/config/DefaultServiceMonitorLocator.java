@@ -44,7 +44,7 @@ import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Serializable {
 
     String m_serviceName;
-    Class<? extends ServiceMonitor> m_serviceClass;
+    String m_serviceClass;
     
     /**
      * <p>Constructor for DefaultServiceMonitorLocator.</p>
@@ -52,14 +52,14 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
      * @param serviceName a {@link java.lang.String} object.
      * @param serviceClass a {@link java.lang.Class} object.
      */
-    public DefaultServiceMonitorLocator(String serviceName, Class<? extends ServiceMonitor> serviceClass) {
+    public DefaultServiceMonitorLocator(String serviceName, String serviceClass) {
         m_serviceName = serviceName;
         m_serviceClass = serviceClass;
     }
 
     @Override
     public CompletableFuture<ServiceMonitor> getServiceMonitor(ServiceMonitorRegistry registry) {
-        return registry.getMonitorFutureByClassName(m_serviceClass.getCanonicalName());
+        return registry.getMonitorFutureByClassName(m_serviceClass);
     }
 
     /**
@@ -79,7 +79,7 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
      */
     @Override
     public String getServiceLocatorKey() {
-        return m_serviceClass.getName();
+        return m_serviceClass;
     }
 
 }
