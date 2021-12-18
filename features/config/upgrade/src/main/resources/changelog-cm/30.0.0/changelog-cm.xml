@@ -68,4 +68,12 @@
         <cm:importConfig schemaId="notifd" configId="default" filePath="notifd-configuration.xml"/>
     </changeSet>
 
+    <changeSet author="pschweizer" id="register-org.opennms.features.topology.app.icons.application">
+        <cm:registerSchema id="org.opennms.features.topology.app.icons.application"/>
+        <cm:changeSchema schemaId="org.opennms.features.topology.app.icons.application">
+            <cm:put name="application.application" type="string" default="application"/>
+            <cm:put name="application.monitored-service" type="string" default="IP_service"/>
+        </cm:changeSchema>
+        <cm:importConfig schemaId="org.opennms.features.topology.app.icons.application" configId="default" filePath="org.opennms.features.topology.app.icons.application.cfg"/>
+    </changeSet>
 </databaseChangeLog>
