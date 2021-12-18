@@ -49,8 +49,6 @@ import org.opennms.features.config.service.api.ConfigurationManagerService;
  */
 public class CmProperties {
 
-    public static final String CHECK_LAST_MODIFY_STRING = "org.opennms.utils.propertiesCache.enableCheckFileModified";
-
     private Map<String, Object> properties;
     private final ConfigurationManagerService cm;
     private final ConfigUpdateInfo configIdentifier;
@@ -60,11 +58,7 @@ public class CmProperties {
     public CmProperties(final ConfigurationManagerService cm, ConfigUpdateInfo configIdentifier) {
         this.cm = Objects.requireNonNull(cm);
         this.configIdentifier = Objects.requireNonNull(configIdentifier);
-        boolean shouldListenToConfigChanges = Boolean.getBoolean(CHECK_LAST_MODIFY_STRING);
-        if (shouldListenToConfigChanges) {
-            // we want to be notified when config has changed
-            cm.registerReloadConsumer(configIdentifier, (ConfigUpdateInfo key) -> this.needReload = true);
-        }
+        cm.registerReloadConsumer(configIdentifier, (ConfigUpdateInfo key) -> this.needReload = true);
         properties = null;
     }
 
