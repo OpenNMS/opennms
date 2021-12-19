@@ -93,7 +93,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
     Optional<ConfigData<CONFIG_DATATYPE>> getConfigData(String configName) throws IOException;
 
     /**
-     * add configs for the registered service name, return false is config already exist
+     * add configs for the registered service name, throws exception if config already exist
      *
      * @param configName
      * @param configData
