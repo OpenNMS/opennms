@@ -134,17 +134,4 @@ public interface ConfigurationManagerService {
      * @param configName
      */
     Set<String> getConfigIds(String configName) throws IOException;
-
-// TODO: next phase for xml conversion work
-//    /** add: inserts a child into a parent element */
-//    void addConfiguration(final String configId, final String path, final String content);
-//
-//    /** Inserts or updates an configuration element at the given path. */
-//    void putConfiguration(final String configId, final String path, final String content);
-//
-//    void putConfiguration(final String configId, JSONObject object);
-//
-//    /** Removes all configuration objects which can be found with the given xpath expression. */
-//
-//    void removeConfiguration(final String configId, final String path);
 }

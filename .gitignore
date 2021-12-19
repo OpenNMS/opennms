@@ -36,8 +36,6 @@ ui/dist/
 ui/node_modules/
 ui/package-lock.json
 
- ui/dist
-ui/package-lock.json
 ui/devConfig.ts
 # Ignore Visual Studio Code
 .factorypath

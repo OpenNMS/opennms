@@ -76,7 +76,6 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             }
             return Response.ok(schema.get()).build();
         } catch (Exception e) {
-            e.printStackTrace();
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
