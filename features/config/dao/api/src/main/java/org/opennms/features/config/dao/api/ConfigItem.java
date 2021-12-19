@@ -119,7 +119,7 @@ public class ConfigItem {
 
     public Optional<ConfigItem> getChild(final String name) {
         Objects.requireNonNull(name);
-        if(this.children == null) {
+        if (this.children == null) {
             return Optional.empty();
         }
         return children
