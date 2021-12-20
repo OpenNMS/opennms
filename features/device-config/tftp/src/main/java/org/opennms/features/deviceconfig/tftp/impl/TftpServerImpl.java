@@ -108,7 +108,7 @@ import org.slf4j.LoggerFactory;
  *
  * @since 2.0
  */
-public class TftpServerImpl implements TftpServer, Runnable {
+public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
 
     private static Logger LOG = LoggerFactory.getLogger(TftpServerImpl.class);
 
