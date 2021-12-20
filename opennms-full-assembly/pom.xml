@@ -611,6 +611,7 @@
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
+                <feature>opennms-deviceconfig</feature>
               </features>
               <repository>${project.build.directory}/opennms-repo</repository>
             </configuration>
