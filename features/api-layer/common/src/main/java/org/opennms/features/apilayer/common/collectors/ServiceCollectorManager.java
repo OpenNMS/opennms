@@ -28,6 +28,7 @@
 
 package org.opennms.features.apilayer.common.collectors;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
