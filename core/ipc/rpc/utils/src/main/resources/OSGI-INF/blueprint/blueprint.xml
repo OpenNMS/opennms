@@ -1,0 +1,29 @@
+<blueprint
+        xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+">
+
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory"/>
+    <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
+    <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory"/>
+
+    <bean id="rpcTargetHelper" class="org.opennms.core.rpc.utils.RpcTargetHelper">
+        <property name="nodeDao" ref="nodeDao"/>
+    </bean>
+
+    <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProviderImpl">
+        <property name="nodeDao" ref="nodeDao"/>
+        <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+        <property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>
+        <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+        <property name="sessionUtils" ref="sessionUtils"/>
+    </bean>
+
+    <service interface="org.opennms.core.rpc.utils.mate.EntityScopeProvider" ref="entityScopeProvider"/>
+
+</blueprint>
