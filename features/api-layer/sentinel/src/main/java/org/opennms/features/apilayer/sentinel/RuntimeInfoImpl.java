@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.minion;
+package org.opennms.features.apilayer.sentinel;
 
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.features.apilayer.common.AbstractRuntimeInfo;
@@ -40,7 +40,7 @@ public class RuntimeInfoImpl extends AbstractRuntimeInfo {
 
     @Override
     public Container getContainer() {
-        return Container.MINION;
+        return Container.SENTINEL;
     }
 
 }

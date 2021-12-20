@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,21 +26,42 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.minion;
+package org.opennms.features.apilayer.common;
+
+import java.util.Objects;
 
 import org.opennms.distributed.core.api.Identity;
-import org.opennms.features.apilayer.common.AbstractRuntimeInfo;
-import org.opennms.integration.api.v1.runtime.Container;
+import org.opennms.integration.api.v1.runtime.RuntimeInfo;
+import org.opennms.integration.api.v1.runtime.Version;
+import org.osgi.framework.FrameworkUtil;
 
-public class RuntimeInfoImpl extends AbstractRuntimeInfo {
+public abstract class AbstractRuntimeInfo implements RuntimeInfo {
 
-    public RuntimeInfoImpl(Identity identity) {
-        super(identity);
+    private final Version version;
+    private final Identity identity;
+
+    public AbstractRuntimeInfo(Identity identity) {
+        version = new VersionBean(FrameworkUtil.getBundle(getClass()).getVersion().toString());
+        this.identity = Objects.requireNonNull(identity);
     }
 
     @Override
-    public Container getContainer() {
-        return Container.MINION;
+    public Version getVersion() {
+        return version;
     }
 
+    @Override
+    public boolean isMeridian() {
+        return version.getMajor() >= 2015;
+    }
+
+    @Override
+    public String getSystemId() {
+        return identity.getId();
+    }
+
+    @Override
+    public String getSystemLocation() {
+        return identity.getLocation();
+    }
 }
