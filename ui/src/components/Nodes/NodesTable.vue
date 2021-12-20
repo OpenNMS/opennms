@@ -7,7 +7,7 @@
     </div>
     <div class="feather-row">
       <div class="feather-col-12">
-        <table class="tl1 tl2 tl3 tl4" summary="Instance Pools">
+        <table class="tl1 tl2 tl3 tl4" summary="Nodes">
           <thead>
             <tr>
               <FeatherSortHeader
@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import { reactive, computed } from 'vue'
-import Pagination from './Pagination.vue'
+import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
 import { QueryParameters } from '@/types'
 import useQueryParameters from '@/hooks/useQueryParams'

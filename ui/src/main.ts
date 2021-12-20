@@ -6,9 +6,12 @@ import store from './store'
 import "@featherds/styles"
 import "@featherds/styles/themes/open-light.css"
 
+import dateFormatDirective from './directives/v-date'
+
 createApp({
   render: () => h(App)
 })
   .use(router)
   .use(store)
+  .directive('date', dateFormatDirective)
   .mount('#app')
