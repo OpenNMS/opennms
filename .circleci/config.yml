@@ -164,7 +164,7 @@ commands:
                 -DupdatePolicy=never \
                 --update-plugins \
                 -Daether.connector.resumeDownloads=false \
-                -Daether.connector.basic.threads=8 \
+                -Daether.connector.basic.threads=1 \
                 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
                 -Pbuild-bamboo \
                 -Prun-expensive-tasks \
