@@ -814,24 +814,20 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        this.updateConfig(expectedConfig);
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
-
+        this.updateConfig(snmpConfigXml);
+        JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+        String snmpConfigJson = converter.xmlToJson(snmpConfigXml);
+        assertThat(ConfigConvertUtil.jsonToObject(snmpConfigJson, SnmpConfig.class), samePropertyValuesAs(snmpPeerFactory.getSnmpConfig()));
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.1.120");
         info.setLastIPAddress("192.168.1.130");
 
-        SnmpPeerFactory.getInstance().define(info);
-        
-//        String config = SnmpPeerFactory.marshallConfig();
-//        System.err.println(config);
-        
-        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
-        assertXmlEquals(expectedConfig, actualConfig);
-        
+        snmpPeerFactory.define(info);
+
+        String expectedConfigJson = converter.xmlToJson(expectedConfig);
+        assertThat(ConfigConvertUtil.jsonToObject(expectedConfigJson, SnmpConfig.class), samePropertyValuesAs(snmpPeerFactory.getSnmpConfig()));
     }
 
     /**
@@ -864,7 +860,6 @@ public class SnmpEventInfoTest {
         //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
         this.updateConfig(expectedConfig);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
-
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
@@ -903,7 +898,7 @@ public class SnmpEventInfoTest {
         "";
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        
+
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         this.updateConfig(expectedConfig);
@@ -1462,20 +1457,18 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        this.updateConfig(expectedConfig);
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
-
+        this.updateConfig(snmpConfigXml);
+        JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+        String snmpConfigJson = converter.xmlToJson(snmpConfigXml);
+        assertThat(ConfigConvertUtil.jsonToObject(snmpConfigJson, SnmpConfig.class), samePropertyValuesAs(snmpPeerFactory.getSnmpConfig()));
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
         info.setFirstIPAddress("192.168.1.12");
         info.setLastIPAddress("192.168.1.38");
-
-        SnmpPeerFactory.getInstance().define(info);
-        
-        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
-        assertXmlEquals(expectedConfig, actualConfig);
+        snmpPeerFactory.define(info);
+        String expectedConfigJson = converter.xmlToJson(expectedConfig);
+        assertThat(ConfigConvertUtil.jsonToObject(expectedConfigJson, SnmpConfig.class), samePropertyValuesAs(snmpPeerFactory.getSnmpConfig()));
     }
 
     /**
@@ -1536,19 +1529,21 @@ public class SnmpEventInfoTest {
 		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
 		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v2c\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\"/>\n";
     	
-    	  //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        this.updateConfig(expectedConfig);
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
+        this.updateConfig(snmpConfigXml);
+        JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+        String snmpConfigJson = converter.xmlToJson(snmpConfigXml);
+        assertThat(ConfigConvertUtil.jsonToObject(snmpConfigJson, SnmpConfig.class), samePropertyValuesAs(snmpPeerFactory.getSnmpConfig()));
 
-          SnmpEventInfo info = new SnmpEventInfo();
-          info.setVersion("v2c");
-          info.setTimeout(800);
-          info.setFirstIPAddress("192.168.0.8");
-          
-          SnmpPeerFactory.getInstance().define(info);
-          
-          String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
-          assertXmlEquals(expectedConfig, actualConfig);
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setVersion("v2c");
+        info.setTimeout(800);
+        info.setFirstIPAddress("192.168.0.8");
+
+        snmpPeerFactory.define(info);
+
+        String expectedConfigJson = converter.xmlToJson(expectedConfig);
+        assertThat(ConfigConvertUtil.jsonToObject(expectedConfigJson, SnmpConfig.class), samePropertyValuesAs(snmpPeerFactory.getSnmpConfig()));
+
     }
 
 
@@ -1575,7 +1570,7 @@ public class SnmpEventInfoTest {
                 "</snmp-config>\n" +
                 "";
         //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        this.updateConfig(expectedConfig);
+        this.updateConfig(snmpConfigXml);
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.1.35"), "MINION","test" );
@@ -1855,36 +1850,38 @@ public class SnmpEventInfoTest {
                 "    </definition>\n" +
                 "</snmp-config>\n" +
                 "";
-        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        this.updateConfig(expectedConfig);
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
+        this.updateConfig(snmpConfigXml);
+        JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+        String snmpConfigJson = converter.xmlToJson(snmpConfigXml);
+        assertThat(ConfigConvertUtil.jsonToObject(snmpConfigJson, SnmpConfig.class), samePropertyValuesAs(snmpPeerFactory.getSnmpConfig()));
 
         // Should fetch config from the definition with profile3
-        SnmpAgentConfig snmpAgentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.1.25"), "MINION");
+        SnmpAgentConfig snmpAgentConfig = snmpPeerFactory.getAgentConfig(InetAddress.getByName("192.168.1.25"), "MINION");
         assertEquals("profile3", snmpAgentConfig.getProfileLabel());
         assertFalse("Should not be default config", snmpAgentConfig.isDefault());
         assertEquals(1200, snmpAgentConfig.getTimeout());
 
-        // Deletion of the IP Address from definitions should fall back to default
-        boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.1.25"), "MINION", "test");
+       // Deletion of the IP Address from definitions should fall back to default
+        boolean success = snmpPeerFactory.removeFromDefinition(InetAddress.getByName("192.168.1.25"), "MINION", "test");
         assertTrue("Remove from definition should be successful", success);
-        snmpAgentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.1.25"), "MINION");
+        snmpAgentConfig = snmpPeerFactory.getAgentConfig(InetAddress.getByName("192.168.1.25"), "MINION");
         assertTrue("Should fall back to default config", snmpAgentConfig.isDefault());
         assertNull("Profile label shouldn't be set for default config", snmpAgentConfig.getProfileLabel());
         assertEquals(800, snmpAgentConfig.getTimeout());
 
-        snmpAgentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.2.25"), "MINION");
+        snmpAgentConfig = snmpPeerFactory.getAgentConfig(InetAddress.getByName("192.168.2.25"), "MINION");
         assertEquals("profile2", snmpAgentConfig.getProfileLabel());
         assertFalse("Should not be default config", snmpAgentConfig.isDefault());
         assertEquals(1500, snmpAgentConfig.getTimeout());
 
-        snmpAgentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.1.35"), "MINION");
+        snmpAgentConfig = snmpPeerFactory.getAgentConfig(InetAddress.getByName("192.168.1.35"), "MINION");
         assertEquals("profile3", snmpAgentConfig.getProfileLabel());
         assertFalse("Should not be default config", snmpAgentConfig.isDefault());
         assertEquals(1200, snmpAgentConfig.getTimeout());
 
-        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
-        assertXmlEquals(expectedConfig, actualConfig);
+        String expectedConfigJson = converter.xmlToJson(expectedConfig);
+        assertThat(ConfigConvertUtil.jsonToObject(expectedConfigJson, SnmpConfig.class), samePropertyValuesAs(snmpPeerFactory.getSnmpConfig()));
+
     }
 
     /**

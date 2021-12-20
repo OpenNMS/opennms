@@ -33,19 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.opennms.core.xml.ValidateUsing;
 
-@XmlRootElement(name="profiles")
-@XmlAccessorType(XmlAccessType.NONE)
-@ValidateUsing("snmp-config.xsd")
 public class SnmpProfiles {
 
-    @XmlElement(name="profile")
+    @JsonProperty("profile")
     private List<SnmpProfile> snmpProfiles = new ArrayList<>();
 
     public List<SnmpProfile> getSnmpProfiles() {
