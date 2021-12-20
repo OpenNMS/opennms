@@ -56,6 +56,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.snmp.AddressSnmpConfigVisitor;
@@ -67,8 +68,6 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
 import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
@@ -615,6 +614,10 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
                 IOUtils.closeQuietly(writer);
             }
             return marshalledConfig;
+        }
+
+        public String getSnmpConfigAsJson() {
+            return ConfigConvertUtil.objectToJson(getSnmpConfig());
         }
 
             @Override

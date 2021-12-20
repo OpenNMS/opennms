@@ -28,12 +28,8 @@
 
 package org.opennms.netmgt.config;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
+import static org.junit.Assert.*;
 import static org.opennms.core.test.xml.XmlTest.assertXmlEquals;
 
 import java.io.File;
@@ -47,12 +43,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.beans.SamePropertyValuesAs;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.network.IPAddressRangeSet;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.model.ImmutableMapper;
@@ -60,8 +61,10 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.AbstractResource;
+import org.springframework.test.context.ContextConfiguration;
 
 import javax.xml.bind.JAXBException;
 
@@ -72,6 +75,11 @@ import javax.xml.bind.JAXBException;
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
  *
  */
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:etc/mock-dao.xml"
+})
+
 public class SnmpEventInfoTest {
     @Autowired
     SnmpPeerFactory snmpPeerFactory;
@@ -937,19 +945,16 @@ public class SnmpEventInfoTest {
         //SnmpPeerFactory factory = new SnmpPeerFactory();
        // SnmpPeerFactory.setInstance(factory);
         this.updateConfig(expectedConfig);
-
         assertXmlEquals(snmpConfigXml, snmpPeerFactory.getSnmpConfigAsString());
-
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.1.200");
-
         SnmpPeerFactory.getInstance().define(info);
-        
+
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
-        
+
         String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
         
@@ -1636,15 +1641,16 @@ public class SnmpEventInfoTest {
                 "    </definition>\n" +
                 "</snmp-config>\n" +
                 "";
-        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        this.updateConfig(expectedConfig);
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
+        this.updateConfig(snmpConfigXml);
+        JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+        String snmpConfigJson = converter.xmlToJson(snmpConfigXml);
+        assertThat(ConfigConvertUtil.jsonToObject(snmpConfigJson, SnmpConfig.class), samePropertyValuesAs(snmpPeerFactory.getSnmpConfig()));
 
-        boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.1.25"), "MINION", "test");
+        boolean success = snmpPeerFactory.removeFromDefinition(InetAddress.getByName("192.168.1.25"), "MINION", "test");
         assertFalse("Remove from definition should fail", success);
-        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
-        assertXmlEquals(expectedConfig, actualConfig);
-    }
+        String expectedConfigJson = converter.xmlToJson(expectedConfig);
+        assertThat(ConfigConvertUtil.jsonToObject(expectedConfigJson, SnmpConfig.class), samePropertyValuesAs(snmpPeerFactory.getSnmpConfig()));
+   }
 
     /**
      * Tests removal of IP address from definition with matching location.
@@ -1675,8 +1681,7 @@ public class SnmpEventInfoTest {
                 "    </definition>\n" +
                 "</snmp-config>\n" +
                 "";
-        //SnmpPeerFactory.setInstance(new SnmpPeerFactory());
-        this.updateConfig(expectedConfig);
+        //SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.1.25"), "Minion", "test");
         assertTrue("Remove from definition should be successful", success);
