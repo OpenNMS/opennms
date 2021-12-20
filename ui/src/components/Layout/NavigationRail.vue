@@ -36,8 +36,8 @@
       <FeatherRailItem
         :class="{ selected: isSelected('/open-api') }"
         href="#/open-api"
-        :icon="MarkComplete"
-        title="OpenAPI"
+        :icon="Cloud"
+        title="Endpoints"
       />
     </template>
   </FeatherNavigationRail>
@@ -51,6 +51,7 @@ import VirtualMachineAlt from "@featherds/icon/hardware/VirtualMachineAlt"
 import AddNote from "@featherds/icon/action/AddNote"
 import Location from "@featherds/icon/action/Location"
 import MarkComplete from "@featherds/icon/action/MarkComplete"
+import Cloud from "@featherds/icon/action/Cloud"
 import {
   FeatherNavigationRail,
   FeatherRailItem,

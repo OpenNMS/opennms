@@ -1,11 +1,11 @@
 <template>
-  <div class="feather-row">
+  <div class="feather-row doc-row">
     <div class="feather-col-12">
       <rapi-doc
         id="thedoc"
         ref="doc"
+        class="doc"
         render-style="read"
-        style="height:100vh; width:100%"
         fetch-credentials="include"
         update-route="false"
         allow-authentication="false"
@@ -16,7 +16,7 @@
 </template>
   
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useStore } from 'vuex'
 import 'rapidoc'
 
@@ -68,6 +68,19 @@ const setup = async () => {
 }
 
 watch(getTheme, () => setup())
-onMounted(() => setup())
+onMounted(() => {
+  store.dispatch('appModule/setNavRailOpen', false)
+  setup()
+})
+onUnmounted(() => store.dispatch('appModule/setNavRailOpen', true))
 </script>
-  
+
+<style scoped lang="scss">
+.doc-row {
+  margin-top: -10px;
+  .doc {
+    height: 100vh;
+    width: 100%;
+  }
+}
+</style>
