@@ -28,6 +28,7 @@
 
 package org.opennms.features.deviceconfig.tftp.impl;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -44,7 +45,6 @@ import org.apache.commons.net.tftp.TFTP;
 import org.apache.commons.net.tftp.TFTPClient;
 import org.junit.Test;
 import org.opennms.features.deviceconfig.tftp.TftpFileReceiver;
-import org.opennms.features.deviceconfig.tftp.TftpStatistics;
 
 public class TftpServerImplTest {
 
@@ -76,7 +76,7 @@ public class TftpServerImplTest {
                 client.close();
             }
 
-            assertThat(receiver.received, hasSize(1));
+            await().untilAsserted(() -> assertThat(receiver.received, hasSize(1)));
             assertThat(receiver.received.get(0).getKey(), equalTo(fileName));
             assertThat(receiver.received.get(0).getValue(), is(bytes));
 
