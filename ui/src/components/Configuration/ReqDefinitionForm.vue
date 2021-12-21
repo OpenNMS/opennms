@@ -103,7 +103,6 @@
               </template>
               Add Another
             </FeatherButton>
-            <a class="viewDoc">View Documentation</a>
           </div>
         </div>
 
@@ -250,7 +249,7 @@ onMounted(async () => {
       let patchVal = url[3].split('?')
       reqDefinition.reqDef.foreignSource = patchVal[0]
       //On edit patch/set data - for advance dropdown
-      setAdvDropDowndata(patchVal)
+      setAdvDropDowndata(patchVal[1])
 
     } else {
       reqDefinition.reqDef.name = ''
@@ -287,6 +286,7 @@ const setCronSchedule = (data: any) => {
 
 const setAdvDropDowndata = (patchVal: any) => {
   //add edit data value to advance dropdown
+  patchVal = patchVal.split('&');
   const dropVal = (dropdownVal: any, advTextVal: any, index: any) => {
     if (index == 1) {
       addAnotherArr.value[0]['dropdownVal'] = dropdownVal
@@ -298,7 +298,7 @@ const setAdvDropDowndata = (patchVal: any) => {
   }
 
   //Identify how many advance parameter
-  for (let i = 1;i < patchVal.length;i++) {
+  for (let i = 0;i < patchVal.length;i++) {
     let val = patchVal[i].split('=')
     dropVal(val[0], val[1], i)
   }
@@ -321,8 +321,8 @@ const closeIcon = (id: any) => {
 const generateURL = () => {
   if (addAnotherArr.value[0].dropdownVal != '') {
     advString.value = []
-    addAnotherArr.value.forEach((ele: any) => {
-      let param = "?" + ele.dropdownVal + "=" + ele.advTextVal
+    addAnotherArr.value.forEach((ele: any, index: number) => {
+      let param = (index === 0 ? "?": "&") + ele.dropdownVal + "=" + ele.advTextVal
       advString.value.push(param)
     })
     generatedURL.value =

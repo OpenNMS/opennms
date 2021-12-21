@@ -10,7 +10,6 @@
     </template>
 
     <div class="main-content">
-      <Spinner />
       <router-view />
     </div>
 
@@ -23,8 +22,6 @@ import { onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Menubar from './components/Layout/Menubar.vue'
-import { notify } from "@kyvg/vue3-notification"
-import Spinner from './components/Common/Spinner.vue'
 import NavigationRail from './components/Layout/NavigationRail.vue'
 
 const store = useStore()
