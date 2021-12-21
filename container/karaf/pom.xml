@@ -78,6 +78,12 @@
                         <feature>http</feature>
                         <feature>http-whiteboard</feature>
                     </bootFeatures>
+                    <installedBundles>
+                        <!-- override for security (see etc/overrides.properties) -->
+                        <bundle>mvn:org.ops4j.pax.logging/pax-logging-api/${paxLoggingVersion}</bundle>
+                        <bundle>mvn:org.ops4j.pax.logging/pax-logging-log4j2/${paxLoggingVersion}</bundle>
+                        <bundle>mvn:org.ops4j.pax.logging/pax-logging-logback/${paxLoggingVersion}</bundle>
+                    </installedBundles>
                     <libraries>
                         <library>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/2.11.0_1;type:=endorsed;export:=true;delegate:=true</library>
                         <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${karaf.servicemix.specs.version};type:=endorsed;export:=true</library>
@@ -108,41 +114,27 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
-                      <phase>prepare-package</phase>
-                      <goals>
-                          <goal>copy</goal>
-                      </goals>
-                      <configuration>
-                          <artifactItems>
-                              <artifactItem>
-                                  <groupId>org.ops4j.pax.logging</groupId>
-                                  <artifactId>pax-logging-api</artifactId>
-                                  <version>${paxLoggingVersion}</version>
-                                  <overWrite>true</overWrite>
-                                  <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-api/1.10.2</outputDirectory>
-                                  <destFileName>pax-logging-api-1.10.2.jar</destFileName>
-                              </artifactItem>
-                              <artifactItem>
-                                  <groupId>org.ops4j.pax.logging</groupId>
-                                  <artifactId>pax-logging-log4j2</artifactId>
-                                  <version>${paxLoggingVersion}</version>
-                                  <overWrite>true</overWrite>
-                                  <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2/1.10.2</outputDirectory>
-                                  <destFileName>pax-logging-log4j2-1.10.2.jar</destFileName>
-                              </artifactItem>
-                              <artifactItem>
-                                  <groupId>org.ops4j.pax.logging</groupId>
-                                  <artifactId>pax-logging-logback</artifactId>
-                                  <version>${paxLoggingVersion}</version>
-                                  <overWrite>true</overWrite>
-                                  <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-logback/1.10.2</outputDirectory>
-                                  <destFileName>pax-logging-logback-1.10.2.jar</destFileName>
-                              </artifactItem>
-                          </artifactItems>
-                      </configuration>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance" />
+                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance.bat" />
+                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell" />
+                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell.bat" />
+                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/etc/startup.properties" />
+                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/system/org/apache/karaf/features/framework/${karafVersion}/framework-${karafVersion}-features.xml" />
+                                <delete>
+                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-api/1.10.2" />
+                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2/1.10.2" />
+                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-logback/1.10.2" />
+                                </delete>
+                            </target>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
