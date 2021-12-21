@@ -81,6 +81,7 @@ onUnmounted(() => store.dispatch('appModule/setNavRailOpen', true))
   .doc {
     height: 100vh;
     width: 100%;
+    max-height: calc(100vh - 70px);
   }
 }
 </style>
