@@ -70,5 +70,7 @@ const updatePageSize = (v: number) => {
 @import "@featherds/styles/mixins/typography";
 .pagination {
   @include body-small();
+  background: var(--feather-surface);
+  color: var(--feather-primary-text-on-surface);
 }
 </style>

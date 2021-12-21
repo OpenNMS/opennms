@@ -31,11 +31,18 @@ package org.opennms.core.tracing.util;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.opentracing.References;
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMapExtractAdapter;
 import org.opennms.core.xml.XmlHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +110,28 @@ public class TracingInfoCarrier implements TextMap {
             return new HashMap<>();
         }
 
+    }
+
+    public static void updateTracingMetadata(Tracer tracer, Span span, BiConsumer<String, String> tracingInfoConsumer) {
+        TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
+        tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+        tracingInfoCarrier.getTracingInfoMap().forEach(tracingInfoConsumer);
+    }
+
+    public static Tracer.SpanBuilder buildSpanFromTracingMetadata(Tracer tracer,
+                                                                  String tracingOperationKey,
+                                                                  Map<String, String> tracingMetadata,
+                                                                  String reference) {
+        // Extract base tracer context from TracingMetadata
+        Tracer.SpanBuilder spanBuilder;
+        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingMetadata));
+        if (context != null &&
+                (References.CHILD_OF.equals(reference) || References.FOLLOWS_FROM.equals(reference))) {
+            spanBuilder = tracer.buildSpan(tracingOperationKey).addReference(reference, context);
+        } else {
+            spanBuilder = tracer.buildSpan(tracingOperationKey);
+        }
+        return spanBuilder;
     }
 
     /**

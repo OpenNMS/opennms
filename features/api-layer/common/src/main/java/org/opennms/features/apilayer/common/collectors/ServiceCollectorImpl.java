@@ -51,10 +51,12 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
     private static final Logger LOG = LoggerFactory.getLogger(ServiceCollectorImpl.class);
 
     private final ServiceCollectorFactory<T> serviceCollectorFactory;
+    private final RrdRepository rrdRepo;
 
 
-    public ServiceCollectorImpl(ServiceCollectorFactory<T> serviceCollectorFactory) {
+    public ServiceCollectorImpl(ServiceCollectorFactory<T> serviceCollectorFactory, RrdRepository rrdRepo) {
         this.serviceCollectorFactory = serviceCollectorFactory;
+        this.rrdRepo = rrdRepo;
     }
 
     @Override
@@ -94,7 +96,7 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
 
     @Override
     public RrdRepository getRrdRepository(String collectionName) {
-        return null;
+        return rrdRepo;
     }
 
     @Override

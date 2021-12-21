@@ -15,6 +15,7 @@ The file `$\{OPENNMS_HOME}/etc/snmp-metadata-adapter-configuration.xml` is used 
             <entry tree=".1" name="anEntryIndex" index="true"/>
             <entry tree=".2" name="anEntryValue"/>
             <entry tree=".3" name="anotherEntryValue"/>
+            <entry tree=".4.999" name="anExactOIDValue" exact="true"/>
         </entry>
     </config>
 </snmp-metadata-config>
@@ -26,6 +27,10 @@ By prepending a tilde symbol (`~`), a regular expression can be specified to che
 The example above will query nodes with System Object Ids matching the regular expression `^4\.3\.2\.1.*`.
 The data will be searched in the SNMP sub-tree `.1.2.3.4` and be stored in the node's metadata context `snmp`.
 The top-level element will be named `myHardware`.
+
+The provisioning adapter automatically appends the `.0` value to single-entry OIDs per normal SNMP specification.
+In some edge cases, you will need to specify the entire OID statically to retrieve a single piece of data.
+Specifying the attribute `exact="true"` allows you to specify the entire OID.
 
 Based on this example and under the assumption that a node provides corresponding data, the following metadata entries will be produced:
 

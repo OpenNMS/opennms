@@ -68,6 +68,11 @@ public class DiscoveryConfigurationTest extends XmlTestNoCastor<DiscoveryConfigu
         includeUrl.setForeignSource("blah");
         conf.addIncludeUrl(includeUrl);
 
+        final ExcludeUrl excludeUrl = new ExcludeUrl("file:/opt/opennms/etc/exclude.txt");
+        excludeUrl.setLocation("everywhere");
+        excludeUrl.setForeignSource("blah");
+        conf.addExcludeUrl(excludeUrl);
+
         final DiscoveryConfiguration exampleConf = new DiscoveryConfiguration();
         exampleConf.setPacketsPerSecond(1d);
         exampleConf.setInitialSleepTime(30000l);
@@ -80,6 +85,9 @@ public class DiscoveryConfigurationTest extends XmlTestNoCastor<DiscoveryConfigu
         
         exampleConf.addIncludeUrl(new IncludeUrl("file:/opt/opennms/etc/include.txt"));
         exampleConf.addIncludeUrl(new IncludeUrl("http://example.com/ip-address-list.txt"));
+
+        exampleConf.addExcludeUrl(new ExcludeUrl("file:/opt/opennms/etc/exclude.txt"));
+        exampleConf.addExcludeUrl(new ExcludeUrl("http://example-exclude.com/ip-address-list.txt"));
 
 
 
@@ -105,7 +113,8 @@ public class DiscoveryConfigurationTest extends XmlTestNoCastor<DiscoveryConfigu
                         "        <begin>192.168.2.1</begin>\n" + 
                         "        <end>192.168.2.254</end>\n" + 
                         "    </exclude-range>\n" +
-                        "    <include-url location=\"everywhere\" foreign-source=\"blah\">file:/opt/opennms/etc/include.txt</include-url>\n" + 
+                        "    <include-url location=\"everywhere\" foreign-source=\"blah\">file:/opt/opennms/etc/include.txt</include-url>\n" +
+                        "    <exclude-url location=\"everywhere\" foreign-source=\"blah\">file:/opt/opennms/etc/exclude.txt</exclude-url>\n" +
                         "</discovery-configuration>"
             },
             {
@@ -118,7 +127,9 @@ public class DiscoveryConfigurationTest extends XmlTestNoCastor<DiscoveryConfigu
                 "                <end>192.168.0.254</end>\n" + 
                 "        </include-range>\n" + 
                 "   <include-url>file:/opt/opennms/etc/include.txt</include-url>\n" + 
-                "   <include-url>http://example.com/ip-address-list.txt</include-url>\n" + 
+                "   <include-url>http://example.com/ip-address-list.txt</include-url>\n" +
+                "   <exclude-url>file:/opt/opennms/etc/exclude.txt</exclude-url>\n" +
+                "   <exclude-url>http://example-exclude.com/ip-address-list.txt</exclude-url>\n" +
                 "</discovery-configuration>"
             }
         });

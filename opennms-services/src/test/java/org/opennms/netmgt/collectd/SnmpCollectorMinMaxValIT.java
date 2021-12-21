@@ -184,7 +184,7 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
         collector.initialize();
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default",
-                m_pollOutagesDao);
+                m_pollOutagesDao, collector.getClass().getCanonicalName());
         m_collectionAgent = DefaultSnmpCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
     }
 

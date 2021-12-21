@@ -3,7 +3,7 @@
 
 .Pollerd configuration file overview
 [options="header"]
-[cols="2,1,1,3"]
+[cols="2,3,1,1"]
 |===
 | File
 | Description
@@ -11,18 +11,20 @@
 | Restart Required
 
 | poller-configuration.xml
-| Contains service monitor configurations that are used for service availability checks. Restart is required in case new monitors are created or removed.
-Reload event loads changed configuration parameters of existing monitors.
+| Contains service monitor configurations for service availability checks. +
+Restart is required in case new monitors are created or removed. +
+Reload event loads changed configuration parameters of existing monitors but will not load new monitors.
 | yes
 | yes
-                                                               
+
 | response-graph.properties
 | Graph definition for response time graphs from monitors
 | no
 | no
 
-| poll-outages.xm
-| Can reload with `uei.opennms.org/internal/schedOutagesChanged`.
+| poll-outages.xml
+| Defines scheduled maintenance windows when polling should not occur.
+Can reload with `uei.opennms.org/internal/schedOutagesChanged`.
 | yes
 | no
 |===

@@ -41,7 +41,7 @@
   
 <script setup lang="ts">
 import { computed } from 'vue'
-import Pagination from './Pagination.vue'
+import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import useQueryParameters from '@/hooks/useQueryParams'
@@ -79,10 +79,10 @@ table {
 }
 .warning {
   background: rgba(255, 175, 34, 0.5);
-  color: var(--feather-state-color-on-surface)
+  color: var(--feather-state-color-on-surface);
 }
 .normal {
   background: rgba(133, 217, 165, 0.5);
-  color: var(--feather-state-color-on-surface)
+  color: var(--feather-state-color-on-surface);
 }
 </style>
