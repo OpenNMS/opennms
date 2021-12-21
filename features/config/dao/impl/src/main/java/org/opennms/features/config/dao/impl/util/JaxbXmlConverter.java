@@ -39,6 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigConverter;
+import org.opennms.features.config.exception.SchemaConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -146,7 +147,7 @@ public class JaxbXmlConverter implements ConfigConverter {
                 return jsonStr;
             }
         } catch (JAXBException | SAXException e) {
-            throw new RuntimeException(e);
+            throw new SchemaConversionException(sourceXml, e);
         }
     }
 
@@ -157,8 +158,7 @@ public class JaxbXmlConverter implements ConfigConverter {
      * @return json without empty value tag
      */
     private JSONObject removeEmptyValueTag(JSONObject json) {
-        json.keySet().forEach(key -> {
-            Object value = json.get(key);
+        json.toMap().forEach((key, value) -> {
             if (VALUE_TAG.equals(key) && value instanceof String && ((String) value).trim().length() == 0) {
                 json.remove(key);
             } else if (value instanceof JSONObject) {
@@ -196,7 +196,8 @@ public class JaxbXmlConverter implements ConfigConverter {
             }
         });
         // loop through children elements
-        json.toMap().forEach((key, value) -> {
+        json.keySet().forEach(key -> {
+            Object value = json.get(key);
             if (value instanceof JSONObject) {
                 this.replaceXmlValueAttributeName((JSONObject) value);
             } else if (value instanceof JSONArray) {
