@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="rangerrick" id="27.1.0-eventid-drop-related-views" runAlways="true">
+    <preConditions onFail="MARK_RAN">
+      <viewExists viewName="node_outages" />
+    </preConditions>
+
+    <!-- these will get recreated by views/*.xml -->
+    <dropView viewName="node_alarms" />
+    <dropView viewName="node_outages" />
+    <dropView viewName="node_outage_status" />
+  </changeSet>
+
+  <changeSet author="rangerrick" id="27.1.0-eventid-to-bigint">
+    <modifyDataType tableName="events" columnName="eventid" newDataType="BIGINT" />
+
+    <modifyDataType tableName="alarms" columnName="lasteventid" newDataType="BIGINT" />
+    <modifyDataType tableName="event_parameters" columnName="eventid" newDataType="BIGINT" />
+    <modifyDataType tableName="notifications" columnName="eventid" newDataType="BIGINT" />
+    <modifyDataType tableName="outages" columnName="svclosteventid" newDataType="BIGINT" />
+    <modifyDataType tableName="outages" columnName="svcregainedeventid" newDataType="BIGINT" />
+
+    <rollback>
+      <modifyDataType tableName="events" columnName="eventid" newDataType="INTEGER" />
+
+      <modifyDataType tableName="alarms" columnName="lasteventid" newDataType="INTEGER" />
+      <modifyDataType tableName="event_parameters" columnName="eventid" newDataType="INTEGER" />
+      <modifyDataType tableName="notifications" columnName="eventid" newDataType="INTEGER" />
+      <modifyDataType tableName="outages" columnName="svclosteventid" newDataType="INTEGER" />
+      <modifyDataType tableName="outages" columnName="svcregainedeventid" newDataType="INTEGER" />
+    </rollback>
+  </changeSet>
+</databaseChangeLog>
