@@ -34,5 +34,5 @@ public interface TftpServer {
     void deregister(TftpFileReceiver receiver);
 
     TftpStatistics getStatistics();
-    void resetStatistics();
+    TftpStatistics getAndResetStatistics();
 }

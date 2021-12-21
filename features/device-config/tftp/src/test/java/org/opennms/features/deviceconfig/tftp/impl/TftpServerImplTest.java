@@ -44,6 +44,7 @@ import org.apache.commons.net.tftp.TFTP;
 import org.apache.commons.net.tftp.TFTPClient;
 import org.junit.Test;
 import org.opennms.features.deviceconfig.tftp.TftpFileReceiver;
+import org.opennms.features.deviceconfig.tftp.TftpStatistics;
 
 public class TftpServerImplTest {
 
@@ -78,6 +79,11 @@ public class TftpServerImplTest {
             assertThat(receiver.received, hasSize(1));
             assertThat(receiver.received.get(0).getKey(), equalTo(fileName));
             assertThat(receiver.received.get(0).getValue(), is(bytes));
+
+            var statistics = server.getStatistics();
+            assertThat(statistics.bytesReceived(), is(bytes.length));
+            assertThat(statistics.warnings(), is(0));
+            assertThat(statistics.errors(), is(0));
         }
 
     }

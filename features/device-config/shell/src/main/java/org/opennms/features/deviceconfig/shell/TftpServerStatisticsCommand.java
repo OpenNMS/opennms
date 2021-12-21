@@ -46,21 +46,21 @@ public class TftpServerStatisticsCommand implements Action {
     private CommandAction action = CommandAction.view;
 
     @Override
-    public Object execute() throws Exception {
-        switch (action) {
-            case reset:
-                tftpServer.resetStatistics();
-                break;
-            default:
-                var s = tftpServer.getStatistics();
-                System.out.println("Files received: " + s.filesReceived());
-                System.out.println("Bytes received: " + s.bytesReceived());
-                if (s.errors() != 0) {
-                    // output number of errors in red if there are errors
-                    System.out.println("\033[0;31mErrors        : " + s.errors() + "\033[0m");
-                } else {
-                    System.out.println("Errors        : " + s.errors());
-                }
+    public Object execute() {
+        var s = action == CommandAction.view ? tftpServer.getStatistics() : tftpServer.getAndResetStatistics();
+        System.out.println("Files received: " + s.filesReceived());
+        System.out.println("Bytes received: " + s.bytesReceived());
+        if (s.warnings() != 0) {
+            // output number of errors in red if there are errors
+            System.out.println("\033[0;31mWarnings      : " + s.warnings() + "\033[0m");
+        } else {
+            System.out.println("Warnings      : " + s.warnings());
+        }
+        if (s.errors() != 0) {
+            // output number of errors in red if there are errors
+            System.out.println("\033[0;31mErrors        : " + s.errors() + "\033[0m");
+        } else {
+            System.out.println("Errors        : " + s.errors());
         }
         return null;
     }

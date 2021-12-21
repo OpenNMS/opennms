@@ -32,4 +32,5 @@ public interface TftpStatistics {
     int filesReceived();
     long bytesReceived();
     int errors();
+    int warnings();
 }

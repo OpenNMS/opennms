@@ -65,49 +65,6 @@ import org.slf4j.LoggerFactory;
 // - the maximum file size to receive can be configured
 // - requesting files is not supported
 
-/**
- * A fully multi-threaded tftp server. Can handle multiple clients at the same time. Implements RFC
- * 1350 and wrapping block numbers for large file support.
- * <p>
- * To launch, just create an instance of the class. An IOException will be thrown if the server
- * fails to start for reasons such as port in use, port denied, etc.
- * <p>
- * To stop, use the shutdown method.
- * <p>
- * To check to see if the server is still running (or if it stopped because of an error), call the
- * isRunning() method.
- * <p>
- * By default, events are not logged to stdout/stderr. This can be changed with the
- * setLog and setLogError methods.
- *
- * <p>
- * Example usage is below:
- *
- * <code>
- * public static void main(String[] args) throws Exception
- * {
- * if (args.length != 1)
- * {
- * System.out
- * .println("You must provide 1 argument - the base path for the server to serve from.");
- * System.exit(1);
- * }
- * <p>
- * TFTPServer ts = new TFTPServer(new File(args[0]), new File(args[0]), GET_AND_PUT);
- * ts.setSocketTimeout(2000);
- * <p>
- * System.out.println("TFTP Server running.  Press enter to stop.");
- * new InputStreamReader(System.in).read();
- * <p>
- * ts.shutdown();
- * System.out.println("Server shut down.");
- * System.exit(0);
- * }
- *
- * </code>
- *
- * @since 2.0
- */
 public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
 
     private static Logger LOG = LoggerFactory.getLogger(TftpServerImpl.class);
@@ -171,6 +128,8 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                         bos = new FromNetASCIIOutputStream(bos);
                     }
                 } catch (final Exception e) {
+                    statistics.incErrors();
+                    LOG.error("can not handle net-ascii mode", e);
                     transferTftp_.bufferedSend(new TFTPErrorPacket(twrp.getAddress(), twrp
                             .getPort(), TFTPErrorPacket.UNDEFINED, e.getMessage()));
                     return;
@@ -194,6 +153,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                             // The data that we got didn't come from the
                             // expected source, fire back an error, and continue
                             // listening.
+                            statistics.incWarnings();
                             LOG.warn("TFTP Server ignoring message from unexpected source.");
                             transferTftp_.bufferedSend(new TFTPErrorPacket(dataPacket.getAddress(),
                                     dataPacket.getPort(), TFTPErrorPacket.UNKNOWN_TID,
@@ -203,6 +163,8 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                         try {
                             dataPacket = transferTftp_.bufferedReceive();
                         } catch (final SocketTimeoutException e) {
+                            statistics.incErrors();
+                            LOG.error("did not receive data packet", e);
                             if (timeoutCount >= maxTimeoutRetries_) {
                                 throw e;
                             }
@@ -219,6 +181,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                         transferTftp_.bufferedSend(lastSentAck);
                     } else if (dataPacket == null || !(dataPacket instanceof TFTPDataPacket)) {
                         if (!shutdownTransfer) {
+                            statistics.incErrors();
                             LOG.error("Unexpected response from tftp client during transfer ("
                                              + dataPacket + ").  Transfer aborted.");
                         }
@@ -233,7 +196,9 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                             // it might resend a data block if it missed our ack
                             // - don't rewrite the block.
                             bytesReceived += dataLength;
+                            statistics.incBytesReceived(dataLength);
                             if (bytesReceived > maximumReceiveSize) {
+                                statistics.incErrors();
                                 LOG.error("Maximum receive size exceeded - address: {}, fileName: {}; max: {}; received: ", twrp.getAddress(), twrp.getFilename(), maximumReceiveSize, bytesReceived);
                                 // make sure it was from the right client...
                                 transferTftp_
@@ -256,6 +221,8 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
 
                             var content = underlyingByteArrayOutputStream.toByteArray();
 
+                            statistics.incFilesReceived();
+
                             synchronized (receivers) {
                                 receivers.forEach(r -> {
                                     r.onFileReceived(twrp.getAddress(), fileName, content);
@@ -276,6 +243,12 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                                 if (dataPacket != null
                                     && (!dataPacket.getAddress().equals(twrp.getAddress()) || dataPacket
                                                                                                       .getPort() != twrp.getPort())) {
+
+                                    statistics.incErrors();
+                                    LOG.error("unexpected host or port - expectedHost: {}; expectedPort: {}; actualHost: {}; actualPort: {}",
+                                            twrp.getAddress(), twrp.getPort(),
+                                            dataPacket.getAddress(), dataPacket.getPort()
+                                    );
                                     // make sure it was from the right client...
                                     transferTftp_
                                             .bufferedSend(new TFTPErrorPacket(dataPacket
@@ -315,16 +288,20 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                 if (tftpPacket_ instanceof TFTPReadRequestPacket) {
                     // for now we do not support read requests; uncomment the following line
                     // handleRead((TFTPReadRequestPacket) tftpPacket_);
+                    statistics.incWarnings();
+                    LOG.warn("illegal operation; tried to read file - host: ", tftpPacket_.getAddress());
                     transferTftp_.bufferedSend(new TFTPErrorPacket(tftpPacket_.getAddress(), tftpPacket_
                             .getPort(), TFTPErrorPacket.ILLEGAL_OPERATION,
                             "Read not allowed by server."));
                 } else if (tftpPacket_ instanceof TFTPWriteRequestPacket) {
                     handleWrite((TFTPWriteRequestPacket) tftpPacket_);
                 } else {
+                    statistics.incWarnings();
                     LOG.warn("Unsupported TFTP request (" + tftpPacket_ + ") - ignored.");
                 }
             } catch (final Exception e) {
                 if (!shutdownTransfer) {
+                    statistics.incErrors();
                     LOG.error("Unexpected Error in during TFTP file transfer.  Transfer aborted.", e);
                 }
             } finally {
@@ -357,6 +334,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
         private int filesReceived;
         private long bytesReceived;
         private int errors;
+        private int warnings;
 
         @Override
         public synchronized int filesReceived() {
@@ -371,6 +349,11 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
         @Override
         public synchronized int errors() {
             return errors;
+        }
+
+        @Override
+        public synchronized int warnings() {
+            return warnings;
         }
 
         public synchronized void reset() {
@@ -391,6 +374,10 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
             errors++;
         }
 
+        public synchronized void incWarnings() {
+            warnings++;
+        }
+
         @Override
         public synchronized TftpStatisticsImpl clone() {
             try {
@@ -399,6 +386,13 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                 throw new RuntimeException(e);
             }
         }
+
+        public synchronized TftpStatisticsImpl cloneAndReset() {
+            var c = clone();
+            reset();
+            return c;
+        }
+
     }
 
     private final HashSet<TFTPTransfer> transfers_ = new HashSet<>();
@@ -480,6 +474,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                 serverTftp_.open(port_);
             }
         } catch (SocketException e) {
+            statistics.incErrors();
             throw new IOException("could not open tftp server - port: " + port_ + (laddr_ != null ? "; address: " + laddr_ : ""), e);
         }
 
@@ -508,6 +503,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
         } catch (final Exception e) {
             if (!shutdownServer) {
                 serverException = e;
+                statistics.incErrors();
                 LOG.error("Unexpected Error in TFTP Server - Server shut down!", e);
             }
         } finally {
@@ -610,7 +606,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
     }
 
     @Override
-    public void resetStatistics() {
-        statistics.reset();
+    public TftpStatistics getAndResetStatistics() {
+        return statistics.cloneAndReset();
     }
 }
