@@ -118,6 +118,14 @@ How:
 
 * Vue3 based SPA leveraging Feather DS: https://feather.nanthealth.com/
 
+### Make containers first class citizens
+
+Improve logging
+
+Reduce container size
+
+Easy metrics
+
 ### Rethink how we do testing
 
 #### Current state
