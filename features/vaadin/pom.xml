@@ -13,7 +13,7 @@
   <packaging>pom</packaging>
   <properties>
     <vaadinGentyrefVersion>1.2.0.vaadin1</vaadinGentyrefVersion>
-    <vaadinJsoupVersion>1.11.2</vaadinJsoupVersion>
+    <vaadinJsoupVersion>1.14.2</vaadinJsoupVersion>
   </properties>
   <dependencies>
     <dependency>
