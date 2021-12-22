@@ -50,10 +50,10 @@ const setup = async () => {
       docEl.setAttribute('bg-color', '#fff')
       docEl.setAttribute('nav-bg-color', '#f4f7fc')
       docEl.setAttribute('nav-text-color', '#131736')
-      docEl.setAttribute('nav-hover-bg-color', '#131736')
+      docEl.setAttribute('nav-hover-bg-color', '#fff')
       docEl.setAttribute('nav-hover-text-color', '#00BFCB')
       docEl.setAttribute('nav-accent-color', '#00BFCB')
-      docEl.setAttribute('primary-color', '#131736')
+      docEl.setAttribute('primary-color', '#00BFCB')
     } else {
       docEl.setAttribute('theme', 'dark')
       docEl.setAttribute('bg-color', '#15182B')
@@ -76,6 +76,10 @@ onUnmounted(() => store.dispatch('appModule/setNavRailOpen', true))
 </script>
 
 <style scoped lang="scss">
+rapi-doc::part(section-tag) {
+  display: none;
+}
+
 .doc-row {
   margin-top: -10px;
   .doc {
