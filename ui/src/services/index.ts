@@ -21,6 +21,7 @@ import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { search } from './searchService'
 import { getInfo } from './infoService'
+import { getOpenApi } from './helpService'
 
 export default {
   search,
@@ -45,4 +46,5 @@ export default {
   getSnippets,
   getFileNames,
   getFileExtensions,
+  getOpenApi
 }
