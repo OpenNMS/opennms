@@ -266,7 +266,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         }
         ServiceDetectorRegistry registry = m_serviceRegistry.findProvider(ServiceDetectorRegistry.class);
         for(String serviceName: registry.getServiceNames()) {
-            if(!m_detectors.keySet().contains(serviceName)) {
+            if(!m_detectors.containsKey(serviceName)) {
                 CompletableFuture<ServiceDetectorFactory<?>> factoryFuture = registry.getDetectorClassNameFutureFromServiceName(serviceName)
                         .thenCompose(className -> registry.getDetectorFactoryFutureByClassName(className));
                 factoryFuture.whenComplete((f, e) ->m_detectors.put(serviceName, f.getDetectorClass()));
@@ -320,7 +320,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         if(m_policies != null) {
             for (String key : m_policies.keySet()) {
                 try {
-                    if(!m_wrappers.keySet().contains(key)) {
+                    if(!m_wrappers.containsKey(key)) {
                         PluginWrapper wrapper = new PluginWrapper(key);
                         m_wrappers.put(key, wrapper);
                     }
@@ -333,7 +333,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
             for (String key : m_detectors.keySet()) {
                 try {
                     Class clazz = m_detectors.get(key);
-                    if(!m_wrappers.keySet().contains(clazz.getCanonicalName())) {
+                    if(!m_wrappers.containsKey(clazz.getCanonicalName())) {
                         PluginWrapper wrapper = new PluginWrapper(clazz);
                         m_wrappers.put(clazz.getCanonicalName(), wrapper);
                     }
