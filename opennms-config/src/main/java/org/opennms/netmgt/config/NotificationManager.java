@@ -58,6 +58,7 @@ import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.notifications.Header;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
@@ -80,7 +81,7 @@ import org.springframework.util.Assert;
  * references during JUnit testing and later to support distributed processes.
  * @version $Id: $
  */
-public abstract class NotificationManager {
+public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifications> {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationManager.class);
 
     /**
@@ -172,12 +173,35 @@ public abstract class NotificationManager {
     }
 
     /**
+     * <p>Constructor for AbstractJaxbConfigDao.</p>
+     * It will use {@link DefaultAbstractCmJaxbConfigDaoUpdateCallback},
+     * override getUpdateCallback if you need to change.
+     *
+     * @param entityClass a {@link Class} object.
+     * @param description a {@link String} object.
+     * @see #getUpdateCallback()
+     */
+    public NotificationManager() {
+        super(Notifications.class, "Notifications");
+    }
+
+    /**
+     * <p>Constructor for NotificationManager.</p>
+     * @param config
+     */
+    public NotificationManager (Notifications config) {
+        super(Notifications.class, "Notifications");
+        m_notifications = config;
+    }
+
+    /**
      * <p>Constructor for NotificationManager.</p>
      *
      * @param configManager a {@link org.opennms.netmgt.config.NotifdConfigManager} object.
      * @param dcf a {@link javax.sql.DataSource} object.
      */
-    protected NotificationManager(final NotifdConfigManager configManager, final DataSource dcf) {
+    public NotificationManager(final NotifdConfigManager configManager, final DataSource dcf) {
+        super(Notifications.class, "Notifications");
         m_configManager = configManager;
         m_dataSource = dcf;
     }
@@ -1119,24 +1143,24 @@ public abstract class NotificationManager {
      * @throws java.lang.ClassNotFoundException if any.
      */
     public synchronized void saveCurrent() throws IOException, ClassNotFoundException {
-        m_notifications.setHeader(rebuildHeader());
-
-        // Marshal to a string first, then write the string to the file. This
-        // way the original configuration
-        // isn't lost if the XML from the marshal is hosed.
-        final String xmlString = JaxbUtils.marshal(m_notifications);
-        saveXML(xmlString);
-
+//        m_notifications.setHeader(rebuildHeader());
+//
+//        // Marshal to a string first, then write the string to the file. This
+//        // way the original configuration
+//        // isn't lost if the XML from the marshal is hosed.
+//        final String xmlString = JaxbUtils.marshal(m_notifications);
+//        saveXML(xmlString);
+        this.updateConfig(m_notifications);
         update();
     }
 
-    /**
-     * <p>saveXML</p>
-     *
-     * @param xmlString a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     */
-    protected abstract void saveXML(String xmlString) throws IOException;
+//    /**
+//     * <p>saveXML</p>
+//     *
+//     * @param xmlString a {@link java.lang.String} object.
+//     * @throws java.io.IOException if any.
+//     */
+//    protected abstract void saveXML(String xmlString) throws IOException;
 
     /**
      * 

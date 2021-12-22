@@ -35,6 +35,7 @@ import java.io.StringReader;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.config.NotifdConfigManager;
+import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.NotificationManager;
 
 /**
@@ -50,13 +51,6 @@ public class MockNotificationManager extends NotificationManager {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.NotificationManager#saveXML(java.lang.String)
-     */
-    @Override
-    protected void saveXML(String xmlString) throws IOException {
-    }
-
-    /* (non-Javadoc)
      * @see org.opennms.netmgt.config.NotificationManager#update()
      */
     @Override
@@ -68,5 +62,15 @@ public class MockNotificationManager extends NotificationManager {
      */
     protected String getInterfaceFilter(String rule) {
         return "SELECT DISTINCT ipaddr, servicename, nodeid FROM ifservices, service WHERE ifservices.serviceid = service.serviceid";
+    }
+
+    @Override
+    protected String getConfigName() {
+        return NotificationFactory.CONFIG_NAME;
+    }
+
+    @Override
+    protected String getDefaultConfigId() {
+        return NotificationFactory.DEFAULT_CONFIG_ID;
     }
 }

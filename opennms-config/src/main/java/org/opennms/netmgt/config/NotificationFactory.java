@@ -32,17 +32,17 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>NotificationFactory class.</p>
@@ -51,6 +51,11 @@ import org.opennms.core.utils.ConfigFileConstants;
  * @version $Id: $
  */
 public class NotificationFactory extends NotificationManager {
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationFactory.class);
+
+    public static final String CONFIG_NAME = "notifications";
+
+    public static final String DEFAULT_CONFIG_ID = "default";
     /**
      * Singleton instance
      */
@@ -72,10 +77,16 @@ public class NotificationFactory extends NotificationManager {
     private long m_lastModified;
 
     /**
-     * 
+     *
      */
     private NotificationFactory() {
         super(NotifdConfigFactory.getInstance(), DataSourceFactory.getInstance());
+    }
+
+
+    @PostConstruct
+    public void postConstruct() throws IOException {
+        reload();
     }
 
     /**
@@ -102,7 +113,6 @@ public class NotificationFactory extends NotificationManager {
     public static synchronized void init() throws IOException, FileNotFoundException, ClassNotFoundException, SQLException, PropertyVetoException  {
         if (!initialized) {
             instance = new NotificationFactory();
-            instance.reload();
             initialized = true;
         }
     }
@@ -127,16 +137,16 @@ public class NotificationFactory extends NotificationManager {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void saveXML(String xmlString) throws IOException {
-        if (xmlString != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_noticeConfFile), StandardCharsets.UTF_8);
-            fileWriter.write(xmlString);
-            fileWriter.flush();
-            fileWriter.close();
-        }
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    protected void saveXML(String xmlString) throws IOException {
+//        if (xmlString != null) {
+//            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_noticeConfFile), StandardCharsets.UTF_8);
+//            fileWriter.write(xmlString);
+//            fileWriter.flush();
+//            fileWriter.close();
+//        }
+//    }
 
     /**
      * <p>update</p>
@@ -148,5 +158,15 @@ public class NotificationFactory extends NotificationManager {
         if (m_lastModified != m_noticeConfFile.lastModified()) {
             reload();
         }
+    }
+
+    @Override
+    public String getConfigName() {
+        return CONFIG_NAME;
+    }
+
+    @Override
+    protected String getDefaultConfigId() {
+        return DEFAULT_CONFIG_ID;
     }
 }

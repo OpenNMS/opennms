@@ -581,15 +581,25 @@ public class NotificationManagerIT implements InitializingBean {
             super(configManager, dcf);
         }
 
-        @Override
-        protected void saveXML(String xmlString) throws IOException {
-            return;
-            
-        }
+//        @Override
+//        protected void saveXML(String xmlString) throws IOException {
+//            return;
+//
+//        }
 
         @Override
         public void update() throws IOException {
             return;
+        }
+
+        @Override
+        protected String getConfigName() {
+            return NotifdConfigFactory.CONFIG_NAME;
+        }
+
+        @Override
+        protected String getDefaultConfigId() {
+            return NotifdConfigFactory.DEFAULT_CONFIG_ID;
         }
     }
 }
