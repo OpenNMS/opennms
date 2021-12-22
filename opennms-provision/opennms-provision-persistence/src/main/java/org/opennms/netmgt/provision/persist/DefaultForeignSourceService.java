@@ -38,20 +38,21 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.spring.PropertyPath;
 import org.opennms.netmgt.provision.OnmsPolicy;
-import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.opennms.netmgt.provision.annotations.Policy;
+import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.support.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -77,7 +78,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     @Qualifier("pending")
     private ForeignSourceRepository m_pendingForeignSourceRepository;
 
-    private static Map<String,String> m_detectors;
+    private static Map<String, Class<?>> m_detectors;
     private static Map<String,String> m_policies;
     private static Map<String, PluginWrapper> m_wrappers;
 
@@ -259,30 +260,24 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
      * @return a {@link java.util.Map} object.
      */
     @Override
-    public Map<String, String> getDetectorTypes() {
-        if (m_detectors == null) {
-            Map<String,String> detectors = new TreeMap<String,String>();
-            for (ServiceDetector d : m_serviceRegistry.findProviders(ServiceDetector.class)) {
-                String serviceName = d.getServiceName();
-                if (serviceName == null) {
-                    serviceName = d.getClass().getSimpleName();
+    public Map<String, Class<?>> getDetectorTypes() {
+        if(m_detectors == null) {
+            m_detectors = new LinkedHashMap<>();
+        }
+        ServiceDetectorRegistry registry = m_serviceRegistry.findProvider(ServiceDetectorRegistry.class);
+        for(String serviceName: registry.getServiceNames()) {
+            if(!m_detectors.keySet().contains(serviceName)) {
+                CompletableFuture<ServiceDetectorFactory<?>> factoryFuture = registry.getDetectorClassNameFutureFromServiceName(serviceName)
+                        .thenCompose(className -> registry.getDetectorFactoryFutureByClassName(className));
+                factoryFuture.whenComplete((f, e) ->m_detectors.put(serviceName, f.getDetectorClass()));
+                if (!factoryFuture.isDone()) {
+                    LOG.warn("The detector {} class not available.", serviceName);
                 }
-                String className = d.getClass().getName();
-                // NMS-8119: The class name may be changed when using proxy objects
-                if (d instanceof TargetClassAware) {
-                    className = ((TargetClassAware)d).getTargetClass().getName();
-                }
-                detectors.put(serviceName, className);
-            }
-
-            m_detectors = new LinkedHashMap<String,String>();
-            for (Entry<String,String> e : detectors.entrySet()) {
-                m_detectors.put(e.getValue(), e.getKey());
             }
         }
-
         return m_detectors;
     }
+
     /**
      * <p>getPolicyTypes</p>
      *
@@ -319,20 +314,29 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
      */
     @Override
     public Map<String,PluginWrapper> getWrappers() {
-        if (m_wrappers == null && m_policies != null && m_detectors != null) {
-            m_wrappers = new HashMap<String,PluginWrapper>(m_policies.size() + m_detectors.size());
+        if (m_wrappers == null) {
+            m_wrappers = new HashMap<>();
+        }
+        if(m_policies != null) {
             for (String key : m_policies.keySet()) {
                 try {
-                    PluginWrapper wrapper = new PluginWrapper(key);
-                    m_wrappers.put(key, wrapper);
+                    if(!m_wrappers.keySet().contains(key)) {
+                        PluginWrapper wrapper = new PluginWrapper(key);
+                        m_wrappers.put(key, wrapper);
+                    }
                 } catch (Throwable e) {
                     LOG.warn("unable to wrap {}", key, e);
                 }
             }
+        }
+        if(m_detectors != null) {
             for (String key : m_detectors.keySet()) {
                 try {
-                    PluginWrapper wrapper = new PluginWrapper(key);
-                    m_wrappers.put(key, wrapper);
+                    Class clazz = m_detectors.get(key);
+                    if(!m_wrappers.keySet().contains(clazz.getCanonicalName())) {
+                        PluginWrapper wrapper = new PluginWrapper(clazz);
+                        m_wrappers.put(clazz.getCanonicalName(), wrapper);
+                    }
                 } catch (Throwable e) {
                     LOG.warn("unable to wrap {}", key, e);
                 }
