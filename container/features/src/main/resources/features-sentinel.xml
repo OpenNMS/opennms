@@ -411,28 +411,26 @@ feature:install scv-jceks-impl
     bundle:install -s wrap:mvn:org.opennms/opennms-webapp-rest/30.0.0-SNAPSHOT  mvn:javax.annotation/javax.annotation-api/1.3.2 mvn:org.opennms.container/org.opennms.container.jaas-login-module-simple/30.0.0-SNAPSHOT mvn:org.opennms/opennms-alarm-rest/30.0.0-SNAPSHOT
     -->
     <feature name="sentinel-alarmd-rest" description="OpenNMS :: Alarms :: Rest"  version="${project.version}">
-        <feature>scv-jceks-impl</feature>
-
         <feature>http</feature>
         <feature>jetty</feature>
         <feature>cxf-jaxrs</feature>
+        <feature>cxf-sse</feature>
 
-        <!-- below already loaded in feature "opennms-core", so might not be necessary
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson.version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson.version}</bundle>
-        -->
-        <!--
-        bundle:install -s wrap:mvn:org.opennms/opennms-webapp-rest/30.0.0-SNAPSHOT
-        bundle:install -s mvn:javax.annotation/javax.annotation-api/1.3.2
-        bundle:install -s mvn:org.opennms/opennms-alarm-rest/30.0.0-SNAPSHOT
-        -->
+        <feature>aries-blueprint</feature>
+        <feature>sentinel-jackson</feature>
+        <feature>scv-jceks-impl</feature>
+
+        <feature>opennms-config</feature>
         <feature>sentinel-alarmd</feature>
         <feature>jaas-deployer</feature>
+
+        <bundle>mvn:org.apache.aries.component-dsl/org.apache.aries.component-dsl.component-dsl/1.2.2</bundle>
+        <feature>aries-jax-rs-whiteboard</feature>
+        <feature>aries-jax-rs-whiteboard-jackson</feature>
+
         <bundle>mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
         <bundle>mvn:org.opennms.container/org.opennms.container.jaas-login-module-simple/30.0.0-SNAPSHOT</bundle>
+
         <bundle>mvn:org.opennms/opennms-alarm-rest/30.0.0-SNAPSHOT</bundle>
 
     </feature>
