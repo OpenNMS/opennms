@@ -106,7 +106,6 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
 
         // The following is required, otherwise getWrappers() throws a NPE
         m_foreignSourceService.getPolicyTypes();
-        //m_foreignSourceService.getDetectorTypes();
     }
 
     /**
@@ -299,7 +298,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
             SimplePluginConfig cfg = createPluginConfig(serviceName, clazz.getCanonicalName(), wrapper);
             plugins.add(cfg);
         }
-        plugins.getPlugins().sort(Comparator.comparing(cfg0 -> cfg0.name));
+        plugins.getPlugins().sort((cfg0, cfg1) -> cfg0.name.compareTo(cfg1.name));
         return plugins;
     }
 
@@ -311,7 +310,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
             final Boolean required = paramEntry.getValue();
             final String paramName = paramEntry.getKey();
             final Set<String> options = required ? wrapper.getRequiredItems().get(paramName) : wrapper.getOptionalItems().get(paramName);
-            final List<String> optionList = new ArrayList<>(options);
+            final List<String> optionList = new ArrayList<String>(options);
             Collections.sort(optionList);
             SimplePluginParameter param = new SimplePluginParameter(paramName, required, optionList);
             if (required) {
