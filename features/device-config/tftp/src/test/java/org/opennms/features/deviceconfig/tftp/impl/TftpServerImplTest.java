@@ -81,7 +81,7 @@ public class TftpServerImplTest {
             assertThat(receiver.received.get(0).getValue(), is(bytes));
 
             var statistics = server.getStatistics();
-            assertThat(statistics.bytesReceived(), is(bytes.length));
+            assertThat(statistics.bytesReceived(), is(Long.valueOf(bytes.length)));
             assertThat(statistics.warnings(), is(0));
             assertThat(statistics.errors(), is(0));
         }
