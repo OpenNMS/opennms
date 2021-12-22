@@ -477,7 +477,7 @@
     "@vue/compiler-core" "3.2.26"
     "@vue/shared" "3.2.26"
 
-"@vue/compiler-sfc@3.2.26", "@vue/compiler-sfc@^3.0.11":
+"@vue/compiler-sfc@3.2.26", "@vue/compiler-sfc@^3.2.20":
   version "3.2.26"
   resolved "https://registry.yarnpkg.com/@vue/compiler-sfc/-/compiler-sfc-3.2.26.tgz#3ce76677e4aa58311655a3bea9eb1cb804d2273f"
   integrity sha512-ePpnfktV90UcLdsDQUh2JdiTuhV0Skv2iYXxfNMOK/F3Q+2BO0AulcVcfoksOpTJGmhhfosWfMyEaEf0UaWpIw==
@@ -1588,7 +1588,7 @@ stable@^0.1.8:
   resolved "https://registry.yarnpkg.com/stable/-/stable-0.1.8.tgz#836eb3c8382fe2936feaf544631017ce7d47a3cf"
   integrity sha512-ji9qxRnOVfcuLDySj9qzhGSEFVobyt1kIOSkj1qZzYLzq7Tos/oUUWvotUPQLlrsidqsK6tBH89Bc9kL5zHA6w==
 
-svgo@^2.3.0:
+svgo@^2.7.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/svgo/-/svgo-2.8.0.tgz#4ff80cce6710dc2795f0c7c74101e6764cfccd24"
   integrity sha512-+N/Q9kV1+F+UeWYoSiULYo4xYSDQlTgb+ayMobAXPwMnLvop7oxKMo9OzIrX5x3eS4L4f2UHhc9axXwY8DpChg==
@@ -1684,13 +1684,13 @@ uvu@^0.5.2:
     sade "^1.7.3"
     totalist "^2.0.0"
 
-vite-svg-loader@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/vite-svg-loader/-/vite-svg-loader-2.2.0.tgz#b5d6ca948b03e45320cb4f96c44bf88f5bef0a2c"
-  integrity sha512-FP6qCN57coIOwmtah68ofpi4dewGmfzPcoKe76RMnJoz7qBTXxQVm2BlnH0YzGeCbOcjm9NKauJ1I6J9OlUUtg==
+vite-svg-loader@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/vite-svg-loader/-/vite-svg-loader-3.1.1.tgz#c87f31ed69aadbdcc4b2c8c4b0de9ed82931dfc0"
+  integrity sha512-riUVb096oYgF+DHHtXPNJIaceFyqGDAjxJE0/aXsz2TW8G/27f4p1e+RZXrltI06Q3GcyB1V4DSoc+Tq6aQSQw==
   dependencies:
-    "@vue/compiler-sfc" "^3.0.11"
-    svgo "^2.3.0"
+    "@vue/compiler-sfc" "^3.2.20"
+    svgo "^2.7.0"
 
 vite@^2.6.14:
   version "2.7.6"
