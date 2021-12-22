@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.soa.ServiceRegistry;
@@ -268,13 +269,18 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         for(String serviceName: registry.getServiceNames()) {
             if(!m_detectors.containsKey(serviceName)) {
                 CompletableFuture<ServiceDetectorFactory<?>> factoryFuture = registry.getDetectorClassNameFutureFromServiceName(serviceName)
-                        .thenCompose(className -> registry.getDetectorFactoryFutureByClassName(className));
+                        .thenCompose(registry::getDetectorFactoryFutureByClassName);
                 factoryFuture.whenComplete((f, e) ->m_detectors.put(serviceName, f.getDetectorClass()));
                 if (!factoryFuture.isDone()) {
                     LOG.warn("The detector {} class not available.", serviceName);
                 }
             }
         }
+        //Remove those uninstalled detectors
+        Set<String> removeList = m_detectors.keySet().stream().filter(svcName -> !registry.getServiceNames().contains(svcName))
+                .collect(Collectors.toSet());
+        removeList.forEach(svc-> m_detectors.remove(svc));
+
         return m_detectors;
     }
 
@@ -286,7 +292,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     @Override
     public Map<String, String> getPolicyTypes() {
         if (m_policies == null) {
-            Map<String,String> policies = new TreeMap<String,String>();
+            Map<String,String> policies = new TreeMap<>();
             for (OnmsPolicy p : m_serviceRegistry.findProviders(OnmsPolicy.class)) {
                 String policyName = p.getClass().getSimpleName();
                 if (p.getClass().isAnnotationPresent(Policy.class)) {
@@ -298,7 +304,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                 policies.put(policyName, p.getClass().getName());
             }
 
-            m_policies = new LinkedHashMap<String,String>();
+            m_policies = new LinkedHashMap<>();
             for (Entry<String,String> e : policies.entrySet()) {
                 m_policies.put(e.getValue(), e.getKey());
             }
