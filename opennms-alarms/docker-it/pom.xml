@@ -88,22 +88,30 @@
                     </fileSets>
                   </inline>
                 </assembly>
+                <!--<cmd>-->
+                  <!--<arg>karaf</arg>-->
+                  <!--<arg>run</arg>-->
+                  <!--<arg>debug</arg>-->
+                <!--</cmd>-->
               </build>
               <run>
                 <ports>
                   <port>karaf-ssh-port:8101</port>
                   <port>karaf-http-port:8181</port>
+                  <!--<port>5005:5005</port>-->
                 </ports>
+                <env>
+                  <!-- Need to make sure address=* is in the DEBUG OPTS otherwise it listens on the container's localhost only -->
+                  <JAVA_DEBUG_OPTS>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005</JAVA_DEBUG_OPTS>
+                </env>
                 <wait>
-                  <http>
-                    <url>http://localhost:${karaf-http-port}/cxf/services</url>
-                    <method>GET</method>
-                  </http>
+                  <log>Blueprint bundle org.opennms.opennms-alarm-rest/.* has been started</log>
                   <time>120000</time>
                 </wait>
                 <volumes>
                   <bind>
                     <volume>${user.home}/.m2:/opt/apache-karaf/.m2</volume>
+                    <volume>${project.basedir}/../../opennms-base-assembly/target/classes:/opt/opennms</volume>
                   </bind>
                 </volumes>
                 <network>
@@ -152,7 +160,7 @@
               <useSystemClassLoader>false</useSystemClassLoader>
               <systemProperties>
                 <property>
-                  <name>alarm.service.url</name>
+                  <name>application.base-url</name>
                   <value>http://localhost:${karaf-http-port}</value>
                 </property>
               </systemProperties>
@@ -171,66 +179,62 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-web-api</artifactId>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-core</artifactId>
+      <scope>test</scope>
     </dependency>
-
     <dependency>
-      <groupId>org.opennms.features.rest</groupId>
-      <artifactId>org.opennms.features.rest.mapper</artifactId>
-      <version>${project.version}</version>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-java</artifactId>
+      <scope>test</scope>
     </dependency>
-
-    <!-- needed for pulling the principle from the container -->
     <dependency>
-      <groupId>org.apache.karaf.jaas</groupId>
-      <artifactId>org.apache.karaf.jaas.boot</artifactId>
-      <version>${karafVersion}</version>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-junit</artifactId>
+      <scope>test</scope>
     </dependency>
-    <!-- needed for using opennms module instead of default karaf -->
     <dependency>
-      <groupId>org.opennms.container</groupId>
-      <artifactId>org.opennms.container.jaas-login-module-simple</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.service.jaxrs</artifactId>
-      <version>1.0.1</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.service.component.annotations</artifactId>
-      <version>1.4.0</version>
-      <scope>provided</scope>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-picocontainer</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
-      <version>3.0.6</version>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-        </exclusion>
-      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+
+    <!--      -->
+    <!-- JAXB -->
+    <!--      -->
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.3.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-core</artifactId>
+      <version>2.3.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>2.3.0</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
-      <scope>test</scope>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>2.11.2</version>
     </dependency>
 
     <dependency>
