@@ -29,24 +29,22 @@
 package org.opennms.features.config.dao.impl;
 
 import com.google.common.io.Resources;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigItem;
-import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
+import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.dao.impl.util.XsdModelConverter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
+import java.util.Optional;
 
 public class XsdModelConverterTest {
 
     @Test
     public void testData() throws IOException {
-        // register
-        JaxbXmlConverter converter = new JaxbXmlConverter("provisiond-configuration.xsd", "provisiond-configuration", null);
-
         String xsdStr = Resources.toString(XsdHelper.getSchemaPath("provisiond-configuration.xsd"), StandardCharsets.UTF_8);
         XsdModelConverter xsdConverter = new XsdModelConverter(xsdStr);
         ConfigItem item = xsdConverter.convert("provisiond-configuration");
@@ -55,5 +53,18 @@ public class XsdModelConverterTest {
         Assert.assertEquals("Should have correct schema ref.",
                 "{http://xmlns.opennms.org/xsd/config/provisiond-configuration}provisiond-configuration", item.getSchemaRef());
         Assert.assertNotNull("Should have documentation", item.getDocumentation());
+    }
+
+    @Test
+    public void testEnum() throws IOException {
+        String xsdStr = Resources.toString(XsdHelper.getSchemaPath("service-configuration.xsd"), StandardCharsets.UTF_8);
+        XsdModelConverter xsdConverter = new XsdModelConverter(xsdStr);
+        ConfigItem item = xsdConverter.convert("service-configuration");
+
+        ConfigItem serviceItem = item.getChildren().get(0).getChildren().get(0);
+        Assert.assertEquals("Should have enough children items", 5, serviceItem.getChildren().size());
+        Optional<ConfigItem> invokeItem = serviceItem.getChild("invoke");
+        Assert.assertArrayEquals(new String[]{"start", "stop", "status"},
+                invokeItem.get().getChildren().get(0).getChild("at").get().getEnumValues().toArray());
     }
 }

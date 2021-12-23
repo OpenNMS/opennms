@@ -39,6 +39,7 @@ import org.w3c.dom.Node;
 import javax.xml.namespace.QName;
 import java.io.StringReader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.apache.ws.commons.schema.constants.Constants.MetaDataConstants.EXTERNAL_ATTRIBUTES;
 
@@ -187,8 +188,16 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         }
     }
 
-    // TODO: not only string support pattern
-    private void handleStringRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
+
+    private void handleEnumerationRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
+        List<XmlSchemaRestriction> enumerationFacets = facets.get(XmlSchemaRestriction.Type.ENUMERATION);
+        if (enumerationFacets != null && !enumerationFacets.isEmpty()) {
+            List<String> enumValues = enumerationFacets.stream().map(e->(String)e.getValue()).collect(Collectors.toList());
+            item.setEnumValues(enumValues);
+        }
+    }
+
+    private void handlePatternRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
         List<XmlSchemaRestriction> patternFacets = facets.get(XmlSchemaRestriction.Type.PATTERN);
         if (patternFacets != null && !patternFacets.isEmpty()) {
             XmlSchemaRestriction restriction = patternFacets.get(0);
@@ -231,8 +240,6 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
             throw new SchemaConversionException("minExclusive are not supported!", null);
         }
 
-        // TODO: enumeration !!! opennms-alarms/api/target/classes/xsds/northbound-alarm.xsd
-        List<XmlSchemaRestriction> enumation = facets.get(XmlSchemaRestriction.Type.ENUMERATION);
 
     }
 
@@ -240,9 +247,9 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         if (facets == null) {
             return;
         }
-        if (item.getType() == ConfigItem.Type.STRING) {
-            this.handleStringRestrictions(item, facets);
-        } else {
+        this.handlePatternRestrictions(item, facets);
+        this.handleEnumerationRestrictions(item, facets);
+        if (item.getType() != ConfigItem.Type.STRING ) {
             this.handleOtherRestrictions(item, facets);
         }
     }

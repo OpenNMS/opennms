@@ -31,7 +31,6 @@ package org.opennms.features.config.dao.impl.util;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.Yaml;
@@ -51,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 /**
  * Convert ConfigItem into OpenAPI
@@ -207,7 +207,7 @@ public class ConfigSwaggerConverter {
             openAPI.setPaths(paths);
 
             // Generate paths for the items
-            this.generatePathsForItems(item,prefix , null, isSingleConfig);
+            this.generatePathsForItems(item, prefix, null, isSingleConfig);
             pathItemsByPath.forEach(paths::addPathItem);
         }
 
@@ -285,7 +285,7 @@ public class ConfigSwaggerConverter {
         }
 
         // Save
-        if(!isSingleConfig) {
+        if (!isSingleConfig) {
             pathItemsByPath.put(path, configNamePathItem);
             pathItemsByPath.put(path + "/{configId}", configIdPathItem);
         } else {
@@ -374,9 +374,6 @@ public class ConfigSwaggerConverter {
                 break;
             case STRING:
                 schema = new StringSchema();
-                if (item.getPattern() != null) { // pattern only work on string
-                    schema.setPattern(item.getPattern());
-                }
                 break;
             case NUMBER:
                 schema = new NumberSchema();
@@ -416,6 +413,9 @@ public class ConfigSwaggerConverter {
         if (item.getDocumentation() != null && !"".equals(item.getDocumentation().trim())) {
             schema.setDescription(item.getDocumentation());
         }
+        if (item.getPattern() != null) {
+            schema.setPattern(item.getPattern());
+        }
         if (item.getMultipleOf() != null) {
             if (schema instanceof NumberSchema || schema instanceof IntegerSchema)
                 schema.setMultipleOf(BigDecimal.valueOf(item.getMultipleOf()));
@@ -436,11 +436,21 @@ public class ConfigSwaggerConverter {
             else
                 schema.setMaximum(BigDecimal.valueOf(item.getMax()));
         }
-
         if (item.getDefaultValue() != null) {
             schema.setDefault(item.getDefaultValue());
         }
-
+        if (item.getEnumValues() != null) {
+            if (schema instanceof StringSchema)
+                ((StringSchema) schema).setEnum(item.getEnumValues());
+            else if (schema instanceof IntegerSchema || schema instanceof NumberSchema) {
+                try {
+                    List<BigDecimal> tmp = item.getEnumValues().stream().map(BigDecimal::new).collect(Collectors.toList());
+                    ((NumberSchema) schema).setEnum(tmp);
+                } catch (NumberFormatException e) {
+                    throw new SchemaConversionException("Fail to convert enum values to Number.", e);
+                }
+            }
+        }
         if (parent != null) {
             // Add the item to the parent
             Schema<?> schemaForParent = schemasByItem.get(parent);
