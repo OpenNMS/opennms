@@ -6,8 +6,9 @@
         xmlns:this="http://xmlns.opennms.org/xsd/notifications"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
-		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
-		  elementFormDefault="qualified">
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+        xmlns:ejaxb="http://xmlns.opennms.org/xsd/config/extended-schema-for-jaxb"
+        elementFormDefault="qualified">
   <annotation>
     <documentation>XML Schema for the notifications.xml configuration file.
     Version: $Id$</documentation>
@@ -26,6 +27,8 @@
             <documentation>Revision of this file.</documentation>
           </annotation>
         </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:specific">
 
         <element maxOccurs="1" minOccurs="1" name="created" type="string">
           <annotation>
@@ -139,6 +142,44 @@
           </annotation>
         </element>
       </sequence>
+    </complexType>
+  </element>
+
+  <element name="specific" ejaxb:body-name="address">
+    <annotation>
+      <documentation>A specific addresses to be polled</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="location" type="string" use="optional">
+            <annotation>
+              <documentation>The monitoring location where this specific address
+                will be executed.</documentation>
+            </annotation>
+          </attribute>
+
+          <attribute name="retries" type="int" use="optional">
+            <annotation>
+              <documentation>The number of times a ping is retried for this
+                specific address. If there is no response after the first ping
+                to an address, it is tried again for the specified number of
+                retries. This retry count overrides the default.</documentation>
+            </annotation>
+          </attribute>
+
+          <attribute name="timeout" type="long" use="optional">
+            <annotation>
+              <documentation>The timeout on each poll for this specific
+                address. This timeout overrides the default.</documentation>
+            </annotation>
+          </attribute>
+
+          <attribute name="foreign-source" type="string" use="optional" />
+
+        </extension>
+      </simpleContent>
     </complexType>
   </element>
 </schema>
