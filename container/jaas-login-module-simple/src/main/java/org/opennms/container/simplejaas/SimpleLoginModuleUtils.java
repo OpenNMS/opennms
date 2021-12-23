@@ -57,6 +57,12 @@ public abstract class SimpleLoginModuleUtils {
 
     public static boolean doLogin(final SimpleOpenNMSLoginHandler handler, final Subject subject, final Map<String, ?> sharedState, final Map<String, ?> options) throws LoginException {
         LOG.debug("OpenNMSLoginModule: login(): handler={}, subject={}, sharedState={}, options={}", handler.getClass(), subject.getClass(), sharedState, options);
+
+        if (handler.callbackHandler() == null) {
+            // Shortcut if we have no callback handler - there is nothing to do here
+            return false;
+        }
+
         final Callback[] callbacks = new Callback[2];
 
         // A U T H E N T I C A T I O N
