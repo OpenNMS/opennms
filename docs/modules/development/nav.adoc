@@ -1,5 +1,6 @@
-.Development
-* xref:overview/overview.adoc[]
+.xref:development.adoc[]
+
+* xref:build-from-source.adoc[]
 
 * xref:minion/introduction.adoc[]
 ** xref:minion/container.adoc[]

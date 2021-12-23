@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.collection.api;
 
-import org.opennms.core.utils.LocationUtils;
-
 import java.util.Collections;
 import java.util.Map;
+
+import org.opennms.core.utils.LocationUtils;
 
 /**
  * Boilerplate code for basic {@link ServiceCollector} implementations.

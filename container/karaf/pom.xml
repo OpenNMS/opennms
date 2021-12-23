@@ -105,6 +105,46 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                      <phase>prepare-package</phase>
+                      <goals>
+                          <goal>copy</goal>
+                      </goals>
+                      <configuration>
+                          <artifactItems>
+                              <artifactItem>
+                                  <groupId>org.ops4j.pax.logging</groupId>
+                                  <artifactId>pax-logging-api</artifactId>
+                                  <version>${paxLoggingVersion}</version>
+                                  <overWrite>true</overWrite>
+                                  <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-api/2.0.9</outputDirectory>
+                                  <destFileName>pax-logging-api-2.0.9.jar</destFileName>
+                              </artifactItem>
+                              <artifactItem>
+                                  <groupId>org.ops4j.pax.logging</groupId>
+                                  <artifactId>pax-logging-log4j2</artifactId>
+                                  <version>${paxLoggingVersion}</version>
+                                  <overWrite>true</overWrite>
+                                  <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2/2.0.9</outputDirectory>
+                                  <destFileName>pax-logging-log4j2-2.0.9.jar</destFileName>
+                              </artifactItem>
+                              <artifactItem>
+                                  <groupId>org.ops4j.pax.logging</groupId>
+                                  <artifactId>pax-logging-logback</artifactId>
+                                  <version>${paxLoggingVersion}</version>
+                                  <overWrite>true</overWrite>
+                                  <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-logback/2.0.9</outputDirectory>
+                                  <destFileName>pax-logging-logback-2.0.9.jar</destFileName>
+                              </artifactItem>
+                          </artifactItems>
+                      </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>net.nicoulaj.maven.plugins</groupId>
                 <artifactId>checksum-maven-plugin</artifactId>
                 <executions>

@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
+import org.opennms.netmgt.config.discovery.ExcludeUrl;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
@@ -258,6 +259,40 @@ public class DiscoveryRestService {
             }
         }
 
+        @XmlRootElement
+        public static class ExcludeUrlDTO {
+            private String content;
+            private String location = "Default";
+            private String foreignSource;
+
+            public ExcludeUrlDTO() {
+            }
+
+            public String getContent() {
+                return content;
+            }
+
+            public void setContent(String content) {
+                this.content = content;
+            }
+
+            public String getLocation() {
+                return location;
+            }
+
+            public void setLocation(String location) {
+                this.location = location;
+            }
+
+            public String getForeignSource() {
+                return foreignSource;
+            }
+
+            public void setForeignSource(String foreignSource) {
+                this.foreignSource = foreignSource;
+            }
+        }
+
         private String location = "Default";
         private Integer retries = 1;
         private Long timeout = 2000l;
@@ -268,6 +303,7 @@ public class DiscoveryRestService {
         private List<IncludeRangeDTO> includeRangeDTOList = new ArrayList<>();
         private List<ExcludeRangeDTO> excludeRangeDTOList = new ArrayList<>();
         private List<IncludeUrlDTO> includeUrlDTOList = new ArrayList<>();
+        private List<ExcludeUrlDTO> excludeUrlDTOList = new ArrayList<>();
 
         public String getLocation() {
             return location;
@@ -348,6 +384,16 @@ public class DiscoveryRestService {
         public void setIncludeUrlDTOList(List<IncludeUrlDTO> includeUrlDTOList) {
             this.includeUrlDTOList = includeUrlDTOList;
         }
+
+        @XmlElementWrapper(name="excludeUrls")
+        @XmlElement(name="excludeUrl")
+        public List<ExcludeUrlDTO> getExcludeUrlDTOList() {
+            return excludeUrlDTOList;
+        }
+
+        public void setExcludeUrlDTOList(List<ExcludeUrlDTO> excludeUrlDTOList) {
+            this.excludeUrlDTOList = excludeUrlDTOList;
+        }
     }
 
     @Autowired
@@ -399,6 +445,14 @@ public class DiscoveryRestService {
             includeUrl.setForeignSource(includeUrlDTO.getForeignSource());
             includeUrl.setLocation(includeUrlDTO.getLocation());
             discoveryConfiguration.addIncludeUrl(includeUrl);
+        }
+
+        for(DiscoveryConfigurationDTO.ExcludeUrlDTO excludeUrlDTO : discoveryConfigurationDTO.getExcludeUrlDTOList()){
+            ExcludeUrl excludeUrl = new ExcludeUrl();
+            excludeUrl.setUrl(excludeUrlDTO.getContent());
+            excludeUrl.setForeignSource(excludeUrlDTO.getForeignSource());
+            excludeUrl.setLocation(excludeUrlDTO.getLocation());
+            discoveryConfiguration.addExcludeUrl(excludeUrl);
         }
 
         for(DiscoveryConfigurationDTO.IncludeRangeDTO includeRangeDTO : discoveryConfigurationDTO.getIncludeRangeDTOList()){

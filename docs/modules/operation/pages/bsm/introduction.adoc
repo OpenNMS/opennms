@@ -17,7 +17,7 @@ A possible representation of the whole system hierarchy is shown in figure <<ga-
 
 [[ga-bsm-example-web-shop]]
 .Example scenario for a web shop
-image:bsm/01_bsm-example-scenario.png[]
+image::bsm/01_bsm-example-scenario.png[]
 
 To be able to model this scenarios the BSM functions can be used.
 The Business Service Monitoring (BSM) feature includes the following components:

@@ -12,7 +12,7 @@ The feature is by default deactivated and is configured by defining a `.properti
 Please note that this feature works with Grafana v2.5.0+.
 
 .Quick access to Grafana dashboards from the {page-component-title} start page
-image:webui/startpage/01_grafana-box.png[]
+image::webui/startpage/01_grafana-box.png[]
 
 .Grafana Dashboard configuration properties
 [options="header" cols="2,3,1,1"]

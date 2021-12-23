@@ -31,12 +31,25 @@ package org.opennms.core.ipc.twin.common;
 import com.google.common.base.Objects;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringJoiner;
+import java.util.function.BiConsumer;
 
 public class TwinUpdate {
 
 
     private final TwinRequest twinRequest;
+
+    private byte[] object;
+
+    private int version;
+
+    private boolean isPatch;
+
+    private String sessionId;
+
+    private Map<String, String> tracingInfo = new HashMap<>();
 
     public TwinUpdate() {
         this.twinRequest = new TwinRequest();
@@ -50,13 +63,7 @@ public class TwinUpdate {
         this.twinRequest = new TwinRequest(key, location);
     }
 
-    private byte[] object;
 
-    private int version;
-
-    private boolean isPatch;
-
-    private String sessionId;
 
     public byte[] getObject() {
         return object;
@@ -107,6 +114,14 @@ public class TwinUpdate {
         return twinRequest.getKey();
     }
 
+    public Map<String, String> getTracingInfo() {
+        return tracingInfo;
+    }
+
+    public void addTracingInfo(String key, String value) {
+        this.tracingInfo.put(key, value);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -133,4 +148,5 @@ public class TwinUpdate {
                 .add("sessionId='" + sessionId + "'")
                 .toString();
     }
+
 }

@@ -25,8 +25,8 @@ class MavenModule(MavenIdentifier):
         self.pom = json_obj['pom']
 
         self.path = os.path.abspath(os.path.join(self.pom, '..'))
-        self.componentName = ""
-        self.subcomponentName = ""
+        self.componentName = []
+        self.subcomponentName = []
         self.componentInheritance = True
         self.stability = ""
         self.artifact_id = json_obj['artifactId']
@@ -36,24 +36,31 @@ class MavenModule(MavenIdentifier):
         # Load pom to get component identifiers
         pomxml = minidom.parse(self.pom)
         elements = pomxml.getElementsByTagName('properties')
+        readComponentName = False
         if elements is not None and len(elements)>0:
-          properties=elements[0]
-          component = properties.getElementsByTagName('opennms.doc.component')
-          subcomponent = properties.getElementsByTagName('opennms.doc.subcomponent')
-          stability = properties.getElementsByTagName('opennms.doc.stability')
-          inheritance = properties.getElementsByTagName('opennms.doc.componentInheritance')
+            properties=elements[0]
+            for property in properties.childNodes:
+                if property.nodeType == minidom.Node.ELEMENT_NODE:
+                    if property.tagName == 'opennms.doc.component':
+                        if readComponentName:
+                            # Reading another component name without getting a sub between. Add one to keep them in sync
+                            self.subcomponentName.append('')
+                        self.componentName.append(property.childNodes[0].nodeValue)
+                        readComponentName = True
+                    elif property.tagName == 'opennms.doc.subcomponent':
+                        if not readComponentName:
+                            # No component name, so we'll add an empty one to keep them in sync
+                            self.componentName.append('')
+                        self.subcomponentName.append(property.childNodes[0].nodeValue)
+                        readComponentName = False
+                    elif property.tagName == 'opennms.doc.stability':
+                        self.stability = property.childNodes[0].nodeValue
+                    elif property.tagName == 'opennms.doc.componentInheritance':
+                        self.componentInheritance = property.childNodes[0].nodeValue
 
-          if len(component)>0:
-            self.componentName = component[0].firstChild.nodeValue
-
-          if len(subcomponent)>0:
-            self.subcomponentName = subcomponent[0].firstChild.nodeValue
-
-          if len(stability)>0:
-            self.stability = stability[0].firstChild.nodeValue
-
-          if len(inheritance)>0:
-            self.componentInheritance = inheritance[0].firstChild.nodeValue
+            # If we exit with finding the component name last, make sure to add a corresponding subcomponent
+            if readComponentName:
+                self.subcomponentName.append('')
 
         self.dependencies = [MavenIdentifier(obj) for obj in json_obj['dependencies']]
 
