@@ -29,6 +29,10 @@
         </element>
 
         <element maxOccurs="unbounded" minOccurs="0" ref="this:specific">
+          <annotation>
+            <documentation>the specific addresses to be polled</documentation>
+          </annotation>
+        </element>
 
         <element maxOccurs="1" minOccurs="1" name="created" type="string">
           <annotation>
