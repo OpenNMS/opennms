@@ -28,7 +28,7 @@
     </preConditions>
 
     <sql>
-      SELECT create_hypertable('bmp_ip_rib_log', 'last_updated', chunk_time_interval => interval '5 day', migrate_data => true);
+      SELECT create_hypertable('bmp_ip_rib_log', 'last_updated', migrate_data => true);
     </sql>
   </changeSet>
 
@@ -49,7 +49,7 @@
     </preConditions>
 
     <sql>
-      SELECT create_hypertable('bmp_stats_by_peer', 'interval_time', chunk_time_interval => interval '2 day', migrate_data => true);
+      SELECT create_hypertable('bmp_stats_by_peer', 'interval_time', migrate_data => true);
     </sql>
   </changeSet>
 
@@ -70,7 +70,7 @@
     </preConditions>
 
     <sql>
-      SELECT create_hypertable('bmp_stats_by_asn', 'interval_time', chunk_time_interval => interval '2 day', migrate_data => true);
+      SELECT create_hypertable('bmp_stats_by_asn', 'interval_time', migrate_data => true);
     </sql>
   </changeSet>
 
@@ -92,7 +92,7 @@
     </preConditions>
 
     <sql>
-      SELECT create_hypertable('bmp_stats_by_prefix', 'interval_time', chunk_time_interval => interval '2 day', migrate_data => true);
+      SELECT create_hypertable('bmp_stats_by_prefix', 'interval_time', migrate_data => true);
     </sql>
   </changeSet>
 
@@ -113,7 +113,7 @@
     </preConditions>
 
     <sql>
-      SELECT create_hypertable('bmp_stats_peer_rib', 'interval_time', chunk_time_interval => interval '1 month', migrate_data => true);
+      SELECT create_hypertable('bmp_stats_peer_rib', 'interval_time', migrate_data => true);
     </sql>
   </changeSet>
 
@@ -134,7 +134,7 @@
     </preConditions>
 
     <sql>
-      SELECT create_hypertable('bmp_stats_ip_origins', 'interval_time', chunk_time_interval => interval '1 month', migrate_data => true);
+      SELECT create_hypertable('bmp_stats_ip_origins', 'interval_time', migrate_data => true);
     </sql>
   </changeSet>
 
