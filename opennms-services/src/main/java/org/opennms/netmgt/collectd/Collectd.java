@@ -565,7 +565,11 @@ public class Collectd extends AbstractServiceDaemon implements
 
             LOG.debug("getSpecificationsForInterface: address/service: {}/{} scheduled, interface does belong to package: {}", iface, svcName, wpkg.getName());
             String className = m_collectdConfigFactory.getCollectdConfig().getCollectors().stream().filter(c->c.getService().equals(svcName)).findFirst().orElse(null).getClassName();
-            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient, pollOutagesDao, className));
+            if(className != null) {
+                matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient, pollOutagesDao, className));
+            } else {
+                LOG.warn("The class for collector {} is not available yet.", svcName);
+            }
         }
         return matchingPkgs;
     }
