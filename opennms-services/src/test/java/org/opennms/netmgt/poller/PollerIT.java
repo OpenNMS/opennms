@@ -43,7 +43,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -68,7 +67,6 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.config.poller.Monitor;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -94,10 +92,6 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.poller.monitors.HttpMonitor;
-import org.opennms.netmgt.poller.monitors.IcmpMonitor;
-import org.opennms.netmgt.poller.monitors.SmtpMonitor;
-import org.opennms.netmgt.poller.monitors.SnmpMonitor;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -222,14 +216,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
         m_pollerConfig.setDefaultPollInterval(2000L);
         m_pollerConfig.addService(m_network.getService(2, "192.168.1.3", "HTTP"));
-        List<Monitor> monitorList = Arrays.asList(
-                new Monitor("ICMP", IcmpMonitor.class.getCanonicalName()),
-                new Monitor("SMTP", SmtpMonitor.class.getCanonicalName()),
-                new Monitor("SNMP", SnmpMonitor.class.getCanonicalName()),
-                new Monitor("HTTP", HttpMonitor.class.getCanonicalName())
-        );
-        m_pollerConfig.setConfiguredMonitors(monitorList);
-
 
         m_outageAnticipator = new OutageAnticipator(m_db);
 

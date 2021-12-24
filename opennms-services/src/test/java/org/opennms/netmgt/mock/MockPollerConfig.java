@@ -98,8 +98,6 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
 
     private Map<Package, List<String>> m_rraLists = Maps.newHashMap();
 
-    private List<Monitor> monitors;
-
     public MockPollerConfig(final MockNetwork network) {
         m_network = network;
         try {
@@ -291,7 +289,7 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
 
     @Override
     public List<Monitor> getConfiguredMonitors() {
-        return monitors;
+        return Collections.emptyList();
     }
 
     private Service findService(Package pkg, String svcName) {
@@ -585,9 +583,5 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     @Override
     public ServiceMonitorRegistry getServiceMonitorRegistry() {
         return m_serviceMonitorRegistry;
-    }
-
-    public void setConfiguredMonitors(List<Monitor> monitors) {
-        this.monitors = monitors;
     }
 }
