@@ -54,7 +54,7 @@
     "@types/leaflet.markercluster": "^1.4.6",
     "@types/lodash": "^4.14.172",
     "@types/marked": "^3.0.2",
-    "@types/node": "^15.14.1",
+    "@types/node": "^17.0.5",
     "@types/splitpanes": "^2.2.1",
     "@vitejs/plugin-vue": "^1.9.1",
     "@vue-leaflet/vue-leaflet": "^0.6.1",
