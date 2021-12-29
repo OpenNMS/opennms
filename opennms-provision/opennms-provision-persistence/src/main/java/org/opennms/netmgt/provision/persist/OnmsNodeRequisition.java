@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.persist;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.net.InetAddress;
 
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
@@ -86,7 +87,7 @@ public class OnmsNodeRequisition {
     }
     
     private List<OnmsAssetRequisition> constructAssetRequistions() {
-    	final List<OnmsAssetRequisition> reqs = new ArrayList<OnmsAssetRequisition>(m_node.getAssets().size());
+        final List<OnmsAssetRequisition> reqs = new ArrayList<OnmsAssetRequisition>(m_node.getAssets().size());
         for(final RequisitionAsset asset : m_node.getAssets()) {
             reqs.add(new OnmsAssetRequisition(asset));
         }
@@ -100,7 +101,7 @@ public class OnmsNodeRequisition {
     }
 
     private List<OnmsIpInterfaceRequisition> constructIpInterfaceRequistions() {
-    	final List<OnmsIpInterfaceRequisition> reqs = new ArrayList<OnmsIpInterfaceRequisition>(m_node.getInterfaces().size());
+        final List<OnmsIpInterfaceRequisition> reqs = new ArrayList<OnmsIpInterfaceRequisition>(m_node.getInterfaces().size());
         for(final RequisitionInterface iface : m_node.getInterfaces()) {
             reqs.add(new OnmsIpInterfaceRequisition(iface));
         }
@@ -108,7 +109,7 @@ public class OnmsNodeRequisition {
     }
 
     private List<OnmsNodeCategoryRequisition> constructCategoryRequistions() {
-    	final List<OnmsNodeCategoryRequisition> reqs = new ArrayList<OnmsNodeCategoryRequisition>(m_node.getCategories().size());
+        final List<OnmsNodeCategoryRequisition> reqs = new ArrayList<OnmsNodeCategoryRequisition>(m_node.getCategories().size());
         for(final RequisitionCategory category : m_node.getCategories()) {
             reqs.add(new OnmsNodeCategoryRequisition(category));
         }
@@ -174,8 +175,8 @@ public class OnmsNodeRequisition {
 
         @Override
         public void visitInterface(final OnmsIpInterfaceRequisition ifaceReq) {
-        	final String ipAddr = ifaceReq.getIpAddr();
-            if (ipAddr == null || "".equals(ipAddr)) {
+            final InetAddress ipAddr = ifaceReq.getIpAddr();
+            if (ipAddr == null) {
                 bldr.clearInterface();
                 LOG.error("Found interface on node {} with an empty ipaddr! Ignoring!", bldr.getCurrentNode().getLabel());
                 return;
@@ -194,7 +195,7 @@ public class OnmsNodeRequisition {
 
         @Override
         public void visitNode(final OnmsNodeRequisition nodeReq) {
-        	final NodeBuilder nodeBldr = bldr.addNode(nodeReq.getNodeLabel());
+            final NodeBuilder nodeBldr = bldr.addNode(nodeReq.getNodeLabel());
             nodeBldr.setLabelSource(NodeLabelSource.USER);
             nodeBldr.setType(NodeType.ACTIVE);
             nodeBldr.setForeignSource(nodeReq.getForeignSource());
@@ -214,7 +215,7 @@ public class OnmsNodeRequisition {
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     public OnmsNode constructOnmsNodeFromRequisition() {
-    	final OnmsNodeBuilder visitor = new OnmsNodeBuilder();
+        final OnmsNodeBuilder visitor = new OnmsNodeBuilder();
         visit(visitor);
         return visitor.getNode();
     }

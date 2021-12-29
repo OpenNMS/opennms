@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.persist;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -106,9 +107,9 @@ public class OnmsIpInterfaceRequisition {
     /**
      * <p>getIpAddr</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link java.net.InetAddress} object.
      */
-    public String getIpAddr() {
+    public InetAddress getIpAddr() {
         return m_iface.getIpAddr();
     }
 

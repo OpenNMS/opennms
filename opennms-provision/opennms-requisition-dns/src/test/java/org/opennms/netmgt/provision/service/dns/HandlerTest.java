@@ -73,7 +73,7 @@ public class HandlerTest {
         
         Assert.assertTrue("Number of nodes in Model Import > 1", 1 == r.getNodeCount());
         Assert.assertTrue("NodeLabel isn't localhost", "localhost".equals(r.getNodes().get(0).getNodeLabel()));
-        Assert.assertTrue("127.0.0.1".equals(r.getNodes().get(0).getInterfaces().get(0).getIpAddr()));
+        Assert.assertTrue("127.0.0.1".equals(r.getNodes().get(0).getInterfaces().get(0).getIpAddr().getHostAddress()));
     }
 
     @Test

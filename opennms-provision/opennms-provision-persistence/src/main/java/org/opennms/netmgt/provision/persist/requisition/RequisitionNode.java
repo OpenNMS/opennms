@@ -144,7 +144,7 @@ public class RequisitionNode {
      */
     public RequisitionInterface getInterface(String ipAddress) {
         for (RequisitionInterface iface : m_interfaces) {
-            if (iface.getIpAddr().equals(ipAddress)) {
+            if (iface.getIpAddr().getHostAddress().equals(ipAddress)) {
                 return iface;
             }
         }
@@ -169,7 +169,7 @@ public class RequisitionNode {
         final Iterator<RequisitionInterface> i = m_interfaces.iterator();
         while (i.hasNext()) {
             final RequisitionInterface iface = i.next();
-            if (iface.getIpAddr().equals(ipAddress)) {
+            if (iface.getIpAddr().getHostAddress().equals(ipAddress)) {
                 i.remove();
                 return true;
             }
@@ -183,7 +183,7 @@ public class RequisitionNode {
      * @param iface a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
      */
     public void putInterface(RequisitionInterface iface) {
-        deleteInterface(iface.getIpAddr());
+        deleteInterface(iface.getIpAddr().getHostAddress());
         m_interfaces.add(0, iface);
     }
 

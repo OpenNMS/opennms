@@ -83,8 +83,6 @@ public class NetworkBuilder {
 
     /**
      * <p>Constructor for NetworkBuilder.</p>
-     *
-     * @param distPollerId a {@link java.lang.String} object.
      */
     public NetworkBuilder() {
         // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID

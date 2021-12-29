@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.net.InetAddress;
 
 import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -54,6 +55,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.PrimaryTypeAdapter;
 
@@ -78,9 +80,10 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
 
     @XmlAttribute(name="descr")
     protected String m_description;
-    
+
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     @XmlAttribute(name="ip-addr", required=true)
-    protected String m_ipAddress;
+    protected InetAddress m_ipAddress;
     
     @XmlAttribute(name="managed")
     protected Boolean m_isManaged;
@@ -307,7 +310,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getIpAddr() {
+    public InetAddress getIpAddr() {
         return m_ipAddress;
     }
 
@@ -318,7 +321,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      */
     public void setIpAddr(String value) {
         try {
-            m_ipAddress = InetAddressUtils.toIpAddrString(InetAddressUtils.getInetAddress(value));
+            m_ipAddress = InetAddressUtils.getInetAddress(value);
         } catch (Throwable e) {
             throw new IllegalArgumentException("Invalid IP address specified", e);
         }
