@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.persist;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.net.InetAddress;
 
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
@@ -174,8 +175,8 @@ public class OnmsNodeRequisition {
 
         @Override
         public void visitInterface(final OnmsIpInterfaceRequisition ifaceReq) {
-        	final String ipAddr = ifaceReq.getIpAddr();
-            if (ipAddr == null || "".equals(ipAddr)) {
+            final InetAddress ipAddr = ifaceReq.getIpAddr();
+            if (ipAddr == null) {
                 bldr.clearInterface();
                 LOG.error("Found interface on node {} with an empty ipaddr! Ignoring!", bldr.getCurrentNode().getLabel());
                 return;

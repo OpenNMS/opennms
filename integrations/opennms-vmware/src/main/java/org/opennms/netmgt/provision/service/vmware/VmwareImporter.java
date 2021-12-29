@@ -333,9 +333,9 @@ public class VmwareImporter {
 
                 if (primaryInterfaceCandidate != null) {
                     if (reachableInterfaceFound) {
-                        logger.warn("Found reachable primary interface '{}'", primaryInterfaceCandidate.getIpAddr());
+                        logger.warn("Found reachable primary interface '{}'", primaryInterfaceCandidate.getIpAddr().getHostAddress());
                     } else {
-                        logger.warn("Only non-reachable interfaces found, using first one for primary interface '{}'", primaryInterfaceCandidate.getIpAddr());
+                        logger.warn("Only non-reachable interfaces found, using first one for primary interface '{}'", primaryInterfaceCandidate.getIpAddr().getHostAddress());
                     }
                     primaryInterfaceCandidate.setSnmpPrimary(PrimaryType.PRIMARY);
 
@@ -833,7 +833,7 @@ public class VmwareImporter {
         return attributes;
     }
 
-    private RequisitionInterface getRequisitionInterface(RequisitionNode node, String ipAddr) {
+    private RequisitionInterface getRequisitionInterface(RequisitionNode node, InetAddress ipAddr) {
         for (RequisitionInterface intf : node.getInterfaces()) {
             if (ipAddr.equals(intf.getIpAddr())) {
                 return intf;

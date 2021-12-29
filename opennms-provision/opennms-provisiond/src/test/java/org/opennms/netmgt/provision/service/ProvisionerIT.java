@@ -401,7 +401,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
             }
             @Override
             public void visitInterface(final OnmsIpInterfaceRequisition req) {
-                LOG.debug("visitInterface: {}", req.getIpAddr());
+                LOG.debug("visitInterface: {}", req.getIpAddr().getHostAddress());
                 m_ifaces.add(req);
                 m_ifaceCount++;
             }
