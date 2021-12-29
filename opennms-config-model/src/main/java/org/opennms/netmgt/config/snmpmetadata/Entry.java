@@ -28,14 +28,15 @@
 
 package org.opennms.netmgt.config.snmpmetadata;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @XmlRootElement(name = "entry")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -48,6 +49,9 @@ public class Entry implements Container {
 
     @XmlAttribute(name = "index")
     private String index = "false";
+
+    @XmlAttribute(name = "exact")
+    private String exact = "false";
 
     @XmlElement(name = "entry")
     private List<Entry> entries = new ArrayList<>();
@@ -72,6 +76,12 @@ public class Entry implements Container {
         this.index = index;
     }
 
+    public boolean isExact() { return "true".equals(exact); }
+
+    public void setExact(boolean exact) { this.exact = exact ? "true" : "false"; }
+
+    public void setExact(String exact) { this.exact = exact; }
+
     public List<Entry> getEntries() {
         return entries;
     }
@@ -94,6 +104,7 @@ public class Entry implements Container {
                 "tree='" + tree + '\'' +
                 ", name='" + name + '\'' +
                 ", index='" + index + '\'' +
+                ", exact='" + exact + '\'' +
                 ", entries=" + entries +
                 '}';
     }
@@ -103,11 +114,11 @@ public class Entry implements Container {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Entry entry = (Entry) o;
-        return Objects.equals(tree, entry.tree) && Objects.equals(name, entry.name) && Objects.equals(index, entry.index) && Objects.equals(entries, entry.entries);
+        return Objects.equals(tree, entry.tree) && Objects.equals(name, entry.name) && Objects.equals(index, entry.index) && Objects.equals(exact, entry.exact) && Objects.equals(entries, entry.entries);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tree, name, index, entries);
+        return Objects.hash(tree, name, index, exact, entries);
     }
 }

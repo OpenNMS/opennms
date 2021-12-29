@@ -16,6 +16,8 @@ By default, OpenNMS now runs as the `opennms` user rather than `root`.
 
 WARNING: If you are upgrading from a version of OpenNMS Horizon older than 29, you will have to fix the ownership of your files.
 
+==== Fixing Permissions and Ownership
+
 Since many OpenNMS instances are very large with thousands or even millions of RRD and similar data files in `$OPENNMS_HOME/share`,
 we decided _not_ to change ownership automatically upon package upgrade.
 
@@ -27,6 +29,25 @@ If you wish to revert to the previous behavior, create an `$OPENNMS_HOME/etc/ope
 [source, shell]
 ----
 RUNAS=root
+----
+
+==== Trapd Port Changes
+
+As OpenNMS can no longer listen on privileged ports by default, the default Trapd port is now `10162`.
+You will need to configure a proxy agent or port forward to continue to receive traps at port `162`.
+Otherwise, you must configure your agents to send traps to the new port instead.
+
+==== Java ICMP Permissions
+
+OpenNMS will attempt to configure ICMP permissions using the `net.ipv4.ping_group_range` sysctl.
+However, Linux kernels older than version 3.11 (like the version provided by CentOS 7) do not support this setting fully.
+
+If you are on a distribution with an older unsupported kernel, you can give Java ICMP permissions using the `setcap` utility once you have completed your upgrade.
+Note that this example assumes you have already run `$OPENNMS_HOME/bin/install` after install or upgrade, so `$OPENNMS_HOME/etc/java.conf` exists.
+
+[source, shell]
+----
+setcap cap_net_raw+ep $(</opt/opennms/etc/java.conf) && echo "$(dirname $(</opt/opennms/etc/java.conf))/../lib/jli/" > /etc/ld.so.conf.d/java.conf && ldconfig -v
 ----
 
 === Additional configuration needed when using Kafka/gRPC for Minion communication.

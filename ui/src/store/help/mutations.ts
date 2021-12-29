@@ -1,6 +1,6 @@
 import { State } from './state'
 
-const SET_OPEN_API = (state: State, openApi: any) => {
+const SET_OPEN_API = (state: State, openApi: Object) => {
   state.openApi = openApi
 }
 

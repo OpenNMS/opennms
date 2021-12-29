@@ -1,9 +1,9 @@
 export interface State {
-  openApi: any
+  openApi: Object
 }
 
 const state: State = {
-  openApi: {}
+  openApi: {} 
 }
 
 export default state

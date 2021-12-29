@@ -31,10 +31,10 @@ package org.opennms.netmgt.dao.hibernate;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeSet;
@@ -62,7 +62,6 @@ import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SortedSetMultimap;
@@ -297,25 +296,15 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", m_managedAddresses.size());
     }
 
-    /**
-     * Returns the nodeid for the IP Address
-     * <p>
-     * If multiple nodes hav assigned interfaces with the same IP, this returns all known nodes sorted by the interface
-     * management priority.
-     *
-     * @param address The IP Address to query.
-     * @return The node ID of the IP Address if known.
-     */
     @Override
-    public synchronized Iterable<Integer> getNodeId(final String location, final InetAddress address) {
-        if (address == null) {
-            return Collections.emptySet();
+    public Optional<Integer> getFirstNodeId(String location, InetAddress ipAddr) {
+        if (ipAddr == null) {
+            return Optional.empty();
         }
-
         m_lock.readLock().lock();
         try {
-            return Iterables.transform(m_managedAddresses.get(new Key(location, address)),
-                    Value::getNodeId);
+            var values = m_managedAddresses.get(new Key(location, ipAddr));
+            return values.isEmpty() ? Optional.empty() : Optional.of(values.first().nodeId);
         } finally {
             m_lock.readLock().unlock();
         }
