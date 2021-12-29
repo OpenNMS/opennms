@@ -7,10 +7,7 @@ import {
   getNodeAvailabilityPercentage
 } from './nodeService'
 
-import {
-  getAlarms,
-  modifyAlarm
-} from './alarmService'
+import { getAlarms, modifyAlarm } from './alarmService'
 
 import { getGraphNodesNodes } from './graphService'
 

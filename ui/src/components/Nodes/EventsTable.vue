@@ -19,7 +19,7 @@
               <td>
                 <router-link :to="`/event/${event.id}`">{{ event.id }}</router-link>
               </td>
-              <td>{{ getFormattedCreatedTime(event.createTime) }}</td>
+              <td v-date>{{ event.createTime }}</td>
               <td>{{ event.severity }}</td>
               <td>
                 <span v-html="event.logMessage" class="log-message"></span>
@@ -46,7 +46,6 @@ import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import useQueryParameters from '@/hooks/useQueryParams'
 import { Event } from '@/types'
-import dayjs from 'dayjs'
 
 const store = useStore()
 const route = useRoute()
@@ -57,7 +56,6 @@ const { queryParameters, updateQueryParameters } = useQueryParameters({
 }, 'eventsModule/getEvents')
 const events = computed(() => store.state.eventsModule.events)
 const getRowClass = (data: Event) => data.severity.toLowerCase()
-const getFormattedCreatedTime = (time: number) => dayjs(time).format()
 </script>
   
 <style lang="scss" scoped>

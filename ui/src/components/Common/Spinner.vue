@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useStore } from 'vuex'
-import { FeatherSpinner } from "@featherds/progress"
+import { FeatherSpinner } from '@featherds/progress'
 
 const store = useStore()
 const spinnerState = computed(() => store.state.spinnerModule.spinnerState)

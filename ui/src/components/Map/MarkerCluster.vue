@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import "leaflet.markercluster/dist/MarkerCluster.css"
+import 'leaflet.markercluster/dist/MarkerCluster.css'
 import {
   inject,
   nextTick,
@@ -13,12 +13,12 @@ import {
   onMounted,
   provide,
   ref,
-} from "vue"
-import { propsBinder, remapEvents } from "@vue-leaflet/vue-leaflet/src/utils"
+} from 'vue'
+import { propsBinder, remapEvents } from '@vue-leaflet/vue-leaflet/src/utils'
 import {
   render,
   setup as layerSetup,
-} from "@vue-leaflet/vue-leaflet/src/functions/layer"
+} from '@vue-leaflet/vue-leaflet/src/functions/layer'
 
 const props = {
   options: {
@@ -30,7 +30,7 @@ const props = {
 }
 
 export default {
-  name: "MarkerCluster",
+  name: 'MarkerCluster',
 
   props,
 
@@ -38,18 +38,18 @@ export default {
     const leafletRef = ref({})
     const ready = ref(false)
 
-    const addLayerToMainMap = inject("addLayer")
-    const removeLayerFromMainMap = inject("removeLayer")
+    const addLayerToMainMap = inject('addLayer')
+    const removeLayerFromMainMap = inject('removeLayer')
 
-    provide("canSetParentHtml", () => !!leafletRef.value.getElement())
+    provide('canSetParentHtml', () => !!leafletRef.value.getElement())
     provide(
-      "setParentHtml",
+      'setParentHtml',
       (html) => (leafletRef.value.getElement().innerHTML = html)
     )
-    provide("addLayer", (layer) => {
+    provide('addLayer', (layer) => {
       leafletRef.value.addLayer(layer.leafletObject)
     })
-    provide("removeLayer", (layer) => {
+    provide('removeLayer', (layer) => {
       leafletRef.value.removeLayer(layer.leafletObject)
     })
 
@@ -70,10 +70,9 @@ export default {
         LatLngBounds,
         LayerGroup,
         Marker,
-        marker,
         Point,
         Util,
-      } = await import("leaflet/dist/leaflet-src.esm")
+      } = await import('leaflet/dist/leaflet-src.esm')
 
       /** create a fake window.L from just the bits we need to make markercluster load properly **/
       const L = {
@@ -95,7 +94,7 @@ export default {
       window['L'] = L
 
       const { MarkerClusterGroup } = await import(
-        "leaflet.markercluster/dist/leaflet.markercluster-src.js"
+        'leaflet.markercluster/dist/leaflet.markercluster-src.js'
       )
       leafletRef.value = new MarkerClusterGroup(props.options)
 
@@ -111,7 +110,7 @@ export default {
       })
 
       ready.value = true
-      nextTick(() => context.emit("ready", leafletRef.value))
+      nextTick(() => context.emit('ready', leafletRef.value))
     })
 
     onBeforeUnmount(

@@ -12,7 +12,7 @@
 
       <span v-if="!isEditing">{{ item.name }}</span>
 
-      <span v-if="isFolder" class="add" @click.stop="addNewFile(item)">&nbsp +</span>
+      <span v-if="isFolder" class="add" @click.stop="addNewFile(item)">&nbsp; +</span>
 
       <span class="remove" v-if="item.fullPath === selectedFile">
         <FeatherIcon :icon="Remove" @click.stop="openConfirmDeleteModal(item)" />
@@ -37,11 +37,11 @@
 import { ref, computed, PropType, watch } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherIcon } from '@featherds/icon'
-import Open from "@featherds/icon/navigation/ExpandMore"
-import Close from "@featherds/icon/navigation/ChevronRight"
-import Remove from "@featherds/icon/action/Remove"
+import Open from '@featherds/icon/navigation/ExpandMore'
+import Close from '@featherds/icon/navigation/ChevronRight'
+import Remove from '@featherds/icon/action/Remove'
 import NewFileInput from './NewFileInput.vue'
-import { IFile } from "@/store/fileEditor/state"
+import { IFile } from '@/store/fileEditor/state'
 
 const store = useStore()
 const props = defineProps({

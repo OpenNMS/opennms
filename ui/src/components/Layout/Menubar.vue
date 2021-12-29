@@ -2,7 +2,7 @@
 <template>
   <FeatherAppBar :labels="{ skip: 'main' }" content="app">
     <template v-slot:left>
-      <FeatherAppBarLink class="logo" :icon="logo" title="Home" type="home" url="/" />
+      <FeatherAppBarLink :icon="logo" title="Home" type="home" url="/" />
     </template>
 
     <template v-slot:right>
@@ -11,7 +11,7 @@
       <FeatherIcon
         :icon="LightDarkMode"
         class="pointer light-dark"
-        @click.native="toggleDarkLightMode(null)"
+        @click="toggleDarkLightMode(null)"
       />
     </template>
   </FeatherAppBar>
@@ -22,7 +22,7 @@ import { ref, onMounted } from 'vue'
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
-import LightDarkMode from "@featherds/icon/action/LightDarkMode"
+import LightDarkMode from '@featherds/icon/action/LightDarkMode'
 import Logo from '@/assets/Logo.vue'
 import Search from './Search.vue'
 import { useStore } from 'vuex'

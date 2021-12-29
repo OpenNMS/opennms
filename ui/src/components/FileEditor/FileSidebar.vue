@@ -43,7 +43,7 @@ import { useStore } from 'vuex'
 import FileTreeItem from './FileTreeItem.vue'
 import Search from './Search.vue'
 import { FeatherIcon } from '@featherds/icon'
-import { FeatherButton } from "@featherds/button"
+import { FeatherButton } from '@featherds/button'
 import FilterAlt from '@featherds/icon/action/FilterAlt'
 import SupportCenter from '@featherds/icon/action/SupportCenter'
 
@@ -57,7 +57,7 @@ const getFles = (changedOnly: boolean) => {
   changedFilesOnly.value = changedOnly
 }
 const scrollToSelectedFile = () => {
-  const selected = document.getElementById("selected")
+  const selected = document.getElementById('selected')
   if (selected) {
     selected.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }

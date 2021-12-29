@@ -31,7 +31,7 @@ const getTheme = computed(() => {
 
 const setup = async () => {
   const theme = getTheme.value
-  const docEl = document.getElementById("thedoc")
+  const docEl = document.getElementById('thedoc')
   const http = 'http', https = 'https'
   let openApiSpec = await store.dispatch('helpModule/getOpenApi')
   const protocol = window.location.protocol.slice(0, -1)
