@@ -121,7 +121,7 @@ const iconCreateFunction = (cluster: Cluster) => {
   // return divIcon({ html: `<span class=${highestSeverity}>` + cluster.getChildCount() + '</span>' })
   const clusterMarker = divIcon({ html: `<span class=${highestSeverity}>` + cluster.getChildCount() + '</span>' })
 
-  // clusterMarker.bindPopup("test");
+ // clusterMarker.bindPopup("test");
 
   return clusterMarker
 }
