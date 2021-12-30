@@ -28,19 +28,15 @@
 
 package org.opennms.features.config.service.api;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-
-import javax.xml.bind.JAXBException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.exception.ValidationException;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Responsible for managing Schemas and Configurations.
@@ -52,15 +48,19 @@ import org.opennms.features.config.exception.ValidationException;
 public interface ConfigurationManagerService {
     String BASE_PATH = "/rest/cm";
 
-    /** Registers a ConfigDefinition under a unique configName. If the schema id is present it will throw an IllegalArgumentException. */
-    void registerConfigDefinition(String configName, ConfigDefinition configDefinition) ;
+    /**
+     * Registers a ConfigDefinition under a unique configName. If the schema id is present it will throw an IllegalArgumentException.
+     */
+    void registerConfigDefinition(String configName, ConfigDefinition configDefinition);
 
-    /** Changes a ConfigDefinition. If the configName is not present it will throw an  IllegalArgumentException. */
-    void changeConfigDefinition(String configName, ConfigDefinition configDefinition) throws  ValidationException;
+    /**
+     * Changes a ConfigDefinition. If the configName is not present it will throw an  IllegalArgumentException.
+     */
+    void changeConfigDefinition(String configName, ConfigDefinition configDefinition);
 
     Map<String, ConfigDefinition> getAllConfigDefinition();
 
-    Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) ;
+    Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName);
 
     void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer);
 
@@ -71,20 +71,18 @@ public interface ConfigurationManagerService {
      * @param configName
      * @param configId
      * @param configObject (config object / JSONObject)
-     * @throws IOException
      */
-    void registerConfiguration(String configName, String configId, JsonAsString configObject) throws ValidationException;
+    void registerConfiguration(String configName, String configId, JsonAsString configObject);
 
     /**
      * remove configure from service
      *
      * @param configId
-     * @throws IOException
      */
     void unregisterConfiguration(String configName, String configId);
 
     void updateConfiguration(String configName, String configId,
-                             JsonAsString configObject) throws ValidationException;
+                             JsonAsString configObject);
 
     /**
      * get config as json by configName, configId
@@ -92,7 +90,6 @@ public interface ConfigurationManagerService {
      * @param configName
      * @param configId
      * @return JSONObject
-     * @throws IOException
      */
     Optional<JSONObject> getJSONConfiguration(String configName, String configId);
 
@@ -109,7 +106,6 @@ public interface ConfigurationManagerService {
      *
      * @param configName
      * @return ConfigData
-     * @throws IOException
      */
     Optional<ConfigData<JSONObject>> getConfigData(String configName);
 
@@ -117,7 +113,6 @@ public interface ConfigurationManagerService {
      * get a list of registered configName
      *
      * @return configName set
-     * @throws IOException
      */
     Set<String> getConfigNames();
 
@@ -125,7 +120,6 @@ public interface ConfigurationManagerService {
      * it will remove both config and schema
      *
      * @param configName
-     * @throws IOException
      */
     void unregisterSchema(String configName);
 

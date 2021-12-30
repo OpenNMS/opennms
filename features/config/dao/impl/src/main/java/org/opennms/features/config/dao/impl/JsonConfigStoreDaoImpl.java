@@ -116,7 +116,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     public void updateConfigDefinition(ConfigDefinition configDefinition) throws ValidationException {
         Optional<ConfigDefinition> oldDef = this.getConfigDefinition(configDefinition.getConfigName());
         if (oldDef.isEmpty()) {
-            throw new IllegalArgumentException("ConfigName not found: " + configDefinition.getConfigName());
+            throw new SchemaNotFoundException("ConfigName not found: " + configDefinition.getConfigName());
         }
         // check config are still valid for the new schema
         Optional<ConfigData<JSONObject>> configData = this.getConfigData(configDefinition.getConfigName());
@@ -257,7 +257,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
      *
      * @param configName
      * @param configData
-     * @throws JsonProcessingException
+     * @throws ValidationException
      */
     private void validateConfigData(final String configName, final ConfigData<JSONObject> configData) throws ValidationException {
         this.validateConfigData(this.getConfigDefinition(configName), configData);
@@ -286,7 +286,6 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
      * @param configName
      * @param configObject
      * @return
-     * @throws JsonProcessingException
      */
     private ValidationReport validateConfig(final String configName, final JSONObject configObject) {
         return this.validateConfig(this.getConfigDefinition(configName), configObject);

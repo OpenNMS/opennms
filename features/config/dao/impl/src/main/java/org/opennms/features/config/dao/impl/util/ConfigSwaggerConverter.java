@@ -68,7 +68,7 @@ public class ConfigSwaggerConverter {
 
     private final OpenAPI openAPI = new OpenAPI();
 
-    public String convertToString(ConfigItem item, String prefix, String acceptType) throws JsonProcessingException {
+    public String convertToString(ConfigItem item, String prefix, String acceptType) throws SchemaConversionException {
         OpenAPI openapi = convert(item, prefix);
         return convertOpenAPIToString(openapi, acceptType);
     }
@@ -407,7 +407,7 @@ public class ConfigSwaggerConverter {
                 schema = new DateSchema();
                 break;
             default:
-                throw new RuntimeException("Unsupported type " + item);
+                throw new SchemaConversionException("Unsupported type " + item);
         }
         schema.setName(item.getName());
         if (item.getDocumentation() != null && !"".equals(item.getDocumentation().trim())) {
@@ -416,8 +416,7 @@ public class ConfigSwaggerConverter {
         if (item.getPattern() != null) {
             schema.setPattern(item.getPattern());
         }
-        if (item.getMultipleOf() != null) {
-            if (schema instanceof NumberSchema || schema instanceof IntegerSchema)
+        if (item.getMultipleOf() != null && (schema instanceof NumberSchema || schema instanceof IntegerSchema)){
                 schema.setMultipleOf(BigDecimal.valueOf(item.getMultipleOf()));
         }
         if (item.getMin() != null) {

@@ -32,9 +32,9 @@ import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.config.exception.ConfigNotFoundException;
-import org.opennms.features.config.exception.ConfigRuntimeException;
-import org.opennms.features.config.exception.ValidationException;
+import org.opennms.features.config.exception.ConfigExistException;
+import org.opennms.features.config.exception.SchemaExistException;
+import org.opennms.features.config.exception.SchemaNotFoundException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -64,17 +64,17 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         Objects.requireNonNull(configDefinition);
 
         if (this.getRegisteredConfigDefinition(configName).isPresent()) {
-            throw new ConfigRuntimeException(String.format("Schema with configName=%s is already registered.", configName), null);
+            throw new SchemaExistException(String.format("Schema with configName=%s is already registered.", configName), null);
         }
         configStoreDao.register(configDefinition);
     }
 
     @Override
-    public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) throws ValidationException {
+    public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) {
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configDefinition);
         if (this.getRegisteredConfigDefinition(configName).isEmpty()) {
-            throw new IllegalArgumentException(String.format("Schema with configName=%s is not present. Use registerSchema instead.", configName));
+            throw new SchemaNotFoundException(String.format("Schema with configName=%s is not present. Use registerSchema instead.", configName));
         }
         configStoreDao.updateConfigDefinition(configDefinition);
     }
@@ -128,16 +128,16 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
      * {@inheritDoc}
      */
     @Override
-    public void registerConfiguration(final String configName, final String configId, JsonAsString configObject) throws ValidationException {
+    public void registerConfiguration(final String configName, final String configId, JsonAsString configObject) {
         Objects.requireNonNull(configId);
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configObject);
         Optional<ConfigDefinition> configDefinition = this.getRegisteredConfigDefinition(configName);
         if (configDefinition.isEmpty()) {
-            throw new ConfigNotFoundException(String.format("Unknown service with configName: %s.", configName));
+            throw new SchemaNotFoundException(String.format("Unknown service with configName: %s.", configName));
         }
         if (this.getJSONConfiguration(configName, configId).isPresent()) {
-            throw new IllegalArgumentException(String.format(
+            throw new ConfigExistException(String.format(
                     "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
         }
 
@@ -146,12 +146,12 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public void unregisterConfiguration(final String configName, final String configId){
+    public void unregisterConfiguration(final String configName, final String configId) {
         this.configStoreDao.deleteConfig(configName, configId);
     }
 
     @Override
-    public void updateConfiguration(String configName, String configId, JsonAsString config) throws ValidationException {
+    public void updateConfiguration(String configName, String configId, JsonAsString config) {
         configStoreDao.updateConfig(configName, configId, new JSONObject(config.toString()));
         ConfigUpdateInfo updateInfo = new ConfigUpdateInfo(configName, configId);
         this.triggerReloadConsumer(updateInfo);

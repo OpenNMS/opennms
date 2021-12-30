@@ -76,6 +76,7 @@ public interface ConfigStoreDao<T> {
      * @param configDefinition
      * @throws JsonProcessingException
      * @throws ClassNotFoundException
+     * @throws ValidationException
      */
     void updateConfigDefinition(ConfigDefinition configDefinition) throws ValidationException;
 
@@ -86,7 +87,6 @@ public interface ConfigStoreDao<T> {
      *
      * @param configName
      * @return config object
-     * @throws JsonProcessingException
      * @see #getConfig(String, String)
      * @see ConfigData
      */
@@ -97,7 +97,7 @@ public interface ConfigStoreDao<T> {
      *
      * @param configName
      * @param configData
-     * @throws JsonProcessingException
+     * @throws ValidationException
      */
     void addConfigs(String configName, ConfigData<T> configData) throws ValidationException;
 
@@ -107,7 +107,7 @@ public interface ConfigStoreDao<T> {
      * @param configName
      * @param configId
      * @param configObject (JSONObject)
-     * @throws JsonProcessingException
+     * @throws ValidationException
      */
     void addConfig(String configName, String configId, JSONObject configObject) throws ValidationException;
 
@@ -124,7 +124,7 @@ public interface ConfigStoreDao<T> {
      * @param configName
      * @param configId
      * @param config     (JSONObject)
-     * @throws JsonProcessingException
+     * @throws ValidationException
      */
     void updateConfig(String configName, String configId, JSONObject config) throws ValidationException;
 
@@ -133,7 +133,7 @@ public interface ConfigStoreDao<T> {
      *
      * @param configName
      * @param configData
-     * @throws JsonProcessingException
+     * @throws ValidationException
      */
     void updateConfigs(String configName, ConfigData<T> configData) throws ValidationException;
 
@@ -142,7 +142,6 @@ public interface ConfigStoreDao<T> {
      *
      * @param configName
      * @param configId
-     * @throws JsonProcessingException
      */
     void deleteConfig(String configName, String configId);
 

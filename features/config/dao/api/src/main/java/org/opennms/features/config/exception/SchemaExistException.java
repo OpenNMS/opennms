@@ -29,10 +29,14 @@
 package org.opennms.features.config.exception;
 
 /**
- * It throws when CM not able to find the config
+ * It throws when CM schema already exist
  */
-public class ConfigNotFoundException extends ConfigRuntimeException {
-    public ConfigNotFoundException(String message) {
+public class SchemaExistException extends ConfigRuntimeException {
+    public SchemaExistException(String message) {
         super(message);
+    }
+
+    public SchemaExistException(String message, Throwable e) {
+        super(message, e);
     }
 }

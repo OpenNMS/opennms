@@ -32,6 +32,9 @@ package org.opennms.features.config.exception;
  * This exception is mainly about schema conversion.
  */
 public class SchemaConversionException extends ConfigRuntimeException {
+    public SchemaConversionException(String message) {
+        super(message);
+    }
 
     public SchemaConversionException(String message, Throwable e) {
         super(message, e);

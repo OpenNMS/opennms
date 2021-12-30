@@ -28,6 +28,8 @@
 
 package org.opennms.features.config.dao.api;
 
+import org.opennms.features.config.exception.SchemaConversionException;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -163,7 +165,7 @@ public class ConfigItem {
 
     public void setMultipleOf(Long multipleOf) {
         if (multipleOf < 0) {
-            throw new RuntimeException("multipleOf must > 0");
+            throw new SchemaConversionException("multipleOf must > 0");
         }
         this.multipleOf = multipleOf;
     }

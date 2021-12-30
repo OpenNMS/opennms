@@ -32,6 +32,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.exception.SchemaConversionException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
@@ -63,6 +64,7 @@ public class XsdHelper {
 
     /**
      * Convert xsd into openapi spec
+     *
      * @param xsdName
      * @return
      */
@@ -72,18 +74,19 @@ public class XsdHelper {
             String xsdStr = Resources.toString(XsdHelper.getSchemaPath(xsdName), StandardCharsets.UTF_8);
             return new XsdModelConverter(xsdStr);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new SchemaConversionException(xsdName, e);
         }
     }
 
     /**
      * It help to convert xsd to openapi and prepare all metadata needed
+     *
      * @param configName
      * @param xsdName
      * @param topLevelElement
      * @return ConfigDefinition
      */
-    public static ConfigDefinition buildConfigDefinition(String configName, String xsdName, String topLevelElement, String basePath){
+    public static ConfigDefinition buildConfigDefinition(String configName, String xsdName, String topLevelElement, String basePath) {
         ConfigDefinition def = new ConfigDefinition(configName);
         XsdModelConverter xsdConverter = XsdHelper.getXsdModelConverter(xsdName);
         ConfigItem item = xsdConverter.convert(topLevelElement);
@@ -101,6 +104,7 @@ public class XsdHelper {
 
     /**
      * Build XmlConverter from ConfigDefinition
+     *
      * @param def
      * @return
      * @throws IOException
@@ -109,8 +113,8 @@ public class XsdHelper {
         String xsdName = (String) def.getMetaValue(ConfigDefinition.XSD_FILENAME_TAG);
         String topLevelElement = (String) def.getMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG);
         Map<String, String> elementNameToValueNameMap = (Map) def.getMetaValue(ConfigDefinition.ELEMENT_NAME_TO_VALUE_NAME_TAG);
-        if(xsdName == null || topLevelElement == null){
-            throw new RuntimeException("ConfigDefinition " + def.getConfigName() + " NOT support XmlConverter.");
+        if (xsdName == null || topLevelElement == null) {
+            throw new SchemaConversionException("ConfigDefinition " + def.getConfigName() + " NOT support XmlConverter.");
         }
         return new JaxbXmlConverter(xsdName, topLevelElement, elementNameToValueNameMap);
     }

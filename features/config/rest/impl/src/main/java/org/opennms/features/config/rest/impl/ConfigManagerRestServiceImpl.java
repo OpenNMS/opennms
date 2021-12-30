@@ -28,11 +28,7 @@
 
 package org.opennms.features.config.rest.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.Paths;
-import io.swagger.v3.oas.models.servers.Server;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
 import org.opennms.features.config.exception.ConfigRuntimeException;
@@ -45,7 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -63,13 +58,13 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     @Override
-    public Response getAllOpenApiSchema(String acceptType, HttpServletRequest request) throws JsonProcessingException {
+    public Response getAllOpenApiSchema(String acceptType, HttpServletRequest request) {
         Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinition();
 
         Map<String, OpenAPI> apis = new HashMap<>(defs.size());
         defs.forEach((key, def) -> {
             OpenAPI api = def.getSchema();
-            if(api != null && api.getPaths() != null){
+            if (api != null && api.getPaths() != null) {
                 apis.put(key, api);
             }
         });
@@ -113,7 +108,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     public Response getConfig(String configName, String configId) {
         try {
             Optional<String> json = configurationManagerService.getJSONStrConfiguration(configName, configId);
-            if(json.isEmpty()){
+            if (json.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
             return Response.ok(json.get()).build();

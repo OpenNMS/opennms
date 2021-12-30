@@ -45,6 +45,7 @@ import javax.ws.rs.core.Response;
 public interface ConfigManagerRestService {
     /**
      * list registered configNames
+     *
      * @return
      */
     @GET
@@ -53,10 +54,11 @@ public interface ConfigManagerRestService {
 
     @GET
     @Path("/schema/all")
-    Response getAllOpenApiSchema(@HeaderParam("accept") String acceptType, @Context HttpServletRequest request) throws JsonProcessingException;
+    Response getAllOpenApiSchema(@HeaderParam("accept") String acceptType, @Context HttpServletRequest request);
 
     /**
      * get filtered OpenApi schema
+     *
      * @param configName
      * @param acceptType
      * @return
@@ -67,6 +69,7 @@ public interface ConfigManagerRestService {
 
     /**
      * get configIds
+     *
      * @param configName
      * @return
      */
@@ -76,6 +79,7 @@ public interface ConfigManagerRestService {
 
     /**
      * get config by configName and configId
+     *
      * @param configName
      * @param configId
      * @return
@@ -86,6 +90,7 @@ public interface ConfigManagerRestService {
 
     /**
      * add new config by
+     *
      * @param configName
      * @param configId
      * @param jsonStr
@@ -96,7 +101,6 @@ public interface ConfigManagerRestService {
     Response addConfig(@PathParam("configName") String configName, @PathParam("configId") String configId, String jsonStr);
 
     /**
-     *
      * @param configName
      * @param configId
      * @param jsonStr
@@ -109,6 +113,7 @@ public interface ConfigManagerRestService {
 
     /**
      * delete config by configName and configId
+     *
      * @param configName
      * @param configId
      * @return

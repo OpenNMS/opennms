@@ -99,7 +99,7 @@ public class JaxbXmlConverter implements ConfigConverter {
 
         if (namespaces.size() != 1) {
             LOG.error("XSD must contain one 'opennms' namespaces!");
-            throw new IllegalArgumentException("XSD must contain one 'opennms' namespaces!");
+            throw new SchemaConversionException("XSD must contain one 'opennms' namespaces!");
         }
 
         return new XmlSchema(xsdStr, namespaces.get(0), rootElement);
@@ -221,7 +221,7 @@ public class JaxbXmlConverter implements ConfigConverter {
         try (InputStream is = new ByteArrayInputStream(xsd.getBytes(StandardCharsets.UTF_8))) {
             return DynamicJAXBContextFactory.createContextFromXSD(is, null, null, null);
         } catch (JAXBException | IOException e) {
-            throw new RuntimeException(e);
+            throw new SchemaConversionException(xsd, e);
         }
     }
 
