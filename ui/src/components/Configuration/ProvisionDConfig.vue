@@ -2,20 +2,28 @@
   <div class="feather-row">
     <div class="feather-col-12">
       <div class="card">
-        <TabMenu :model="TabMenuItem" />
-        <router-view></router-view>
+        <FeatherTabContainer>
+          <template v-slot:tabs>
+            <FeatherTab @click="$router.push('/provisionDConfig')">Requisition Definitions</FeatherTab>
+            <FeatherTab @click="$router.push('/threadPools')">Thread Pools</FeatherTab>
+          </template>
+          <FeatherTabPanel><router-view></router-view></FeatherTabPanel>
+          <FeatherTabPanel><router-view></router-view></FeatherTabPanel>
+        </FeatherTabContainer>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 
-import TabMenu from 'primevue/tabmenu'
+import { onMounted } from 'vue';
+import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
+import router from '@/router';
 
-const TabMenuItem = [
-  { label: 'Requisition Definitions', to: '/provisionDConfig' },
-  { label: 'Thread Pools', to: '/threadPools' },
-]
+onMounted(() => {
+  router.push('/provisionDConfig')
+})
+
 </script>
 
 <style lang="scss" scoped>
