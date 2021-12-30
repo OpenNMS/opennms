@@ -28,12 +28,6 @@
           </annotation>
         </element>
 
-        <element maxOccurs="unbounded" minOccurs="0" ref="this:specific">
-          <annotation>
-            <documentation>the specific addresses to be polled</documentation>
-          </annotation>
-        </element>
-
         <element maxOccurs="1" minOccurs="1" name="created" type="string">
           <annotation>
             <documentation>Creation time in the 'dow mon dd hh:mm:ss zzz yyyy'
@@ -110,7 +104,7 @@
     </complexType>
   </element>
 
-  <element name="rule">
+  <element name="rule" ejaxb:body-name="content">
     <complexType>
       <simpleContent>
         <extension base="string">
@@ -146,44 +140,6 @@
           </annotation>
         </element>
       </sequence>
-    </complexType>
-  </element>
-
-  <element name="specific" ejaxb:body-name="address">
-    <annotation>
-      <documentation>A specific addresses to be polled</documentation>
-    </annotation>
-
-    <complexType>
-      <simpleContent>
-        <extension base="string">
-          <attribute name="location" type="string" use="optional">
-            <annotation>
-              <documentation>The monitoring location where this specific address
-                will be executed.</documentation>
-            </annotation>
-          </attribute>
-
-          <attribute name="retries" type="int" use="optional">
-            <annotation>
-              <documentation>The number of times a ping is retried for this
-                specific address. If there is no response after the first ping
-                to an address, it is tried again for the specified number of
-                retries. This retry count overrides the default.</documentation>
-            </annotation>
-          </attribute>
-
-          <attribute name="timeout" type="long" use="optional">
-            <annotation>
-              <documentation>The timeout on each poll for this specific
-                address. This timeout overrides the default.</documentation>
-            </annotation>
-          </attribute>
-
-          <attribute name="foreign-source" type="string" use="optional" />
-
-        </extension>
-      </simpleContent>
     </complexType>
   </element>
 </schema>
