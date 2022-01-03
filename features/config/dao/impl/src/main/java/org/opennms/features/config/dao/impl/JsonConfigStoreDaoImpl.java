@@ -28,11 +28,12 @@
 
 package org.opennms.features.config.dao.impl;
 
-import com.atlassian.oai.validator.report.ValidationReport;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
@@ -44,11 +45,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import com.atlassian.oai.validator.report.ValidationReport;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 
 @Component
@@ -264,8 +265,12 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
             LOG.error("ConfigDefinition not found!");
             throw new RuntimeException("ConfigDefinition not found!");
         }
+        final Map<String, JSONObject> configs = configData.getConfigs();
+        if (!configDefinition.get().getAllowMultiple() && configs.size()>1) {
+            throw new RuntimeException(String.format("Cannot set multiple configurations for '%s'", configDefinition.get().getConfigName()));
+        }
         ValidationReport finalReport = ValidationReport.empty();
-        configData.getConfigs().forEach((key, config) -> {
+        configs.forEach((key, config) -> {
             ValidationReport report = this.validateConfig(configDefinition, config);
             if (report.hasErrors()) {
                 finalReport.merge(report);

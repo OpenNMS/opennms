@@ -28,6 +28,16 @@
 
 package org.opennms.features.config.service.impl;
 
+import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
+
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
+
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -51,14 +61,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
@@ -68,29 +70,38 @@ import java.util.function.Consumer;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class ConfigurationManagerServiceImplTest {
-    private static final String CONFIG_NAME = "provisiond";
-    private static final String CONFIG_ID = "test1";
+    private static final String CONFIG_NAME = "ConfigurationManagerServiceImplTest";
+    private static final String CONFIG_NAME_MULTIPLE = "ConfigurationManagerServiceImplTest_multiple";
+    private static final String CONFIG_ID_OK = DEFAULT_CONFIG_ID;
+    private static final String CONFIG_ID_NOT_OK_FOR_NON_MULTIPLE = "someId";
+
     @Autowired
     private ConfigurationManagerService configManagerService;
 
     @Before
     public void init() throws Exception {
-        if (configManagerService.getRegisteredConfigDefinition(CONFIG_NAME).isEmpty()) {
-            ConfigDefinition def = XsdHelper.buildConfigDefinition(CONFIG_NAME, "provisiond-configuration.xsd",
-                    "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
-            configManagerService.registerConfigDefinition(CONFIG_NAME, def);
-        }
+
+        ConfigDefinition def = XsdHelper.buildConfigDefinition(CONFIG_NAME, "provisiond-configuration.xsd",
+                "provisiond-configuration", ConfigurationManagerService.BASE_PATH, false);
+
+        ConfigDefinition def_M = XsdHelper.buildConfigDefinition(CONFIG_NAME_MULTIPLE, "provisiond-configuration.xsd",
+                "provisiond-configuration", ConfigurationManagerService.BASE_PATH, true);
+
+        configManagerService.registerConfigDefinition(CONFIG_NAME, def);
+        configManagerService.registerConfigDefinition(CONFIG_NAME_MULTIPLE, def_M);
+
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
-        Optional<ConfigDefinition> def = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
         String xmlStr = Files.readString(Path.of(xmlPath.getPath()));
-        ConfigConverter converter = XsdHelper.getConverter(def.get());
+        ConfigConverter converter = XsdHelper.getConverter(def);
         JsonAsString json = new JsonAsString(converter.xmlToJson(xmlStr));
-        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID, json);
+        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID_OK, json);
+        configManagerService.registerConfiguration(CONFIG_NAME_MULTIPLE, CONFIG_ID_OK, json);
     }
 
     @After
     public void after() throws IOException {
         configManagerService.unregisterSchema(CONFIG_NAME);
+        configManagerService.unregisterSchema(CONFIG_NAME_MULTIPLE);
     }
 
     @Test
@@ -102,6 +113,7 @@ public class ConfigurationManagerServiceImplTest {
 
     @Test
     public void testRegisterExtraSchema() throws IOException {
+        Assert.assertEquals("There must be 2 shemas initialy.", 2, configManagerService.getAllConfigDefinition().size());
         String VACUUMD_CONFIG_NAME = "vacuumd";
         ConfigDefinition def = XsdHelper.buildConfigDefinition(VACUUMD_CONFIG_NAME, "vacuumd-configuration.xsd",
                 "VacuumdConfiguration", ConfigurationManagerService.BASE_PATH);
@@ -110,7 +122,9 @@ public class ConfigurationManagerServiceImplTest {
         Assert.assertTrue(VACUUMD_CONFIG_NAME + " fail to register", configSchema.isPresent());
 
         Map<String, ConfigDefinition> map = configManagerService.getAllConfigDefinition();
-        Assert.assertArrayEquals("It should contain 2 schemas.", new String[]{CONFIG_NAME, VACUUMD_CONFIG_NAME}, map.keySet().toArray());
+        Assert.assertTrue("Contains schema "+ CONFIG_NAME, map.keySet().contains(CONFIG_NAME));
+        Assert.assertTrue("Contains schema "+ CONFIG_NAME_MULTIPLE, map.keySet().contains(CONFIG_NAME_MULTIPLE));
+        Assert.assertTrue("Contains schema "+ VACUUMD_CONFIG_NAME, map.keySet().contains(VACUUMD_CONFIG_NAME));
     }
 
     @Test
@@ -118,7 +132,7 @@ public class ConfigurationManagerServiceImplTest {
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config not found", configData.isPresent());
         Assert.assertEquals("Incorrect importThreads", 11,
-                configData.get().getConfigs().get(CONFIG_ID).get("importThreads"));
+                configData.get().getConfigs().get(CONFIG_ID_OK).get("importThreads"));
     }
 
     /**
@@ -133,7 +147,7 @@ public class ConfigurationManagerServiceImplTest {
         Optional<ConfigDefinition> def = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
         ConfigConverter converter = XsdHelper.getConverter(def.get());
         JsonAsString json = new JsonAsString(converter.xmlToJson(ConfigConvertUtil.objectToJson(config)));
-        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID + "_2", json);
+        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID_OK + "_2", json);
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config should not store", configData.get().getConfigs().size() == 1);
     }
@@ -144,12 +158,12 @@ public class ConfigurationManagerServiceImplTest {
         ConfigConverter converter = XsdHelper.getConverter(def.get());
 
         ProvisiondConfiguration pConfig = ConfigConvertUtil.jsonToObject(
-                configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID).get(), ProvisiondConfiguration.class);
+                configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID_OK).get(), ProvisiondConfiguration.class);
 
         pConfig.setImportThreads(12L);
-        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID,
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID_OK,
                 new JsonAsString(ConfigConvertUtil.objectToJson(pConfig)));
-        Optional<JSONObject> jsonAfterUpdate = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
+        Optional<JSONObject> jsonAfterUpdate = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID_OK);
         Assert.assertEquals("Incorrect importThreads", 12, jsonAfterUpdate.get().get("importThreads"));
     }
 
@@ -163,9 +177,9 @@ public class ConfigurationManagerServiceImplTest {
     public void testRegisterNewCallback() throws IOException {
         TestCallback callback = Mockito.mock(TestCallback.class);
         JSONObject json = configManagerService
-                .getJSONConfiguration(CONFIG_NAME, CONFIG_ID).get();
-        configManagerService.registerReloadConsumer(new ConfigUpdateInfo(CONFIG_NAME, CONFIG_ID), callback);
-        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JsonAsString(json.toString()));
+                .getJSONConfiguration(CONFIG_NAME, CONFIG_ID_OK).get();
+        configManagerService.registerReloadConsumer(new ConfigUpdateInfo(CONFIG_NAME, CONFIG_ID_OK), callback);
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID_OK, new JsonAsString(json.toString()));
         Mockito.verify(callback, Mockito.atLeastOnce()).accept(Mockito.any());
     }
 
@@ -179,10 +193,10 @@ public class ConfigurationManagerServiceImplTest {
         Optional<ConfigDefinition> def = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
         ConfigConverter converter = XsdHelper.getConverter(def.get());
         ProvisiondConfiguration config = ConfigConvertUtil.jsonToObject(
-                configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID).get(), ProvisiondConfiguration.class);
+                configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID_OK).get(), ProvisiondConfiguration.class);
         config.setImportThreads(-1L);
 
-        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID,
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID_OK,
                 new JsonAsString(ConfigConvertUtil.objectToJson(config)));
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config not found", configData.isPresent());
@@ -190,20 +204,42 @@ public class ConfigurationManagerServiceImplTest {
 
     @Test
     public void testRemoveEverything() throws Exception {
-        Optional<ConfigDefinition> def = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
+        Optional<ConfigDefinition> def = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME_MULTIPLE);
         ConfigConverter converter = XsdHelper.getConverter(def.get());
         //below extra configuration added, since it is not allowed to delete last configuration
-        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID + "_1", new JsonAsString("{}"));
+        configManagerService.registerConfiguration(CONFIG_NAME_MULTIPLE, CONFIG_ID_OK + "_1", new JsonAsString("{}"));
 
-        configManagerService.unregisterConfiguration(CONFIG_NAME, CONFIG_ID);
-        Optional<JSONObject> json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
+        configManagerService.unregisterConfiguration(CONFIG_NAME_MULTIPLE, CONFIG_ID_OK);
+        Optional<JSONObject> json = configManagerService.getJSONConfiguration(CONFIG_NAME_MULTIPLE, CONFIG_ID_OK);
         Assert.assertTrue("Fail to unregister config", json.isEmpty());
-        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID,
+        configManagerService.registerConfiguration(CONFIG_NAME_MULTIPLE, CONFIG_ID_OK,
                 new JsonAsString(ConfigConvertUtil.objectToJson(new ProvisiondConfiguration())));
-        configManagerService.unregisterSchema(CONFIG_NAME);
-        Optional<ConfigDefinition> schemaAfterDeregister = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
-        Optional<ConfigData<JSONObject>> configAfterDeregister = configManagerService.getConfigData(CONFIG_NAME);
+        configManagerService.unregisterSchema(CONFIG_NAME_MULTIPLE);
+        Optional<ConfigDefinition> schemaAfterDeregister = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME_MULTIPLE);
+        Optional<ConfigData<JSONObject>> configAfterDeregister = configManagerService.getConfigData(CONFIG_NAME_MULTIPLE);
         Assert.assertTrue("FAIL TO deregister schema", schemaAfterDeregister.isEmpty());
         Assert.assertTrue("FAIL TO deregister config", configAfterDeregister.isEmpty());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testErroneousConfideIdOnSchemaWithoutAllowMultiple() throws Exception {
+
+        //take existing config
+        final String configStr = configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID_OK).get();
+        //and cleanup
+        configManagerService.unregisterConfiguration(CONFIG_NAME, CONFIG_ID_OK);
+        Assert.assertTrue("Must be initially empty", configManagerService.getConfigIds(CONFIG_NAME).isEmpty());
+        Assert.assertFalse("Must be non multiple", configManagerService.getRegisteredConfigDefinition(CONFIG_NAME).get().getAllowMultiple());
+
+        //Adding config wit ID other than org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID
+        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID_OK + "someString",new JsonAsString(configStr));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddSecondConfigOnNonMultiple() throws Exception {
+        //take existing config
+        final String configStr = configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID_OK).get();
+        //Adding config wit ID other than org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID
+        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID_OK + "someString",new JsonAsString(configStr));
     }
 }

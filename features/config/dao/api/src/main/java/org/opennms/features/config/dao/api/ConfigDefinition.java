@@ -28,6 +28,12 @@
 
 package org.opennms.features.config.dao.api;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.opennms.features.config.dao.api.util.OpenAPIDeserializer;
+import org.opennms.features.config.dao.api.util.OpenAPISerializer;
+
 import com.atlassian.oai.validator.report.MessageResolver;
 import com.atlassian.oai.validator.report.ValidationReport;
 import com.atlassian.oai.validator.schema.SchemaValidator;
@@ -36,13 +42,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
-import org.opennms.features.config.dao.api.util.OpenAPIDeserializer;
-import org.opennms.features.config.dao.api.util.OpenAPISerializer;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class holds the definition for a configuration.
@@ -53,9 +55,10 @@ public class ConfigDefinition {
     public static final String TOP_LEVEL_ELEMENT_NAME_TAG = "topLevelElement";
     public static final String XSD_FILENAME_TAG = "xsdFilename";
     public static final String ELEMENT_NAME_TO_VALUE_NAME_TAG = "elementNameToValueName";
+    public static final String DEFAULT_CONFIG_ID = "default";
 
     private String configName;
-    private int maxInstances = 1;
+    private boolean allowMultiple;
     private Map<String, Object> meta = new HashMap<>();
 
     @JsonSerialize(using = OpenAPISerializer.class)
@@ -63,8 +66,10 @@ public class ConfigDefinition {
     protected OpenAPI schema;
 
     @JsonCreator
-    public ConfigDefinition(@JsonProperty("configName") String configName) {
+    public ConfigDefinition(@JsonProperty("configName") String configName,
+                            @JsonProperty("allowMultiple") Boolean allowMultiple) {
         this.configName = configName;
+        this.allowMultiple = allowMultiple == null ? false : allowMultiple;
     }
 
     public OpenAPI getSchema() {
@@ -83,14 +88,6 @@ public class ConfigDefinition {
         this.configName = configName;
     }
 
-    public int getMaxInstances() {
-        return maxInstances;
-    }
-
-    public void setMaxInstances(int maxInstances) {
-        this.maxInstances = maxInstances;
-    }
-
     public Map<String, Object> getMeta() {
         return meta;
     }
@@ -105,6 +102,14 @@ public class ConfigDefinition {
 
     public void setMetaValue(String key, Object value) {
         this.meta.put(key, value);
+    }
+
+    public boolean getAllowMultiple() {
+        return allowMultiple;
+    }
+
+    public void setAllowMultiple(boolean allowMultiple) {
+        this.allowMultiple = allowMultiple;
     }
 
     @JsonIgnore

@@ -28,6 +28,22 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
@@ -40,16 +56,6 @@ import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 /**
  * It is a minimal mock for CM use. If configFile is passed, it will read and return as configEntity.
@@ -91,28 +97,28 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
         ConfigDefinition def = null;
         if ("provisiond".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("provisiond", "provisiond-configuration.xsd",
-                    "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
+                    "provisiond-configuration", ConfigurationManagerService.BASE_PATH, false);
         } else if ("enlinkd".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("enlinkd", "enlinkd-configuration.xsd",
-                    "enlinkd-configuration", ConfigurationManagerService.BASE_PATH);
+                    "enlinkd-configuration", ConfigurationManagerService.BASE_PATH, false);
         } else if ("vmware".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("vmware", "vmware-config.xsd",
-                    "vmware-config", ConfigurationManagerService.BASE_PATH);
+                    "vmware-config", ConfigurationManagerService.BASE_PATH, false);
         } else if ("discovery".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("discovery", "discovery-configuration.xsd",
-                    "discovery-configuration", ConfigurationManagerService.BASE_PATH);
+                    "discovery-configuration", ConfigurationManagerService.BASE_PATH, false);
         } else if ("jmx".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("jmx", "jmx-config.xsd",
-                    "jmx-config", ConfigurationManagerService.BASE_PATH);
+                    "jmx-config", ConfigurationManagerService.BASE_PATH, false);
         } else if ("trapd".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("trapd", "trapd-configuration.xsd",
-                    "trapd-configuration", ConfigurationManagerService.BASE_PATH);
+                    "trapd-configuration", ConfigurationManagerService.BASE_PATH, false);
         } else if ("xmp".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("xmp", "xmp-config.xsd",
-                    "xmp-config", ConfigurationManagerService.BASE_PATH);
+                    "xmp-config", ConfigurationManagerService.BASE_PATH, false);
         } else if ("notifd".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("notifd", "notifd-configuration.xsd",
-                    "notifd-configuration", ConfigurationManagerService.BASE_PATH);
+                    "notifd-configuration", ConfigurationManagerService.BASE_PATH, false);
         }
         return Optional.ofNullable(def);
     }

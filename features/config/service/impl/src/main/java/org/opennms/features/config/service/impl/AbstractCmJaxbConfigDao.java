@@ -28,6 +28,17 @@
 
 package org.opennms.features.config.service.impl;
 
+import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
+
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+
+import javax.annotation.PostConstruct;
+
 import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
@@ -38,14 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 /**
  * <p>Abstract AbstractCmJaxbConfigDao class.</p>
@@ -84,7 +87,9 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      *
      * @return configId
      */
-    protected abstract String getDefaultConfigId();
+    protected String getDefaultConfigId() {
+        return DEFAULT_CONFIG_ID;
+    }
 
     /**
      * <p>Constructor for AbstractJaxbConfigDao.</p>
