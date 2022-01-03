@@ -27,8 +27,11 @@
  ******************************************************************************/
 package org.opennms.features.config.dao.impl.util;
 
-import com.google.common.io.Resources;
-import io.swagger.v3.oas.models.OpenAPI;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
@@ -36,10 +39,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import com.google.common.io.Resources;
+
+import io.swagger.v3.oas.models.OpenAPI;
 
 /**
  * Main helper class for all xsd related function
@@ -84,7 +86,20 @@ public class XsdHelper {
      * @return ConfigDefinition
      */
     public static ConfigDefinition buildConfigDefinition(String configName, String xsdName, String topLevelElement, String basePath){
-        ConfigDefinition def = new ConfigDefinition(configName);
+        return buildConfigDefinition(configName, xsdName, topLevelElement, basePath, false);
+    }
+
+    /**
+     * It help to convert xsd to openapi and prepare all metadata needed
+     * @param configName
+     * @param xsdName
+     * @param topLevelElement
+     * @param basePath
+     * @param allowMultiple
+     * @return ConfigDefinition
+     */
+    public static ConfigDefinition buildConfigDefinition(String configName, String xsdName, String topLevelElement, String basePath, boolean allowMultiple){
+        ConfigDefinition def = new ConfigDefinition(configName, allowMultiple);
         XsdModelConverter xsdConverter = XsdHelper.getXsdModelConverter(xsdName);
         ConfigItem item = xsdConverter.convert(topLevelElement);
 

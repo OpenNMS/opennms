@@ -36,7 +36,6 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
@@ -61,8 +60,6 @@ import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
 import liquibase.util.file.FilenameUtils;
 
-import javax.xml.bind.JAXBException;
-
 /**
  * Imports an existing configuration. It can either live in {opennms.home}/etc (user defined) or in the class path (default).
  */
@@ -82,7 +79,6 @@ public class ImportConfiguration extends AbstractCmChange {
     @Override
     public ValidationErrors validate(CmDatabase db, ValidationErrors validationErrors) {
         validationErrors.checkRequiredField("schemaId", this.schemaId);
-        validationErrors.checkRequiredField("configId", this.configId);
         validationErrors.checkRequiredField("filePath", this.filePath);
 
         String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
@@ -140,15 +136,19 @@ public class ImportConfiguration extends AbstractCmChange {
                 new GenericCmStatement((ConfigurationManagerService m) -> {
                     LOG.info("Importing configuration from {} with id={} for schema={}", this.filePath, this.configId, this.schemaId);
                     try {
-                        Optional<ConfigDefinition> configDefinition = m.getRegisteredConfigDefinition(this.schemaId);
+                        ConfigDefinition configDefinition = m.getRegisteredConfigDefinition(this.schemaId).get();
+
+                        if (!configDefinition.getAllowMultiple() && !ConfigDefinition.DEFAULT_CONFIG_ID.equals(this.getConfigId())) {
+                            throw new IllegalArgumentException(String.format("For the '%s' only one configuration can be provided (configId='%s')", this.schemaId, ConfigDefinition.DEFAULT_CONFIG_ID));
+                        }
 
                         String fileType = FilenameUtils.getExtension(this.filePath);
                         JsonAsString configObject;
                         if("xml".equalsIgnoreCase(fileType)) {
-                            configObject = new XmlToJson(asString(this.configResource), configDefinition.get()).getJson();
+                            configObject = new XmlToJson(asString(this.configResource), configDefinition).getJson();
                         } else if("cfg".equalsIgnoreCase(fileType)) {
                             // TODO: Patrick: adopt builder to make this easier
-                            ConfigItem schema = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, "", configDefinition.get().getSchema()).getRootConfig();
+                            ConfigItem schema = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, "", configDefinition.getSchema()).getRootConfig();
                             configObject = new PropertiesToJson(this.configResource.getInputStream(), schema).getJson();
                         } else {
                             throw new IllegalArgumentException(String.format("Unknown file type: '%s'", fileType));
@@ -183,7 +183,7 @@ public class ImportConfiguration extends AbstractCmChange {
     }
 
     public String getConfigId() {
-        return configId;
+        return configId == null ? ConfigDefinition.DEFAULT_CONFIG_ID : configId;
     }
 
     public void setConfigId(String configId) {

@@ -29,7 +29,6 @@
 package liquibase.ext2.cm.change;
 
 import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.createConfigItemForProperty;
-import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.findPropertyDefinition;
 import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.getAttributeValueOrThrowException;
 
 import java.io.IOException;
@@ -38,13 +37,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
@@ -98,7 +98,7 @@ public class ChangeSchema extends AbstractCmChange {
                     ConfigDefinition definition;
                     if (definitionOpt.isEmpty()) {
                         // Create a new one
-                        definition = new ConfigDefinition(this.schemaId);
+                        definition = new ConfigDefinition(this.schemaId, false);
                         definition.setConfigName(this.schemaId);
                         try {
                             cm.registerConfigDefinition(this.schemaId, definition);
