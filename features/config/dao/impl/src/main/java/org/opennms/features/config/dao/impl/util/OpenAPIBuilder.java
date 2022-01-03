@@ -87,7 +87,7 @@ public class OpenAPIBuilder {
             return builder;
 
         schema.getProperties().forEach((k, s) ->
-            builder.walkSchema(k, s, builder.rootConfig, schema.getRequired(), openapi)
+                builder.walkSchema(k, s, builder.rootConfig, schema.getRequired(), openapi)
         );
         return builder;
     }
@@ -106,9 +106,12 @@ public class OpenAPIBuilder {
     private void handle$ref(Schema<?> schema, OpenAPI openapi, ConfigItem item) {
         String refObjName = schema.get$ref().replaceFirst("^" + SCHEMA_REF_TAG, "");
         Schema<?> refObjSchema = openapi.getComponents().getSchemas().get(refObjName);
+        if (refObjSchema.getDescription() != null) {
+            item.setDocumentation(refObjSchema.getDescription());
+        }
         if (refObjSchema != null && refObjSchema.getProperties() != null) {
             refObjSchema.getProperties().forEach((k, s) ->
-                this.walkSchema(k, s, item, refObjSchema.getRequired(), openapi)
+                    this.walkSchema(k, s, item, refObjSchema.getRequired(), openapi)
             );
         }
     }
@@ -159,9 +162,6 @@ public class OpenAPIBuilder {
             item.setType(ConfigItem.Type.DATE_TIME);
         } else if (schema instanceof StringSchema) {
             item.setType(ConfigItem.Type.STRING);
-            if (schema.getPattern() != null) {
-                item.setPattern(schema.getPattern());
-            }
             if (schema.getMinLength() != null)
                 item.setMin(Long.valueOf(schema.getMinLength().longValue()));
             if (schema.getMaxLength() != null)
@@ -194,6 +194,12 @@ public class OpenAPIBuilder {
             item.setType(ConfigItem.Type.DATE);
         } else if (schema instanceof Schema) {
             item.setType(ConfigItem.Type.OBJECT);
+        }
+        if (schema.getPattern() != null) {
+            item.setPattern(schema.getPattern());
+        }
+        if (schema.getDescription() != null) {
+            item.setDocumentation(schema.getDescription());
         }
         return item;
     }
