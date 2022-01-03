@@ -1,4 +1,4 @@
-import API from "@/services"
+import API from '@/services'
 import { VuexContext } from '@/types'
 
 const getWhoAmI = async (context: VuexContext) => {

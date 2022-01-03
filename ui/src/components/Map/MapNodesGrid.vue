@@ -109,17 +109,17 @@
 </template>
 <script setup lang="ts">
 import { reactive, computed, onMounted } from 'vue'
-import { useStore } from "vuex"
-import { Coordinates, Node, FeatherSortObject } from "@/types"
-import { FeatherSortHeader, SORT } from "@featherds/table"
+import { useStore } from 'vuex'
+import { Coordinates, Node, FeatherSortObject } from '@/types'
+import { FeatherSortHeader, SORT } from '@featherds/table'
 
 const store = useStore()
 const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
-const nodeLabelAlarmServerityMap = computed(() => store.getters["mapModule/getNodeAlarmSeverityMap"])
+const nodeLabelAlarmServerityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
 
 const doubleClickHandler = (node: Node) => {
   const coordinate: Coordinates = { latitude: node.assetRecord.latitude, longitude: node.assetRecord.longitude }
-  store.dispatch("mapModule/setMapCenter", coordinate)
+  store.dispatch('mapModule/setMapCenter', coordinate)
 }
 
 const sortStates: any = reactive({
@@ -146,12 +146,12 @@ const sortChanged = (sortObj: FeatherSortObject) => {
 }
 
 onMounted(() => {
-  const wrap = document.getElementById("wrap")
-  const thead = document.querySelector("thead")
+  const wrap = document.getElementById('wrap')
+  const thead = document.querySelector('thead')
 
   if (wrap && thead) {
-    wrap.addEventListener("scroll", function () {
-      let translate = "translate(0," + this.scrollTop + "px)"
+    wrap.addEventListener('scroll', function () {
+      let translate = 'translate(0,' + this.scrollTop + 'px)'
       thead.style.transform = translate
     })
   }

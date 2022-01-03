@@ -1,9 +1,9 @@
 export interface State {
-  openApi: Object
+  openApi: Record<string, unknown>
 }
 
 const state: State = {
-  openApi: {} 
+  openApi: {}
 }
 
 export default state
