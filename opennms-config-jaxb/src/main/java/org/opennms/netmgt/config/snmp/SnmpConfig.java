@@ -49,7 +49,7 @@ public class SnmpConfig extends Configuration implements Serializable {
     private List<Definition> definitions = new ArrayList<>();
 
     @JsonProperty("profiles")
-    private SnmpProfiles snmpProfiles;
+    private SnmpProfiles profiles;
 
     public SnmpConfig() {
         super();
@@ -103,12 +103,22 @@ public class SnmpConfig extends Configuration implements Serializable {
         return this.definitions.remove(definitions);
     }
 
-    public SnmpProfiles getSnmpProfiles() {
-        return snmpProfiles;
+
+    public SnmpProfiles getProfiles() {
+        return profiles;
     }
 
+
+    public void setProfiles(SnmpProfiles profiles) {
+        this.profiles = profiles;
+    }
+
+    public SnmpProfiles getSnmpProfiles() {
+        return profiles;
+    }
+    // changed for backward compatibility
     public void setSnmpProfiles(SnmpProfiles snmpProfiles) {
-        this.snmpProfiles = snmpProfiles;
+        this.profiles = snmpProfiles;
     }
 
     @Override
