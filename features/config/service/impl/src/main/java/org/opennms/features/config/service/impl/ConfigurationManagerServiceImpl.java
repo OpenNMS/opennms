@@ -28,12 +28,23 @@
 
 package org.opennms.features.config.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -42,10 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Component
 public class ConfigurationManagerServiceImpl implements ConfigurationManagerService {
@@ -77,9 +85,12 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) throws IOException {
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configDefinition);
-        if (this.getRegisteredConfigDefinition(configName).isEmpty()) {
+        final Optional<ConfigDefinition> existingDefinition = this.getRegisteredConfigDefinition(configName);
+        if (existingDefinition.isEmpty()) {
             throw new IllegalArgumentException(String.format("Schema with id=%s is not present. Use registerSchema instead.", configName));
         }
+        //allowMultiple must be preserved. It is set only once on creation
+        configDefinition.setAllowMultiple(existingDefinition.get().getAllowMultiple());
         configStoreDao.updateConfigDefinition(configDefinition);
     }
 
@@ -141,11 +152,23 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         if (configDefinition.isEmpty()) {
             throw new IllegalArgumentException(String.format("Unknown service with id=%s.", configName));
         }
-        if (this.getJSONConfiguration(configName, configId).isPresent()) {
+
+        final Set<String> configIds = this.getConfigIds(configName);
+        if (configIds.contains(configId)) {
             throw new IllegalArgumentException(String.format(
                     "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
         }
 
+        if (!configDefinition.get().getAllowMultiple()){
+            if (!DEFAULT_CONFIG_ID.equals(configId)) {
+                throw new IllegalArgumentException(String.format(
+                        "For the service '%s' is only one configuration with id='%s' allowed; provided was id '%s'", configName, DEFAULT_CONFIG_ID, configId));
+            }
+            if (!configIds.isEmpty()) {
+                throw new IllegalStateException(String.format(
+                        "For the service '%s' found existing configuration(s) with id(s) other than '%s'", configName, DEFAULT_CONFIG_ID));
+            }
+        }
 
         configStoreDao.addConfig(configName, configId, new JSONObject(configObject.toString()));
         LOG.info("ConfigurationManager.registeredConfiguration(service={}, id={}, config={});", configName, configId, configObject);
