@@ -29,6 +29,7 @@ export default defineComponent({
     selectedServices: {
       type: Array,
       required: true,
+      // eslint-disable-next-line vue/require-valid-default-prop
       default: []
     },
     disableService: {

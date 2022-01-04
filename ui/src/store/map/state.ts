@@ -1,6 +1,6 @@
 import { Node, Alarm, Coordinates, FeatherSortObject } from '@/types'
 import { SORT } from '@featherds/table'
-import { latLng, LatLngBounds } from 'leaflet'
+import { LatLngBounds } from 'leaflet'
 
 export interface State {
   nodesWithCoordinates: Node[]

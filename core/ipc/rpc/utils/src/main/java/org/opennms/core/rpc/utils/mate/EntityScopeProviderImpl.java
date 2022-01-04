@@ -318,6 +318,10 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
     }
 
+    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        this.snmpInterfaceDao = snmpInterfaceDao;
+    }
+
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         this.monitoredServiceDao = Objects.requireNonNull(monitoredServiceDao);
     }

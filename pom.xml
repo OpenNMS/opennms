@@ -1418,6 +1418,7 @@
     <hawtioVersion>1.4.68</hawtioVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
     <hikaricpVersion>2.5.1</hikaricpVersion>
+    <hllVersion>1.6.0</hllVersion>
     <httpcoreVersion>4.4.4</httpcoreVersion>
     <httpclientVersion>4.5.13</httpclientVersion>
     <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
@@ -4409,6 +4410,11 @@
         <groupId>com.zaxxer</groupId>
         <artifactId>HikariCP</artifactId>
         <version>${hikaricpVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.agkn</groupId>
+        <artifactId>hll</artifactId>
+        <version>${hllVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jdt.core.compiler</groupId>

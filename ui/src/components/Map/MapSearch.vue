@@ -18,14 +18,14 @@
 import { ref, computed } from 'vue'
 import { debounce } from 'lodash'
 import { useStore } from 'vuex'
-import { FeatherAutocomplete } from "@featherds/autocomplete"
+import { FeatherAutocomplete } from '@featherds/autocomplete'
 
 const emit = defineEmits(['fly-to-node', 'set-bounding-box'])
 
 const store = useStore()
 const searchStr = ref()
 const loading = ref(false)
-const defaultLabels = { noResults: "Searching..." }
+const defaultLabels = { noResults: 'Searching...' }
 const labels = ref(defaultLabels)
 
 const selectItem = (items: { label: string }[]) => {
@@ -51,7 +51,7 @@ const search = debounce(async (value: string) => {
   if (!value) return
   loading.value = true
   await store.dispatch('searchModule/search', value)
-  labels.value = { noResults: "No results found" }
+  labels.value = { noResults: 'No results found' }
   loading.value = false
 }, 1000)
 

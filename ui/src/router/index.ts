@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import FileEditor from '@/containers/FileEditor.vue'
 import Logs from '@/containers/Logs.vue'
-import OpenAPI from '@/containers/OpenAPI.vue'
 
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
@@ -46,33 +45,32 @@ const router = createRouter({
       component: Logs
     },
     {
-      path: '/:pathMatch(.*)*', // catch other paths and redirect
-      redirect: '/'
-    },
-    {
-      path: "/map",
-      name: "Map",
+      path: '/map',
+      name: 'Map',
       component: () => import('@/containers/Map.vue'),
       children: [
         {
-          path: "",
-          name: "MapAlarms",
+          path: '',
+          name: 'MapAlarms',
           component: () => import('@/components/Map/MapAlarmsGrid.vue')
         },
         {
-          path: "nodes",
-          name: "MapNodes",
+          path: 'nodes',
+          name: 'MapNodes',
           component: () => import('@/components/Map/MapNodesGrid.vue')
-        },
-      ],
+        }
+      ]
     },
     {
       path: '/open-api',
       name: 'OpenAPI',
-      component: OpenAPI
+      component: () => import('@/containers/OpenAPI.vue')
     },
+    {
+      path: '/:pathMatch(.*)*', // catch other paths and redirect
+      redirect: '/'
+    }
   ]
 })
 
 export default router
-

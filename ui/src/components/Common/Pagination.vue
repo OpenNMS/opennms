@@ -12,7 +12,7 @@
   
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { FeatherPagination } from "@featherds/pagination"
+import { FeatherPagination } from '@featherds/pagination'
 import { useStore } from 'vuex'
 
 const props = defineProps({

@@ -6,5 +6,5 @@ const SAVE_LOCATIONS_TO_STATE = (state: State, locations: MonitoringLocation[]) 
 }
 
 export default {
-  SAVE_LOCATIONS_TO_STATE,
+  SAVE_LOCATIONS_TO_STATE
 }

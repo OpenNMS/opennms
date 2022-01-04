@@ -28,10 +28,10 @@ export default { name: 'MapKeepAlive' }
 
 <script setup lang="ts">
 import { onMounted, onActivated, onDeactivated, ref } from 'vue'
-import { useStore } from "vuex"
-import { Splitpanes, Pane } from "splitpanes"
-import "splitpanes/dist/splitpanes.css"
-import LeafletMap from "../components/Map/LeafletMap.vue"
+import { useStore } from 'vuex'
+import { Splitpanes, Pane } from 'splitpanes'
+import 'splitpanes/dist/splitpanes.css'
+import LeafletMap from '../components/Map/LeafletMap.vue'
 import GridTabs from '@/components/Map/GridTabs.vue'
 import { debounce } from 'lodash'
 

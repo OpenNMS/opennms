@@ -1,4 +1,4 @@
-import API from "@/services"
+import API from '@/services'
 import { VuexContext } from '@/types'
 import { State } from './state'
 

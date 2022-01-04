@@ -50,19 +50,19 @@ export default defineComponent({
       requiredFields.value = form.requiredFields
     }
 
-    const isValid = () => {
-      const missingFields = []
-      for (const form of formsValues.value) {
-        for (const field of requiredFields.value) {
-          if (!form[field]) missingFields.push(field)
-        }
-      }
+    // const isValid = () => {
+    //   const missingFields = []
+    //   for (const form of formsValues.value) {
+    //     for (const field of requiredFields.value) {
+    //       if (!form[field]) missingFields.push(field)
+    //     }
+    //   }
 
-      return Boolean(missingFields.length === 0)
-    }
+    //   return Boolean(missingFields.length === 0)
+    // }
 
     const test = async () => {
-       store.dispatch('spinnerModule/setSpinnerState', true)
+      store.dispatch('spinnerModule/setSpinnerState', true)
 
       //const validForms = isValid()
 

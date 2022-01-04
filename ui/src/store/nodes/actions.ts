@@ -1,4 +1,4 @@
-import API from "@/services"
+import API from '@/services'
 import { Node, QueryParameters, VuexContext } from '@/types'
 
 const getNodes = async (context: VuexContext, queryParameters?: QueryParameters) => {
@@ -16,7 +16,10 @@ const getNodeById = async (context: VuexContext, node: Node) => {
   }
 }
 
-const getNodeSnmpInterfaces = async (context: VuexContext, payload: { id: string, queryParameters?: QueryParameters }) => {
+const getNodeSnmpInterfaces = async (
+  context: VuexContext,
+  payload: { id: string; queryParameters?: QueryParameters }
+) => {
   const resp = await API.getNodeSnmpInterfaces(payload.id, payload.queryParameters)
   if (resp) {
     context.commit('SAVE_SNMP_INTERFACES_TO_STATE', resp.snmpInterface)
@@ -24,7 +27,10 @@ const getNodeSnmpInterfaces = async (context: VuexContext, payload: { id: string
   }
 }
 
-const getNodeIpInterfaces = async (context: VuexContext, payload: { id: string, queryParameters?: QueryParameters }) => {
+const getNodeIpInterfaces = async (
+  context: VuexContext,
+  payload: { id: string; queryParameters?: QueryParameters }
+) => {
   const resp = await API.getNodeIpInterfaces(payload.id, payload.queryParameters)
   if (resp) {
     context.commit('SAVE_IP_INTERFACES_TO_STATE', resp.ipInterface)
@@ -39,7 +45,7 @@ const getNodeAvailabilityPercentage = async (context: VuexContext, id: string) =
   }
 }
 
-const getNodeOutages = async (context: VuexContext, payload: { id: string, queryParameters?: QueryParameters }) => {
+const getNodeOutages = async (context: VuexContext, payload: { id: string; queryParameters?: QueryParameters }) => {
   const resp = await API.getNodeOutages(payload.id, payload.queryParameters)
   if (resp) {
     context.commit('SAVE_NODE_OUTAGES_TO_STATE', resp.outage)

@@ -46,7 +46,6 @@ export default defineComponent({
   name: 'Steps',
   props: {
     id: {
-      type: String,
       default: 1
     },
     model: {

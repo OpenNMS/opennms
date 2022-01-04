@@ -1,5 +1,5 @@
 <template>
-  <template v-for="index in forms">
+  <template v-for="index in forms" :key="index">
     <component :is="service" :index="index" @setValues="setValues"></component>
   </template>
   <div class="feather-row">

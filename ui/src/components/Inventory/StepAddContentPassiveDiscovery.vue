@@ -8,7 +8,7 @@
 import { defineComponent, ref } from 'vue'
 import { MonitoringLocation } from '@/types'
 import LocationsDropdown from './LocationsDropdown.vue'
-import { useStore } from 'vuex'
+// import { useStore } from 'vuex'
 import Row from '@/components/Common/Row.vue'
 
 export default defineComponent({
@@ -17,7 +17,7 @@ export default defineComponent({
     LocationsDropdown
   },
   setup() {
-    const store = useStore()
+    // const store = useStore()
     const location = ref()
 
     const setLocation = (selectedLocation: MonitoringLocation) => {

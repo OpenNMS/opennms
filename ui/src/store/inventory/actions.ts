@@ -1,9 +1,8 @@
 import { IPRange, ProvisionRequest, SNMPDetectRequest, VuexContext } from '@/types'
-import { Commit } from 'vuex'
 import { State } from './state'
 import API from '../../services'
 
-const setShowCompleteButton = (context: VuexContext, val: boolean|string) => {
+const setShowCompleteButton = (context: VuexContext, val: boolean | string) => {
   context.commit('SET_SHOW_COMPLETE_BUTTON', val)
 }
 
@@ -51,7 +50,7 @@ const saveProvisionRequest = (context: VuexContext, provisionRequest: ProvisionR
   context.commit('SAVE_PROVISION_REQUEST', provisionRequest)
 }
 
-const scheduleProvision = async ({ commit, state }: { commit: Commit, state: State }) => {
+const scheduleProvision = async ({ state }: { state: State }) => {
   return await API.provision(state.provisionRequest)
 }
 

@@ -3,7 +3,7 @@ import { LocationsApiResponse } from '@/types'
 
 const endpoint = '/monitoringLocations'
 
-const getLocations = async (): Promise<LocationsApiResponse|false> => {
+const getLocations = async (): Promise<LocationsApiResponse | false> => {
   try {
     const resp = await rest.get(endpoint)
 
@@ -17,6 +17,4 @@ const getLocations = async (): Promise<LocationsApiResponse|false> => {
   }
 }
 
-export {
-  getLocations
-}
+export { getLocations }

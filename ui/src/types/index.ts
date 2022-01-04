@@ -114,7 +114,7 @@ export interface Alarm {
   nodeLabel: string
   uei: string
   count: number
-  lastEventTime: number,
+  lastEventTime: number
   logMessage: string
 }
 
@@ -220,11 +220,11 @@ export interface FeatherSortObject {
 }
 
 export interface SortProps extends FeatherSortObject {
-  filters: Object
-  first: Number
-  multiSortMeta: Object
+  filters: Record<string, unknown>
+  first: number
+  multiSortMeta: Record<string, unknown>
   originalEvent: MouseEvent
-  rows: Number
+  rows: number
   sortField: string
   sortOrder: 1 | -1
 }
@@ -254,8 +254,8 @@ export interface MonitoringLocation {
   longitude: any
   priority: 100
   tags: any[]
-  "location-name": string
-  "monitoring-area": string
+  'location-name': string
+  'monitoring-area': string
 }
 
 export interface IPRange {
@@ -305,7 +305,7 @@ export interface ProvisionRequest {
 }
 
 export interface FileEditorResponseLog {
-  success: boolean,
+  success: boolean
   msg: string
 }
 
@@ -328,12 +328,12 @@ export interface Vertice {
 }
 
 export interface Edge {
-  source: { namespace: string, id: number }
-  target: { namespace: string, id: number }
+  source: { namespace: string; id: number }
+  target: { namespace: string; id: number }
 }
 
 export interface Coordinates {
-  latitude: number | string,
+  latitude: number | string
   longitude: number | string
 }
 
@@ -355,13 +355,13 @@ export interface WhoAmIResponse {
 }
 
 export interface FileEditorResponseLog {
-  success: boolean,
+  success: boolean
   msg: string
 }
 
 export interface AppInfo {
   datetimeformatConfig: {
-    zoneId: string,
+    zoneId: string
     datetimeformat: string
   }
   displayVersion: string
@@ -369,8 +369,19 @@ export interface AppInfo {
   packageName: string
   services: object
   ticketerConfig: {
-    plugin: string | null,
+    plugin: string | null
     enabled: boolean
   }
   version: string
+}
+
+export interface Notification {
+  msg: string
+  severity: NotificationSeverity
+}
+
+export enum NotificationSeverity {
+  ERROR = 'error',
+  WARNING = 'warning',
+  SUCCESS = 'success'
 }

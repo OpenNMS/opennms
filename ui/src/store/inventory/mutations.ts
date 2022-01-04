@@ -1,10 +1,4 @@
-import { 
-  IPRange, 
-  IPRangeResponse, 
-  ProvisionRequest, 
-  SNMPDetectRequest, 
-  SNMPDetectResponse 
-} from '@/types'
+import { IPRange, IPRangeResponse, ProvisionRequest, SNMPDetectRequest, SNMPDetectResponse } from '@/types'
 import { State } from './state'
 
 const SET_SHOW_ADD_STEP_NEXT_BUTTON = (state: State, bool: boolean) => {
@@ -19,7 +13,7 @@ const ADD_COMPLETED_SERVICE = (state: State, service: string) => {
   state.completedServices = [...state.completedServices, service]
 }
 
-const SET_SHOW_COMPLETE_BUTTON = (state: State, val: boolean|string) => {
+const SET_SHOW_COMPLETE_BUTTON = (state: State, val: boolean | string) => {
   state.showCompleteButton = val
 }
 

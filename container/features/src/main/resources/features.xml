@@ -909,6 +909,8 @@
     </feature>
     <feature name="opennms-situation-feedback-api" version="${project.version}" description="OpenNMS :: Features :: Situation-Feedback :: API">
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
         <bundle>mvn:org.opennms.features.situation-feedback/org.opennms.features.situation-feedback.api/${project.version}</bundle>
     </feature>
     <feature name="opennms-situation-feedback" version="${project.version}" description="OpenNMS :: Features :: Situation-Feedback">
@@ -1142,6 +1144,7 @@
         <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
         <bundle dependency="true">mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
         <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.dao-common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.core/${project.version}</bundle>
     </feature>
     <feature name="opennms-enlinkd-shell" version="${project.version}" description="OpenNMS :: Features :: Enlinkd :: Shell">

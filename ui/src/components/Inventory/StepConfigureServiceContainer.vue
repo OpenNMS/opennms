@@ -1,8 +1,8 @@
 <template>
-  <template v-for="service in services">
+  <template v-for="service in services" :key="service">
     <component 
       v-if="service === services[currentServiceIndex]" 
-      is="ServiceContainer" 
+      :is="'ServiceContainer'" 
       :service="service"
       :lastService="services[currentServiceIndex] === services[services.length - 1]"
       @completeService="completeService"

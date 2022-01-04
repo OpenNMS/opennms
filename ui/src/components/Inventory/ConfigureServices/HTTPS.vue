@@ -16,7 +16,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
 import { FeatherInput } from '@featherds/input'
-import { FeatherCheckbox } from "@featherds/checkbox"
+import { FeatherCheckbox } from '@featherds/checkbox'
 import Row from '@/components/Common/Row.vue'
 import ShowHideBox from '@/components/Common/ShowHideBox.vue'
 import ServiceFilter from './ServiceFilter.vue'

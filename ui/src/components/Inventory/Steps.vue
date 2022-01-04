@@ -30,15 +30,15 @@ export default defineComponent({
     const items = ref([
       {
         label: 'Add Nodes',
-        to: "/inventory"
+        to: '/inventory'
       },
       {
         label: 'Configure Services',
-        to: "/inventory/configure",
+        to: '/inventory/configure',
       },
       {
         label: 'Schedule',
-        to: "/inventory/schedule",
+        to: '/inventory/schedule',
       }
     ])
 

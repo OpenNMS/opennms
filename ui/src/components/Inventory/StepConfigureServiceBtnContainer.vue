@@ -1,9 +1,9 @@
 <template>
   <div class="feather-row">
     <div class="feather-col-12">
-      <template v-for="service of services">
+      <template v-for="service of services" :key="service">
         <component
-          is="StepConfigureServiceBtn"
+          :is="'StepConfigureServiceBtn'"
           :serviceName="service"
           :selectedServices="selectedServices"
           :disableService="disableServiceSelection"

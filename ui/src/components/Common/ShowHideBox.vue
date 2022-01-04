@@ -19,7 +19,7 @@ export default defineComponent({
     }
   },
   setup() {
-    const show = ref(false);
+    const show = ref(false)
 
     return {
       show

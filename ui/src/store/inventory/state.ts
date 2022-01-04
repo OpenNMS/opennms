@@ -1,8 +1,8 @@
-import { IPRange, IPRangeResponse, ProvisionRequest, SNMPDetectRequest, SNMPDetectResponse } from "@/types"
+import { IPRange, IPRangeResponse, ProvisionRequest, SNMPDetectRequest, SNMPDetectResponse } from '@/types'
 
 export interface State {
   completedServices: string[]
-  showCompleteButton: boolean|string
+  showCompleteButton: boolean | string
   showAddStepNextButton: boolean
   showConfigureServiceStepNextButton: boolean
   ipRanges: IPRange[]

@@ -17,11 +17,11 @@ import { FeatherSelect } from '@featherds/select'
 const store = useStore()
 
 const options = [
-  { id: 'NORMAL', option: "Normal" },
-  { id: 'WARNING', option: "Warning" },
-  { id: 'MINOR', option: "Minor" },
-  { id: 'MAJOR', option: "Major" },
-  { id: 'CRITICAL', option: "Critical" }
+  { id: 'NORMAL', option: 'Normal' },
+  { id: 'WARNING', option: 'Warning' },
+  { id: 'MINOR', option: 'Minor' },
+  { id: 'MAJOR', option: 'Major' },
+  { id: 'CRITICAL', option: 'Critical' }
 ]
 const selectedSeverity = ref(options[0])
 

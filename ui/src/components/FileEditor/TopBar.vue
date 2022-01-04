@@ -19,7 +19,7 @@ import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
-import ChevronRight from "@featherds/icon/navigation/ChevronRight"
+import ChevronRight from '@featherds/icon/navigation/ChevronRight'
 
 const store = useStore()
 
