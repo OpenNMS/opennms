@@ -28,21 +28,21 @@
 
 package org.opennms.features.config.dao.api;
 
-import java.io.IOException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.json.JSONObject;
+import org.opennms.features.config.exception.ValidationException;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.json.JSONObject;
 
 /**
  * It handles storing config data in database by generic datatype
  * It also validation config before persist. (add & update)
  *
- * @param <CONFIG_DATATYPE> data type store in database
+ * @param <T> data type store in database
  */
-public interface ConfigStoreDao<CONFIG_DATATYPE> {
+public interface ConfigStoreDao<T> {
 
     /**
      * register service to config manager
@@ -50,13 +50,13 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * @param configDefinition
      * @return status
      */
-    void register(ConfigDefinition configDefinition) throws IOException;
+    void register(ConfigDefinition configDefinition);
 
     /**
      * get all config names managing by config manager
      *
      * @return list of config name
-     * @throws IOException
+     * @throws JsonProcessingException
      */
     Optional<Set<String>> getConfigNames();
 
@@ -68,16 +68,17 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * @param configName
      * @return status
      */
-    Optional<ConfigDefinition> getConfigDefinition(String configName) throws JsonProcessingException;
+    Optional<ConfigDefinition> getConfigDefinition(String configName);
 
     /**
      * update configs meta by configName
      *
      * @param configDefinition
-     * @throws IOException
+     * @throws JsonProcessingException
      * @throws ClassNotFoundException
+     * @throws ValidationException
      */
-    void updateConfigDefinition(ConfigDefinition configDefinition) throws IOException;
+    void updateConfigDefinition(ConfigDefinition configDefinition) throws ValidationException;
 
     /**
      * get configs data by configName
@@ -86,67 +87,70 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      *
      * @param configName
      * @return config object
-     * @throws IOException
      * @see #getConfig(String, String)
      * @see ConfigData
      */
-    Optional<ConfigData<CONFIG_DATATYPE>> getConfigData(String configName) throws IOException;
+    Optional<ConfigData<T>> getConfigData(String configName);
 
     /**
      * add configs for the registered service name, throws exception if config already exist
      *
      * @param configName
      * @param configData
-     * @throws IOException
+     * @throws ValidationException
      */
-    void addConfigs(String configName, ConfigData<CONFIG_DATATYPE> configData) throws IOException;
+    void addConfigs(String configName, ConfigData<T> configData) throws ValidationException;
 
     /**
      * add new config to a registered service name
      *
      * @param configName
      * @param configId
-     * @param configObject (entityBean/String(json)/JSONObject)
-     * @throws IOException
+     * @param configObject (JSONObject)
+     * @throws ValidationException
      */
-    void addConfig(String configName, String configId, JSONObject configObject) throws IOException;
+    void addConfig(String configName, String configId, JSONObject configObject) throws ValidationException;
 
-    Optional<CONFIG_DATATYPE> getConfig(String configName, String configId) throws IOException;
+    Optional<T> getConfig(String configName, String configId);
 
     /**
-     * update config to a registered service name, if the configObject is String / JSONObject, it can be partial data and
-     * copy into existing config.
+     * update config to a registered service name. It can be partial data and copy into existing config.
+     * The flow of update
+     * 1. reading the config by configName & configId
+     * 2. copy new config's data by its property keys to config in database
+     * 3. validate
+     * 4. update db
      *
      * @param configName
      * @param configId
-     * @param configObject (entityBean/String(json)/JSONObject)
-     * @throws IOException
+     * @param config     (JSONObject)
+     * @throws ValidationException
      */
-    void updateConfig(String configName, String configId, JSONObject config) throws IOException;
+    void updateConfig(String configName, String configId, JSONObject config) throws ValidationException;
+
     /**
      * **replace** all configs for the registered service name
      *
      * @param configName
      * @param configData
-     * @throws IOException
+     * @throws ValidationException
      */
-    void updateConfigs(String configName, ConfigData<CONFIG_DATATYPE> configData) throws IOException;
+    void updateConfigs(String configName, ConfigData<T> configData) throws ValidationException;
 
     /**
      * delete one config from registered service name
      *
      * @param configName
      * @param configId
-     * @throws IOException
      */
-    void deleteConfig(String configName, String configId) throws IOException;
+    void deleteConfig(String configName, String configId);
 
     /**
      * unregister a service from config manager, it will remove both schema and configs
      *
      * @param configName
      */
-    void unregister(String configName) throws IOException;
+    void unregister(String configName);
 
     /**
      * get all configs by registered config name
@@ -154,5 +158,6 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * @param configName
      * @return configs
      */
-    Optional<Map<String, CONFIG_DATATYPE>> getConfigs(String configName) throws IOException;
+    Optional<Map<String, T>> getConfigs(String configName);
 }
+

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -33,17 +33,20 @@ import org.apache.ws.commons.schema.walker.XmlSchemaRestriction;
 import org.apache.ws.commons.schema.walker.XmlSchemaTypeInfo;
 import org.apache.ws.commons.schema.walker.XmlSchemaWalker;
 import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.exception.SchemaConversionException;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
 import java.io.StringReader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.apache.ws.commons.schema.constants.Constants.MetaDataConstants.EXTERNAL_ATTRIBUTES;
 
 /**
  * Used to convert a XSD to a structure of {@link ConfigItem}s.
  * It usually uses with JaxbXmlConverter together.
+ *
  * @see JaxbXmlConverter
  */
 public class XsdModelConverter extends NoopXmlSchemaVisitor {
@@ -93,6 +96,7 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
 
     /**
      * It will read the ejaxb:body-name and put in elementNameToValueNameMap
+     *
      * @param xmlSchemaElement
      */
     private void handleExternalAttributes(XmlSchemaElement xmlSchemaElement) {
@@ -176,7 +180,7 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
             ConfigItem child = new ConfigItem();
             // special logic to handle Xml Value to attribute name mapping
             String bodyName = this.elementNameToValueNameMap.get(currentConfigItem.getName());
-            child.setName(bodyName != null ? bodyName: currentConfigItem.getName());
+            child.setName(bodyName != null ? bodyName : currentConfigItem.getName());
             child.setType(currentConfigItem.getType());
             child.setSchemaRef(currentConfigItem.getSchemaRef());
             child.setRequired(currentConfigItem.isRequired());
@@ -186,13 +190,31 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         }
     }
 
-    private void handleStringRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
+
+    private void handleEnumerationRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
+        List<XmlSchemaRestriction> enumerationFacets = facets.get(XmlSchemaRestriction.Type.ENUMERATION);
+        if (enumerationFacets != null && !enumerationFacets.isEmpty()) {
+            List<String> enumValues = enumerationFacets.stream().map(e -> (String) e.getValue()).collect(Collectors.toList());
+            item.setEnumValues(enumValues);
+        }
+    }
+
+    private void handlePatternRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
         List<XmlSchemaRestriction> patternFacets = facets.get(XmlSchemaRestriction.Type.PATTERN);
         if (patternFacets != null && !patternFacets.isEmpty()) {
             XmlSchemaRestriction restriction = patternFacets.get(0);
             Object obj = restriction.getValue();
             if (obj instanceof String) {
-                item.setPattern((String) obj);
+                // skip apache xml walker XmlSchemaCollection.java's default pattern
+                if ((item.getType() == ConfigItem.Type.INTEGER
+                        || item.getType() == ConfigItem.Type.LONG
+                        || item.getType() == ConfigItem.Type.NUMBER
+                        || item.getType() == ConfigItem.Type.POSITIVE_INTEGER
+                        || item.getType() == ConfigItem.Type.NEGATIVE_INTEGER
+                        || item.getType() == ConfigItem.Type.NON_NEGATIVE_INTEGER) && "[\\-+]?[0-9]+".equals(obj))
+                    return;
+                else
+                    item.setPattern((String) obj);
             }
         }
     }
@@ -217,15 +239,28 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
                 item.setMax(Long.valueOf((String) maxVal));
             }
         }
+
+        // openapi do not support exclusive
+        List<XmlSchemaRestriction> maxExclusiveFacets = facets.get(XmlSchemaRestriction.Type.EXCLUSIVE_MAX);
+        if ((maxExclusiveFacets != null) && !maxExclusiveFacets.isEmpty()) {
+            throw new SchemaConversionException("maxExclusive are not supported!", null);
+        }
+
+        List<XmlSchemaRestriction> minExclusiveFacets = facets.get(XmlSchemaRestriction.Type.EXCLUSIVE_MIN);
+        if ((minExclusiveFacets != null) && !minExclusiveFacets.isEmpty()) {
+            throw new SchemaConversionException("minExclusive are not supported!", null);
+        }
+
+
     }
 
     private void setRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
         if (facets == null) {
             return;
         }
-        if (item.getType() == ConfigItem.Type.STRING) {
-            this.handleStringRestrictions(item, facets);
-        } else {
+        this.handlePatternRestrictions(item, facets);
+        this.handleEnumerationRestrictions(item, facets);
+        if (item.getType() != ConfigItem.Type.STRING) {
             this.handleOtherRestrictions(item, facets);
         }
     }

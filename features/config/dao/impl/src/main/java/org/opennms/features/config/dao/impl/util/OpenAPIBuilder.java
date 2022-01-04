@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -30,6 +30,7 @@ package org.opennms.features.config.dao.impl.util;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.*;
 import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.exception.SchemaConversionException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -74,20 +75,20 @@ public class OpenAPIBuilder {
      * @param name
      * @param topElementName
      * @param prefix
-     * @param openapi (existing)
+     * @param openapi        (existing)
      * @return
      */
     public static OpenAPIBuilder createBuilder(String name, String topElementName, String prefix, OpenAPI openapi) {
         OpenAPIBuilder builder = OpenAPIBuilder.createBuilder(name, topElementName, prefix);
         if (openapi == null)
             return builder;
-        Schema schema = openapi.getComponents().getSchemas().get(topElementName);
+        Schema<?> schema = openapi.getComponents().getSchemas().get(topElementName);
         if (schema == null)
             return builder;
 
-        ((Map<String, Schema>) schema.getProperties()).forEach((k, s) -> {
-            builder.walkSchema(k, s, builder.rootConfig, schema.getRequired(), openapi);
-        });
+        schema.getProperties().forEach((k, s) ->
+                builder.walkSchema(k, s, builder.rootConfig, schema.getRequired(), openapi)
+        );
         return builder;
     }
 
@@ -102,13 +103,16 @@ public class OpenAPIBuilder {
      * @param openapi
      * @param item
      */
-    private void handle$ref(Schema schema, OpenAPI openapi, ConfigItem item) {
+    private void handle$ref(Schema<?> schema, OpenAPI openapi, ConfigItem item) {
         String refObjName = schema.get$ref().replaceFirst("^" + SCHEMA_REF_TAG, "");
-        Schema refObjSchema = openapi.getComponents().getSchemas().get(refObjName);
+        Schema<?> refObjSchema = openapi.getComponents().getSchemas().get(refObjName);
+        if (refObjSchema.getDescription() != null) {
+            item.setDocumentation(refObjSchema.getDescription());
+        }
         if (refObjSchema != null && refObjSchema.getProperties() != null) {
-            ((Map<String, Schema>) refObjSchema.getProperties()).forEach((k, s) -> {
-                this.walkSchema(k, s, item, refObjSchema.getRequired(), openapi);
-            });
+            refObjSchema.getProperties().forEach((k, s) ->
+                    this.walkSchema(k, s, item, refObjSchema.getRequired(), openapi)
+            );
         }
     }
 
@@ -121,15 +125,14 @@ public class OpenAPIBuilder {
      * @param required
      * @param openapi
      */
-    private void walkSchema(String name, Schema schema, ConfigItem currentItem, List<String> required, OpenAPI openapi) {
+    private void walkSchema(String name, Schema<?> schema, ConfigItem currentItem, List<String> required, OpenAPI openapi) {
         ConfigItem item = this.getConfigItem(name, schema, required);
         if (item.getType() == ConfigItem.Type.ARRAY) {
-            Schema childSchema = ((ArraySchema) schema).getItems();
+            Schema<?> childSchema = ((ArraySchema) schema).getItems();
             ConfigItem childrenItem = this.getConfigItem(name, childSchema, required);
-            if (childrenItem.getType() == ConfigItem.Type.OBJECT) {
-                if (childSchema.get$ref() != null && childSchema.get$ref().startsWith(SCHEMA_REF_TAG)) {
-                    this.handle$ref(childSchema, openapi, childrenItem);
-                }
+            if (childrenItem.getType() == ConfigItem.Type.OBJECT
+                    && (childSchema.get$ref() != null && childSchema.get$ref().startsWith(SCHEMA_REF_TAG))) {
+                this.handle$ref(childSchema, openapi, childrenItem);
             }
             item.getChildren().add(childrenItem);
 
@@ -147,7 +150,7 @@ public class OpenAPIBuilder {
      * @param required
      * @return
      */
-    private ConfigItem getConfigItem(String schemaKey, Schema schema, List<String> required) {
+    private ConfigItem getConfigItem(String schemaKey, Schema<?> schema, List<String> required) {
         ConfigItem item = new ConfigItem();
         item.setName((schema.getName() != null) ? schema.getName() : schemaKey);
         if (required != null && required.contains(item.getName())) {
@@ -159,9 +162,6 @@ public class OpenAPIBuilder {
             item.setType(ConfigItem.Type.DATE_TIME);
         } else if (schema instanceof StringSchema) {
             item.setType(ConfigItem.Type.STRING);
-            if (schema.getPattern() != null) {
-                item.setPattern(schema.getPattern());
-            }
             if (schema.getMinLength() != null)
                 item.setMin(Long.valueOf(schema.getMinLength().longValue()));
             if (schema.getMaxLength() != null)
@@ -194,6 +194,12 @@ public class OpenAPIBuilder {
             item.setType(ConfigItem.Type.DATE);
         } else if (schema instanceof Schema) {
             item.setType(ConfigItem.Type.OBJECT);
+        }
+        if (schema.getPattern() != null) {
+            item.setPattern(schema.getPattern());
+        }
+        if (schema.getDescription() != null) {
+            item.setDocumentation(schema.getDescription());
         }
         return item;
     }
@@ -274,7 +280,7 @@ public class OpenAPIBuilder {
     public OpenAPIBuilder addNumberAttribute(String name, ConfigItem.Type type, Long min, Long max,
                                              Long multipleOf, Object defaultValue, boolean required, String doc) {
         if (type != ConfigItem.Type.NUMBER && type != ConfigItem.Type.INTEGER && type != ConfigItem.Type.LONG) {
-            throw new RuntimeException("Type should be NUMBER/INTEGER/LONG");
+            throw new SchemaConversionException("Type should be NUMBER/INTEGER/LONG");
         }
         return this.addAttribute(name, type, min, max, multipleOf, null, defaultValue, required, doc);
     }
@@ -288,7 +294,7 @@ public class OpenAPIBuilder {
     private ConfigItem getConfigItem(String name, ConfigItem.Type type, Long min, Long max, Long multipleOf,
                                      String pattern, Object defaultValue, boolean required, String doc) {
         if (usedAttributeNames.contains(name)) {
-            throw new RuntimeException("Duplicated attribute name exist! name = " + name);
+            throw new SchemaConversionException("Duplicated attribute name exist! name = " + name);
         }
         usedAttributeNames.add(name);
         ConfigItem configItem = new ConfigItem();
@@ -305,7 +311,7 @@ public class OpenAPIBuilder {
         if (defaultValue != null)
             configItem.setDefaultValue(defaultValue);
         configItem.setRequired(required);
-        if (doc != doc)
+        if (doc != null)
             configItem.setDocumentation(doc);
         return configItem;
     }

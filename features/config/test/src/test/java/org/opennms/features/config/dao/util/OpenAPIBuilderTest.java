@@ -111,9 +111,9 @@ public class OpenAPIBuilderTest {
                 .addDateTimeAttribute("att1", null, true, "date time doc")
                 .addDateTimeAttribute("att2", null, true, "date time doc")
                 .addObject("obj1", OpenAPIBuilder.createBuilder()
-                        .addStringAttribute("name", 3L, 10L, null, null, true, "val1")
+                        .addStringAttribute("name", 3L, 10L, "[A-Z]*", null, true, "val1")
                         .addNumberAttribute("digit", ConfigItem.Type.INTEGER, 3L, 10L, null, null, true, "digit")
-                        .addDateAttribute("data", null, false, "date field"), true, "test array")
+                        .addDateAttribute("data", null, false, "date field"), true, "test object")
                 .addArray("arr1", ConfigItem.Type.INTEGER, null, 100L, 20L, null, 10L, null, null, true, "test array")
                 .addArray("arr2", OpenAPIBuilder.createBuilder()
                         .addStringAttribute("name", 3L, 10L, null, null, true, "val1")
@@ -123,11 +123,12 @@ public class OpenAPIBuilderTest {
         OpenAPIBuilder newBuilder = OpenAPIBuilder.createBuilder(configName, elementName, ConfigurationManagerService.BASE_PATH, openapi);
         OpenAPI newOpenapi = newBuilder.build(false);
 
-
         ConfigSwaggerConverter converter = new ConfigSwaggerConverter();
         String json = converter.convertOpenAPIToString(openapi, "application/json");
         String newJson = converter.convertOpenAPIToString(newOpenapi, "application/json");
 
+        System.out.println(json);
+        System.out.println(newJson);
         JSONAssert.assertEquals(new JSONObject(json), new JSONObject(newJson), true);
     }
 

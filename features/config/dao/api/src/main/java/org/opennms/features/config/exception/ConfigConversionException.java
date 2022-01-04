@@ -24,32 +24,15 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- ******************************************************************************/
-package org.opennms.features.config.dao.api.util;
+ *******************************************************************************/
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.core.util.Json;
-import io.swagger.v3.oas.models.OpenAPI;
-
-import java.io.IOException;
+package org.opennms.features.config.exception;
 
 /**
- * OpenAPI have its own deserializer, ObjectMapper may have problem
+ * This exception is mainly about config conversion.
  */
-public class OpenAPIDeserializer extends JsonDeserializer<OpenAPI> {
-
-    private ObjectMapper mapper;
-
-    public OpenAPIDeserializer() {
-        mapper = Json.mapper();
-    }
-
-    @Override
-    public OpenAPI deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-        String json = jsonParser.getCodec().readTree(jsonParser).toString();
-        return mapper.readValue(json, OpenAPI.class);
+public class ConfigConversionException extends ConfigRuntimeException {
+    public ConfigConversionException(String message, Throwable e) {
+        super(message, e);
     }
 }

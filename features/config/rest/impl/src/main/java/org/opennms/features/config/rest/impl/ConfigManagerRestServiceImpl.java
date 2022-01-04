@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,10 @@
 
 package org.opennms.features.config.rest.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.Paths;
-import io.swagger.v3.oas.models.servers.Server;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
+import org.opennms.features.config.exception.ConfigRuntimeException;
 import org.opennms.features.config.rest.api.ConfigManagerRestService;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -44,7 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -61,33 +57,14 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
         this.configurationManagerService = configurationManagerService;
     }
 
-    /**
-     * get or create a fake schema and return
-     *
-     * @param configName
-     * @return
-     */
     @Override
-    public Response getRawSchema(String configName) {
-        try {
-            Optional<ConfigDefinition> schema = configurationManagerService.getRegisteredConfigDefinition(configName);
-            if (schema.isEmpty()) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            return Response.ok(schema.get()).build();
-        } catch (Exception e) {
-            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @Override
-    public Response getAllOpenApiSchema(String acceptType, HttpServletRequest request) throws JsonProcessingException {
+    public Response getAllOpenApiSchema(String acceptType, HttpServletRequest request) {
         Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinition();
 
         Map<String, OpenAPI> apis = new HashMap<>(defs.size());
         defs.forEach((key, def) -> {
             OpenAPI api = def.getSchema();
-            if(api != null && api.getPaths() != null){
+            if (api != null && api.getPaths() != null) {
                 apis.put(key, api);
             }
         });
@@ -110,7 +87,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             openapi = configSwaggerConverter.setupServers(openapi, Arrays.asList(new String[]{request.getContextPath()}));
             String outStr = configSwaggerConverter.convertOpenAPIToString(openapi, acceptType);
             return Response.ok(outStr).build();
-        } catch (IOException | RuntimeException e) {
+        } catch (ConfigRuntimeException e) {
             LOG.error(e.getMessage());
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
@@ -121,7 +98,8 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
         try {
             Set<String> ids = configurationManagerService.getConfigIds(configName);
             return Response.ok(ids).build();
-        } catch (IOException e) {
+        } catch (ConfigRuntimeException e) {
+            LOG.error("Fail to getConfigIds for configName: {}", configName);
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -130,7 +108,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     public Response getConfig(String configName, String configId) {
         try {
             Optional<String> json = configurationManagerService.getJSONStrConfiguration(configName, configId);
-            if(json.isEmpty()){
+            if (json.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
             return Response.ok(json.get()).build();
@@ -177,7 +155,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     public Response listConfigs() {
         try {
             return Response.ok(configurationManagerService.getConfigNames()).build();
-        } catch (IOException | RuntimeException e) {
+        } catch (ConfigRuntimeException e) {
             LOG.error("listConfigs: " + e.getMessage());
             return Response.serverError().build();
         }

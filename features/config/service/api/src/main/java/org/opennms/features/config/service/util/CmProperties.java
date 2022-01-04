@@ -28,9 +28,10 @@
 
 package org.opennms.features.config.service.util;
 
-import static org.opennms.features.config.service.util.PropertiesConversionUtil.mapToJsonString;
+import org.opennms.features.config.exception.ValidationException;
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -39,8 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.opennms.features.config.service.api.ConfigUpdateInfo;
-import org.opennms.features.config.service.api.ConfigurationManagerService;
+import static org.opennms.features.config.service.util.PropertiesConversionUtil.mapToJsonString;
 
 /**
  * Wrapper around CM to read and write properties.
@@ -64,17 +64,13 @@ public class CmProperties {
 
     private Optional<Map<String, Object>> read() {
         Optional<Map<String, Object>> result;
-        try {
-            result = this.cm.getJSONStrConfiguration(configIdentifier.getConfigName(), configIdentifier.getConfigId())
-                    .map(PropertiesConversionUtil::jsonToMap);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        result = this.cm.getJSONStrConfiguration(configIdentifier.getConfigName(), configIdentifier.getConfigId())
+                .map(PropertiesConversionUtil::jsonToMap);
         needReload = false;
         return result;
     }
 
-    private void write() throws IOException {
+    private void write() throws ValidationException {
         Map<String, Object> entries = new HashMap<>();
         for (Map.Entry<?, ?> entry : this.properties.entrySet()) {
             entries.put(entry.getKey().toString(), entry.getValue());
@@ -82,7 +78,7 @@ public class CmProperties {
         this.cm.updateConfiguration(this.configIdentifier.getConfigName(), this.configIdentifier.getConfigId(), mapToJsonString(entries));
     }
 
-    public Map<String, Object> get() throws IOException {
+    public Map<String, Object> get() {
         lock.lock();
         try {
             if (properties == null || needReload) {
@@ -94,7 +90,7 @@ public class CmProperties {
         }
     }
 
-    public void setProperty(final String key, final Object value) throws IOException {
+    public void setProperty(final String key, final Object value) throws ValidationException {
         lock.lock();
         try {
             if (!value.equals(get().get(key))) {
@@ -106,7 +102,7 @@ public class CmProperties {
         }
     }
 
-    public Object getProperty(final String key) throws IOException {
+    public Object getProperty(final String key) {
         lock.lock();
         try {
             return get().get(key);

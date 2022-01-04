@@ -41,6 +41,7 @@ import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.exception.ConfigRuntimeException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
@@ -67,7 +68,7 @@ public class ConfigStoreDaoImplTest {
     private ConfigStoreDao configStoreDao;
 
     @Test
-    public void testData() throws Exception {
+    public void testData() {
         // register
         ConfigDefinition def = XsdHelper.buildConfigDefinition(configName, "provisiond-configuration.xsd",
                 "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
@@ -116,7 +117,7 @@ public class ConfigStoreDaoImplTest {
         Assert.assertEquals("FAIL configs count is not equal to 1", 1, resultAfterDelete.get().getConfigs().size());
 
         //check if its last config, deletion not allowed if it is last config
-        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expect(ConfigRuntimeException.class);
         expectedException.expectMessage("Deletion of the last config is not allowed. testConfigName, configId testFilename");
         configStoreDao.deleteConfig(configName, filename);
 

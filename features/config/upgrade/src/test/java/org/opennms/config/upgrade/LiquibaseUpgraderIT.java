@@ -48,6 +48,7 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
+import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -150,7 +151,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     }
 
     @Test
-    public void shouldRunChangelog() throws LiquibaseException, IOException, SQLException, JAXBException, URISyntaxException {
+    public void shouldRunChangelog() throws LiquibaseException, ValidationException, SQLException {
         try {
             assertFalse(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROPERTIES).isPresent());
 

@@ -28,6 +28,8 @@
 
 package org.opennms.features.config.dao.api;
 
+import org.opennms.features.config.exception.SchemaConversionException;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -48,6 +50,7 @@ public class ConfigItem {
     private String pattern;
     private Object defaultValue;
     private String documentation;
+    private List<String> enumValues;
 
     private boolean required = false;
 
@@ -161,8 +164,8 @@ public class ConfigItem {
     }
 
     public void setMultipleOf(Long multipleOf) {
-        if(multipleOf < 0){
-            throw new RuntimeException("multipleOf must > 0");
+        if (multipleOf < 0) {
+            throw new SchemaConversionException("multipleOf must > 0");
         }
         this.multipleOf = multipleOf;
     }
@@ -191,13 +194,23 @@ public class ConfigItem {
         this.documentation = documentation;
     }
 
+    public List<String> getEnumValues() {
+        return enumValues;
+    }
+
+    public void setEnumValues(List<String> enumValues) {
+        this.enumValues = enumValues;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ConfigItem that = (ConfigItem) o;
-        return required == that.required && Objects.equals(name, that.name) && Objects.equals(schemaRef, that.schemaRef) && type == that.type && Objects.equals(children, that.children)
-                && Objects.equals(max, that.max) && Objects.equals(min, that.min) && Objects.equals(pattern, that.pattern);
+        return required == that.required && Objects.equals(name, that.name) && Objects.equals(schemaRef, that.schemaRef)
+                && type == that.type && Objects.equals(children, that.children) && Objects.equals(max, that.max)
+                && Objects.equals(min, that.min) && Objects.equals(pattern, that.pattern)
+                && Objects.equals(multipleOf, that.multipleOf) && Objects.equals(enumValues, that.enumValues);
     }
 
     @Override
@@ -215,6 +228,9 @@ public class ConfigItem {
                 ", required=" + required +
                 ", min=" + min +
                 ", max=" + max +
+                ", pattern=" + pattern +
+                ", multipleOf=" + multipleOf +
+                ", enumValues=" + enumValues +
                 '}';
     }
 }

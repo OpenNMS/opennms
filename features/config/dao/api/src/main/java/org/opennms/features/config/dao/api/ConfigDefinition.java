@@ -40,6 +40,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
 import org.opennms.features.config.dao.api.util.OpenAPIDeserializer;
 import org.opennms.features.config.dao.api.util.OpenAPISerializer;
+import org.opennms.features.config.exception.SchemaNotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -110,11 +111,11 @@ public class ConfigDefinition {
     @JsonIgnore
     public ValidationReport validate(String json) {
         String topSchemaName = (String) meta.get(TOP_LEVEL_ELEMENT_NAME_TAG);
-        if(topSchemaName == null) {
+        if (topSchemaName == null) {
             topSchemaName = configName;
         }
-        if(this.getSchema() == null){
-            throw new RuntimeException("Empty schema!");
+        if (this.getSchema() == null) {
+            throw new SchemaNotFoundException("Empty schema!");
         }
         SchemaValidator validator = new SchemaValidator(this.getSchema(), new MessageResolver());
         final Schema<?> schema = new Schema<>().$ref("#/components/schemas/" + topSchemaName);

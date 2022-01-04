@@ -28,6 +28,7 @@
 
 package org.opennms.features.config.service.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -54,38 +55,50 @@ public class ConfigConvertUtil {
         throw new IllegalStateException("Utility class");
     }
 
-    public static <ENTITY> ENTITY jsonToObject(String jsonStr, Class<ENTITY> entityClass) {
-        ObjectMapper mapper = null;
+    /**
+     * Convert config json to entity class
+     *
+     * @param jsonStr
+     * @param entityClass
+     * @param <E>         entity class
+     * @return
+     */
+    public static <E> E jsonToObject(String jsonStr, Class<E> entityClass) {
+        ObjectMapper mapper;
         try {
             mapper = pool.borrowObject();
-            return mapper.readValue(jsonStr, entityClass);
         } catch (Exception e) {
-            throw new ConfigConversionException(e);
+            throw new ConfigConversionException("Fail to borrow ObjectMapper. ", e);
+        }
+        try {
+            return mapper.readValue(jsonStr, entityClass);
+        } catch (JsonProcessingException e) {
+            throw new ConfigConversionException("Fail to convert json to object. ", e);
         } finally {
-            if (mapper != null) {
-                try {
-                    pool.returnObject(mapper);
-                } catch (Exception e) {
-                    throw new ConfigConversionException(e);
-                }
+            try {
+                pool.returnObject(mapper);
+            } catch (Exception e) {
+                throw new ConfigConversionException("Fail to return ObjectMapper. ", e);
             }
         }
     }
 
     public static String objectToJson(Object object) {
-        ObjectMapper mapper = null;
+        ObjectMapper mapper;
         try {
             mapper = pool.borrowObject();
-            return mapper.writeValueAsString(object);
         } catch (Exception e) {
-            throw new ConfigConversionException(e);
+            throw new ConfigConversionException("Fail to borrow ObjectMapper. ", e);
+        }
+        try {
+            return mapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new ConfigConversionException("Fail to convert object to json. ", e);
         } finally {
-            if (mapper != null) {
-                try {
-                    pool.returnObject(mapper);
-                } catch (Exception e) {
-                    throw new ConfigConversionException(e);
-                }
+            try {
+                pool.returnObject(mapper);
+            } catch (Exception e) {
+                throw new ConfigConversionException("Fail to return ObjectMapper. ", e);
             }
         }
     }
