@@ -28,14 +28,11 @@
 
 package org.opennms.core.ipc.twin.grpc.publisher;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.*;
-
+import com.google.common.base.Strings;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.grpc.stub.StreamObserver;
 import io.opentracing.References;
 import io.opentracing.Scope;
 import io.opentracing.Tracer;
@@ -51,14 +48,17 @@ import org.opennms.core.ipc.twin.grpc.common.OpenNMSTwinIpcGrpc;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.core.logging.Logging;
-import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-
-import io.grpc.stub.StreamObserver;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 public class GrpcTwinPublisher extends AbstractTwinPublisher {
 
