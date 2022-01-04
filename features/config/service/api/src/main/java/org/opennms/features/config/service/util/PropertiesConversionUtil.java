@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -40,7 +40,7 @@ public class PropertiesConversionUtil {
     // We expect to have a flat json with only simple data types as children.
     // Returns an immutable map.
     public static Map<String, Object> jsonToMap(String jsonString) {
-        JSONObject  json = new JSONObject(jsonString);
+        JSONObject json = new JSONObject(Objects.requireNonNull(jsonString));
         Map<String, Object> map = new ConcurrentHashMap<>();
         for(String key : json.keySet()) {
             Object value = json.get(key);

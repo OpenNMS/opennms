@@ -58,7 +58,7 @@ public interface ConfigurationManagerService {
      */
     void changeConfigDefinition(String configName, ConfigDefinition configDefinition);
 
-    Map<String, ConfigDefinition> getAllConfigDefinition();
+    Map<String, ConfigDefinition> getAllConfigDefinitions();
 
     Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName);
 

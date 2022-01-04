@@ -52,7 +52,7 @@ import java.util.Set;
 
 @Component
 public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
-    private static final Logger LOG = LoggerFactory.getLogger(ConfigStoreDao.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonConfigStoreDaoImpl.class);
     public static final String CONTEXT_CONFIG = "CM_CONFIG";
     public static final String CONTEXT_SCHEMA = "CM_SCHEMA";
     private final ObjectMapper mapper;
@@ -87,7 +87,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public Map<String, ConfigDefinition> getAllConfigDefinition() {
+    public Map<String, ConfigDefinition> getAllConfigDefinitions() {
         Map<String, ConfigDefinition> output = new HashMap<>();
         jsonStore.enumerateContext(CONTEXT_SCHEMA).forEach((key, value) -> {
             output.put(key, this.deserializeConfigDefinition(value));

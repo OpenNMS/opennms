@@ -38,7 +38,7 @@ import java.util.Set;
 
 /**
  * It handles storing config data in database by generic datatype
- * It also validation config before persist. (add & update)
+ * It also validates config before persist. (add & update)
  *
  * @param <T> data type store in database
  */
@@ -60,7 +60,7 @@ public interface ConfigStoreDao<T> {
      */
     Optional<Set<String>> getConfigNames();
 
-    Map<String, ConfigDefinition> getAllConfigDefinition();
+    Map<String, ConfigDefinition> getAllConfigDefinitions();
 
     /**
      * get configs meta by configName

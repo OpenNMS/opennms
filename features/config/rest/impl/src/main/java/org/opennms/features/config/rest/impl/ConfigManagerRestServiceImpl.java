@@ -59,7 +59,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
 
     @Override
     public Response getAllOpenApiSchema(String acceptType, HttpServletRequest request) {
-        Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinition();
+        Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinitions();
 
         Map<String, OpenAPI> apis = new HashMap<>(defs.size());
         defs.forEach((key, def) -> {
@@ -99,7 +99,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             Set<String> ids = configurationManagerService.getConfigIds(configName);
             return Response.ok(ids).build();
         } catch (ConfigRuntimeException e) {
-            LOG.error("Fail to getConfigIds for configName: {}", configName);
+            LOG.error("Fail to getConfigIds for configName: {}, message: {}", configName, e.getMessage());
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }

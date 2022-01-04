@@ -80,8 +80,8 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public Map<String, ConfigDefinition> getAllConfigDefinition() {
-        return configStoreDao.getAllConfigDefinition();
+    public Map<String, ConfigDefinition> getAllConfigDefinitions() {
+        return configStoreDao.getAllConfigDefinitions();
     }
 
     @Override

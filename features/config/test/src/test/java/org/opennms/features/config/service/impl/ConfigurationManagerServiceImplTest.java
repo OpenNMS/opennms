@@ -110,7 +110,7 @@ public class ConfigurationManagerServiceImplTest {
         Optional<ConfigDefinition> configSchema = configManagerService.getRegisteredConfigDefinition(VACUUMD_CONFIG_NAME);
         Assert.assertTrue(VACUUMD_CONFIG_NAME + " fail to register", configSchema.isPresent());
 
-        Map<String, ConfigDefinition> map = configManagerService.getAllConfigDefinition();
+        Map<String, ConfigDefinition> map = configManagerService.getAllConfigDefinitions();
         Assert.assertArrayEquals("It should contain 2 schemas.", new String[]{CONFIG_NAME, VACUUMD_CONFIG_NAME}, map.keySet().toArray());
     }
 

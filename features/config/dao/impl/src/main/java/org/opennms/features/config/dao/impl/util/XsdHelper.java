@@ -56,8 +56,9 @@ public class XsdHelper {
         if (url == null) {
             PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
             Resource[] resources = resolver.getResources("classpath*:**/" + xsdName);
-            if (resources != null && resources.length > 0)
+            if (resources != null && resources.length > 0) {
                 url = resources[0].getURL();
+            }
         }
         return url;
     }

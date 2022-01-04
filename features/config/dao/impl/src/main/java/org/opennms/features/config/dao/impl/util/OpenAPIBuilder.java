@@ -80,11 +80,13 @@ public class OpenAPIBuilder {
      */
     public static OpenAPIBuilder createBuilder(String name, String topElementName, String prefix, OpenAPI openapi) {
         OpenAPIBuilder builder = OpenAPIBuilder.createBuilder(name, topElementName, prefix);
-        if (openapi == null)
+        if (openapi == null) {
             return builder;
+        }
         Schema<?> schema = openapi.getComponents().getSchemas().get(topElementName);
-        if (schema == null)
+        if (schema == null) {
             return builder;
+        }
 
         schema.getProperties().forEach((k, s) ->
                 builder.walkSchema(k, s, builder.rootConfig, schema.getRequired(), openapi)
@@ -162,16 +164,20 @@ public class OpenAPIBuilder {
             item.setType(ConfigItem.Type.DATE_TIME);
         } else if (schema instanceof StringSchema) {
             item.setType(ConfigItem.Type.STRING);
-            if (schema.getMinLength() != null)
+            if (schema.getMinLength() != null) {
                 item.setMin(Long.valueOf(schema.getMinLength().longValue()));
-            if (schema.getMaxLength() != null)
+            }
+            if (schema.getMaxLength() != null) {
                 item.setMax(Long.valueOf(schema.getMaxLength().longValue()));
+            }
         } else if (schema instanceof ArraySchema) {
             item.setType(ConfigItem.Type.ARRAY);
-            if (schema.getMinItems() != null)
+            if (schema.getMinItems() != null) {
                 item.setMin(Long.valueOf(schema.getMinItems()));
-            if (schema.getMaxItems() != null)
+            }
+            if (schema.getMaxItems() != null) {
                 item.setMax(Long.valueOf(schema.getMaxItems()));
+            }
         } else if (schema instanceof ObjectSchema) {
             item.setType(ConfigItem.Type.OBJECT);
         } else if (schema instanceof NumberSchema || schema instanceof IntegerSchema) {
@@ -182,12 +188,15 @@ public class OpenAPIBuilder {
             } else {
                 item.setType(ConfigItem.Type.NUMBER);
             }
-            if (schema.getMinimum() != null)
+            if (schema.getMinimum() != null) {
                 item.setMin(Long.valueOf(schema.getMinimum().longValue()));
-            if (schema.getMaximum() != null)
+            }
+            if (schema.getMaximum() != null) {
                 item.setMax(Long.valueOf(schema.getMaximum().longValue()));
-            if (schema.getMultipleOf() != null)
+            }
+            if (schema.getMultipleOf() != null) {
                 item.setMultipleOf(Long.valueOf(schema.getMultipleOf().longValue()));
+            }
         } else if (schema instanceof BooleanSchema) {
             item.setType(ConfigItem.Type.BOOLEAN);
         } else if (schema instanceof DateSchema) {

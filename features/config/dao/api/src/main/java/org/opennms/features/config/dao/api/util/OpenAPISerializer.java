@@ -42,7 +42,7 @@ import java.io.IOException;
  * Custom serializer to prevent too much null write into database
  */
 public class OpenAPISerializer extends JsonSerializer<OpenAPI> {
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     public OpenAPISerializer() {
         mapper = Json.mapper();

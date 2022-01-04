@@ -40,8 +40,7 @@ import java.io.IOException;
  * OpenAPI have its own deserializer, ObjectMapper may have problem
  */
 public class OpenAPIDeserializer extends JsonDeserializer<OpenAPI> {
-
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     public OpenAPIDeserializer() {
         mapper = Json.mapper();

@@ -77,7 +77,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public Map<String, ConfigDefinition> getAllConfigDefinition() {
+    public Map<String, ConfigDefinition> getAllConfigDefinitions() {
         return null;
     }
 
@@ -141,7 +141,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
             String xmlStr = IOUtils.toString(in, StandardCharsets.UTF_8);
             configOptional = Optional.of(xmlStr);
             LOG.debug("xmlStr: {}", xmlStr);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOG.error("FAIL TO LOAD XML: {}", configFile, e);
         }
 

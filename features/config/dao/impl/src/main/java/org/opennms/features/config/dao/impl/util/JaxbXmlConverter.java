@@ -98,8 +98,8 @@ public class JaxbXmlConverter implements ConfigConverter {
                 .filter(targetNamespace -> targetNamespace.contains("opennms")).collect(Collectors.toList());
 
         if (namespaces.size() != 1) {
-            LOG.error("XSD must contain one 'opennms' namespaces!");
-            throw new SchemaConversionException("XSD must contain one 'opennms' namespaces!");
+            LOG.error("XSD must contain one 'opennms' namespace!");
+            throw new SchemaConversionException("XSD must contain one 'opennms' namespace!");
         }
 
         return new XmlSchema(xsdStr, namespaces.get(0), rootElement);
@@ -177,7 +177,7 @@ public class JaxbXmlConverter implements ConfigConverter {
      * Help to replace XmlValue tag (value) to expected attributeName
      *
      * @param json
-     * @return json with replacedvalue
+     * @return json with replaced value
      */
     private JSONObject replaceXmlValueAttributeName(JSONObject json) {
         this.elementNameToValueNameMap.forEach((elementName, valueName) -> {
@@ -202,8 +202,9 @@ public class JaxbXmlConverter implements ConfigConverter {
                 this.replaceXmlValueAttributeName((JSONObject) value);
             } else if (value instanceof JSONArray) {
                 ((JSONArray) value).forEach(arrayItem -> {
-                    if (arrayItem instanceof JSONObject)
+                    if (arrayItem instanceof JSONObject) {
                         this.replaceXmlValueAttributeName((JSONObject) arrayItem);
+                    }
                 });
             }
         });

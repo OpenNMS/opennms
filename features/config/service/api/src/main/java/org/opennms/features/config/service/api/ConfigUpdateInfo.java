@@ -36,10 +36,11 @@ public class ConfigUpdateInfo {
 
     /**
      * ConfigId is nullable, when it is null. It will reload all configIds.
+     *
      * @param configName
      * @param configId
      */
-     public ConfigUpdateInfo(String configName, String configId) {
+    public ConfigUpdateInfo(String configName, String configId) {
         this.configName = Objects.requireNonNull(configName);
         this.configId = Objects.requireNonNull(configId);
     }
@@ -54,7 +55,7 @@ public class ConfigUpdateInfo {
 
     @Override
     public int hashCode() {
-        return (this.getConfigName() + this.getConfigId()).hashCode();
+        return Objects.hash(this.getConfigName(), this.getConfigId());
     }
 
     @Override

@@ -80,7 +80,7 @@ public class ConfigSwaggerConverterAllTest {
     @Test
     public void canConvertAllXsd() throws Exception {
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
-        Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinition();
+        Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinitions();
         Map<String, OpenAPI> apis = new HashMap<>(defs.size());
         defs.forEach((key, def) -> {
             OpenAPI api = def.getSchema();

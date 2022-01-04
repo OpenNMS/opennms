@@ -72,8 +72,7 @@ public class CmPersistenceManager implements PersistenceManager {
     public Enumeration getDictionaries() {
         List<Dictionary<String, Object>> dictionaries = MigratedServices.PIDS.stream()
                 .map(this::loadInternal)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(Optional::stream)
                 .collect(Collectors.toList());
         return Collections.enumeration(dictionaries);
     }
@@ -99,14 +98,14 @@ public class CmPersistenceManager implements PersistenceManager {
     @Override
     public void store(String pid, Dictionary props) throws IOException {
         Optional<Dictionary<String, Object>> confFromConfigService = loadInternal(pid);
-        if(confFromConfigService.isEmpty() || !equalsWithoutRevision(props, confFromConfigService.get())) {
+        if (confFromConfigService.isEmpty() || !equalsWithoutRevision(props, confFromConfigService.get())) {
             configService.updateConfiguration(pid, CONFIG_ID, new JsonAsString(DictionaryUtil.writeToJson(props).toString()));
         }
     }
 
     @Override
     public void delete(final String pid) throws IOException {
-        LOG.warn("delete of pid={} not supported.", pid);
+        LOG.warn("Deletion of pid={} not supported.", pid);
     }
 
     public static boolean equalsWithoutRevision(Dictionary<String, Object> a, Dictionary<String, Object> b) {
