@@ -28,22 +28,12 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
-import java.net.InetAddress;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.TreeSet;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SortedSetMultimap;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
@@ -61,11 +51,25 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SortedSetMultimap;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.net.InetAddress;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
+
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 /**
  * This class represents a singular instance that is used to map IP
@@ -79,6 +83,11 @@ import com.google.common.collect.SortedSetMultimap;
  */
 public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache implements InterfaceToNodeCache {
     private static final Logger LOG = LoggerFactory.getLogger(InterfaceToNodeCacheDaoImpl.class);
+
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("sync-interface-to-node-cache")
+            .build();
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
 
     private static class Key {
         private final String location;
@@ -206,21 +215,26 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
     @PostConstruct
     public void init() {
-        // we call this, to ensure the bean-initialization is blocked, until it is initialized
-        dataSourceSync();
-
-        if (refreshRate > 0) {
-            refreshTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        dataSourceSync();
-                    } catch (Exception ex) {
-                        LOG.error("An error occurred while synchronizing the datasource: {}", ex.getMessage(), ex);
+        // sync datasource asynchronously in order to not block bean initialization.
+        syncDataSourceAsynchronously().whenComplete((result, ex) -> {
+            if (refreshRate > 0) {
+                refreshTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            dataSourceSync();
+                        } catch (Exception ex) {
+                            LOG.error("An error occurred while synchronizing the datasource: {}", ex.getMessage(), ex);
+                        }
                     }
-                }
-            }, refreshRate, refreshRate);
-        }
+                }, refreshRate, refreshRate);
+            }
+        });
+    }
+
+    @PreDestroy
+    public void destroy() {
+        executorService.shutdownNow();
     }
 
     public NodeDao getNodeDao() {
@@ -261,6 +275,10 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
                 return null;
             });
         }
+    }
+
+    private CompletableFuture<Void> syncDataSourceAsynchronously() {
+        return CompletableFuture.runAsync(this::dataSourceSync, executorService);
     }
 
     private void dataSourceSyncWithinTransaction() {
