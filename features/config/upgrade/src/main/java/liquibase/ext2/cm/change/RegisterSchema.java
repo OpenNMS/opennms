@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @DatabaseChange(name = "registerSchema", description = "Registers a new schema", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class RegisterSchema extends AbstractCmChange {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractSchemaChange.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
 
     protected String id;
 

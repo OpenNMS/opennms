@@ -28,7 +28,6 @@
 
 package org.opennms.features.config.service.impl;
 
-import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.features.config.exception.ConfigNotFoundException;
 import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;

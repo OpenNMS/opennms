@@ -121,7 +121,7 @@ public class ConfigSwaggerConverter {
      * @return
      */
     public OpenAPI setupServers(OpenAPI openapi, List<String> urls) {
-        final List<Server> servers = new ArrayList<>(1);
+        final List<Server> servers = new ArrayList<>(urls.size());
         urls.forEach(url -> {
             Server server = new Server();
             server.setUrl(url);
@@ -146,8 +146,9 @@ public class ConfigSwaggerConverter {
         openapiMap.forEach((configName, openapi) -> {
             Paths paths = openapi.getPaths();
             paths.forEach((name, path) -> {
-                if (path.readOperations() == null)
+                if (path.readOperations() == null) {
                     return;
+                }
                 path.readOperations().forEach((oper -> {
                     if (oper.getResponses() != null) {
                         oper.getResponses().forEach((resK, resV) -> {
@@ -501,8 +502,9 @@ public class ConfigSwaggerConverter {
     private String generate$ref(ConfigItem item, String configName) {
         if (configName != null) {
             return REMOTE_REF_PATH + configName + SCHEMA_PATH + item.getName();
-        } else
+        } else {
             return SCHEMA_PATH + item.getName();
+        }
     }
 
     public void walk(ConfigItem parent, ConfigItem item, BiConsumer<ConfigItem, ConfigItem> consumer) {

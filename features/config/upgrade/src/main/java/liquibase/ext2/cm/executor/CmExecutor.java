@@ -54,8 +54,8 @@ public class CmExecutor extends JdbcExecutor {
 
     @Override
     public void execute(final SqlStatement sql, final List<SqlVisitor> sqlVisitors) throws DatabaseException {
-        if(sql instanceof AbstractCmStatement && this.database instanceof CmDatabase) {
-            ((AbstractCmStatement) sql).execute((CmDatabase)this.database);
+        if (sql instanceof AbstractCmStatement && this.database instanceof CmDatabase) {
+            ((AbstractCmStatement) sql).execute((CmDatabase) this.database);
             return;
         }
 

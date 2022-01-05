@@ -41,6 +41,7 @@ import java.util.Optional;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
+import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
@@ -86,7 +87,7 @@ public class ImportConfiguration extends AbstractCmChange {
         validationErrors.checkRequiredField("filePath", this.filePath);
 
         String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
-        this.etcFile = Path.of(opennmsHome + "/etc/"+this.filePath);
+        this.etcFile = Path.of(opennmsHome + "/etc/" + this.filePath);
         configResource = new FileSystemResource(etcFile.toString()); // check etc dir first
         if (!configResource.isReadable()) {
             configResource = new ClassPathResource("/defaults/"+this.filePath); // fallback: default config
@@ -121,7 +122,9 @@ public class ImportConfiguration extends AbstractCmChange {
 
     void checkFileType(ValidationErrors validationErrors) {
 
-        if(this.filePath == null) return; // nothing to do
+        if (this.filePath == null) {
+            return; // nothing to do
+        }
 
         String fileType = FilenameUtils.getExtension(this.filePath);
         if (!"xml".equalsIgnoreCase(fileType) && !"cfg".equalsIgnoreCase(fileType)) {
@@ -151,7 +154,7 @@ public class ImportConfiguration extends AbstractCmChange {
                             ConfigItem schema = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, "", configDefinition.get().getSchema()).getRootConfig();
                             configObject = new PropertiesToJson(this.configResource.getInputStream(), schema).getJson();
                         } else {
-                            throw new IllegalArgumentException(String.format("Unknown file type: '%s'", fileType));
+                            throw new ConfigConversionException(String.format("Unknown file type: '%s'", fileType));
                         }
                         m.registerConfiguration(this.schemaId, this.configId, configObject);
                         LOG.info("Configuration with id={} imported.", this.configId);
