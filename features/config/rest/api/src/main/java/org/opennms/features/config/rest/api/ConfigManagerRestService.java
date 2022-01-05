@@ -104,12 +104,12 @@ public interface ConfigManagerRestService {
      * @param configName
      * @param configId
      * @param jsonStr
+     * @param isReplace
      * @return
      */
     @PUT
     @Path("/{configName}/{configId}")
-    Response updateConfig(@PathParam("configName") String configName, @PathParam("configId") String configId, String jsonStr);
-
+    Response updateConfig(@PathParam("configName") String configName, @PathParam("configId") String configId, @QueryParam("replace") boolean isReplace, String jsonStr);
 
     /**
      * delete config by configName and configId

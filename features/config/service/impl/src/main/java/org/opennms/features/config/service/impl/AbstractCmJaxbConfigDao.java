@@ -130,7 +130,7 @@ public abstract class AbstractCmJaxbConfigDao<E> {
 
         LOG.debug("Loading {} configuration from {}", description, configId);
         Optional<E> configOptional = configurationManagerService.getJSONStrConfiguration(this.getConfigName(), configId)
-                    .map(s -> ConfigConvertUtil.jsonToObject(s, entityClass)); // no validation since we validated already at write time
+                .map(s -> ConfigConvertUtil.jsonToObject(s, entityClass)); // no validation since we validated already at write time
         if (configOptional.isEmpty()) {
             throw new ConfigNotFoundException("NOT_FOUND: configName: " + this.getConfigName() + " configId: " + configId);
         }
@@ -183,8 +183,13 @@ public abstract class AbstractCmJaxbConfigDao<E> {
      * @throws ValidationException
      */
     public void updateConfig(String configId, String jsonConfigString) throws ValidationException {
-        configurationManagerService.updateConfiguration(this.getConfigName(), configId, new JsonAsString(jsonConfigString));
+        this.updateConfig(configId, jsonConfigString, false);
     }
+
+    public void updateConfig(String configId, String jsonConfigString, boolean isReplace) throws ValidationException {
+        configurationManagerService.updateConfiguration(this.getConfigName(), configId, new JsonAsString(jsonConfigString), isReplace);
+    }
+
 
     /**
      * it will update the default config

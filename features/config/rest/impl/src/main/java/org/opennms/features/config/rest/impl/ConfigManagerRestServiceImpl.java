@@ -130,9 +130,9 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     @Override
-    public Response updateConfig(String configName, String configId, String jsonStr) {
+    public Response updateConfig(String configName, String configId, boolean isReplace, String jsonStr) {
         try {
-            configurationManagerService.updateConfiguration(configName, configId, new JsonAsString(jsonStr));
+            configurationManagerService.updateConfiguration(configName, configId, new JsonAsString(jsonStr), isReplace);
             return Response.ok().build();
         } catch (Exception e) {
             LOG.error("configName: {}, configId: {}", configName, configId, e);

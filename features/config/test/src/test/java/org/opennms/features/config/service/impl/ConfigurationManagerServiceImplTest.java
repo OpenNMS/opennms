@@ -149,9 +149,15 @@ public class ConfigurationManagerServiceImplTest {
 
         pConfig.setImportThreads(12L);
         configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID,
-                new JsonAsString(ConfigConvertUtil.objectToJson(pConfig)));
+                new JsonAsString(ConfigConvertUtil.objectToJson(pConfig)), false);
         Optional<JSONObject> jsonAfterUpdate = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
         Assert.assertEquals("Incorrect importThreads", 12, jsonAfterUpdate.get().get("importThreads"));
+
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID,
+                new JsonAsString("{\"rescanThreads\": 7}"), true);
+        Optional<JSONObject> jsonAfterReplace = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
+        Assert.assertEquals("Incorrect rescanThreads", 7, jsonAfterReplace.get().get("rescanThreads"));
+        Assert.assertEquals("importThreads should be default", 8, jsonAfterReplace.get().get("importThreads"));
     }
 
     private class TestCallback implements Consumer<ConfigUpdateInfo> {
@@ -166,7 +172,7 @@ public class ConfigurationManagerServiceImplTest {
         JSONObject json = configManagerService
                 .getJSONConfiguration(CONFIG_NAME, CONFIG_ID).get();
         configManagerService.registerReloadConsumer(new ConfigUpdateInfo(CONFIG_NAME, CONFIG_ID), callback);
-        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JsonAsString(json.toString()));
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JsonAsString(json.toString()), false);
         Mockito.verify(callback, Mockito.atLeastOnce()).accept(Mockito.any());
     }
 
@@ -184,7 +190,7 @@ public class ConfigurationManagerServiceImplTest {
         config.setImportThreads(-1L);
 
         configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID,
-                new JsonAsString(ConfigConvertUtil.objectToJson(config)));
+                new JsonAsString(ConfigConvertUtil.objectToJson(config)), false);
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config not found", configData.isPresent());
     }

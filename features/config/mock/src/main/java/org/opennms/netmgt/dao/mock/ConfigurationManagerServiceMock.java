@@ -106,7 +106,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public void updateConfiguration(String configName, String configId, JsonAsString configObject) {
+    public void updateConfiguration(String configName, String configId, JsonAsString configObject, boolean isReplace) {
         configOptional = Optional.of(configObject.toString());
     }
 

@@ -151,8 +151,8 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public void updateConfiguration(String configName, String configId, JsonAsString config) {
-        configStoreDao.updateConfig(configName, configId, new JSONObject(config.toString()));
+    public void updateConfiguration(String configName, String configId, JsonAsString config, boolean isReplace) {
+        configStoreDao.updateConfig(configName, configId, new JSONObject(config.toString()), isReplace);
         ConfigUpdateInfo updateInfo = new ConfigUpdateInfo(configName, configId);
         this.triggerReloadConsumer(updateInfo);
     }

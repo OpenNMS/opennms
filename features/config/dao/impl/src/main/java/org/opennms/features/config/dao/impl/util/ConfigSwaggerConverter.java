@@ -38,6 +38,8 @@ import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.*;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.PathParameter;
+import io.swagger.v3.oas.models.parameters.QueryParameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
@@ -249,10 +251,9 @@ public class ConfigSwaggerConverter {
 
         // configId path param
         List<Parameter> parameters = new ArrayList<>();
-        Parameter configIdParam = new Parameter();
+        PathParameter configIdParam = new PathParameter();
         configIdParam.setName("configId");
         configIdParam.setRequired(true);
-        configIdParam.in("path");
         configIdParam.setSchema(new StringSchema());
         parameters.add(configIdParam);
 
@@ -264,8 +265,17 @@ public class ConfigSwaggerConverter {
         }
 
         //============== PUT =================
+        List<Parameter> putParameters = new ArrayList<>();
+        if (!isSingleConfig) {
+            putParameters.addAll(parameters);
+        }
+        QueryParameter replaceParameter = new QueryParameter();
+        replaceParameter.setName("replace");
+        replaceParameter.setSchema(new BooleanSchema());
+        replaceParameter.setDescription("Set to true for replace the whole config");
+        putParameters.add(replaceParameter);
         Operation put = this.generateOperation(tagName, "Overwrite " + item.getName() + " configuration", "OK",
-                isSingleConfig ? null : parameters, jsonObjectContent, null);
+                isSingleConfig ? null : putParameters, jsonObjectContent, null);
         configIdPathItem.setPut(put);
 
         //============== GET =================
@@ -416,8 +426,8 @@ public class ConfigSwaggerConverter {
         if (item.getPattern() != null) {
             schema.setPattern(item.getPattern());
         }
-        if (item.getMultipleOf() != null && (schema instanceof NumberSchema || schema instanceof IntegerSchema)){
-                schema.setMultipleOf(BigDecimal.valueOf(item.getMultipleOf()));
+        if (item.getMultipleOf() != null && (schema instanceof NumberSchema || schema instanceof IntegerSchema)) {
+            schema.setMultipleOf(BigDecimal.valueOf(item.getMultipleOf()));
         }
         if (item.getMin() != null) {
             if (schema instanceof StringSchema)

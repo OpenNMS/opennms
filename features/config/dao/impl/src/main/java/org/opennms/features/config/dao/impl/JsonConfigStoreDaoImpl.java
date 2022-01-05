@@ -171,7 +171,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public void updateConfig(String configName, String configId, JSONObject config) throws ValidationException {
+    public void updateConfig(String configName, String configId, JSONObject config, boolean isReplace) throws ValidationException {
         Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
             throw new ConfigNotFoundException("ConfigData not found configName: " + configName);
@@ -180,13 +180,19 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         if (!configs.containsKey(configId)) {
             throw new ConfigNotFoundException("Config not found configName: " + configName + ", configId: " + configId);
         }
-        JSONObject existingJson = configs.get(configId);
+        JSONObject configToUpdate;
+        if (isReplace) {
+            configToUpdate = config;
+            configs.put(configId, configToUpdate);
+        } else {
+            configToUpdate = configs.get(configId);
 
-        // copy all first level keys' value into existing config
-        config.keySet().forEach((key) -> {
-            existingJson.put(key, config.get(key));
-        });
-        ValidationReport report = this.validateConfig(configName, existingJson);
+            // copy all first level keys' value into existing config
+            config.keySet().forEach((key) -> {
+                configToUpdate.put(key, config.get(key));
+            });
+        }
+        ValidationReport report = this.validateConfig(configName, configToUpdate);
         if (report.hasErrors()) {
             throw new ValidationException(report);
         }

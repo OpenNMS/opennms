@@ -82,7 +82,7 @@ public interface ConfigurationManagerService {
     void unregisterConfiguration(String configName, String configId);
 
     void updateConfiguration(String configName, String configId,
-                             JsonAsString configObject);
+                             JsonAsString configObject, boolean isReplace);
 
     /**
      * get config as json by configName, configId

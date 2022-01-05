@@ -99,7 +99,7 @@ public class CmPersistenceManager implements PersistenceManager {
     public void store(String pid, Dictionary props) throws IOException {
         Optional<Dictionary<String, Object>> confFromConfigService = loadInternal(pid);
         if (confFromConfigService.isEmpty() || !equalsWithoutRevision(props, confFromConfigService.get())) {
-            configService.updateConfiguration(pid, CONFIG_ID, new JsonAsString(DictionaryUtil.writeToJson(props).toString()));
+            configService.updateConfiguration(pid, CONFIG_ID, new JsonAsString(DictionaryUtil.writeToJson(props).toString()), false);
         }
     }
 

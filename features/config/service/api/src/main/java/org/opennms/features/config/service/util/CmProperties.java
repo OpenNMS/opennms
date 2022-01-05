@@ -74,7 +74,7 @@ public class CmProperties {
         for (Map.Entry<?, ?> entry : this.properties.entrySet()) {
             entries.put(entry.getKey().toString(), entry.getValue());
         }
-        this.cm.updateConfiguration(this.configIdentifier.getConfigName(), this.configIdentifier.getConfigId(), mapToJsonString(entries));
+        this.cm.updateConfiguration(this.configIdentifier.getConfigName(), this.configIdentifier.getConfigId(), mapToJsonString(entries), false);
     }
 
     public Map<String, Object> get() {
