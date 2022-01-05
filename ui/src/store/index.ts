@@ -16,6 +16,8 @@ import appModule from './app'
 import infoModule from './info'
 import helpModule from './help'
 import notificationModule from './notification'
+import resourceModule from './resource'
+import graphModule from './graph'
 
 export default createStore({
   modules: {
@@ -33,6 +35,8 @@ export default createStore({
     appModule,
     infoModule,
     helpModule,
-    notificationModule
+    notificationModule,
+    resourceModule,
+    graphModule
   }
 })

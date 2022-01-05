@@ -67,6 +67,11 @@ const router = createRouter({
       component: () => import('@/containers/OpenAPI.vue')
     },
     {
+      path: '/resource-graphs',
+      name: 'ResourceGraphs',
+      component: () => import('@/containers/ResourceGraphs.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }

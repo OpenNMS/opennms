@@ -65,6 +65,42 @@ export interface LocationsApiResponse extends ApiResponse {
   location: MonitoringLocation[]
 }
 
+export interface ResourcesApiResponse extends ApiResponse {
+  resource: Resource[]
+}
+
+export interface ResourceDefinitionsApiResponse extends ApiResponse {
+  name: string[]
+}
+
+export interface Resource {
+  children?: ResourcesApiResponse
+  externalValueAttributes: Record<string, unknown>
+  id: string
+  label: string
+  link: string
+  name: string
+  parentId: string | null
+  rrdGraphAttributes: Record<string, unknown>
+  stringPropertyAttributes: Record<string, unknown>
+  typeLabel: string
+}
+
+export interface PreFabGraph {
+  columns: string[]
+  command: string
+  description: string | null
+  externalValues: string[]
+  height: number | null
+  name: string
+  order: number
+  propertiesValues: string[]
+  suppress: string[]
+  title: string
+  types: string[]
+  width: number | null
+}
+
 export interface Node {
   location: string
   type: string

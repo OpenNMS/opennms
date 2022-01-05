@@ -9,7 +9,7 @@ import {
 
 import { getAlarms, modifyAlarm } from './alarmService'
 
-import { getGraphNodesNodes } from './graphService'
+import { getGraphNodesNodes, getGraphDefinitionsByResourceId, getDefinitionData } from './graphService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { search } from './searchService'
@@ -20,6 +20,7 @@ import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
 import { getOpenApi } from './helpService'
+import { getResources, getResourceForNode } from './resourceService'
 
 export default {
   search,
@@ -48,5 +49,9 @@ export default {
   getSnippets,
   getFileNames,
   getFileExtensions,
-  getOpenApi
+  getOpenApi,
+  getResources,
+  getResourceForNode,
+  getDefinitionData,
+  getGraphDefinitionsByResourceId
 }
