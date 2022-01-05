@@ -52,6 +52,22 @@ parameters:
     type: string
     default: release-29.x
 
+  ### sub-tree "module" build setup ###
+  trigger-setup:
+    description: whether to use path filtering to determine which modules to trigger
+    type: boolean
+    default: true
+  trigger-docs:
+    description: whether to trigger the documentation build
+    type: boolean
+    default: false
+  trigger-build:
+    description: whether to trigger the main build
+    type: boolean
+    default: false
+
+setup: << pipeline.parameters.trigger-setup >>
+
 aliases:
   - &setup_dct_env
     name: Setup DCT environment
@@ -96,6 +112,7 @@ docker_container_config: &docker_container_config
 
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.3
+  path-filtering: circleci/path-filtering@0.1.1
   sign-packages: opennms/sign-packages@2.1.3
 
 commands:
@@ -505,28 +522,42 @@ commands:
             done
 
 workflows:
-  weekly-coverage:
-    when:
-      equal: [ false, << pipeline.parameters.minimal >> ]
-    triggers:
-      - schedule:
-          # Saturday at 12:00 AM
-          cron: "0 0 * * 6"
-          filters:
-            branches:
-              only:
-                - develop
+  pre-build:
+    when: << pipeline.parameters.trigger-setup >>
     jobs:
-      - build
-      - integration-test-with-coverage:
-          requires:
-            - build
-      - code-coverage:
-          requires:
-            - integration-test-with-coverage
+      - path-filtering/filter:
+          base-revision: << pipeline.git.branch >>
+          config-path: .circleci/config.yml
+          mapping: |
+            .*            trigger-setup false
+            ((?!docs/).)* trigger-build true
+            docs/.*       trigger-docs  true
+            .circleci/.*  trigger-docs  true
+#  weekly-coverage:
+#    when:
+#      equal: [ false, << pipeline.parameters.minimal >> ]
+#    triggers:
+#      - schedule:
+#          # Saturday at 12:00 AM
+#          cron: "0 0 * * 6"
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#    jobs:
+#      - build
+#      - integration-test-with-coverage:
+#          requires:
+#            - build
+#      - code-coverage:
+#          requires:
+#            - integration-test-with-coverage
   build-minimal:
     when:
-      equal: [ true, << pipeline.parameters.minimal >> ]
+      and:
+        - equal: [ true, << pipeline.parameters.trigger-build >> ]
+        - equal: [ false, << pipeline.parameters.trigger-setup >> ]
+        - equal: [ true, << pipeline.parameters.minimal >> ]
     jobs:
       - build
       - create-merge-foundation-branch:
@@ -556,16 +587,26 @@ workflows:
             branches:
               only:
                 - /^foundation.*/
-  build-deploy:
+  docs:
     when:
-      equal: [ false, << pipeline.parameters.minimal >> ]
+      and:
+        - equal: [ true,  << pipeline.parameters.trigger-docs >> ]
+        - equal: [ false, << pipeline.parameters.trigger-setup >> ]
+        - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
-      - build:
+      - build-docs:
           filters:
             branches:
               ignore:
                 - /^from-foundation.*/
-      - build-docs:
+  build-deploy:
+    when:
+      and:
+        - equal: [ true,  << pipeline.parameters.trigger-build >> ]
+        - equal: [ false, << pipeline.parameters.trigger-setup >> ]
+        - equal: [ false, << pipeline.parameters.minimal >> ]
+    jobs:
+      - build:
           filters:
             branches:
               ignore:
@@ -871,6 +912,8 @@ jobs:
     # in the core/web-assets module to complete reliably
     resource_class: xlarge
     steps:
+      - attach_workspace:
+          at: ~/
       - run-build:
           number-vcpu: 8
   build-docs:
