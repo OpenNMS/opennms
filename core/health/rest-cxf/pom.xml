@@ -3,15 +3,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>core-parent</artifactId>
-    <groupId>org.opennms.features.minion</groupId>
+    <groupId>org.opennms.core</groupId>
+    <artifactId>org.opennms.core.health</artifactId>
     <version>30.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-
-  <artifactId>minion-rest-service</artifactId>
+  <groupId>org.opennms.core.health</groupId>
+  <artifactId>org.opennms.core.health.rest-cxf</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS :: Features :: Minion :: ReST Service</name>
+  <name>OpenNMS :: Feature :: Health :: ReST Service</name>
 
   <build>
     <plugins>

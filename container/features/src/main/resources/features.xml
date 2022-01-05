@@ -225,6 +225,7 @@
         <bundle>wrap:mvn:com.googlecode.json-simple/json-simple/1.1.1</bundle>
     </feature>
     <feature name="owasp-encoder" version="${owaspEncoderVersion}" description="OWASP :: Encoder">
+        <feature prerequisite="true">wrap</feature>
         <bundle>wrap:mvn:org.owasp.encoder/encoder/${owaspEncoderVersion}$Export-Package=org.owasp.encoder</bundle>
     </feature>
     <feature name="owasp-html-sanitizer" version="${owaspHtmlSanitizerVersion}" description="OWASP :: HTML Sanitizer">
@@ -1841,5 +1842,12 @@
 
     <feature name="opennms-core-ipc-twin-shell" description="OpenNMS :: Core :: IPC :: Twin :: Shell" version="${project.version}">
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-health-rest-service" description="OpenNMS :: Feature :: Health :: ReST Service" version="${project.version}">
+        <feature>opennms-health-rest</feature>
+        <feature version="${cxfVersion}">cxf-core</feature>
+        <feature version="${cxfVersion}">cxf-jaxrs</feature>
+        <bundle>mvn:org.opennms.core.health/org.opennms.core.health.rest-cxf/${project.version}</bundle>
     </feature>
 </features>
