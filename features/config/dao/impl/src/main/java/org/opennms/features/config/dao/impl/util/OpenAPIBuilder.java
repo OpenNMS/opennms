@@ -309,19 +309,25 @@ public class OpenAPIBuilder {
         ConfigItem configItem = new ConfigItem();
         configItem.setType(type);
         configItem.setName(name);
-        if (max != null)
+        if (max != null) {
             configItem.setMax(max);
-        if (min != null)
+        }
+        if (min != null) {
             configItem.setMin(min);
-        if (multipleOf != null)
+        }
+        if (multipleOf != null) {
             configItem.setMultipleOf(multipleOf);
-        if (pattern != null)
+        }
+        if (pattern != null) {
             configItem.setPattern(pattern);
-        if (defaultValue != null)
+        }
+        if (defaultValue != null) {
             configItem.setDefaultValue(defaultValue);
+        }
         configItem.setRequired(required);
-        if (doc != null)
+        if (doc != null) {
             configItem.setDocumentation(doc);
+        }
         return configItem;
     }
 }
