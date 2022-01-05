@@ -59,7 +59,7 @@
                                 <feature>scv-api</feature>
                                 <feature>scv-shell</feature>
                                 <feature>scv-jceks-impl</feature>
-                                <feature>cxf-commands</feature>
+                                <feature>cxf-commands/${cxfVersion}</feature>
                                 <feature>opennms-health-rest-service</feature>
 
                                 <!-- Sentinel specific features -->
