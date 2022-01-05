@@ -33,6 +33,7 @@ import org.apache.ws.commons.schema.walker.XmlSchemaRestriction;
 import org.apache.ws.commons.schema.walker.XmlSchemaTypeInfo;
 import org.apache.ws.commons.schema.walker.XmlSchemaWalker;
 import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.features.config.exception.SchemaConversionException;
 import org.w3c.dom.Node;
 
@@ -80,7 +81,7 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         XmlSchemaWalker walker = new XmlSchemaWalker(collection, this);
         XmlSchemaElement rootEl = getElementOf(collection, topLevelElement);
         if (rootEl == null) {
-            throw new RuntimeException("No element found with name: " + topLevelElement);
+            throw new SchemaConversionException("No element found with name: " + topLevelElement);
         }
         elementNameToValueNameMap = new HashMap<>();
         walker.walk(rootEl);
@@ -89,7 +90,7 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
 
     public Map<String, String> getElementNameToValueNameMap() {
         if (elementNameToValueNameMap == null) {
-            throw new RuntimeException("Should call after convert.");
+            throw new ConfigConversionException("Should call after convert.");
         }
         return elementNameToValueNameMap;
     }

@@ -28,8 +28,6 @@
 
 package org.opennms.features.config.rest.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;

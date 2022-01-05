@@ -32,7 +32,15 @@ package org.opennms.features.config.exception;
  * It throws when CM config is already exist
  */
 public class ConfigExistException extends ConfigRuntimeException {
+    public ConfigExistException() {
+        super();
+    }
+
     public ConfigExistException(String message) {
         super(message);
+    }
+
+    public ConfigExistException(String message, Throwable e) {
+        super(message, e);
     }
 }

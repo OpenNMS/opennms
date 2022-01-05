@@ -35,13 +35,11 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
-import org.opennms.features.config.exception.ConfigRuntimeException;
+import org.opennms.features.config.exception.ConfigIOException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
@@ -117,7 +115,7 @@ public class ConfigStoreDaoImplTest {
         Assert.assertEquals("FAIL configs count is not equal to 1", 1, resultAfterDelete.get().getConfigs().size());
 
         //check if its last config, deletion not allowed if it is last config
-        expectedException.expect(ConfigRuntimeException.class);
+        expectedException.expect(ConfigIOException.class);
         expectedException.expectMessage("Deletion of the last config is not allowed. testConfigName, configId testFilename");
         configStoreDao.deleteConfig(configName, filename);
 

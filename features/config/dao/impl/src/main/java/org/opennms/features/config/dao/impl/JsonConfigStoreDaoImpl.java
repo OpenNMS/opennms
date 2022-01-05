@@ -144,7 +144,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     public void addConfigs(String configName, ConfigData<JSONObject> configData) throws ValidationException {
         Optional<ConfigData<JSONObject>> exist = this.getConfigData(configName);
         if (exist.isPresent()) {
-            throw new ConfigRuntimeException("Duplicate config found for service: " + configName, null);
+            throw new ConfigExistException("Duplicate config found for service: " + configName);
         }
         this.validateConfigData(configName, configData);
         this.putConfig(configName, configData);
@@ -155,7 +155,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         var configData = this.getConfigData(configName).orElse(new ConfigData<>());
         Map<String, JSONObject> configs = configData.getConfigs();
         if (configs.containsKey(configId)) {
-            throw new ConfigRuntimeException("Duplicate config found for configId: " + configId, null);
+            throw new ConfigExistException("Duplicate config found for configId: " + configId);
         }
         ValidationReport report = this.validateConfig(configName, configObject);
         if (report.hasErrors()) {
@@ -212,7 +212,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
             throw new ConfigNotFoundException("Config not found for config " + configName + ", configId " + configId);
         }
         if (configData.get().getConfigs().size() <= 1) {
-            throw new ConfigRuntimeException("Deletion of the last config is not allowed. " + configName + ", configId " + configId, null);
+            throw new ConfigIOException("Deletion of the last config is not allowed. " + configName + ", configId " + configId, null);
         }
         if (configData.get().getConfigs().remove(configId) == null) {
             throw new ConfigNotFoundException("Config not found for config " + configName + ", configId " + configId);
@@ -240,7 +240,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
             long timestamp = jsonStore.put(configDefinition.getConfigName(), mapper.writeValueAsString(configDefinition),
                     CONTEXT_SCHEMA);
             if (timestamp < 0) {
-                throw new ConfigRuntimeException("Fail to put ConfigDefinition in JsonStore! configName: " + configDefinition.getConfigName(), null);
+                throw new ConfigIOException("Fail to put ConfigDefinition in JsonStore! configName: " + configDefinition.getConfigName(), null);
             }
         } catch (JsonProcessingException e) {
             throw new SchemaConversionException("Fail to convert Definition to String! configName: " + configDefinition.getConfigName(), e);
@@ -251,7 +251,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         try {
             long timestamp = jsonStore.put(configName, mapper.writeValueAsString(configData), CONTEXT_CONFIG);
             if (timestamp < 0) {
-                throw new ConfigRuntimeException("Fail to put data in JsonStore! configName: " + configName, null);
+                throw new ConfigIOException("Fail to put data in JsonStore! configName: " + configName, null);
             }
         } catch (JsonProcessingException e) {
             throw new ConfigConversionException("Fail to convert ConfigData to String! configName: " + configName, e);

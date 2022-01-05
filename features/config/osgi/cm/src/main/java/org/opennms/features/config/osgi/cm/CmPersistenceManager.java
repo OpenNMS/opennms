@@ -55,6 +55,7 @@ public class CmPersistenceManager implements PersistenceManager {
     private interface OsgiProperties {
         String SERVICE_PID = "service.pid";
     }
+
     private final static String CONFIG_ID = "default";
 
     private final ConfigurationManagerService configService;
@@ -66,7 +67,7 @@ public class CmPersistenceManager implements PersistenceManager {
     @Override
     public boolean exists(final String pid) {
         return MigratedServices.PIDS.contains(pid)
-            && loadInternal(pid).isPresent();
+                && loadInternal(pid).isPresent();
     }
 
     @Override
@@ -86,15 +87,13 @@ public class CmPersistenceManager implements PersistenceManager {
 
     private Optional<Dictionary<String, Object>> loadInternal(String pid) {
         Objects.requireNonNull(pid);
-        return configService.getJSONStrConfiguration(pid, CONFIG_ID)
-                .map(s -> new JsonAsString(s))
-                .map(DictionaryUtil::createFromJson)
-                .map(m -> {
-                    if(m.get(OsgiProperties.SERVICE_PID) == null) {
-                        m.put(OsgiProperties.SERVICE_PID, pid); // make sure pid is set, otherwise we will run into a Nullpointer later
-                    }
-                    return m;
-                });
+        return configService.getJSONStrConfiguration(pid, CONFIG_ID).map(s -> {
+            Dictionary d = DictionaryUtil.createFromJson(new JsonAsString(s));
+            if (d.get(OsgiProperties.SERVICE_PID) == null) {
+                d.put(OsgiProperties.SERVICE_PID, pid); // make sure pid is set, otherwise we will run into a Nullpointer later
+            }
+            return d;
+        });
     }
 
     @Override
