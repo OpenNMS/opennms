@@ -67,7 +67,7 @@ public class CmPersistenceManagerDelegator implements NotCachablePersistenceMana
         List<Dictionary<String, String>> dictionaries = new ArrayList<>();
         ensurePersistenceManagerIsAvailable(this.fileManager);
         dictionaries.addAll(Collections.list(this.fileManager.persistenceManager.getDictionaries()));
-        if (this.cmManager.isLoaded.get()) {
+        if (this.cmManager.persistenceManager != null) {
             dictionaries.addAll(Collections.list(this.cmManager.persistenceManager.getDictionaries()));
         }
         return Collections.enumeration(dictionaries);
@@ -98,12 +98,12 @@ public class CmPersistenceManagerDelegator implements NotCachablePersistenceMana
     }
 
     private void ensurePersistenceManagerIsAvailable(final PersistenceManagerHolder pm) {
-        if (pm.isLoaded.get()) {
-            return; // registration already done
+        if (pm.persistenceManager != null) {
+            return; // persistence manager already loaded
         }
-        if (pm.isLoaded.compareAndSet(false, true)) {
-            pm.persistenceManager = findPersistenceManager(pm.className);
-        }
+        // there is a chance that we have a race condition where findPersistenceManager() is called multiple times.
+        // this shouldn't be critical but saves us from using any kind of sync mechanism
+        pm.persistenceManager = findPersistenceManager(pm.className);
     }
 
     private PersistenceManager findPersistenceManager(String className) {
@@ -120,7 +120,6 @@ public class CmPersistenceManagerDelegator implements NotCachablePersistenceMana
     }
 
     private final static class PersistenceManagerHolder {
-        final AtomicBoolean isLoaded = new AtomicBoolean(false);
         PersistenceManager persistenceManager;
         final String className;
 
