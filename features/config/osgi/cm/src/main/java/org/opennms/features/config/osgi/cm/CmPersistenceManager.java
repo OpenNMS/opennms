@@ -34,6 +34,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -84,6 +85,7 @@ public class CmPersistenceManager implements PersistenceManager {
     }
 
     private Optional<Dictionary<String, Object>> loadInternal(String pid) {
+        Objects.requireNonNull(pid);
         return configService.getJSONStrConfiguration(pid, CONFIG_ID)
                 .map(s -> new JsonAsString(s))
                 .map(DictionaryUtil::createFromJson)
