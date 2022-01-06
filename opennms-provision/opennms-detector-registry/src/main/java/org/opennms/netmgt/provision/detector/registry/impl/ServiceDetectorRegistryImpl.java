@@ -36,7 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -47,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, InitializingBean {
@@ -58,8 +58,7 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
     @Autowired(required=false)
     Set<ServiceDetectorFactory<?>> m_detectorFactories;
 
-    private final Map<String, CompletableFuture<String>> m_classNameByServiceName = new LinkedHashMap<>();
-    private final Map<String, CompletableFuture<ServiceDetectorFactory<? extends ServiceDetector>>> m_factoriesByServiceName = new LinkedHashMap<>();
+    private final Map<String, String> m_classNameByServiceName = new LinkedHashMap<>();
     private final Map<String, CompletableFuture<ServiceDetectorFactory<? extends ServiceDetector>>> m_factoriesByClassName = new LinkedHashMap<>();
 
     @Override
@@ -95,26 +94,13 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
         if (factory != null) {
             final String serviceName = getServiceName(factory);
             final String className = factory.getDetectorClass().getCanonicalName();
-            CompletableFuture<ServiceDetectorFactory<? extends ServiceDetector>> srvNameFactoryFuture = m_factoriesByServiceName.get(serviceName);
-            if(srvNameFactoryFuture == null) {
-                srvNameFactoryFuture = new CompletableFuture<>();
-                m_factoriesByServiceName.put(serviceName, srvNameFactoryFuture);
-            }
-            srvNameFactoryFuture.complete(factory);
-
             CompletableFuture<ServiceDetectorFactory<? extends ServiceDetector>> clzNameFactoryFuture = m_factoriesByClassName.get(className);
             if(clzNameFactoryFuture == null) {
                 clzNameFactoryFuture = new CompletableFuture<>();
                 m_factoriesByClassName.put(className, clzNameFactoryFuture);
             }
             clzNameFactoryFuture.complete(factory);
-
-            CompletableFuture<String> classNameFuture = m_classNameByServiceName.get(serviceName);
-            if(classNameFuture == null) {
-                classNameFuture = new CompletableFuture<>();
-                m_classNameByServiceName.put(serviceName, classNameFuture);
-            }
-            classNameFuture.complete(className);
+            m_classNameByServiceName.put(serviceName, className);
         }
     }
 
@@ -124,34 +110,31 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
         if (factory != null) {
             final String serviceName = getServiceName(factory);
             final String className = factory.getDetectorClass().getCanonicalName();
-            m_factoriesByServiceName.remove(serviceName);
             m_factoriesByClassName.remove(className);
             m_classNameByServiceName.remove(serviceName);
         }
     }
 
     @Override
-    public synchronized Map<String, String> getTypes() {
-        return m_classNameByServiceName.entrySet().stream()
-                .filter(e -> e.getValue().isDone())
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().join()));
+    public Map<String, String> getTypes() {
+        return ImmutableMap.copyOf(m_classNameByServiceName);
     }
 
     @Override
     public synchronized Set<String> getServiceNames() {
-        return ImmutableSet.copyOf(m_factoriesByServiceName.keySet());
+        return ImmutableSet.copyOf(m_classNameByServiceName.keySet());
     }
 
     @Override
-    public CompletableFuture<String> getDetectorClassNameFutureFromServiceName(String serviceName) {
-        CompletableFuture<String> classNameFuture = m_classNameByServiceName.get(serviceName);
-        if(classNameFuture == null) {
-            classNameFuture = new CompletableFuture<>();
-            m_classNameByServiceName.put(serviceName, classNameFuture);
-        }
-        return classNameFuture;
+    public String getDetectorClassNameFromServiceName(String serviceName) {
+        return m_classNameByServiceName.get(serviceName);
     }
 
+    @Override
+    public Class<?> getDetectorClassByServiceName(String serviceName) {
+        String className = m_classNameByServiceName.get(serviceName);
+        return m_factoriesByClassName.get(className).join().getDetectorClass();
+    }
 
     @Override
     public Set<String> getClassNames() {
@@ -172,6 +155,8 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
     public CompletableFuture<ServiceDetectorFactory<?>> getDetectorFactoryFutureByClassName(String className) {
         return m_factoriesByClassName.get(className);
     }
+
+
 
 
     private static CompletableFuture<ServiceDetector> createDetector(CompletableFuture<ServiceDetectorFactory<? extends ServiceDetector>> factoryFuture, Map<String, String> properties) {

@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.detector.client.rpc;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
@@ -71,8 +72,11 @@ public class DetectorClientRpcModule extends AbstractXmlRpcModule<DetectorReques
     public CompletableFuture<DetectorResponseDTO> execute(DetectorRequestDTO request) {
         String className = request.getClassName();
         Map<String, String> attributes = request.getAttributeMap();
-        return serviceDetectorRegistry.getDetectorFutureByClassName(className, attributes)
-                .thenComposeAsync((detector) -> detectService(detector, request));
+        ServiceDetector detector = serviceDetectorRegistry.getDetectorFutureByClassName(className, attributes).completeOnTimeout(null, 100, TimeUnit.MILLISECONDS).join();
+        if (detector == null) {
+            throw new IllegalArgumentException("No detector found with class name '" + className + "'.");
+        }
+        return detectService(detector, request);
     }
 
     private CompletableFuture<DetectorResponseDTO> detectService(ServiceDetector detector, DetectRequest detectRequest) {

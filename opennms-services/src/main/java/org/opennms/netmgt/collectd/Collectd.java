@@ -1493,7 +1493,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 }
             });
             if(!collectorFuture.isDone()) {
-                LOG.warn("The collector {} with class {} is not available.", svcName, collector.getClassName());
+                LOG.warn("The collector {} with class {} is not available yet, if the feature is installed correctly it will be available latter.", svcName, collector.getClassName());
             }
         }
     }

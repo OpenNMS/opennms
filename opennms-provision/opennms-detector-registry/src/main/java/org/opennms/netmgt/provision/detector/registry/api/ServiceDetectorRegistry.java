@@ -53,6 +53,8 @@ public interface ServiceDetectorRegistry {
 
     Set<String> getServiceNames();
 
-    CompletableFuture<String> getDetectorClassNameFutureFromServiceName(String serviceName);
+    String getDetectorClassNameFromServiceName(String serviceName);
+
+    Class<?> getDetectorClassByServiceName(String serviceName);
 
 }

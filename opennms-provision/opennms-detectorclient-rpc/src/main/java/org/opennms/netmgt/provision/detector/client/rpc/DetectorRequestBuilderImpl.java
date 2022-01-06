@@ -98,8 +98,11 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
     @Override
     public DetectorRequestBuilder withServiceName(String serviceName) {
-        client.getRegistry().getDetectorClassNameFutureFromServiceName(serviceName)
-                        .whenComplete((name, ex) -> this.className = name );
+        String className = client.getRegistry().getDetectorClassNameFromServiceName(serviceName);
+        if(className == null) {
+            throw new IllegalArgumentException("No detector found with service name '" + serviceName + "'.");
+        }
+        this.className = className;
         return this;
     }
 

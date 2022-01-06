@@ -38,7 +38,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.MethodUtils;
@@ -46,7 +45,6 @@ import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.spring.PropertyPath;
 import org.opennms.netmgt.provision.OnmsPolicy;
-import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.opennms.netmgt.provision.annotations.Policy;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
@@ -268,19 +266,13 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         ServiceDetectorRegistry registry = m_serviceRegistry.findProvider(ServiceDetectorRegistry.class);
         for(String serviceName: registry.getServiceNames()) {
             if(!m_detectors.containsKey(serviceName)) {
-                CompletableFuture<ServiceDetectorFactory<?>> factoryFuture = registry.getDetectorClassNameFutureFromServiceName(serviceName)
-                        .thenCompose(registry::getDetectorFactoryFutureByClassName);
-                factoryFuture.whenComplete((f, e) ->m_detectors.put(serviceName, f.getDetectorClass()));
-                if (!factoryFuture.isDone()) {
-                    LOG.warn("The detector {} class not available.", serviceName);
-                }
+                m_detectors.put(serviceName, registry.getDetectorClassByServiceName(serviceName));
             }
         }
         //Remove those uninstalled detectors
         Set<String> removeList = m_detectors.keySet().stream().filter(svcName -> !registry.getServiceNames().contains(svcName))
                 .collect(Collectors.toSet());
         removeList.forEach(svc-> m_detectors.remove(svc));
-
         return m_detectors;
     }
 

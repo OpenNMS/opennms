@@ -986,7 +986,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                 m_svcMonitors.put(locator.getServiceName(), monitor);
             });
             if(!monitorFuture.isDone()) {
-                LOG.warn("The monitor {} with class not available.", locator.getServiceName());
+                LOG.warn("The monitor with class {} not available yet, if the feature is installed correctly it will be available latter.", locator.getServiceName());
             }
         }
     }
