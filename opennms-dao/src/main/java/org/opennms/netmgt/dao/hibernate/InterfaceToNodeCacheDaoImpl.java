@@ -42,7 +42,6 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.PrimaryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +61,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -88,6 +88,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             .setNameFormat("sync-interface-to-node-cache")
             .build();
     private final ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
+    private final CountDownLatch initialNodeSyncDone = new CountDownLatch(1);
 
     private static class Key {
         private final String location;
@@ -217,6 +218,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
     public void init() {
         // sync datasource asynchronously in order to not block bean initialization.
         syncDataSourceAsynchronously().whenComplete((result, ex) -> {
+            initialNodeSyncDone.countDown();
             if (refreshRate > 0) {
                 refreshTimer.schedule(new TimerTask() {
                     @Override
@@ -234,6 +236,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
     @PreDestroy
     public void destroy() {
+        initialNodeSyncDone.countDown();
         executorService.shutdownNow();
     }
 
@@ -291,7 +294,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
         // Fetch all non-deleted nodes
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
-        builder.ne("type", String.valueOf(NodeType.DELETED.value()));
+        builder.ne("type", String.valueOf(OnmsNode.NodeType.DELETED.value()));
 
         for (OnmsNode node : m_nodeDao.findMatching(builder.toCriteria())) {
             for (final OnmsIpInterface iface : node.getIpInterfaces()) {
@@ -329,13 +332,21 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         if (address == null) {
             return Collections.emptySet();
         }
-
+        waitForInitialNodeSync();
         m_lock.readLock().lock();
         try {
             return Iterables.transform(m_managedAddresses.get(new Key(location, address)),
                     Value::getNodeId);
         } finally {
             m_lock.readLock().unlock();
+        }
+    }
+
+    private void waitForInitialNodeSync() {
+        try {
+            initialNodeSyncDone.await();
+        } catch (InterruptedException e) {
+            LOG.warn("Wait for node cache sync interrupted", e);
         }
     }
 
@@ -396,6 +407,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
     @Override
     public int size() {
+        waitForInitialNodeSync();
         m_lock.readLock().lock();
         try {
             return m_managedAddresses.size();
