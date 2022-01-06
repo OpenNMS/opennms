@@ -52,7 +52,6 @@
     <xsd:element name="importConfig">
         <xsd:complexType>
             <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
-            <xsd:attribute name="configId" type="xsd:string" use="required"/>
             <xsd:attribute name="filePath" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>
