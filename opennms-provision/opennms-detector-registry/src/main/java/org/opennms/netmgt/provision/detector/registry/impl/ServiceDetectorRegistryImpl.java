@@ -143,17 +143,18 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
 
     @Override
     public CompletableFuture<ServiceDetector> getDetectorFutureByClassName(String className, Map<String, String> properties) {
-        CompletableFuture<ServiceDetectorFactory<? extends ServiceDetector>> factoryFuture = m_factoriesByClassName.get(className);
-        if(factoryFuture == null) {
-            factoryFuture = new CompletableFuture<>();
-            m_factoriesByClassName.put(className, factoryFuture);
-        }
+        CompletableFuture<ServiceDetectorFactory<? extends ServiceDetector>> factoryFuture = getDetectorFactoryFutureByClassName(className);
         return createDetector(factoryFuture, properties);
     }
 
     @Override
     public CompletableFuture<ServiceDetectorFactory<?>> getDetectorFactoryFutureByClassName(String className) {
-        return m_factoriesByClassName.get(className);
+        CompletableFuture<ServiceDetectorFactory<? extends ServiceDetector>> factoryFuture = m_factoriesByClassName.get(className);
+        if(factoryFuture == null) {
+            factoryFuture = new CompletableFuture<>();
+            m_factoriesByClassName.put(className, factoryFuture);
+        }
+        return factoryFuture;
     }
 
 
