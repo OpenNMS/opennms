@@ -150,7 +150,6 @@ public class ImportConfiguration extends AbstractCmChange {
                         if("xml".equalsIgnoreCase(fileType)) {
                             configObject = new XmlToJson(asString(this.configResource), configDefinition.get()).getJson();
                         } else if("cfg".equalsIgnoreCase(fileType)) {
-                            // TODO: Patrick: adopt builder to make this easier
                             ConfigItem schema = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, "", configDefinition.get().getSchema()).getRootConfig();
                             configObject = new PropertiesToJson(this.configResource.getInputStream(), schema).getJson();
                         } else {
