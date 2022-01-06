@@ -26,19 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.snmp;
+package org.opennms.features.config.convert;
 
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
+import org.opennms.netmgt.config.snmp.SnmpProfiles;
 
-public class SnmpProfilesTest  extends XmlTestNoCastor<SnmpProfiles> {
+public class SnmpProfilesTest  extends CmConfigTest<SnmpProfiles> {
 
     public SnmpProfilesTest(SnmpProfiles sampleObject, String sampleXml, String schemaFile) {
-        super(sampleObject, sampleXml, schemaFile);
+        super(sampleObject, sampleXml, "snmp-config.xsd", "profiles");
     }
 
     @Parameterized.Parameters

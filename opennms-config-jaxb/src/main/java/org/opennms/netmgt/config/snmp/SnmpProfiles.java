@@ -39,18 +39,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SnmpProfiles {
 
     @JsonProperty("profile")
-    private List<SnmpProfile> snmpProfiles = new ArrayList<>();
+    private List<SnmpProfile> profiles = new ArrayList<>();
 
     public List<SnmpProfile> getSnmpProfiles() {
-        return snmpProfiles;
+        return profiles;
     }
 
     public void setSnmpProfiles(List<SnmpProfile> snmpProfiles) {
-        this.snmpProfiles = snmpProfiles;
+        this.profiles = snmpProfiles;
+    }
+
+    public List<SnmpProfile> getProfiles() {
+        return profiles;
+    }
+
+    public void setProfiles(List<SnmpProfile> profiles) {
+        this.profiles = profiles;
     }
 
     public void addSnmpProfile(SnmpProfile snmpProfile) {
-        this.snmpProfiles.add(snmpProfile);
+        this.profiles.add(snmpProfile);
     }
 
     @Override
@@ -58,11 +66,11 @@ public class SnmpProfiles {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SnmpProfiles that = (SnmpProfiles) o;
-        return Objects.equals(snmpProfiles, that.snmpProfiles);
+        return Objects.equals(profiles, that.profiles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(snmpProfiles);
+        return Objects.hash(profiles);
     }
 }
