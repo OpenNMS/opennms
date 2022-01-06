@@ -7,6 +7,7 @@
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
     <repository>mvn:org.opennms.integration.api/karaf-features/${opennmsApiVersion}/xml</repository>
     <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
+    <repository>mvn:no.priv.bang.karaf/liquibase-core-karaf/${liquibaseVersion}/xml/features</repository>
     <feature name="opennms-amqp-event-forwarder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Forwarder">
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
@@ -1082,6 +1083,9 @@
     <feature name="opennms-persistence" version="${project.version}" description="OpenNMS :: Persistence">
         <feature>opennms-model</feature>
         <feature>opennms-dao</feature>
+        <feature>commons-lang3</feature>
+        <feature>liquibase-core</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.schema/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.datasource/${project.version}</bundle>
     </feature>
     <feature name="opennms-spring-extender" version="${project.version}" description="OpenNMS :: Spring Extender">

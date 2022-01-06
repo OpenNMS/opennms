@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+    ">
+
+    <changeSet author="rangerrick" id="1.10.13-unique-service-type-alarms">
+        <sql>
+UPDATE alarms SET serviceid=bad.good_serviceid FROM (
+   SELECT
+      serviceid AS bad_serviceid,
+      (SELECT min(serviceid) FROM service s WHERE s.servicename=t.servicename) AS good_serviceid
+   FROM (
+      SELECT
+         serviceid, servicename
+      FROM
+         service
+      WHERE
+         serviceid NOT IN (
+            SELECT
+               min(serviceid)
+            FROM
+               service
+            GROUP BY
+               servicename
+         )
+      ORDER BY serviceid
+   ) t
+) bad
+WHERE
+   serviceid=bad.bad_serviceid;
+        </sql>
+    </changeSet>
+
+    <changeSet author="rangerrick" id="1.10.13-unique-service-type-events">
+        <sql>
+UPDATE events SET serviceid=bad.good_serviceid FROM (
+   SELECT
+      serviceid AS bad_serviceid,
+      (SELECT min(serviceid) FROM service s WHERE s.servicename=t.servicename) AS good_serviceid
+   FROM (
+      SELECT
+         serviceid, servicename
+      FROM
+         service
+      WHERE
+         serviceid NOT IN (
+            SELECT
+               min(serviceid)
+            FROM
+               service
+            GROUP BY
+               servicename
+         )
+      ORDER BY serviceid
+   ) t
+) bad
+WHERE
+   serviceid=bad.bad_serviceid;
+        </sql>
+    </changeSet>
+
+    <changeSet author="rangerrick" id="1.10.13-unique-service-type-ifservices">
+        <sql>
+UPDATE ifservices SET serviceid=bad.good_serviceid FROM (
+   SELECT
+      serviceid AS bad_serviceid,
+      (SELECT min(serviceid) FROM service s WHERE s.servicename=t.servicename) AS good_serviceid
+   FROM (
+      SELECT
+         serviceid, servicename
+      FROM
+         service
+      WHERE
+         serviceid NOT IN (
+            SELECT
+               min(serviceid)
+            FROM
+               service
+            GROUP BY
+               servicename
+         )
+      ORDER BY serviceid
+   ) t
+) bad
+WHERE
+   serviceid=bad.bad_serviceid;
+        </sql>
+    </changeSet>
+
+    <changeSet author="rangerrick" id="1.10.13-unique-service-type-notifications">
+        <sql>
+UPDATE notifications SET serviceid=bad.good_serviceid FROM (
+   SELECT
+      serviceid AS bad_serviceid,
+      (SELECT min(serviceid) FROM service s WHERE s.servicename=t.servicename) AS good_serviceid
+   FROM (
+      SELECT
+         serviceid, servicename
+      FROM
+         service
+      WHERE
+         serviceid NOT IN (
+            SELECT
+               min(serviceid)
+            FROM
+               service
+            GROUP BY
+               servicename
+         )
+      ORDER BY serviceid
+   ) t
+) bad
+WHERE
+   serviceid=bad.bad_serviceid;
+        </sql>
+    </changeSet>
+
+    <changeSet author="rangerrick" id="1.10.13-unique-service-type-outages">
+        <sql>
+UPDATE outages SET serviceid=bad.good_serviceid FROM (
+   SELECT
+      serviceid AS bad_serviceid,
+      (SELECT min(serviceid) FROM service s WHERE s.servicename=t.servicename) AS good_serviceid
+   FROM (
+      SELECT
+         serviceid, servicename
+      FROM
+         service
+      WHERE
+         serviceid NOT IN (
+            SELECT
+               min(serviceid)
+            FROM
+               service
+            GROUP BY
+               servicename
+         )
+      ORDER BY serviceid
+   ) t
+) bad
+WHERE
+   serviceid=bad.bad_serviceid;
+        </sql>
+    </changeSet>
+
+    <!-- The vulnerabilities database goes away in the future, so consider updating it non-fatal. -->
+    <changeSet author="rangerrick" id="1.10.13-unique-service-type-vulnerabilities">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="vulnerabilities" />
+		</preConditions> 
+        <sql>
+UPDATE vulnerabilities SET serviceid=bad.good_serviceid FROM (
+   SELECT
+      serviceid AS bad_serviceid,
+      (SELECT min(serviceid) FROM service s WHERE s.servicename=t.servicename) AS good_serviceid
+   FROM (
+      SELECT
+         serviceid, servicename
+      FROM
+         service
+      WHERE
+         serviceid NOT IN (
+            SELECT
+               min(serviceid)
+            FROM
+               service
+            GROUP BY
+               servicename
+         )
+      ORDER BY serviceid
+   ) t
+) bad
+WHERE
+   serviceid=bad.bad_serviceid;
+        </sql>
+    </changeSet>
+
+    <changeSet author="rangerrick" id="1.10.13-delete-duplicate-services">
+        <delete tableName="service">
+          <where>serviceid NOT IN (SELECT min(serviceid) FROM service GROUP BY servicename);</where>
+        </delete>
+        <addUniqueConstraint tableName="service" columnNames="servicename" />
+        <rollback>
+          <dropUniqueConstraint tableName="service" uniqueColumns="servicename" />
+        </rollback>
+    </changeSet>
+
+    <changeSet author="rangerrick" id="1.10.13-set-service-sequence">
+        <sql>ALTER TABLE service ALTER COLUMN serviceid SET DEFAULT nextval('serviceNxtId');</sql>
+    </changeSet>
+
+</databaseChangeLog>

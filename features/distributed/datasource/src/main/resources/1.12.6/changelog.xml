@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+    fix null eventdpname and alarmdpname
+    -->
+    <changeSet author="rangerrick" id="1.12.6-fix-null-dpname">
+        <update tableName="events">
+            <column name="eventdpname" value="localhost" />
+            <where>eventdpname IS NULL</where>
+        </update>
+        <update tableName="alarms">
+            <column name="dpname" value="localhost" />
+            <where>dpname IS NULL</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

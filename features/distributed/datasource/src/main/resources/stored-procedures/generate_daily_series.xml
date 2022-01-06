@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+<changeSet runOnChange="false" author="thedesloge" id="generate_daily_series">
+	<validCheckSum>3:0d204277dd3aa194f43d827174b60797</validCheckSum>
+<sql>
+CREATE TYPE daily_series AS (
+	ds TIMESTAMP WITHOUT TIME ZONE,
+	de TIMESTAMP WITHOUT TIME ZONE,
+	dow INTEGER
+);
+</sql>
+<createProcedure>
+CREATE OR REPLACE FUNCTION generate_daily_series("start" timestamp without time zone, days integer)
+  RETURNS SETOF daily_series AS
+$BODY$ select $1 + CAST(n || ' days' as interval) as ds, $1 + CAST((n+1)||' days' as interval) as de, n as dow from generate_series(0,$2) as n $BODY$
+  LANGUAGE sql;
+</createProcedure>
+
+<rollback>
+  <sql>
+    DROP FUNCTION IF EXISTS generate_daily_series("start" timestamp without time zone, days integer);
+    DROP TYPE IF EXISTS daily_series;
+  </sql>
+</rollback>
+</changeSet>
+
+</databaseChangeLog>

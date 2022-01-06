@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<preConditions>
+		<or>
+			<and>
+				<!-- must be a fresh/empty database -->
+				<not><tableExists tableName="ipinterface" /></not>
+				<not><tableExists tableName="snmpinterface" /></not>
+				<not><tableExists tableName="categories" /></not>
+			</and>
+			<!-- OR -->
+			<and>
+				<!-- all three have to exist for it to be a database we can upgrade -->
+				<tableExists tableName="ipinterface" />
+				<tableExists tableName="snmpinterface" />
+				<tableExists tableName="categories" />
+			</and>
+		</or>
+	</preConditions>
+
+	<include file="create-sequences.xml" />
+
+	<include file="1.6.0/changelog.xml" />
+	<include file="1.7.0/changelog.xml" />
+	<include file="1.7.1/changelog.xml" />
+	<include file="1.7.3/changelog.xml" /> 
+	<include file="1.7.4/changelog.xml" />
+	<include file="1.7.5/changelog.xml" />
+	<include file="1.7.6/changelog.xml" />
+	<include file="1.7.7/changelog.xml" />
+	<include file="1.7.8/changelog.xml" />
+	<include file="1.7.10/changelog.xml" />
+	<include file="1.7.92/changelog.xml" />
+	<include file="1.8.5/changelog.xml" />
+	<include file="1.8.6/changelog.xml" />
+	<include file="1.8.8/changelog.xml" />
+	<include file="1.8.11/changelog.xml" />
+	<include file="1.9.4/changelog.xml"/>
+	<include file="1.9.7/changelog.xml"/>
+	<include file="1.9.8/changelog.xml"/>
+	<include file="1.9.9/changelog.xml"/>
+	<include file="1.9.90/changelog.xml"/>
+	<include file="1.9.91/changelog.xml"/>
+	<include file="1.9.92/changelog.xml"/>
+	<include file="1.9.94/changelog.xml"/>
+	<include file="1.10.1/changelog.xml"/>
+	<include file="1.10.4/changelog.xml"/>
+	<include file="1.10.13/changelog.xml"/>
+	<include file="1.11.1/AlarmNotes.xml"/>
+	<include file="1.11.3/changelog.xml"/>
+	<include file="1.11.4/changelog.xml"/>
+	<include file="1.11.90/changelog.xml"/>
+	<include file="1.11.95/changelog.xml"/>
+	<include file="1.12.2/changelog.xml"/>
+	<include file="1.12.5/changelog.xml"/>
+	<include file="1.12.6/changelog.xml"/>
+	<include file="1.13.0/changelog.xml"/>
+	<include file="1.13.1/changelog.xml"/>
+	<include file="1.13.3/changelog.xml"/>
+	<include file="1.13.4/changelog.xml"/>
+	<include file="1.13.5/changelog.xml"/>
+	<include file="1.14.0/changelog.xml"/>
+	<include file="14.0.3/changelog.xml"/>
+	<include file="14.0.4/changelog.xml"/>
+	<include file="foundation-2015/changelog.xml"/>
+	<include file="1.15.1/changelog.xml"/>
+	<include file="1.15.2/changelog.xml"/>
+	<include file="16.0.4/changelog.xml"/>
+	<include file="17.0.0/changelog.xml"/>
+	<include file="18.0.0/changelog.xml"/>
+	<include file="19.0.0/changelog.xml"/>
+	<include file="19.1.0/changelog.xml"/>
+	<include file="19.1.1/changelog.xml"/>
+	<include file="foundation-2017/changelog.xml"/>
+	<include file="21.0.0/changelog.xml"/>
+	<include file="foundation-2018/changelog.xml"/>
+	<include file="22.0.0/changelog.xml"/>
+	<include file="22.0.0/changelog-insert-rules.xml"/>
+	<include file="22.0.1/changelog.xml"/>
+	<include file="23.0.0/changelog.xml"/>
+	<include file="24.0.0/changelog.xml"/>
+	<include file="24.1.0/changelog.xml"/>
+	<include file="25.0.0/changelog.xml"/>
+	<include file="25.2.1/changelog.xml"/>
+	<include file="26.0.0/changelog.xml"/>
+	<include file="27.0.0/changelog.xml"/>
+	<include file="27.0.1/changelog.xml"/>
+	<include file="27.0.4/changelog.xml"/>
+	<include file="27.1.0/changelog.xml"/>
+	<include file="29.0.0/changelog.xml"/>
+	<include file="29.0.4/changelog.xml"/>
+
+	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
+	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />
+	<include file="stored-procedures/getManagedOutageForIntfInWindow.xml" />
+	<include file="stored-procedures/getManagedOutageForNodeInWindow.xml" />
+	<include file="stored-procedures/getManagedServiceCountForIntf.xml" />
+	<include file="stored-procedures/getManagedServiceCountForNode.xml" />
+	<include file="stored-procedures/getOutageTimeInWindow.xml" />
+	<include file="stored-procedures/getPercentAvailabilityInWindow.xml" />
+	<include file="stored-procedures/dropTriggerIfExists.xml" />
+	<include file="stored-procedures/generate_daily_series.xml"/>
+
+</databaseChangeLog>

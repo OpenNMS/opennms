@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-pathoutage">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="pathoutage" /></not>
+		</preConditions> 
+
+		<createTable tableName="pathoutage">
+			<column name="nodeid" type="integer" />
+			<column name="criticalpathip" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="criticalpathservicename" type="varchar(32)" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="fk_nodeid8" onDelete="CASCADE"
+			baseTableName="pathoutage" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="pathoutage" indexName="pathoutage_nodeid" unique="true">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="pathoutage" indexName="pathoutage_criticalpathip">
+			<column name="criticalpathip" />
+		</createIndex>
+		<createIndex tableName="pathoutage" indexName="pathoutage_criticalpathservicename_idx">
+			<column name="criticalpathservicename" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rssntn67" id="1.7.3-expand-mapname">
+		<modifyDataType tableName="map" columnName="mapname" newDataType="varchar(63)" />
+
+		<rollback>
+			<modifyDataType tableName="map" columnName="mapname" newDataType="varchar(40)" />
+		</rollback>
+	</changeSet>
+
+	<changeSet author="brozow" id="1.7.3-category-group">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="category_group" /></not>
+		</preConditions>
+		<createTable tableName="category_group">
+			<column name="categoryid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="groupid" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="categoryid_fkey2" onDelete="CASCADE"
+			baseTableName="category_group" baseColumnNames="categoryid"
+			referencedTableName="categories" referencedColumnNames="categoryid" />
+
+		<createIndex tableName="category_group" indexName="catid_idx3">
+			<column name="categoryid" />
+		</createIndex>
+		<createIndex tableName="category_group" indexName="catgroup_idx">
+			<column name="groupid" />
+		</createIndex>
+		<createIndex tableName="category_group" indexName="catgroup_unique_idx" unique="true">
+			<column name="categoryid" />
+			<column name="groupid" />
+		</createIndex>
+
+		<rollback>
+			<dropTable tableName="category_group" />
+		</rollback>
+	</changeSet>
+
+</databaseChangeLog>

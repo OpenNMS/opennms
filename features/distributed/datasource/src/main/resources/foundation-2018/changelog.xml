@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <!-- NMS-9559 store forwarders -->
+  <changeSet author="rssntn67" id="foundation2018-store-forwarders">
+    <sql>DELETE FROM bridgebridgelink;</sql>
+    <sql>DELETE FROM bridgemaclink;</sql>
+    
+    <addColumn tableName="bridgemaclink">
+      <column name="linktype" type="integer">
+       <constraints nullable="false" />
+      </column>
+    </addColumn>
+    
+       <rollback>
+            <dropColumn tableName="bridgemaclink" columnName="linktype" />
+        </rollback>
+  </changeSet>
+
+  <!-- NMS-10293: use 'ifregainedservice' to identify ongoing outages -->
+  <changeSet author="cpape" id="foundation2018-fix-node-outage-status-view">
+    <createView replaceIfExists="true" viewName="node_outage_status">
+      SELECT
+        node.nodeid,
+        (CASE WHEN severity IS NULL OR severity &lt; 3 THEN 3 ELSE severity END) AS max_outage_severity
+      FROM
+        (
+          SELECT events.nodeid, max(events.eventseverity) AS severity
+          FROM events
+          JOIN outages ON outages.svclosteventid = events.eventid
+          WHERE outages.ifregainedservice IS NULL
+          GROUP BY events.nodeid
+        ) AS tmp
+      RIGHT JOIN node ON tmp.nodeid = node.nodeid
+    </createView>
+  </changeSet>
+    
+  <!--Change the event_parameters table to use text instead of varchar for the parameter names. -->
+  <changeSet author="jwhite" id="foundation2018-event-parm-name-to-text">
+    <modifyDataType tableName="event_parameters" columnName="name" newDataType="text" />
+    <rollback>
+      <modifyDataType tableName="event_parameters" columnName="name" newDataType="varchar(256)" />
+    </rollback>
+  </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+<changeSet runOnChange="true" author="rangerrick" id="getManagedOutageForNodeInWindow">
+<createProcedure>
+CREATE OR REPLACE FUNCTION getManagedOutageForNodeInWindow(integer,timestamp without time zone,timestamp without time zone)
+        RETURNS float8 AS '
+   DECLARE
+        nid ALIAS FOR $1;
+        xtime ALIAS FOR $2;
+        ytime ALIAS FOR $3;
+        downtime float8 := 0.0;
+        orec RECORD;
+   BEGIN
+        FOR orec IN SELECT DISTINCT ifservices.id AS ifServiceId 
+                FROM ifservices, ipinterface, node 
+                WHERE ifservices.ipInterfaceId = ipInterface.id 
+                        AND ipinterface.nodeid = node.nodeid 
+                        AND ifservices.status = ''A'' 
+                        AND ipinterface.ismanaged = ''M'' 
+                        AND node.nodeid = nid 
+                        AND node.nodetype = ''A''
+        LOOP
+                BEGIN
+                        downtime := downtime + getOutageTimeInWindow( orec.ifServiceId, xtime, ytime);
+                END;
+        END LOOP;
+        RETURN downtime;
+   END;
+' LANGUAGE 'plpgsql';
+</createProcedure>
+
+<rollback>
+  <sql>DROP FUNCTION IF EXISTS getManagedOutageForNodeInWindow(integer,timestamp without time zone,timestamp without time zone);</sql>
+</rollback>
+
+</changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="mvrueden" id="24.0.0-remove-ncs-table-subcomponents">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="subcomponents"/>
+    </preConditions>
+    <dropTable tableName="subcomponents" />
+  </changeSet>
+  <changeSet author="mvrueden" id="24.0.0-remove-ncs-table-ncs_attributes">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="ncs_attributes"/>
+    </preConditions>
+    <dropTable tableName="ncs_attributes" />
+  </changeSet>
+  <changeSet author="mvrueden" id="24.0.0-remove-ncs-table-ncscomponent">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="ncscomponent"/>
+    </preConditions>
+    <dropTable tableName="ncscomponent" />
+  </changeSet>
+
+  <changeSet author="ronny" id="24.0.0-node-categories-nms-10418">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <viewExists viewName="node_categories"/>
+      </not>
+    </preConditions>
+    <sql>
+      CREATE VIEW node_categories AS (
+        SELECT
+          n.*,
+          COALESCE(s_cat.categoryname, 'no category') AS categoryname
+        FROM
+          node n
+        LEFT JOIN
+          category_node cn
+        ON
+          n.nodeid = cn.nodeid
+        LEFT JOIN
+          categories s_cat
+        ON
+          cn.categoryid = s_cat.categoryid
+      );
+    </sql>
+  </changeSet>
+
+  <changeSet author="ronny" id="24.0.0-node-alarms-nms-10418">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <viewExists viewName="node_alarms"/>
+      </not>
+    </preConditions>
+    <sql>
+      CREATE VIEW node_alarms AS (
+        SELECT
+          n.nodeid,
+          n.nodecreatetime,
+          n.nodeparentid,
+          n.nodetype,
+          n.nodesysoid,
+          n.nodesysname,
+          n.nodesysdescription,
+          n.nodesyslocation,
+          n.nodesyscontact,
+          n.nodelabel,
+          n.nodelabelsource,
+          n.nodenetbiosname,
+          n.nodedomainname,
+          n.operatingsystem,
+          n.lastcapsdpoll,
+          n.foreignsource,
+          n.foreignid,
+          n.location,
+          a.alarmid,
+          a.eventuei,
+          a.ipaddr,
+          a.reductionkey,
+          a.alarmtype,
+          a.counter,
+          a.severity,
+          a.lasteventid,
+          a.firsteventtime,
+          a.lasteventtime,
+          a.firstautomationtime,
+          a.lastautomationtime,
+          a.description,
+          a.logmsg,
+          a.operinstruct,
+          a.tticketid,
+          a.tticketstate,
+          a.suppresseduntil,
+          a.suppresseduser,
+          a.suppressedtime,
+          a.alarmackuser,
+          a.alarmacktime,
+          a.managedobjectinstance,
+          a.managedobjecttype,
+          a.applicationdn,
+          a.ossprimarykey,
+          a.x733alarmtype,
+          a.qosalarmstate,
+          a.clearkey,
+          a.ifindex,
+          a.stickymemo,
+          a.systemid,
+          (a.alarmacktime NOTNULL) AS acknowledged,
+          COALESCE(s_cat.categoryname, 'no category') AS categoryname,
+          s_cat.categorydescription,
+          s.servicename,
+          nas.max_alarm_severity,
+          nas.max_alarm_severity_unack,
+          nas.alarm_count_unack,
+          nas.alarm_count
+        FROM
+          node n
+        JOIN
+          alarms a
+        ON
+          n.nodeid = a.nodeid
+        JOIN
+          node_alarm_status nas
+        ON
+          a.nodeid = nas.nodeid
+        LEFT JOIN
+          service s
+        ON
+          a.serviceid = s.serviceid
+        LEFT JOIN
+          category_node cat
+        ON
+          n.nodeid = cat.nodeid
+        LEFT JOIN
+          categories s_cat
+        ON
+          cat.categoryid = s_cat.categoryid
+      );
+    </sql>
+  </changeSet>
+
+  <changeSet author="ronny" id="24.0.0-node-outages-nms-10418">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <viewExists viewName="node_outages"/>
+      </not>
+    </preConditions>
+    <sql>
+      CREATE VIEW node_outages AS (
+        SELECT
+          outages.outageid,
+          outages.svclosteventid,
+          outages.svcregainedeventid,
+          outages.iflostservice,
+          outages.ifregainedservice,
+          outages.ifserviceid,
+          e.eventuei AS svclosteventuei,
+          e.eventsource,
+          e.alarmid,
+          e.eventseverity,
+          (ifregainedservice NOTNULL) AS resolved,
+          s.servicename,
+          i.serviceid,
+          ipif.ipaddr,
+          COALESCE(outages.ifregainedservice - outages.iflostservice, now() - outages.iflostservice) AS duration,
+          nos.max_outage_severity,
+          nc.*
+        FROM
+          outages
+        JOIN
+          events e
+        ON
+          outages.svclosteventid = e.eventid
+        JOIN
+          ifservices i
+        ON
+          outages.ifserviceid = i.id
+        JOIN
+          service s
+        ON
+          i.serviceid = s.serviceid
+        JOIN
+          ipinterface ipif
+        ON
+          i.ipinterfaceid = ipif.id
+        JOIN
+          node_categories nc
+        ON
+          nc.nodeid = e.nodeid
+        JOIN
+          node_outage_status nos
+        ON
+          nc.nodeid = nos.nodeid
+      );
+    </sql>
+  </changeSet>
+
+  <changeSet author="ronny" id="24.0.0-node-ip-services-nms-10418">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <viewExists viewName="node_ip_services"/>
+      </not>
+    </preConditions>
+    <sql>
+      CREATE VIEW node_ip_services AS (
+        SELECT
+          n.*,
+          ip_if.id AS ip_if_id,
+          ip_if.ipaddr,
+          ip_if.iphostname,
+          ip_if.ismanaged,
+          ip_if.ipstatus,
+          ip_if.iplastcapsdpoll,
+          ip_if.issnmpprimary,
+          ip_if.snmpinterfaceid,
+          ip_if.netmask,
+          svc.serviceid,
+          svc.servicename,
+          if_svc.id AS if_svc_id,
+          if_svc.ifindex AS if_svc_ifindex,
+          if_svc.status AS if_svc_status
+        FROM
+          node_categories n
+        LEFT JOIN
+          ipinterface ip_if
+        ON
+          ip_if.nodeid = n.nodeid
+        LEFT JOIN
+          ifservices if_svc
+        ON
+          ip_if.id = if_svc.ipinterfaceid
+        LEFT JOIN
+          service svc
+        ON
+          if_svc.serviceid = svc.serviceid
+      );
+    </sql>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="24.0.0-drop-alarm-situations-table">
+    <preConditions onFail="MARK_RAN">
+      <not><columnExists tableName="alarm_situations" columnName="id" /></not>
+    </preConditions>
+    <dropTable tableName="alarm_situations" />
+  </changeSet>
+
+  <changeSet author="cgorantla" id="24.0.0-add-mapped-time-to-alarm-situations">
+    <validCheckSum>3:e01c4288c19444d61c6bd149ecf6bde7</validCheckSum>
+    <createTable tableName="alarm_situations">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="situation_id" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="related_alarm_id" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="mapped_time" type="TIMESTAMP WITH TIME ZONE">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <addForeignKeyConstraint constraintName="fk_alarm_situations_situation_id" onDelete="CASCADE"
+                             baseTableName="alarm_situations" baseColumnNames="situation_id"
+                             referencedTableName="alarms" referencedColumnNames="alarmid"/>
+    <addForeignKeyConstraint constraintName="fk_alarm_situations_alarm_id" onDelete="CASCADE"
+                             baseTableName="alarm_situations" baseColumnNames="related_alarm_id"
+                             referencedTableName="alarms" referencedColumnNames="alarmid"/>
+  </changeSet>
+
+  <!-- NMS-9273: Create Topology Service Updates in enlinkd Add nodeid,idindex and port -->
+  <changeSet author="rssntn67" id="24.0.0-ipnettomedia-add-nodeid-ifindex-port">
+    
+    <addColumn tableName="ipnettomedia">
+      <column name="nodeid" type="integer">
+      </column>
+      <column name="ifindex" type="integer">
+      </column>
+      <column name="port" type="text">
+      </column>
+    </addColumn>
+    
+    <addForeignKeyConstraint constraintName="fk_ipnettomedia_nodeid" 
+    	baseTableName="ipnettomedia" 
+    	baseColumnNames="nodeid" 
+    	referencedTableName="node" 
+    	referencedColumnNames="nodeid" />
+    
+    
+       <rollback>
+            <dropColumn tableName="ipnettomedia" columnName="nodeid" />
+            <dropColumn tableName="ipnettomedia" columnName="ifindex" />
+            <dropColumn tableName="ipnettomedia" columnName="port" />
+        </rollback>
+  </changeSet>
+
+  <changeSet author="cpape" id="24.0.0-bsm-application-edge">
+    <createTable tableName="bsm_service_applications" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="applicationid" type="integer">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="bsm_service_applications" columnNames="id" constraintName="bsm_service_applications_pkey" />
+    <addForeignKeyConstraint constraintName="fk_bsm_service_applications_edge_id"
+                             baseTableName="bsm_service_applications" baseColumnNames="id"
+                             referencedTableName="bsm_service_edge" referencedColumnNames="id" onDelete="CASCADE"/>
+    <addForeignKeyConstraint constraintName="fk_bsm_service_applications_applicationid"
+                             baseTableName="bsm_service_applications" baseColumnNames="applicationid"
+                             referencedTableName="applications" referencedColumnNames="id" onDelete="CASCADE"/>
+  </changeSet>
+
+  <changeSet author="fooker" id="24.0.0-classification-add-omnidirectional">
+    <addColumn tableName="classification_rules">
+      <column name="omnidirectional"
+              type="BOOLEAN"
+              defaultValue="FALSE">
+        <constraints nullable="false"></constraints>
+      </column>
+    </addColumn>
+    <sql>
+        UPDATE classification_rules
+        SET omnidirectional = TRUE
+        WHERE groupid = 1;
+    </sql>
+  </changeSet>
+
+  <changeSet author="jwhite" id="24.0.0-create-refid-index-on-acks">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="acks"/>
+    </preConditions>
+
+    <!-- Create index-->
+    <sql>
+      CREATE INDEX ack_refid_idx ON acks USING btree (refid);
+    </sql>
+  </changeSet>
+
+  <changeSet author="jwhite" id="24.0.0-node-metadata">
+    <createTable tableName="node_metadata" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="context" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="key" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="node_metadata" columnNames="id, context, key" constraintName="node_metadata_pkey" />
+    <addForeignKeyConstraint constraintName="fk_node_metadata_id"
+                             baseTableName="node_metadata" baseColumnNames="id"
+                             referencedTableName="node" referencedColumnNames="nodeid" />
+
+    <createTable tableName="ipinterface_metadata" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="context" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="key" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="ipinterface_metadata" columnNames="id, context, key" constraintName="ipinterface_metadata_pkey" />
+    <addForeignKeyConstraint constraintName="fk_ipinterface_metadata_id"
+                             baseTableName="ipinterface_metadata" baseColumnNames="id"
+                             referencedTableName="ipinterface" referencedColumnNames="id" />
+
+    <createTable tableName="ifservices_metadata" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="context" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="key" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="ifservices_metadata" columnNames="id, context, key" constraintName="ifservices_metadata_pkey" />
+    <addForeignKeyConstraint constraintName="fk_ifservices_metadata_id"
+                             baseTableName="ifservices_metadata" baseColumnNames="id"
+                             referencedTableName="ifservices" referencedColumnNames="id" />
+
+  </changeSet>
+
+  <changeSet author="jwhite" id="24.0.0-user-defined-links">
+    <createTable tableName="user_defined_links" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="node_id_a" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="node_id_z" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="component_label_a" type="text" />
+      <column name="component_label_z" type="text" />
+      <column name="link_id" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="link_label" type="text" />
+      <column name="owner" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="user_defined_links" columnNames="id" constraintName="user_defined_links_pkey" />
+    <addForeignKeyConstraint constraintName="fk_user_defined_links_node_id_a"
+                             baseTableName="user_defined_links" baseColumnNames="node_id_a"
+                             referencedTableName="node" referencedColumnNames="nodeid"
+                             onDelete="CASCADE"/>
+    <addForeignKeyConstraint constraintName="fk_user_defined_links_node_id_z"
+                             baseTableName="user_defined_links" baseColumnNames="node_id_z"
+                             referencedTableName="node" referencedColumnNames="nodeid"
+                             onDelete="CASCADE"/>
+  </changeSet>
+
+  <changeSet author="cpape" id="24.0.0-node-metadata-on-delete-cascade">
+    <dropForeignKeyConstraint baseTableName="node_metadata" constraintName="fk_node_metadata_id"/>
+    <addForeignKeyConstraint constraintName="fk_node_metadata_id"
+                             baseTableName="node_metadata" baseColumnNames="id"
+                             referencedTableName="node" referencedColumnNames="nodeid" onDelete="CASCADE"/>
+
+    <dropForeignKeyConstraint baseTableName="ipinterface_metadata" constraintName="fk_ipinterface_metadata_id"/>
+    <addForeignKeyConstraint constraintName="fk_ipinterface_metadata_id"
+                             baseTableName="ipinterface_metadata" baseColumnNames="id"
+                             referencedTableName="ipinterface" referencedColumnNames="id" onDelete="CASCADE"/>
+
+    <dropForeignKeyConstraint baseTableName="ifservices_metadata" constraintName="fk_ifservices_metadata_id"/>
+    <addForeignKeyConstraint constraintName="fk_ifservices_metadata_id"
+                             baseTableName="ifservices_metadata" baseColumnNames="id"
+                             referencedTableName="ifservices" referencedColumnNames="id" onDelete="CASCADE"/>
+  </changeSet>
+
+</databaseChangeLog>

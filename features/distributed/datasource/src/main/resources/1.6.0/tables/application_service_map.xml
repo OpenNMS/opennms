@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-application_service_map">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="application_service_map" /></not>
+		</preConditions> 
+
+		<createTable tableName="application_service_map">
+			<column name="appid" type="integer" />
+			<column name="ifserviceid" type="integer" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="applicationid_fkey1" onDelete="CASCADE"
+			baseTableName="application_service_map" baseColumnNames="appid"
+			referencedTableName="applications" referencedColumnNames="id" />
+		<addForeignKeyConstraint constraintName="ifservices_fkey3" onDelete="CASCADE"
+			baseTableName="application_service_map" baseColumnNames="ifserviceid"
+			referencedTableName="ifservices" referencedColumnNames="id" />
+
+		<createIndex tableName="application_service_map" indexName="appid_idx">
+			<column name="appid" />
+		</createIndex>
+		<createIndex tableName="application_service_map" indexName="ifserviceid_idx">
+			<column name="ifserviceid" />
+		</createIndex>
+		<createIndex tableName="application_service_map" indexName="appid_ifserviceid_idex" unique="true">
+			<column name="appid" />
+			<column name="ifserviceid" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

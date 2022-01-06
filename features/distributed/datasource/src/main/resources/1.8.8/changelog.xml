@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+<changeSet author="rangerrick" id="1.8.8-alarms-text-columns">
+  <modifyDataType tableName="alarms" columnName="description" newDataType="text" />
+  <modifyDataType tableName="alarms" columnName="logmsg" newDataType="text" />
+
+  <rollback>
+    <modifyDataType tableName="alarms" columnName="description" newDataType="varchar(4000)" />
+    <modifyDataType tableName="alarms" columnName="logmsg" newDataType="varchar(256)" />
+  </rollback>
+</changeSet>
+
+<changeSet author="rangerrick" id="1.8.8-events-text-columns">
+  <modifyDataType tableName="events" columnName="eventdescr" newDataType="text" />
+  <modifyDataType tableName="events" columnName="eventlogmsg" newDataType="text" />
+
+  <rollback>
+    <modifyDataType tableName="events" columnName="eventdescr" newDataType="varchar(4000)" />
+    <modifyDataType tableName="events" columnName="eventlogmsg" newDataType="varchar(256)" />
+  </rollback>
+</changeSet>
+
+<changeSet author="rangerrick" id="1.8.8-notifications-text-columns">
+  <modifyDataType tableName="notifications" columnName="textmsg" newDataType="text" />
+
+  <rollback>
+    <modifyDataType tableName="notifications" columnName="textmsg" newDataType="varchar(4000)" />
+  </rollback>
+</changeSet>
+
+<changeSet author="rangerrick" id="1.8.8-vulnerabilities-text-columns">
+  <modifyDataType tableName="vulnerabilities" columnName="logmsg" newDataType="text" />
+
+  <rollback>
+    <modifyDataType tableName="vulnerabilities" columnName="logmsg" newDataType="varchar(256)" />
+  </rollback>
+</changeSet>
+
+</databaseChangeLog>

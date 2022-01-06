@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+<changeSet runOnChange="true" author="rangerrick" id="dropTriggerIfExists">
+<createProcedure>
+-- NOTE: you must call this with the arguments all lower-case or postgresql will try to do case-sensitive table/trigger names
+CREATE OR REPLACE FUNCTION drop_trigger_if_exists(VARCHAR, VARCHAR) RETURNS VOID AS '
+        DECLARE
+                in_triggername ALIAS FOR $1;
+                in_tablename ALIAS FOR $2;
+
+        BEGIN
+                PERFORM tgname FROM pg_catalog.pg_trigger, pg_catalog.pg_class WHERE pg_catalog.pg_class.oid = pg_catalog.pg_trigger.tgrelid AND tgname = in_triggername AND pg_catalog.pg_class.relname = in_tablename;
+                IF FOUND THEN
+                        EXECUTE ''DROP TRIGGER '' || in_triggername || '' ON '' || in_tablename;
+                END IF;
+                RETURN;
+        END;
+' LANGUAGE 'plpgsql';
+</createProcedure>
+
+<rollback>
+  <sql>DROP FUNCTION IF EXISTS drop_trigger_if_exists(VARCHAR, VARCHAR);</sql>
+</rollback>
+
+</changeSet>
+
+</databaseChangeLog>

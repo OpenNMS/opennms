@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+<changeSet author="rangerrick" id="1.8.6-notifconfigname-size">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="notifications" />
+	</preConditions>
+
+	<modifyDataType tableName="notifications" columnName="notifconfigname" newDataType="text" />
+	<rollback>
+		<modifyDataType tableName="notifications" columnName="notifconfigname" newDataType="varchar(63)" />
+	</rollback>
+</changeSet>
+
+<changeSet author="rangerrick" id="1.8.6-notifications-index">
+	<createIndex tableName="usersnotified" indexName="usersnotified_notifyid_idx">
+		<column name="notifyid" />
+	</createIndex>
+	<rollback>
+		<dropIndex tableName="usersnotified" indexName="usersnotified_notifyid_idx" />
+	</rollback>
+</changeSet>
+
+</databaseChangeLog>

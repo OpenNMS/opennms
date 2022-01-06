@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-statisticsreportdata">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="statisticsreportdata" /></not>
+		</preConditions> 
+
+		<!-- This table contains individual data points (aggregated or not) for statistics reports. -->
+		<createTable tableName="statisticsreportdata">
+
+			<!-- Unique integer identifier for the data -->
+			<column name="id" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_statsdata_id" />
+			</column>
+
+			<!-- Integer ID for the report that created this data -->
+			<column name="reportid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Integer ID for this resource related to this data -->
+			<column name="resourceid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Float containing the value for this data point -->
+			<column name="value" type="float8">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<ext:addAutoIncrement tableName="statisticsreportdata" columnName="id" sequenceName="opennmsNxtId" />
+
+		<addForeignKeyConstraint constraintName="fk_statsdata_reportid" onDelete="CASCADE"
+			baseTableName="statisticsreportdata" baseColumnNames="reportid"
+			referencedTableName="statisticsreport" referencedColumnNames="id" />
+		<addForeignKeyConstraint constraintName="fk_statsdata_resourceid" onDelete="CASCADE"
+			baseTableName="statisticsreportdata" baseColumnNames="resourceid"
+			referencedTableName="resourcereference" referencedColumnNames="id" />
+
+		<createIndex tableName="statisticsreportdata" indexName="statsdata_unique" unique="true">
+			<column name="reportid" />
+			<column name="resourceid" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

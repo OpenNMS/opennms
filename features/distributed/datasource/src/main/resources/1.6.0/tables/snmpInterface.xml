@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-snmpInterface">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="snmpinterface" /></not>
+		</preConditions> 
+
+		<!-- Augments the ipInterface table with information available from IP interfaces
+			which also support SNMP. -->
+		<createTable tableName="snmpinterface">
+
+			<!-- Unique identifier for this SNMP interface -->
+			<column name="id" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="snmpinterface_pkey" />
+			</column>
+
+			<!-- Unique identifier for node to which this if belongs -->
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- IP Address associated with this interface -->
+			<column name="ipaddr" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- SNMP MIB-2 ipAddrTable.ipAddrEntry.ipAdEntNetMask; Value is interface's subnet mask -->
+			<column name="snmpipadentnetmask" type="varchar(16)" />
+
+			<!-- SNMP MIB-2 ifTable.ifEntry.ifPhysAddress; Value is interface's MAC Address -->
+			<column name="snmpphysaddr" type="varchar(12)" />
+
+			<!-- SNMP MIB-2 ifTable.ifEntry.ifIndex; Value is interface's arbitrarily assigned index,
+				or -100 if we can query the agent, but we can't find this IP address in the ifTable. -->
+			<column name="snmpifindex" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- SNMP MIB-2 ifTable.ifEntry.ifDescr; Value is interface's manufacturer/product name/version -->
+			<column name="snmpifdescr" type="varchar(256)" />
+
+			<!-- SNMP MIB-2 ifTable.ifEntry.ifType; Value is interface's physical/link protocol -->
+			<column name="snmpiftype" type="integer" />
+
+			<!-- SNMP MIB-2 ifTable.ifEntry.ifName; Value is interface's device name -->
+			<column name="snmpifname" type="varchar(96)" />
+
+			<!-- SNMP MIB-2 ifTable.ifEntry.ifSpeed; Value is estimate of interface's data rate -->
+			<column name="snmpifspeed" type="bigint" />
+
+			<!-- SNMP MIB-2 ifTable.ifEntry.ifAdminStatus; Value is interface's desired status:
+				1 = Up, 2 = Down, 3 = Testing -->
+			<column name="snmpifadminstatus" type="integer" />
+
+			<!-- SNMP MIB-2 ifTable.ifEntry.ifOperStatus; Value is interface's current operational status:
+				1 = Up, 2 = Down, 3 = Testing -->
+			<column name="snmpifoperstatus" type="integer" />
+
+			<!-- SNMP MIB-2 ifXTable.ifXEntry.ifAlias; Value is interface's device alias -->
+			<column name="snmpifalias" type="varchar(256)" />
+		</createTable>
+
+		<ext:addAutoIncrement tableName="snmpinterface" columnName="id" sequenceName="opennmsNxtId" />
+
+		<addForeignKeyConstraint constraintName="fk_nodeid2" onDelete="CASCADE"
+			baseTableName="snmpinterface" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="snmpinterface" indexName="snmpinterface_nodeid_ifindex_unique_idx" unique="true">
+			<column name="nodeid" />
+			<column name="snmpifindex" />
+		</createIndex>
+		<createIndex tableName="snmpinterface" indexName="snmpinterface_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="snmpinterface" indexName="snmpinterface_ipaddr_idx">
+			<column name="ipaddr" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

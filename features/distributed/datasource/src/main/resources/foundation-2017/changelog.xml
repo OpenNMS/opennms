@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <!-- Fix for issue NMS-9497 -->
+  <changeSet author="ranger" id="foundation2017-fix-bsm-alarm-type">
+    <update tableName="alarms">
+      <column name="alarmtype" value="3" />
+      <where>eventuei='uei.opennms.org/bsm/serviceProblem' OR eventuei='uei.opennms.org/bsm/serviceProblemResolved'</where>
+    </update>
+
+    <rollback>
+      <update tableName="alarms">
+        <column name="alarmtype" value="1" />
+	<where>eventuei='uei.opennms.org/bsm/serviceProblem' OR eventuei='uei.opennms.org/bsm/serviceProblemResolved'</where>
+      </update>
+    </rollback>
+  </changeSet>
+
+  <!-- NMS-9653: undo NMS-9497 and set to 1+2 respectively -->
+  <changeSet author="ranger" id="foundation2017-bsm-service-problem-type">
+    <update tableName="alarms">
+      <column name="alarmtype" value="1" />
+      <where>eventuei='uei.opennms.org/bsm/serviceProblem'</where>
+    </update>
+    <update tableName="alarms">
+      <column name="alarmtype" value="2" />
+      <where>eventuei='uei.opennms.org/bsm/serviceProblemResolved'</where>
+    </update>
+
+    <rollback>
+      <update tableName="alarms">
+        <column name="alarmtype" value="3" />
+	<where>eventuei='uei.opennms.org/bsm/serviceProblem' OR eventuei='uei.opennms.org/bsm/serviceProblemResolved'</where>
+      </update>
+    </rollback>
+  </changeSet>
+
+  <!-- See NMS-9742 -->
+  <changeSet id="foundation-2017-remove-duplicate-reductionkey-memos" author="mvrueden">
+    <!-- Merge existing duplicate entries -->
+    <sql>
+      WITH subquery AS (
+      SELECT
+      reductionkey,
+      type,
+      max(updated) AS updated,
+      string_agg(body, E'\n\nMerged by database installer - ' || to_char(current_timestamp, 'YYYY-MM-DD') || E':\n') AS body,
+      count(*)
+      FROM memos
+      WHERE reductionkey IS NOT NULL
+      GROUP BY reductionkey, type
+      HAVING count(*) > 1
+      )
+      UPDATE memos
+      SET body = subquery.body
+      FROM subquery
+      WHERE memos.reductionkey = subquery.reductionkey
+      AND memos.type = subquery.type
+      AND memos.updated = subquery.updated;
+    </sql>
+    <!-- Delete duplicate entries except the newest -->
+    <sql>
+      WITH merged_memos AS (
+      SELECT reductionkey, MAX(updated) as max_updated
+      FROM memos
+      WHERE reductionkey IS NOT NULL
+      GROUP BY reductionkey
+      HAVING count(*) > 1
+      )
+      DELETE from memos where id in (
+      SELECT memos.id
+      FROM memos
+      JOIN merged_memos ON memos.reductionkey = merged_memos.reductionkey
+      WHERE memos.reductionkey = merged_memos.reductionkey AND memos.updated &lt; merged_memos.max_updated
+      );
+    </sql>
+    <!-- Add constraint to prevent duplicate entries in the future -->
+    <addUniqueConstraint tableName="memos" columnNames="reductionkey, type" />
+
+  </changeSet>
+
+  <changeSet author="ranger" id="NMS-9855-asset-unique-nodeid">
+    <!-- delete all but one asset entry for each node ID -->
+    <sql>
+      DELETE FROM assets
+      WHERE id IN (
+        SELECT id
+        FROM (
+          SELECT id, nodeid, ROW_NUMBER() OVER (PARTITION BY nodeid ORDER BY nodeid) AS rnum
+          FROM assets
+          WHERE nodeid IS NOT NULL
+        ) t
+        WHERE t.rnum > 1
+      );
+    </sql>
+    <createIndex tableName="assets" indexName="assets_unique_nodeid_idx" unique="true">
+      <column name="nodeid" />
+    </createIndex>
+
+    <rollback>
+      <dropIndex tableName="assets" indexName="assets_unique_nodeid_idx" />
+    </rollback>
+  </changeSet>
+
+  <changeSet author="mvrueden" id="NMS-9855-asset-delete-null-nodeid">
+    <sql>
+      DELETE FROM assets WHERE nodeid IS NULL;
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>

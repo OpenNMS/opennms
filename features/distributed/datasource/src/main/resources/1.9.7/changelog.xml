@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+  <changeSet author="rangerrick" id="1.9.7-expand-netmask-field">
+    <modifyDataType tableName="snmpinterface" columnName="snmpipadentnetmask" newDataType="varchar(45)" />
+    <rollback>
+      <modifyDataType tableName="snmpinterface" columnName="snmpipadentnetmask" newDataType="varchar(16)" />
+    </rollback>
+  </changeSet>
+
+  <changeSet author="kleind" id="1.9.7-add-hardware-assets">
+    <preConditions onFail="MARK_RAN">
+      <not><columnExists tableName="assets" columnName="snmpcommunity" /></not>
+    </preConditions>
+
+    <addColumn tableName="assets">
+      <column name="cpu"    type="varchar(32)" />
+      <column name="ram"    type="varchar(10)" />
+      <column name="storagectrl"    type="varchar(32)" />
+      <column name="hdd1"    type="varchar(32)" />
+      <column name="hdd2"    type="varchar(32)" />
+      <column name="hdd3"    type="varchar(32)" />
+      <column name="hdd4"    type="varchar(32)" />
+      <column name="hdd5"    type="varchar(32)" />
+      <column name="hdd6"    type="varchar(32)" />
+      <column name="numpowersupplies"    type="varchar(1)" />
+      <column name="inputpower"    type="varchar(6)" />
+      <column name="additionalhardware"    type="varchar(64)" />
+      <column name="admin"    type="varchar(32)" />
+      <column name="snmpcommunity"    type="varchar(32)" />
+    </addColumn>
+
+    <rollback>
+      <dropColumn tableName="assets" columnName="cpu" />
+      <dropColumn tableName="assets" columnName="ram" />
+      <dropColumn tableName="assets" columnName="storagectrl" />
+      <dropColumn tableName="assets" columnName="hdd1" />
+      <dropColumn tableName="assets" columnName="hdd2" />
+      <dropColumn tableName="assets" columnName="hdd3" />
+      <dropColumn tableName="assets" columnName="hdd4" />
+      <dropColumn tableName="assets" columnName="hdd5" />
+      <dropColumn tableName="assets" columnName="hdd6" />
+      <dropColumn tableName="assets" columnName="numpowersupplies" />
+      <dropColumn tableName="assets" columnName="inputpower" />
+      <dropColumn tableName="assets" columnName="additionalhardware" />
+      <dropColumn tableName="assets" columnName="admin" />
+      <dropColumn tableName="assets" columnName="snmpcommunity" />
+    </rollback>
+  </changeSet>
+
+</databaseChangeLog>

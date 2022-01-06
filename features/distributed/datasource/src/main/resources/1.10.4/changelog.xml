@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- Change the type of the notification's subject from varchar to text. -->
+    <changeSet author="agalue" id="1.10.4-subject-type">
+        <modifyDataType tableName="notifications" columnName="subject" newDataType="text" />
+        <rollback>
+          <modifyDataType tableName="notifications" columnName="subject" newDataType="varchar(256)" />
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

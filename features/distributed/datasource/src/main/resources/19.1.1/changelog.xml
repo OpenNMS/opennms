@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+
+  <!-- NMS-9938: Remove -infinity values from asset table -->
+  <changeSet author="mvrueden" id="19.1.1-clear-asset-table-with-invalid-geocoordinations">
+    <sql>UPDATE assets SET longitude = null where longitude = '-infinity';</sql>
+    <sql>UPDATE assets SET latitude = null where latitude = '-infinity';</sql>
+  </changeSet>
+
+</databaseChangeLog>

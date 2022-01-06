@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="mattraykow" id="1.7.1-add-map-id">
+		<ext:dropForeignKeyConstraint baseTableName="map" constraintName="pk_mapid" cascade="true" />
+		<addPrimaryKey tableName="map" columnNames="mapid" constraintName="pk_mapid" />
+		<ext:addAutoIncrement tableName="map" columnName="mapid" columnDataType="integer" sequenceName="opennmsNxtId" />
+
+		<rollback>
+			<dropPrimaryKey tableName="map" constraintName="pk_mapid" />
+		</rollback>
+
+	</changeSet>
+
+	<changeSet author="rssntn67" id="1.7.1-add-map-group">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="map" columnName="mapgroup" /></not>
+		</preConditions>
+
+		<addColumn tableName="map">
+			<column name="mapgroup" type="varchar(64)" />
+		</addColumn>
+
+		<rollback>
+			<dropColumn tableName="map" columnName="mapgroup" />
+		</rollback>
+	</changeSet>
+
+</databaseChangeLog>

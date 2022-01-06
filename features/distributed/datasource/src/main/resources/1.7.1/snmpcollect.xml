@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<!-- miscellaneous stuff -->
+	<changeSet author="brozow" id="1.7.1-move-snmpcollect">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="snmpinterface" columnName="snmpcollect" /></not>
+		</preConditions>
+
+		<addColumn tableName="snmpinterface">
+			<column name="snmpcollect" type="varchar(2)" defaultValue="N" />
+		</addColumn>
+		<update tableName="snmpinterface">
+			<column name="snmpcollect" value="N" />
+		</update>
+		<sql>UPDATE snmpinterface SET snmpcollect='C' FROM ipinterface WHERE ipinterface.issnmpprimary IN ('P', 'S') AND ipinterface.snmpinterfaceid=snmpinterface.id</sql>
+		<sql>UPDATE snmpinterface SET snmpcollect='UC' FROM ipinterface WHERE ipinterface.issnmpprimary='C' AND ipinterface.snmpinterfaceid=snmpinterface.id</sql>
+		<update tableName="ipinterface">
+			<column name="issnmpprimary" value="N" />
+			<where>issnmpprimary='C'</where>
+		</update>
+
+		<rollback>
+			<sql>UPDATE ipinterface SET issnmpprimary='C' FROM snmpinterface WHERE snmpinterface.snmpcollect='UC' AND ipinterface.snmpinterfaceid=snmpinterface.id</sql>
+			<dropColumn tableName="snmpinterface" columnName="snmpcollect" />
+		</rollback>
+	</changeSet>
+
+</databaseChangeLog>

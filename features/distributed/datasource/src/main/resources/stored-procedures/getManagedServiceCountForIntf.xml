@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+<changeSet runOnChange="true" author="rangerrick" id="getManagedServiceCountForIntf">
+<createProcedure>
+CREATE OR REPLACE FUNCTION getManagedServiceCountForIntf(integer,varchar(16))
+        RETURNS float8 AS '
+   DECLARE
+        nid ALIAS FOR $1;
+        ipid ALIAS FOR $2;
+        orec RECORD;
+        counter float8;
+   BEGIN
+        counter = 0;
+        FOR orec IN SELECT DISTINCT ifservices.ipInterfaceId, ifservices.serviceid
+                FROM ifservices, ipinterface, node 
+                WHERE ifservices.ipInterfaceId = ipInterface.id 
+                        AND ipinterface.nodeid = node.nodeid 
+                        AND ifservices.status = ''A'' 
+                        AND ipinterface.ismanaged = ''M'' 
+                        AND ipinterface.ipaddr = ipid 
+                        AND node.nodeid = nid 
+                        AND node.nodetype = ''A''
+        LOOP
+                BEGIN
+                        counter := counter + 1;
+                END;
+        END LOOP;
+        RETURN counter;
+   END;
+' LANGUAGE 'plpgsql';
+</createProcedure>
+
+<rollback>
+  <sql>DROP FUNCTION IF EXISTS getManagedServiceCountForIntf(integer,varchar(16));</sql>
+</rollback>
+
+</changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-location_monitor_details">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="location_monitor_details" /></not>
+		</preConditions> 
+
+		<createTable tableName="location_monitor_details">
+			<column name="locationmonitorid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="property" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="propertyvalue" type="varchar(255)" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="location_monitor_fkey1" onDelete="CASCADE"
+			baseTableName="location_monitor_details" baseColumnNames="locationmonitorid"
+			referencedTableName="location_monitors" referencedColumnNames="id" />
+
+		<createIndex tableName="location_monitor_details" indexName="location_monitor_details_id">
+			<column name="locationmonitorid" />
+		</createIndex>
+		<createIndex tableName="location_monitor_details" indexName="location_monitor_details_id_property" unique="true">
+			<column name="locationmonitorid" />
+			<column name="property" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

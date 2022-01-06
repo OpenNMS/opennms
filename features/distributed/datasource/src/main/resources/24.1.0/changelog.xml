@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="jondevit" id="24.1.0-ipnettomedia-on-delete-cascade">
+    <dropForeignKeyConstraint baseTableName="ipnettomedia" constraintName="fk_ipnettomedia_nodeid"/>
+    <addForeignKeyConstraint constraintName="fk_ipnettomedia_nodeid"
+                             baseTableName="ipnettomedia" baseColumnNames="nodeid"
+                             referencedTableName="node" referencedColumnNames="nodeid" onDelete="CASCADE"/>
+  </changeSet>
+
+</databaseChangeLog>

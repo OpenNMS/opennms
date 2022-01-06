@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-qrtz_job_details">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="qrtz_job_details" /></not>
+		</preConditions> 
+
+		<createTable tableName="qrtz_job_details">
+			<column name="job_name" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="job_group" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="description" type="varchar(120)" />
+			<column name="job_class_name" type="varchar(128)"><constraints nullable="false" /></column>
+			<column name="is_durable" type="BOOLEAN"><constraints nullable="false" /></column>
+			<column name="is_volatile" type="BOOLEAN"><constraints nullable="false" /></column>
+			<column name="is_stateful" type="BOOLEAN"><constraints nullable="false" /></column>
+			<column name="requests_recovery" type="BOOLEAN"><constraints nullable="false" /></column>
+			<column name="job_data" type="bytea"><constraints nullable="false" /></column>
+		</createTable>
+		<addPrimaryKey tableName="qrtz_job_details" constraintName="qrtz_job_details_pkey" columnNames="job_name,job_group" />
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.6.0-qrtz_job_listeners">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="qrtz_job_listeners" /></not>
+		</preConditions> 
+
+		<createTable tableName="qrtz_job_listeners">
+			<column name="job_name" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="job_group" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="job_listener" type="varchar(80)"><constraints nullable="false" /></column>
+		</createTable>
+		<addPrimaryKey tableName="qrtz_job_listeners" constraintName="pk_qrtz_job_listeners" columnNames="job_name,job_group,job_listener" />
+		<addForeignKeyConstraint constraintName="fk_qrtz_job_listeners"
+			baseTableName="qrtz_job_listeners" baseColumnNames="job_name,job_group"
+			referencedTableName="qrtz_job_details" referencedColumnNames="job_name,job_group" />
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.6.0-qrtz_triggers">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="qrtz_triggers" /></not>
+		</preConditions> 
+
+		<createTable tableName="qrtz_triggers">
+			<column name="trigger_name" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="trigger_group" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="job_name" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="job_group" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="is_volatile" type="BOOLEAN"><constraints nullable="false" /></column>
+			<column name="description" type="varchar(120)" />
+			<column name="next_fire_time" type="BIGINT" />
+			<column name="prev_fire_time" type="BIGINT" />
+			<column name="trigger_state" type="varchar(16)"><constraints nullable="false" /></column>
+			<column name="trigger_type" type="varchar(8)"><constraints nullable="false" /></column>
+			<column name="start_time" type="BIGINT"><constraints nullable="false" /></column>
+			<column name="end_time" type="BIGINT" />
+			<column name="calendar_name" type="varchar(80)" />
+			<column name="misfire_instr" type="smallint" />
+			<column name="job_data" type="bytea" />
+		</createTable>
+		<addPrimaryKey tableName="qrtz_triggers" constraintName="pk_qrtz_triggers" columnNames="trigger_name,trigger_group" />
+		<addForeignKeyConstraint constraintName="fk_qrtz_triggers"
+			baseTableName="qrtz_triggers" baseColumnNames="job_name,job_group"
+			referencedTableName="qrtz_job_details" referencedColumnNames="job_name,job_group" />
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.6.0-qrtz_simple_triggers">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="qrtz_simple_triggers" /></not>
+		</preConditions> 
+
+		<createTable tableName="qrtz_simple_triggers">
+			<column name="trigger_name" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="trigger_group" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="repeat_count" type="BIGINT"><constraints nullable="false" /></column>
+			<column name="repeat_interval" type="BIGINT"><constraints nullable="false" /></column>
+			<column name="times_triggered" type="BIGINT"><constraints nullable="false" /></column>
+		</createTable>
+		<addPrimaryKey tableName="qrtz_simple_triggers" constraintName="pk_qrtz_simple_triggers" columnNames="trigger_name,trigger_group" />
+		<addForeignKeyConstraint constraintName="fk_qrtz_simple_triggers"
+			baseTableName="qrtz_simple_triggers" baseColumnNames="trigger_name,trigger_group"
+			referencedTableName="qrtz_triggers" referencedColumnNames="trigger_name,trigger_group" />
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.6.0-qrtz_cron_triggers">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="qrtz_cron_triggers" /></not>
+		</preConditions> 
+
+		<createTable tableName="qrtz_cron_triggers">
+			<column name="trigger_name" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="trigger_group" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="cron_expression" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="time_zone_id" type="varchar(80)" />
+		</createTable>
+		<addPrimaryKey tableName="qrtz_cron_triggers" constraintName="pk_qrtz_cron_triggers" columnNames="trigger_name,trigger_group" />
+		<addForeignKeyConstraint constraintName="fk_qrtz_cron_triggers"
+			baseTableName="qrtz_cron_triggers" baseColumnNames="trigger_name,trigger_group"
+			referencedTableName="qrtz_triggers" referencedColumnNames="trigger_name,trigger_group" />
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.6.0-qrtz_blob_triggers">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="qrtz_blob_triggers" /></not>
+		</preConditions> 
+
+		<createTable tableName="qrtz_blob_triggers">
+			<column name="trigger_name" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="trigger_group" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="blob_data" type="bytea" />
+		</createTable>
+		<addPrimaryKey tableName="qrtz_blob_triggers" constraintName="pk_qrtz_blob_triggers" columnNames="trigger_name,trigger_group" />
+		<addForeignKeyConstraint constraintName="fk_qrtz_blob_triggers"
+			baseTableName="qrtz_blob_triggers" baseColumnNames="trigger_name,trigger_group"
+			referencedTableName="qrtz_triggers" referencedColumnNames="trigger_name,trigger_group" />
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.6.0-qrtz_trigger_listeners">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="qrtz_trigger_listeners" /></not>
+		</preConditions> 
+
+		<createTable tableName="qrtz_trigger_listeners">
+			<column name="trigger_name" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="trigger_group" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="trigger_listener" type="varchar(80)"><constraints nullable="false" /></column>
+		</createTable>
+		<addPrimaryKey tableName="qrtz_trigger_listeners" constraintName="pk_qrtz_trigger_listeners" columnNames="trigger_name,trigger_group,trigger_listener" />
+		<addForeignKeyConstraint constraintName="fk_qrtz_trigger_listeners"
+			baseTableName="qrtz_trigger_listeners" baseColumnNames="trigger_name,trigger_group"
+			referencedTableName="qrtz_triggers" referencedColumnNames="trigger_name,trigger_group" />
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.6.0-qrtz_calendars">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="qrtz_calendars" /></not>
+		</preConditions> 
+
+		<createTable tableName="qrtz_calendars">
+			<column name="calendar_name" type="varchar(80)">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_qrtz_calendars" />
+			</column>
+			<column name="calendar" type="bytea"><constraints nullable="false" /></column>
+		</createTable>
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.6.0-qrtz_paused_trigger_grps">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="qrtz_paused_trigger_grps" /></not>
+		</preConditions> 
+
+		<createTable tableName="qrtz_paused_trigger_grps">
+			<column name="trigger_group" type="varchar(80)">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_qrtz_paused_trigger_grps" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.6.0-qrtz_fired_triggers">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="qrtz_fired_triggers" /></not>
+		</preConditions> 
+
+		<createTable tableName="qrtz_fired_triggers">
+			<column name="entry_id" type="varchar(95)">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_qrtz_fired_triggers" />
+			</column>
+			<column name="trigger_name" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="trigger_group" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="is_volatile" type="BOOLEAN"><constraints nullable="false" /></column>
+			<column name="instance_name" type="varchar(80)"><constraints nullable="false" /></column>
+			<column name="fired_time" type="BIGINT"><constraints nullable="false" /></column>
+			<column name="state" type="varchar(16)"><constraints nullable="false" /></column>
+			<column name="job_name" type="varchar(80)" />
+			<column name="job_group" type="varchar(80)" />
+			<column name="is_stateful" type="BOOLEAN" />
+			<column name="requests_recovery" type="BOOLEAN" />
+		</createTable>
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.6.0-qrtz_scheduler_state">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="qrtz_scheduler_state" /></not>
+		</preConditions> 
+
+		<createTable tableName="qrtz_scheduler_state">
+			<column name="instance_name" type="varchar(80)">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_qrtz_scheduler_state" />
+			</column>
+			<column name="last_checkin_time" type="BIGINT"><constraints nullable="false" /></column>
+			<column name="checkin_interval" type="BIGINT"><constraints nullable="false" /></column>
+			<column name="recoverer" type="varchar(80)" />
+		</createTable>
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.6.0-qrtz_locks">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="qrtz_locks" /></not>
+		</preConditions> 
+
+		<createTable tableName="qrtz_locks">
+			<column name="lock_name" type="varchar(40)">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_qrtz_locks" />
+			</column>
+		</createTable>
+		<insert tableName="qrtz_locks"><column name="lock_name" value="TRIGGER_ACCESS" /></insert>
+		<insert tableName="qrtz_locks"><column name="lock_name" value="JOB_ACCESS" /></insert>
+		<insert tableName="qrtz_locks"><column name="lock_name" value="CALENDAR_ACCESS" /></insert>
+		<insert tableName="qrtz_locks"><column name="lock_name" value="STATE_ACCESS" /></insert>
+		<insert tableName="qrtz_locks"><column name="lock_name" value="MISFIRE_ACCESS" /></insert>
+	</changeSet>
+
+	<changeSet author="rangerrick" id="qrtz_locks-data" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM qrtz_locks WHERE lock_name='TRIGGER_ACCESS'</sqlCheck>
+		</preConditions> 
+
+		<insert tableName="qrtz_locks"><column name="lock_name" value="TRIGGER_ACCESS" /></insert>
+		<insert tableName="qrtz_locks"><column name="lock_name" value="JOB_ACCESS" /></insert>
+		<insert tableName="qrtz_locks"><column name="lock_name" value="CALENDAR_ACCESS" /></insert>
+		<insert tableName="qrtz_locks"><column name="lock_name" value="STATE_ACCESS" /></insert>
+		<insert tableName="qrtz_locks"><column name="lock_name" value="MISFIRE_ACCESS" /></insert>
+	</changeSet>
+
+</databaseChangeLog>

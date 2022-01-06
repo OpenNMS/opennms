@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+<changeSet runOnChange="false" author="rangerrick" id="opennmsnxtid">
+	<preConditions onFail="MARK_RAN">
+		<!-- <not><sequenceExists sequenceName="opennmsnxtid" /></not> -->
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'opennmsnxtid'
+		</sqlCheck>
+	</preConditions>
+	<createSequence sequenceName="opennmsnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="opennmsnxtid" />
+	</rollback>
+</changeSet>
+
+<changeSet runOnChange="false" author="rangerrick" id="nodenxtid">
+	<preConditions onFail="MARK_RAN">
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'nodenxtid'
+		</sqlCheck>
+	</preConditions> 
+	<createSequence sequenceName="nodenxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="nodenxtid" />
+	</rollback>
+</changeSet>
+
+<changeSet runOnChange="false" author="rangerrick" id="servicenxtid">
+	<preConditions onFail="MARK_RAN">
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'servicenxtid'
+		</sqlCheck>
+	</preConditions> 
+	<createSequence sequenceName="servicenxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="servicenxtid" />
+	</rollback>
+</changeSet>
+
+<changeSet runOnChange="false" author="rangerrick" id="eventsnxtid">
+	<preConditions onFail="MARK_RAN">
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'eventsnxtid'
+		</sqlCheck>
+	</preConditions> 
+	<createSequence sequenceName="eventsnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="eventsnxtid" />
+	</rollback>
+</changeSet>
+
+<changeSet runOnChange="false" author="rangerrick" id="alarmsnxtid">
+	<preConditions onFail="MARK_RAN">
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'alarmsnxtid'
+		</sqlCheck>
+	</preConditions> 
+	<createSequence sequenceName="alarmsnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="alarmsnxtid" />
+	</rollback>
+</changeSet>
+
+<changeSet runOnChange="false" author="rangerrick" id="outagenxtid">
+	<preConditions onFail="MARK_RAN">
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'outagenxtid'
+		</sqlCheck>
+	</preConditions> 
+	<createSequence sequenceName="outagenxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="outagenxtid" />
+	</rollback>
+</changeSet>
+
+<changeSet runOnChange="false" author="rangerrick" id="notifynxtid">
+	<preConditions onFail="MARK_RAN">
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'notifynxtid'
+		</sqlCheck>
+	</preConditions> 
+	<createSequence sequenceName="notifynxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="notifynxtid" />
+	</rollback>
+</changeSet>
+
+<changeSet runOnChange="false" author="rangerrick" id="catnxtid">
+	<preConditions onFail="MARK_RAN">
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'catnxtid'
+		</sqlCheck>
+	</preConditions> 
+	<createSequence sequenceName="catnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="catnxtid" />
+	</rollback>
+</changeSet>
+
+<changeSet runOnChange="false" author="rangerrick" id="usernotifnxtid">
+	<preConditions onFail="MARK_RAN">
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'usernotifnxtid'
+		</sqlCheck>
+	</preConditions> 
+	<createSequence sequenceName="usernotifnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="usernotifnxtid" />
+	</rollback>
+</changeSet>
+
+<changeSet runOnChange="false" author="rangerrick" id="demandpollnxtid">
+	<preConditions onFail="MARK_RAN">
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'demandpollnxtid'
+		</sqlCheck>
+	</preConditions> 
+	<createSequence sequenceName="demandpollnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="demandpollnxtid" />
+	</rollback>
+</changeSet>
+
+<changeSet runOnChange="false" author="rangerrick" id="pollresultnxtid">
+	<preConditions onFail="MARK_RAN">
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'pollresultnxtid'
+		</sqlCheck>
+	</preConditions> 
+	<createSequence sequenceName="pollresultnxtid" />
+	
+	<rollback>
+	  <dropSequence sequenceName="pollresultnxtid" />
+	</rollback>
+</changeSet>
+
+</databaseChangeLog>

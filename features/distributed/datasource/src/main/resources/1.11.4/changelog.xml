@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rangerrick" id="1.11.4-add-source-to-datalinkinterface">
+      <addColumn tableName="datalinkinterface">
+        <column name="source" type="varchar(64)" defaultValue="linkd">
+          <constraints nullable="false" />
+        </column>
+      </addColumn>
+      <addNotNullConstraint tableName="datalinkinterface" columnName="source" defaultNullValue="linkd" />
+      <rollback>
+      	<dropColumn tableName="datalinkinterface" columnName="source" />
+      </rollback>
+    </changeSet>
+
+    <changeSet author="agalue" id="1.11.4-add-geolocation-to-assets">
+      <addColumn tableName="assets">
+        <column name="geolocation" type="varchar(32)" />
+      </addColumn>
+      <rollback>
+        <dropColumn tableName="assets" columnName="geolocation" />
+      </rollback>
+    </changeSet>
+
+    <changeSet author="agalue" id="1.11.4-add-country-to-assets">
+      <addColumn tableName="assets">
+        <column name="country" type="varchar(32)" />
+      </addColumn>
+      <rollback>
+        <dropColumn tableName="assets" columnName="country" />
+      </rollback>
+    </changeSet>
+
+</databaseChangeLog>

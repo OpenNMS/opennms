@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rangerrick" id="1.11.90-change-geolocation-to-floats">
+      <dropColumn tableName="assets" columnName="geolocation"/>
+      <addColumn tableName="assets">
+        <column name="longitude" type="float" />
+      </addColumn>
+      <addColumn tableName="assets">
+        <column name="latitude" type="float" />
+      </addColumn>
+      <rollback>
+        <dropColumn tableName="assets" columnName="longitude" />
+        <dropColumn tableName="assets" columnName="latitude" />
+        <addColumn tableName="assets">
+          <column name="geolocation" type="varchar(32)" />
+        </addColumn>
+      </rollback>
+    </changeSet>
+
+</databaseChangeLog>

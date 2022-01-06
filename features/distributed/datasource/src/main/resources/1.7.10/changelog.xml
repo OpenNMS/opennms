@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<include file="1.7.10/reportcatalog.xml" />
+
+	<changeSet author="jsartin" id="1.7.10-quartz-priority">
+
+		<addColumn tableName="qrtz_triggers">
+                        <column name="priority" type="integer" />
+                </addColumn>
+		<addColumn tableName="qrtz_fired_triggers">
+                        <column name="priority" type="integer" />
+                </addColumn>
+
+
+		<rollback>
+			<dropColumn tableName="qrtz_triggers" columnName="priority" />
+			<dropColumn tableName="qrtz_fired_triggers" columnName="priority" />
+		</rollback>
+
+	</changeSet>
+	
+	<changeSet author="jsartin" id="1.7.10-drop-reportlocator">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="reportlocator" />
+		</preConditions>
+		<dropTable tableName="reportlocator" />
+	</changeSet>
+
+	<changeSet author="rssntn67" id="1.7.10-snmp-poll">
+		<validCheckSum>3:7d048835d0907ab78a3be74f06da211b</validCheckSum>
+
+		<addColumn tableName="snmpinterface">
+                        <column name="snmppoll" type="varchar(1)" defaultValue="N"/>
+                </addColumn>
+		<addColumn tableName="snmpinterface">
+                        <column name="snmplastsnmppoll" type="TIMESTAMP WITH TIME ZONE" />
+                </addColumn>
+
+
+		<rollback>
+			<dropColumn tableName="qrtz_triggers" columnName="priority" />
+			<dropColumn tableName="qrtz_fired_triggers" columnName="priority" />
+    		<dropColumn tableName="snmpinterface" columnName="snmppoll"/>
+    		<dropColumn tableName="snmpinterface" columnName="snmplastsnmppoll"/>
+		</rollback>
+
+	</changeSet>
+	
+</databaseChangeLog>

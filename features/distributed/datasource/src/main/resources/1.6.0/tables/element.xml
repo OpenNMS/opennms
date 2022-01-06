@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-element">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="element" /></not>
+		</preConditions> 
+
+		<!-- This table maintains a record of elements belonging to maps -->
+		<createTable tableName="element">
+
+			<!-- identifier of the element -->
+			<column name="elementid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Identifier of the parent map -->
+			<column name="mapid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Flag indicating the type of the element.
+				'M' - Element is a Map 
+				'N' - Element is a Node -->
+			<column name="elementtype" type="char(1)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- a human-readable label -->
+			<column name="elementlabel" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- image associated with element -->
+			<column name="elementicon" type="varchar(256)" />
+
+			<!-- An Integer representing the position in arbitrary units -->
+			<column name="elementx" type="integer" />
+
+			<!-- An Integer representing the offset in arbitrary units -->
+			<column name="elementy" type="integer" />
+		</createTable>
+
+		<addPrimaryKey tableName="element" constraintName="pk_element" columnNames="mapid,elementid,elementtype" />
+
+		<addForeignKeyConstraint constraintName="fk_mapid" onDelete="CASCADE"
+			baseTableName="element" baseColumnNames="mapid"
+			referencedTableName="map" referencedColumnNames="mapid" />
+
+		<createIndex tableName="element" indexName="element_mapid_elementid">
+			<column name="mapid" />
+			<column name="elementid" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

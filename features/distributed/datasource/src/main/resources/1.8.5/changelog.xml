@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+<changeSet author="rangerrick" id="1.8.5-repair-linkd-data">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="stpinterface" />
+		<tableExists tableName="stpnode" />
+		<tableExists tableName="vlan" />
+	</preConditions>
+	
+	<update tableName="vlan">
+	  <column name="vlantype" value="0" />
+	  <where>vlantype=-1</where>
+	</update>
+
+	<update tableName="vlan">
+	  <column name="vlanstatus" value="0" />
+	  <where>vlanstatus=-1</where>
+	</update>
+
+	<update tableName="stpnode">
+		<column name="basetype" value="1" />
+		<where>basetype=-1</where>
+	</update>
+	<update tableName="stpnode">
+		<column name="basetype" value="1" />
+		<where>basetype=0</where>
+	</update>
+
+	<update tableName="stpnode">
+		<column name="stpprotocolspecification" value="1" />
+		<where>stpprotocolspecification=-1</where>
+	</update>
+	<update tableName="stpnode">
+		<column name="stpprotocolspecification" value="1" />
+		<where>stpprotocolspecification=0</where>
+	</update>
+
+	<update tableName="stpinterface">
+		<column name="stpportstate" value="1" />
+		<where>stpportstate=-1</where>
+	</update>
+	<update tableName="stpinterface">
+		<column name="stpportstate" value="1" />
+		<where>stpportstate=0</where>
+	</update>
+</changeSet>
+
+</databaseChangeLog>

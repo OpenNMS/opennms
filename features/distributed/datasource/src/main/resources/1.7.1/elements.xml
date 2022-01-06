@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rssntn67" id="1.7.1-add-element-id">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="element" columnName="id" /></not>
+		</preConditions>
+
+		<dropPrimaryKey tableName="element" constraintName="pk_element" />
+		<addColumn tableName="element">
+			<column name="id" type="integer">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+		</addColumn>
+
+		<ext:addAutoIncrement tableName="element" columnName="id" sequenceName="opennmsNxtId" />
+
+		<rollback>
+			<dropPrimaryKey tableName="element" />
+			<dropColumn tableName="element" columnName="id" />
+		</rollback>
+
+	</changeSet>
+
+</databaseChangeLog>

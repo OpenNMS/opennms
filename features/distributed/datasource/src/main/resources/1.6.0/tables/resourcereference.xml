@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-resourcereference">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="resourcereference" /></not>
+		</preConditions> 
+
+		<!-- This table is a lookup table for string resourceIds.  This will help keep
+			the relatively long (tens of characters) string resource IDs out of the statistics table. -->
+		<createTable tableName="resourcereference">
+
+			<column name="id" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_resourcereference_id" />
+			</column>
+			<column name="resourceid" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<ext:addAutoIncrement tableName="resourcereference" columnName="id" sequenceName="opennmsNxtId" />
+
+		<createIndex tableName="resourcereference" indexName="resourcereference_resourceid" unique="true">
+			<column name="resourceid" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

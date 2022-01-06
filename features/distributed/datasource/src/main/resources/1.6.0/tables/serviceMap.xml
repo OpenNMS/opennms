@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-serviceMap">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="servicemap" /></not>
+		</preConditions> 
+
+		<!-- Contains a list of IP Addresses mapped to OpenNMS services -->
+		<createTable tableName="servicemap">
+			<!-- IP address of the device to be monitored -->
+			<column name="ipaddr" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<!-- Text field to store the service name -->
+			<column name="servicemapname" type="varchar(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<createIndex tableName="servicemap" indexName="servicemap_name_idx">
+			<column name="servicemapname" />
+		</createIndex>
+		<createIndex tableName="servicemap" indexName="servicemap_ipaddr_idx">
+			<column name="ipaddr" />
+		</createIndex>
+	</changeSet>
+
+</databaseChangeLog>

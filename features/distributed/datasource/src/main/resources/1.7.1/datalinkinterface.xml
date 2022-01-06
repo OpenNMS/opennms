@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="mattraykow" id="1.7.1-datalinkinterface-index">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="datalinkinterface" columnName="id" /></not>
+		</preConditions>
+
+		<dropPrimaryKey tableName="datalinkinterface" constraintName="pk_datalinkinterface" />
+		<addColumn tableName="datalinkinterface">
+			<column name="id" type="integer">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+		</addColumn>
+
+		<ext:addAutoIncrement tableName="datalinkinterface" columnName="id" sequenceName="opennmsNxtId" />
+
+		<rollback>
+			<dropPrimaryKey tableName="datalinkinterface" />
+			<dropColumn tableName="datalinkinterface" columnName="id" />
+		</rollback>
+
+	</changeSet>
+
+</databaseChangeLog>

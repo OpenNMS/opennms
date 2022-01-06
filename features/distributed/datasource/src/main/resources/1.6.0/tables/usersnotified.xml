@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-usersnotified">
+		<validCheckSum>3:9758b84f83242eb088bf33746fb6eb60</validCheckSum>
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="usersnotified" /></not>
+		</preConditions> 
+
+		<createTable tableName="usersnotified">
+
+			<!-- Unique identifier for the table -->
+			<column name="id" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_usernotificationid" />
+			</column>
+
+			<!-- The user id of the person being paged -->
+			<column name="userid" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The identifier for the associated notification -->
+			<column name="notifyid" type="integer" />
+
+			<!-- The timestamp of when the notification was sent -->
+			<column name="notifytime" type="TIMESTAMP WITH TIME ZONE" />
+
+			<!-- A string describing the type of contact being made, ie text page, numeric page, email, etc... -->
+			<column name="media" type="varchar(32)" />
+
+			<!-- A field for storing the information used to contact the user, e.g. an email address,
+				the phone number and pin of the pager... -->
+			<column name="contactinfo" type="varchar(64)" />
+
+			<!-- A character to determine how auto acknowledge is handled for this entry -->
+			<column name="autonotify" type="char(1)" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="fk_notifid2" onDelete="CASCADE"
+			baseTableName="usersnotified" baseColumnNames="notifyid"
+			referencedTableName="notifications" referencedColumnNames="notifyid" />
+
+		<createIndex tableName="usersnotified" indexName="userid_notifyid_idx">
+			<column name="userid" />
+			<column name="notifyid" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

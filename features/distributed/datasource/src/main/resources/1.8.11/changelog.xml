@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+ 
+  <changeSet id="1.8.11-service-servicename-length" author="David Schlenk &lt;david.schlenk@spanlink.com&gt;">
+    <modifyDataType tableName="service" columnName="servicename" newDataType="varchar(255)" />
+    <modifyDataType tableName="servicemap" columnName="servicemapname" newDataType="varchar(255)" />
+    <modifyDataType tableName="pathoutage" columnName="criticalpathservicename" newDataType="varchar(255)" />
+
+    <rollback>
+      <modifyDataType tableName="service" columnName="servicename" newDataType="varchar(32)" />
+      <modifyDataType tableName="servicemap" columnName="servicemapname" newDataType="varchar(32)" />
+      <modifyDataType tableName="pathoutage" columnName="criticalpathservicename" newDataType="varchar(32)" />
+    </rollback>
+  </changeSet>
+ 
+</databaseChangeLog>

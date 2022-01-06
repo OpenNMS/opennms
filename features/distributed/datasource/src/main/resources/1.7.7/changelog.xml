@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rssntn67" id="1.7.7-add-linkTypeId">
+		<addColumn tableName="datalinkinterface">
+			<column name="linktypeid" type="integer"/>
+		</addColumn>
+
+		<rollback>
+			<dropColumn tableName="datalinkinterface" columnName="linktypeid" />
+		</rollback>
+	</changeSet>
+</databaseChangeLog>

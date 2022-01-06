@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+    <changeSet author="thedesloge" id="14.0.3-changeDataTypeOfFilterFavoritesToText">
+        <modifyDataType tableName="filterfavorites" columnName="filter" newDataType="text"/>
+        <modifyDataType tableName="filterfavorites" columnName="filtername" newDataType="text"/>
+
+        <rollback>
+            <modifyDataType tableName="filterfavorites" columnName="filter" newDataType="varchar(255)"/>
+            <modifyDataType tableName="filterfavorites" columnName="filtername" newDataType="varchar(50)"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

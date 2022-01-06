@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+  <changeSet author="dhustace" id="1.7.5-addAlarmFkConstraint">
+    <delete tableName="alarms">
+      <where>nodeid IS NOT NULL AND nodeid NOT IN (SELECT NODEID FROM NODE)</where>
+    </delete>
+    
+    <addForeignKeyConstraint constraintName="fk_alarms_nodeid" onDelete="CASCADE" baseTableName="alarms"
+      baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+
+    <rollback>
+      <dropForeignKeyConstraint baseTableName="alarms" constraintName="alarm_nodeid" />
+    </rollback>
+    
+  </changeSet>
+
+ <changeSet author="rssntn67" id="1.7.5-fixMapPkConstraint" context="repair">
+	<validCheckSum>ANY</validCheckSum>
+
+	<preConditions onFail="MARK_RAN">
+			<and>
+				<not><primaryKeyExists tableName="map" primaryKeyName="pk_mapid" /></not>
+			</and>
+	</preConditions>
+    
+	<addPrimaryKey tableName="map" columnNames="mapid" constraintName="pk_mapid"/>        
+	<rollback>
+		<dropPrimaryKey tableName="map" constraintName="pk_mapid" />
+	</rollback>
+ 
+  </changeSet>
+  
+   <changeSet author="rssntn67" id="1.7.5-fixElementFkConstraint">
+	<preConditions onFail="MARK_RAN">
+			<and>
+				<not><foreignKeyConstraintExists foreignKeyName="pk_mapid" /></not>
+			</and>
+	</preConditions>
+    
+	<addForeignKeyConstraint constraintName="fk_mapid" onDelete="CASCADE"
+			baseTableName="element" baseColumnNames="mapid"
+			referencedTableName="map" referencedColumnNames="mapid" />
+		        
+  </changeSet>
+  
+</databaseChangeLog>

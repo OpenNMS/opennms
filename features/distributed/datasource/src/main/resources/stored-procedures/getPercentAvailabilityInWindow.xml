@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+<changeSet runOnChange="true" author="rangerrick" id="getPercentAvailabilityInWindow">
+<createProcedure>
+<!-- Drop any old versions of the procedure -->
+DROP FUNCTION IF EXISTS getPercentAvailabilityInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone);
+
+CREATE OR REPLACE FUNCTION getPercentAvailabilityInWindow(integer,timestamp without time zone,timestamp without time zone)
+        RETURNS float8 AS '
+   DECLARE
+        ipifid ALIAS FOR $1;
+        xtime ALIAS FOR $2;
+        ytime ALIAS FOR $3;
+        downtime float8;
+   BEGIN
+        downtime := getOutageTimeInWindow(ipifid, xtime, ytime);
+        IF xtime &gt; ytime THEN
+                RETURN 100 * (1 - (downtime / (EXTRACT(EPOCH FROM (xtime - ytime))* 1000)));
+        ELSE
+                RETURN 100 * (1 - (downtime / (EXTRACT(EPOCH FROM (ytime - xtime))* 1000)));
+        END IF;
+   END;
+' LANGUAGE 'plpgsql';
+</createProcedure>
+
+<rollback>
+  <sql>DROP FUNCTION IF EXISTS getPercentAvailabilityInWindow(integer,timestamp without time zone,timestamp without time zone);</sql>
+</rollback>
+
+</changeSet>
+
+</databaseChangeLog>

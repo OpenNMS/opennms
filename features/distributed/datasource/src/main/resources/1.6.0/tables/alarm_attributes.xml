@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-alarm_attributes">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="alarm_attributes" /></not>
+		</preConditions> 
+
+		<!-- Use this table to add additional custom data about an alarm... somewhat
+			useful with automations and will be viewable/editable in the alarm details WebUI page. -->
+		<createTable tableName="alarm_attributes">
+
+			<!-- the alarm's ID -->
+			<column name="alarmid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The custom attribute name -->
+			<column name="attributename" type="varchar(63)" />
+
+			<!-- The custom attribute value -->
+			<column name="attributevalue" type="varchar(255)" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="fk_alarmid1" onDelete="CASCADE"
+			baseTableName="alarm_attributes" baseColumnNames="alarmid"
+			referencedTableName="alarms" referencedColumnNames="alarmid" />
+
+		<createIndex tableName="alarm_attributes" indexName="alarm_attributes_idx">
+			<column name="alarmid" />
+		</createIndex>
+		<createIndex tableName="alarm_attributes" indexName="alarm_attributes_aan_idx" unique="true">
+			<column name="alarmid" />
+			<column name="attributename" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

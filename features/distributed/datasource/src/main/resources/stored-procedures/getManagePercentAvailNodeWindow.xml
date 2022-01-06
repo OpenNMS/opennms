@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+<changeSet runOnChange="true" author="rangerrick" id="getManagePercentAvailNodeWindow">
+<createProcedure>
+CREATE OR REPLACE FUNCTION getManagePercentAvailNodeWindow(integer,timestamp without time zone,timestamp without time zone)
+        RETURNS float8 AS '
+   DECLARE
+        nid ALIAS FOR $1;
+        xtime ALIAS FOR $2;
+        ytime ALIAS FOR $3;
+        downtime float8 := 0.0;
+        count integer := 0;
+        rollingWindow float := 0;
+        totalServiceTime float := 0;
+   BEGIN
+        IF xtime &lt; ytime THEN
+                rollingWindow := EXTRACT (EPOCH FROM (ytime - xtime));
+                downtime := getManagedOutageForNodeInWindow(nid, ytime, xtime)/1000;
+        ELSE
+                rollingWindow := EXTRACT (EPOCH FROM (xtime - ytime));
+                downtime := getManagedOutageForNodeInWindow(nid, xtime, ytime)/1000;
+        END IF;
+        count := getManagedServiceCountForNode(nid);
+        totalServiceTime := count * rollingWindow;
+
+        IF totalServiceTime &gt; 0 THEN
+                RETURN 100 * (1 - (downtime / totalServiceTime));
+        ELSE
+                IF totalServiceTime = 0 THEN
+                        RETURN 100;
+                ELSE
+                        RETURN -1;
+                END IF;
+        END IF;
+   END;
+' LANGUAGE 'plpgsql';
+</createProcedure>
+
+<rollback>
+  <sql>DROP FUNCTION IF EXISTS getManagePercentAvailNodeWindow(integer,timestamp without time zone,timestamp without time zone);</sql>
+</rollback>
+</changeSet>
+
+</databaseChangeLog>

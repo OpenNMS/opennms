@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-pollresults">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="pollresults" /></not>
+		</preConditions> 
+
+		<createTable tableName="pollresults">
+			<column name="id" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pollresult_pkey" />
+			</column>
+			<column name="pollid" type="integer" />
+			<column name="nodeid" type="integer" />
+			<column name="ipaddr" type="varchar(16)" />
+			<column name="ifindex" type="integer" />
+			<column name="serviceid" type="integer" />
+			<column name="statuscode" type="integer" />
+			<column name="statusname" type="varchar(32)" />
+			<column name="reason" type="varchar(128)" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="fk_demandpollid" onDelete="CASCADE"
+			baseTableName="pollresults" baseColumnNames="pollid"
+			referencedTableName="demandpolls" referencedColumnNames="id" />
+
+		<createIndex tableName="pollresults" indexName="pollresults_poll_id">
+			<column name="pollid" />
+		</createIndex>
+		<createIndex tableName="pollresults" indexName="pollresults_service">
+			<column name="nodeid" />
+			<column name="ipaddr" />
+			<column name="ifindex" />
+			<column name="serviceid" />
+		</createIndex>
+	</changeSet>
+
+</databaseChangeLog>

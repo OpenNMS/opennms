@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-category_node">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="category_node" /></not>
+		</preConditions> 
+
+		<createTable tableName="category_node">
+			<column name="categoryid" type="integer" />
+			<column name="nodeid" type="integer" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="categoryid_fkey1" onDelete="CASCADE"
+			baseTableName="category_node" baseColumnNames="categoryid"
+			referencedTableName="categories" referencedColumnNames="categoryid" />
+		<addForeignKeyConstraint constraintName="nodeid_fkey1" onDelete="CASCADE"
+			baseTableName="category_node" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="category_node" indexName="catid_idx">
+			<column name="categoryid" />
+		</createIndex>
+		<createIndex tableName="category_node" indexName="catnode_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="category_node" indexName="catenode_unique_idx" unique="true">
+			<column name="categoryid" />
+			<column name="nodeid" />
+		</createIndex>
+	</changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="brozow" id="1.11.3-increase-size-of-physaddr">
+      <modifyDataType tableName="snmpinterface" columnName="snmpphysaddr"         newDataType="varchar(64)" />
+      <rollback>
+      	<modifyDataType tableName="snmpinterface" columnName="snmpphysaddr"         newDataType="varchar(32)" />
+      </rollback>
+    </changeSet>
+
+    <!-- Add a new table for the access point monitor -->
+    <include file="1.11.3/tables/accesspoints.xml" />
+
+</databaseChangeLog>

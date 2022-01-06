@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="mvrueden" id="25.0.0-create-endpoints-grafana-table">
+    <createTable tableName="endpoints_grafana">
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="uid" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="url" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="api_key" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="text"/>
+      <column name="connect_timeout" type="integer"/>
+      <column name="read_timeout" type="integer" />
+    </createTable>
+    <addUniqueConstraint tableName="endpoints_grafana" columnNames="uid" />
+    <addPrimaryKey tableName="endpoints_grafana" columnNames="id" constraintName="endpoints_grafana_pkey" />
+
+    <rollback>
+      <dropTable tableName="endpoints_grafana"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="mvrueden" id="25.0.0-create-endpoints-sequence">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'endpointsnxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="endpointsnxtid" />
+
+    <rollback>
+      <dropSequence sequenceName="endpointsnxtid" />
+    </rollback>
+  </changeSet>
+
+    <changeSet author="mbrooks" id="25.0.0-kvstore_jsonb">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kvstore_jsonb"/>
+            </not>
+        </preConditions>
+        <createTable tableName="kvstore_jsonb">
+            <column name="key" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="context" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires_at" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="value" type="jsonb">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="kvstore_jsonb" constraintName="pk_kvstore_jsonb" columnNames="key,context"/>
+    </changeSet>
+    <changeSet author="mbrooks" id="25.0.0-kvstore_bytea">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kvstore_bytea"/>
+            </not>
+        </preConditions>
+        <createTable tableName="kvstore_bytea">
+            <column name="key" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="context" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires_at" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="value" type="bytea">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="kvstore_bytea" constraintName="pk_kvstore_bytea" columnNames="key,context"/>
+    </changeSet>
+    <changeSet author="patrick-schweizer" id="25.0.0-classification-rename-column-priority">
+        <renameColumn
+                newColumnName="position"
+                oldColumnName="priority"
+                tableName="classification_groups"/>
+        <rollback>
+            <renameColumn
+                    newColumnName="priority"
+                    oldColumnName="position"
+                    tableName="classification_groups"/>
+        </rollback>
+    </changeSet>
+    <!--
+        Originally the position was a priority and therefore the logic inverted.
+        When the priority column was renamed to position it should also have changed the priority values
+        to match the new behaviour.
+        This change fixes that.
+        Can be invoked multiple times as it does not change the position if it is already set correctly.
+    -->
+    <changeSet author="mvrueden" id="25.0.0-classification-group-position-fix">
+        <sql>
+            UPDATE classification_groups SET position = t2.newPosition - 1
+            FROM (
+                SELECT id, position, name, ROW_NUMBER() OVER (ORDER BY position DESC) AS newPosition FROM classification_groups
+            ) t2
+            WHERE classification_groups.id = t2.id
+        </sql>
+    </changeSet>
+    <changeSet author="patrick-schweizer" id="25.0.0-add-position-column-to-event_parameters">
+        <addColumn tableName="event_parameters">
+        <column name="position"
+                type="integer"
+                defaultValueNumeric="0" />
+
+        </addColumn>
+        <rollback>
+            <dropColumn
+                    columnName="position"
+                    tableName="event_parameters"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

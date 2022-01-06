@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+    <changeSet author="cpape" id="25.2.1-has-flows-snmpinterface">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="snmpinterface" columnName="hasflows" />
+        </preConditions>
+
+        <dropNotNullConstraint tableName="snmpinterface" columnName="hasflows" />
+        <dropColumn tableName="snmpinterface" columnName="hasflows" />
+
+        <addColumn tableName="snmpinterface">
+            <column name="last_ingress_flow" type="TIMESTAMP WITH TIME ZONE"  />
+            <column name="last_egress_flow" type="TIMESTAMP WITH TIME ZONE"  />
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="cpape" id="25.2.1-has-flows-node">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="node" columnName="hasflows" />
+        </preConditions>
+
+        <!-- we have to drop these views since the node table will be changed -->
+        <dropView viewName="node_outages"/>
+        <dropView viewName="node_ip_services"/>
+        <dropView viewName="node_categories"/>
+
+        <dropNotNullConstraint tableName="node" columnName="hasflows" />
+        <dropColumn tableName="node" columnName="hasflows" />
+        <addColumn tableName="node">
+            <column name="last_ingress_flow" type="TIMESTAMP WITH TIME ZONE"  />
+            <column name="last_egress_flow" type="TIMESTAMP WITH TIME ZONE"  />
+        </addColumn>
+
+        <!-- we have to recreate the views since the node table has been changed -->
+        <sql>
+          CREATE VIEW node_categories AS (
+            SELECT
+              n.*,
+              COALESCE(s_cat.categoryname, 'no category') AS categoryname
+            FROM
+              node n
+            LEFT JOIN
+              category_node cn
+            ON
+              n.nodeid = cn.nodeid
+            LEFT JOIN
+              categories s_cat
+            ON
+              cn.categoryid = s_cat.categoryid
+          );
+        </sql>
+
+        <sql>
+          CREATE VIEW node_outages AS (
+            SELECT
+              outages.outageid,
+              outages.svclosteventid,
+              outages.svcregainedeventid,
+              outages.iflostservice,
+              outages.ifregainedservice,
+              outages.ifserviceid,
+              e.eventuei AS svclosteventuei,
+              e.eventsource,
+              e.alarmid,
+              e.eventseverity,
+              (ifregainedservice NOTNULL) AS resolved,
+              s.servicename,
+              i.serviceid,
+              ipif.ipaddr,
+              COALESCE(outages.ifregainedservice - outages.iflostservice, now() - outages.iflostservice) AS duration,
+              nos.max_outage_severity,
+              nc.*
+            FROM
+              outages
+            JOIN
+              events e
+            ON
+              outages.svclosteventid = e.eventid
+            JOIN
+              ifservices i
+            ON
+              outages.ifserviceid = i.id
+            JOIN
+              service s
+            ON
+              i.serviceid = s.serviceid
+            JOIN
+              ipinterface ipif
+            ON
+              i.ipinterfaceid = ipif.id
+            JOIN
+              node_categories nc
+            ON
+              nc.nodeid = e.nodeid
+            JOIN
+              node_outage_status nos
+            ON
+              nc.nodeid = nos.nodeid
+          );
+        </sql>
+
+        <sql>
+           CREATE VIEW node_ip_services AS (
+            SELECT
+              n.*,
+              ip_if.id AS ip_if_id,
+              ip_if.ipaddr,
+              ip_if.iphostname,
+              ip_if.ismanaged,
+              ip_if.ipstatus,
+              ip_if.iplastcapsdpoll,
+              ip_if.issnmpprimary,
+              ip_if.snmpinterfaceid,
+              ip_if.netmask,
+              svc.serviceid,
+              svc.servicename,
+              if_svc.id AS if_svc_id,
+              if_svc.ifindex AS if_svc_ifindex,
+              if_svc.status AS if_svc_status
+            FROM
+              node_categories n
+            LEFT JOIN
+              ipinterface ip_if
+            ON
+              ip_if.nodeid = n.nodeid
+            LEFT JOIN
+              ifservices if_svc
+            ON
+              ip_if.id = if_svc.ipinterfaceid
+            LEFT JOIN
+              service svc
+            ON
+              if_svc.serviceid = svc.serviceid
+          );
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

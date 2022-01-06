@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-categories">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="categories" /></not>
+		</preConditions> 
+
+		<createTable tableName="categories">
+			<column name="categoryid" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="category_pkey" />
+			</column>
+			<column name="categoryname" type="varchar(64)">
+				<constraints nullable="false" />
+			</column>
+			<column name="categorydescription" type="varchar(256)" />
+		</createTable>
+		
+		<ext:addAutoIncrement tableName="categories" columnName="categoryid" sequenceName="catNxtId" />
+
+		<createIndex tableName="categories" indexName="category_idx" unique="true">
+			<column name="categoryname" />
+		</createIndex>
+
+		<insert tableName="categories"><column name="categoryname" value="Routers" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Switches" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Servers" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Production" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Test" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Development" /></insert>
+
+	</changeSet>
+
+</databaseChangeLog>

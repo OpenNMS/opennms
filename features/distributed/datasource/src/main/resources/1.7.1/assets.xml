@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rssntn67" id="1.7.1-assets">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="assets" columnName="enable" /></not>
+		</preConditions>
+
+		<addColumn tableName="assets">
+			<column name="username"   type="varchar(32)" />
+			<column name="password"   type="varchar(32)" />
+			<column name="enable"     type="varchar(32)" />
+			<column name="autoenable" type="char(1)" />
+			<column name="connection" type="varchar(32)" />
+		</addColumn>
+
+		<rollback>
+			<dropColumn tableName="assets" columnName="username" />
+			<dropColumn tableName="assets" columnName="password" />
+			<dropColumn tableName="assets" columnName="enable" />
+			<dropColumn tableName="assets" columnName="autoenable" />
+			<dropColumn tableName="assets" columnName="connection" />
+		</rollback>
+	</changeSet>
+
+</databaseChangeLog>

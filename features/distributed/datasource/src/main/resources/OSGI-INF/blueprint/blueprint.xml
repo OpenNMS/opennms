@@ -27,6 +27,7 @@
             <cm:property name="datasource.password" value="" />
             <cm:property name="datasource.driverClass" value="org.postgresql.Driver" />
             <cm:property name="datasource.databaseName" value="opennms" />
+            <cm:property name="datasource.initialize" value="true" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -53,5 +54,17 @@
         <argument ref="connectionPool" />
         <argument ref="dataSourceConfig" />
     </bean>
-    <service ref="datasource" interface="javax.sql.DataSource" />
+
+    <bean id="datasourceMigration" class="org.opennms.netmgt.distributed.datasource.BootTimeDatabaseMigration" init-method="init">
+        <property name="enabled" value="${datasource.initialize}" />
+        <property name="datasource" ref="datasource" />
+        <property name="dataSourceConfig" ref="dataSourceConfig" />
+    </bean>
+
+    <!--TODO: consider using PRE HOOK-->
+    <service ref="datasource" interface="javax.sql.DataSource" depends-on="datasourceMigration">
+        <service-properties>
+            <entry key="osgi.jndi.service.name" value="opennms-datasource"/>
+        </service-properties>
+    </service>
 </blueprint>

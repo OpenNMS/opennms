@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rangerrick" id="1.7.8-remove-old-primary-key-if-necessary" failOnError="false" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+
+        <preConditions onFail="MARK_RAN">
+        	<foreignKeyConstraintExists foreignKeyName="pk_datalinkinterface" />
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="datalinkinterface" constraintName="pk_datalinkinterface" />
+        <addPrimaryKey tableName="datalinkinterface" columnNames="id" />
+    </changeSet>
+
+	<changeSet author="rangerrick" id="1.7.8-add-linkState">
+		<createTable tableName="linkstate">
+			<column name="id" type="integer">
+				<constraints nullable="false"  primaryKey="true" />
+			</column>
+			<column name="datalinkinterfaceid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="linkstate" type="VARCHAR(24)" defaultValue="LINK_UP" />
+		</createTable>
+
+		<ext:addAutoIncrement tableName="linkstate" columnName="id" sequenceName="opennmsNxtId" />
+
+		<addForeignKeyConstraint constraintName="fk_linkstate_datalinkinterface_id" onDelete="CASCADE"
+			baseTableName="linkstate" baseColumnNames="datalinkinterfaceid"
+			referencedTableName="datalinkinterface" referencedColumnNames="id" />
+
+		<rollback>
+			<dropForeignKeyConstraint baseTableName="linkstate" constraintName="fk_linkstate_datalinkinterface_id" />
+			<dropTable tableName="linkstate" />
+		</rollback>
+
+	</changeSet>
+	
+	<changeSet author="thedesloge" id="1.7.8-update-linkstate">
+		<modifyDataType tableName="linkstate" columnName="linkstate" newDataType="varchar(32)" />
+		<rollback>
+			<modifyDataType tableName="linkstate" columnName="linkstate" newDataType="varchar(24)" />
+		</rollback>
+	</changeSet>
+
+</databaseChangeLog>

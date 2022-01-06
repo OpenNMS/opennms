@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="rangerrick" id="1.7.4-drop-old-acks-sequence" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN"><sequenceExists sequenceName="acks_id_seq" /></preConditions>
+		<dropSequence sequenceName="acks_id_seq" />
+	</changeSet>
+	
+	<changeSet author="rangerrick" id="1.7.4-drop-old-assets-sequence" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN"><sequenceExists sequenceName="assets_id_seq" /></preConditions>
+		<dropSequence sequenceName="assets_id_seq" />
+	</changeSet>
+	
+	<changeSet author="rangerrick" id="1.7.4-drop-old-atinterface-sequence" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN"><sequenceExists sequenceName="atinterface_id_seq" /></preConditions>
+		<dropSequence sequenceName="atinterface_id_seq" />
+	</changeSet>
+	
+	<changeSet author="rangerrick" id="1.7.4-drop-old-categories-sequence" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN"><sequenceExists sequenceName="categories_categoryid_seq" /></preConditions>
+		<dropSequence sequenceName="categories_categoryid_seq" />
+	</changeSet>
+	
+	<changeSet author="rangerrick" id="1.7.4-drop-old-datalinkinterface-sequence" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN"><sequenceExists sequenceName="datalinkinterface_id_seq" /></preConditions>
+		<dropSequence sequenceName="datalinkinterface_id_seq" />
+	</changeSet>
+	
+	<changeSet author="rangerrick" id="1.7.4-drop-old-element-sequence" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN"><sequenceExists sequenceName="element_id_seq" /></preConditions>
+		<dropSequence sequenceName="element_id_seq" />
+	</changeSet>
+	
+	<changeSet author="rangerrick" id="1.7.4-drop-old-ifservices-sequence" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN"><sequenceExists sequenceName="ifservices_id_seq" /></preConditions>
+		<dropSequence sequenceName="ifservices_id_seq" />
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.7.4-drop-old-ipinterface-sequence" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN"><sequenceExists sequenceName="ipinterface_id_seq" /></preConditions>
+		<dropSequence sequenceName="ipinterface_id_seq" />
+	</changeSet>
+	
+	<changeSet author="rangerrick" id="1.7.4-drop-old-map-sequence" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN"><sequenceExists sequenceName="map_mapid_seq" /></preConditions>
+		<dropSequence sequenceName="map_mapid_seq" />
+	</changeSet>
+	
+	<changeSet author="rangerrick" id="1.7.4-drop-old-resourcereference-sequence" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN"><sequenceExists sequenceName="resourcereference_id_seq" /></preConditions>
+		<dropSequence sequenceName="resourcereference_id_seq" />
+	</changeSet>
+	
+	<changeSet author="rangerrick" id="1.7.4-drop-old-snmpinterface-sequence" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN"><sequenceExists sequenceName="snmpinterface_id_seq" /></preConditions>
+		<dropSequence sequenceName="snmpinterface_id_seq" />
+	</changeSet>
+	
+	<changeSet author="rangerrick" id="1.7.4-drop-old-statisticsreport-sequence" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN"><sequenceExists sequenceName="statisticsreport_id_seq" /></preConditions>
+		<dropSequence sequenceName="statisticsreport_id_seq" />
+	</changeSet>
+	
+	<changeSet author="rangerrick" id="1.7.4-drop-old-statisticsreportdata-sequence" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN"><sequenceExists sequenceName="statisticsreportdata_id_seq" /></preConditions>
+		<dropSequence sequenceName="statisticsreportdata_id_seq" />
+	</changeSet>
+	
+	<changeSet author="rangerrick" id="1.7.4-fix-broken-autoincrement">
+		<ext:addAutoIncrement tableName="acks" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
+		<ext:addAutoIncrement tableName="assets" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
+		<ext:addAutoIncrement tableName="atinterface" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
+		<ext:addAutoIncrement tableName="categories" columnName="categoryid" columnDataType="integer" sequenceName="catNxtId" />
+		<ext:addAutoIncrement tableName="datalinkinterface" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
+		<ext:addAutoIncrement tableName="element" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
+		<ext:addAutoIncrement tableName="ifservices" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
+		<ext:addAutoIncrement tableName="ipinterface" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
+		<!-- liquibase 2.0-related changes to this mean it is already correct now
+		<ext:addAutoIncrement tableName="map" columnName="mapid" columnDataType="integer" sequenceName="opennmsNxtId" />
+		-->
+		<ext:addAutoIncrement tableName="resourcereference" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
+		<ext:addAutoIncrement tableName="snmpinterface" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
+		<ext:addAutoIncrement tableName="statisticsreport" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
+		<ext:addAutoIncrement tableName="statisticsreportdata" columnName="id" columnDataType="integer" sequenceName="opennmsNxtId" />
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.7.4-categories-fix-missing-data" context="repair">
+		<validCheckSum>ANY</validCheckSum>
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM categories</sqlCheck>
+		</preConditions> 
+
+		<insert tableName="categories"><column name="categoryname" value="Routers" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Switches" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Servers" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Production" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Test" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Development" /></insert>
+	</changeSet>
+
+</databaseChangeLog>
