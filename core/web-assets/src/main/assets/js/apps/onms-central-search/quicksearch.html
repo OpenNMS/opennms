@@ -82,6 +82,8 @@
             <a id="onms-search-result-item-{{$index}}" ng-class="{'selected': item.selected}" ng-repeat-end ng-if="item.type === 'Item'" href="{{item.url}}" class="list-group-item list-group-item-action" ng-mouseover="select($index)" ng-click="resetQuery()">
                 <h6 class="mb-0"><i class="{{item.icon}}" ng-if="item.icon">&nbsp;</i>{{item.label}} <i style="-webkit-transform: scaleY(-1);transform: scaleY(-1);" class="fa fa-reply pull-right" ng-if="item.selected"></i></h6>
                 <small class="mr-4" ng-class="{'text-muted': !item.selected}" ng-repeat="match in item.matches">{{match.label}}: {{match.value}}</small>
+                <br ng-if="item.info !== ''"/>
+                <small class="mr-4" ng-class="{'text-muted': !item.selected}" ng-if="item.info !== ''">{{item.info}}</small>
             </a>
         </div>
 

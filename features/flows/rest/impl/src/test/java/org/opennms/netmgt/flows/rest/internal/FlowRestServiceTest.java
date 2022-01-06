@@ -48,7 +48,7 @@ import org.junit.Test;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.FlowQueryService;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.NodeCriteria;
@@ -92,12 +92,12 @@ public class FlowRestServiceTest {
     @Test
     public void canGenerateFlowGraphUrlInfo() {
         // Mock the dependencies
-        FlowRepository flowRepository = mock(FlowRepository.class);
-        when(flowRepository.getFlowCount(any())).thenReturn(CompletableFuture.completedFuture(1L));
+        FlowQueryService flowQueryService = mock(FlowQueryService.class);
+        when(flowQueryService.getFlowCount(any())).thenReturn(CompletableFuture.completedFuture(1L));
         NodeDao nodeDao = mock(NodeDao.class);
         SnmpInterfaceDao snmpInterfaceDao = mock(SnmpInterfaceDao.class);
         SessionUtils sessionUtils = mock(SessionUtils.class);
-        FlowRestServiceImpl flowRestService = new FlowRestServiceImpl(flowRepository, nodeDao, snmpInterfaceDao, sessionUtils);
+        FlowRestServiceImpl flowRestService = new FlowRestServiceImpl(flowQueryService, nodeDao, snmpInterfaceDao, sessionUtils);
 
         // Set the URL
         flowRestService.setFlowGraphUrl("https://grafana:3000/d/eWsVEL6zz/flows?orgId=1&var-node=$nodeId&var-interface=$ifIndex&from=$start&to=$end");

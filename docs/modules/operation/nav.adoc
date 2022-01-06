@@ -134,6 +134,7 @@
 ** xref:flows/sentinel/sentinel.adoc[]
 ** xref:flows/classification-engine.adoc[]
 ** xref:flows/aggregation.adoc[]
+** xref:flows/nephron.adoc[]
 
 * xref:kafka-producer/kafka-producer.adoc[]
 ** xref:kafka-producer/enable-kafka.adoc[]
@@ -150,6 +151,7 @@
 *** xref:admin/webui/dashboard.adoc[]
 *** xref:admin/webui/grafana-dashboard-box.adoc[]
 *** xref:admin/webui/heatmap.adoc[]
+*** xref:admin/webui/search.adoc[]
 *** xref:admin/webui/jmx-config-generator/introduction.adoc[]
 **** xref:admin/webui/jmx-config-generator/webui.adoc[]
 **** xref:admin/webui/jmx-config-generator/cli.adoc[]

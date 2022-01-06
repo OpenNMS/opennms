@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.flows.classification.internal.value;
 
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -38,16 +37,14 @@ public class PortValueTest {
 
     @Test
     public void verifySingleValue() {
-        final PortValue portValue = new PortValue("5");
-        assertThat(portValue.getPorts(), hasItems(5));
+        final PortValue portValue = PortValue.of("5");
         assertThat(portValue.matches(5), is(true));
         assertThat(portValue.matches(1), is(false));
     }
 
     @Test
     public void verifyMultipleValues() {
-        final PortValue portValue = new PortValue("1,2,3");
-        assertThat(portValue.getPorts(), hasItems(1,2,3));
+        final PortValue portValue = PortValue.of("1,2,3");
         assertThat(portValue.matches(1), is(true));
         assertThat(portValue.matches(2), is(true));
         assertThat(portValue.matches(3), is(true));
@@ -57,11 +54,11 @@ public class PortValueTest {
 
     @Test
     public void verifyRange() {
-        final PortValue portValue = new PortValue("10-13");
-        assertThat(portValue.getPorts(), hasItems(10, 11, 12, 13));
+        final PortValue portValue = PortValue.of("10-13");
         assertThat(portValue.matches(10), is(true));
         assertThat(portValue.matches(11), is(true));
         assertThat(portValue.matches(12), is(true));
+        assertThat(portValue.matches(13), is(true));
         assertThat(portValue.matches(1), is(false));
         assertThat(portValue.matches(2), is(false));
         assertThat(portValue.matches(3), is(false));

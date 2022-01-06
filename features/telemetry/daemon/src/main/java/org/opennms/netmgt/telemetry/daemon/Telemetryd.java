@@ -36,6 +36,7 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.telemetry.api.TelemetryManager;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -65,7 +66,7 @@ import org.springframework.context.ApplicationContext;
  * @author jwhite
  */
 @EventListener(name=Telemetryd.NAME, logPrefix=Telemetryd.LOG_PREFIX)
-public class Telemetryd implements SpringServiceDaemon {
+public class Telemetryd implements SpringServiceDaemon, TelemetryManager {
     private static final Logger LOG = LoggerFactory.getLogger(Telemetryd.class);
 
     public static final String NAME = "Telemetryd";
@@ -138,6 +139,9 @@ public class Telemetryd implements SpringServiceDaemon {
                 continue;
             }
             final Listener listener = telemetryRegistry.getListener(listenerConfig);
+            if (listener == null) {
+                throw new IllegalStateException("Failed to create listener from registry for listener named: " + listenerConfig.getName());
+            }
             listeners.add(listener);
         }
 
@@ -227,4 +231,15 @@ public class Telemetryd implements SpringServiceDaemon {
         DaemonTools.handleReloadEvent(e, Telemetryd.NAME, (event) -> handleConfigurationChanged());
     }
 
+    @Override
+    public List<Listener> getListeners() {
+        return this.listeners;
+    }
+
+    @Override
+    public List<Adapter> getAdapters() {
+        return this.consumers.stream()
+                .flatMap(consumer -> consumer.getAdapters().stream())
+                .collect(Collectors.toList());
+    }
 }

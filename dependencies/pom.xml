@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>27.1.2-SNAPSHOT</version>
+    <version>29.0.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
@@ -14,7 +14,6 @@
     <module>activemq-web</module>
     <module>asterisk</module>
     <module>atomikos</module>
-    <module>aws</module>
     <module>camel</module>
     <module>camel-test</module>
     <module>cxf</module>

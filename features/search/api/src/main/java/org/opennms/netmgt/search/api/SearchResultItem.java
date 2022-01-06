@@ -55,6 +55,7 @@ public class SearchResultItem {
     private final Map<String, String> properties = new HashMap<>();
     private final List<Match> matches = new ArrayList<>();
     private int weight;
+    private String info = "";
 
     public String getIdentifier() {
         return identifier;
@@ -161,5 +162,13 @@ public class SearchResultItem {
 
         // Adjust weight
         setWeight(Math.max(getWeight(), mergeMe.getWeight()));
+    }
+
+    public void setInfo(final String info) {
+        this.info = info;
+    }
+
+    public String getInfo() {
+        return this.info;
     }
 }

@@ -33,9 +33,13 @@ image::flows/flow_integration_overview.png[width=70%]
 At a high level, with a xref:operation:flows/basic.adoc#flows-basic[basic setup], OpenNMS processes flows as follows:
 
 * <<telemetryd/introduction.adoc#ga-telemetryd, Telemetryd>> receives and decodes flows on {page-component-title}.
-* Telemetryd adapters convert the flows to a canonical flow model and dispatch these to the flow repository.
-* The flow repository enriches the flows and persists them to Elasticsearch:
+* Telemetryd adapters convert the flows to a canonical flow model.
+* Flows are enriched:
 ** The <<flows/classification-engine.adoc#ga-flow-support-classification-engine, classification engine>> tags flows with an application name.
 ** Metadata related to associated nodes (such as IDs and categories) are also added to the flows.
-* The REST API supports generating both summaries and time series data from the flows stored in the flow repository.
-* OpenNMS Helm visualizes the flow data through the flow datasource, which interfaces with the {page-component-title} REST API.
+* Enriched flows are persisted in Elasticsearch and/or forwarded to Kafka.
+* You can use <<flows/nephron.adoc#ga-nephron, Nephron>> to aggregate flows and output aggregates to Elasticsearch, Cortex, or Kafka.
+* The REST API supports generating both summaries and time series data from the flows or flow aggregates stored in Elasticsearch.
+* Use OpenNMS Helm to visualize flows and/or flow aggregates:
+** Use the "Flow Deep Dive" dashboard to visualize flows and flow aggregates that are stored in Elasticsearch using the flow datasource that interfaces with the {page-component-title} REST API.
+** Use the "Cortex Flow Deep Dive" dashboard that uses a Prometheus datasource to access flow aggregates stored in Cortex.

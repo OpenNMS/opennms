@@ -66,4 +66,29 @@
       </storageStrategy>
     </resourceType>
 
+    <!-- Twin Metrics -->
+    <resourceType name="twinMetrics" label="Twin Metrics" resourceLabel="${index}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+            <parameter key="sibling-column-name" value="name" />
+            <parameter key="replace-all" value="s/.([^.]+)$//"/>
+        </storageStrategy>
+    </resourceType>
+
+    <!-- Queue Metrics -->
+    <resourceType name="queueMetrics" label="Queue Metrics" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="destinationName" />
+      </storageStrategy>
+    </resourceType>
+
+    <resourceType name="ALECgraph" label="ALEC Graph Stats"
+                  resourceLabel="${name}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+                   <parameter key="sibling-column-name" value="name" />
+      </storageStrategy>
+    </resourceType>
+
 </resource-types>

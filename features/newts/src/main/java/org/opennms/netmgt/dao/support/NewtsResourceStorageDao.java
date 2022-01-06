@@ -196,7 +196,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
                 }
             }
 
-            if (ResourceTypeUtils.isResponseTime(resourceId)) {
+            if (ResourceTypeUtils.isResponseTime(resourceId) || ResourceTypeUtils.isStatus(resourceId)) {
                 // Use the last part of the resource id as the dsName
                 // Store the resource id in the rrdFile field
                 attributes.add(new RrdGraphAttribute(toMetricName(resourceId), "", resourceId));

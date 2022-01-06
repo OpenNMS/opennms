@@ -123,6 +123,88 @@ categories:
             description: "Secure credentials vault (SCV) provider"
             key: "/scv/provider"
             example: "TODO"
+
+  # Java Agent
+  - name: "java"
+    label: "Java"
+    description: "Java configuration parameters."
+    categories:
+      # Java :: Agent
+      - name: "agent"
+        label: "Agent"
+        description: "Configuration parameters for Java agents."
+        categories:
+          # Prometheus JMX exporter
+          - name: "prom-jmx-exporter"
+            label: "Prometheus JMX Exporter"
+            description: "Configuration for the Prometheus JMX Exporter agent."
+            config:
+              - name: "startDelaySeconds"
+                type:
+                  name: "string"
+                label: "Start delay"
+                description: "Start delay in seconds before serving requests. Any requests within the delay period will result in an empty metrics set."
+                key: "/java/agent/prom-jmx-exporter/startDelaySeconds"
+                example: "0"
+              - name: "jmxUrl"
+                type:
+                  name: "string"
+                label: "JMX URL"
+                description: "JMX URL connecting to the local JVM."
+                key: "/java/agent/prom-jmx-exporter/jmxUrl"
+                example: "service:jmx:rmi:///jndi/rmi://127.0.0.1:1299/karaf-minion"
+              - name: "username"
+                type:
+                  name: "string"
+                label: "Username"
+                description: "Connection username to establish the JMX connection."
+                key: "/java/agent/prom-jmx-exporter/username"
+                example: "admin"
+              - name: "password"
+                type:
+                  name: "string"
+                label: "Password"
+                description: "Connection password to establish the JMX connection."
+                key: "/java/agent/prom-jmx-exporter/password"
+                example: "admin"
+              - name: "lowerCaseOutputName"
+                type:
+                  name: "boolean"
+                label: "Lowercase output name"
+                description: "Lowercase the output metric name."
+                key: "/java/agent/prom-jmx-exporter/lowerCaseOutputName"
+                example: "true"
+              - name: "lowercaseOutputLabelNames"
+                type:
+                  name: "boolean"
+                label: "Lowercase output label names"
+                description: "Lowercase the output metric label names."
+                key: "/java/agent/prom-jmx-exporter/lowercaseOutputLabelNames"
+                example: "true"
+              - name: "whitelistObjectNames"
+                type:
+                  name: "collection"
+                  strategy: "indexed"
+                  items:
+                    label: "Whitelist Object Names"
+                    type:
+                      name: "string"
+                label: "Whitelist Object Names"
+                description: "A list of ObjectNames to query."
+                key: "/java/agent/prom-jmx-exporter/whitelistObjectNames"
+                example: "\"org.opennms.core.ipc.sink.producer:*\", \"org.opennms.netmgt.dnsresolver.netty:*\", or \"org.opennms.netmgt.telemetry:*\""
+              - name: "blacklistObjectNames"
+                type:
+                  name: "collection"
+                  strategy: "indexed"
+                  items:
+                    label: "Blacklist Object Names"
+                    type:
+                      name: "string"
+                label: "Blacklist Object Names"
+                description: "A list of ObjectNames to not query. Takes precedence over whitelistObjectNames. Defaults to none."
+                key: "/java/agent/prom-jmx-exporter/blacklistObjectNames"
+                example: "org.apache.activemq:clientId=*,*"
   # Karaf
   - name: "karaf"
     label: "Karaf"
@@ -212,31 +294,6 @@ categories:
     label: "IPC"
     description: "Core, Minion, and Sentinel distributed inter-process communication (IPC) settings"
     categories:
-      # IPC Configuration :: AWS
-      - name: "aws"
-        label: "AWS"
-        description: "Configuration for Amazon Web Services Simple Queue Service (AWS SQS) as message broker"
-        config:
-          - name: "properties"
-            type:
-              name: "properties"
-            label: "Properties"
-            description: "Global AWS SQS properties"
-            key: "/aws"
-            example: "aws_region: us-east-1, aws_access_key_id: xxxxxx or aws_secret_access_key: yyyyyy"
-        categories:
-          # IPC Configuration :: AWS :: SQS
-          - name: "sqs"
-            label: "SQS"
-            description: "Configuration for IPC messaging using AWS SQS"
-            config:
-              - name: "properties"
-                type:
-                  name: "properties"
-                label: "Properties"
-                description: "Generic AWS SQS IPC properties"
-                key: "/ipc/sqs"
-                example: "sink.MaximumMessageSize: 262144"
       # IPC Configuration :: gRPC
       - name: "grpc"
         label: "gRPC"
@@ -293,6 +350,36 @@ categories:
                 description: "Additional Kafka configuration properties"
                 key: "/ipc/rpc/kafka"
                 example: "compression.type: gzip"
+       # IPC Configuration :: Twin
+            - name: "twin"
+              label: "Twin"
+              description: "Configuration settings for Twin"
+              categories:
+                # IPC Configuration :: Twin :: Kafka
+                - name: "kafka"
+                  label: "Kafka"
+                  description: "Configuration for Twin using Apache Kafka as message broker"
+                  config:
+                    - name: "bootstrap-servers"
+                      type:
+                        name: "collection"
+                        strategy: "concat"
+                        items:
+                          label: "Server"
+                          type:
+                            name: "host-with-port"
+                          separator: ","
+                      label: "Bootstrap Servers"
+                      description: "Kafka bootstrap servers"
+                      key: "/ipc/twin/kafka/bootstrap.servers"
+                      example: "kafka-01-ip:9092, kafka-02-ip:9092"
+                    - name: "properties"
+                      type:
+                        name: "properties"
+                      label: "Properties"
+                      description: "Additional Kafka configuration properties"
+                      key: "/ipc/twin/kafka"
+                      example: "compression.type: gzip"
       # IPC Configuration :: Sink
       - name: "sink"
         label: "Sink"
@@ -331,6 +418,32 @@ categories:
                 description: "Additional generic Kafka configuration properties for IPC Sink"
                 key: "/ipc/sink/kafka"
                 example: "compression.type: gzip"
+       # IPC Configuration :: Kafka IPC
+        - name: "kafka"
+          label: "Kafka IPC"
+          description: "Configuration settings for Kafka IPC"
+          config:
+            - name: "bootstrap-servers"
+              type:
+                name: "collection"
+                strategy: "concat"
+                items:
+                  label: "Server"
+                  type:
+                    name: "host-with-port"
+                  separator: ","
+              label: "Bootstrap Servers"
+              description: "Kafka bootstrap servers"
+              key: "/ipc/kafka/bootstrap.servers"
+              example: "kafka-01-ip:9092, kafka-02-ip:9092"
+            - name: "properties"
+              type:
+                name: "properties"
+              label: "Properties"
+              description: "Additional Kafka configuration properties"
+              key: "/ipc/kafka"
+              example: "compression.type: gzip"
+
   # Netmgt
   - name: "netmgt"
     label: "Network Management"

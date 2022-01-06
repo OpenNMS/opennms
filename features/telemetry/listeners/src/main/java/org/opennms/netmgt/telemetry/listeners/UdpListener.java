@@ -28,10 +28,23 @@
 
 package org.opennms.netmgt.telemetry.listeners;
 
+import java.net.InetSocketAddress;
+import java.time.Duration;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+
+import org.opennms.netmgt.telemetry.api.receiver.Listener;
+import org.opennms.netmgt.telemetry.api.receiver.Parser;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -47,16 +60,6 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.SocketUtils;
-import org.opennms.netmgt.telemetry.api.receiver.Listener;
-import org.opennms.netmgt.telemetry.api.receiver.Parser;
-import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.InetSocketAddress;
-import java.time.Duration;
-import java.util.List;
-import java.util.Objects;
 
 public class UdpListener implements Listener {
     private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
@@ -163,6 +166,15 @@ public class UdpListener implements Listener {
         return name;
     }
 
+    @Override
+    public String getDescription() {
+        return String.format("UDP %s:%s",  this.host != null ? this.host : "*", this.port);
+    }
+
+    @Override
+    public Collection<? extends Parser> getParsers() {
+        return this.parsers;
+    }
 
     private class DefaultChannelInitializer extends ChannelInitializer<DatagramChannel> {
 

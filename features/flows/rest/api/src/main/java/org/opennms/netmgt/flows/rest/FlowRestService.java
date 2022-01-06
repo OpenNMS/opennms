@@ -91,6 +91,28 @@ public interface FlowRestService {
     @Produces(MediaType.APPLICATION_JSON)
     FlowNodeDetails getFlowExporter(@PathParam("nodeId") final Integer nodeId);
 
+    @GET
+    @Path("dscp/enumerate")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<Integer> getDscpValues(
+            @Context UriInfo uriInfo
+    );
+
+    @GET
+    @Path("dscp")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSummaryResponse getDscpSummaries(
+            @Context UriInfo uriInfo
+    );
+
+    @GET
+    @Path("dscp/series")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSeriesResponse getDscpSeries(
+            @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
+            @Context UriInfo uriInfo
+    );
+
     /**
      * Retrieve the list of applications.
      *

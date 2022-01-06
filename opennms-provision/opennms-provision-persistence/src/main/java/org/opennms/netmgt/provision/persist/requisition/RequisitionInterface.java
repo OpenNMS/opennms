@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,7 +55,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.provision.persist.PrimaryTypeAdapter;
+import org.opennms.netmgt.model.PrimaryTypeAdapter;
 
 
 /**

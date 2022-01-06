@@ -51,6 +51,7 @@ import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.rpc.utils.mate.MapScope;
+import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.DestinationPathManager;
@@ -764,7 +765,7 @@ public final class BroadcastEventProcessor implements EventListener {
             m_entityScopeProvider.getScopeForNode(nodeId),
             m_entityScopeProvider.getScopeForInterface(nodeId, event.getInterface()),
             m_entityScopeProvider.getScopeForService(nodeId, event.getInterfaceAddress(), event.getService()),
-            MapScope.singleContext("notification",
+            MapScope.singleContext(Scope.ScopeName.SERVICE, "notification",
                     new ImmutableMap.Builder<String,String>()
                             .put("eventID", String.valueOf(event.getDbid()))
                             .put("eventUEI", event.getUei())

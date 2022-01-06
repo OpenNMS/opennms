@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+FORCE=0
+RECURSE=1
+
+while getopts fhR OPT; do
+  case "${OPT}" in
+    h)
+      echo "usage: $0 [-h] [-R] [-f] [file...]"
+      echo ""
+      echo "  -h    this help"
+      echo ""
+      echo "  -f    change ownership regardless of current \$RUNAS"
+      echo "  -R    do not recurse"
+      echo ""
+      exit 1
+      ;;
+    f)
+      FORCE=1
+      ;;
+    R)
+      RECURSE=0
+      ;;
+    *)
+      ;;
+  esac
+done
+shift $((OPTIND -1))
+
+if [ -z "${OPENNMS_HOME}" ]; then
+  # shellcheck disable=SC2016,SC2154
+  OPENNMS_HOME='${install.dir}'
+fi
+
+if [ -e "${OPENNMS_HOME}/etc/opennms.conf" ]; then
+  # shellcheck disable=SC1090,SC1091
+  . "${OPENNMS_HOME}/etc/opennms.conf"
+fi
+[ -z "$RUNAS" ] && RUNAS=opennms
+
+if ! id -u "${RUNAS}" >/dev/null 2>&1; then
+  echo "Something is very wrong, \$RUNAS=${RUNAS} but that user does not exist. Bailing."
+  exit 1
+fi
+
+if [ "${RUNAS}" != "opennms" ] && [ "${FORCE}" -eq 0 ]; then
+  echo "\$RUNAS has been changed from the default 'opennms' user. Assuming you know what you're doing and _not_ changing ownership of any files."
+  echo ""
+  echo "If you want to use this script to change everything to '${RUNAS}', pass the -f flag:"
+  echo "$0 -f"
+  echo ""
+  exit 0
+fi
+
+RUNAS_UID="$(id -u "${RUNAS}" 2>/dev/null || :)"
+RUNAS_GID="$(id -g "${RUNAS}" 2>/dev/null || :)"
+
+if [ -z "${RUNAS_UID}" ] || [ -z "${RUNAS_GID}" ]; then
+  echo "ERROR: unable to determine UID and GID from \$RUNAS=${RUNAS}. Bailing."
+  exit 1
+fi
+
+SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
+
+do_sudo() {
+  if [ -x "$SUDO" ]; then
+    "$SUDO" "$@"
+  else
+    # if no sudo, fall back to running as the current user
+    if [ "$(id -u -n)" != "root" ]; then
+      echo "WARNING: sudo was not located, but this script is not being run as root. This will probably fail."
+    fi
+    "$@"
+  fi
+}
+
+do_chown() {
+  _mypath="$1"
+
+  # just in case :)
+  if [ "${_mypath}" = "/" ]; then
+    echo "ERROR: trying to chown / -- something is very broken. Bailing."
+    exit 1
+  fi
+
+  echo "* fixing ownership of ${_mypath}"
+  do_sudo chown -h "${RUNAS_UID}:${RUNAS_GID}" "${_mypath}"
+  if [ "$RECURSE" -eq 1 ]; then
+    echo "* fixing ownership of ${_mypath} contents"
+    _count="$(find -L "${_mypath}" -mount ! -user "${RUNAS_UID}" | wc -l)"
+    if [ "${_count}" -ge 1 ]; then
+      find -L "${_mypath}" -mount ! -user "${RUNAS_UID}" -print0 | do_sudo xargs -0 chown "${RUNAS_UID}:${RUNAS_GID}"
+    fi
+  fi
+}
+
+if [ -n "$1" ]; then
+  # user has passed specific files to change
+  for CHANGEME in "$@"; do
+    do_chown "$CHANGEME"
+  done
+  exit 0
+fi
+
+do_chown "${OPENNMS_HOME}/"
+find "${OPENNMS_HOME}"/* -maxdepth 0 -type l | while read -r SUBDIR; do
+  do_chown "${SUBDIR}/"
+done
+
+for TOOLFILE in "/etc/default/opennms" "/etc/sysconfig/opennms"; do
+  if [ -e "${TOOLFILE}" ]; then
+    echo "* fixing ownership of ${TOOLFILE}"
+    do_chown "${TOOLFILE}"
+  fi
+done

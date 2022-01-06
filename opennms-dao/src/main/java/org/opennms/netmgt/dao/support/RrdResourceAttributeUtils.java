@@ -110,7 +110,7 @@ public abstract class RrdResourceAttributeUtils {
         
         for (final File file : files) {
             String fileName = file.getName();
-            if (ResourceTypeUtils.isStoreByGroup() && !ResourceTypeUtils.isResponseTime(relativePath)) {
+            if (ResourceTypeUtils.isStoreByGroup() && !(ResourceTypeUtils.isResponseTime(relativePath) || ResourceTypeUtils.isStatus(relativePath))) {
                 String groupName = fileName.substring(0, fileName.length() - suffixLength);
                 Properties props = getDsProperties(resourceDir);
                 for (Object o : props.keySet()) {

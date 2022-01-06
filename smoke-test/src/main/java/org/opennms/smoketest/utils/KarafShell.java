@@ -83,7 +83,7 @@ public class KarafShell {
                         pipe.println("logout");
 
                         // Wait for karaf to process the commands
-                        await().atMost(10, SECONDS).until(sshClient.isShellClosedCallable());
+                        await().atMost(30, SECONDS).until(sshClient.isShellClosedCallable());
 
                         // Read stdout
                         final String shellOutput = sshClient.getStdout();

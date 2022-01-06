@@ -36,6 +36,8 @@
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 
+INCOMING_ARGS=("$@")
+
 # Home directory for OpenNMS.
 # shellcheck disable=SC2154
 OPENNMS_HOME="${install.dir}"
@@ -96,7 +98,7 @@ RUNJAVA_OPTIONS=""
 JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
 
 # The user that OpenNMS needs to run as.
-RUNAS="root"
+[ -z "$RUNAS" ] && RUNAS=opennms
 
 # Maximum file Descriptors to be setted by ulimit -n
 MAXIMUM_FILE_DESCRIPTORS=20480
@@ -141,7 +143,7 @@ COMMAND=""
 
 show_help () {
 	cat <<END
-Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] <command> [<service>]
+Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] [-s] <command> [<service>]
 
   command options: start|stop|restart|status|ssh|check|pause|resume|kill
 
@@ -164,6 +166,7 @@ Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] <command> [<service>]
       -Q  Quick mode.  Don't wait for ${install.package.description} to start up.
           Useful if you want to watch the logs while ${install.package.description} starts up
           without wanting to open another terminal window.
+      -s  systemd mode. The foreground mode option, -f, is ignored when this option is used.
 
 END
 	return
@@ -452,7 +455,6 @@ doStart(){
 		echo "running ulimit -a"
 		ulimit -a
 		runCmd "${CMD[@]}" &
-		exit 0
 	else
 		if [ "$BACKGROUND" = 1 ]; then
 			# shellcheck disable=SC2129
@@ -715,6 +717,9 @@ fi
 
 JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"
 JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1)"
+if [ -z "$JAVA_SHORT_VERSION" ]; then
+	JAVA_SHORT_VERSION=0
+fi
 
 JAVA_MODULES=(
 	java.base \
@@ -909,12 +914,20 @@ if [ "$VERBOSE_GC" != "" ]; then
 	MANAGER_OPTIONS+=("-verbose:gc")
 fi
 
+SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
 myuser="$(id -u -n)"
-if [ "$myuser" = "$RUNAS" ]; then
-	true # all is well
-else
-	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
-	exit 4	# According to LSB: 4 - user had insufficient privileges
+if [ "$myuser" != "$RUNAS" ]; then
+	if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
+		echo "WARNING: relaunching as $RUNAS" >&2
+		_cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
+		exec "${_cmd[@]}"
+	fi
+	echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
+	echo "       Create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
+	echo "       if you wish for OpenNMS to run as ${myuser} instead." >&2
+	echo "       If you have already edited opennms.conf, make sure that 'User=' is also set" >&2
+	echo "       in the OpenNMS systemd service." >&2
+	exit 4 # According to LSB: 4 - user had insufficient privileges
 fi
 
 if [ -e "${OPENNMS_PIDFILE}" ]; then

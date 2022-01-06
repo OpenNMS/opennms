@@ -1,5 +1,5 @@
 
-[[flow-rest]]
+[[ga-flow-support-aggregation]]
 = Aggregated flows by REST API
 
 The flow query engine supports rendering Top-N metrics from pre-aggregated documents stored in Elasticsearch.

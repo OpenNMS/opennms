@@ -10,12 +10,14 @@
                 {
                     "id": 2,
                     "name": "ICMP",
-                    "availability": -1.0
+                    "availability": -1.0,
+                    "up": true
                 },
                 {
                     "id": 3,
                     "name": "SNMP",
-                    "availability": -1.0
+                    "availability": -1.0,
+                    "up": true
                 }
             ]
         },
@@ -27,12 +29,14 @@
                 {
                     "id": 5,
                     "name": "ICMP",
-                    "availability": -1.0
+                    "availability": -1.0,
+                    "up": true
                 },
                 {
                     "id": 6,
                     "name": "HTTP",
-                    "availability": -1.0
+                    "availability": -1.0,
+                    "up": true
                 }
             ]
         },
@@ -44,7 +48,8 @@
                 {
                     "id": 8,
                     "name": "ICMP",
-                    "availability": -1.0
+                    "availability": -1.0,
+                    "up": true
                 }
             ]
         },
@@ -56,7 +61,8 @@
                 {
                     "id": 10,
                     "name": "ICMP",
-                    "availability": -1.0
+                    "availability": -1.0,
+                    "up": true
                 }
             ]
         }

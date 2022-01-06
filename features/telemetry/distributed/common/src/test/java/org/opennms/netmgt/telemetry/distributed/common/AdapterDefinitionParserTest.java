@@ -91,4 +91,34 @@ public class AdapterDefinitionParserTest {
         Assert.assertEquals(1, adapters.size());
     }
 
+    /**
+     * see NMS-13477
+     */
+    @Test
+    public void testWhitespaces() {
+        final Map<String, String> properties = new HashMap();
+        properties.put("name", " SFlow");
+        properties.put("adapters.1.name", " SFlow-Parser");
+        properties.put("adapters.1.class-name", " org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter");
+        properties.put("adapters.2.name", "SFLOW-Telemetry ");
+        properties.put("adapters.2.class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter ");
+        properties.put("adapters.2.parameters.script", "/opt/sentinel/etc/sflow-host.groovy ");
+
+        // Parse and verify
+        final List<AdapterDefinition> adapters = new AdapterDefinitionParser().parse("Test", PropertyTree.from(properties));
+        Assert.assertEquals(2, adapters.size());
+        Assert.assertThat(adapters, CoreMatchers.hasItems(
+                new MapBasedAdapterDef(
+                        "Test",
+                        PropertyTree.from(ImmutableMap.of("name", "SFlow-Parser",
+                                "class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter"))
+                ),
+                new MapBasedAdapterDef(
+                        "Test",
+                        PropertyTree.from(ImmutableMap.of("name", "SFLOW-Telemetry",
+                                "class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter",
+                                "parameters.script", "/opt/sentinel/etc/sflow-host.groovy"))
+                )
+        ));
+    }
 }

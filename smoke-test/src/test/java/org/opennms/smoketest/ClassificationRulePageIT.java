@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -41,6 +42,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.awaitility.core.ThrowingRunnable;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.flows.rest.classification.ClassificationRequestDTO;
@@ -54,11 +56,15 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 @org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ClassificationRulePageIT.class);
 
     private static int DEFAULT_WAIT_TIME = 2000;
 
@@ -266,6 +272,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         tab.search(""); // clear Search afterwards
     }
 
+    private ThrowingRunnable responseIsAssertion(String expected) {
+        return () -> {
+            var actual = execute(() -> findElementById("classification-response")).getText();
+            assertThat(actual, is(expected));
+        };
+    }
+
     @Test
     public void verifyClassification() {
         final ClassificationRequestDTO classificationRequestDTO = new ClassificationRequestDTO();
@@ -277,15 +290,15 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         classificationRequestDTO.setExporterAddress("10.0.0.5");
 
         // try http
-        assertThat("http", is(uiPage.classify(classificationRequestDTO)));
+        uiPage.classifyAndWaitUntilAsserted(classificationRequestDTO, responseIsAssertion("http"));
 
         // try http-alt
         classificationRequestDTO.setDstPort("8080");
-        assertThat("http-alt", is(uiPage.classify(classificationRequestDTO)));
+        uiPage.classifyAndWaitUntilAsserted(classificationRequestDTO, responseIsAssertion("http-alt"));
 
         // try no mapping found
         classificationRequestDTO.setDstPort("12");
-        assertThat("No mapping found", is(uiPage.classify(classificationRequestDTO)));
+        uiPage.classifyAndWaitUntilAsserted(classificationRequestDTO, responseIsAssertion("No mapping found"));
     }
 
     @Test
@@ -318,27 +331,27 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         classificationRequest.setProtocol("tcp");
 
         // try classification, should fail
-        uiPage.classify(classificationRequest);
-
-        // Error should be displayed, but response should not
-        assertThat(true, is(driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
-        assertThat(false, is(driver.findElement(By.id("classification-response")).isDisplayed()));
+        uiPage.classifyAndWaitUntilAsserted(classificationRequest, () -> {
+            // Error should be displayed, but response should not
+            assertThat(true, is(driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
+            assertThat(false, is(driver.findElement(By.id("classification-response")).isDisplayed()));
+        });
 
         // fix classification request and retry
         classificationRequest.setDstPort("80");
-        uiPage.classify(classificationRequest);
-
-        // Verify visibility is inverted
-        assertThat(false, is(driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
-        assertThat(true, is(driver.findElement(By.id("classification-response")).isDisplayed()));
+        uiPage.classifyAndWaitUntilAsserted(classificationRequest, () -> {
+            // Verify visibility is inverted
+            assertThat(false, is(driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
+            assertThat(true, is(driver.findElement(By.id("classification-response")).isDisplayed()));
+        });
 
         // make an invalid request and try again
         classificationRequest.setDstPort("x");
-        uiPage.classify(classificationRequest);
-
-        // Error should be displayed, but response should not
-        assertThat(true, is(driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
-        assertThat(false, is(driver.findElement(By.id("classification-response")).isDisplayed()));
+        uiPage.classifyAndWaitUntilAsserted(classificationRequest, () -> {
+            // Error should be displayed, but response should not
+            assertThat(true, is(driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
+            assertThat(false, is(driver.findElement(By.id("classification-response")).isDisplayed()));
+        });
     }
 
     @Test
@@ -366,11 +379,11 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         classificationRequest.setProtocol("tcp");
 
         // Src Address does not match, so OpenNMS should be the result
-        assertThat("OpenNMS", is(uiPage.classify(classificationRequest)));
+        uiPage.classifyAndWaitUntilAsserted(classificationRequest, responseIsAssertion("OpenNMS"));
 
         // Update srcAddress
         classificationRequest.setSrcAddress("10.0.0.5");
-        assertThat("OpenNMS Monitoring", is(uiPage.classify(classificationRequest)));
+        uiPage.classifyAndWaitUntilAsserted(classificationRequest, responseIsAssertion("OpenNMS Monitoring"));
     }
 
     @Test
@@ -414,11 +427,11 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             classificationRequest.setProtocol("tcp");
 
             // exporter filter should apply
-            assertThat("test", is(uiPage.classify(classificationRequest)));
+            uiPage.classifyAndWaitUntilAsserted(classificationRequest, responseIsAssertion("test"));
 
             // update exporter address and have exporterFilter not apply
             classificationRequest.setExporterAddress("10.0.0.5");
-            assertThat("OpenNMS", is(uiPage.classify(classificationRequest)));
+            uiPage.classifyAndWaitUntilAsserted(classificationRequest, responseIsAssertion("OpenNMS"));
         } finally {
             deleteExistingRequisition(REQUISITION_NAME);
         }
@@ -465,7 +478,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             });
         }
 
-        public String classify(ClassificationRequestDTO classificationRequest) {
+        public void classifyAndWaitUntilAsserted(ClassificationRequestDTO classificationRequest, ThrowingRunnable assertion) {
             // get the classification input
             if (!execute(() -> findElementById("classification-tab")).isDisplayed()) {
                 execute(() -> findElementById("action.classification.toggle")).click();
@@ -482,21 +495,19 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             // Submit form
             execute(() -> findElementById("classification-submit")).click();
 
-            // The "classification-response" may already be visible (e.g. due to an earlier verification)
-            // therefore it may contain a value if it is fetched directly after clicking the button.
-            // In some scenarios the response from the opennms endpoint is not yet received, thus the old value is returned
-            // resulting in test failures. To avoid this, a bunch of seconds is waited before reading the value.
-            // See HZN-1289.
-            sleep(DEFAULT_WAIT_TIME);
-
-            // Fiddle result out of UI
-            return execute(() -> findElementById("classification-response")).getText();
+            await()
+                    // reloading the classification engine sometimes takes insanely long on CI
+                    // (this is further aggravated by the fact that one reload may be under way and another one may be pending)
+                    .atMost(150, TimeUnit.SECONDS)
+                    .pollInterval(2, TimeUnit.SECONDS)
+                    .untilAsserted(assertion);
         }
 
         private void setInput(String id, String text, boolean withEnter) {
             final WebElement element = execute(() -> findElementById(id));
             element.clear();
             element.sendKeys(text);
+            LOG.debug("setInput: text=" + text);
             if (withEnter) {
                 element.sendKeys(Keys.ENTER);
             }
@@ -799,7 +810,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             return new RuleModal()
                     .open(() -> {
                         // Click add rule button
-                        findElementById("action.addRule").click();
+                        clickElement(By.id("action.addRule"));
                         new WebDriverWait(driver, 5).until(pageContainsText("Create Classification Rule"));
                     });
         }

@@ -29,7 +29,9 @@
 package org.opennms.netmgt.snmp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,11 +47,14 @@ public class TrapIdentity {
     private int m_generic;
     private int m_specific;
     private String m_enterpriseId;
+    private String trapOID;
     
     /**
      * The standard traps list
      */
     private static final List<SnmpObjId> GENERIC_TRAPS;
+
+    private static final Map<Integer, SnmpObjId> GENERIC_TRAPS_BY_GENERIC_ID;
     
     /**
      * The dot separator in an OID
@@ -82,6 +87,16 @@ public class TrapIdentity {
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.4")); // linkUp
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.5")); // authenticationFailure
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.6")); // egpNeighborLoss
+    }
+
+    static {
+        GENERIC_TRAPS_BY_GENERIC_ID = new HashMap<>();
+        GENERIC_TRAPS_BY_GENERIC_ID.put(0, new SnmpObjId("1.3.6.1.6.3.1.1.5.1")); // coldStart
+        GENERIC_TRAPS_BY_GENERIC_ID.put(1, new SnmpObjId("1.3.6.1.6.3.1.1.5.2")); // warmStart
+        GENERIC_TRAPS_BY_GENERIC_ID.put(2, new SnmpObjId("1.3.6.1.6.3.1.1.5.3")); // linkDown
+        GENERIC_TRAPS_BY_GENERIC_ID.put(3, new SnmpObjId("1.3.6.1.6.3.1.1.5.4")); // linkUp
+        GENERIC_TRAPS_BY_GENERIC_ID.put(4, new SnmpObjId("1.3.6.1.6.3.1.1.5.5")); // authenticationFailure
+        GENERIC_TRAPS_BY_GENERIC_ID.put(5, new SnmpObjId("1.3.6.1.6.3.1.1.5.6")); // egpNeighborLoss
     }
     
     public TrapIdentity(SnmpObjId snmpTrapOid, SnmpObjId lastVarBindOid, SnmpValue lastVarBindValue) {
@@ -119,7 +134,7 @@ public class TrapIdentity {
                 // snmpTraps value defined as in RFC 1907
                 setEnterpriseId(TrapIdentity.SNMP_TRAPS + "." + snmpTrapOidValue.charAt(snmpTrapOidValue.length() - 1));
             }
-            
+            setTrapOID(getEnterpriseId());
         } else // not standard trap
         {
             // set generic to 6
@@ -135,8 +150,11 @@ public class TrapIdentity {
                 // set enterprise value to trap oid minus the
                 // the last two subids
                 setEnterpriseId(snmpTrapOidValue.substring(0, nextToLastIndex));
+                // Parse full trap oid with sub-id
+                setTrapOID(snmpTrapOidValue);
             } else {
                 setEnterpriseId(snmpTrapOidValue.substring(0, lastIndex));
+                setTrapOID(snmpTrapOidValue);
             }
         }
     }
@@ -145,6 +163,17 @@ public class TrapIdentity {
         m_enterpriseId = entId.toString();
         m_generic = generic;
         m_specific = specific;
+        // SNMP V1
+        if (m_generic == 6) {
+            // Concatenate sub-id and specific with enterpriseId.
+            String trapOID = m_enterpriseId + "." + 0 + "." + m_specific;
+            setTrapOID(trapOID);
+        } else if (GENERIC_TRAPS_BY_GENERIC_ID.containsKey(m_generic)) {
+            SnmpObjId trapOID = GENERIC_TRAPS_BY_GENERIC_ID.get(m_generic);
+            setTrapOID(trapOID.toString());
+        } else {
+            setTrapOID(getEnterpriseId());
+        }
     }
 
     public int getGeneric() {
@@ -171,7 +200,15 @@ public class TrapIdentity {
         m_enterpriseId = enterpriseId;
     }
 
-        @Override
+    public String getTrapOID() {
+        return trapOID;
+    }
+
+    private void setTrapOID(String trapOID) {
+        this.trapOID = trapOID;
+    }
+
+    @Override
     public String toString() {
         return "[Generic="+getGeneric()+", Specific="+getSpecific()+", EnterpriseId="+getEnterpriseId()+"]";
     }

@@ -54,6 +54,6 @@ public class ThreadReportPluginIT extends ReportPluginITCase {
         final Map<String, org.springframework.core.io.Resource> entries = m_threadReportPlugin.getEntries();
         final org.springframework.core.io.Resource resource = entries.get("ThreadDump.txt");
         final String contents = IOUtils.toString(resource.getInputStream());
-        assertTrue(contents.contains("at sun.management.ThreadImpl.dumpAllThreads"));
+        assertTrue(contents.contains("/sun.management.ThreadImpl.dumpAllThreads"));
     }
 }

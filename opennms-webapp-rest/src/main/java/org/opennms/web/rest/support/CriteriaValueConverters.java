@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,6 +67,22 @@ public abstract class CriteriaValueConverters {
         @Override
         public String toString() {
             return "DATE_CONVERTER";
+        }
+    };
+
+    public static final Function<String,Character> CHARACTER_CONVERTER = new Function<String,Character>() {
+        @Override
+        public Character apply(final String t) {
+            return t.charAt(0);
+        }
+
+        /**
+         * Override {@link #toString()} on this functional interface
+         * to make it identifiable inside a debugger.
+         */
+        @Override
+        public String toString() {
+            return "CHARACTER_CONVERTER";
         }
     };
 

@@ -47,6 +47,18 @@ The Netflow v9 UDP parser supports protocol detection.
 | A value > 1 enables checking for sequence number completeness.
  The value gives the size of the history buffer allowing flows to be processed out of order.
 | 32
+
+| flowActiveTimeoutFallback
+| Fallback value for active flow timeout, if value is not included in exported flows.
+| none
+
+| flowInactiveTimeoutFallback
+| Fallback value for inactive flow timeout, if value is not included in exported flows.
+| none
+
+| flowSamplingIntervalFallback
+| Fallback value for sampling interval, if value is not included in exported flows.
+| none
 |===
 
 NOTE: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters.

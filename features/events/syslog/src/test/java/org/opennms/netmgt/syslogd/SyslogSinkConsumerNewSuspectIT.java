@@ -33,7 +33,7 @@ import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import java.io.IOException;
 import java.io.InputStream;

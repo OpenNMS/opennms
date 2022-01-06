@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <changeSet author="swachter" id="29.0.4-create-index-snmpinterface_snmpphysaddr_idx">
+    <!-- speeds up enlinkd link retrieval -->
+    <createIndex tableName="snmpinterface" indexName="snmpinterface_snmpphysaddr_idx">
+      <column name="snmpphysaddr" />
+    </createIndex>
+  </changeSet>
+
+
+  <changeSet author="aramos" id="29.0.4-bmp-ip-rib-log-create-hypertable" runAlways="true">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_ip_rib_log';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_ip_rib_log', 'last_updated', migrate_data => true);
+    </sql>
+  </changeSet>
+
+
+  <changeSet author="aramos" id="29.0.4-bmp-stats_by-peer-create-hypertable" runAlways="true">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_by_peer';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_stats_by_peer', 'interval_time', migrate_data => true);
+    </sql>
+  </changeSet>
+
+
+  <changeSet author="aramos" id="29.0.4-bmp-stats_by-asn-create-hypertable" runAlways="true">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_by_asn';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_stats_by_asn', 'interval_time', migrate_data => true);
+    </sql>
+  </changeSet>
+
+
+
+  <changeSet author="aramos" id="29.0.4-bmp-stats_by-prefix-create-hypertable" runAlways="true">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_by_prefix';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_stats_by_prefix', 'interval_time', migrate_data => true);
+    </sql>
+  </changeSet>
+
+
+  <changeSet author="aramos" id="29.0.4-bmp-stats-peer-rib-create-hypertable" runAlways="true">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_peer_rib';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_stats_peer_rib', 'interval_time', migrate_data => true);
+    </sql>
+  </changeSet>
+
+
+  <changeSet author="aramos" id="29.0.4-bmp-stats-ip-origins-create-hypertable" runAlways="true">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_ip_origins';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_stats_ip_origins', 'interval_time', migrate_data => true);
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>

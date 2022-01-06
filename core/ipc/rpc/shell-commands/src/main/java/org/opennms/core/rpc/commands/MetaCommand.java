@@ -84,7 +84,7 @@ public class MetaCommand implements Action {
         for (final Map.Entry<String, Set<ContextKey>> group : grouped.entrySet()) {
             System.out.printf("%s:\n", group.getKey());
             for (final ContextKey contextKey : group.getValue()) {
-                System.out.printf("  %s='%s'\n", contextKey.getKey(), scope.get(contextKey).orElse(""));
+                System.out.printf("  %s='%s'\n", contextKey.getKey(), scope.get(contextKey).map(r -> String.format("%s @ %s", r.value, r.scopeName)).orElse(""));
             }
         }
     }
@@ -121,8 +121,13 @@ public class MetaCommand implements Action {
                 System.out.printf("---\n");
 
                 if (!Strings.isNullOrEmpty(this.expression)) {
-                    final String result = Interpolator.interpolate(this.expression, new FallbackScope(nodeScope, interfaceScope, serviceScope));
-                    System.out.printf("Input: '%s'\nOutput: '%s'\n", this.expression, result);
+                    final Interpolator.Result result = Interpolator.interpolate(this.expression, new FallbackScope(nodeScope, interfaceScope, serviceScope));
+                    System.out.printf("Input: '%s'\nOutput: '%s'\n", this.expression, result.output);
+
+                    System.out.printf("Details:\n");
+                    for(final Interpolator.ResultPart resultPart : result.parts) {
+                        System.out.printf("  Part: '%s' => match='%s', value='%s', scope='%s'\n", resultPart.input, resultPart.match, resultPart.value.value, resultPart.value.scopeName);
+                    }
                 }
                 return null;
         } catch (final Exception e) {

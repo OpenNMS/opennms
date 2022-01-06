@@ -30,6 +30,7 @@ package org.opennms.features.kafka.producer.shell;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
@@ -51,7 +52,7 @@ public class ListAlarms implements Action {
 
     @Override
     public Object execute() {
-        if (!SyncAlarms.waitForAlarmDataStore(alarmDataStore)) {
+        if (!SyncAlarms.waitForAlarmDataStore(alarmDataStore, 15, TimeUnit.SECONDS)) {
             return null;
         }
 

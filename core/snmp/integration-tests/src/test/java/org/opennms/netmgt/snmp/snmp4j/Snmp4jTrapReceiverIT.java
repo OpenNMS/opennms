@@ -170,7 +170,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
         } finally {
             LOG.debug("ONMS: Unregister for Traps");
             try {
-                strategy.unregisterForTraps(trapListener, 9162);
+                strategy.unregisterForTraps(trapListener);
             } catch (final IOException e) {
                 LOG.debug("Failed to unregister for traps.", e);
             }
@@ -200,7 +200,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
         } finally {
             LOG.debug("ONMS: Unregister for Traps");
             try {
-                strategy.unregisterForTraps(trapListener, 9162);
+                strategy.unregisterForTraps(trapListener);
             } catch (final IOException e) {
                 LOG.debug("Failed to unregister for traps.", e);
             }
@@ -233,7 +233,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
         } finally {
             LOG.debug("ONMS: Unregister for Traps");
             try {
-                strategy.unregisterForTraps(trapListener, 9162);
+                strategy.unregisterForTraps(trapListener);
             } catch (final IOException e) {
                 LOG.debug("Failed to unregister for traps.", e);
             }
@@ -264,7 +264,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
         } finally {
             LOG.debug("ONMS: Unregister for Traps");
             try {
-                strategy.unregisterForTraps(trapListener, 9162);
+                strategy.unregisterForTraps(trapListener);
             } catch (final IOException e) {
                 LOG.debug("Failed to unregister for traps.", e);
             }
@@ -315,7 +315,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
         // Cleanup for sanity
         strategy.clearUsers();
         // unregister listener
-        strategy.unregisterForTraps(trapListener, getAgentAddress(), 9162);
+        strategy.unregisterForTraps(trapListener);
     }
 
 
