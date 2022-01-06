@@ -101,7 +101,7 @@ commands:
       steps:
         - run:
             name: Calculate cache key from pom files
-            command: find . -type f -name "pom.xml" | grep -v /target/ | sort -u | xargs cat > maven-dependency-pom-cache.key
+            command: find * -type f -name "pom.xml" | grep -v /target/ | sort -u | xargs cat > maven-dependency-pom-cache.key
         - restore_cache:
             keys:
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
@@ -235,8 +235,8 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/junit
-            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
-            find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find * -type f -regex ".*target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find * -type f -regex ".*target/failsafe-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
             mkdir -p ~/test-artifacts/recordings
             cp -R ~/project/smoke-test/target/*.flv ~/test-artifacts/recordings || true
             cp -R ~/project/smoke-test/target/screenshots ~/test-artifacts/ || true
@@ -348,8 +348,8 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/junit
-            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
-            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*dump.*" -exec cp {} ~/test-results/junit/ \;
+            find * -type f -regex ".*target/.*-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find * -type f -regex ".*target/.*-reports-[0-9]+/.*dump.*" -exec cp {} ~/test-results/junit/ \;
       - run:
           name: Gather tests
           when: always
