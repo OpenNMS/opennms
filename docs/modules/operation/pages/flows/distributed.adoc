@@ -21,10 +21,8 @@ See the examples in `$OPENNMS_HOME/etc/telemetryd-configuration.xml`, or <<refer
 
 To enable and configure a listener for NetFlow v5 on Minion, connect to the Karaf Console and set the following properties:
 
-[source, console]
+[source, karaf]
 ----
-$ ssh -p 8201 admin@localhost
-...
 config:edit --alias udp-8877 --factory org.opennms.features.telemetry.listeners
 config:property-set name Netflow-5
 config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
