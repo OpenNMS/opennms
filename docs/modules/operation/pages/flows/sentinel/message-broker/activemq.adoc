@@ -31,7 +31,7 @@ config:update
 ----
 
 <1> A location string is required and used only for tracing.
-<2> Unique identifier used as service name only for tracing.
+<2> Unique identifier or hostname used as service name only for tracing.
 <3> Base URL for the web UI, which provides the REST endpoints.
 <4> URL that points to ActiveMQ broker.
 
