@@ -50,7 +50,7 @@ config:update
 
 == Configure access to Elasticsearch
 
-.Connect to the Karaf shell via SSH
+.Connect to the Sentinel Karaf shell via SSH
 [source, console]
 ----
 ssh -p 8301 admin@localhost
