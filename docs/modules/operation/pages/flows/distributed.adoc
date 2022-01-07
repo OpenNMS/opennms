@@ -36,7 +36,7 @@ config:update
 
 TIP: If using a configuration management, you can create and use the properties file as startup configuration in `$MINION_HOME/etc/org.opennms.features.telemetry.listeners-udp-8877.cfg`.
 
-[source, console]
+[source, properties]
 ----
 name = Netflow-5
 class-name = org.opennms.netmgt.telemetry.listeners.UdpListener
