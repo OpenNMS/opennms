@@ -37,7 +37,6 @@ import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.features.config.service.util.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -149,7 +148,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
 
         return lastKnownEntityMap.compute(configId, (k, v) -> {
             if (v != null) {
-                BeanUtils.copyProperties(config, v);
+                BeanFieldCopyUtil.copyFields(config, v);
                 return v;
             } else {
                 return config;
