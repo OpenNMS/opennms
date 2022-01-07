@@ -41,5 +41,5 @@ At a high level, with a xref:operation:flows/basic.adoc#flows-basic[basic setup]
 * You can use <<flows/nephron.adoc#ga-nephron, Nephron>> to aggregate flows and output aggregates to Elasticsearch, Cortex, or Kafka.
 * The REST API supports generating both summaries and time series data from the flows or flow aggregates stored in Elasticsearch.
 * Use OpenNMS Helm to visualize flows and/or flow aggregates:
-** Use the "Flow Deep Dive" dashboard to visualize flows and flow aggregates that are stored in Elasticsearch using the flow datasource that interfaces with the {page-component-title} REST API.
-** Use the "Cortex Flow Deep Dive" dashboard that uses a Prometheus datasource to access flow aggregates stored in Cortex.
+** Use the "Flow Deep Dive" dashboard with an OpenNMS Flow datasource to visualize flows and flow aggregates that are stored in Elasticsearch.
+** Use the "Cortex Flow Deep Dive" dashboard with a Prometheus datasource to access flow aggregates stored in Cortex.
