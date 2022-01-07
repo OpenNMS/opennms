@@ -52,11 +52,23 @@ Use the `metaDataNodeLookup` parameter to specify a context-key pair in the form
 The value the lookup uses corresponds to the following fields from each protocol:
 
 [options="header, autowidth"]
+[cols="1,1"]
 |===
-| Property     | Description
-| NetFlow v5   | engineId
-| NetFlow v9   | sourceId
-| IPFix        | observationDomainId
-| SFlow        | agent_address:sub_agent_id
-| BMP          | bgpId
+| Property
+| Description
+
+| NetFlow v5
+| engineId
+
+| NetFlow v9
+| sourceId
+
+| IPFix
+| observationDomainId
+
+| SFlow
+| agent_address:sub_agent_id
+
+| BMP
+| bgpId
 |===
