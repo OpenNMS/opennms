@@ -51,18 +51,12 @@
 
 package org.opennms.netmgt.protocols.xmp.config;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Reader;
 
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
-
-import javax.annotation.PostConstruct;
 
 public class XmpConfigFactory extends AbstractCmJaxbConfigDao<XmpConfig> {
 
@@ -70,7 +64,6 @@ public class XmpConfigFactory extends AbstractCmJaxbConfigDao<XmpConfig> {
         private static XmpConfigFactory instance;
         private XmpConfig config = null;
         private static final String CONFIG_NAME = "xmp";
-        private static final String DEFAULT_CONFIG_ID = "default";
         // initialize our class for the creation of instances
         /**
          * <p>init</p>
@@ -132,12 +125,6 @@ public class XmpConfigFactory extends AbstractCmJaxbConfigDao<XmpConfig> {
         public String getConfigName() {
             return CONFIG_NAME;
         }
-
-        @Override
-        public String getDefaultConfigId() {
-            return DEFAULT_CONFIG_ID;
-        }
-
 
         /* private methods *********************************** */
 

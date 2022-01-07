@@ -28,26 +28,12 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-
-import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -64,7 +50,6 @@ import javax.annotation.PostConstruct;
 public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager {
     private static final Logger LOG = LoggerFactory.getLogger(EnhancedLinkdConfigFactory.class);
     private static final String CONFIG_NAME = "enlinkd";
-    private static final String DEFAULT_CONFIG_ID = "default";
 
     public EnhancedLinkdConfigFactory() {
         // move to postConstruct to prevent dao bean not ready
@@ -113,12 +98,6 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
     public String getConfigName() {
         return CONFIG_NAME;
     }
-
-    @Override
-    protected String getDefaultConfigId() {
-        return DEFAULT_CONFIG_ID;
-    }
-
 
     @Override
     public void reload() throws IOException {

@@ -46,7 +46,6 @@ public final class NotifdConfigFactory extends NotifdConfigManager {
     private static final Logger LOG = LoggerFactory.getLogger(NotifdConfigFactory.class);
 
     public static final String CONFIG_NAME = "notifd";
-    public static final String DEFAULT_CONFIG_ID = "default";
 
     /**
      * Singleton instance
@@ -155,11 +154,6 @@ public final class NotifdConfigFactory extends NotifdConfigManager {
     @Override
     public String getConfigName() {
         return CONFIG_NAME;
-    }
-
-    @Override
-    protected String getDefaultConfigId() {
-        return DEFAULT_CONFIG_ID;
     }
 
 }

@@ -82,8 +82,4 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
         return NotifdConfigFactory.CONFIG_NAME;
     }
 
-    @Override
-    protected String getDefaultConfigId() {
-        return NotifdConfigFactory.DEFAULT_CONFIG_ID;
-    }
 }
