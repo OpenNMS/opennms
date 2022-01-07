@@ -2,7 +2,7 @@
 [[flows-scaling]]
 = Scale Flows Data
 
-When your flows data collection volume increases to the point that {page-component-title} is too busy processing flows, you can add Sentinel to do the processing instead.
+When your flows data collection volume increases to the point that {page-component-title} is too busy processing flows, you can add Sentinel(s) to do the processing instead.
 Sentinel can do the following:
 
 * Persist network flow messages with Sentinel to Elasticsearch
