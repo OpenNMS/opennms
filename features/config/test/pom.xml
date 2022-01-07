@@ -137,5 +137,11 @@
       <artifactId>org.opennms.core.test-api.lib</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>uk.co.jemos.podam</groupId>
+      <artifactId>podam</artifactId>
+      <version>7.2.8.RELEASE</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
