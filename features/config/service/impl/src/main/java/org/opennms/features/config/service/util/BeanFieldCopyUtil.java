@@ -32,8 +32,9 @@ import org.opennms.features.config.exception.ConfigRuntimeException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This util simply copy all field. (Shallow copy only.)
@@ -60,7 +61,8 @@ public class BeanFieldCopyUtil {
     }
 
     private static <E> void copyValue(E source, E target, Field field) throws IllegalAccessException {
-        field.setAccessible(true); // ignore accessible since we are copying field
+        // temp ignore accessible since we are copying field, assume that the source fields are all passing the setter logic already
+        field.setAccessible(true);
         field.set(target, field.get(source));
     }
 
@@ -68,14 +70,17 @@ public class BeanFieldCopyUtil {
         return getAllFields(sourceClass, null);
     }
 
+    /**
+     * Return all fields in the class and all related parent class.
+     * It will skip final & static fields.
+     * @param sourceClass
+     * @param currentParentClass
+     * @return list of all fields
+     */
     public static Iterable<Field> getAllFields(Class<?> sourceClass, Class<?> currentParentClass) {
-        List<Field> currentClassFields = new ArrayList<>();
-        Field[] currentField = sourceClass.getDeclaredFields();
-        for (int i = 0; i < currentField.length; i++) {
-            if (!Modifier.isFinal(currentField[i].getModifiers()) && !Modifier.isStatic(currentField[i].getModifiers())) {
-                currentClassFields.add(currentField[i]);
-            }
-        }
+        List<Field> currentClassFields = Arrays.stream(sourceClass.getDeclaredFields()).filter(
+                f -> (!Modifier.isFinal(f.getModifiers()) && !Modifier.isStatic(f.getModifiers())))
+                .collect(Collectors.toList());
 
         Class<?> parentClass = sourceClass.getSuperclass();
 
