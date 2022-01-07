@@ -28,16 +28,17 @@
 
 package org.opennms.netmgt.config;
 
-import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
-import org.opennms.netmgt.config.trapd.Snmpv3User;
-import org.opennms.netmgt.config.trapd.TrapdConfiguration;
-import org.opennms.netmgt.snmp.SnmpV3User;
-
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
+import org.opennms.netmgt.config.trapd.TrapdConfiguration;
+import org.opennms.netmgt.snmp.SnmpV3User;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -69,7 +70,6 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
 
 
     private static final String CONFIG_NAME = "trapd";
-    private static final String DEFAULT_CONFIG_ID = "default";
     /**
      * Private constructor
      * 
@@ -258,8 +258,4 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
         return CONFIG_NAME;
     }
 
-    @Override
-    public String getDefaultConfigId() {
-        return DEFAULT_CONFIG_ID;
-    }
 }

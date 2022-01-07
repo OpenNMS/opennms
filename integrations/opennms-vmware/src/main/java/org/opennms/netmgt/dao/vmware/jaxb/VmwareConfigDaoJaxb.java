@@ -28,15 +28,16 @@
 
 package org.opennms.netmgt.dao.vmware.jaxb;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The Class VmwareConfigDaoJaxb
@@ -49,7 +50,6 @@ import java.util.Map;
 public class VmwareConfigDaoJaxb extends AbstractCmJaxbConfigDao<VmwareConfig> implements VmwareConfigDao {
     protected static VmwareConfig m_config;
     private static final String CONFIG_NAME = "vmware";
-    private static final String DEFAULT_CONFIG_ID = "default";
     /**
      * Default constructor
      */
@@ -93,11 +93,5 @@ public class VmwareConfigDaoJaxb extends AbstractCmJaxbConfigDao<VmwareConfig> i
     protected String getConfigName() {
         return CONFIG_NAME;
     }
-
-    @Override
-    protected String getDefaultConfigId() {
-        return DEFAULT_CONFIG_ID;
-    }
-
 
 }

@@ -46,7 +46,6 @@ import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 public class DefaultProvisiondConfigurationDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> implements ProvisiondConfigurationDao {
 
     private static final String CONFIG_NAME = "provisiond";
-    private static final String DEFAULT_CONFIG_ID = "default";
 
     /**
      * <p>Constructor for DefaultProvisiondConfigurationDao.</p>
@@ -166,8 +165,4 @@ public class DefaultProvisiondConfigurationDao extends AbstractCmJaxbConfigDao<P
         return CONFIG_NAME;
     }
 
-    @Override
-    protected String getDefaultConfigId() {
-        return DEFAULT_CONFIG_ID;
-    }
 }
