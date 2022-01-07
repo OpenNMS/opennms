@@ -34,8 +34,8 @@ org.opennms.instance.id=MyNMS
 * For Kafka RPC, the number of partitions should always be greater than the number of Minions at a location.
 When there are multiple locations, partitions >= max number of minions at a location.
 
-* By default, Kafka RPC supports buffers greater than >1MB by splitting large buffer into chunks of 900KB.
-Max buffer size (900KB, by default) can be configured by setting `org.opennms.core.ipc.rpc.kafka.max.buffer.size` (in bytes).
+* By default, Kafka RPC supports buffers greater than >1MB by splitting them into chunks of 900KB.
+Configure max buffer size (900KB, by default) by setting `org.opennms.core.ipc.rpc.kafka.max.buffer.size` to the desired size in bytes.
 
 * Default time to live (time at which request will expire) is 20000 msec (20sec).
 To change it, configure the system property `org.opennms.core.ipc.rpc.kafka.ttl` in msec.
