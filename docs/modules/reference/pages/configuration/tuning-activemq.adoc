@@ -9,7 +9,7 @@ from being published to the broker.
 
 == Monitoring the ActiveMQ broker using the Karaf shell
 
-The `opennms:activemq-stats` command available via the Karaf shell can be used to show statistics about the embedded broker:
+Use the `opennms:activemq-stats` command available via the Karaf shell to show statistics about the embedded broker:
 
 [source, karaf]
 ----
@@ -41,8 +41,8 @@ See the `authorizationPlugin` section in `$\{OPENNMS_HOME}/etc/opennms-activemq.
 
 == Multi-tenancy with {page-component-title} and ActiveMQ
 
-The queue names used by {page-component-title} are prefixed with a constant value.
-If many {page-component-title} are configured to use the same broker, then these queues would end up being shared amongst the instances, which is not desired.
+The queue names {page-component-title} uses are prefixed with a constant value.
+If many {page-component-title} are configured to use the same broker, then these queues would end up being shared among the instances, which is not desired.
 In order to isolate multiple instances on the same broker, you can customize the prefix by setting the value of the `org.opennms.instance.id` system property to something that is unique per instance.
 
 .`$\{OPENNMS_HOME}/etc/opennms.properties.d/instance-id.properties`
@@ -60,7 +60,7 @@ org.opennms.instance.id=MyNMS
 ----
 
 CAUTION: If you change the instance ID setting when using the embedded broker, you will need to update the authorization section in the broker's configuration to reflect the updated prefix.
-The configuration can be modified with the file `$\{OPENNMS_HOME}/etc/opennms-activemq.xml`:
+Modify the configuration with the file `$\{OPENNMS_HOME}/etc/opennms-activemq.xml`:
 
 [source, xml]
 ----
@@ -131,4 +131,4 @@ To interactively test RPC communication with a remote location use the `opennms:
 ----
 opennms:poll -l LOCATION -c org.opennms.netmgt.poller.monitors.IcmpMonitor 127.0.0.1 <1>
 ----
-<1> Replace `LOCATION` in the command above with the name of the Monitoring Location you want to test.
+<1> Replace `LOCATION` in the command above with the name of the monitoring location you want to test.
