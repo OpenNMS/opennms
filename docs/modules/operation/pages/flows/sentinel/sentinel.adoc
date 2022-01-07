@@ -26,7 +26,7 @@ NOTE: You must set configuration in the `etc` directory relative to the {page-co
 
 == Configure access to PostgreSQL database
 
-.Connect to the Karaf shell via SSH
+.Connect to the Sentinel Karaf shell via SSH
 [source, console]
 ----
 ssh -p 8301 admin@localhost
