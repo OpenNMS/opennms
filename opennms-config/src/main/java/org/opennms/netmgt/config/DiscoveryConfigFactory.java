@@ -28,7 +28,33 @@
 
 package org.opennms.netmgt.config;
 
-import com.google.common.base.Strings;
+import static java.util.Spliterator.IMMUTABLE;
+import static java.util.Spliterator.ORDERED;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Spliterators;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.StreamSupport;
+
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.spring.BeanUtils;
@@ -37,26 +63,20 @@ import org.opennms.core.utils.IteratorUtils;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
-import org.opennms.netmgt.config.discovery.*;
+import org.opennms.netmgt.config.discovery.Definition;
+import org.opennms.netmgt.config.discovery.Detector;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.ExcludeRange;
+import org.opennms.netmgt.config.discovery.ExcludeUrl;
+import org.opennms.netmgt.config.discovery.IncludeRange;
+import org.opennms.netmgt.config.discovery.IncludeUrl;
+import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import java.io.*;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.StreamSupport;
-
-import static java.util.Spliterator.IMMUTABLE;
-import static java.util.Spliterator.ORDERED;
+import com.google.common.base.Strings;
 
 /**
  * This class is used to load the configuration for the OpenNMS
@@ -74,7 +94,6 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
     private Map<String, Pair<Optional<String>, List<String>>> m_excludeUrlsMap = new HashMap<>();
 
     private static final String CONFIG_NAME = "discovery";
-    private static final String DEFAULT_CONFIG_ID = "default";
 
     public static final String COMMENT_STR = "#";
     public static final char COMMENT_CHAR = '#';
@@ -795,8 +814,4 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
         return CONFIG_NAME;
     }
 
-    @Override
-    public String getDefaultConfigId() {
-        return DEFAULT_CONFIG_ID;
-    }
 }

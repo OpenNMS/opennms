@@ -40,7 +40,6 @@ import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 public class DefaultJmxConfigDao extends AbstractCmJaxbConfigDao<JmxConfig> implements JmxConfigDao {
     
     private static final String CONFIG_NAME = "jmx";
-    private static final String DEFAULT_CONFIG_ID = "default";
 
     public DefaultJmxConfigDao() {
         super(JmxConfig.class, "JMX Configuration");
@@ -57,8 +56,4 @@ public class DefaultJmxConfigDao extends AbstractCmJaxbConfigDao<JmxConfig> impl
         return CONFIG_NAME;
     }
 
-    @Override
-    protected String getDefaultConfigId() {
-        return DEFAULT_CONFIG_ID;
-    }
 }
