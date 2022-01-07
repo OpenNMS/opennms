@@ -94,7 +94,7 @@ include::message-broker/activemq.adoc[]
 
 == Enable flow processing protocols
 
-.Connect to the Karaf shell via SSH
+.Connect to the Sentinel Karaf shell via SSH
 [source, console]
 ----
 ssh -p 8301 admin@localhost
