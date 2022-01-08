@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -476,7 +476,7 @@ public class NotificationManagerIT implements InitializingBean {
                 .put(NotificationManager.PARAM_INTERFACE, InetAddressUtils.toIpAddrString(ipInterfaceOnNode1.getIpAddress()))
                 .put(NotificationManager.PARAM_SERVICE, "ICMP")
                 .put("eventUEI", dbEvent.getEventUei())
-                .put("eventID", Integer.toString(dbEvent.getId()))
+                .put("eventID", Long.toString(dbEvent.getId()))
                 .build();
         m_notificationManager.insertNotice(1, params, "q1", notification);
 
@@ -487,9 +487,9 @@ public class NotificationManagerIT implements InitializingBean {
                 .addParam("some-parameter", "some-specific-value")
                 .addParam("some-other-parameter", "some-other-specific-value")
                 .getEvent();
-        Collection<Integer> eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
-        assertEquals(1, eventIds.size());
-        assertEquals(dbEvent.getId(), eventIds.iterator().next());
+        Collection<Integer> notifIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
+        assertEquals(1, notifIds.size());
+        assertEquals(dbEvent.getId().longValue(), notifIds.iterator().next().longValue());
         unacknowledgeAllNotices();
 
         // It should not match when either of the event parameters are different
@@ -497,31 +497,31 @@ public class NotificationManagerIT implements InitializingBean {
                 .addParam("some-parameter", "!some-specific-value")
                 .addParam("some-other-parameter", "some-other-specific-value")
                 .getEvent();
-        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
-        assertEquals(0, eventIds.size());
+        notifIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
+        assertEquals(0, notifIds.size());
         unacknowledgeAllNotices();
 
         e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
                 .addParam("some-parameter", "some-specific-value")
                 .addParam("some-other-parameter", "!some-other-specific-value")
                 .getEvent();
-        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
-        assertEquals(0, eventIds.size());
+        notifIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
+        assertEquals(0, notifIds.size());
         unacknowledgeAllNotices();
 
         // It should not match when either of the event parameters are missing
         e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
                 .addParam("some-other-parameter", "some-other-specific-value")
                 .getEvent();
-        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
-        assertEquals(0, eventIds.size());
+        notifIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
+        assertEquals(0, notifIds.size());
         unacknowledgeAllNotices();
 
         e = new EventBuilder(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, "test")
                 .addParam("some-parameter", "some-specific-value")
                 .getEvent();
-        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
-        assertEquals(0, eventIds.size());
+        notifIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
+        assertEquals(0, notifIds.size());
         unacknowledgeAllNotices();
 
         // Now try matching on other fields without any event parameters
@@ -531,8 +531,8 @@ public class NotificationManagerIT implements InitializingBean {
                 .setInterface(ipInterfaceOnNode1.getIpAddress())
                 .setService("ICMP")
                 .getEvent();
-        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, fieldMatchList);
-        assertEquals(1, eventIds.size());
+        notifIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, fieldMatchList);
+        assertEquals(1, notifIds.size());
         unacknowledgeAllNotices();
 
         // Expect no match if we set different values responsive event
@@ -541,8 +541,8 @@ public class NotificationManagerIT implements InitializingBean {
                 .setInterface(InetAddressUtils.UNPINGABLE_ADDRESS)
                 .setService("HTTP")
                 .getEvent();
-        eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, fieldMatchList);
-        assertEquals(0, eventIds.size());
+        notifIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, fieldMatchList);
+        assertEquals(0, notifIds.size());
         unacknowledgeAllNotices();
     }
 

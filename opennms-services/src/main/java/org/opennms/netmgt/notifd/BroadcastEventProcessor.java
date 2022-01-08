@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -396,7 +396,7 @@ public final class BroadcastEventProcessor implements EventListener {
             final Map<String, String> parmMap = rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix);
 
             m_eventUtil.expandMapValues(parmMap,
-                    getNotificationManager().getEvent(Integer.parseInt(parmMap.get("eventID"))));
+                    getNotificationManager().getEvent(Long.parseLong(parmMap.get("eventID"))));
 
             String queueID = getNotificationManager().getQueueForNotification(notifId);
 

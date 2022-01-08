@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,7 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,8 +44,8 @@ import org.opennms.netmgt.dao.api.EventCountDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 
-public class MockEventDao extends AbstractMockDao<OnmsEvent, Integer> implements EventDao, EventCountDao {
-    private AtomicInteger m_id = new AtomicInteger(0);
+public class MockEventDao extends AbstractMockDao<OnmsEvent, Long> implements EventDao, EventCountDao {
+    private AtomicLong m_id = new AtomicLong(0);
 
     @Override
     protected void generateId(final OnmsEvent event) {
@@ -53,8 +53,8 @@ public class MockEventDao extends AbstractMockDao<OnmsEvent, Integer> implements
     }
 
     @Override
-    protected Integer getId(final OnmsEvent event) {
-        final Integer id = event.getId();
+    protected Long getId(final OnmsEvent event) {
+        final Long id = event.getId();
         return id == null || id == 0? null : id;
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,16 +40,15 @@ import org.opennms.web.filter.SQLType;
  * @version $Id: $
  * @since 1.8.1
  */
-public class EventIdListFilter extends InFilter<Integer> {
-    /** Constant <code>TYPE="eventIdList"</code> */
+public class EventIdListFilter extends InFilter<Long> {
     public static final String TYPE = "eventIdList";
     
-    private static Integer[] box(int[] values) {
+    private static Long[] box(long[] values) {
         if (values == null) {
             return null;
         }
         
-        Integer[] boxed = new Integer[values.length];
+        Long[] boxed = new Long[values.length];
         for(int i = 0; i < values.length; i++) {
             boxed[i] = values[i];
         }
@@ -57,29 +56,14 @@ public class EventIdListFilter extends InFilter<Integer> {
         return boxed;
     }
     
-    /**
-     * <p>Constructor for EventIdListFilter.</p>
-     *
-     * @param eventIds an array of int.
-     */
-    public EventIdListFilter(int[] eventIds) {
-        super(TYPE, SQLType.INT, "EVENTID", "id", box(eventIds));
+    public EventIdListFilter(long[] eventIds) {
+        super(TYPE, SQLType.BIGINT, "EVENTID", "id", box(eventIds));
     }
     
-    /**
-     * <p>Constructor for EventIdListFilter.</p>
-     *
-     * @param eventIds a {@link java.util.Collection} object.
-     */
-    public EventIdListFilter(Collection<Integer> eventIds) {
-        super(TYPE, SQLType.INT, "EVENTID", "id", eventIds.toArray(new Integer[0]));
+    public EventIdListFilter(Collection<Long> eventIds) {
+        super(TYPE, SQLType.BIGINT, "EVENTID", "id", eventIds.toArray(new Long[0]));
     }
 
-    /**
-     * <p>getTextDescription</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     @Override
     public String getTextDescription() {
         final StringBuilder buf = new StringBuilder("eventId in ");

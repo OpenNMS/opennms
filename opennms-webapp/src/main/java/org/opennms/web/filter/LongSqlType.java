@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,17 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.event.filter;
+package org.opennms.web.filter;
 
-import org.opennms.web.filter.EqualsFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-public class EventIdFilter extends EqualsFilter<Long> {
-    /** Constant <code>TYPE="eventId"</code> */
-    public static final String TYPE = "eventId";
-    
-    public EventIdFilter(long eventId) {
-        super(TYPE, SQLType.BIGINT, "EVENTID", "id", eventId);
+public class LongSqlType implements SQLType<Long> {
+
+    @Override
+    public String formatValue(final Long value) {
+        return value.toString();
     }
     
+    @Override
+    public String getValueAsString(Long value) {
+        return String.valueOf(value);
+    }
+
+    @Override
+    public void bindParam(final PreparedStatement ps, final int parameterIndex, final Long value) throws SQLException {
+        ps.setLong(parameterIndex, value);
+    }
+
+    @Override
+    public Long[] createArray(Long value1, Long value2) {
+        return new Long[] { value1, value2 };
+    }
+
 }

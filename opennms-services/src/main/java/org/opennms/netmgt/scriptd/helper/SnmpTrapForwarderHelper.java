@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -380,8 +380,8 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 
 	private SnmpTrapBuilder buildEventTrap(Event event, SnmpTrapBuilder trap, String severity) {
 		try {
-			 Integer t_dbid = Integer.valueOf(event.getDbid());
-             if (t_dbid.intValue() > 0)
+			 Long t_dbid = Long.valueOf(event.getDbid());
+             if (t_dbid.longValue() > 0)
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.1.0", "OctetString", "text", t_dbid.toString());
              else
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.1.0", "OctetString", "text", "null");

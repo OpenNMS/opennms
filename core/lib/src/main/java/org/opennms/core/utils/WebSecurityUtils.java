@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -139,6 +139,16 @@ public abstract class WebSecurityUtils {
 		return Integer.parseInt(clean);
 	}
 	
+    public static long[] safeParseLong(String[] dirty) throws NumberFormatException {
+        final long[] clean = new long[dirty.length];
+        String cleanString;
+        for (int i = 0; i < dirty.length; i++) {
+            cleanString = ILLEGAL_IN_INTEGER.matcher(dirty[i]).replaceAll("");
+            clean[i] = Long.parseLong(cleanString);
+        }
+        return clean;
+    }
+
 	/**
 	 * <p>safeParseLong</p>
 	 *

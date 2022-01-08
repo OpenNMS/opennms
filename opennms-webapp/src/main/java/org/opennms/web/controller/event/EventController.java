@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,10 +67,6 @@ import java.util.List;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class EventController extends MultiActionController implements InitializingBean {
 
@@ -138,11 +134,11 @@ public class EventController extends MultiActionController implements Initializi
     public ModelAndView detail(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	String idString = request.getParameter("id");
     	// asking for a specific ID; only filter should be event ID
-        final int eventId;
+        final long eventId;
         try {
-            eventId = WebSecurityUtils.safeParseInt(idString);
+            eventId = WebSecurityUtils.safeParseLong(idString);
         } catch (NumberFormatException e) {
-            throw new EventIdNotFoundException("Could not parse event ID '" + idString + "' to integer.", idString);
+            throw new EventIdNotFoundException("Could not parse event ID '" + idString + "' to long.", idString);
         }
     	ModelAndView modelAndView = createModelAndView(request, new EventIdFilter(eventId));
     	modelAndView.setViewName("event/detail");
@@ -221,7 +217,7 @@ public class EventController extends MultiActionController implements Initializi
         }
 
         List<Filter> filters = new ArrayList<>();
-        filters.add(new EventIdListFilter(WebSecurityUtils.safeParseInt(eventIdStrings)));
+        filters.add(new EventIdListFilter(WebSecurityUtils.safeParseLong(eventIdStrings)));
         EventCriteria criteria = new EventCriteria(filters.toArray(new Filter[0]));
 
         LOG.debug("criteria = {}, action = {}", criteria, action);

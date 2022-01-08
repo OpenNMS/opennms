@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -60,12 +60,7 @@ public abstract class PollEvent {
         return m_scope;
     }
 
-    /**
-     * <p>getEventId</p>
-     *
-     * @return a int.
-     */
-    public abstract int getEventId();
+    public abstract long getEventId();
 
     /**
      * <p>getDate</p>

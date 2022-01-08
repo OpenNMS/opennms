@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -160,7 +160,7 @@ public class ProtoBufMapperTest {
         Event event = new Event();
         event.setUuid(UUID.randomUUID().toString());
         event.setUei("newSuspectEvent");
-        event.setDbid(254);
+        event.setDbid(254L);
         event.setNodeid(1L);
         event.setSource("kafka-producer-test");
         event.setDistPoller("systemId1");

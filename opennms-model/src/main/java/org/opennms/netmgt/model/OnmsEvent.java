@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,7 +51,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -90,7 +89,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	@Column(name="eventId", nullable=false)
 	@SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
 	@GeneratedValue(generator="eventSequence")
-	private Integer eventId;
+	private Long eventId;
 
 	/** persistent field */
 	@Column(name="eventUei", length=256, nullable=false)
@@ -253,22 +252,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	public OnmsEvent() {
 	}
 
-    /**
-     * <p>getId</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
 	@XmlAttribute(name="id")
-	public Integer getId() {
+	public Long getId() {
 		return eventId;
 	}
 
-	/**
-	 * <p>setId</p>
-	 *
-	 * @param eventid a {@link java.lang.Integer} object.
-	 */
-	public void setId(Integer eventid) {
+	public void setId(Long eventid) {
 		eventId = eventid;
 	}
 

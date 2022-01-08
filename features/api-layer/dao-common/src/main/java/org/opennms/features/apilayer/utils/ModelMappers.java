@@ -175,6 +175,8 @@ public class ModelMappers {
             return null;
         }
         switch (severity) {
+            case INDETERMINATE:
+                return Severity.INDETERMINATE;
             case CLEARED:
                 return Severity.CLEARED;
             case NORMAL:

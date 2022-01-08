@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,7 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,EventDTO,SearchBean,Integer,Integer> implements EventRestApi {
+public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,EventDTO,SearchBean,Long,Long> implements EventRestApi {
 
     @Autowired
     private EventDao m_dao;
@@ -162,7 +162,7 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
     }
 
     @Override
-    protected OnmsEvent doGet(UriInfo uriInfo, Integer id) {
+    protected OnmsEvent doGet(UriInfo uriInfo, Long id) {
         return getDao().get(id);
     }
 
@@ -172,7 +172,7 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
     }
 
     @Override
-    public Response get(UriInfo uriInfo, Integer id) {
+    public Response get(UriInfo uriInfo, Long id) {
         return super.get(uriInfo, id);
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -124,7 +124,7 @@ public class MockQueryManager implements QueryManager {
     }
 
     @Override
-    public void updateOpenOutageWithEventId(int outageId, int lostEventId) {
+    public void updateOpenOutageWithEventId(int outageId, long lostEventId) {
         // TODO Auto-generated method stub
     }
 
@@ -136,8 +136,7 @@ public class MockQueryManager implements QueryManager {
     }
 
     @Override
-    public void updateResolvedOutageWithEventId(int outageId,
-            int regainedEventId) {
+    public void updateResolvedOutageWithEventId(int outageId, long regainedEventId) {
         // TODO Auto-generated method stub
     }
 
@@ -153,28 +152,25 @@ public class MockQueryManager implements QueryManager {
 	}
 
 	@Override
-	public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
+	public void closeOutagesForNode(Date closeDate, long eventId, int nodeId) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void closeOutagesForInterface(Date closeDate, int eventId,
-			int nodeId, String ipAddr) {
+	public void closeOutagesForInterface(Date closeDate, long eventId, int nodeId, String ipAddr) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void closeOutagesForService(Date closeDate, int eventId, int nodeId,
-			String ipAddr, String serviceName) {
+	public void closeOutagesForService(Date closeDate, long eventId, int nodeId, String ipAddr, String serviceName) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void updateServiceStatus(int nodeId, String ipAddr,
-			String serviceName, String status) {
+	public void updateServiceStatus(int nodeId, String ipAddr, String serviceName, String status) {
 		// TODO Auto-generated method stub
 		
 	}

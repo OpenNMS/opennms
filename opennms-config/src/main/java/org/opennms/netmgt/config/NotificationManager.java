@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -594,7 +594,7 @@ public abstract class NotificationManager {
             ResultSet results = statement.executeQuery();
             dbUtils.watch(results);
             if (results != null && results.next()) {
-                int eventID = results.getInt(1);
+                long eventID = results.getLong(1);
                 notifIDs = doAcknowledgeNotificationsFromEvent(connection, dbUtils, eventID);
             } else {
                 LOG.debug("No matching DOWN eventID found");
@@ -697,14 +697,14 @@ public abstract class NotificationManager {
      * @throws java.sql.SQLException if any.
      * @throws java.io.IOException if any.
      */
-    private List<Integer> doAcknowledgeNotificationsFromEvent(final Connection connection, final DBUtils dbUtils, int eventID) 
+    private List<Integer> doAcknowledgeNotificationsFromEvent(final Connection connection, final DBUtils dbUtils, long eventID) 
             throws SQLException, IOException {
         List<Integer> notifIDs = new LinkedList<>();
         LOG.debug("EventID for notice(s) to be acked: {}", eventID);
 
         PreparedStatement statement = connection.prepareStatement("SELECT notifyid, answeredby, respondtime FROM notifications WHERE eventID=?");
         dbUtils.watch(statement);
-        statement.setInt(1, eventID);
+        statement.setLong(1, eventID);
 
         ResultSet results = statement.executeQuery();
         boolean wasAcked = false;
@@ -905,9 +905,9 @@ public abstract class NotificationManager {
             // eventID field
             final String eventID = params.get("eventID");
             if (eventID != null && !eventID.trim().equals("") && !eventID.trim().equals("0") && !eventID.equalsIgnoreCase("null") && !eventID.equalsIgnoreCase("%eventid%")) {
-                statement.setInt(8, Integer.parseInt(eventID));
+                statement.setLong(8, Long.parseLong(eventID));
             } else {
-                statement.setNull(8, Types.INTEGER);
+                statement.setNull(8, Types.BIGINT);
             }
 
             statement.setString(9, params.get("eventUEI"));
@@ -1269,17 +1269,17 @@ public abstract class NotificationManager {
      * In the absence of DAOs and ORMs this creates an Event object from the persisted
      * record.
      *
-     * @param eventid a int.
+     * @param eventid the event's ID
      * @return a populated Event object
      */
-    public Event getEvent(final int eventid) {
+    public Event getEvent(final long eventid) {
         // don't switch using event builder since this event is read from the database
         final Event event = new Event();
         Querier querier = new Querier(m_dataSource, "select * from events where eventid = ?", new RowProcessor() {
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                event.setDbid(rs.getInt("eventid"));
+                event.setDbid(rs.getLong("eventid"));
                 event.setUei(rs.getString("eventuei"));
                 event.setNodeid(rs.getLong("nodeid"));
                 event.setTime(rs.getDate("eventtime"));

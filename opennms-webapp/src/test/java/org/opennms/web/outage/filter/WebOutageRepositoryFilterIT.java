@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -99,7 +99,7 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
         m_dbPopulator.populateDatabase();
         OnmsMonitoredService svc2 = m_dbPopulator.getMonitoredServiceDao().get(m_dbPopulator.getNode2().getId(), InetAddressUtils.addr("192.168.2.1"), "ICMP");
         // This requires every test method to have a new database instance :/
-        OnmsEvent event = m_dbPopulator.getEventDao().get(1);
+        OnmsEvent event = m_dbPopulator.getEventDao().get(1l);
         
         OnmsOutage unresolved2 = new OnmsOutage(new Date(), event, svc2);
         m_dbPopulator.getOutageDao().save(unresolved2);
@@ -156,7 +156,7 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
     public void testRegainedServiceDateAfterFilter(){
         OnmsMonitoredService svc2 = m_dbPopulator.getMonitoredServiceDao().get(m_dbPopulator.getNode2().getId(), InetAddressUtils.addr("192.168.2.1"), "ICMP");
         // This requires every test method to have a new database instance :/
-        OnmsEvent event = m_dbPopulator.getEventDao().get(1);
+        OnmsEvent event = m_dbPopulator.getEventDao().get(1l);
 
         // Put a resolved outage into the database so that one will match the
         // filter below

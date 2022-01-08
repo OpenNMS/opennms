@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,7 +43,7 @@ import java.util.*;
  */
 public final class ImmutableEvent implements IEvent {
     private final String uuid;
-    private final Integer dbId;
+    private final Long dbId;
     private final String distPoller;
     private final Date creationTime;
     private final String masterStation;
@@ -131,7 +131,7 @@ public final class ImmutableEvent implements IEvent {
 
     public static final class Builder {
         private String uuid;
-        private Integer dbId;
+        private Long dbId;
         private String distPoller;
         private Date creationTime;
         private String masterStation;
@@ -210,7 +210,7 @@ public final class ImmutableEvent implements IEvent {
             return this;
         }
 
-        public Builder setDbId(Integer dbId) {
+        public Builder setDbId(Long dbId) {
             this.dbId = dbId;
             return this;
         }
@@ -427,8 +427,8 @@ public final class ImmutableEvent implements IEvent {
     }
 
     @Override
-    public Integer getDbid() {
-        return dbId == null ? 0 : dbId;
+    public Long getDbid() {
+        return dbId == null ? 0l : dbId;
     }
 
     @Override

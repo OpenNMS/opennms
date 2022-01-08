@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -175,7 +175,7 @@ public class NotificationFilterController extends AbstractController implements 
         int noticeCount = m_webNotificationRepository.countMatchingNotifications(countCriteria);
         final Map<Integer,String[]> nodeLabels = new HashMap<Integer,String[]>();
         final Map<Integer,String[]> nodeLocations = new HashMap<Integer,String[]>();
-        Set<Integer> eventIds = new TreeSet<>();
+        Set<Long> eventIds = new TreeSet<>();
 
         // really inefficient, is there a better way to do this?
         for (Notification notice : notices) {
@@ -220,7 +220,7 @@ public class NotificationFilterController extends AbstractController implements 
             }
         }
 
-        Map<Integer,Event> events = new HashMap<Integer,Event>();
+        Map<Long,Event> events = new HashMap<Long,Event>();
         if (eventIds.size() > 0) {
             for (Event e : m_webEventRepository.getMatchingEvents(new EventCriteria(new EventIdListFilter(eventIds)))) {
                 events.put(e.getId(), e);

@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -924,9 +924,9 @@
         // If a new alarm is received the variable is updated
         String soundStr="<script type=\"text/javascript\"> playSound(); </script>";
 
-        Integer highest = (Integer)session.getAttribute("opennms.alarmlist.HIGHEST");
-        Integer latest = 0;
-        Integer lastId = 0;
+        Long highest = ((Integer)session.getAttribute("opennms.alarmlist.HIGHEST")).longValue();
+        Long latest = 0l;
+        Long lastId = 0l;
 
         // To have every new unique alarm trigger, use getId.  To have every new
         // alarm and every increment of Count, use last event Id.
@@ -934,17 +934,17 @@
             OnmsEvent lastEvent=onmsAlarm.getLastEvent();
             if(lastEvent!=null && lastEvent.getId()!=null) lastId = lastEvent.getId();
         } else {
-            lastId=onmsAlarm.getId();
+            lastId=onmsAlarm.getId().longValue();
         }
 
         if(highest==null) {
             if (lastId!=null) {
-                highest = new Integer(lastId);
-                session.setAttribute("opennms.alarmlist.HIGHEST", new Integer(highest));
+                highest = new Long(lastId);
+                session.setAttribute("opennms.alarmlist.HIGHEST", new Long(highest));
                 return soundStr;
             }
         } else {
-            latest = new Integer(lastId);
+            latest = new Long(lastId);
             if (latest > highest) {
                 highest = latest;
                 session.setAttribute("opennms.alarmlist.HIGHEST", highest);

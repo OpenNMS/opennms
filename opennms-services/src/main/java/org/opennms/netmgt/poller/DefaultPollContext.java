@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -323,7 +323,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                final int eventId = svcLostEvent.getEventId();
+                final long eventId = svcLostEvent.getEventId();
                 if (eventId > 0) {
                     getQueryManager().updateOpenOutageWithEventId(outageId, eventId);
                 } else {
@@ -363,7 +363,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                final int eventId = svcRegainEvent.getEventId();
+                final long eventId = svcRegainEvent.getEventId();
                 if (eventId > 0) {
                     getQueryManager().updateResolvedOutageWithEventId(outageId, eventId);
                 } else {

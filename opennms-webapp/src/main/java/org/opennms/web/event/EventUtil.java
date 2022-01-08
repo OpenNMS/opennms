@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -133,9 +133,9 @@ public abstract class EventUtil {
         } else if (type.equals(NegativeAcknowledgedByFilter.TYPE)) {
             filter = new NegativeAcknowledgedByFilter(value);
         } else if (type.equals(EventIdFilter.TYPE)) {
-            filter = new EventIdFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new EventIdFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(EventIdFilter.TYPE)) {
-            filter = new EventIdFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new EventIdFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(IPAddrLikeFilter.TYPE)) {
             filter = new IPAddrLikeFilter(value);
         } else if (type.equals(EventTextFilter.TYPE)) {

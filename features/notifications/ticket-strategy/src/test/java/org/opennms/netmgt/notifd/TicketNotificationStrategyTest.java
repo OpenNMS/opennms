@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -86,7 +86,7 @@ public class TicketNotificationStrategyTest extends TestCase {
     	}
     	
     	@Override
-    	protected AlarmState getAlarmStateFromEvent(int eventID) {
+    	protected AlarmState getAlarmStateFromEvent(long eventID) {
     		return m_alarmState;
     	}
     	

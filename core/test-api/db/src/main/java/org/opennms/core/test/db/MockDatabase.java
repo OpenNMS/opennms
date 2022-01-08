@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -181,8 +181,8 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         return getNextSequenceValStatement("eventsNxtId");
     }
     
-    public Integer getNextEventId() {
-        return getNextId(getNextEventIdStatement());
+    public Long getNextEventId() {
+        return getNextLongId(getNextEventIdStatement());
     }
     
     public String getNextServiceIdStatement() {
@@ -234,11 +234,11 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         createOutage(svc, svcLostEvent.getDbid(), new Timestamp(svcLostEvent.getTime().getTime()));
     }
 
-    public void createOutage(MockService svc, int eventId, Timestamp time) {
+    public void createOutage(MockService svc, Long eventId, Timestamp time) {
         Object[] values = {
                 getNextOutageId(), // outageID
                 svc.getId(), // service ID
-                Integer.valueOf(eventId),           // svcLostEventId
+                eventId, // svcLostEventId
                 time, // ifLostService
                };
         
@@ -250,10 +250,10 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         resolveOutage(svc, svcRegainEvent.getDbid(), new Timestamp(svcRegainEvent.getTime().getTime()));
     }        
 
-    public void resolveOutage(MockService svc, int eventId, Timestamp timestamp) {
+    public void resolveOutage(MockService svc, Long eventId, Timestamp timestamp) {
 
         Object[] values = {
-                Integer.valueOf(eventId),           // svcLostEventId
+                eventId,           // svcLostEventId
                 timestamp, // ifLostService
                 Integer.valueOf(svc.getId()) // ifServiceId
                };
@@ -267,7 +267,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
      */
     @Override
     public void writeEvent(Event e) {
-        Integer eventId = getNextEventId();
+        Long eventId = getNextEventId();
         
         if (e.getCreationTime() == null) {
             e.setCreationTime(new Date());
@@ -383,10 +383,10 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
             public void processRow(ResultSet rs) throws SQLException {
                 Outage outage = new Outage(rs.getInt("nodeId"), rs.getString("ipAddr"), rs.getInt("serviceId"));
                 outage.setServiceName(rs.getString("serviceName"));
-                outage.setLostEvent(rs.getInt("svcLostEventID"), rs.getTimestamp("ifLostService"));
+                outage.setLostEvent(rs.getLong("svcLostEventID"), rs.getTimestamp("ifLostService"));
                 boolean open = (rs.getObject("ifRegainedService") == null);
                 if (!open) {
-                    outage.setRegainedEvent(rs.getInt("svcRegainedEventID"), rs.getTimestamp("ifRegainedService"));
+                    outage.setRegainedEvent(rs.getLong("svcRegainedEventID"), rs.getTimestamp("ifRegainedService"));
                 }
                 outages.add(outage);
             }
@@ -461,7 +461,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                 notifyIds.add(rs.getInt(1));
             }
         };
-        loadExisting.execute(Integer.valueOf(event.getDbid()));
+        loadExisting.execute(event.getDbid());
         return notifyIds;
     }
 
@@ -488,5 +488,9 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
 
     protected Integer getNextId(String nxtIdStmt) {
         return getJdbcTemplate().queryForObject(nxtIdStmt, Integer.class);
+    }
+
+    protected Long getNextLongId(final String nxtIdStmt) {
+        return getJdbcTemplate().queryForObject(nxtIdStmt, Long.class);
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -186,7 +186,7 @@ public class NotificationModel extends Object {
                 nbean.m_nodeID = rs.getInt(NODE);
                 nbean.m_interfaceID = rs.getString(INTERFACE);
                 nbean.m_serviceId = rs.getInt(SERVICE);
-                nbean.m_eventId = rs.getInt(EVENTID);
+                nbean.m_eventId = rs.getLong(EVENTID);
                 nbean.m_serviceName = getServiceName(conn, nbean.m_serviceId);
                 vector.add(nbean);
             }

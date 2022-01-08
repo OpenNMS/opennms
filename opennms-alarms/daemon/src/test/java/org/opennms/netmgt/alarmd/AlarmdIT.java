@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -476,7 +476,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         bldr.setLogMessage("This is a test.");
 
         final Event event = bldr.getEvent();
-        event.setDbid(17);
+        event.setDbid(17l);
 
         MockNode node = m_mockNetwork.getNode(1);
         sendNodeDownEvent("%nodeid%", node);

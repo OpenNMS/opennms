@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -108,7 +108,7 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
                          final PreparedStatement nullifyStatement = connection.prepareStatement("UPDATE events SET eventparms=NULL WHERE eventid=?")) {
 
                         do {
-                            final Integer eventId = resultSet.getInt("eventid");
+                            final Long eventId = resultSet.getLong("eventid");
                             final String eventParms = resultSet.getString("eventparms");
                             final List<Parm> parmList = EventParameterUtils.decode(eventParms);
 
@@ -117,7 +117,7 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
 
                                 for (int i=0; i < normalizedParms.size(); i++) {
                                     Parm parm = normalizedParms.get(i);
-                                    insertStatement.setInt(1, eventId);
+                                    insertStatement.setLong(1, eventId);
                                     insertStatement.setString(2, parm.getParmName());
                                     insertStatement.setString(3, parm.getValue().getContent());
                                     insertStatement.setString(4, parm.getValue().getType());
@@ -126,7 +126,7 @@ public class EventParameterMigratorOffline extends AbstractOnmsUpgrade {
                                     parameterCount++;
                                 }
                             }
-                            nullifyStatement.setInt(1, eventId);
+                            nullifyStatement.setLong(1, eventId);
                             nullifyStatement.execute();
 
                             eventCount++;

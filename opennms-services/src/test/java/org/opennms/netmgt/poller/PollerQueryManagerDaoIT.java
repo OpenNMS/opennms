@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -1327,7 +1327,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 			assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
 			assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));
 			assertEquals(m_svc.getSvcId(), rs.getInt("serviceId"));
-			assertEquals(m_lostSvcEvent.getDbid(), Integer.valueOf(rs.getInt("svcLostEventId")));
+			assertEquals(m_lostSvcEvent.getDbid(), Long.valueOf(rs.getLong("svcLostEventId")));
 			assertEquals(m_lostSvcTime, rs.getTimestamp("ifLostService"));
 			assertEquals(getRegainedEventId(), rs
 					.getObject("svcRegainedEventId"));
@@ -1335,10 +1335,10 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 					.getTimestamp("ifRegainedService"));
 		}
 
-		private Integer getRegainedEventId() {
+		private Long getRegainedEventId() {
 			if (m_regainedSvcEvent == null)
 				return null;
-			return Integer.valueOf(m_regainedSvcEvent.getDbid());
+			return m_regainedSvcEvent.getDbid();
 		}
 	}
 

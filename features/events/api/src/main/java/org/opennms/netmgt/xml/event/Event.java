@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -77,7 +77,7 @@ public class Event implements Message,Serializable {
 	 */
 	@Min(1)
 	@XmlElement(name = "dbid")
-	private Integer _dbid;
+	private Long _dbid;
 
 	/**
 	 * Field _distPoller.
@@ -639,7 +639,7 @@ public class Event implements Message,Serializable {
 	 * 
 	 * @return the value of field 'Dbid'.
 	 */
-	public Integer getDbid() {
+	public Long getDbid() {
 		return _dbid == null ? 0 : _dbid;
 	}
 
@@ -1437,7 +1437,7 @@ public class Event implements Message,Serializable {
 	 * @param dbid
 	 *            the value of field 'dbid'.
 	 */
-	public void setDbid(final Integer dbid) {
+	public void setDbid(final Long dbid) {
 		_dbid = dbid;
 	}
 

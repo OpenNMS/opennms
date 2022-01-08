@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.PollStatus;
@@ -42,8 +43,8 @@ public class MockPathOutage extends MockElement{
 	int m_nodeId;
 	InetAddress m_ipAddr;
 	String m_svcName;
-	int m_lostEventId;
-    int m_regainedEventId;
+	long m_lostEventId;
+    long m_regainedEventId;
     Timestamp m_lostEventTime;
     Timestamp m_regainedEventTime;
 	private int m_pollCount;
@@ -62,12 +63,12 @@ public class MockPathOutage extends MockElement{
 		
 	}
 	
-	public void setLostEvent(int eventId, Timestamp eventTime) {
+	public void setLostEvent(long eventId, Timestamp eventTime) {
         m_lostEventId = eventId;
         m_lostEventTime = eventTime;
     }
     
-    public void setRegainedEvent(int eventId, Timestamp eventTime) {
+    public void setRegainedEvent(long eventId, Timestamp eventTime) {
         m_regainedEventId = eventId;
         m_regainedEventTime = eventTime;
     }
@@ -80,7 +81,7 @@ public class MockPathOutage extends MockElement{
     
     @Override
     public int hashCode() {
-        return 0;
+        return Objects.hash(m_nodeId, m_ipAddr, m_svcName, m_lostEventId, m_regainedEventId, m_pollCount);
     }
     
     @Override

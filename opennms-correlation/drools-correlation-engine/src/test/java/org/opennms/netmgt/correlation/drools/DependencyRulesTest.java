@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -62,7 +62,7 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
         DroolsCorrelationEngine engine = findEngineByName("dependencyRules");
 
         Event event = createNodeLostServiceEvent( 1, "10.1.1.1", "ICMP" );
-        event.setDbid(17);
+        event.setDbid(17l);
 	engine.correlate(event);
 
         // event + initialized

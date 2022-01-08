@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -598,15 +598,15 @@ public class OutageFactory extends Object {
             }
 
             // can be null
-            intElement = rs.getInt("svcLostEventID");
+            final long svcLostEventId = rs.getLong("svcLostEventID");
             if (!rs.wasNull()) {
-                outage.lostServiceEventId = Integer.valueOf(intElement);
+                outage.lostServiceEventId = Long.valueOf(svcLostEventId);
             }
 
             // can be null
-            intElement = rs.getInt("svcRegainedEventID");
+            final long svcRegainedEventId = rs.getLong("svcRegainedEventID");
             if (!rs.wasNull()) {
-                outage.regainedServiceEventId = Integer.valueOf(intElement);
+                outage.regainedServiceEventId = Long.valueOf(svcRegainedEventId);
             }
 
             // can be null

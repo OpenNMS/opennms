@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,14 +33,14 @@ import java.util.Date;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 public class RelatedEvent {
-    final Integer eventId;
+    final Long eventId;
     final Integer alarmId;
     final Date creationTime;
     final OnmsSeverity severity;
     final String uei;
     final String logMessage;
 
-    public RelatedEvent(final Integer eventId, final Integer alarmId, final Date creationTime, final OnmsSeverity severity, final String uei, final String logMessage) {
+    public RelatedEvent(final Long eventId, final Integer alarmId, final Date creationTime, final OnmsSeverity severity, final String uei, final String logMessage) {
         this.eventId = eventId;
         this.alarmId = alarmId;
         this.creationTime = creationTime;
@@ -49,7 +49,7 @@ public class RelatedEvent {
         this.logMessage = logMessage;
     }
 
-    public Integer getEventId() {
+    public Long getEventId() {
         return eventId;
     }
 

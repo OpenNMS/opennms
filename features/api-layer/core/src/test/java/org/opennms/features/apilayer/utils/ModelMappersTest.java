@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -77,8 +78,6 @@ import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
@@ -255,14 +254,14 @@ public class ModelMappersTest {
     public void canMapDatabaseEvent() {
         OnmsEvent event = new OnmsEvent();
         event.setEventUei("test.uei");
-        event.setId(1);
+        event.setId(1L);
         String eventName = "test.name";
         String eventValue = "test.value";
         event.setEventParameters(Collections.singletonList(new OnmsEventParameter(null, eventName, eventValue, null)));
 
         DatabaseEvent databaseEvent = ModelMappers.toEvent(event);
         assertThat(databaseEvent.getUei(), equalTo(event.getEventUei()));
-        assertThat(databaseEvent.getId(), equalTo(event.getId()));
+        assertEquals(databaseEvent.getId(), event.getId());
         assertThat(databaseEvent.getParameters(), hasItems(ImmutableEventParameter.newInstance(eventName, eventValue)));
         assertThat(databaseEvent.getParametersByName(eventName),
                 hasItems(ImmutableEventParameter.newInstance(eventName, eventValue)));

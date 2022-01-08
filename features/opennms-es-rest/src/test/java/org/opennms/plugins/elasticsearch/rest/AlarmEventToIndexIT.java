@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -59,7 +59,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 	// See NMS-9831 for more information
 	@Test
 	public void verifyOidMapping() throws InterruptedException, IOException {
-		int eventId = 13;
+		long eventId = 13;
 		final Event event = createDummyEventWithOids(eventId);
 		getEventToIndex().forwardEvents(Arrays.asList(event));
 
@@ -79,7 +79,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 	// See NMS-9831 for more information
 	@Test
 	public void verifyOidGrouping() throws InterruptedException, IOException {
-		int eventId = 15;
+		long eventId = 15;
 		final Event event = createDummyEventWithOids(eventId);
 		getEventToIndex().setGroupOidParameters(true);
 		getEventToIndex().forwardEvents(Arrays.asList(event));
@@ -108,7 +108,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 	// See HZN-1272
 	@Test
 	public void verifyJsonEventParameters() throws InterruptedException, IOException {
-		final int eventId = 17;
+		final long eventId = 17;
 		final Event event = createDummyEvent(eventId);
 
 		final JsonObject addressObject = new JsonObject();
@@ -145,7 +145,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 		assertEquals(jsonObject, jsonArray.get(0).getAsJsonObject().get("_source").getAsJsonObject().get("p_name").getAsJsonObject());
 	}
 
-	private static Event createDummyEvent(int eventId) {
+	private static Event createDummyEvent(long eventId) {
 		final Event event = new Event();
 		event.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
 		event.setCreationTime(new Date());
@@ -156,7 +156,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 		return event;
 	}
 
-	private static Event createDummyEventWithOids(int eventId) {
+	private static Event createDummyEventWithOids(long eventId) {
 		final Event event = createDummyEvent(eventId);
 		IntStream.range(1, 100).forEach(i -> {
 			Parm parm = new Parm();
@@ -167,7 +167,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 		return event;
 	}
 
-	private static String buildSearchQuery(int eventId) {
+	private static String buildSearchQuery(long eventId) {
 		return "{\n"
 				+"\n       \"query\": {"
 				+ "\n         \"match\": {"

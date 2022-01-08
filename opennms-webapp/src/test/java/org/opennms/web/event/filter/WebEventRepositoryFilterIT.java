@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,7 +50,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.web.alarm.filter.AlarmIdFilter;
 import org.opennms.web.event.Event;
 import org.opennms.web.event.WebEventRepository;
 import org.opennms.web.filter.Filter;
@@ -137,7 +136,7 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testEventIdListFilter(){
-        int[] ids = {1};
+        long[] ids = {1};
         EventIdListFilter filter = new EventIdListFilter(ids);
         assert1Result(filter);
         
@@ -173,7 +172,7 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testAlarmIdFilter(){
-        AlarmIdFilter filter = new AlarmIdFilter(1);
+        AlarmIDFilter filter = new AlarmIDFilter(1);
         
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);

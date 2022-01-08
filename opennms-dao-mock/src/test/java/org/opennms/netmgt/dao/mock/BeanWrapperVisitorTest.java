@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -369,7 +369,7 @@ public class BeanWrapperVisitorTest {
         THIRD
     }
 
-    private OnmsEvent createEvent(final int id, final String uei) {
+    private OnmsEvent createEvent(final long id, final String uei) {
         final OnmsEvent event = new OnmsEvent();
         event.setId(id);
         event.setEventUei(uei);

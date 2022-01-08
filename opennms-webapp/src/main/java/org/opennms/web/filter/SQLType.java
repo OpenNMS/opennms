@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,16 +35,10 @@ import java.util.Date;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.filter.OnmsSeveritySqlType;
 
-/**
- * <p>SQLType interface.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
 public interface SQLType<T> {
     
     public static final SQLType<Integer> INT = new IntegerSqlType();
+    public static final SQLType<Long> BIGINT = new LongSqlType();
     public static final SQLType<String> STRING = new StringSqlType();
     public static final SQLType<Date> DATE = new DateSqlType();
     public static final SQLType<OnmsSeverity> SEVERITY = new OnmsSeveritySqlType();

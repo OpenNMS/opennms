@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -73,7 +73,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         @Override
         public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             if (event.hasDbid()) {
-                return Integer.toString(event.getDbid());
+                return Long.toString(event.getDbid());
             } else {
                 return "eventid-unknown";
             }

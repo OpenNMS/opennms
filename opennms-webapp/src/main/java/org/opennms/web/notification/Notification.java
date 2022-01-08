@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -77,7 +77,7 @@ public class Notification {
     public int m_serviceId;
 
     // ID of the event that triggered this notification
-    public int m_eventId;
+    public long m_eventId;
 
     /**
      * Default Constructor
@@ -85,23 +85,7 @@ public class Notification {
     public Notification() {
     }
 
-    /**
-     * <p>Constructor for Notification.</p>
-     *
-     * @param sentToList a {@link java.util.List} object.
-     * @param notifyId a int.
-     * @param txtMsg a {@link java.lang.String} object.
-     * @param numMsg a {@link java.lang.String} object.
-     * @param timeSent a long.
-     * @param timeReply a long.
-     * @param responder a {@link java.lang.String} object.
-     * @param nodeid a int.
-     * @param interfaceID a {@link java.lang.String} object.
-     * @param svcId a int.
-     * @param svcName a {@link java.lang.String} object.
-     * @param eventid a int.
-     */
-    public Notification(List<NoticeSentTo> sentToList, int notifyId, String txtMsg, String numMsg, long timeSent, long timeReply, String responder, int nodeid, String interfaceID, int svcId, String svcName, int eventid) {
+    public Notification(List<NoticeSentTo> sentToList, int notifyId, String txtMsg, String numMsg, long timeSent, long timeReply, String responder, int nodeid, String interfaceID, int svcId, String svcName, long eventid) {
         m_sentTo = sentToList;
         m_notifyID = notifyId;
         m_txtMsg = txtMsg;
@@ -234,7 +218,7 @@ public class Notification {
      *
      * @return a int.
      */
-    public int getEventId() {
+    public long getEventId() {
         return (this.m_eventId);
     }
 

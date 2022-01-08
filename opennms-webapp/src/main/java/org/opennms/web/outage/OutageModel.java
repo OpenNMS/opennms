@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -230,9 +230,9 @@ public abstract class OutageModel {
             }
 
             if (includesNotifications) {
-                int serviceLostEventId = rs.getInt("svclosteventid");
+                long serviceLostEventId = rs.getLong("svclosteventid");
                 if (!rs.wasNull()) {
-                    outage.lostServiceEventId = Integer.valueOf(serviceLostEventId);
+                    outage.lostServiceEventId = Long.valueOf(serviceLostEventId);
                 }
 
                 int notifyId = rs.getInt("notifyid");

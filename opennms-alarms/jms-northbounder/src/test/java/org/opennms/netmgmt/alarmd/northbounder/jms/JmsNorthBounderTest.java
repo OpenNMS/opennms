@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -305,7 +305,7 @@ public class JmsNorthBounderTest {
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
             OnmsEvent event = new OnmsEvent();
-            event.setId(5);
+            event.setId(5L);
             event.setEventUei("uei.uei.org/uei");
             event.setEventTime(new Date());
             event.setEventHost("eventhost");
@@ -418,7 +418,7 @@ public class JmsNorthBounderTest {
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
             OnmsEvent event = new OnmsEvent();
-            event.setId(5);
+            event.setId(5L);
             event.setEventUei("uei.uei.org/uei");
             event.setEventTime(new Date());
             event.setEventHost("eventhost");
@@ -542,7 +542,7 @@ public class JmsNorthBounderTest {
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
             OnmsEvent event = new OnmsEvent();
-            event.setId(5);
+            event.setId(5L);
             event.setEventUei("uei.uei.org/uei");
             event.setEventTime(new Date());
             event.setEventHost("eventhost");

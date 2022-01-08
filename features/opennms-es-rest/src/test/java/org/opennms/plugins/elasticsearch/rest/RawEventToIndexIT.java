@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -90,7 +90,7 @@ public class RawEventToIndexIT extends AbstractEventToIndexITCase {
 			eb.setUuid("00000000-0000-0000-0000-000000000000");		
 
 			Event event = eb.getEvent();
-			event.setDbid(101);
+			event.setDbid(101l);
 
 			LOG.debug("ecreated node lost service event:"+event.toString());
 

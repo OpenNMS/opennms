@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-202 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -118,7 +118,7 @@ public class QueryManagerDaoImpl implements QueryManager {
 
     /** {@inheritDoc} */
     @Override
-    public void updateOpenOutageWithEventId(int outageId, int lostEventId) {
+    public void updateOpenOutageWithEventId(int outageId, long lostEventId) {
         LOG.info("updating open outage {} with event id {}", outageId, lostEventId);
 
         final OnmsEvent event = m_eventDao.get(lostEventId);
@@ -158,7 +158,7 @@ public class QueryManagerDaoImpl implements QueryManager {
 
     /** {@inheritDoc} */
     @Override
-    public void updateResolvedOutageWithEventId(int outageId, int regainedEventId) {
+    public void updateResolvedOutageWithEventId(int outageId, long regainedEventId) {
         LOG.info("updating resolved outage {} with event id {}", outageId, regainedEventId);
 
         final OnmsEvent event = m_eventDao.get(regainedEventId);
@@ -234,15 +234,8 @@ public class QueryManagerDaoImpl implements QueryManager {
         }
     }
     
-    /**
-     * <p>closeOutagesForNode</p>
-     *
-     * @param closeDate a {@link java.util.Date} object.
-     * @param eventId a int.
-     * @param nodeId a int.
-     */
     @Override
-    public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
+    public void closeOutagesForNode(Date closeDate, long eventId, int nodeId) {
         Criteria criteria = new Criteria(OnmsOutage.class);
         criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {
@@ -260,16 +253,8 @@ public class QueryManagerDaoImpl implements QueryManager {
         }
     }
     
-    /**
-     * <p>closeOutagesForInterface</p>
-     *
-     * @param closeDate a {@link java.util.Date} object.
-     * @param eventId a int.
-     * @param nodeId a int.
-     * @param ipAddr a {@link java.lang.String} object.
-     */
     @Override
-    public void closeOutagesForInterface(Date closeDate, int eventId, int nodeId, String ipAddr) {
+    public void closeOutagesForInterface(Date closeDate, long eventId, int nodeId, String ipAddr) {
         Criteria criteria = new Criteria(OnmsOutage.class);
         criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {
@@ -287,18 +272,9 @@ public class QueryManagerDaoImpl implements QueryManager {
             m_outageDao.update(outage);
         }
     }
-    
-    /**
-     * <p>closeOutagesForService</p>
-     *
-     * @param closeDate a {@link java.util.Date} object.
-     * @param eventId a int.
-     * @param nodeId a int.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param serviceName a {@link java.lang.String} object.
-     */
+
     @Override
-    public void closeOutagesForService(Date closeDate, int eventId, int nodeId, String ipAddr, String serviceName) {
+    public void closeOutagesForService(Date closeDate, long eventId, int nodeId, String ipAddr, String serviceName) {
         Criteria criteria = new Criteria(OnmsOutage.class);
         criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {

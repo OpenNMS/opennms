@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,9 +34,9 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsEvent;
 
-public interface EventDao extends LegacyOnmsDao<OnmsEvent, Integer> {
+public interface EventDao extends LegacyOnmsDao<OnmsEvent, Long> {
 
-    int deletePreviousEventsForAlarm(final Integer id, final OnmsEvent e);
+    int deletePreviousEventsForAlarm(final Integer alarmId, final OnmsEvent event);
 
     /**
      * Returns a list of events which have been created

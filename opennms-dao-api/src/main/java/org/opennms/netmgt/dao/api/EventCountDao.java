@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsEvent;
 
-public interface EventCountDao extends OnmsDao<OnmsEvent, Integer> {
+public interface EventCountDao extends OnmsDao<OnmsEvent, Long> {
     
     Set<CountedObject<String>> getUeiCounts(final Integer limit);
 

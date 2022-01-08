@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -79,7 +79,7 @@ public class EventValidationTest {
         final Event event = new Event();
         event.setSource("tests");
         event.setTime(new Date());
-        event.setDbid(-1);
+        event.setDbid(-1l);
         final Set<ConstraintViolation<Event>> errors = validator.validate(event);
         assertEquals(1, errors.size());
     }

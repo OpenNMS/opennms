@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -218,8 +218,8 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
 
             // Event-related fields
             final OnmsEvent event = onmsOutage.getServiceLostEvent();
-            outage.lostServiceEventId = 0;
-            outage.regainedServiceEventId = 0;
+            outage.lostServiceEventId = 0l;
+            outage.regainedServiceEventId = 0l;
             if (event != null) {
                 outage.lostServiceEventId = onmsOutage.getServiceLostEvent().getId();
                 if (event.getDistPoller() != null) {

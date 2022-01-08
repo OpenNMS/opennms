@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -94,10 +94,10 @@ public class EventRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{eventId}")
     @Transactional
-    public OnmsEvent getEvent(@PathParam("eventId") final Integer eventId) {
+    public OnmsEvent getEvent(@PathParam("eventId") final Long eventId) {
         final OnmsEvent e = m_eventDao.get(eventId);
         if (e == null) {
-            throw getException(Status.NOT_FOUND, "Event object {} was not found.", Integer.toString(eventId));
+            throw getException(Status.NOT_FOUND, "Event object {} was not found.", Long.toString(eventId));
         }
         return e;
     }
@@ -208,16 +208,14 @@ public class EventRestService extends OnmsRestService {
      * then acks the events as the current logged in user, otherwise unacks
      * the events
      * 
-     * @param eventId
-     *            a {@link java.lang.Integer} object.
-     * @param ack
-     *            a {@link java.lang.Boolean} object.
+     * @param eventId the event's ID
+     * @param ack whether to ack the event
      */
     @PUT
     @Path("{eventId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateEvent(@Context final SecurityContext securityContext, @PathParam("eventId") final Integer eventId, @FormParam("ack") final Boolean ack) {
+    public Response updateEvent(@Context final SecurityContext securityContext, @PathParam("eventId") final Long eventId, @FormParam("ack") final Boolean ack) {
         writeLock();
 
         try {

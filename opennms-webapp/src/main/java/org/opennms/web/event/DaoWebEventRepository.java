@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -118,11 +118,17 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
                 case ID:
                     criteria.addOrder(Order.desc("id"));
                      break;
+                case ALARMID:
+                    criteria.addOrder(Order.desc("alarmId"));
+                     break;
                 case INTERFACE:
                     criteria.addOrder(Order.desc("ipAddr"));
                     break;
                 case NODE:
                     criteria.addOrder(Order.desc("node.label"));
+                    break;
+                case NODE_LOCATION:
+                    criteria.addOrder(Order.desc("node.location"));
                     break;
                 case POLLER:
                     criteria.addOrder(Order.desc("distPoller"));
@@ -145,11 +151,17 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
                 case REVERSE_ID:
                     criteria.addOrder(Order.asc("id"));
                     break;
+                case REVERSE_ALARMID:
+                    criteria.addOrder(Order.asc("alarmId"));
+                    break;
                 case REVERSE_INTERFACE:
                     criteria.addOrder(Order.asc("ipAddr"));
                     break;
                 case REVERSE_NODE:
                     criteria.addOrder(Order.asc("node.label"));
+                    break;
+                case REVERSE_NODE_LOCATION:
+                    criteria.addOrder(Order.asc("node.location"));
                     break;
                 case REVERSE_POLLER:
                     criteria.addOrder(Order.asc("distPoller"));
@@ -309,7 +321,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public Event getEvent(int eventId) {
+    public Event getEvent(final long eventId) {
         return mapOnmsEventToEvent(m_eventDao.get(eventId));
     }
     

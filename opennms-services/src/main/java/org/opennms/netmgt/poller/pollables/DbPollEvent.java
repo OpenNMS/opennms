@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.util.Date;
+import java.util.Objects;
 
 
 /**
@@ -39,29 +40,17 @@ import java.util.Date;
  */
 public class DbPollEvent extends PollEvent {
     
-    private final int m_eventId;
+    private final long m_eventId;
     private final Date m_date;
     
-    /**
-     * <p>Constructor for DbPollEvent.</p>
-     *
-     * @param eventId a int.
-     * @param uei a {@link java.lang.String} object.
-     * @param date a {@link java.util.Date} object.
-     */
-    public DbPollEvent(int eventId, String uei, Date date) {
+    public DbPollEvent(long eventId, String uei, Date date) {
         super(Scope.fromUei(uei));
         m_eventId = eventId;
         m_date = date;
     }
     
-    /**
-     * <p>getEventId</p>
-     *
-     * @return a int.
-     */
     @Override
-    public int getEventId() {
+    public long getEventId() {
         return m_eventId;
     }
     
@@ -75,13 +64,8 @@ public class DbPollEvent extends PollEvent {
         return m_date;
     }
     
-    /**
-     * <p>hashCode</p>
-     *
-     * @return a int.
-     */
     @Override
-    public int hashCode() { return m_eventId; }
+    public int hashCode() { return Objects.hash(m_eventId); }
     
     /**
      * <p>equals</p>

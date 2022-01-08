@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,7 +48,7 @@ public interface IEvent {
     int getAutoactionCount();
     ICorrelation getCorrelation();
     Date getCreationTime();
-    Integer getDbid();
+    Long getDbid();
     String getDescr();
     String getDistPoller();
     IForward getForward(final int index);
