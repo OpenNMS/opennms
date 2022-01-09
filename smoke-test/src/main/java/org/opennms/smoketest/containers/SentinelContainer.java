@@ -43,6 +43,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 import org.apache.commons.io.FileUtils;
 import org.opennms.smoketest.stacks.IpcStrategy;
@@ -74,6 +76,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     private static final Logger LOG = LoggerFactory.getLogger(SentinelContainer.class);
     private static final int SENTINEL_DEBUG_PORT = 5005;
     private static final int SENTINEL_SSH_PORT = 8301;
+    private static final int SENTINEL_JETTY_PORT = 8181;
     static final String ALIAS = "sentinel";
 
     private final StackModel model;
@@ -85,7 +88,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
         this.overlay = writeOverlay();
-        withExposedPorts(SENTINEL_DEBUG_PORT, SENTINEL_SSH_PORT)
+        withExposedPorts(SENTINEL_DEBUG_PORT, SENTINEL_SSH_PORT, SENTINEL_JETTY_PORT)
                 .withEnv("SENTINEL_LOCATION", "Sentinel")
                 .withEnv("SENTINEL_ID", profile.getId())
                 .withEnv("POSTGRES_HOST", OpenNMSContainer.DB_ALIAS)
@@ -165,6 +168,11 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
                         .put("compression.type", model.getKafkaCompressionStrategy().getCodec())
                         .build());
 
+        writeProps(etc.resolve("org.apache.cxf.osgi.cfg"),
+                ImmutableMap.<String,String>builder()
+                        .put("org.apache.cxf.servlet.context", "/sentinel")
+                        .build());
+
         writeProps(etc.resolve("org.opennms.core.ipc.sink.kafka.cfg"),
                 ImmutableMap.<String,String>builder()
                         .put("bootstrap.servers", OpenNMSContainer.KAFKA_ALIAS + ":9092")
@@ -189,6 +197,8 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     public List<String> getFeaturesOnBoot() {
         final List<String> featuresOnBoot = new ArrayList<>();
         featuresOnBoot.add("sentinel-persistence");
+        featuresOnBoot.add("sentinel-core");
+        featuresOnBoot.add("opennms-health-rest-service");
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             featuresOnBoot.add("sentinel-kafka");
         } else if (IpcStrategy.JMS.equals(model.getIpcStrategy())) {
@@ -228,6 +238,18 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     @Override
     public SshClient ssh() {
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
+    }
+
+    public URL getWebUrl() {
+        try {
+            return new URL(String.format("http://%s:%d/", getContainerIpAddress(), getMappedPort(SENTINEL_JETTY_PORT)));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getWebPort() {
+        return SENTINEL_JETTY_PORT;
     }
 
     private static class WaitForSentinel extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {

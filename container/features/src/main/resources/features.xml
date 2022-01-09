@@ -1845,7 +1845,6 @@
 
     <feature name="opennms-health-rest-service" description="OpenNMS :: Feature :: Health :: ReST Service" version="${project.version}">
         <feature>org.json</feature>
-        <feature>owasp-encoder</feature>
         <feature>opennms-health-rest</feature>
         <feature version="${cxfVersion}">cxf-core</feature>
         <feature version="${cxfVersion}">cxf-jaxrs</feature>
