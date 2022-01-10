@@ -222,7 +222,7 @@ public class ConfigurationManagerServiceImplTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testErroneousConfideIdOnSchemaWithoutAllowMultiple() throws Exception {
+    public void testErroneousConfigIdOnSchemaWithoutAllowMultiple() throws Exception {
 
         //take existing config
         final String configStr = configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID_OK).get();
