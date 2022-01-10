@@ -21,16 +21,50 @@
             <cm:property name="connection.pool.minPool" value="50" />
             <cm:property name="connection.pool.maxPool" value="50" />
             <cm:property name="connection.pool.maxSize" value="50" />
-            <cm:property name="datasource.name" value="opennms" />
+
+            <cm:property name="datasource.adminUrl" value="jdbc:postgresql://localhost:5432/template1" />
+            <cm:property name="datasource.adminDatabaseName" value="template1" />
+            <cm:property name="datasource.adminUsername" value="postgres" />
+            <cm:property name="datasource.adminPassword" value="" />
+
             <cm:property name="datasource.url" value="jdbc:postgresql://localhost:5432/opennms" />
             <cm:property name="datasource.username" value="postgres" />
             <cm:property name="datasource.password" value="" />
-            <cm:property name="datasource.driverClass" value="org.postgresql.Driver" />
             <cm:property name="datasource.databaseName" value="opennms" />
             <cm:property name="datasource.initialize" value="true" />
+
+            <cm:property name="datasource.driverClass" value="org.postgresql.Driver" />
         </cm:default-properties>
     </cm:property-placeholder>
 
+    <!--                                                                      -->
+    <!-- ADMIN datasource - for creating the opennms database and other admin -->
+    <!--                                                                      -->
+    <bean id="adminConnectionPool" class="org.opennms.netmgt.config.opennmsDataSources.ConnectionPool">
+        <property name="factory" value="${connection.pool.factory}" />
+        <property name="idleTimeout" value="${connection.pool.idleTimeout}" />
+        <property name="loginTimeout" value="${connection.pool.loginTimeout}" />
+        <property name="minPool" value="${connection.pool.minPool}" />
+        <property name="maxPool" value="${connection.pool.maxPool}" />
+        <property name="maxSize" value="${connection.pool.maxSize}" />
+    </bean>
+    <bean id="adminDataSourceConfig" class="org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource">
+        <property name="databaseName" value="${datasource.adminDatabaseName}" /> <!-- default = template1 -->
+        <property name="name" value="${datasource.databaseName}" />
+        <property name="className" value="${datasource.driverClass}" />
+        <property name="url" value="${datasource.adminUrl}" />
+        <property name="userName" value="${datasource.adminUsername}" />
+        <property name="password" value="${datasource.adminPassword}" />
+    </bean>
+    <bean id="adminDatasource" factory-ref="configFactory" factory-method="createDataSource" destroy-method="close">
+        <argument ref="adminConnectionPool" />
+        <argument ref="adminDataSourceConfig" />
+    </bean>
+
+
+    <!--                                                                -->
+    <!-- REGULAR datasource that requires the opennms database to exist -->
+    <!--                                                                -->
     <bean id="connectionPool" class="org.opennms.netmgt.config.opennmsDataSources.ConnectionPool">
         <property name="factory" value="${connection.pool.factory}" />
         <property name="idleTimeout" value="${connection.pool.idleTimeout}" />
@@ -50,15 +84,31 @@
     </bean>
 
     <bean id="configFactory" class="org.opennms.netmgt.distributed.datasource.ConfigFactory" />
-    <bean id="datasource" factory-ref="configFactory" factory-method="createDataSource" destroy-method="close">
+    <bean id="datasource" factory-ref="configFactory" factory-method="createDataSource" destroy-method="close" depends-on="initialDatabaseSetup">
         <argument ref="connectionPool" />
         <argument ref="dataSourceConfig" />
     </bean>
 
-    <bean id="datasourceMigration" class="org.opennms.netmgt.distributed.datasource.BootTimeDatabaseMigration" init-method="init">
+
+    <!--                              -->
+    <!-- DATABASE SETUP AND MIGRATION -->
+    <!--                              -->
+    <bean id="initialDatabaseSetup" class="org.opennms.netmgt.distributed.datasource.BootTimeDatabaseInit" init-method="init">
+        <property name="enabled" value="${datasource.initialize}" />
+        <property name="databaseName" value="${datasource.databaseName}" />
+        <property name="databaseUsername" value="${datasource.username}" />
+        <property name="databasePassword" value="${datasource.password}" />
+
+        <property name="adminDataSourceConfig" ref="adminDataSourceConfig"/>
+        <property name="adminDatasource" ref="adminDatasource"/>
+    </bean>
+    <bean id="datasourceMigration" class="org.opennms.netmgt.distributed.datasource.BootTimeDatabaseMigration" init-method="init" depends-on="initialDatabaseSetup">
         <property name="enabled" value="${datasource.initialize}" />
         <property name="datasource" ref="datasource" />
         <property name="dataSourceConfig" ref="dataSourceConfig" />
+
+        <property name="adminDataSourceConfig" ref="adminDataSourceConfig"/>
+        <property name="adminDatasource" ref="adminDatasource"/>
     </bean>
 
     <!--TODO: consider using PRE HOOK-->

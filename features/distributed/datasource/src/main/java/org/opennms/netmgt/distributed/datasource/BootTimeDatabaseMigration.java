@@ -35,6 +35,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 
+/**
+ * MIGRATE - use liquibase to bring the database up-to-date
+ */
 public class BootTimeDatabaseMigration {
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(BootTimeDatabaseMigration.class);
@@ -42,10 +45,13 @@ public class BootTimeDatabaseMigration {
     private Logger log = DEFAULT_LOGGER;
 
     private boolean m_enabled;
-    private DataSource m_datasource;
 
-    private boolean m_validateDatabase;
+    private DataSource m_adminDatasource;
+    private JdbcDataSource m_adminDataSourceConfig;
+
+    private DataSource m_datasource;
     private JdbcDataSource m_dataSourceConfig;
+
 
 //========================================
 // Getters and Setters
@@ -67,12 +73,20 @@ public class BootTimeDatabaseMigration {
         this.m_datasource = datasource;
     }
 
-    public boolean isValidateDatabase() {
-        return m_validateDatabase;
+    public DataSource getAdminDatasource() {
+        return m_adminDatasource;
     }
 
-    public void setValidateDatabase(boolean validateDatabase) {
-        this.m_validateDatabase = validateDatabase;
+    public void setAdminDatasource(DataSource adminDatasource) {
+        this.m_adminDatasource = adminDatasource;
+    }
+
+    public JdbcDataSource getAdminDataSourceConfig() {
+        return m_adminDataSourceConfig;
+    }
+
+    public void setAdminDataSourceConfig(JdbcDataSource adminDataSourceConfig) {
+        this.m_adminDataSourceConfig = adminDataSourceConfig;
     }
 
     public JdbcDataSource getDataSourceConfig() {
@@ -91,15 +105,13 @@ public class BootTimeDatabaseMigration {
         if (this.m_enabled) {
             ClassLoaderBasedMigrator migrator = new ClassLoaderBasedMigrator(this.getClass().getClassLoader());
 
-            migrator.setDataSource(this.m_datasource);
-            migrator.setAdminDataSource(this.m_datasource); // TODO: what is the difference between ADMIN and non-admin datasource?
-            migrator.setValidateDatabaseVersion(this.m_validateDatabase);
+            migrator.setAdminDataSource(this.m_adminDatasource);
+            migrator.setAdminUser(this.m_adminDataSourceConfig.getUserName());
+            migrator.setAdminPassword(this.m_adminDataSourceConfig.getPassword());
 
-            // TODO: admin username + password vs db username + password
+            migrator.setDataSource(this.m_datasource);
             migrator.setDatabaseName(this.m_dataSourceConfig.getDatabaseName());
             migrator.setSchemaName(this.m_dataSourceConfig.getSchemaName());
-            migrator.setAdminUser(this.m_dataSourceConfig.getUserName());
-            migrator.setAdminPassword(this.m_dataSourceConfig.getPassword());
             migrator.setDatabaseUser(this.m_dataSourceConfig.getUserName());
             migrator.setDatabasePassword(this.m_dataSourceConfig.getPassword());
 

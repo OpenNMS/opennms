@@ -85,8 +85,6 @@ public class ClassLoaderBasedMigrator {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClassLoaderBasedMigrator.class);
     private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^(?:PostgreSQL|EnterpriseDB) (\\d+\\.\\d+)");
-    private static final float POSTGRESQL_MIN_VERSION_INCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.minVersion", "10.0"));
-    private static final float POSTGRESQL_MAX_VERSION_EXCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.maxVersion", "15.0"));
 
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
@@ -95,9 +93,6 @@ public class ClassLoaderBasedMigrator {
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
     private Float m_databaseVersion;
-    private boolean m_validateDatabaseVersion = true;
-    private boolean m_createUser = true;
-    private boolean m_createDatabase = true;
 
     private String m_databaseName;
     private String m_schemaName;
@@ -148,33 +143,6 @@ public class ClassLoaderBasedMigrator {
      */
     public void setAdminDataSource(final DataSource dataSource) {
         m_adminDataSource = dataSource;
-    }
-
-    /**
-     * <p>setValidateDatabaseVersion</p>
-     *
-     * @param validate a boolean.
-     */
-    public void setValidateDatabaseVersion(final boolean validate) {
-        m_validateDatabaseVersion = validate;
-    }
-
-    /**
-     * <p>setCreateUser</p>
-     *
-     * @param createUser a boolean.
-     */
-    public void setCreateUser(final boolean createUser) {
-        m_createUser = createUser;
-    }
-
-    /**
-     * <p>setCreateDatabase</p>
-     *
-     * @param createDatabase a boolean.
-     */
-    public void setCreateDatabase(final boolean createDatabase) {
-        m_createDatabase = createDatabase;
     }
 
     /**
@@ -312,35 +280,6 @@ public class ClassLoaderBasedMigrator {
     }
 
     /**
-     * <p>validateDatabaseVersion</p>
-     *
-     * @throws MigrationException if any.
-     */
-    public void validateDatabaseVersion() throws MigrationException {
-        if (!m_validateDatabaseVersion) {
-            LOG.info("skipping database version validation");
-            return;
-        }
-        LOG.info("validating database version");
-
-        final Float dbv = getDatabaseVersion();
-        if (dbv == null) {
-            throw new MigrationException("unable to determine database version");
-        }
-
-        final String message = String.format(
-                "Unsupported database version \"%f\" -- you need at least %f and less than %f.  "
-                        + "Use the \"-Q\" option to disable this check if you feel brave and are willing "
-                        + "to find and fix bugs found yourself.",
-                        dbv, POSTGRESQL_MIN_VERSION_INCLUSIVE, POSTGRESQL_MAX_VERSION_EXCLUSIVE
-                );
-
-        if (dbv < POSTGRESQL_MIN_VERSION_INCLUSIVE || dbv >= POSTGRESQL_MAX_VERSION_EXCLUSIVE) {
-            throw new MigrationException(message);
-        }
-    }
-
-    /**
      * Get the expected shared object/JNI library extension for this platform.
      * @return
      */
@@ -396,163 +335,6 @@ public class ClassLoaderBasedMigrator {
             }
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred getting the version from the database", e);
-        } finally {
-            cleanUpDatabase(c, null, st, rs);
-        }
-    }
-
-    /**
-     * <p>databaseUserExists</p>
-     *
-     * @return a boolean.
-     * @throws MigrationException if any.
-     */
-    public boolean databaseUserExists() throws MigrationException {
-        Statement st = null;
-        ResultSet rs = null;
-        Connection c = null;
-        try {
-            c = m_adminDataSource.getConnection();
-            st = c.createStatement();
-            rs = st.executeQuery("SELECT usename FROM pg_user WHERE usename = '" + getUserForONMSDB() + "'");
-            if (rs.next()) {
-                final String datname = rs.getString("usename");
-                if (datname != null && datname.equalsIgnoreCase(getUserForONMSDB())) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            return rs.next();
-        } catch (final SQLException e) {
-            throw new MigrationException("an error occurred determining whether the OpenNMS user exists", e);
-        } finally {
-            cleanUpDatabase(c, null, st, rs);
-        }
-    }
-
-    /**
-     * <p>createUser</p>
-     *
-     * @throws MigrationException if any.
-     */
-    public void createUser() throws MigrationException {
-        if (!m_createUser || databaseUserExists()) {
-            return;
-        }
-
-        LOG.info("creating OpenNMS user, if necessary");
-        Statement st = null;
-        ResultSet rs = null;
-        Connection c = null;
-        try {
-            c = m_adminDataSource.getConnection();
-            st = c.createStatement();
-            st.execute("CREATE USER " + getUserForONMSDB() + " WITH PASSWORD '" + getDatabasePassword() + "'");
-        } catch (final SQLException e) {
-            throw new MigrationException("an error occurred creating the OpenNMS user", e);
-        } finally {
-            cleanUpDatabase(c, null, st, rs);
-        }
-    }
-
-    protected String getUserForONMSDB() {
-        String user = getDatabaseUser();
-        user = user.indexOf("@")>0? user.substring(0, user.indexOf("@")):user;
-        return user;
-    }
-
-    /**
-     * <p>databaseExists</p>
-     *
-     * @return a boolean.
-     * @throws MigrationException if any.
-     */
-    public boolean databaseExists() throws MigrationException {
-        return databaseExists(getDatabaseName());
-    }
-
-    public boolean databaseExists(String databaseName) throws MigrationException {
-        Statement st = null;
-        ResultSet rs = null;
-        Connection c = null;
-        try {
-            c = m_adminDataSource.getConnection();
-            st = c.createStatement();
-            rs = st.executeQuery("SELECT datname from pg_database WHERE datname = '" + databaseName + "'");
-            if (rs.next()) {
-                final String datname = rs.getString("datname");
-                if (datname != null && datname.equalsIgnoreCase(databaseName)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            return rs.next();
-        } catch (final SQLException e) {
-            throw new MigrationException("an error occurred determining whether the OpenNMS database exists", e);
-        } finally {
-            cleanUpDatabase(c, null, st, rs);
-        }
-    }
-
-    public void createSchema() throws MigrationException {
-        if (!m_createDatabase || schemaExists()) {
-            return;
-        }
-    }
-
-    public boolean schemaExists() throws MigrationException {
-        /* FIXME: not sure how to ask postgresql for a schema
-        Statement st = null;
-        ResultSet rs = null;
-        Connection c = null;
-        try {
-            c = m_adminDataSource.getConnection();
-            st = c.createStatement();
-            rs = st.executeQuery("SELECT datname from pg_database WHERE datname = '" + migration.getDatabaseName() + "'");
-            if (rs.next()) {
-                final String datname = rs.getString("datname");
-                if (datname != null && datname.equalsIgnoreCase(migration.getDatabaseName())) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            return rs.next();
-        } catch (final SQLException e) {
-            throw new MigrationException("an error occurred determining whether the OpenNMS user exists", e);
-        } finally {
-            cleanUpDatabase(c, st, rs);
-        }
-         */
-        return true;
-    }
-
-    /**
-     * <p>createDatabase</p>
-     *
-     * @throws MigrationException if any.
-     */
-    public void createDatabase() throws MigrationException {
-        if (!m_createDatabase || databaseExists()) {
-            return;
-        }
-        LOG.info("creating OpenNMS database, if necessary");
-        if (!databaseUserExists()) {
-            throw new MigrationException(String.format("database will not be created: unable to grant access (user %s does not exist)", getDatabaseUser()));
-        }
-
-        Statement st = null;
-        ResultSet rs = null;
-        Connection c = null;
-        try {
-            c = m_adminDataSource.getConnection();
-            st = c.createStatement();
-            st.execute("CREATE DATABASE \"" + getDatabaseName() + "\" WITH ENCODING='UNICODE'");
-            st.execute("GRANT ALL ON DATABASE \"" + getDatabaseName() + "\" TO \"" + getUserForONMSDB() + "\"");
-        } catch (final SQLException e) {
-            throw new MigrationException("an error occurred creating the OpenNMS database: " + e, e);
         } finally {
             cleanUpDatabase(c, null, st, rs);
         }
@@ -830,59 +612,6 @@ public class ClassLoaderBasedMigrator {
     }
 
     /**
-     * <p>dropDatabase</p>
-     *
-     * @throws SQLException if any.
-     */
-    public void dropDatabase() throws MigrationException {
-        LOG.info("removing database '" + getDatabaseName() + "'");
-
-        Connection c = null;
-        Statement st = null;
-
-        try {
-            c = m_adminDataSource.getConnection();
-            st = c.createStatement();
-            st.execute("DROP DATABASE \"" + getDatabaseName() + "\"");
-        } catch (SQLException e) {
-            throw new MigrationException("could not drop database " + getDatabaseName(), e);
-        } finally {
-            cleanUpDatabase(c, null, st, null);
-        }
-    }
-
-    public void addTimescaleDBExtension() throws MigrationException {
-        LOG.info("adding timescaledb extension in template db");
-
-        Connection c = null;
-        Statement st = null;
-
-        try {
-            c = m_adminDataSource.getConnection();
-            st = c.createStatement();
-            st.execute("CREATE EXTENSION IF NOT EXISTS timescaledb;");
-        } catch (SQLException e) {
-            throw new MigrationException("could not add timescaledb extension", e);
-        } finally {
-            cleanUpDatabase(c, null, st, null);
-        }
-
-    }
-
-    /**
-     * <p>prepareDatabase</p>
-     *
-     * @throws MigrationException if any.
-     */
-    public void prepareDatabase() throws MigrationException {
-        validateDatabaseVersion();
-        createUser();
-        createSchema();
-        createDatabase();
-        createLangPlPgsql();
-    }
-
-    /**
      * <p>migrate</p>
      *
      * @param changelogUri
@@ -981,14 +710,8 @@ public class ClassLoaderBasedMigrator {
     }
 
     public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, boolean timescaleDB) throws MigrationException, Exception, IOException {
-        validateDatabaseVersion();
-
-        // Creating extension in template1 before creating opennms DB.
-        if(timescaleDB) {
-            addTimescaleDBExtension();
-        }
         if (updateDatabase) {
-            prepareDatabase();
+            this.createLangPlPgsql();
         }
 
         checkUnicode();
