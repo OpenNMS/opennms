@@ -4,7 +4,7 @@
 The entries for `assetLayers` can be any node or asset entry from the following list (defined in class NodeParamLabels).
 Keys beginning with `node-` come from the node table.
 Keys beginning with `parent-` come from the node table entry of the designated parent node (if defined).
-Keys beginning with `asset-`  come from the corresponding asset table entry for the given node (if defined).
+Keys beginning with `asset-` come from the corresponding asset table entry for the given node (if defined).
 
 [options="autowidth"]
 |===
