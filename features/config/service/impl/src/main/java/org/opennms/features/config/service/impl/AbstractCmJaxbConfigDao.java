@@ -32,6 +32,7 @@ import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.BeanFieldCopyUtil;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.features.config.service.util.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
 import org.slf4j.Logger;
@@ -147,7 +148,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
 
         return lastKnownEntityMap.compute(configId, (k, v) -> {
             if (v != null) {
-                BeanUtils.copyProperties(config, v);
+                BeanFieldCopyUtil.copyFields(config, v);
                 return v;
             } else {
                 return config;
