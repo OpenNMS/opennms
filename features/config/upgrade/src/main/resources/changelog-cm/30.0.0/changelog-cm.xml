@@ -85,7 +85,7 @@
 
     <changeSet author="uguggilam" id="1.0-register-schema-notifications">
         <cm:registerSchema id="notifications"/>
-        <cm:importSchemaFromXsd id="notifications" xsdFileName="notifications.xsd" xsdFileHash="ecef6545d8f5d03d3daa3873c98a7b643ef984da82876d6ae4a876045011d7b6" rootElement="notifications"/>
+        <cm:importSchemaFromXsd id="notifications" xsdFileName="notifications.xsd" xsdFileHash="ef29ac614357d53f27aa75ff810e8b9ba658d48f8c725478a5b1a46311bff883" rootElement="notifications"/>
         <cm:importConfig schemaId="notifications" configId="default" filePath="notifications.xml"/>
     </changeSet>
 
