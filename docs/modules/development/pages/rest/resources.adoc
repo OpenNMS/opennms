@@ -18,7 +18,8 @@ This service is especially useful in conjunction with the Measurements API.
 The `/resources/select` endpoint returns only selected parts of node resources:
 
 * If the `nodeSubresources` attribute is not set then a shallow copy of all node subresources (i.e. without nested content) is included. Otherwise the selected node subresources are included and some or all of their string properties.
-* Similarly, if the `stringProperties` attribute is not set then all string properties are included. Otherwise only selected string properties are included.
+* Similarly, if the `stringProperties` attribute is not set, then all string properties are included. 
+Otherwise, only selected string properties are included.
 
 == DELETEs (Removing Data)
 [options="header", cols="5,10"]
