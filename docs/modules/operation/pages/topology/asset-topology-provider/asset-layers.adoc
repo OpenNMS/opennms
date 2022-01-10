@@ -23,5 +23,5 @@ Keys beginning with `asset-`  come from the corresponding asset table entry for 
 |===
 
 This lets you generate arbitrary topologies, including physical fields (room, rack) and logical fields (asset node categories).
-Note that you should not put any spaces in the comma-separated `assetLayers` list.
+You should not put any spaces in the comma-separated `assetLayers` list.
 If the `assetLayers` property is defined as empty, then a single graph layer is generated containing all OpenNMS nodes.
