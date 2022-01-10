@@ -30,7 +30,6 @@ package org.opennms.netmgt.config;
 
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.Assert.*;
-import static org.opennms.core.test.xml.XmlTest.assertXmlEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,7 +42,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.beans.SamePropertyValuesAs;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.network.IPAddress;
@@ -61,12 +59,10 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.AbstractResource;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.xml.bind.JAXBException;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
