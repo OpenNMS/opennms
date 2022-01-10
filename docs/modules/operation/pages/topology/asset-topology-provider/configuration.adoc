@@ -19,7 +19,7 @@ The asset graph definitions for the Asset Topology Provider are persisted to the
 ${OPENNMS_HOME}/etc/org.opennms.features.topology.plugins.topo.asset.xml
 ----
 
-Normally you should not edit this file directly but use the Karaf console or events to define new graphs.
+TIP: Normally you should use the Karaf console or events to define new graphs and not edit this file directly.
 
 The configuration file contains each of the graph definitions as properties in the form:
 
