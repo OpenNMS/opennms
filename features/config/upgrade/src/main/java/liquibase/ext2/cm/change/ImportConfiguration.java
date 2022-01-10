@@ -72,9 +72,9 @@ public class ImportConfiguration extends AbstractCmChange {
 
     private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
     private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
+    private final static String CONFIG_ID = "default";
 
     private String schemaId;
-    private String configId;
     private String filePath;
     private Path archivePath;
     private Path etcFile = null; // user defined file
@@ -83,7 +83,6 @@ public class ImportConfiguration extends AbstractCmChange {
     @Override
     public ValidationErrors validate(CmDatabase db, ValidationErrors validationErrors) {
         validationErrors.checkRequiredField("schemaId", this.schemaId);
-        validationErrors.checkRequiredField("configId", this.configId);
         validationErrors.checkRequiredField("filePath", this.filePath);
 
         String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
@@ -134,14 +133,14 @@ public class ImportConfiguration extends AbstractCmChange {
 
     @Override
     public String getConfirmationMessage() {
-        return String.format("Imported configuration from %s with id=%s for schema=%s", this.filePath, this.configId, this.schemaId);
+        return String.format("Imported configuration from %s with id=default for schema=%s", this.filePath, this.schemaId);
     }
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
         return new SqlStatement[] {
                 new GenericCmStatement((ConfigurationManagerService m) -> {
-                    LOG.info("Importing configuration from {} with id={} for schema={}", this.filePath, this.configId, this.schemaId);
+                    LOG.info("Importing configuration from {} with id=default for schema={}", this.filePath, this.schemaId);
                     try {
                         Optional<ConfigDefinition> configDefinition = m.getRegisteredConfigDefinition(this.schemaId);
 
@@ -155,8 +154,8 @@ public class ImportConfiguration extends AbstractCmChange {
                         } else {
                             throw new ConfigConversionException(String.format("Unknown file type: '%s'", fileType));
                         }
-                        m.registerConfiguration(this.schemaId, this.configId, configObject);
-                        LOG.info("Configuration with id={} imported.", this.configId);
+                        m.registerConfiguration(this.schemaId, CONFIG_ID, configObject);
+                        LOG.info("Configuration with configName={} and configId=default imported.", this.schemaId);
                         if(etcFile != null) {
                             // we imported a user defined config file => move to archive
                             Path archiveFile = Path.of(this.archivePath + "/" + etcFile.getFileName());
@@ -182,14 +181,6 @@ public class ImportConfiguration extends AbstractCmChange {
 
     public void setSchemaId(String schemaId) {
         this.schemaId = schemaId;
-    }
-
-    public String getConfigId() {
-        return configId;
-    }
-
-    public void setConfigId(String configId) {
-        this.configId = configId;
     }
 
     public String getFilePath() {
