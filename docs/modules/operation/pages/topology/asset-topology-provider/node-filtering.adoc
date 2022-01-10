@@ -10,10 +10,21 @@ Define filters using the same asset table keys that are available for the `asset
 [options="header"]
 [cols="1,3,2"]
 |===
-| Operation  | Definition                                               | Example
-| OR         | key1=value1,value2 alternatively key1=value1;key1=value2 | asset-region=north,south
-| AND        | key1=val1;key2=val2                                      | asset-region=north;asset-building=23
-| NOT        | key1=!val1                                               | asset-building=!23
+| Operation
+| Definition
+| Example
+
+| OR
+| key1=value1,value2 alternatively key1=value1;key1=value2
+| asset-region=north,south
+
+| AND
+| key1=val1;key2=val2
+| asset-region=north;asset-building=23
+
+| NOT
+| key1=!val1
+| asset-building=!23
 |===
 
 Thus, the following configuration means include only nodes with region north or south but exclude all nodes with building 23.

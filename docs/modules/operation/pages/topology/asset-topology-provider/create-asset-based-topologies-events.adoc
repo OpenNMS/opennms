@@ -17,7 +17,7 @@ To create a new topology from the current OpenNMS inventory, use the following:
 sudo ./send-event.pl  uei.opennms.plugins/assettopology/create localhost
 
 (or with parameters)
-sudo ./send-event.pl  uei.opennms.plugins/assettopology/create localhost  -p 'providerId test' -p 'label test' -p 'assetLayers asset-country,asset-city,asset-building'-->
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/create localhost  -p 'providerId test' -p 'label test' -p 'assetLayers asset-country,asset-city,asset-building'
 
 other sample possible parameters are
 
