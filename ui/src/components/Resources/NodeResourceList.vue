@@ -26,6 +26,7 @@
 <script setup lang=ts>
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { groupBy } from 'lodash'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherButton } from '@featherds/button'
@@ -42,6 +43,7 @@ interface GroupedResourcesObject {
 }
 
 const store = useStore()
+const router = useRouter()
 
 const selectedResourceObject = ref<any>({})
 
@@ -55,18 +57,20 @@ const selectAll = () => {
   }
 }
 const clearAll = () => selectedResourceObject.value = {}
-const graphSelected = () => {
+const graphSelected = async () => {
   const selectedIds = []
   for (const key in selectedResourceObject.value) {
     if (selectedResourceObject.value[key]) {
       selectedIds.push(key)
     }
   }
-  store.dispatch('graphModule/getGraphDefinitionsByResourceIds', selectedIds)
+  await store.dispatch('graphModule/getGraphDefinitionsByResourceIds', selectedIds)
+  router.push('/resource-graphs/graphs')
 }
-const graphAll = () => {
+const graphAll = async () => {
   const resourceIds = resources.value.map((resource) => resource.id)
-  store.dispatch('graphModule/getGraphDefinitionsByResourceIds', resourceIds)
+  await store.dispatch('graphModule/getGraphDefinitionsByResourceIds', resourceIds)
+  router.push('/resource-graphs/graphs')
 }
 </script>
   

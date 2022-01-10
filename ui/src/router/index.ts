@@ -69,7 +69,19 @@ const router = createRouter({
     {
       path: '/resource-graphs',
       name: 'ResourceGraphs',
-      component: () => import('@/containers/ResourceGraphs.vue')
+      component: () => import('@/containers/ResourceGraphs.vue'),
+      children: [
+        {
+          path: '',
+          name: 'Resources',
+          component: () => import('@/components/Resources/Resources.vue')
+        },
+        {
+          path: 'graphs',
+          name: 'Graphs',
+          component: () => import('@/components/Resources/Graphs.vue')
+        }       
+      ]
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

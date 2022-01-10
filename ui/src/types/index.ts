@@ -101,6 +101,46 @@ export interface PreFabGraph {
   width: number | null
 }
 
+export interface Metric {
+  aggregation: string
+  attribute: string
+  label: string
+  resourceId: string
+  transient: true | false
+}
+
+export interface GraphMetricsPayload {
+  end: number
+  start: number
+  step: number
+  source: Metric[]
+}
+
+export interface GraphMetricsResponse {
+  columns: [{ values: number[] }]
+  constants: number[]
+  end: number
+  labels: string[]
+  metadata: {
+    nodes: {
+      id: number
+      label: string
+      'foreign-source': string
+      'foreign-id': string
+    }[]
+    resources: {
+      id: string
+      label: string
+      name: string
+      'node-id': number
+      'parent-id': string
+    }[]
+  }
+  start: number
+  step: number
+  timestamps: number[]
+}
+
 export interface Node {
   location: string
   type: string

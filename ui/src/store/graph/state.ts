@@ -1,13 +1,15 @@
-import { PreFabGraph } from '@/types'
+import { GraphMetricsResponse, PreFabGraph } from '@/types'
 
 export interface State {
-  definitions: string[]
-  definitionData: PreFabGraph
+  definitions: { id: string, definitions: string[] }[]
+  definitionDataObjects: PreFabGraph[]
+  graphMetrics: GraphMetricsResponse[]
 }
 
 const state: State = {
   definitions: [],
-  definitionData: {} as PreFabGraph
+  definitionDataObjects: [],
+  graphMetrics: []
 }
 
 export default state

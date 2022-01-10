@@ -9,7 +9,7 @@ import {
 
 import { getAlarms, modifyAlarm } from './alarmService'
 
-import { getGraphNodesNodes, getGraphDefinitionsByResourceId, getDefinitionData } from './graphService'
+import { getGraphNodesNodes, getGraphDefinitionsByResourceId, getDefinitionData, getGraphMetrics } from './graphService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { search } from './searchService'
@@ -53,5 +53,6 @@ export default {
   getResources,
   getResourceForNode,
   getDefinitionData,
-  getGraphDefinitionsByResourceId
+  getGraphDefinitionsByResourceId,
+  getGraphMetrics
 }

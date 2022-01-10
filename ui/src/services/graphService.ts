@@ -1,5 +1,5 @@
 import { v2, rest } from './axiosInstances'
-import { QueryParameters, GraphNodesApiResponse, ResourceDefinitionsApiResponse, PreFabGraph } from '@/types'
+import { QueryParameters, GraphNodesApiResponse, ResourceDefinitionsApiResponse, PreFabGraph, GraphMetricsPayload, GraphMetricsResponse } from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
 
 const endpoint = '/graphs/nodes/nodes'
@@ -43,4 +43,13 @@ const getDefinitionData = async (definition: string): Promise<PreFabGraph | null
   }
 }
 
-export { getGraphNodesNodes, getGraphDefinitionsByResourceId, getDefinitionData }
+const getGraphMetrics = async (payload: GraphMetricsPayload): Promise<GraphMetricsResponse | null> => {
+  try {
+    const resp = await rest.post('/measurements', payload)
+    return resp.data
+  } catch (err) {
+    return null
+  }
+}
+
+export { getGraphNodesNodes, getGraphDefinitionsByResourceId, getDefinitionData, getGraphMetrics }
