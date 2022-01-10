@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.snmp;
+package org.opennms.features.config.convert;
 
 import static org.junit.Assert.fail;
 
@@ -38,13 +38,13 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.snmp.*;
 
-public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
+public class SnmpConfigTest extends CmConfigTest<SnmpConfig> {
 
     public SnmpConfigTest(final SnmpConfig sampleObject, final String sampleXml, final String schemaFile) {
-        super(sampleObject, sampleXml, schemaFile);
+        super(sampleObject, sampleXml, "snmp-config.xsd", "snmp-config");
     }
 
     @Parameters
