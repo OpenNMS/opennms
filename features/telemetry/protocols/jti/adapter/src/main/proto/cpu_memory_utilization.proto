@@ -37,6 +37,7 @@
 
 
 import "telemetry_top.proto";
+option java_package = "org.opennms.netmgt.telemetry.protocols.jti.adapter.proto";
 
 //
 // This sensor occupies branch 1 from JuniperNetworksSensors
