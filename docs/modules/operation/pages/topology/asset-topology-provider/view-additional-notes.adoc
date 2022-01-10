@@ -9,8 +9,6 @@ However, the label field must be unique across all installed topologies.
 It is possible to have several topologies installed that have been generated using different configurations.
 You must ensure that the providerId and label field used for each installation command are different.
 
-== Additional notes
-
-You must first uninstall a {page-component-title} GraphML topology before installing an updated version of the same topology.
+IMPORTANT: You must first uninstall a {page-component-title} GraphML topology before installing an updated version of the same topology.
 You will have to log out and log back into the UI to see the new topology file.
 If you uninstall a topology while viewing it, the UI throws an error and you will have to log out and back in to see the remaining topologies.
