@@ -1,5 +1,7 @@
 [[ksc]]
-= KSC
+= KSC Reports
+
+This dashlet shows an existing KSC report. KSC Reports provide a way to generate prefabricated graphical views of collected data.
 
 [options="autowidth", cols="1,2"]
 |===
@@ -12,5 +14,38 @@
 
 == KSC Report Configuration
 
-This dashlet shows an existing link:https://opennms.discourse.group/t/ksc-report-configuration/2209[KSC report].
-The view is exactly the same as the KSC report is built regarding order, columns, and time spans.
+KSC Reports are configured through the GUI in `Reports` -> `KSC Reports`. 
+
+Here is an example report entry that uses a custom index and graphs:
+[source, xml]
+----
+<Report id="7" title="GlassFish JVM Stats" show_timespan_button="true"
+        show_graphtype_button="true" graphs_per_line="2">
+  <Graph title="Instance1 Heap Usage" resourceId="node[1].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.heap"/>
+  <Graph title="Instance1 Non-Heap Usage" resourceId="node[1].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.nonheap"/>
+  <Graph title="Instance2 Heap Used" resourceId="node[2].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.heap"/>
+  <Graph title="Instance2 Non-Heap Used" resourceId="node[2].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.nonheap"/>
+</Report>
+----
+
+Valid options for timespan are: (See org.opennms.netmgt.config.KSC_PerformanceReportFactory.java:TIMESPAN_OPTIONS)
+
+[source, console]
+----
+  "1_hour", "2_hour", "4_hour", "6_hour", "8_hour", "12_hour",
+  "1_day", "2_day", "7_day", "1_month", "3_month", "6_month",
+  "1_year", "Today", "Yesterday", "Yesterday 9am-5pm",
+  "Yesterday 5pm-10pm", "This Week", "Last Week", "This Month",
+  "Last Month", "This Quarter", "Last Quarter", "This Year",
+  "Last Year"
+----
+
+Be sure to keep each `id` unique for each `<Report>`.`
+
+## Using KSC Reports
+
+On the right of the main page of OpenNMS there is a drop-down selection box with the title `KSC Reports` where you can select the KSC reports you have configured.
