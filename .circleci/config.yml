@@ -1011,6 +1011,9 @@ jobs:
             with open(output_path, 'w') as fp:
               fp.write(json.dumps(mappings))
 
+      - store_artifacts:
+          path: /tmp/pipeline-parameters.json
+          destination: pipeline-parameters.json
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: .circleci/config.yml
