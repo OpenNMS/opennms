@@ -24,38 +24,6 @@ executors:
       - image: cimg/node:16.3.0
 # NOTE: the "_label" versions of these are for the case when your source or target
 # branches have slashes in them, that way the merge branch gets created properly
-<<<<<<< HEAD
-defaults: &defaults
-  parameters:
-    minimal:
-      description: whether to do a minimal (build-and-merge only) build
-      type: boolean
-      default: false
-    previous_branch:
-      description: the previous branch, if any
-      type: string
-      default: release-29.x
-    previous_branch_label:
-      description: the previous branch, if any (escaped, no slashes)
-      type: string
-      default: release-29.x
-    main_branch:
-      description: the auto-merge main branch
-      type: string
-      default: develop
-    main_branch_label:
-      description: the auto-merge main branch (escaped, no slashes)
-      type: string
-      default: develop
-    next_branch:
-      description: the auto-merge target branch
-      type: string
-      default: ""
-    next_branch_label:
-      description: the auto-merge target branch (escaped, no slashes)
-      type: string
-      default: ""
-=======
 parameters:
   minimal:
     description: whether to do a minimal (build-and-merge only) build
@@ -64,27 +32,27 @@ parameters:
   previous_branch:
     description: the previous branch, if any
     type: string
-    default: foundation-2021
+    default: release-29.x
   previous_branch_label:
     description: the previous branch, if any (escaped, no slashes)
     type: string
-    default: foundation-2021
+    default: release-29.x
   main_branch:
     description: the auto-merge main branch
     type: string
-    default: release-29.x
+    default: develop
   main_branch_label:
     description: the auto-merge main branch (escaped, no slashes)
     type: string
-    default: release-29.x
+    default: develop
   next_branch:
     description: the auto-merge target branch
     type: string
-    default: develop
+    default: ""
   next_branch_label:
     description: the auto-merge target branch (escaped, no slashes)
     type: string
-    default: develop
+    default: ""
 
   ### sub-tree "module" build setup ###
   trigger-setup:
@@ -101,7 +69,6 @@ parameters:
     default: false
 
 setup: << pipeline.parameters.trigger-setup >>
->>>>>>> origin/release-29.x
 
 aliases:
   - &setup_dct_env
