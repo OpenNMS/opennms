@@ -35,9 +35,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -264,6 +266,26 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @Path("{nodeCriteria}/categories")
     public NodeCategoriesRestService getCategoriesResource(@Context final ResourceContext context) {
         return context.getResource(NodeCategoriesRestService.class);
+    }
+
+    /**
+     * <p>rescanNode</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("{nodeCriteria}/rescan")
+    public Response rescanNode(@PathParam("nodeCriteria") final String nodeCriteria) {
+        final OnmsNode node = m_dao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.NOT_FOUND, "Node {} was not found.", nodeCriteria);
+        }
+        
+        final Event e = EventUtils.createNodeRescanEvent("ReST", node.getId());
+        sendEvent(e);
+        return Response.ok().build();
     }
 
     @GET
