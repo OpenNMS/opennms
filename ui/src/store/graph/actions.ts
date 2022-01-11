@@ -25,6 +25,11 @@ const getGraphDefinitionsByResourceIds = async (context: VuexContext, ids: strin
     idsWithDefinitions = [...idsWithDefinitions, { id, definitions: uniqueSortedDefinitions }]
   }
 
+  const definitionsList = idsWithDefinitions.map((item) => item.definitions).flat()
+
+  console.log(definitionsList)
+
+  context.commit('SAVE_DEFINITIONS_LIST', definitionsList)
   context.commit('SAVE_DEFINITIONS', idsWithDefinitions)
 }
 

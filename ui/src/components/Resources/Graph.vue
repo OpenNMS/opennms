@@ -1,17 +1,19 @@
 <template>
   <div class="feather-row">
     <div class="feather-col-12">
-      <LineChart :chartData="lineChartData" :options="options" v-if="graphData.columns"/>
+      <LineChart :chartData="lineChartData" :options="options" v-if="graphData.columns" />
     </div>
   </div>
 </template>
   
 <script setup lang=ts>
-import { GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph } from '@/types'
-import { onMounted, ref, computed } from 'vue'
+import { GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph, StartEndTime } from '@/types'
+import { onMounted, ref, computed, PropType, watch } from 'vue'
 import { useStore } from 'vuex'
 import { RrdGraphConverter } from 'backshift'
 import { LineChart } from 'vue-chart-3'
+import { ChartOptions, TitleOptions } from 'chart.js'
+import { formatXLabels } from './utils'
 
 interface SeriesObject {
   color: string
@@ -20,13 +22,33 @@ interface SeriesObject {
   type: string
 }
 
-const store = useStore()
+const emit = defineEmits(['addGraphDefinition'])
 
+const props = defineProps({
+  definition: {
+    required: true,
+    type: String
+  },
+  resourceId: {
+    required: true,
+    type: String
+  },
+  time: {
+    required: true,
+    type: Object as PropType<StartEndTime>
+  }
+})
+
+const store = useStore()
 const graphData = ref<GraphMetricsResponse>({} as GraphMetricsResponse)
 const series = ref<SeriesObject[]>([])
-const convertedGraphDataRef = ref({ title: '' })
+const convertedGraphDataRef = ref({
+  title: '',
+  verticalLabel: '',
+  metrics: []
+})
 
-const options = computed(() => ({
+const options = computed<ChartOptions>(() => ({
   responsive: true,
   plugins: {
     legend: {
@@ -36,7 +58,7 @@ const options = computed(() => ({
     title: {
       display: true,
       text: convertedGraphDataRef.value.title,
-    },
+    } as TitleOptions,
     zoom: {
       zoom: {
         wheel: {
@@ -48,18 +70,67 @@ const options = computed(() => ({
         enabled: true,
         mode: 'x'
       }
-    }
+    },
   },
+  scales: {
+    y: {
+      title: {
+        display: true,
+        text: convertedGraphDataRef.value.verticalLabel,
+      } as TitleOptions
+    }
+  }
 }))
+
+const getLabels = (index: number) => {
+  const label = graphData.value.labels[index]
+  for (const item of series.value) {
+    if (item.metric === label) {
+      if (item.name) {
+        return item.name
+      }
+    }
+  }
+}
+
+const getColors = (index: number) => {
+  const colors = []
+  const label = graphData.value.labels[index]
+  for (const item of series.value) {
+    if (item.metric === label) {
+      if (item.name) {
+        colors.push(item.color)
+      }
+    }
+  }
+
+  return colors
+}
+
+const isHidden = (index: number) => {
+  const label = graphData.value.labels[index]
+
+  for (const item of series.value) {
+    if (item.metric === label) {
+      if (item.type === 'hidden') {
+        return true
+      }
+    }
+  }
+
+  return false
+}
 
 const dataSets = computed(() => {
   const sets = []
 
   for (const [index, column] of graphData.value.columns.entries()) {
+    if (isHidden(index)) continue
+
     sets.push({
-      label: series.value[index].name,
+      label: getLabels(index),
       data: column.values,
-      backgroundColor: series.value[index].color
+      backgroundColor: getColors(index)
     })
   }
 
@@ -68,51 +139,59 @@ const dataSets = computed(() => {
 
 const lineChartData = computed(() => {
   return {
-    labels: graphData.value.timestamps,
+    labels: graphData.value.formattedTimestamps,
     datasets: dataSets.value
   }
 })
 
-const props = defineProps({
-  definition: {
-    required: true,
-    type: String
-  },
-  resourceId: {
-    required: true,
-    type: String
-  }
-})
+const getGraphMetricsPayload = (source: Metric[]): GraphMetricsPayload => {
+  const resolution = 1000
+  const start = props.time.startTime as number * 1000
+  const end = props.time.endTime as number * 1000
+  const step = Math.floor((end - start) / resolution)
 
-onMounted(async () => {
+  return {
+    start,
+    end,
+    step,
+    source
+  }
+}
+
+const render = async () => {
   const definitionData: PreFabGraph = await store.dispatch('graphModule/getDefinitionData', props.definition)
 
-  const convertedGraphData = RrdGraphConverter.getData({
-    graphDef: definitionData,
-    resourceId: props.resourceId
-  })
+  try {
+    const convertedGraphData = RrdGraphConverter.getData({
+      graphDef: definitionData,
+      resourceId: props.resourceId
+    })
 
-  console.log(convertedGraphData)
-  series.value = convertedGraphData.series
-  convertedGraphDataRef.value = convertedGraphData
+    console.log(convertedGraphData)
+    series.value = convertedGraphData.series
+    convertedGraphDataRef.value = convertedGraphData
 
-  const metrics: Metric[] = convertedGraphData.metrics.map((metric: any): Metric => ({
-    aggregation: metric.aggregation,
-    attribute: metric.attribute,
-    label: metric.name,
-    resourceId: metric.resourceId,
-    transient: metric.transient
-  }))
+    const metrics: Metric[] = convertedGraphData.metrics.map((metric: any): Metric => ({
+      aggregation: metric.aggregation,
+      attribute: metric.attribute,
+      label: metric.name,
+      resourceId: metric.resourceId,
+      transient: metric.transient
+    }))
 
-  const payload: GraphMetricsPayload = {
-    end: 1641831900314,
-    start: 1641745500314,
-    step: 130909,
-    source: metrics
+    const payload = getGraphMetricsPayload(metrics)
+    const graphMetrics = await store.dispatch('graphModule/getGraphMetrics', payload)
+    const formattedMetrics = formatXLabels(graphMetrics, props.time.format)
+    graphData.value = formattedMetrics
+
+  } catch (error) {
+    console.log('Could not render graph for ', props.definition)
+    emit('addGraphDefinition') // adds another to infinite scroll
   }
+}
 
-  graphData.value = await store.dispatch('graphModule/getGraphMetrics', payload)
-})
+watch(props.time, () => render())
+onMounted(() => render())
 </script>
   
 <style scoped lang="scss">

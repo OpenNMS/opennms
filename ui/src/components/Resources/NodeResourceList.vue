@@ -4,8 +4,8 @@
       <div v-if="resources.length">
         <FeatherButton primary @click="selectAll">Select All</FeatherButton>
         <FeatherButton primary @click="clearAll">Clear All</FeatherButton>
-        <FeatherButton primary @click="graphSelected">Graph Selected</FeatherButton>
         <FeatherButton primary @click="graphAll">Graph All</FeatherButton>
+        <FeatherButton primary @click="graphSelected" :disabled="!resourceIsSelected">Graph Selected</FeatherButton>
       </div>
       <FeatherList>
         <template v-for="(resources, header) in groupedResourcesObject" :key="header">
@@ -49,6 +49,7 @@ const selectedResourceObject = ref<any>({})
 
 const resources = computed<Resource[]>(() => store.state.resourceModule.nodeResource.children?.resource || [])
 const groupedResourcesObject = computed<GroupedResourcesObject>(() => groupBy(resources.value, 'typeLabel'))
+const resourceIsSelected = computed<boolean>(() => Object.values(selectedResourceObject.value).includes(true))
 
 const selectCheckbox = (resourceId: string) => selectedResourceObject.value[resourceId] = !selectedResourceObject.value[resourceId]
 const selectAll = () => {

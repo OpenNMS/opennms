@@ -139,6 +139,7 @@ export interface GraphMetricsResponse {
   start: number
   step: number
   timestamps: number[]
+  formattedTimestamps: string[]
 }
 
 export interface Node {
@@ -460,4 +461,10 @@ export enum NotificationSeverity {
   ERROR = 'error',
   WARNING = 'warning',
   SUCCESS = 'success'
+}
+
+export interface StartEndTime {
+  startTime: string | number
+  endTime: string | number
+  format: string
 }

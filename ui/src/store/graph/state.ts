@@ -4,12 +4,14 @@ export interface State {
   definitions: { id: string, definitions: string[] }[]
   definitionDataObjects: PreFabGraph[]
   graphMetrics: GraphMetricsResponse[]
+  definitionsList: string[]
 }
 
 const state: State = {
   definitions: [],
   definitionDataObjects: [],
-  graphMetrics: []
+  graphMetrics: [],
+  definitionsList: []
 }
 
 export default state

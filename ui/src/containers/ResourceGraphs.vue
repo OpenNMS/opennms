@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div id="card">
     <router-view />
   </div>
 </template>
@@ -10,7 +10,7 @@
   
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/elevation";
-.card {
+#card {
   @include elevation(2);
   background: var(--feather-surface);
   padding: 15px;
