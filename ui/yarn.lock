@@ -437,13 +437,14 @@
   dependencies:
     vue "^2.0.0"
 
-"@typescript-eslint/eslint-plugin@^5.8.1":
-  version "5.8.1"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.8.1.tgz#97dfaa39f38e99f86801fdf34f9f1bed66704258"
-  integrity sha512-wTZ5oEKrKj/8/366qTM366zqhIKAp6NCMweoRONtfuC07OAU9nVI2GZZdqQ1qD30WAAtcPdkH+npDwtRFdp4Rw==
+"@typescript-eslint/eslint-plugin@^5.9.1":
+  version "5.9.1"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.9.1.tgz#e5a86d7e1f9dc0b3df1e6d94feaf20dd838d066c"
+  integrity sha512-Xv9tkFlyD4MQGpJgTo6wqDqGvHIRmRgah/2Sjz1PUnJTawjHWIwBivUE9x0QtU2WVii9baYgavo/bHjrZJkqTw==
   dependencies:
-    "@typescript-eslint/experimental-utils" "5.8.1"
-    "@typescript-eslint/scope-manager" "5.8.1"
+    "@typescript-eslint/experimental-utils" "5.9.1"
+    "@typescript-eslint/scope-manager" "5.9.1"
+    "@typescript-eslint/type-utils" "5.9.1"
     debug "^4.3.2"
     functional-red-black-tree "^1.0.1"
     ignore "^5.1.8"
@@ -451,15 +452,15 @@
     semver "^7.3.5"
     tsutils "^3.21.0"
 
-"@typescript-eslint/experimental-utils@5.8.1":
-  version "5.8.1"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-5.8.1.tgz#01861eb2f0749f07d02db342b794145a66ed346f"
-  integrity sha512-fbodVnjIDU4JpeXWRDsG5IfIjYBxEvs8EBO8W1+YVdtrc2B9ppfof5sZhVEDOtgTfFHnYQJDI8+qdqLYO4ceww==
+"@typescript-eslint/experimental-utils@5.9.1":
+  version "5.9.1"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-5.9.1.tgz#8c407c4dd5ffe522329df6e4c9c2b52206d5f7f1"
+  integrity sha512-cb1Njyss0mLL9kLXgS/eEY53SZQ9sT519wpX3i+U457l2UXRDuo87hgKfgRazmu9/tQb0x2sr3Y0yrU+Zz0y+w==
   dependencies:
     "@types/json-schema" "^7.0.9"
-    "@typescript-eslint/scope-manager" "5.8.1"
-    "@typescript-eslint/types" "5.8.1"
-    "@typescript-eslint/typescript-estree" "5.8.1"
+    "@typescript-eslint/scope-manager" "5.9.1"
+    "@typescript-eslint/types" "5.9.1"
+    "@typescript-eslint/typescript-estree" "5.9.1"
     eslint-scope "^5.1.1"
     eslint-utils "^3.0.0"
 
@@ -481,10 +482,32 @@
     "@typescript-eslint/types" "5.8.1"
     "@typescript-eslint/visitor-keys" "5.8.1"
 
+"@typescript-eslint/scope-manager@5.9.1":
+  version "5.9.1"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-5.9.1.tgz#6c27be89f1a9409f284d95dfa08ee3400166fe69"
+  integrity sha512-8BwvWkho3B/UOtzRyW07ffJXPaLSUKFBjpq8aqsRvu6HdEuzCY57+ffT7QoV4QXJXWSU1+7g3wE4AlgImmQ9pQ==
+  dependencies:
+    "@typescript-eslint/types" "5.9.1"
+    "@typescript-eslint/visitor-keys" "5.9.1"
+
+"@typescript-eslint/type-utils@5.9.1":
+  version "5.9.1"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/type-utils/-/type-utils-5.9.1.tgz#c6832ffe655b9b1fec642d36db1a262d721193de"
+  integrity sha512-tRSpdBnPRssjlUh35rE9ug5HrUvaB9ntREy7gPXXKwmIx61TNN7+l5YKgi1hMKxo5NvqZCfYhA5FvyuJG6X6vg==
+  dependencies:
+    "@typescript-eslint/experimental-utils" "5.9.1"
+    debug "^4.3.2"
+    tsutils "^3.21.0"
+
 "@typescript-eslint/types@5.8.1":
   version "5.8.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.8.1.tgz#04c6b49ebc8c99238238a6b8b43f2fc613983b5a"
   integrity sha512-L/FlWCCgnjKOLefdok90/pqInkomLnAcF9UAzNr+DSqMC3IffzumHTQTrINXhP1gVp9zlHiYYjvozVZDPleLcA==
+
+"@typescript-eslint/types@5.9.1":
+  version "5.9.1"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.9.1.tgz#1bef8f238a2fb32ebc6ff6d75020d9f47a1593c6"
+  integrity sha512-SsWegWudWpkZCwwYcKoDwuAjoZXnM1y2EbEerTHho19Hmm+bQ56QG4L4jrtCu0bI5STaRTvRTZmjprWlTw/5NQ==
 
 "@typescript-eslint/typescript-estree@5.8.1":
   version "5.8.1"
@@ -499,12 +522,33 @@
     semver "^7.3.5"
     tsutils "^3.21.0"
 
+"@typescript-eslint/typescript-estree@5.9.1":
+  version "5.9.1"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-5.9.1.tgz#d5b996f49476495070d2b8dd354861cf33c005d6"
+  integrity sha512-gL1sP6A/KG0HwrahVXI9fZyeVTxEYV//6PmcOn1tD0rw8VhUWYeZeuWHwwhnewnvEMcHjhnJLOBhA9rK4vmb8A==
+  dependencies:
+    "@typescript-eslint/types" "5.9.1"
+    "@typescript-eslint/visitor-keys" "5.9.1"
+    debug "^4.3.2"
+    globby "^11.0.4"
+    is-glob "^4.0.3"
+    semver "^7.3.5"
+    tsutils "^3.21.0"
+
 "@typescript-eslint/visitor-keys@5.8.1":
   version "5.8.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-5.8.1.tgz#58a2c566265d5511224bc316149890451c1bbab0"
   integrity sha512-SWgiWIwocK6NralrJarPZlWdr0hZnj5GXHIgfdm8hNkyKvpeQuFyLP6YjSIe9kf3YBIfU6OHSZLYkQ+smZwtNg==
   dependencies:
     "@typescript-eslint/types" "5.8.1"
+    eslint-visitor-keys "^3.0.0"
+
+"@typescript-eslint/visitor-keys@5.9.1":
+  version "5.9.1"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-5.9.1.tgz#f52206f38128dd4f675cf28070a41596eee985b7"
+  integrity sha512-Xh37pNz9e9ryW4TVdwiFzmr4hloty8cFj8GTWMXh3Z8swGwyQWeCcNgF0hm6t09iZd6eiZmIf4zHedQVP6TVtg==
+  dependencies:
+    "@typescript-eslint/types" "5.9.1"
     eslint-visitor-keys "^3.0.0"
 
 "@vitejs/plugin-vue@^2.0.1":
@@ -2384,11 +2428,6 @@ token-stream@1.0.0:
   resolved "https://registry.yarnpkg.com/token-stream/-/token-stream-1.0.0.tgz#cc200eab2613f4166d27ff9afc7ca56d49df6eb4"
   integrity sha1-zCAOqyYT9BZtJ/+a/HylbUnfbrQ=
 
-totalist@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/totalist/-/totalist-2.0.0.tgz#db6f1e19c0fa63e71339bbb8fba89653c18c7eec"
-  integrity sha512-+Y17F0YzxfACxTyjfhnJQEe7afPA0GSpYlFkl2VFMxYP7jshQf9gXV7cH47EfToBumFThfKBvfAcoUn6fdNeRQ==
-
 traverse@~0.6.6:
   version "0.6.6"
   resolved "https://registry.yarnpkg.com/traverse/-/traverse-0.6.6.tgz#cbdf560fd7b9af632502fed40f918c157ea97137"
@@ -2450,16 +2489,15 @@ url@~0.11.0:
     punycode "1.3.2"
     querystring "0.2.0"
 
-uvu@^0.5.2:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/uvu/-/uvu-0.5.2.tgz#c145e7f4b5becf80099cf22fd8a4a05f0112b2c0"
-  integrity sha512-m2hLe7I2eROhh+tm3WE5cTo/Cv3WQA7Oc9f7JB6uWv+/zVKvfAm53bMyOoGOSZeQ7Ov2Fu9pLhFr7p07bnT20w==
+uvu@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/uvu/-/uvu-0.5.3.tgz#3d83c5bc1230f153451877bfc7f4aea2392219ae"
+  integrity sha512-brFwqA3FXzilmtnIyJ+CxdkInkY/i4ErvP7uV0DnUVxQcQ55reuHphorpF+tZoVHK2MniZ/VJzI7zJQoc9T9Yw==
   dependencies:
     dequal "^2.0.0"
     diff "^5.0.0"
     kleur "^4.0.3"
     sade "^1.7.3"
-    totalist "^2.0.0"
 
 v8-compile-cache@^2.0.3:
   version "2.3.0"
