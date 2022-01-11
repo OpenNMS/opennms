@@ -1,7 +1,7 @@
 
 = Health Rest Service
 
-Service that allows health rest calls
+Service that allows health rest calls.
 
 Currently implemented on Minion and Sentinel by default
 
