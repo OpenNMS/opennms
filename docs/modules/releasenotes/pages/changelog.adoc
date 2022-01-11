@@ -4,31 +4,31 @@
 
 [[releasenotes-changelog-29.0.4]]
 
-==== Release 29.0.4
+== Release 29.0.4
 
 Release 29.0.4 is a re-release of 29.0.3 with additional fixes relating to
 Log4j2 vulnerabilities.
 
 The codename for Horizon 29.0.4 is https://wikipedia.org/wiki/$$Bird_(gesture)$$[_The Bird_].
 
-===== Bug
+=== Bug
 
 * CVE-2021-45046: incomplete Log4j2 vulnerability mitigation (Issue http://issues.opennms.org/browse/NMS-13858[NMS-13858])
 
 [[releasenotes-changelog-29.0.3]]
 
-==== Release 29.0.3
+== Release 29.0.3
 
 Release 29.0.3 is an out-of-band release with a fix for the Log4j2 security issue,
 plus an enhancement to support `exclude-url` in discovery's configuration.
 
 The codename for Horizon 29.0.3 is https://wikipedia.org/wiki/$$Penguin$$[_Penguin_].
 
-===== Bug
+=== Bug
 
 * Log4j2 0-day: CVE-2021-44228 (Issue http://issues.opennms.org/browse/NMS-13850[NMS-13850])
 
-===== Enhancement
+=== Enhancement
 
 * Update VMWare import documentation regarding multiple parameters (Issue http://issues.opennms.org/browse/NMS-9889[NMS-9889])
 * Add "exclude-url" to Discoverd's configuration (Issue http://issues.opennms.org/browse/NMS-13718[NMS-13718])
@@ -194,4 +194,3 @@ The codename for Horizon 29.0.0 is https://wikipedia.org/wiki/$$Turkey_(bird)$$[
 * GeoIP Provisioning Adapter (Issue http://issues.opennms.org/browse/NMS-13704[NMS-13704])
 * Allow PostgreSQL 14 (Issue http://issues.opennms.org/browse/NMS-13714[NMS-13714])
 * Add hint for time sync on OpenNMS components (Issue http://issues.opennms.org/browse/NMS-13724[NMS-13724])
-

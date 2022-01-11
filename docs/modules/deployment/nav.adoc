@@ -10,7 +10,6 @@
 ** xref:minion/off-heap-storage.adoc[]
 * xref:sentinel/introduction.adoc[]
 ** xref:sentinel/runtime/install.adoc[]
-** xref:sentinel/flow-processing.adoc[]
 
 * xref:time-series-storage/timeseries/time-series-storage.adoc[]
 ** xref:time-series-storage/timeseries/rrdtool.adoc[]
