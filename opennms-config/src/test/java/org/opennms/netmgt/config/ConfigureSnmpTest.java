@@ -28,13 +28,21 @@
 
 package org.opennms.netmgt.config;
 
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 
+import com.google.common.io.Resources;
 import junit.framework.TestCase;
 
+import org.apache.bsf.util.IOUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.model.ImmutableMapper;
@@ -56,9 +64,11 @@ public class ConfigureSnmpTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
     	super.setUp();
-    	
-        Resource rsrc = ConfigurationTestUtils.getSpringResourceForResource(this, "snmp-config-configureSnmpTest.xml");
-        SnmpConfig config = JaxbUtils.unmarshal(SnmpConfig.class, rsrc);
+        URL url = Thread.currentThread().getContextClassLoader().getResource("org/opennms/netmgt/config/snmp-config-configureSnmpTest.xml");
+        String configXml = Resources.toString(url, StandardCharsets.UTF_8);
+        JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+        String snmpConfigJson = converter.xmlToJson(configXml);
+        SnmpConfig config = ConfigConvertUtil.jsonToObject(snmpConfigJson, SnmpConfig.class);
     	SnmpPeerFactory.setInstance(new SnmpPeerFactory(config));
     }
 
@@ -74,7 +84,7 @@ public class ConfigureSnmpTest extends TestCase {
     }
 
     /**
-     * Test method for {@link org.opennms.netmgt.config.SnmpPeerFactory#createSnmpEventInfo(org.opennms.netmgt.events.api.model.IEvent)}.
+     * Test method for {@link org.opennms.netmgt.config.SnmpPeerFactory# createSnmpEventInfo(org.opennms.netmgt.events.api.model.IEvent)}.
      * Tests creating an SNMP config definition from a configureSNMP event.
      * 
      * @throws UnknownHostException 
