@@ -1,0 +1,42 @@
+
+= Health Rest Service
+
+Service that allows health rest calls
+
+Currently implemented on Minion and Sentinel by default
+
+Examples:
+
+* /rest/health
+* /rest/health/probe
+* /rest/health?tag=local
+* /rest/health/probe?tag=local
+
+== GETs (Reading Data)
+
+[options="header, %autowidth"]
+|===
+| Resource             | Description
+| `/health`            | Health check results for components. Include health check result details for each element.
+| `/health/prob`       | Health check probe for components. Only indicate if the health is good or not. 
+|===
+
+The following table shows all supported query string parameters and their default values.
+
+[options="header"]
+|===
+| Name              | Default  | Comment
+s| t                 | 5000     | Timeout in milliseconds
+s| maxAgeMs          | 90000    | 
+s| tag               | ''       
+a| Use tag to filter Health Check components. A tag could be: +
+ * local + 
+ * rest +
+ * telemetry +
+ * dao +
+ * minion +
+ * elastic +
+ * bundle +
+|===
+
+
