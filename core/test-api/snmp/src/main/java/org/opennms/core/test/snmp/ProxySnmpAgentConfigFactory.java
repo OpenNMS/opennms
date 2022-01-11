@@ -52,6 +52,10 @@ public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
         super();
     }
 
+    public ProxySnmpAgentConfigFactory(SnmpConfig snmpConfig) throws IOException {
+        super(snmpConfig);
+    }
+
     @Override
     public SnmpAgentConfig getAgentConfig(final InetAddress address) {
         return getAgentConfig(address, null);
