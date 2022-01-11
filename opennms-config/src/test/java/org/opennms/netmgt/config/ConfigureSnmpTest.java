@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -37,10 +35,7 @@ import java.nio.charset.StandardCharsets;
 import com.google.common.io.Resources;
 import junit.framework.TestCase;
 
-import org.apache.bsf.util.IOUtils;
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -48,7 +43,6 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.springframework.core.io.Resource;
 
 /**
  * 
