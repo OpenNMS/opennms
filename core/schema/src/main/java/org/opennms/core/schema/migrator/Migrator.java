@@ -26,25 +26,11 @@
  *     http://www.opennms.com/
  ******************************************************************************/
 
-package org.opennms.core.schema;
+package org.opennms.core.schema.migrator;
 
-import liquibase.Contexts;
-import liquibase.Liquibase;
-import liquibase.change.ChangeFactory;
 import liquibase.database.DatabaseConnection;
-import liquibase.database.core.PostgresDatabase;
-import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
-import liquibase.exception.LiquibaseException;
-import liquibase.ext.opennms.autoincrement.AddNamedAutoIncrementChange;
-import liquibase.ext.opennms.createindex.CreateIndexWithWhereChange;
-import liquibase.ext.opennms.createindex.CreateIndexWithWhereGenerator;
-import liquibase.ext.opennms.dropconstraint.DropForeignKeyConstraintCascadeChange;
-import liquibase.ext.opennms.dropconstraint.DropForeignKeyConstraintCascadeGenerator;
-import liquibase.ext.opennms.setsequence.SetSequenceChange;
-import liquibase.ext.opennms.setsequence.SetSequenceGenerator;
-import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.sqlgenerator.SqlGeneratorFactory;
+import org.opennms.core.schema.MigrationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +39,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -66,29 +51,24 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * TODO: consolidate common parts with Migrator
+ *
  */
-public class ClassLoaderBasedMigrator {
-    private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(ClassLoaderBasedMigrator.class);
+public class Migrator {
+    private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(Migrator.class);
 
     private Logger log = DEFAULT_LOGGER;
 
-    public static final String LIQUIBASE_CHANGELOG_FILENAME = "changelog.xml";
-
-    private static final Logger LOG = LoggerFactory.getLogger(ClassLoaderBasedMigrator.class);
     private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^(?:PostgreSQL|EnterpriseDB) (\\d+\\.\\d+)");
 
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
-    private final ClassLoader m_classLoader;
+    private final MigratorResourceProvider m_resourceProvider;
+    private final MigratorLiquibaseExecutor m_liquibaseExecutor;
 
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
@@ -101,13 +81,18 @@ public class ClassLoaderBasedMigrator {
     private String m_adminUser;
     private String m_adminPassword;
 
-    public ClassLoaderBasedMigrator() {
-        this.m_classLoader = this.getClass().getClassLoader();
+//========================================
+// Constructors
+//========================================
+
+    public Migrator(MigratorResourceProvider m_resourceProvider, MigratorLiquibaseExecutor m_liquibaseExecutor) {
+        this.m_resourceProvider = m_resourceProvider;
+        this.m_liquibaseExecutor = m_liquibaseExecutor;
     }
 
-    public ClassLoaderBasedMigrator(ClassLoader classLoader) {
-        this.m_classLoader = classLoader;
-    }
+//========================================
+// Getters and Setters
+//========================================
 
     /**
      * <p>getDataSource</p>
@@ -238,14 +223,86 @@ public class ClassLoaderBasedMigrator {
         m_adminPassword = adminPassword;
     }
 
+//========================================
+// Interface
+//========================================
+
+
+    public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, boolean timescaleDB) throws MigrationException, Exception, IOException {
+        if (updateDatabase) {
+            this.createLangPlPgsql();
+        }
+
+        this.checkUnicode();
+        this.checkTime();
+
+        if (updateDatabase) {
+            databaseSetOwner();
+
+            Collection<String> changelogs = this.m_resourceProvider.getLiquibaseChangelogs(true);
+
+            for (String changelogUri : changelogs) {
+                log.info("- Running migration for changelog: {}", changelogUri);
+                this.migrate(changelogUri);
+            }
+        }
+
+        if (vacuum) {
+            this.vacuumDatabase(fullVacuum);
+        }
+
+        if (iplike) {
+            this.updateIplike();
+        }
+    }
+
+
+    /**
+     * <p>migrate</p>
+     *
+     * Used in Integration Tests (TODO: remove IT use and internalize)
+     *
+     * @param changelogUri
+     * @throws MigrationException if any.
+     */
+    public void migrate(String changelogUri) throws MigrationException {
+        Connection connection = null;
+
+        try {
+            String contexts = getLiquibaseContexts();
+
+            Map<String, String> changeLogParameters = this.getChangeLogParameters();
+
+            this.m_liquibaseExecutor
+                    .update(
+                            changelogUri,
+                            contexts,
+                            this.m_dataSource,
+                            this.m_schemaName,
+                            changeLogParameters
+                    );
+
+        } catch (final Throwable e) {
+            throw new MigrationException("unable to migrate the database: " + e.getMessage(), e);
+        } finally {
+            cleanUpDatabase(connection, null, null, null);
+        }
+    }
+
+//========================================
+// Processing
+//========================================
+
     /**
      * <p>getDatabaseVersion</p>
      *
      * @return a {@link Float} object.
      * @throws MigrationException if any.
      */
-    public Float getDatabaseVersion() throws MigrationException {
+    private Float getDatabaseVersion() throws MigrationException {
         if (m_databaseVersion == null) {
+            this.log.debug("Retrieving the database version");
+
             String versionString = null;
             Statement st = null;
             ResultSet rs = null;
@@ -259,6 +316,8 @@ public class ClassLoaderBasedMigrator {
                 }
 
                 versionString = rs.getString(1);
+
+                this.log.debug("Have DB version string: version={}", versionString);
 
                 rs.close();
                 st.close();
@@ -302,8 +361,8 @@ public class ClassLoaderBasedMigrator {
      *
      * @throws MigrationException if any.
      */
-    public void createLangPlPgsql() throws MigrationException {
-        LOG.info("adding PL/PgSQL support to the database, if necessary");
+    private void createLangPlPgsql() throws MigrationException {
+        log.info("adding PL/PgSQL support to the database, if necessary");
         Statement st = null;
         ResultSet rs = null;
         Connection c = null;
@@ -312,9 +371,9 @@ public class ClassLoaderBasedMigrator {
             st = c.createStatement();
             rs = st.executeQuery("SELECT oid FROM pg_proc WHERE " + "proname='plpgsql_call_handler' AND " + "proargtypes = ''");
             if (rs.next()) {
-                LOG.info("PL/PgSQL call handler exists");
+                log.info("PL/PgSQL call handler exists");
             } else {
-                LOG.info("adding PL/PgSQL call handler");
+                log.info("adding PL/PgSQL call handler");
                 st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql." + getSharedObjectExtension(false) + "' LANGUAGE 'c'");
             }
             rs.close();
@@ -326,9 +385,9 @@ public class ClassLoaderBasedMigrator {
                     + "pg_proc.oid = pg_language.lanplcallfoid AND "
                     + "pg_language.lanname = 'plpgsql'");
             if (rs.next()) {
-                LOG.info("PL/PgSQL language exists");
+                log.info("PL/PgSQL language exists");
             } else {
-                LOG.info("adding PL/PgSQL language");
+                log.info("adding PL/PgSQL language");
                 //noinspection SqlNoDataSourceInspection,Duplicates
                 st.execute("CREATE TRUSTED PROCEDURAL LANGUAGE 'plpgsql' "
                         + "HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL'");
@@ -345,8 +404,8 @@ public class ClassLoaderBasedMigrator {
      *
      * @throws Exception if any.
      */
-    public void checkUnicode() throws Exception {
-        LOG.info("checking if database \"" + getDatabaseName() + "\" is unicode");
+    private void checkUnicode() throws Exception {
+        log.info("checking if database \"" + getDatabaseName() + "\" is unicode");
 
         Statement st = null;
         ResultSet rs = null;
@@ -373,7 +432,7 @@ public class ClassLoaderBasedMigrator {
      *
      * @throws SQLException if any.
      */
-    public void databaseSetOwner() throws MigrationException {
+    private void databaseSetOwner() throws MigrationException {
         PreparedStatement st = null;
         ResultSet rs = null;
         Connection c = null;
@@ -419,7 +478,7 @@ public class ClassLoaderBasedMigrator {
      * @param full a boolean.
      * @throws SQLException if any.
      */
-    public void vacuumDatabase(final boolean full) throws MigrationException {
+    private void vacuumDatabase(final boolean full) throws MigrationException {
         Connection c = null;
         Statement st = null;
 
@@ -427,11 +486,11 @@ public class ClassLoaderBasedMigrator {
             c = m_dataSource.getConnection();
 
             st = c.createStatement();
-            LOG.info("optimizing database (VACUUM ANALYZE)");
+            log.info("optimizing database (VACUUM ANALYZE)");
             st.execute("VACUUM ANALYZE");
 
             if (full) {
-                LOG.info("recovering database disk space (VACUUM FULL)");
+                log.info("recovering database disk space (VACUUM FULL)");
                 st.execute("VACUUM FULL");
             }
         } catch (SQLException e) {
@@ -446,7 +505,7 @@ public class ClassLoaderBasedMigrator {
      *
      * @throws Exception if any.
      */
-    public void updateIplike() throws MigrationException {
+    private void updateIplike() throws MigrationException {
 
         boolean insert_iplike = !isIpLikeUsable();
 
@@ -461,7 +520,7 @@ public class ClassLoaderBasedMigrator {
         // XXX This error is generated from Postgres if eventtime(text)
         // does not exist:
         // ERROR: function eventtime(text) does not exist
-        LOG.info("checking for stale eventtime.so references");
+        log.info("checking for stale eventtime.so references");
         Connection c = null;
         Statement st = null;
         try {
@@ -487,12 +546,12 @@ public class ClassLoaderBasedMigrator {
      *
      * @return a boolean.
      */
-    public boolean isIpLikeUsable() throws MigrationException {
+    private boolean isIpLikeUsable() throws MigrationException {
         Connection c = null;
         Statement st = null;
 
         try {
-            LOG.info("checking if iplike is usable");
+            log.info("checking if iplike is usable");
             c = m_dataSource.getConnection();
             st = c.createStatement();
 
@@ -504,7 +563,7 @@ public class ClassLoaderBasedMigrator {
 
             st.close();
 
-            LOG.info("checking if iplike supports IPv6");
+            log.info("checking if iplike supports IPv6");
             st = c.createStatement();
             st.execute("SELECT IPLIKE('fe80:0000:5ab0:35ff:feee:cecd', 'fe80:*::cecd')");
         } catch (final SQLException e) {
@@ -518,11 +577,11 @@ public class ClassLoaderBasedMigrator {
 
     private boolean installCIpLike(String pgIplikeLocation) throws MigrationException {
         if (pgIplikeLocation == null) {
-            LOG.info("Skipped inserting C iplike function (location of iplike function not set)");
+            log.info("Skipped inserting C iplike function (location of iplike function not set)");
             return false;
         }
 
-        LOG.info("inserting C iplike function");
+        log.info("inserting C iplike function");
 
         Statement st = null;
         Connection c = null;
@@ -543,11 +602,11 @@ public class ClassLoaderBasedMigrator {
         }
     }
 
-    public void dropExistingIpLike() throws MigrationException {
+    private void dropExistingIpLike() throws MigrationException {
         Connection c = null;
         Statement st = null;
 
-        LOG.info("removing existing iplike definition (if any)");
+        log.info("removing existing iplike definition (if any)");
         try {
             c = m_dataSource.getConnection();
             st = c.createStatement();
@@ -568,8 +627,8 @@ public class ClassLoaderBasedMigrator {
      *
      * @throws Exception if any.
      */
-    public void setupPlPgsqlIplike() throws MigrationException {
-        LOG.info("inserting PL/pgSQL iplike function");
+    private void setupPlPgsqlIplike() throws MigrationException {
+        log.info("inserting PL/pgSQL iplike function");
 
         InputStream sqlfile = null;
         final StringBuffer createFunction = new StringBuffer();
@@ -611,36 +670,6 @@ public class ClassLoaderBasedMigrator {
         }
     }
 
-    /**
-     * <p>migrate</p>
-     *
-     * @param changelogUri
-     * @throws MigrationException if any.
-     */
-    public void migrate(String changelogUri) throws MigrationException {
-        Connection connection = null;
-
-        try {
-            connection = m_dataSource.getConnection();
-
-            Map<String, String> changeLogParameters = this.getChangeLogParameters();
-
-            Liquibase liquibase = this.prepareLiquibase(connection, changelogUri, changeLogParameters);
-
-            String contexts = getLiquibaseContexts();
-
-            liquibase.update(new Contexts(contexts));
-        } catch (final Throwable e) {
-            throw new MigrationException("unable to migrate the database: " + e.getMessage(), e);
-        } finally {
-            cleanUpDatabase(connection, null, null, null);
-        }
-    }
-
-    public static String getLiquibaseContexts() {
-        return System.getProperty("opennms.contexts", "production");
-    }
-
     private Map<String, String> getChangeLogParameters() {
         final Map<String,String> parameters = new HashMap<>();
         parameters.put("install.database.admin.user", getAdminUser());
@@ -654,36 +683,36 @@ public class ClassLoaderBasedMigrator {
             try {
                 rs.close();
             } catch (final SQLException e) {
-                LOG.warn("Failed to close result set.", e);
+                log.warn("Failed to close result set.", e);
             }
         }
         if (st != null) {
             try {
                 st.close();
             } catch (final SQLException e) {
-                LOG.warn("Failed to close statement.", e);
+                log.warn("Failed to close statement.", e);
             }
         }
         if (dbc != null) {
             try {
                 dbc.close();
             } catch (final DatabaseException e) {
-                LOG.warn("Failed to close database connection.", e);
+                log.warn("Failed to close database connection.", e);
             }
         }
         if (c != null) {
             try {
                 c.close();
             } catch (final SQLException e) {
-                LOG.warn("Failed to close connection.", e);
+                log.warn("Failed to close connection.", e);
             }
         }
     }
 
     // Ensures that the database time and the system time running the installer match
     // If the difference is greater than 1s, it fails
-    public void checkTime() throws Exception {
-        LOG.info("checking if time of database \"" + getDatabaseName() + "\" is matching system time");
+    private void checkTime() throws Exception {
+        log.info("checking if time of database \"" + getDatabaseName() + "\" is matching system time");
 
         try (Statement st = m_adminDataSource.getConnection().createStatement()) {
             final long beforeQueryTime = System.currentTimeMillis();
@@ -694,7 +723,7 @@ public class ClassLoaderBasedMigrator {
                     final long diff = currentDatabaseTime.getTime() - currentSystemTime;
                     final long queryExecuteDelta = Math.abs(currentSystemTime - beforeQueryTime);
                     if (Math.abs(diff) > 1000 + queryExecuteDelta) {
-                        LOG.info("NOT OK");
+                        log.info("NOT OK");
                         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
                         final String databaseDateString = simpleDateFormat.format(new Date(currentDatabaseTime.getTime()));
                         final String systemTimeDateString = simpleDateFormat.format(new Date(currentSystemTime));
@@ -703,126 +732,17 @@ public class ClassLoaderBasedMigrator {
                                 + ", diff: " + Math.abs(diff) + "ms. The maximum allowed difference is 1000ms."
                                 + " Please update either the database time or system time");
                     }
-                    LOG.info("OK");
+                    log.info("OK");
                 }
             }
         }
-    }
-
-    public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, boolean timescaleDB) throws MigrationException, Exception, IOException {
-        if (updateDatabase) {
-            this.createLangPlPgsql();
-        }
-
-        checkUnicode();
-        checkTime();
-
-        if (updateDatabase) {
-            databaseSetOwner();
-
-            for (String changelogUri : getLiquibaseChangelogs(true)) {
-                LOG.info("- Running migration for changelog: {}", changelogUri);
-                migrate(changelogUri);
-            }
-        }
-
-        if (vacuum) {
-            vacuumDatabase(fullVacuum);
-        }
-
-        if (iplike) {
-            updateIplike();
-        }
-    }
-
-    public Collection<String> getLiquibaseChangelogs(boolean required) throws IOException, Exception {
-
-        List<String> located = new LinkedList<>();
-
-        // TODO: support multiple "changelog.xml" files?
-        URL url = this.m_classLoader.getResource(LIQUIBASE_CHANGELOG_FILENAME);
-        if (url != null) {
-            located.add(url.toString());
-        }
-
-        if (( required ) && ( located.isEmpty() )) {
-            throw new MigrationException("Could not find the '" + LIQUIBASE_CHANGELOG_FILENAME + "' file.");
-        }
-
-        return located;
     }
 
 //========================================
 // Miscellaneous Internals
 //========================================
 
-    protected Liquibase prepareLiquibase(Connection databaseConnection, String changelogUri, Map<String, String> changelogParameters) throws LiquibaseException {
-        this.registerLiquibaseExtensions();
-
-        DatabaseConnection liquibaseDatabaseConnection = new JdbcConnection(databaseConnection);
-
-        PostgresDatabase postgresDatabase = new PostgresDatabase();
-        postgresDatabase.setConnection(liquibaseDatabaseConnection);
-        postgresDatabase.setDefaultSchemaName(this.m_schemaName);
-
-        ClassLoaderResourceAccessor classLoaderResourceAccessor =
-                new MyBundleClassLoaderResourceAccessor(this.m_classLoader);
-
-        Liquibase liquibase = new Liquibase(changelogUri, classLoaderResourceAccessor, postgresDatabase);
-
-        //
-        // Populate Liquibase with the changelog parameters.
-        //
-        changelogParameters.forEach(liquibase::setChangeLogParameter);
-
-        return liquibase;
+    private String getLiquibaseContexts() {
+        return System.getProperty("opennms.contexts", "production");
     }
-
-    private void registerLiquibaseExtensions() {
-        SqlGeneratorFactory.getInstance().register(new DropForeignKeyConstraintCascadeGenerator());
-        SqlGeneratorFactory.getInstance().register(new CreateIndexWithWhereGenerator());
-        SqlGeneratorFactory.getInstance().register(new SetSequenceGenerator());
-
-        ChangeFactory.getInstance().register(AddNamedAutoIncrementChange.class);
-        ChangeFactory.getInstance().register(CreateIndexWithWhereChange.class);
-        ChangeFactory.getInstance().register(DropForeignKeyConstraintCascadeChange.class);
-        ChangeFactory.getInstance().register(SetSequenceChange.class);
-    }
-
-    /**
-     * Resource Accessor that extracts the path from a resource URL for use with getResourceAsStream
-     */
-    private class MyBundleClassLoaderResourceAccessor extends ClassLoaderResourceAccessor {
-        public MyBundleClassLoaderResourceAccessor(ClassLoader classLoader) {
-            super(classLoader);
-        }
-
-        @Override
-        public Set<InputStream> getResourcesAsStream(String path) throws IOException {
-            if (path.startsWith("bundle://")) {
-                String updPath = path.replaceFirst("bundle://[^/]*", "");
-
-                ClassLoaderBasedMigrator.this.log.debug("MAPPED BUNDLE PATH {} => {}", path, updPath);
-
-                path = updPath;
-            }
-
-            return super.getResourcesAsStream(path);
-        }
-
-
-
-        @Override
-        public Set<String> list(String relativeTo, String path, boolean includeFiles, boolean includeDirectories, boolean recursive) throws IOException {
-            if (path.startsWith("bundle://")) {
-                String updPath = path.replaceFirst("bundle://[^/]*", "");
-
-                ClassLoaderBasedMigrator.this.log.debug("MAPPED BUNDLE PATH {} => {}", path, updPath);
-
-                path = updPath;
-            }
-
-            return super.list(relativeTo, path, includeFiles, includeDirectories, recursive);
-        }
-    };
 }

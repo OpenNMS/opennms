@@ -41,8 +41,8 @@ import javax.sql.DataSource;
  * Perform the Database setup that only requires the Admin connection, so that it can safely execute prior to the
  *  existence of the "opennms" database.
  *
- * Separating this step allows the opennms DB source to still fail-fast in case of problems accessing the database at
- *  startup time, even when database initialization is disabled.
+ * Separating this step from the rest of the migration allows the opennms DB source to still fail-fast in case of
+ *  problems accessing the database at startup time, even when database initialization is disabled.
  */
 public class BootTimeDatabaseInit {
 
@@ -130,7 +130,6 @@ public class BootTimeDatabaseInit {
 
             migratorAdminInitialize.setAdminDataSource(this.m_adminDatasource);
 
-            migratorAdminInitialize.setAdminDataSource(this.m_adminDatasource);
             migratorAdminInitialize.setAdminUser(this.m_adminDataSourceConfig.getUserName());
             migratorAdminInitialize.setAdminPassword(this.m_adminDataSourceConfig.getPassword());
             migratorAdminInitialize.setDatabaseName(this.m_databaseName);

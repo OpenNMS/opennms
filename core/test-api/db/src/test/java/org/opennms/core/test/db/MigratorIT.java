@@ -55,8 +55,10 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.schema.MigrationException;
-import org.opennms.core.schema.Migrator;
+import org.opennms.core.schema.MigratorAdminInitialize;
+import org.opennms.core.schema.migrator.Migrator;
+import org.opennms.core.schema.migrator.SpringContextBasedLiquibaseExecutor;
+import org.opennms.core.schema.migrator.SpringContextBasedMigratorResourceProvider;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -134,22 +136,36 @@ public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
         Set<String> tables = getTables();
         assertFalse("must not contain table 'schematest'", tables.contains("schematest"));
 
-        final Migrator migrator = new Migrator();
-        migrator.setApplicationContext(m_context);
+
+        //
+        // STEP 1 - initialize
+        //
+        MigratorAdminInitialize migratorAdminInitialize = new MigratorAdminInitialize();
+        migratorAdminInitialize.setValidateDatabaseVersion(false);
+        migratorAdminInitialize.setCreateUser(false);
+        migratorAdminInitialize.setCreateDatabase(false);
+        migratorAdminInitialize.initializeDatabase(true, false);
+
+
+        //
+        // STEP 2 - migrate
+        //
+        SpringContextBasedMigratorResourceProvider resourceProvider =
+                new SpringContextBasedMigratorResourceProvider(m_context);
+        SpringContextBasedLiquibaseExecutor liquibaseExecutor =
+                new SpringContextBasedLiquibaseExecutor(m_context);
+
+        final Migrator migrator = new Migrator(resourceProvider, liquibaseExecutor);
         migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
         migrator.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         migrator.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
         migrator.setDataSource(m_dataSource);
         migrator.setAdminDataSource(m_dataSource);
-        migrator.setValidateDatabaseVersion(false);
-        migrator.setCreateUser(false);
-        migrator.setCreateDatabase(false);
 
         LOG.info("Running migration on database: {}", migrator.getDatabaseName());
 
-        migrator.prepareDatabase();
-        migrator.migrate(aResource);
+        migrator.migrate(aResource.getURI().toString()); // TODO: why use the internal API?
 
         LOG.info("Migration complete: {}", migrator.getDatabaseName());
 
@@ -162,8 +178,25 @@ public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
     public void testMultipleChangelogs() throws Exception {
         assertFalse(changelogExists());
 
-        final Migrator migrator = new Migrator();
-        migrator.setApplicationContext(m_context);
+        //
+        // STEP 1 - initialize
+        //
+        MigratorAdminInitialize migratorAdminInitialize = new MigratorAdminInitialize();
+        migratorAdminInitialize.setValidateDatabaseVersion(false);
+        migratorAdminInitialize.setCreateUser(false);
+        migratorAdminInitialize.setCreateDatabase(false);
+        migratorAdminInitialize.initializeDatabase(true, false);
+
+
+        //
+        // STEP 2 - migrate
+        //
+        SpringContextBasedMigratorResourceProvider resourceProvider =
+                new SpringContextBasedMigratorResourceProvider(m_context);
+        SpringContextBasedLiquibaseExecutor liquibaseExecutor =
+                new SpringContextBasedLiquibaseExecutor(m_context);
+
+        final Migrator migrator = new Migrator(resourceProvider, liquibaseExecutor);
 
         migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
@@ -172,11 +205,8 @@ public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
 
         migrator.setDataSource(m_dataSource);
         migrator.setAdminDataSource(m_dataSource);
-        migrator.setValidateDatabaseVersion(false);
-        migrator.setCreateUser(false);
-        migrator.setCreateDatabase(false);
 
-        migrator.setLiquibaseChangelogFilter(createTestApiLiquibaseChangelogFilter());
+        resourceProvider.setLiquibaseChangelogFilter(createTestApiLiquibaseChangelogFilter());
 
         // this doesn't work as an alternative to the for loop below and I haven't had a chance to dig too deep yet -- dj@
         //migrator.setDatabaseName(m_database.getTestDatabase());
@@ -187,7 +217,7 @@ public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
             if (uri.getScheme().equals("jar") && !uri.toString().contains("test-api.schema")) continue;
             if (uri.getScheme().equals("file") && !uri.toString().contains("test-api/schema")) continue;
             LOG.info("=== found resource: {} ===", resource);
-            migrator.migrate(resource);
+            migrator.migrate(resource.getURI().toString()); // TODO: why use the internal API?
         }
 
         final List<ChangelogEntry> ids = getChangelogEntries();
@@ -217,8 +247,25 @@ public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
 
         assertFalse(changelogExists());
 
-        final Migrator migrator = new Migrator();
-        migrator.setApplicationContext(m_context);
+        //
+        // STEP 1 - initialize
+        //
+        MigratorAdminInitialize migratorAdminInitialize = new MigratorAdminInitialize();
+        migratorAdminInitialize.setValidateDatabaseVersion(false);
+        migratorAdminInitialize.setCreateUser(false);
+        migratorAdminInitialize.setCreateDatabase(false);
+        migratorAdminInitialize.initializeDatabase(true, false);
+
+
+        //
+        // STEP 2 - migrate
+        //
+        SpringContextBasedMigratorResourceProvider resourceProvider =
+                new SpringContextBasedMigratorResourceProvider(m_context);
+        SpringContextBasedLiquibaseExecutor liquibaseExecutor =
+                new SpringContextBasedLiquibaseExecutor(m_context);
+
+        final Migrator migrator = new Migrator(resourceProvider, liquibaseExecutor);
 
         migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
@@ -227,13 +274,10 @@ public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
 
         migrator.setDataSource(m_dataSource);
         migrator.setAdminDataSource(m_dataSource);
-        migrator.setValidateDatabaseVersion(false);
-        migrator.setCreateUser(false);
-        migrator.setCreateDatabase(false);
 
         for (final Resource resource : getRealChangelog()) {
             LOG.info("=== found resource: {} ===", resource);
-            migrator.migrate(resource);
+            migrator.migrate(resource.getURI().toString());
         }
 
         final List<ChangelogEntry> ids = getChangelogEntries();
@@ -254,9 +298,26 @@ public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
         assertTrue(changelogExists());
     }
 
-    private void doMigration() throws MigrationException, IOException {
-        final Migrator migrator = new Migrator();
-        migrator.setApplicationContext(m_context);
+    private void doMigration() throws Exception {
+        //
+        // STEP 1 - initialize
+        //
+        MigratorAdminInitialize migratorAdminInitialize = new MigratorAdminInitialize();
+        migratorAdminInitialize.setValidateDatabaseVersion(false);
+        migratorAdminInitialize.setCreateUser(false);
+        migratorAdminInitialize.setCreateDatabase(false);
+        migratorAdminInitialize.initializeDatabase(true, false);
+
+
+        //
+        // STEP 2 - migrate
+        //
+        SpringContextBasedMigratorResourceProvider resourceProvider =
+                new SpringContextBasedMigratorResourceProvider(m_context);
+        SpringContextBasedLiquibaseExecutor liquibaseExecutor =
+                new SpringContextBasedLiquibaseExecutor(m_context);
+
+        final Migrator migrator = new Migrator(resourceProvider, liquibaseExecutor);
 
         migrator.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         migrator.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
@@ -266,7 +327,7 @@ public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
         migrator.setDataSource(m_dataSource);
 
         for (final Resource resource : getTestResources()) {
-            migrator.migrate(resource);
+            migrator.migrate(resource.getURI().toString()); // TODO: why use the internal API?
         }
     }
 
@@ -391,7 +452,7 @@ public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
     private List<Resource> getChangelogs(String fileMatch) throws IOException {
         String jarMatch = fileMatch.replace('/', '.');
         final List<Resource> resources = new ArrayList<>();
-        for (final Resource resource : m_context.getResources(Migrator.LIQUIBASE_CHANGELOG_LOCATION_PATTERN)) {
+        for (final Resource resource : m_context.getResources(SpringContextBasedMigratorResourceProvider.LIQUIBASE_CHANGELOG_LOCATION_PATTERN)) {
             URI uri = resource.getURI();
             if (uri.getScheme().equals("file") && !uri.toString().contains(fileMatch)) continue;
             if (uri.getScheme().equals("jar") && !uri.toString().contains(jarMatch)) continue;

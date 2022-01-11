@@ -64,7 +64,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.schema.ExistingResourceAccessor;
 import org.opennms.core.schema.MigrationException;
-import org.opennms.core.schema.Migrator;
+import org.opennms.core.schema.migrator.Migrator;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.postgresql.xa.PGXADataSource;
 import org.slf4j.LoggerFactory;

@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.distributed.datasource;
 
-import org.opennms.core.schema.ClassLoaderBasedMigrator;
+import org.opennms.core.schema.migrator.ClassLoaderBasedLiquibaseExecutor;
+import org.opennms.core.schema.migrator.ClassLoaderBasedMigratorResourceProvider;
+import org.opennms.core.schema.migrator.Migrator;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +105,12 @@ public class BootTimeDatabaseMigration {
 
     public void init() throws Exception {
         if (this.m_enabled) {
-            ClassLoaderBasedMigrator migrator = new ClassLoaderBasedMigrator(this.getClass().getClassLoader());
+            ClassLoaderBasedMigratorResourceProvider resourceProvider =
+                    new ClassLoaderBasedMigratorResourceProvider(this.getClass().getClassLoader());
+            ClassLoaderBasedLiquibaseExecutor liquibaseExecutor =
+                    new ClassLoaderBasedLiquibaseExecutor(this.getClass().getClassLoader());
+
+            Migrator migrator = new Migrator(resourceProvider, liquibaseExecutor);
 
             migrator.setAdminDataSource(this.m_adminDatasource);
             migrator.setAdminUser(this.m_adminDataSourceConfig.getUserName());

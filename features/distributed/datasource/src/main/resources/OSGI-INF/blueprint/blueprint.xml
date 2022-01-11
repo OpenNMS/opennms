@@ -28,7 +28,7 @@
             <cm:property name="datasource.adminPassword" value="" />
 
             <cm:property name="datasource.url" value="jdbc:postgresql://localhost:5432/opennms" />
-            <cm:property name="datasource.username" value="postgres" />
+            <cm:property name="datasource.username" value="opennms" />
             <cm:property name="datasource.password" value="" />
             <cm:property name="datasource.databaseName" value="opennms" />
             <cm:property name="datasource.initialize" value="true" />

@@ -49,8 +49,6 @@ import java.util.regex.Pattern;
 
 /**
  * Perform administrative setup of the database, including creation of the opennms database.
- *
- * TODO: consolidate common parts with Migrator
  */
 public class MigratorAdminInitialize {
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(MigratorAdminInitialize.class);
@@ -75,8 +73,17 @@ public class MigratorAdminInitialize {
     private String m_databaseUser;
     private String m_databasePassword;
 
+//========================================
+// Constructors
+//========================================
+
     public MigratorAdminInitialize() {
     }
+
+
+//========================================
+// Getters and Setters
+//========================================
 
     /**
      * <p>getAdminDataSource</p>
@@ -216,13 +223,60 @@ public class MigratorAdminInitialize {
         m_databasePassword = databasePassword;
     }
 
+
+//========================================
+// Interface
+//========================================
+
+    public void initializeDatabase(boolean updateDatabase, boolean timescaleDB) throws MigrationException, Exception, IOException {
+        validateDatabaseVersion();
+
+        // Creating extension in template1 before creating opennms DB.
+        if(timescaleDB) {
+            addTimescaleDBExtension();
+        }
+        if (updateDatabase) {
+            this.databaseSetOwner();
+            prepareDatabase();
+        }
+
+        checkUnicode();
+        checkTime();
+    }
+
+    /**
+     * <p>dropDatabase</p>
+     *
+     * @throws SQLException if any.
+     */
+    public void dropDatabase() throws MigrationException {
+        LOG.info("removing database '" + getDatabaseName() + "'");
+
+        Connection c = null;
+        Statement st = null;
+
+        try {
+            c = m_adminDataSource.getConnection();
+            st = c.createStatement();
+            st.execute("DROP DATABASE \"" + getDatabaseName() + "\"");
+        } catch (SQLException e) {
+            throw new MigrationException("could not drop database " + getDatabaseName(), e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+    }
+
+//========================================
+// Internals
+//========================================
+
     /**
      * <p>getDatabaseVersion</p>
      *
      * @return a {@link Float} object.
      * @throws MigrationException if any.
      */
-    public Float getDatabaseVersion() throws MigrationException {
+    private Float getDatabaseVersion() throws MigrationException {
         if (m_databaseVersion == null) {
             String versionString = null;
             Statement st = null;
@@ -262,7 +316,7 @@ public class MigratorAdminInitialize {
      *
      * @throws MigrationException if any.
      */
-    public void validateDatabaseVersion() throws MigrationException {
+    private void validateDatabaseVersion() throws MigrationException {
         if (!m_validateDatabaseVersion) {
             LOG.info("skipping database version validation");
             return;
@@ -292,7 +346,7 @@ public class MigratorAdminInitialize {
      * @return a boolean.
      * @throws MigrationException if any.
      */
-    public boolean databaseUserExists() throws MigrationException {
+    private boolean databaseUserExists() throws MigrationException {
         Statement st = null;
         ResultSet rs = null;
         Connection c = null;
@@ -321,7 +375,7 @@ public class MigratorAdminInitialize {
      *
      * @throws MigrationException if any.
      */
-    public void createUser() throws MigrationException {
+    private void createUser() throws MigrationException {
         if (!m_createUser || databaseUserExists()) {
             return;
         }
@@ -341,7 +395,7 @@ public class MigratorAdminInitialize {
         }
     }
 
-    protected String getUserForONMSDB() {
+    private String getUserForONMSDB() {
         String user = getDatabaseUser();
         user = user.indexOf("@")>0? user.substring(0, user.indexOf("@")):user;
         return user;
@@ -353,11 +407,11 @@ public class MigratorAdminInitialize {
      * @return a boolean.
      * @throws MigrationException if any.
      */
-    public boolean databaseExists() throws MigrationException {
+    private boolean databaseExists() throws MigrationException {
         return databaseExists(getDatabaseName());
     }
 
-    public boolean databaseExists(String databaseName) throws MigrationException {
+    private boolean databaseExists(String databaseName) throws MigrationException {
         Statement st = null;
         ResultSet rs = null;
         Connection c = null;
@@ -381,13 +435,13 @@ public class MigratorAdminInitialize {
         }
     }
 
-    public void createSchema() throws MigrationException {
+    private void createSchema() throws MigrationException {
         if (!m_createDatabase || schemaExists()) {
             return;
         }
     }
 
-    public boolean schemaExists() throws MigrationException {
+    private boolean schemaExists() throws MigrationException {
         /* FIXME: not sure how to ask postgresql for a schema
         Statement st = null;
         ResultSet rs = null;
@@ -419,7 +473,7 @@ public class MigratorAdminInitialize {
      *
      * @throws MigrationException if any.
      */
-    public void createDatabase() throws MigrationException {
+    private void createDatabase() throws MigrationException {
         if (!m_createDatabase || databaseExists()) {
             return;
         }
@@ -448,7 +502,7 @@ public class MigratorAdminInitialize {
      *
      * @throws Exception if any.
      */
-    public void checkUnicode() throws Exception {
+    private void checkUnicode() throws Exception {
         LOG.info("checking if database \"" + getDatabaseName() + "\" is unicode");
 
         Statement st = null;
@@ -476,7 +530,7 @@ public class MigratorAdminInitialize {
      *
      * @throws SQLException if any.
      */
-    public void databaseSetOwner() throws MigrationException {
+    private void databaseSetOwner() throws MigrationException {
         PreparedStatement st = null;
         ResultSet rs = null;
         Connection c = null;
@@ -516,29 +570,7 @@ public class MigratorAdminInitialize {
         }
     }
 
-    /**
-     * <p>dropDatabase</p>
-     *
-     * @throws SQLException if any.
-     */
-    public void dropDatabase() throws MigrationException {
-        LOG.info("removing database '" + getDatabaseName() + "'");
-
-        Connection c = null;
-        Statement st = null;
-
-        try {
-            c = m_adminDataSource.getConnection();
-            st = c.createStatement();
-            st.execute("DROP DATABASE \"" + getDatabaseName() + "\"");
-        } catch (SQLException e) {
-            throw new MigrationException("could not drop database " + getDatabaseName(), e);
-        } finally {
-            cleanUpDatabase(c, null, st, null);
-        }
-    }
-
-    public void addTimescaleDBExtension() throws MigrationException {
+    private void addTimescaleDBExtension() throws MigrationException {
         LOG.info("adding timescaledb extension in template db");
 
         Connection c = null;
@@ -561,7 +593,7 @@ public class MigratorAdminInitialize {
      *
      * @throws MigrationException if any.
      */
-    public void prepareDatabase() throws MigrationException {
+    private void prepareDatabase() throws MigrationException {
         validateDatabaseVersion();
         createUser();
         createSchema();
@@ -601,7 +633,7 @@ public class MigratorAdminInitialize {
 
     // Ensures that the database time and the system time running the installer match
     // If the difference is greater than 1s, it fails
-    public void checkTime() throws Exception {
+    private void checkTime() throws Exception {
         LOG.info("checking if time of database \"" + getDatabaseName() + "\" is matching system time");
 
         try (Statement st = m_adminDataSource.getConnection().createStatement()) {
@@ -626,21 +658,5 @@ public class MigratorAdminInitialize {
                 }
             }
         }
-    }
-
-    public void initializeDatabase(boolean updateDatabase, boolean timescaleDB) throws MigrationException, Exception, IOException {
-        validateDatabaseVersion();
-
-        // Creating extension in template1 before creating opennms DB.
-        if(timescaleDB) {
-            addTimescaleDBExtension();
-        }
-        if (updateDatabase) {
-            this.databaseSetOwner();
-            prepareDatabase();
-        }
-
-        checkUnicode();
-        checkTime();
     }
 }
