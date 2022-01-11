@@ -252,6 +252,7 @@
                 <documentation>Specific IP address to which this definition
                   applies.</documentation>
               </annotation>
+              <!-- workaround for the issue https://github.com/eclipse-ee4j/eclipselink/issues/1388 -->
               <complexType>
                 <simpleContent>
                   <extension base="string"/>
@@ -263,6 +264,7 @@
               <annotation>
                 <documentation>Match Octets (as in IPLIKE)</documentation>
               </annotation>
+              <!-- workaround for the issue https://github.com/eclipse-ee4j/eclipselink/issues/1388 -->
               <complexType>
                 <simpleContent>
                   <extension base="this:ip-match"/>
