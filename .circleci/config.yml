@@ -67,6 +67,10 @@ parameters:
     description: whether to trigger the main build
     type: boolean
     default: false
+  trigger-ui:
+    description: whether to trigger the featherds UI build
+    type: boolean
+    default: false
 
 setup: << pipeline.parameters.trigger-setup >>
 
@@ -531,10 +535,12 @@ workflows:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
           mapping: |
-            .*            trigger-setup false
-            ((?!docs/).)* trigger-build true
-            docs/.*       trigger-docs  true
-            .circleci/.*  trigger-docs  true
+            .*                trigger-setup false
+            ((?!docs/|ui/).)* trigger-build true
+            docs/.*           trigger-docs  true
+            ui/.*             trigger-ui    true
+            .circleci/.*      trigger-docs  true
+            .circleci/.*      trigger-ui    true
 #  weekly-coverage:
 #    when:
 #      equal: [ false, << pipeline.parameters.minimal >> ]
@@ -601,6 +607,18 @@ workflows:
             branches:
               ignore:
                 - /^from-foundation.*/
+  ui:
+    when:
+      and:
+        - equal: [ true,  << pipeline.parameters.trigger-ui >> ]
+        - equal: [ false, << pipeline.parameters.trigger-setup >> ]
+        - equal: [ false, << pipeline.parameters.minimal >> ]
+    jobs:
+      - build-ui:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
   build-deploy:
     when:
       and:
@@ -609,11 +627,6 @@ workflows:
         - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
       - build:
-          filters:
-            branches:
-              ignore:
-                - /^from-foundation.*/
-      - build-ui:
           filters:
             branches:
               ignore:
