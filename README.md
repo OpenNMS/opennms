@@ -1,30 +1,43 @@
 [OpenNMS][]
 ===========
 
-[OpenNMS][] is the world's first enterprise grade network management application platform developed under the open source model.
+[OpenNMS][] is an open-source solution that helps you visualize and monitor everything on your local and remote networks. It offers comprehensive fault, performance, traffic monitoring, and alarm generation in one place. Highly customizable and scalable, OpenNMS easily integrates with your core business applications and workflows.
 
-Well, what does that mean?
+Features
+---------
 
-*	World's First
+* **Full inventory management**
 
-	The OpenNMS project started in July 1999 and was registered on SourceForge in March 2000. It has years of experience on the alternatives.
+	Supports any type of provisioning and interoperates with virtually any configuration management system.
 
-*	Enterprise Grade
+* **Extensive data collection**
 
-	It was designed from "day one" to monitor tens of thousands to ultimately unlimited devices with a single instance. It brings the power, scalability, and flexibility that enterprises and carriers demand.
+	Most industry-standard data collection protocols (14) with no need to write or maintain plugins.
 
-*	Application Platform
+* **Robust traffic management**
 
-	While OpenNMS is useful "out of the box," it is designed to be highly customizable to create a unique and integrated management solution.
+	Four flow protocols (NetFlow v.5/9, IPFIX, sFlow). 300,000+ flows/sec. Deep-dive analysis, enterprise reporting.
 
-* Open Source
+* **Digital Experience Monitoring**
 
-	OpenNMS is 100% free and open source software, with no license fees, software subscriptions, or special "enterprise" versions.
+	Use the distributed Minion infrastructure to monitor a service’s latency and availability from different perspectives.
+
+* **High Configurability**
+
+	Configure most features through the webUI or XML scripting.
+
+* **Scalability**
+
+	Monitor tens of thousands of devices via a distributed and tiered system.
+
+* **Enterprise Reporting and  Visualization**
+
+	Real-time notifications for high-priority response
 
 Install OpenNMS
 ==================
 
-For details on installing OpenNMS, see the installation guide: [Installing OpenNMS][].
+For details on installing OpenNMS, see [Install OpenNMS][].
 
 Build OpenNMS
 ================
@@ -33,4 +46,4 @@ For details on how to build OpenNMS, see [Build OpenNMS from source][].
 
 [OpenNMS]:           http://www.opennms.com/
 [Build OpenNMS from source]:  docs/modules/development/pages/build-from-source.adoc
-[Installing OpenNMS]:  docs/modules/deployment/pages/core/getting-started.adoc
+[Install OpenNMS]:  docs/modules/deployment/pages/core/getting-started.adoc
