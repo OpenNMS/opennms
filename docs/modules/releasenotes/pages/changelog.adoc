@@ -2,6 +2,27 @@
 
 = Changelog
 
+[[releasenotes-changelog-Meridian-2021.1.10]]
+
+== Release Meridian-2021.1.10
+
+Release 2021.1.10 is a small release with another upgrade for Log4j2 as well as an NPE
+fix in the topology UI, plus some dependency updates in the web UI code.
+
+It is not believed that we are vulnerable to the Log4j issues fixed in these newer releases,
+but are updating anyway link:https://www.merriam-webster.com/dictionary/belt-and-suspenders[just to be sure].
+
+=== Bug
+
+* Customer is not able to view Topology (Issue http://issues.opennms.org/browse/NMS-13851[NMS-13851])
+* Javascript security updates (December, 2021) (Issue http://issues.opennms.org/browse/NMS-13857[NMS-13857])
+* CVE-2021-45105: Update to Log4j 2.17.0 (Issue http://issues.opennms.org/browse/NMS-13868[NMS-13868])
+* upgrade to log4j2 2.17.1 and pax-logging 1.11.13/2.0.14 (Issue http://issues.opennms.org/browse/NMS-13878[NMS-13878])
+
+=== Enhancement
+
+* Minion Kafka docs missing reference to custom.system.properties (Issue http://issues.opennms.org/browse/NMS-13885[NMS-13885])
+
 [[releasenotes-changelog-Meridian-2021.1.9]]
 
 == Release Meridian-2021.1.9
