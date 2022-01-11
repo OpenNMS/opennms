@@ -3,7 +3,7 @@
 
 Service that allows health rest calls.
 
-Currently implemented on Minion and Sentinel by default
+Currently implemented on Minion and Sentinel by default.
 
 Examples:
 
