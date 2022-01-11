@@ -221,6 +221,24 @@ For a more complete list of major changes included in this release, see the link
 
 === Changelog
 
+[[releasenotes-changelog-Meridian-2020.1.18]]
+
+==== Release Meridian-2020.1.18
+
+Release 2020.1.18 is a small release with another upgrade for Log4j2 as well as an NPE
+fix in the topology UI.
+
+It is not believed that we are vulnerable to the Log4j issues fixed in these newer releases,
+but are updating anyway link:https://www.merriam-webster.com/dictionary/belt-and-suspenders[just to be sure].
+
+The codename for 2020.1.18 is link:https://wikipedia.org/wiki/$$Cuspate_foreland$$[_Cuspate Foreland_].
+
+===== Bug
+
+* Customer is not able to view Topology (Issue http://issues.opennms.org/browse/NMS-13851[NMS-13851])
+* CVE-2021-45105: Update to Log4j 2.17.0 (Issue http://issues.opennms.org/browse/NMS-13868[NMS-13868])
+* upgrade to log4j2 2.17.1 and pax-logging 1.11.13/2.0.14 (Issue http://issues.opennms.org/browse/NMS-13878[NMS-13878])
+
 [[releasenotes-changelog-Meridian-2020.1.17]]
 
 ==== Release Meridian-2020.1.17
