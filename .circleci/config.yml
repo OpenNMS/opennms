@@ -1,0 +1,166 @@
+version: 2.1
+
+setup: true
+
+orbs:
+  continuation: circleci/continuation@0.2.0
+  # path-filtering: circleci/path-filtering@0.1.1
+
+commands:
+  cached-checkout:
+      description: "Checkout with caching"
+      steps:
+        - restore_cache:
+            keys:
+              - source-v2-{{ .Branch }}-{{ .Revision }}
+              - source-v2-{{ .Branch }}-
+              - source-v2-
+        - checkout
+        - run:
+            name: git config merge.renameLimit
+            command: git config merge.renameLimit 999999
+        - run:
+            name: git fetch origin
+            command: git fetch origin
+        - save_cache:
+            key: source-v2-{{ .Branch }}-{{ .Revision }}
+            paths:
+              - ".git"
+
+workflows:
+  pre-build:
+    jobs:
+      - trigger-path-filtering:
+          base-revision: << pipeline.git.branch >>
+          mapping: |
+            ((?!docs/|ui/).)* trigger-build true
+            docs/.*           trigger-docs  true
+            ui/.*             trigger-ui    true
+            .circleci/.*      trigger-docs  true
+            .circleci/.*      trigger-ui    true
+
+jobs:
+  trigger-path-filtering:
+    docker:
+      - image: cimg/python:3.10.1
+    parameters:
+      base-revision:
+        default: main
+        description: The revision to compare the current one against for the purpose of determining changed files.
+        type: string
+      mapping:
+        default: ""
+        description: Mapping of path regular expressions to pipeline parameters and values. One mapping per line, whitespace-delimited.
+        type: string
+    steps:
+      - cached-checkout
+      # copied from https://circleci.com/developer/orbs/orb/circleci/path-filtering
+      # we do it ourselves because otherwise we have to do a full un-cached checkout every time
+      - run:
+          name: process mapping
+          environment:
+            BASE_REVISION: << parameters.base-revision >>
+            MAPPING: << parameters.mapping >>
+            OUTPUT_PATH: /tmp/pipeline-parameters.json
+          shell: /usr/bin/env python3
+          command: |+
+            #!/usr/bin/env python3
+
+            import json
+            import os
+            import re
+            import subprocess
+
+            def checkout(revision):
+              """
+              Helper function for checking out a branch
+
+              :param revision: The revision to checkout
+              :type revision: str
+              """
+              subprocess.run(
+                ['git', 'checkout', revision],
+                check=True
+              )
+
+            output_path = os.environ.get('OUTPUT_PATH')
+            head = os.environ.get('CIRCLE_SHA1')
+            base_revision = os.environ.get('BASE_REVISION')
+            checkout(base_revision)  # Checkout base revision to make sure it is available for comparison
+            checkout(head)  # return to head commit
+
+            base = subprocess.run(
+              ['git', 'merge-base', base_revision, head],
+              check=True,
+              capture_output=True
+            ).stdout.decode('utf-8').strip()
+
+            if head == base:
+              try:
+                # If building on the same branch as BASE_REVISION, we will get the
+                # current commit as merge base. In that case try to go back to the
+                # first parent, i.e. the last state of this branch before the
+                # merge, and use that as the base.
+                base = subprocess.run(
+                  ['git', 'rev-parse', 'HEAD~1'], # FIXME this breaks on the first commit, fallback to something
+                  check=True,
+                  capture_output=True
+                ).stdout.decode('utf-8').strip()
+              except:
+                # This can fail if this is the first commit of the repo, so that
+                # HEAD~1 actually doesn't resolve. In this case we can compare
+                # against this magic SHA below, which is the empty tree. The diff
+                # to that is just the first commit as patch.
+                base = '4b825dc642cb6eb9a060e54bf8d69288fbee4904'
+
+            print('Comparing {}...{}'.format(base, head))
+            changes = subprocess.run(
+              ['git', 'diff', '--name-only', base, head],
+              check=True,
+              capture_output=True
+            ).stdout.decode('utf-8').splitlines()
+
+            mappings = [
+              m.split() for m in
+              os.environ.get('MAPPING').splitlines()
+            ]
+
+            def check_mapping(m):
+              if 3 != len(m):
+                raise Exception("Invalid mapping")
+              path, param, value = m
+              regex = re.compile(r'^' + path + r'$')
+              for change in changes:
+                if regex.match(change):
+                  return True
+              return False
+
+            def convert_mapping(m):
+              return [m[1], json.loads(m[2])]
+
+            mappings = filter(check_mapping, mappings)
+            mappings = map(convert_mapping, mappings)
+            mappings = dict(mappings)
+
+            with open(output_path, 'w') as fp:
+              fp.write(json.dumps(mappings))
+
+      - run:
+          name: Pack Dynamic Config
+          command: |
+            CIRCLE_BIN_DIR="$HOME/.local/bin"
+            mkdir -p "$CIRCLE_BIN_DIR"
+            export PATH="$CIRCLE_BIN_DIR:$PATH"
+            curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | DESTDIR="$CIRCLE_BIN_DIR" bash
+            "$CIRCLE_BIN_DIR/circleci" version
+            "$CIRCLE_BIN_DIR/circleci" config pack .circleci/main --skip-update-check > .circleci/main.yml || exit 1
+      - store_artifacts:
+          path: .circleci/main.yml
+          destination: main.yml
+      - store_artifacts:
+          path: /tmp/pipeline-parameters.json
+          destination: pipeline-parameters.json
+      - continuation/continue:
+          circleci_domain: circleci.com
+          configuration_path: .circleci/main.yml
+          parameters: /tmp/pipeline-parameters.json
