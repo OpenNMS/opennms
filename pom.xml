@@ -1536,18 +1536,12 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- nodejs development -->
-<<<<<<< HEAD
     <frontendPluginVersion>1.12.0</frontendPluginVersion>
     <nodeVersion>v12.19.0</nodeVersion>
     <!-- used for the new UI -->
     <nodeNewUIVersion>v16.3.0</nodeNewUIVersion>
-    <npmVersion>6.13.4</npmVersion>
-    <yarnVersion>v1.22.10</yarnVersion>
-=======
-    <frontendPluginVersion>1.11.0</frontendPluginVersion>
-    <nodeVersion>v10.24.1</nodeVersion>
     <npmVersion>6.14.5</npmVersion>
->>>>>>> origin/release-29.x
+    <yarnVersion>v1.22.10</yarnVersion>
 
     <!-- CI Settings -->
     <ci.instance>0</ci.instance>
