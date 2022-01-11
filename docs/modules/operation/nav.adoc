@@ -130,8 +130,11 @@
 
 * xref:flows/introduction.adoc[]
 ** xref:flows/basic.adoc[]
+** xref:flows/distributed.adoc[]
+** xref:flows/sentinel/sentinel.adoc[]
 ** xref:flows/classification-engine.adoc[]
 ** xref:flows/aggregation.adoc[]
+** xref:flows/nephron.adoc[]
 
 * xref:kafka-producer/kafka-producer.adoc[]
 ** xref:kafka-producer/enable-kafka.adoc[]

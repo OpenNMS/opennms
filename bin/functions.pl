@@ -247,6 +247,14 @@ if (not grep { $_ =~ /^-Dmaven.metadata.legacy/ } @ARGS) {
 	unshift(@ARGS, '-Dmaven.metadata.legacy=true');
 }
 
+if (not grep { $_ =~ /^-Daether.connector.resumeDownloads/ } @ARGS) {
+	unshift(@ARGS, '-Daether.connector.resumeDownloads=false');
+}
+
+if (not grep { $_ =~ /^-Daether.connector.basic.threads/ } @ARGS) {
+	unshift(@ARGS, '-Daether.connector.basic.threads=1');
+}
+
 if (grep { $_ =~ /^-Droot.dir=/ } @ARGS) {
 	debug("root.dir defined");
 } else {
