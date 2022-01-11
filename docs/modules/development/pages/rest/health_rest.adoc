@@ -14,7 +14,7 @@ Examples:
 
 == GETs (Reading Data)
 
-[options="header, %autowidth"]
+[options="header", cols="5,10"]
 |===
 | Resource             | Description
 | `/health`            | Health check results for components. Include health check result details for each element.
@@ -23,20 +23,21 @@ Examples:
 
 The following table shows all supported query string parameters and their default values.
 
-[options="header"]
+[options="header", cols="1,3,1"]
 |===
-| Name              | Default  | Comment
-s| t                 | 5000     | Timeout in milliseconds
-s| maxAgeMs          | 90000    | 
-s| tag               | ''       
-a| Use tag to filter health check components. A tag could be: +
+| Name               | Description                  | Default 
+| t                 | Timeout in milliseconds      | 5000 
+| maxAgeMs          | Max age to live miliseconds  | 90000 
+| tag                     
+| Use tag to filter Health Check components. A tag could be: +
  * local + 
  * rest +
  * telemetry +
  * dao +
  * minion +
  * elastic +
- * bundle +
+ * bundle 
+                                                    | '' 
 |===
 
 
