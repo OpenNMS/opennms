@@ -31,7 +31,9 @@ The following table shows all supported query string parameters and their defaul
 | t
 | Timeout in milliseconds
 | 5000 
-| maxAgeMs          | Max age to live miliseconds  | 90000 
+| maxAgeMs
+| Max age to live milliseconds
+| 90000 
 | tag                     
 | Use tag to filter Health Check components. A tag could be: +
  * local + 
