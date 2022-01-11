@@ -18,7 +18,8 @@ Examples:
 |===
 | Resource            
 | Description
-| `/health`            | Health check results for components. Include health check result details for each element.
+| `/health`
+| Health check results for components. Include health check result details for each element.
 | `/health/prob`       | Health check probe for components. Only indicate if the health is good or not. 
 |===
 
