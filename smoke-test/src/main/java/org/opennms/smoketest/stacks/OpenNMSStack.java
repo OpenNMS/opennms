@@ -74,6 +74,10 @@ public final class OpenNMSStack implements TestRule {
             .withMinion()
             .build());
 
+    public static final OpenNMSStack SENTINEL = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withSentinel()
+            .build());
+
     public static final OpenNMSStack ALEC = OpenNMSStack.withModel(StackModel.newBuilder()
             .withMinions(MinionProfile.DEFAULT, MinionProfile.newBuilder()
                     .withLocation("BANANA")
