@@ -93,6 +93,9 @@
     <!--                              -->
     <!-- DATABASE SETUP AND MIGRATION -->
     <!--                              -->
+    <reference id="opennmsLiquibaseChangeLogProvider" interface="org.opennms.core.schema.liquibase.OpennmsLiquibaseChangeLogProvider"/>
+    <bean id="liquibaseResourceClassloader" factory-ref="opennmsLiquibaseChangeLogProvider" factory-method="getResourceClassLoader"/>
+
     <bean id="initialDatabaseSetup" class="org.opennms.netmgt.distributed.datasource.BootTimeDatabaseInit" init-method="init">
         <property name="enabled" value="${datasource.initialize}" />
         <property name="databaseName" value="${datasource.databaseName}" />
@@ -109,6 +112,8 @@
 
         <property name="adminDataSourceConfig" ref="adminDataSourceConfig"/>
         <property name="adminDatasource" ref="adminDatasource"/>
+
+        <property name="liquibaseResourceClassLoader" ref="liquibaseResourceClassloader"/>
     </bean>
 
     <!--TODO: consider using PRE HOOK-->

@@ -5,20 +5,26 @@
     <artifactId>org.opennms.core</artifactId>
     <version>30.0.0-SNAPSHOT</version>
   </parent>
+
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
-  <artifactId>org.opennms.core.schema</artifactId>
-  <name>OpenNMS :: Core :: Schema</name>
+  <artifactId>org.opennms.core.schema-liquibase</artifactId>
+
+  <name>OpenNMS :: Core :: Schema - Liquibase</name>
   <packaging>bundle</packaging>
   <build>
-    <testResources>
-      <testResource>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+
+      <!-- Add the liquibase changelogs directly into the root of the JAR as the liquibase paths are based on it -->
+      <!--  but keep them in a separate source directory for maintainability -->
+      <resource>
         <directory>src/main/liquibase</directory>
-      </testResource>
-      <testResource>
-        <directory>src/test/resources</directory>
-      </testResource>
-    </testResources>
+      </resource>
+    </resources>
+
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -45,62 +51,14 @@
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>liquibase-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <!-- test dependencies -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <version>${log4j2Version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.liquibase</groupId>
-      <artifactId>liquibase-core</artifactId>
-      <version>${liquibaseVersion}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.spockframework</groupId>
-      <artifactId>spock-core</artifactId>
-      <scope>test</scope>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.schema</artifactId>
     </dependency>
   </dependencies>
+
   <repositories>
     <repository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>

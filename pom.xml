@@ -2007,8 +2007,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
-        <artifactId>org.opennms.core.schema</artifactId>
-        <classifier>liquibase</classifier>
+        <artifactId>org.opennms.core.schema-liquibase</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

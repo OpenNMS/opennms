@@ -1085,6 +1085,7 @@
         <feature>opennms-dao</feature>
         <feature>commons-lang3</feature>
         <feature>liquibase-core</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.schema-liquibase/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.schema/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.datasource/${project.version}</bundle>
     </feature>

@@ -54,6 +54,7 @@ public class BootTimeDatabaseMigration {
     private DataSource m_datasource;
     private JdbcDataSource m_dataSourceConfig;
 
+    private ClassLoader m_liquibaseResourceClassLoader = this.getClass().getClassLoader();
 
 //========================================
 // Getters and Setters
@@ -99,6 +100,15 @@ public class BootTimeDatabaseMigration {
         this.m_dataSourceConfig = dataSourceConfig;
     }
 
+    public ClassLoader getLiquibaseResourceClassLoader() {
+        return m_liquibaseResourceClassLoader;
+    }
+
+    public void setLiquibaseResourceClassLoader(ClassLoader liquibaseResourceClassLoader) {
+        this.m_liquibaseResourceClassLoader = liquibaseResourceClassLoader;
+    }
+
+
 //========================================
 // Lifecycle
 //========================================
@@ -106,9 +116,9 @@ public class BootTimeDatabaseMigration {
     public void init() throws Exception {
         if (this.m_enabled) {
             ClassLoaderBasedMigratorResourceProvider resourceProvider =
-                    new ClassLoaderBasedMigratorResourceProvider(this.getClass().getClassLoader());
+                    new ClassLoaderBasedMigratorResourceProvider(this.m_liquibaseResourceClassLoader);
             ClassLoaderBasedLiquibaseExecutor liquibaseExecutor =
-                    new ClassLoaderBasedLiquibaseExecutor(this.getClass().getClassLoader());
+                    new ClassLoaderBasedLiquibaseExecutor(this.m_liquibaseResourceClassLoader);
 
             Migrator migrator = new Migrator(resourceProvider, liquibaseExecutor);
 

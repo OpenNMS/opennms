@@ -119,8 +119,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.schema</artifactId>
-      <classifier>liquibase</classifier>
+      <artifactId>org.opennms.core.schema-liquibase</artifactId>
     </dependency>
     <!-- Non-OpenNMS dependencies -->
     <dependency>

@@ -176,5 +176,5 @@ public class ClassLoaderBasedLiquibaseExecutor implements MigratorLiquibaseExecu
 
             return super.list(relativeTo, path, includeFiles, includeDirectories, recursive);
         }
-    };
+    }
 }
