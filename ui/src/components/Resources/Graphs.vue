@@ -7,13 +7,15 @@
         :resource="resource"
         :key="resource.id"
         :time="time"
+        :definitionsToDisplay="definitionsToDisplay"
+        @addGraphDefinition="addGraphDefinition"
       />
     </div>
   </div>
 </template>
   
 <script setup lang=ts>
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import GraphContainer from './GraphContainer.vue'
 import TimeControls from './TimeControls.vue'
@@ -21,14 +23,19 @@ import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import { sub, getUnixTime } from 'date-fns'
 import { StartEndTime } from '@/types'
+import { useScroll } from '@vueuse/core'
 
 Chart.register(...registerables)
 Chart.register(zoomPlugin)
 
+const el = document.getElementById('card')
+const { arrivedState } = useScroll(el)
+const definitionsToDisplay = ref<any>([])
 const store = useStore()
 const now = new Date()
 
-const resources = computed<{ id: string, definitions: string[] }[]>(() => store.state.graphModule.definitions)
+const resources = computed<{ id: string, definitions: string[], label: string }[]>(() => store.state.graphModule.definitions)
+const definitionsList: string[] = JSON.parse(JSON.stringify(store.state.graphModule.definitionsList))
 
 const time = reactive<StartEndTime>({
   startTime: getUnixTime(sub(now, { hours: 24 })),
@@ -41,6 +48,25 @@ const updateTime = (newStartEndTime: StartEndTime) => {
   time.startTime = newStartEndTime.startTime
   time.format = newStartEndTime.format
 }
+
+const addGraphDefinition = () => {
+  const next = definitionsList.shift()
+  console.log(next)
+  definitionsToDisplay.value = [...definitionsToDisplay.value, next]
+}
+
+watch(arrivedState, () => {
+  if (arrivedState.bottom) {
+    addGraphDefinition()
+  }
+})
+onMounted(() => {
+  console.log(definitionsList)
+  addGraphDefinition()
+  addGraphDefinition()
+  addGraphDefinition()
+  addGraphDefinition()
+})
 </script>
   
 <style scoped lang="scss">

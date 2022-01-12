@@ -53,7 +53,8 @@ const options = computed<ChartOptions>(() => ({
   plugins: {
     legend: {
       display: true,
-      position: 'bottom'
+      position: 'bottom',
+      align: 'start'
     },
     title: {
       display: true,

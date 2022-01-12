@@ -1,7 +1,7 @@
 import { GraphMetricsResponse, PreFabGraph } from '@/types'
 import { State } from './state'
 
-const SAVE_DEFINITIONS = (state: State, definitions: { id: string, definitions: string[] }[]) => {
+const SAVE_DEFINITIONS = (state: State, definitions: { id: string, definitions: string[], label: string }[]) => {
   state.definitions = definitions
 }
 
