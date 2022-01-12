@@ -12,6 +12,8 @@ fix in the topology UI, plus some dependency updates in the web UI code.
 It is not believed that we are vulnerable to the Log4j issues fixed in these newer releases,
 but are updating anyway link:https://www.merriam-webster.com/dictionary/belt-and-suspenders[just to be sure].
 
+The codename for 2021.1.10 is link:https://wikipedia.org/wiki/$$Parker_Solar_Probe$$[_Parker Solar Probe_].
+
 === Bug
 
 * Customer is not able to view Topology (Issue http://issues.opennms.org/browse/NMS-13851[NMS-13851])
