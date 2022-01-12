@@ -28,6 +28,7 @@
 
 package org.opennms.features.deviceconfig.persistence.api;
 
+import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.OnmsIpInterface;
 
 import javax.persistence.Column;
@@ -37,7 +38,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -57,7 +57,7 @@ public class DeviceConfig implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "deviceConfigSequence")
     @SequenceGenerator(name = "deviceConfigSequence", sequenceName = "deviceconfignxtid")
-    @Column(name="id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -67,7 +67,7 @@ public class DeviceConfig implements Serializable {
     @Column(name = "version", nullable = false)
     private Integer version;
 
-    @Lob
+    @Type(type="org.hibernate.type.BinaryType")
     @Column(name = "config", nullable = false)
     private byte[] config;
 
@@ -142,8 +142,7 @@ public class DeviceConfig implements Serializable {
         if (this == o) return true;
         if (!(o instanceof DeviceConfig)) return false;
         DeviceConfig that = (DeviceConfig) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(ipInterface, that.ipInterface) &&
+        return Objects.equals(ipInterface, that.ipInterface) &&
                 Objects.equals(version, that.version) &&
                 Arrays.equals(config, that.config) &&
                 Objects.equals(encoding, that.encoding) &&
@@ -153,7 +152,7 @@ public class DeviceConfig implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, ipInterface, version, encoding, deviceType, createdTime);
+        int result = Objects.hash(ipInterface, version, encoding, deviceType, createdTime);
         result = 31 * result + Arrays.hashCode(config);
         return result;
     }

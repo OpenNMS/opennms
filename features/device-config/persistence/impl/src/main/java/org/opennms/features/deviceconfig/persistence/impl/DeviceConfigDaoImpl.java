@@ -32,7 +32,7 @@ import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 
-public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Integer> implements DeviceConfigDao {
+public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long> implements DeviceConfigDao {
 
     public DeviceConfigDaoImpl() {
         super(DeviceConfig.class);

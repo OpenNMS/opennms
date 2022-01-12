@@ -30,5 +30,5 @@ package org.opennms.features.deviceconfig.persistence.api;
 
 import org.opennms.netmgt.dao.api.OnmsDao;
 
-public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Integer> {
+public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
 }
