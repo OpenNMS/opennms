@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -59,7 +58,7 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
     Set<ServiceDetectorFactory<?>> m_detectorFactories;
 
     private final Map<String, String> m_classNameByServiceName = new LinkedHashMap<>();
-    private final Map<String, CompletableFuture<ServiceDetectorFactory<? extends ServiceDetector>>> m_factoriesByClassName = new LinkedHashMap<>();
+    private final Map<String, ServiceDetectorFactory<? extends ServiceDetector>> m_factoriesByClassName = new LinkedHashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -94,13 +93,8 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
         if (factory != null) {
             final String serviceName = getServiceName(factory);
             final String className = factory.getDetectorClass().getCanonicalName();
-            CompletableFuture<ServiceDetectorFactory<? extends ServiceDetector>> clzNameFactoryFuture = m_factoriesByClassName.get(className);
-            if(clzNameFactoryFuture == null) {
-                clzNameFactoryFuture = new CompletableFuture<>();
-                m_factoriesByClassName.put(className, clzNameFactoryFuture);
-            }
-            clzNameFactoryFuture.complete(factory);
             m_classNameByServiceName.put(serviceName, className);
+            m_factoriesByClassName.put(className, factory);
         }
     }
 
@@ -133,7 +127,7 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
     @Override
     public Class<?> getDetectorClassByServiceName(String serviceName) {
         String className = m_classNameByServiceName.get(serviceName);
-        return m_factoriesByClassName.get(className).join().getDetectorClass();
+        return m_factoriesByClassName.get(className).getDetectorClass();
     }
 
     @Override
@@ -142,26 +136,18 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
     }
 
     @Override
-    public CompletableFuture<ServiceDetector> getDetectorFutureByClassName(String className, Map<String, String> properties) {
-        CompletableFuture<ServiceDetectorFactory<? extends ServiceDetector>> factoryFuture = getDetectorFactoryFutureByClassName(className);
-        return createDetector(factoryFuture, properties);
+    public ServiceDetector getDetectorByClassName(String className, Map<String, String> properties) {
+        ServiceDetectorFactory<? extends ServiceDetector> factory = getDetectorFactoryByClassName(className);
+        return createDetector(factory, properties);
     }
 
     @Override
-    public CompletableFuture<ServiceDetectorFactory<?>> getDetectorFactoryFutureByClassName(String className) {
-        CompletableFuture<ServiceDetectorFactory<? extends ServiceDetector>> factoryFuture = m_factoriesByClassName.get(className);
-        if(factoryFuture == null) {
-            factoryFuture = new CompletableFuture<>();
-            m_factoriesByClassName.put(className, factoryFuture);
-        }
-        return factoryFuture;
+    public ServiceDetectorFactory<?> getDetectorFactoryByClassName(String className) {
+        return m_factoriesByClassName.get(className);
     }
 
-
-
-
-    private static CompletableFuture<ServiceDetector> createDetector(CompletableFuture<ServiceDetectorFactory<? extends ServiceDetector>> factoryFuture, Map<String, String> properties) {
-        return factoryFuture.thenApplyAsync(f->f.createDetector(properties));
+    private static ServiceDetector createDetector(ServiceDetectorFactory<? extends ServiceDetector> factory, Map<String, String> properties) {
+        return factory == null? null: factory.createDetector(properties);
     }
 
     private static String getServiceName(ServiceDetectorFactory<? extends ServiceDetector> factory) {
