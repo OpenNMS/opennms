@@ -41,8 +41,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.io.Resources;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,6 +58,8 @@ import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.filter.api.FilterDao;
@@ -78,9 +82,9 @@ import io.opentracing.util.GlobalTracer;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        //"classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-snmp.xml"
+        "classpath:/META-INF/opennms/applicationContext-rpc-snmp.xml",
 })
 @JUnitConfigurationEnvironment
 @JUnitSnmpAgent(host = "192.0.1.206", resource = "classpath:/snmpProfileTestData.properties")
@@ -162,8 +166,12 @@ public class NodeInfoScanIT {
     public void testNodeInfoScanWithProfileThatsGotUpdated() throws InterruptedException {
         URL url =  getClass().getResource("/snmp-config1.xml");
         try (InputStream configStream = url.openStream()) {
+            String configXml = Resources.toString(url, StandardCharsets.UTF_8);
+            JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+            String configJson = converter.xmlToJson(configXml);
+            SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(configJson, SnmpConfig.class);
             // Make default scan fail by setting wrong read community.
-            snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension2(new SnmpConfig());
+            snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension2(snmpConfig);
             SnmpPeerFactory.setFile(new File(url.getFile()));
             initializeProvisionService();
             FilterDao filterDao = Mockito.mock(FilterDao.class);
