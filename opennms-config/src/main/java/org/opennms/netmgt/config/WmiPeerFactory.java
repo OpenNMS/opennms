@@ -87,32 +87,8 @@ public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
     private static boolean m_loaded = false;
 
     public WmiPeerFactory() throws IOException {
-        super(WmiConfig.class, "wmi Configuration");
+        super(WmiConfig.class, "WMI peer configuration");
     }
-
-    public WmiPeerFactory (WmiConfig config) {
-        super(WmiConfig.class, "wmi Configuration");
-        m_config = config;
-    }
-//    public WmiPeerFactory() {
-//        super(WmiConfig.class, "WMI peer configuration");
-//    }
-
-    /**
-     * Private constructor
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     */
-//    WmiPeerFactory(final String configFile) {
-//        super(WmiConfig.class, "WMI peer configuration");
-//        setConfigResource(new FileSystemResource(configFile));
-//    }
-//
-//    public WmiPeerFactory(final Resource resource) {
-//        super(WmiConfig.class, "WMI peer configuration");
-//        setConfigResource(resource);
-//    }
 
     @PostConstruct
     public void postConstruct() throws IOException {
@@ -135,7 +111,6 @@ public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
         }
 
         WmiPeerFactory factory = new WmiPeerFactory();
-//        factory.afterPropertiesSet();
         setInstance(factory);
     }
 
@@ -149,8 +124,6 @@ public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
      *             if any.
      */
     public void reload() throws IOException {
-//        init();
-//        getInstance().update();
         this.m_config = this.loadConfig(this.getDefaultConfigId());
     }
 
@@ -177,7 +150,6 @@ public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
     public static void setInstance(final WmiPeerFactory instance) {
         m_loaded = true;
         m_singleton = instance;
-
     }
 
     public WmiConfig getConfig() {
@@ -282,10 +254,8 @@ public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
                         continue;
                     }
 
-                    if (
-                            InetAddressUtils.toInteger(specific).compareTo(InetAddressUtils.toInteger(begin)) >= 0 &&
-                                    InetAddressUtils.toInteger(specific).compareTo(InetAddressUtils.toInteger(end)) <= 0
-                    ) {
+                    if (InetAddressUtils.toInteger(specific).compareTo(InetAddressUtils.toInteger(begin)) >= 0
+                            && InetAddressUtils.toInteger(specific).compareTo(InetAddressUtils.toInteger(end)) <= 0) {
                         specificsMap.remove(specific);
                         break;
                     }

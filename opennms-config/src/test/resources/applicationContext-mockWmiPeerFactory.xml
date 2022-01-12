@@ -15,8 +15,8 @@
   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 ">
-    <bean id="factory" class="org.opennms.netmgt.config.WmiPeerFactory" />
-    <util:map id="configFileMap" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
+    <bean id="factory" class="org.opennms.netmgt.config.WmiPeerFactory"/>
+    <util:map id="configFileMap" map-class="java.util.HashMap" key-type="java.lang.String"  value-type="java.lang.String">
         <entry key="wmi" value="etc/wmi-default.xml"/>
     </util:map>
     <bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">

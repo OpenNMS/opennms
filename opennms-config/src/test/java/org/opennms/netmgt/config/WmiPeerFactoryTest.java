@@ -28,27 +28,15 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.URL;
-import java.util.Optional;
-
-import org.apache.camel.converter.jaxp.XmlConverter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
-import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.net.InetAddress;
 
 import static org.junit.Assert.assertEquals;
 
@@ -57,39 +45,25 @@ import static org.junit.Assert.assertEquals;
  * the SNMP configuration XML.
  *
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
- *
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        //"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-        // "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        // "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        // "classpath:/META-INF/opennms/applicationContext-config-service.xml",
         "classpath:applicationContext-mockWmiPeerFactory.xml"
 
 })
-public class WmiPeerFactoryTest  {
-    private static final Logger LOG = LoggerFactory.getLogger(WmiPeerFactoryTest.class);
+public class WmiPeerFactoryTest {
+
     @Autowired
     private WmiPeerFactory factory;
 
-   /* private WmiPeerFactory getFactory() throws IOException {
-        //WmiPeerFactory factory = new WmiPeerFactory(ConfigurationTestUtils.getResourceForConfigWithReplacements(amiConfigXml));
-        //WmiPeerFactory factory = BeanUtils.getBean("commonContext", "wmiPeerFactory", WmiPeerFactory.class);
-        //factory.afterPropertiesSet();
-        factory.reload();
-        return factory;
-    }*/
-
-    private void updateConfig(String amiConfigXml) throws IOException, JAXBException {
+    private void updateConfig(String amiConfigXml) {
         try {
-            JaxbXmlConverter converter = new JaxbXmlConverter("wmi-config.xsd", "wmi-config",null);
+            JaxbXmlConverter converter = new JaxbXmlConverter("wmi-config.xsd", "wmi-config", null);
             String json = converter.xmlToJson(amiConfigXml);
-            LOG.warn(json);
             factory.updateConfig(json);
             factory.reload();
-        }catch(Exception e){
-            e.printStackTrace();;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -97,7 +71,7 @@ public class WmiPeerFactoryTest  {
      * @throws IOException
      */
     @Test
-    public final void testOneSpecific() throws IOException, JAXBException {
+    public final void testOneSpecific() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -109,8 +83,6 @@ public class WmiPeerFactoryTest  {
                 "</wmi-config>\n" +
                 "";
         this.updateConfig(amiConfigXml);
-
-        //WmiPeerFactory factory = getFactory();
 
         assertEquals(1, factory.getConfig().getDefinitions().size());
 
@@ -126,7 +98,7 @@ public class WmiPeerFactoryTest  {
      * @throws IOException
      */
     @Test
-    public final void testAddAdjacentSpecificToDef() throws IOException, JAXBException {
+    public final void testAddAdjacentSpecificToDef() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -141,8 +113,6 @@ public class WmiPeerFactoryTest  {
 
         this.updateConfig(amiConfigXml);
 
-        //WmiPeerFactory factory = getFactory();
-
         assertEquals(1, factory.getConfig().getDefinitions().size());
         assertEquals(2, factory.getConfig().getDefinitions().get(0).getSpecifics().size());
         assertEquals(0, factory.getConfig().getDefinitions().get(0).getRanges().size());
@@ -155,8 +125,9 @@ public class WmiPeerFactoryTest  {
         assertEquals("192.168.0.5", factory.getConfig().getDefinitions().get(0).getRanges().get(0).getBegin());
         assertEquals("192.168.0.6", factory.getConfig().getDefinitions().get(0).getRanges().get(0).getEnd());
     }
+
     @Test
-    public final void testAddAdjacentSpecificToDefIPv6() throws IOException, JAXBException {
+    public final void testAddAdjacentSpecificToDefIPv6() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -170,7 +141,6 @@ public class WmiPeerFactoryTest  {
                 "";
 
         this.updateConfig(amiConfigXml);
-        //WmiPeerFactory factory = getFactory();
 
         assertEquals(1, factory.getConfig().getDefinitions().size());
         assertEquals(2, factory.getConfig().getDefinitions().get(0).getSpecifics().size());
@@ -184,8 +154,9 @@ public class WmiPeerFactoryTest  {
         assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedb", factory.getConfig().getDefinitions().get(0).getRanges().get(0).getBegin());
         assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedc", factory.getConfig().getDefinitions().get(0).getRanges().get(0).getEnd());
     }
+
     @Test
-    public final void testAddAdjacentSpecificToDefIPv6WithSameScopeId() throws IOException, JAXBException {
+    public final void testAddAdjacentSpecificToDefIPv6WithSameScopeId() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -200,8 +171,6 @@ public class WmiPeerFactoryTest  {
 
         this.updateConfig(amiConfigXml);
 
-        //WmiPeerFactory factory = getFactory();
-
         assertEquals(1, factory.getConfig().getDefinitions().size());
         assertEquals(2, factory.getConfig().getDefinitions().get(0).getSpecifics().size());
         assertEquals(0, factory.getConfig().getDefinitions().get(0).getRanges().size());
@@ -214,8 +183,9 @@ public class WmiPeerFactoryTest  {
         assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedb%5", factory.getConfig().getDefinitions().get(0).getRanges().get(0).getBegin());
         assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedc%5", factory.getConfig().getDefinitions().get(0).getRanges().get(0).getEnd());
     }
+
     @Test
-    public final void testAddAdjacentSpecificToDefIPv6WithDifferentScopeIds() throws IOException, JAXBException {
+    public final void testAddAdjacentSpecificToDefIPv6WithDifferentScopeIds() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -229,7 +199,6 @@ public class WmiPeerFactoryTest  {
                 "";
 
         this.updateConfig(amiConfigXml);
-        //WmiPeerFactory factory = getFactory();
 
         assertEquals(1, factory.getConfig().getDefinitions().size());
         assertEquals(2, factory.getConfig().getDefinitions().get(0).getSpecifics().size());
@@ -252,7 +221,7 @@ public class WmiPeerFactoryTest  {
      * @throws IOException
      */
     @Test
-    public void testRecombineSpecificIntoRange() throws IOException, JAXBException {
+    public void testRecombineSpecificIntoRange() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -267,7 +236,6 @@ public class WmiPeerFactoryTest  {
                 "";
 
         this.updateConfig(amiConfigXml);
-        //WmiPeerFactory factory = getFactory();
 
         assertEquals(1, factory.getConfig().getDefinitions().size());
         assertEquals(1, factory.getConfig().getDefinitions().get(0).getSpecifics().size());
@@ -291,7 +259,7 @@ public class WmiPeerFactoryTest  {
      * @throws IOException
      */
     @Test
-    public void testRecombineSpecificIntoRangeWithDifferentScopeIds() throws IOException, JAXBException {
+    public void testRecombineSpecificIntoRangeWithDifferentScopeIds() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -306,7 +274,6 @@ public class WmiPeerFactoryTest  {
                 "";
 
         this.updateConfig(amiConfigXml);
-        // WmiPeerFactory factory = getFactory();
 
         assertEquals(1, factory.getConfig().getDefinitions().size());
         assertEquals(1, factory.getConfig().getDefinitions().get(0).getSpecifics().size());
@@ -330,7 +297,7 @@ public class WmiPeerFactoryTest  {
      * @throws IOException
      */
     @Test
-    public final void testNewSpecificSameAsBeginInOldDef() throws IOException, JAXBException {
+    public final void testNewSpecificSameAsBeginInOldDef() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -343,7 +310,6 @@ public class WmiPeerFactoryTest  {
                 "</wmi-config>\n" +
                 "";
 
-        //WmiPeerFactory factory = getFactory();
         this.updateConfig(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitions().size());
@@ -366,7 +332,7 @@ public class WmiPeerFactoryTest  {
      * @throws IOException
      */
     @Test
-    public final void testNewSpecificSameAsEndInOldDef() throws IOException, JAXBException {
+    public final void testNewSpecificSameAsEndInOldDef() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -379,7 +345,6 @@ public class WmiPeerFactoryTest  {
                 "</wmi-config>\n" +
                 "";
 
-        // WmiPeerFactory factory = getFactory();
         this.updateConfig(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitions().size());
@@ -402,7 +367,7 @@ public class WmiPeerFactoryTest  {
      * @throws IOException
      */
     @Test
-    public void testOverlapsTwoRanges() throws IOException, JAXBException {
+    public void testOverlapsTwoRanges() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -416,7 +381,6 @@ public class WmiPeerFactoryTest  {
                 "</wmi-config>\n" +
                 "";
 
-        // WmiPeerFactory factory = getFactory();
         this.updateConfig(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitions().size());
@@ -436,7 +400,7 @@ public class WmiPeerFactoryTest  {
      * @throws IOException
      */
     @Test
-    public final void testEncodedPassDefault() throws IOException, JAXBException {
+    public final void testEncodedPassDefault() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -448,7 +412,6 @@ public class WmiPeerFactoryTest  {
                 "</wmi-config>\n" +
                 "";
         this.updateConfig(amiConfigXml);
-        // WmiPeerFactory factory = getFactory();
 
         assertEquals(1, factory.getConfig().getDefinitions().size());
 
@@ -463,7 +426,7 @@ public class WmiPeerFactoryTest  {
      * @throws IOException
      */
     @Test
-    public final void testEncodedPassDefinition() throws IOException, JAXBException {
+    public final void testEncodedPassDefinition() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -475,7 +438,6 @@ public class WmiPeerFactoryTest  {
                 "</wmi-config>\n" +
                 "";
         this.updateConfig(amiConfigXml);
-        // WmiPeerFactory factory = getFactory();
 
         assertEquals(1, factory.getConfig().getDefinitions().size());
 
@@ -490,7 +452,7 @@ public class WmiPeerFactoryTest  {
      * @throws IOException
      */
     @Test
-    public final void testUnencodedPassDefault() throws IOException, JAXBException {
+    public final void testUnencodedPassDefault() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -502,7 +464,6 @@ public class WmiPeerFactoryTest  {
                 "</wmi-config>\n" +
                 "";
         this.updateConfig(amiConfigXml);
-        // WmiPeerFactory factory = getFactory();
 
         assertEquals(1, factory.getConfig().getDefinitions().size());
 
@@ -517,7 +478,7 @@ public class WmiPeerFactoryTest  {
      * @throws IOException
      */
     @Test
-    public final void testUnencodedPassDefinition() throws IOException, JAXBException {
+    public final void testUnencodedPassDefinition() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
@@ -529,7 +490,6 @@ public class WmiPeerFactoryTest  {
                 "</wmi-config>\n" +
                 "";
         this.updateConfig(amiConfigXml);
-        // WmiPeerFactory factory = getFactory();
 
         assertEquals(1, factory.getConfig().getDefinitions().size());
 

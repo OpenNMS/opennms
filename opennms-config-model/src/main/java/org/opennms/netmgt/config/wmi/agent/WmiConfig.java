@@ -28,16 +28,14 @@
 
 package org.opennms.netmgt.config.wmi.agent;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import org.opennms.core.xml.ValidateUsing;
-import org.opennms.netmgt.config.utils.ConfigUtils;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This is the top-level element for wmi-config.xml
@@ -49,106 +47,101 @@ public class WmiConfig implements Serializable {
     /**
      * Default timeout (in milliseconds).
      */
-    @JsonProperty("timeout")
-    private Integer m_timeout;
+    private Integer timeout;
 
     /**
      * Default number of retries.
      */
-    @JsonProperty("retry")
-    private Integer m_retry;
+    private Integer retry;
 
     /**
      * Default username.
      */
-    @JsonProperty("username")
-    private String m_username;
+    private String username;
 
     /**
      * Default Windows Domain.
      */
-    @JsonProperty("domain")
-    private String m_domain;
+    private String domain;
 
     /**
      * Default user password.
      */
-    @JsonProperty("password")
-    private String m_password;
+    private String password;
 
     /**
      * Maps IP addresses to specific SNMP parmeters
      *  (retries, timeouts...)
      */
     @JsonProperty("definition")
-    private List<Definition> m_definitions = new ArrayList<>();
+    private List<Definition> definitions = new ArrayList<>();
 
     public Optional<Integer> getTimeout() {
-        return Optional.ofNullable(m_timeout);
+        return Optional.ofNullable(this.timeout);
     }
 
     public void setTimeout(final Integer timeout) {
-        m_timeout = timeout;
+        this.timeout = timeout;
     }
 
     public Optional<Integer> getRetry() {
-        return Optional.ofNullable(m_retry);
+        return Optional.ofNullable(this.retry);
     }
 
     public void setRetry(final Integer retry) {
-        m_retry = retry;
+        this.retry = retry;
     }
 
     public Optional<String> getUsername() {
-        return Optional.ofNullable(m_username);
+        return Optional.ofNullable(this.username);
     }
 
     public void setUsername(final String username) {
-        m_username = ConfigUtils.normalizeString(username);
+        this.username = ConfigUtils.normalizeString(username);
     }
 
     public Optional<String> getDomain() {
-        return Optional.ofNullable(m_domain);
+        return Optional.ofNullable(this.domain);
     }
 
     public void setDomain(final String domain) {
-        m_domain = ConfigUtils.normalizeString(domain);
+        this.domain = ConfigUtils.normalizeString(domain);
     }
 
     public Optional<String> getPassword() {
-        return Optional.ofNullable(m_password);
+        return Optional.ofNullable(this.password);
     }
 
     public void setPassword(final String password) {
-        m_password = ConfigUtils.normalizeString(password);
+        this.password = ConfigUtils.normalizeString(password);
     }
 
     public List<Definition> getDefinitions() {
-        return m_definitions;
+        return this.definitions;
     }
 
     public void setDefinitions(final List<Definition> definitions) {
-        if (definitions == m_definitions) return;
-        m_definitions.clear();
-        if (definitions != null) m_definitions.addAll(definitions);
+        if (definitions == this.definitions) return;
+        this.definitions.clear();
+        if (definitions != null) this.definitions.addAll(definitions);
     }
 
     public void addDefinition(final Definition definition) {
-        m_definitions.add(definition);
+        this.definitions.add(definition);
     }
 
     public boolean removeDefinition(final Definition definition) {
-        return m_definitions.remove(definition);
+        return this.definitions.remove(definition);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_timeout,
-                            m_retry,
-                            m_username,
-                            m_domain,
-                            m_password,
-                            m_definitions);
+        return Objects.hash(timeout,
+                            retry,
+                            username,
+                            domain,
+                            password,
+                            definitions);
     }
 
     @Override
@@ -159,12 +152,12 @@ public class WmiConfig implements Serializable {
 
         if (obj instanceof WmiConfig) {
             final WmiConfig that = (WmiConfig)obj;
-            return Objects.equals(this.m_timeout, that.m_timeout)
-                    && Objects.equals(this.m_retry, that.m_retry)
-                    && Objects.equals(this.m_username, that.m_username)
-                    && Objects.equals(this.m_domain, that.m_domain)
-                    && Objects.equals(this.m_password, that.m_password)
-                    && Objects.equals(this.m_definitions, that.m_definitions);
+            return Objects.equals(this.timeout, that.timeout)
+                    && Objects.equals(this.retry, that.retry)
+                    && Objects.equals(this.username, that.username)
+                    && Objects.equals(this.domain, that.domain)
+                    && Objects.equals(this.password, that.password)
+                    && Objects.equals(this.definitions, that.definitions);
         }
         return false;
     }

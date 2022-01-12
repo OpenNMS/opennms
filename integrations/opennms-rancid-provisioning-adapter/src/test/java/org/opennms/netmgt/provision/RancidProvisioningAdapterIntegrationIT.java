@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -56,23 +55,23 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-		"classpath:/META-INF/opennms/applicationContext-soa.xml",
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
-		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-		"classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-		"classpath*:/META-INF/opennms/component-dao.xml",
-		"classpath:/META-INF/opennms/applicationContext-daemon.xml",
-		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
-		"classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-		"classpath*:/META-INF/opennms/provisiond-extensions.xml"
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath*:/META-INF/opennms/provisiond-extensions.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 /**
  * Test class for Rancid Provisioning
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
@@ -80,16 +79,16 @@ public class RancidProvisioningAdapterIntegrationIT implements InitializingBean 
 
     @Autowired
     private NodeDao m_nodeDao;
-    
+
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
-    
+
     @Autowired
     private DatabasePopulator m_populator;
 
     @Autowired
-    private RancidProvisioningAdapter m_adapter; 
-    
+    private RancidProvisioningAdapter m_adapter;
+
     private static final int NODE_ID = 1;
 
     @Override
@@ -104,32 +103,32 @@ public class RancidProvisioningAdapterIntegrationIT implements InitializingBean 
         props.setProperty("log4j.logger.org.springframework", "INFO");
         props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
         MockLogAppender.setupLogging(props);
-        
+
         m_populator.populateDatabase();
     }
-    
+
     /**
      * TODO: This test needs to be updated so that it properly connects to the JUnitHttpServer
      * for simulated RANCID REST operations.
      */
     @Test
     @Transactional
-    @JUnitHttpServer(port=7081,basicAuth=true)
+    @JUnitHttpServer(port = 7081, basicAuth = true)
     public void testAddNode() {
         List<OnmsNode> nodes = m_nodeDao.findAll();
-        
+
         assertTrue(nodes.size() > 0);
-        
+
         m_adapter.addNode(nodes.get(0).getId());
     }
-    
+
     /**
      * TODO: This test needs to be updated so that it properly connects to the JUnitHttpServer
      * for simulated RANCID REST operations.
      */
     @Test
     @Transactional
-    @JUnitHttpServer(port=7081,basicAuth=true)
+    @JUnitHttpServer(port = 7081, basicAuth = true)
     @Ignore
     public void testAddSameOperationTwice() throws InterruptedException {
         // AdapterOperationChecker verifyOperations = new AdapterOperationChecker(2);
