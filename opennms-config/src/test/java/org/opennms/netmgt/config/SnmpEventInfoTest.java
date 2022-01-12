@@ -1268,9 +1268,9 @@ public class SnmpEventInfoTest {
 
     @Test
     public void testCombineOverLappingRangesWithLocation() throws Exception {
-        //testOverlapsTwoRangesWithLocationAndCombinesThem("192.168.1.10", "192.168.1.40");
-        //testOverlapsTwoRangesWithDefaultLocationAndCombinesThem("192.168.1.0", "192.168.1.40");
-        //testOverlapsTwoRangesWithoutLocationAndCombinesThem("192.168.1.15", "192.168.1.40");
+        testOverlapsTwoRangesWithLocationAndCombinesThem("192.168.1.10", "192.168.1.40");
+        testOverlapsTwoRangesWithDefaultLocationAndCombinesThem("192.168.1.0", "192.168.1.40");
+        testOverlapsTwoRangesWithoutLocationAndCombinesThem("192.168.1.15", "192.168.1.40");
     }
 
     private void testOverlapsTwoRangesWithDefaultLocationAndCombinesThem(String firstIp, String lastIp)
