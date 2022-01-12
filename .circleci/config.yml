@@ -33,7 +33,7 @@ workflows:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
           mapping: |
-            ((?!docs/|ui/).)* trigger-build true
+            ((?!docs/).)*     trigger-build true
             docs/.*           trigger-docs  true
             ui/.*             trigger-ui    true
             .circleci/.*      trigger-docs  true
