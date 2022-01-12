@@ -4063,7 +4063,7 @@
       <dependency>
         <groupId>org.jolokia</groupId>
         <artifactId>jolokia-client-java</artifactId>
-        <version>1.3.3</version>
+        <version>1.6.2</version>
       <exclusions>
         <exclusion>
           <artifactId>commons-logging</artifactId>
