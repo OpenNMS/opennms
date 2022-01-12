@@ -42,7 +42,7 @@
             <!--                -->
             <image>
               <name>postgres-it-image</name>
-              <alias>postgres</alias>
+              <alias>postgres-host</alias>
               <build>
                 <!-- POSTGRES VERSION PROPERTY -->
                 <from>postgres:13.3-alpine</from>
@@ -57,6 +57,11 @@
                 <wait>
                   <log>(?s)PostgreSQL init process complete; ready for start up..*database system is ready to accept connections</log>
                 </wait>
+                <network>
+                  <mode>custom</mode>
+                  <name>alarm-docker-it-network</name>
+                  <alias>postgres-host</alias>
+                </network>
               </run>
             </image>
 
@@ -116,7 +121,7 @@
                 </volumes>
                 <network>
                   <mode>custom</mode>
-                  <name>alarm-network</name>
+                  <name>alarm-docker-it-network</name>
                   <alias>application</alias>
                 </network>
               </run>
