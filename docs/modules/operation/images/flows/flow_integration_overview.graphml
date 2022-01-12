@@ -20,7 +20,7 @@
           <y:Geometry height="424.7346387370984" width="964.7980049337953" x="57.60099753310243" y="148.43212662711505"/>
           <y:Fill color="#ECECEC" transparent="false"/>
           <y:BorderStyle hasColor="false" raised="false" type="dotted" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" rotationAngle="90.0" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="933.7293821162011" y="210.3673193685492">
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" rotationAngle="90.0" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="933.7293821162011" y="210.36731936854926">
             <y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -342,7 +342,7 @@ parser<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mod
           <y:Geometry height="29.0" width="29.0" x="419.45348678219483" y="391.16106164245616"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="50.60000228881836" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="60.65999984741211" x="41.84187018731001" xml:space="preserve" y="-10.80000114440918">IPFIX
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="50.60000228881836" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="60.65999984741211" x="41.841870187309894" xml:space="preserve" y="-10.80000114440918">IPFIX
 parser<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="0.0" offsetX="12.841870187309894" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
           <y:Image refid="1"/>
         </y:ImageNode>
@@ -414,7 +414,7 @@ with Drift plugin<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
     <node id="n29">
       <data key="d6">
         <y:ImageNode>
-          <y:Geometry height="29.0" width="29.0" x="341.32165109034304" y="180.51385656339124"/>
+          <y:Geometry height="29.0" width="29.0" x="341.32165109034304" y="198.51385656339124"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.475000381469727" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="39.26499938964844" x="42.555756325497214" xml:space="preserve" y="3.7624998092651083">IPFIX<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="-9.992007221626409E-16" offsetX="13.555756325497214" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -425,7 +425,7 @@ with Drift plugin<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
     <node id="n30">
       <data key="d6">
         <y:ImageNode>
-          <y:Geometry height="29.0" width="29.0" x="341.32165109034304" y="217.51385656339124"/>
+          <y:Geometry height="29.0" width="29.0" x="525.5" y="198.51385656339124"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.475000381469727" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="43.41999816894531" x="42.555756325497214" xml:space="preserve" y="3.7624998092651083">sFlow<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="-9.992007221626409E-16" offsetX="13.555756325497214" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -436,7 +436,7 @@ with Drift plugin<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
     <node id="n31">
       <data key="d6">
         <y:ImageNode>
-          <y:Geometry height="29.0" width="29.0" x="585.5" y="198.51385656339124"/>
+          <y:Geometry height="29.0" width="29.0" x="632.3357810413885" y="198.51385656339124"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="38.95000076293945" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="53.45500183105469" x="42.555756325497214" xml:space="preserve" y="-4.975000381469755">sFlow
@@ -545,7 +545,6 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
     </edge>
     <edge id="e8" source="n7" target="n8">
       <data key="d8" xml:space="preserve"/>
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-144.26843198338526" sy="0.0" tx="-144.2684319833852" ty="0.0"/>
@@ -557,7 +556,6 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
       </data>
     </edge>
     <edge id="e9" source="n7" target="n8">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="185.73156801661474" sy="-24.080900634883108" tx="185.7315680166148" ty="0.0"/>
@@ -569,7 +567,6 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
       </data>
     </edge>
     <edge id="e10" source="n16" target="n0">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="71.79867601246104" sy="40.043668126056104" tx="-23.9328920041537" ty="0.0"/>
