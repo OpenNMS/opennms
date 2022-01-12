@@ -12,7 +12,7 @@ import { onMounted, ref, computed, PropType, watch } from 'vue'
 import { useStore } from 'vuex'
 import { RrdGraphConverter } from 'backshift'
 import { LineChart } from 'vue-chart-3'
-import { ChartOptions, TitleOptions } from 'chart.js'
+import { ChartOptions, TitleOptions, ChartData } from 'chart.js'
 import { formatXLabels } from './utils'
 
 interface SeriesObject {
@@ -138,7 +138,7 @@ const dataSets = computed(() => {
   return sets
 })
 
-const lineChartData = computed(() => {
+const lineChartData = computed<ChartData<any>>(() => {
   return {
     labels: graphData.value.formattedTimestamps,
     datasets: dataSets.value
