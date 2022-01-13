@@ -1,6 +1,6 @@
 
 [[flows-remote]]
-= Distributed/Remote Flows with Minion
+= Using Minions as a flow collector
 
 Beyond a basic flows setup, you may want to add a Minion to collect flows data from hard-to-reach or remote locations.
 

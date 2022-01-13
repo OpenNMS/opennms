@@ -17,10 +17,10 @@
     <node id="n0">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="139.74999999999983" width="964.7980049337953" x="69.02665474275" y="144.26385656339136"/>
+          <y:Geometry height="225.96303303640184" width="964.7980049337953" x="69.02665474275" y="-53.153328543778855"/>
           <y:Fill color="#ECECEC" transparent="false"/>
           <y:BorderStyle hasColor="false" raised="false" type="dotted" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" rotationAngle="90.0" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="933.7293821162011" y="67.87499999999994">
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" rotationAngle="90.0" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="933.7293821162011" y="110.98151651820095">
             <y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -35,7 +35,7 @@
     <node id="n1">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="238.04849607343778" width="964.7980049337953" x="69.02665474275" y="398.1277875723687"/>
+          <y:Geometry height="238.04849607343778" width="964.7980049337953" x="69.02665474275" y="286.9236355016005"/>
           <y:Fill color="#ECECEC" transparent="false"/>
           <y:BorderStyle hasColor="false" raised="false" type="dotted" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" rotationAngle="90.0" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="933.7293821162011" y="117.02424803671886">
@@ -53,7 +53,7 @@
     <node id="n2">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="85.11662282965" width="964.7980049337953" x="69.02665474275" y="297.0867768913629"/>
+          <y:Geometry height="85.11662282965" width="964.7980049337953" x="69.02665474275" y="185.88262482059469"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#C0C0C0" raised="false" type="dashed" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.84000015258789" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="160.6599884033203" x="777.0693937128808" xml:space="preserve" y="28.638311338531025">Message Broker<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.5" labelRatioY="0.0" nodeRatioX="0.4719437408875533" nodeRatioY="1.1102230246251565E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -64,7 +64,7 @@
     <node id="n3">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="125.49999999999983" width="90.79800493379514" x="754.513327371375" y="150.26385656339139"/>
+          <y:Geometry height="125.49999999999983" width="90.79800493379514" x="754.513327371375" y="39.05970449262318"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#B4B6C8" raised="false" type="dashed" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.84000015258789" horizontalTextPosition="center" iconTextGap="4" modelName="custom" rotationAngle="90.0" textColor="#000000" verticalTextPosition="bottom" visible="true" width="79.91999816894531" x="60.4105524278915" xml:space="preserve" y="22.79000091552726">Adapter<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.5" labelRatioY="0.0" nodeRatioX="0.4719437408875533" nodeRatioY="1.1102230246251565E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -75,7 +75,7 @@
     <node id="n4">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="214.24999999999983" width="90.79800493379503" x="754.5133273713751" y="410.1277875723687"/>
+          <y:Geometry height="214.24999999999983" width="90.79800493379503" x="754.5133273713751" y="298.9236355016005"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#B4B6C8" raised="false" type="dashed" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.84000015258789" horizontalTextPosition="center" iconTextGap="4" modelName="custom" rotationAngle="90.0" textColor="#000000" verticalTextPosition="bottom" visible="true" width="63.23999786376953" x="60.41055242789139" xml:space="preserve" y="75.50500106811512">Ingest<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.5" labelRatioY="0.0" nodeRatioX="0.4719437408875533" nodeRatioY="1.1102230246251565E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -86,7 +86,7 @@
     <node id="n5">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="80.11662282965" width="707.558670820353" x="90.48909657320877" y="426.0618062437095"/>
+          <y:Geometry height="80.11662282965" width="707.558670820353" x="90.48909657320877" y="314.8576541729413"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#B4B6C8" raised="false" type="line" width="5.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="652.1655365826141" y="38.05831141482497">
@@ -104,10 +104,10 @@
     <node id="n6">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="93.0" width="707.558670820353" x="90.48909657320871" y="166.51385656339124"/>
+          <y:Geometry height="109.24999999999986" width="707.558670820353" x="90.48909657320871" y="39.05970449262318"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#B4B6C8" raised="false" type="line" width="5.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="652.1655365826142" y="44.5">
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="652.1655365826142" y="52.62499999999993">
             <y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -122,7 +122,7 @@
     <node id="n7">
       <data key="d6">
         <y:ImageNode>
-          <y:Geometry height="29.0" width="29.0" x="105.49999999999999" y="451.62011765853447"/>
+          <y:Geometry height="29.0" width="29.0" x="105.49999999999999" y="340.41596558776627"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="18" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.939998626708984" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="94.64800262451172" x="41.84187018730991" xml:space="preserve" y="-8.469999313354492">NetFlow v5
@@ -134,7 +134,7 @@ parser<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mod
     <node id="n8">
       <data key="d6">
         <y:ImageNode>
-          <y:Geometry height="29.0" width="29.0" x="186.773883696781" y="180.51385656339124"/>
+          <y:Geometry height="29.0" width="29.0" x="186.773883696781" y="69.30970449262304"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.475000381469727" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="79.54000854492188" x="42.55575632549727" xml:space="preserve" y="3.7624998092651083">NetFlow v5<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="-5.551115123125783E-16" offsetX="13.55575632549727" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -145,7 +145,7 @@ parser<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mod
     <node id="n9">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="80.11662282965" width="707.558670820353" x="90.48909657320877" y="528.3271460713776"/>
+          <y:Geometry height="80.11662282965" width="707.558670820353" x="90.48909657320877" y="417.12299400060937"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#B4B6C8" raised="false" type="line" width="5.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="652.1655365826141" y="38.05831141482497">
@@ -163,7 +163,7 @@ parser<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mod
     <node id="n10">
       <data key="d6">
         <y:ImageNode>
-          <y:Geometry height="51.0" width="51.0" x="342.51843198338526" y="542.8854574862025"/>
+          <y:Geometry height="51.0" width="51.0" x="342.51843198338526" y="431.68130541543434"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="27.30000114440918" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="167.70001220703125" x="62.060460358228795" xml:space="preserve" y="11.84999942779541">UDP/TCP Listener<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="0.0" offsetX="11.060460358228795" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -173,22 +173,8 @@ parser<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mod
     </node>
     <node id="n11">
       <data key="d6">
-        <y:SVGNode>
-          <y:Geometry height="28.0000000000002" width="28.0000000000002" x="875.3113323051701" y="199.0138565633912"/>
-          <y:Fill color="#CCCCFF" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.84000015258789" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="50.29999923706055" x="39.6758073693959" xml:space="preserve" y="0.07999992370616837">Core<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="0.0" offsetX="11.67580736939567" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
-          <y:SVGNodeProperties usingVisualBounds="true"/>
-          <y:SVGModel svgBoundsPolicy="0">
-            <y:SVGContent refid="4"/>
-          </y:SVGModel>
-        </y:SVGNode>
-      </data>
-    </node>
-    <node id="n12">
-      <data key="d6">
         <y:ImageNode>
-          <y:Geometry height="29.0" width="29.0" x="255.5" y="451.62011765853447"/>
+          <y:Geometry height="29.0" width="29.0" x="255.5" y="340.41596558776627"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="50.60000228881836" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="104.7199935913086" x="41.841870187309894" xml:space="preserve" y="-10.80000114440918">NetFlow v9
@@ -197,10 +183,10 @@ parser<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mod
         </y:ImageNode>
       </data>
     </node>
-    <node id="n13">
+    <node id="n12">
       <data key="d6">
         <y:ImageNode>
-          <y:Geometry height="29.0" width="29.0" x="429.76843198338526" y="451.62011765853447"/>
+          <y:Geometry height="29.0" width="29.0" x="429.76843198338526" y="340.41596558776627"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="50.60000228881836" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="60.65999984741211" x="41.841870187309894" xml:space="preserve" y="-10.80000114440918">IPFIX
@@ -209,10 +195,10 @@ parser<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mod
         </y:ImageNode>
       </data>
     </node>
-    <node id="n14">
+    <node id="n13">
       <data key="d6">
         <y:ImageNode>
-          <y:Geometry height="29.0" width="29.0" x="604.0368639667705" y="451.62011765853447"/>
+          <y:Geometry height="29.0" width="29.0" x="604.0368639667705" y="340.41596558776627"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="50.60000228881836" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="60.65999984741211" x="41.84187018730984" xml:space="preserve" y="-10.80000114440918">sFlow
@@ -221,10 +207,24 @@ parser<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mod
         </y:ImageNode>
       </data>
     </node>
+    <node id="n14">
+      <data key="d6">
+        <y:SVGNode>
+          <y:Geometry height="43.7399597167971" width="34.82792946315851" x="222.58603526842074" y="206.60501975512727"/>
+          <y:Fill color="#CCCCFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="sandwich" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="15.413964731579256" y="47.7399597167971"/>
+          <y:SVGNodeProperties usingVisualBounds="true"/>
+          <y:SVGModel svgBoundsPolicy="0">
+            <y:SVGContent refid="4"/>
+          </y:SVGModel>
+        </y:SVGNode>
+      </data>
+    </node>
     <node id="n15">
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="43.7399597167971" width="34.82792946315851" x="222.58603526842074" y="317.8091718258955"/>
+          <y:Geometry height="43.7399597167971" width="34.82792946315851" x="372.58603526842074" y="206.5709563770211"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="sandwich" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="15.413964731579256" y="47.7399597167971"/>
@@ -237,22 +237,8 @@ parser<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mod
     </node>
     <node id="n16">
       <data key="d6">
-        <y:SVGNode>
-          <y:Geometry height="43.7399597167971" width="34.82792946315851" x="372.58603526842074" y="317.7751084477893"/>
-          <y:Fill color="#CCCCFF" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="sandwich" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="15.413964731579256" y="47.7399597167971"/>
-          <y:SVGNodeProperties usingVisualBounds="true"/>
-          <y:SVGModel svgBoundsPolicy="0">
-            <y:SVGContent refid="6"/>
-          </y:SVGModel>
-        </y:SVGNode>
-      </data>
-    </node>
-    <node id="n17">
-      <data key="d6">
         <y:ImageNode>
-          <y:Geometry height="29.0" width="29.0" x="186.773883696781" y="217.51385656339124"/>
+          <y:Geometry height="29.0" width="29.0" x="186.773883696781" y="106.30970449262304"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.475000381469727" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="79.54000854492188" x="42.55575632549727" xml:space="preserve" y="3.7624998092651083">NetFlow v9<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="-5.551115123125783E-16" offsetX="13.55575632549727" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -260,10 +246,10 @@ parser<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mod
         </y:ImageNode>
       </data>
     </node>
-    <node id="n18">
+    <node id="n17">
       <data key="d6">
         <y:ImageNode>
-          <y:Geometry height="29.0" width="29.0" x="341.32165109034304" y="198.51385656339124"/>
+          <y:Geometry height="29.0" width="29.0" x="341.32165109034304" y="87.30970449262304"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.475000381469727" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="39.26499938964844" x="42.555756325497214" xml:space="preserve" y="3.7624998092651083">IPFIX<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="-9.992007221626409E-16" offsetX="13.555756325497214" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -271,10 +257,10 @@ parser<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mod
         </y:ImageNode>
       </data>
     </node>
-    <node id="n19">
+    <node id="n18">
       <data key="d6">
         <y:ImageNode>
-          <y:Geometry height="29.0" width="29.0" x="555.5" y="198.51385656339124"/>
+          <y:Geometry height="29.0" width="29.0" x="555.5" y="87.30970449262304"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.475000381469727" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="43.41999816894531" x="42.555756325497214" xml:space="preserve" y="3.7624998092651083">sFlow<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="-9.992007221626409E-16" offsetX="13.555756325497214" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -282,10 +268,10 @@ parser<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mod
         </y:ImageNode>
       </data>
     </node>
-    <node id="n20">
+    <node id="n19">
       <data key="d6">
         <y:ImageNode>
-          <y:Geometry height="29.0" width="29.0" x="664.7617558942295" y="198.51385656339124"/>
+          <y:Geometry height="29.0" width="29.0" x="664.7617558942295" y="87.30970449262304"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="38.95000076293945" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="53.45500183105469" x="42.555756325497214" xml:space="preserve" y="-4.975000381469755">sFlow
@@ -294,52 +280,13 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
         </y:ImageNode>
       </data>
     </node>
-    <node id="n21">
+    <node id="n20">
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="28.0000000000002" width="28.0000000000002" x="875.3113323051701" y="503.25278757236845"/>
+          <y:Geometry height="28.0000000000002" width="28.0000000000002" x="875.3113323051701" y="392.04863550160024"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.84000015258789" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="68.4000015258789" x="39.6758073693959" xml:space="preserve" y="0.07999992370616837">Minion<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="0.0" offsetX="11.67580736939567" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
-          <y:SVGNodeProperties usingVisualBounds="true"/>
-          <y:SVGModel svgBoundsPolicy="0">
-            <y:SVGContent refid="4"/>
-          </y:SVGModel>
-        </y:SVGNode>
-      </data>
-    </node>
-    <node id="n22">
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="85.11662282965" width="964.7980049337953" x="69.02665474275" y="46.07431340576966"/>
-          <y:Fill hasColor="false" transparent="false"/>
-          <y:BorderStyle color="#C0C0C0" raised="false" type="dashed" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.84000015258789" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="160.6599884033203" x="777.0693937128808" xml:space="preserve" y="28.638311338531068">Message Broker<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.5" labelRatioY="0.0" nodeRatioX="0.4719437408875533" nodeRatioY="1.1102230246251565E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
-          <y:Shape type="roundrectangle"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n23">
-      <data key="d6">
-        <y:SVGNode>
-          <y:Geometry height="43.7399597167971" width="34.82792946315851" x="222.58603526842074" y="66.79670834030225"/>
-          <y:Fill color="#CCCCFF" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="sandwich" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="15.413964731579256" y="47.7399597167971"/>
-          <y:SVGNodeProperties usingVisualBounds="true"/>
-          <y:SVGModel svgBoundsPolicy="0">
-            <y:SVGContent refid="5"/>
-          </y:SVGModel>
-        </y:SVGNode>
-      </data>
-    </node>
-    <node id="n24">
-      <data key="d6">
-        <y:SVGNode>
-          <y:Geometry height="43.7399597167971" width="34.82792946315851" x="372.5860352684208" y="66.79670834030225"/>
-          <y:Fill color="#CCCCFF" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="sandwich" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="15.413964731579256" y="47.7399597167971"/>
           <y:SVGNodeProperties usingVisualBounds="true"/>
           <y:SVGModel svgBoundsPolicy="0">
             <y:SVGContent refid="6"/>
@@ -347,25 +294,7 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
         </y:SVGNode>
       </data>
     </node>
-    <node id="n25">
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="100.49999999999983" width="964.7980049337953" x="69.02665474275" y="-73.4986069222019"/>
-          <y:Fill color="#ECECEC" transparent="false"/>
-          <y:BorderStyle hasColor="false" raised="false" type="dotted" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" rotationAngle="90.0" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="933.7293821162011" y="48.24999999999993">
-            <y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.5" labelRatioY="0.0" nodeRatioX="0.4719437408875533" nodeRatioY="1.1102230246251565E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:Shape type="roundrectangle"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n26">
+    <node id="n21">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="131.74999999999994" width="90.79800493379514" x="754.513327371375" y="-485.54176455134814"/>
@@ -376,7 +305,7 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n27">
+    <node id="n22">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="93.0" width="707.5586708203531" x="90.48909657320871" y="-468.7086564746479"/>
@@ -394,10 +323,10 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n28">
+    <node id="n23">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="139.74999999999983" width="90.79800493379514" x="754.513327371375" y="672.5840560160782"/>
+          <y:Geometry height="139.74999999999983" width="90.79800493379514" x="754.513327371375" y="561.3799039453099"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#B4B6C8" raised="false" type="dashed" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.84000015258789" horizontalTextPosition="center" iconTextGap="4" modelName="custom" rotationAngle="90.0" textColor="#000000" verticalTextPosition="bottom" visible="true" width="130.6399917602539" x="60.4105524278915" xml:space="preserve" y="4.555004119872933">Flow Devices<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.5" labelRatioY="0.0" nodeRatioX="0.4719437408875533" nodeRatioY="1.1102230246251565E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -405,7 +334,7 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n29">
+    <node id="n24">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="93.0" width="707.558670820353" x="90.48909657320871" y="-297.70098504022667"/>
@@ -423,10 +352,10 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n30">
+    <node id="n25">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="92.99999999999994" width="707.558670820353" x="90.48909657320877" y="695.9590560160781"/>
+          <y:Geometry height="92.99999999999994" width="707.558670820353" x="90.48909657320877" y="584.7549039453099"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#B4B6C8" raised="false" type="line" width="5.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="652.1655365826141" y="44.5">
@@ -441,10 +370,10 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n31">
+    <node id="n26">
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="47.0" width="72.0" x="358.9232832107548" y="718.9590560160781"/>
+          <y:Geometry height="47.0" width="72.0" x="358.9232832107548" y="607.7549039453099"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="27.30000114440918" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="288.0400085449219" x="84.49181365966774" xml:space="preserve" y="9.84999942779541">Flow exporting network devices<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="8.881784197001252E-16" offsetX="12.491813659667741" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -455,7 +384,7 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
         </y:SVGNode>
       </data>
     </node>
-    <node id="n32">
+    <node id="n27">
       <data key="d6">
         <y:SVGNode>
           <y:Geometry height="50.0" width="50.0" x="494.9265128374684" y="-444.66676455134814"/>
@@ -469,7 +398,7 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
         </y:SVGNode>
       </data>
     </node>
-    <node id="n33">
+    <node id="n28">
       <data key="d6">
         <y:SVGNode>
           <y:Geometry height="50.0000000000002" width="50.0000000000002" x="167.23909657320843" y="-442.67584398663473"/>
@@ -478,12 +407,12 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="27.30000114440918" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="97.73999786376953" x="61.675807369395784" xml:space="preserve" y="11.349999427795524">OpenNMS<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="3.3306690738754696E-16" offsetX="11.675807369395557" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
           <y:SVGNodeProperties usingVisualBounds="true"/>
           <y:SVGModel svgBoundsPolicy="0">
-            <y:SVGContent refid="4"/>
+            <y:SVGContent refid="6"/>
           </y:SVGModel>
         </y:SVGNode>
       </data>
     </node>
-    <node id="n34">
+    <node id="n29">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="125.49999999999983" width="90.79800493379514" x="754.513327371375" y="-308.95098504022656"/>
@@ -494,10 +423,10 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n35">
+    <node id="n30">
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="47.0" width="72.0" x="196.9232832107548" y="718.9590560160781"/>
+          <y:Geometry height="47.0" width="72.0" x="196.9232832107548" y="607.7549039453099"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="sandwich" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="34.0" y="51.0"/>
@@ -508,10 +437,10 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
         </y:SVGNode>
       </data>
     </node>
-    <node id="n36">
+    <node id="n31">
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="47.0" width="72.0" x="277.9232832107548" y="718.9590560160781"/>
+          <y:Geometry height="47.0" width="72.0" x="277.9232832107548" y="607.7549039453099"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="sandwich" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="34.0" y="51.0"/>
@@ -522,7 +451,7 @@ metrics<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:Mo
         </y:SVGNode>
       </data>
     </node>
-    <node id="n37">
+    <node id="n32">
       <data key="d6">
         <y:SVGNode>
           <y:Geometry height="50.0" width="50.0" x="168.9201033992243" y="-271.20098504022667"/>
@@ -537,7 +466,7 @@ with Drift plugin<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
         </y:SVGNode>
       </data>
     </node>
-    <node id="n38">
+    <node id="n33">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="51.0" width="201.0" x="504.5" y="-271.70098504022667"/>
@@ -548,7 +477,7 @@ with Drift plugin<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n39">
+    <node id="n34">
       <data key="d6">
         <y:ImageNode>
           <y:Geometry height="65.15222482435597" width="65.0" x="411.7684319833852" y="-151.5020208055703"/>
@@ -559,27 +488,45 @@ with Drift plugin<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
         </y:ImageNode>
       </data>
     </node>
-    <node id="n40">
+    <node id="n35">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="51.0" width="201.0" x="559.5" y="-42.74860692220196"/>
+          <y:Fill hasColor="false" transparent="false"/>
+          <y:BorderStyle hasColor="false" raised="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="27.30000114440918" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="152.16000366210938" x="-176.35488875282772" xml:space="preserve" y="27.125734243307107">Flow enrichment<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.5" labelRatioY="0.37451519252343146" nodeRatioX="-0.5" nodeRatioY="0.5" offsetX="-24.194885090718344" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n36">
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="28.0000000000002" width="28.0000000000002" x="875.3966770508825" y="-31.248606922202057"/>
+          <y:Geometry height="28.0000000000002" width="28.0000000000002" x="875.3113323051701" y="39.05970449262318"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.84000015258789" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="81.02000427246094" x="39.6758073693959" xml:space="preserve" y="0.07999992370615416">Sentinel<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="0.0" offsetX="11.67580736939567" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
           <y:SVGNodeProperties usingVisualBounds="true"/>
           <y:SVGModel svgBoundsPolicy="0">
-            <y:SVGContent refid="4"/>
+            <y:SVGContent refid="6"/>
           </y:SVGModel>
         </y:SVGNode>
       </data>
     </node>
-    <node id="n41">
+    <node id="n37">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.15222482435597" width="707.558670820353" x="90.48909657320883" y="-54.4008317465579"/>
+          <y:Geometry height="68.058311414825" width="707.558670820353" x="90.48909657320871" y="-42.74860692220196"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#B4B6C8" raised="false" type="line" width="5.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.475000381469727" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="186.25003051757812" x="260.6543201513874" xml:space="preserve" y="21.83861222144312">Flow enrichment &amp; Adapter<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:NodeLabel alignment="right" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="351.7793354101765" y="32.0291557074125">
+            <y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
           <y:Shape type="roundrectangle"/>
         </y:ShapeNode>
       </data>
@@ -593,17 +540,17 @@ with Drift plugin<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
         </y:BezierEdge>
       </data>
     </edge>
-    <edge id="e1" source="n30" target="n9">
+    <edge id="e1" source="n25" target="n9">
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="-57.004411764706106" tx="0.0" ty="52.69234852987529"/>
           <y:LineStyle color="#000000" type="line" width="4.0"/>
           <y:Arrows source="none" target="delta"/>
-          <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasLineColor="false" height="21.475000381469727" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="97.30000305175781" x="-48.65000215968115" xml:space="preserve" y="-43.99073861108832">network flows<y:LabelModel><y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="false" position="center" ratio="0.5" segment="0"/></y:ModelParameter><y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/></y:EdgeLabel>
+          <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Helvetica Neue" fontSize="15" fontStyle="plain" hasLineColor="false" height="21.475000381469727" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="97.30000305175781" x="-48.65000215968115" xml:space="preserve" y="-43.990728084200214">network flows<y:LabelModel><y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="false" position="center" ratio="0.5" segment="0"/></y:ModelParameter><y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/></y:EdgeLabel>
         </y:BezierEdge>
       </data>
     </edge>
-    <edge id="e2" source="n29" target="n27">
+    <edge id="e2" source="n24" target="n22">
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="-60.347156883073154" tx="0.0" ty="60.66051455134817"/>
@@ -612,7 +559,7 @@ with Drift plugin<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
         </y:BezierEdge>
       </data>
     </edge>
-    <edge id="e3" source="n31" target="n30">
+    <edge id="e3" source="n26" target="n25">
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -621,7 +568,7 @@ with Drift plugin<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
         </y:BezierEdge>
       </data>
     </edge>
-    <edge id="e4" source="n39" target="n29">
+    <edge id="e4" source="n34" target="n24">
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="-42.687744151213366" tx="0.0" ty="57.20098504022667"/>
@@ -630,31 +577,18 @@ with Drift plugin<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
         </y:BezierEdge>
       </data>
     </edge>
-    <edge id="e5" source="n41" target="n39">
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="-32.55867760472815" tx="0.0" ty="43.312255848786634"/>
-          <y:LineStyle color="#000000" type="line" width="3.0"/>
-          <y:Arrows source="none" target="none"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e6" source="n5" target="n6">
+    <edge id="e5" source="n5" target="n6">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-126.32020122474557" sy="0.0" tx="-124.05013375951074" ty="5.535279468551437">
-            <y:Point x="317.9482307586397" y="466.12011765853447"/>
-            <y:Point x="317.9482307586397" y="336.6594581821517"/>
-            <y:Point x="317.9482307586397" y="218.54913603194268"/>
-          </y:Path>
+          <y:Path sx="-126.32020122474557" sy="0.0" tx="-126.32020122474552" ty="6.502465397196168"/>
           <y:LineStyle color="#000000" type="line" width="2.0"/>
           <y:Arrows source="none" target="delta"/>
-          <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasLineColor="false" height="21.666015625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="105.77734375" x="-52.88868330386032" xml:space="preserve" y="-100.24810407370768">Flow protobuf<y:LabelModel><y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="1.0" segment="0"/></y:ModelParameter><y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/></y:EdgeLabel>
+          <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasLineColor="false" height="21.666015625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="105.77734375" x="-52.88868330386032" xml:space="preserve" y="-161.52504282183008">Flow protobuf<y:LabelModel><y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="1.0" segment="0"/></y:ModelParameter><y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/></y:EdgeLabel>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e7" source="n12" target="n5">
+    <edge id="e6" source="n11" target="n5">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -664,46 +598,43 @@ with Drift plugin<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelM
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e8" source="n5" target="n6">
+    <edge id="e7" source="n5" target="n6">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="201.04244449098263" sy="0.0" tx="201.0424444909827" ty="37.97832699253158"/>
+          <y:Path sx="201.04244449098263" sy="0.0" tx="201.0424444909827" ty="44.61432498853838"/>
           <y:LineStyle color="#000000" type="line" width="2.0"/>
           <y:Arrows source="none" target="delta"/>
-          <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasLineColor="false" height="21.666015625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="43.44091796875" x="-21.720434560788362" xml:space="preserve" y="-94.1176861745746">BSON<y:LabelModel><y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter><y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/></y:EdgeLabel>
+          <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasLineColor="false" height="21.666015625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="43.44091796875" x="-21.720434560788362" xml:space="preserve" y="-94.10491930003033">BSON<y:LabelModel><y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter><y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/></y:EdgeLabel>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e9" source="n6" target="n41">
+    <edge id="e8" source="n18" target="n6">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-132.42060213869382" sy="0.0" tx="-132.42060213869394" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="2.0"/>
-          <y:Arrows source="none" target="delta"/>
-          <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasLineColor="false" height="21.666015625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="105.77734375" x="-52.888681385777375" xml:space="preserve" y="-88.6879928551866">Flow protobuf<y:LabelModel><y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter><y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/></y:EdgeLabel>
+          <y:Path sx="-11.203822689511867" sy="7.94117647058826" tx="103.32392263759107" ty="16.066176470588196"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="none"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e10" source="n6" target="n41">
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="202.10165154500078" sy="0.0" tx="202.10165154500066" ty="21.824719334379914"/>
-          <y:LineStyle color="#000000" type="line" width="2.0"/>
-          <y:Arrows source="none" target="delta"/>
-          <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasLineColor="false" height="21.666015625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="43.44091796875" x="-21.720431608332774" xml:space="preserve" y="-88.69546966182722">BSON<y:LabelModel><y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter><y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/></y:EdgeLabel>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e11" source="n19" target="n6">
+    <edge id="e9" source="n37" target="n34">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="80.91627725856733" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="2.0"/>
           <y:Arrows source="none" target="none"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="27.9999993661977" y="-23.793818913866353">
+            <y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
@@ -1656,8 +1587,7 @@ TbPe0AyrhebLqV6DLEECgVBRYB2vrjv/aBi5v0PRTDNzTCY62cyq7MkEaJxiOnNVI2ct+343+91p&#13
 8yEQCISoAvccwegsb8qrNPl+ak3rRyhImhb8LRPJvzPRelHV7SY8pUizWmCPQSaA3VXd6sPEbDAT&#13;
 sxGKaY/k36O4GXYP9vqOqp7TSvPZQc3IzmLiVzdNz6qmqta/q2ruzzH6npLh/CDk+ga/kZyc+RV2&#13;
 KFXEYyMQnhT/H+v7V3tzKOPeAAAAAElFTkSuQmCC</y:Resource>
-      <y:Resource id="4" xml:space="preserve">&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"&gt;&lt;defs&gt;&lt;style&gt;.cls-1{fill:#14d1df;}&lt;/style&gt;&lt;/defs&gt;&lt;g id="Layer_2" data-name="Layer 2"&gt;&lt;g id="Logos"&gt;&lt;path class="cls-1" d="M4.46,9.12A27.28,27.28,0,0,1,1.68,5.57,10.84,10.84,0,0,1,1,4.22,8,8,0,0,0,2,13.29C2.09,12.43,3,10.88,4.46,9.12Z"/&gt;&lt;path class="cls-1" d="M6.88,11.54C5.12,13,3.57,13.91,2.71,14a8,8,0,0,0,9.07,1.05,11.54,11.54,0,0,1-1.95-1.13A28.79,28.79,0,0,1,6.88,11.54Z"/&gt;&lt;path class="cls-1" d="M9.12,4.46C10.88,3,12.43,2.09,13.29,2A8,8,0,0,0,4.22,1a11.54,11.54,0,0,1,2,1.13A28.79,28.79,0,0,1,9.12,4.46Z"/&gt;&lt;path class="cls-1" d="M14,2.71c-.09.86-1,2.41-2.46,4.17a27.28,27.28,0,0,1,2.78,3.55,10.84,10.84,0,0,1,.73,1.35A8,8,0,0,0,14,2.71Z"/&gt;&lt;path class="cls-1" d="M8,5.42H8C5.25,2.94,2.77,1.51,2.14,2.14s1.3,3.94,4.54,7.18Q7.34,10,8,10.58Z"/&gt;&lt;path class="cls-1" d="M10.58,8h0Q10,8.66,9.32,9.32T8,10.58c2.75,2.48,5.23,3.91,5.86,3.28S13.06,10.75,10.58,8Z"/&gt;&lt;/g&gt;&lt;/g&gt;&lt;/svg&gt;</y:Resource>
-      <y:Resource id="5" xml:space="preserve">&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
+      <y:Resource id="4" xml:space="preserve">&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
 &lt;!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"&gt;
 &lt;svg width="100%" height="100%" viewBox="0 0 495 625" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"&gt;
     &lt;g transform="matrix(1,0,0,1,-200.499,-161.828)"&gt;
@@ -1674,7 +1604,7 @@ KFXEYyMQnhT/H+v7V3tzKOPeAAAAAElFTkSuQmCC</y:Resource>
     &lt;/defs&gt;
 &lt;/svg&gt;
 </y:Resource>
-      <y:Resource id="6" xml:space="preserve">&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
+      <y:Resource id="5" xml:space="preserve">&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
 &lt;!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"&gt;
 &lt;svg width="100%" height="100%" viewBox="0 0 495 625" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"&gt;
     &lt;g transform="matrix(-1,-1.22465e-16,1.22465e-16,-1,694.82,786.813)"&gt;
@@ -1691,6 +1621,7 @@ KFXEYyMQnhT/H+v7V3tzKOPeAAAAAElFTkSuQmCC</y:Resource>
     &lt;/defs&gt;
 &lt;/svg&gt;
 </y:Resource>
+      <y:Resource id="6" xml:space="preserve">&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"&gt;&lt;defs&gt;&lt;style&gt;.cls-1{fill:#14d1df;}&lt;/style&gt;&lt;/defs&gt;&lt;g id="Layer_2" data-name="Layer 2"&gt;&lt;g id="Logos"&gt;&lt;path class="cls-1" d="M4.46,9.12A27.28,27.28,0,0,1,1.68,5.57,10.84,10.84,0,0,1,1,4.22,8,8,0,0,0,2,13.29C2.09,12.43,3,10.88,4.46,9.12Z"/&gt;&lt;path class="cls-1" d="M6.88,11.54C5.12,13,3.57,13.91,2.71,14a8,8,0,0,0,9.07,1.05,11.54,11.54,0,0,1-1.95-1.13A28.79,28.79,0,0,1,6.88,11.54Z"/&gt;&lt;path class="cls-1" d="M9.12,4.46C10.88,3,12.43,2.09,13.29,2A8,8,0,0,0,4.22,1a11.54,11.54,0,0,1,2,1.13A28.79,28.79,0,0,1,9.12,4.46Z"/&gt;&lt;path class="cls-1" d="M14,2.71c-.09.86-1,2.41-2.46,4.17a27.28,27.28,0,0,1,2.78,3.55,10.84,10.84,0,0,1,.73,1.35A8,8,0,0,0,14,2.71Z"/&gt;&lt;path class="cls-1" d="M8,5.42H8C5.25,2.94,2.77,1.51,2.14,2.14s1.3,3.94,4.54,7.18Q7.34,10,8,10.58Z"/&gt;&lt;path class="cls-1" d="M10.58,8h0Q10,8.66,9.32,9.32T8,10.58c2.75,2.48,5.23,3.91,5.86,3.28S13.06,10.75,10.58,8Z"/&gt;&lt;/g&gt;&lt;/g&gt;&lt;/svg&gt;</y:Resource>
       <y:Resource id="7" xml:space="preserve">&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
 &lt;!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"&gt;
 &lt;svg width="100%" height="100%" viewBox="0 0 1280 800" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;"&gt;
