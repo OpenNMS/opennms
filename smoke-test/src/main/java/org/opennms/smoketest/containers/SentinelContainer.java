@@ -168,11 +168,6 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
                         .put("compression.type", model.getKafkaCompressionStrategy().getCodec())
                         .build());
 
-        writeProps(etc.resolve("org.apache.cxf.osgi.cfg"),
-                ImmutableMap.<String,String>builder()
-                        .put("org.apache.cxf.servlet.context", "/sentinel")
-                        .build());
-
         writeProps(etc.resolve("org.opennms.core.ipc.sink.kafka.cfg"),
                 ImmutableMap.<String,String>builder()
                         .put("bootstrap.servers", OpenNMSContainer.KAFKA_ALIAS + ":9092")
