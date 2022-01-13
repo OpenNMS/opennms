@@ -1,6 +1,6 @@
 
 [[flows-scaling]]
-= Scale Flows Data
+= Scale Flow Processing with Sentinel
 
 When your flows data collection volume increases to the point that {page-component-title} is too busy processing flows, you can add Sentinel(s) to do the processing instead.
 Sentinel can do the following:
@@ -10,6 +10,9 @@ Sentinel can do the following:
 * Generate and send events to Horizon Core instance via message broker
 
 Follow the procedures below to set up Sentinel to scale your flows data.
+
+.Flow integration with Sentinel
+image::flows/flow_integration_sentinel.png[width=70%]
 
 == Before you begin
 
