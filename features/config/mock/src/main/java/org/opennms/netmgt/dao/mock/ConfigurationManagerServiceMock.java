@@ -114,7 +114,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
         } else if ("notifd".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("notifd", "notifd-configuration.xsd",
                     "notifd-configuration", ConfigurationManagerService.BASE_PATH);
-        }else if ("wmi".equals(configName)) {
+        } else if ("wmi".equals(configName)) {
             def = XsdHelper.buildConfigDefinition("wmi", "wmi-config.xsd",
                     "wmi-config", ConfigurationManagerService.BASE_PATH);
         }

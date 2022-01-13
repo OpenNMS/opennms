@@ -56,15 +56,11 @@ public class WmiPeerFactoryTest {
     @Autowired
     private WmiPeerFactory factory;
 
-    private void updateConfig(String amiConfigXml) {
-        try {
-            JaxbXmlConverter converter = new JaxbXmlConverter("wmi-config.xsd", "wmi-config", null);
-            String json = converter.xmlToJson(amiConfigXml);
-            factory.updateConfig(json);
-            factory.reload();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void updateConfig(String amiConfigXml) throws IOException {
+        JaxbXmlConverter converter = new JaxbXmlConverter("wmi-config.xsd", "wmi-config", null);
+        String json = converter.xmlToJson(amiConfigXml);
+        factory.updateConfig(json);
+        factory.reload();
     }
 
     /**
