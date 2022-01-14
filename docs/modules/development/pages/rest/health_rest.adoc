@@ -1,9 +1,9 @@
 
 = Health Rest Service
 
-Service that allows health rest calls.
+Service that allows health rest calls on all _HealthCheck_ components available .
 
-Currently implemented on Minion and Sentinel by default.
+Currently implemented on Minion by default.
 
 Examples:
 
@@ -48,7 +48,45 @@ The following table shows all supported query string parameters and their defaul
  * minion +
  * elastic +
  * bundle 
-                                                    | '' 
+| '' 
 |===
 
+Requests without parameters will return all HealthCheck components available 
 
+.Response
+[source,javascript]
+----
+{
+    "healthy": true,
+    "responses": [
+        {
+            "description": "Verifying installed bundles",
+            "status": "Success"
+        },
+        {
+            "description": "Verifying Listener NXOS-Listener (org.opennms.netmgt.telemetry.listeners.UdpListener)",
+            "status": "Success"
+        },
+        {
+            "description": "Verifying Listener JTI-Listener (org.opennms.netmgt.telemetry.listeners.UdpListener)",
+            "status": "Success"
+        },
+        ...
+    ]
+}
+
+----
+
+== Http Error Codes
+
+[options="header", cols="5,10"]
+|===
+| Error
+| Description
+| 404
+| Rest health feature is not installed, or is installed and stopped.
+| 200
+| Rest health feature is installed and running. This reponse is independent of the health status. + 
+*healthy : true* status means all components found are healthy. +
+*healthy : false* status means at least one component didn't return a healthy status.                                              
+|===
