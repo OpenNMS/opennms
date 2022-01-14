@@ -1,7 +1,15 @@
 
 = Charts
 
-This dashlet displays an existing link:https://opennms.discourse.group/t/creating-custom-charts/2208[Chart].
+This dashlet displays predefined bar graphs on the charts UI or the Ops Board.
+You can also <<create-custom, create custom charts>> in the `charts-configuration.xml` file.
+
+
+
+
+
+
+link:https://opennms.discourse.group/t/creating-custom-charts/2208[Chart].
 
 [options="autowidth", cols="1,2"]
 |===
@@ -11,9 +19,24 @@ This dashlet displays an existing link:https://opennms.discourse.group/t/creatin
 | Chart
 | Name of the existing chart to display
 
-| Maximize Width
+| Maximize width
 | Rescale the image to fill display width
 
 | Maximize Height
 | Rescale the image to fill display height
 |===
+
+[[custom-chart]]
+== Create a custom chart
+
+Example of how to create a custom chart
+Find a similar chart in the `charts-configuration.xml`
+Copy that chart
+Modify the name, domain-axis-label, and title value to match the new information being presented.
+For each series-def -
+* Rename the series name and domain-axis label to an appropriate name
+* modify the SQL to return a row with two columns the first column is the label, the second the numeric value.
+In most cases, the first column will be a string in single quotes, the second will be a count(*).
+
+You may need to restart the webapp after the first test to get this going.
+Restart all of OpenNMS to restart Jetty.
