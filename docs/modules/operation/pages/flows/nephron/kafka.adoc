@@ -1,0 +1,65 @@
+[[kafka-config]]
+= Kafka Configuration
+
+[[kafka-forwarder-config]]
+== Enable Kafka forwarder
+
+To use Nephron, you must enable the Kafka forwarder to receive enriched flows (with OpenNMS node data).
+
+Enriched flows are stored in the `flowDocuments` topic and the payloads are encoded using link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)].
+See `flowdocument.proto` in the corresponding source distribution for the model definitions.
+
+Enable Kafka forwarding:
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+config:edit org.opennms.features.flows.persistence.elastic
+config:property-set enableForwarding true
+config:update
+----
+
+Configure Kafka server for flows:
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+config:edit org.opennms.features.flows.persistence.kafka
+config:property-set bootstrap.servers 127.0.0.1:9092
+config:update
+----
+
+== Correct clock skew
+
+Flow analyses use timestamps exposed by the underlying flow management protocol.
+These timestamps are set depending on the clock of the exporting router.
+If the router's clock differs from the actual time, this will be reflected in received flows and therefore skew up further analysis and aggregation.
+
+{page-component-title} Core can correct the timestamps of a received flow.
+To do so, it compares the current time of the exporting device with the actual time when the packet has been received.
+If these times differ by a certain amount, OpenNMS considers the receive time more correct and all timestamps of the flow will be adapted.
+
+To enable clock correction, configure a threshold for the maximum allowed delta, in milliseconds.
+Set the threshold to `0` to disable the correction mechanism.
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+config:edit org.opennms.features.flows.persistence.elastic
+config:property-set clockSkewCorrectionThreshold 5000
+config:update
+----
+
+== Configure flow input from Kafka
+
+Use the following command-line arguments to configure flow input from Kafka:
+
+[source, console]
+----
+--bootstrapServers=...
+--flowSourceTopic=...
+----
+
+The `flowSourceTopic` must match the topic configured for the xref:operation:flows/aggregation.adoc#kafka-forwarder-config[Kafka forwarder].

@@ -1,0 +1,111 @@
+[[nephron-monitor]]
+= Monitor Nephron
+
+Nephron provides a number of metrics you can use to monitor its operation.
+If you use Prometheus to monitor Nephron, you must enable the link:https://ci.apache.org/projects/flink/flink-docs-master/docs/deployment/metric_reporters/#prometheus[Prometheus metric reporter] by adding the following lines to `flink-conf.yaml`:
+
+[source, console]
+----
+metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusReporter
+metrics.reporter.prom.port: 9250-9260
+----
+
+You must add a corresponding scrape configuration to `prometheus.yml`:
+
+[source, console]
+----
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'flink'
+    static_configs:
+    - targets: ['localhost:9250', 'localhost:9251', 'localhost:9252', 'localhost:9253', 'localhost:9254', 'localhost:9255', 'localhost:9256', 'localhost:9257', 'localhost:9258', 'localhost:9259', 'localhost:9260']
+      labels:
+      flinklabel: 'flink'
+----
+
+== Metrics
+
+[options="header" cols="1,2,1,4"]
+|===
+| Namespace
+| Name
+| Type
+| Description
+
+| flows
+| from_kafka
+| Counter
+| The number of flows read from Kafka.
+
+| flows
+| from_kafka_drift
+| Gauge
+| The number of milliseconds between processing time and the `last_switched` of flows.
+
+| flows
+| to_es
+| Counter
+| The number of flows written to Elasticsearch.
+
+| cortex
+| write
+| Counter
+| The number of batches written to Cortex.
+
+| cortex
+| sample
+| Counter
+| The number of Cortex samples.
+
+| cortex
+| write_failure
+| Counter
+| The number of Cortex write failures (writes that completed with an exception).
+
+| cortex
+| response_failure
+| Counter
+| The number of Cortex response failures (responses to Cortex writes that indicate a failure condition).
+
+| cortex
+| response_failure_<kind>
+| Counter
+| The number of Cortex response failures of certain kinds. 
+Cortex persistence analyses response failures and tries to derive corresponding failure kinds (e.g., "out of order sample" or "per-user series limit reached").
+|===
+
+[options="header" cols="1,2,5"]
+|===
+| Namespace
+| Name
+| Prometheus metric name
+
+| flows
+| from_kafka
+| `flink_taskmanager_job_task_operator_flows_from_kafka`
+
+| flows
+| to_es
+| `flink_taskmanager_job_task_operator_flows_to_es`
+
+| cortex
+| write
+| `flink_taskmanager_job_task_operator_cortex_write`
+
+| cortex
+| sample
+| `flink_taskmanager_job_task_operator_cortex_sample`
+
+| cortex
+| write_failure
+| `flink_taskmanager_job_task_operator_cortex_write_failure`
+
+| cortex
+| response_failure
+| `flink_taskmanager_job_task_operator_cortex_response_failure`
+
+| cortex
+| response_failure_<kind>
+| `{__name__=~"flink_taskmanager_job_.\*response_failure_.*"}`
+
+|===

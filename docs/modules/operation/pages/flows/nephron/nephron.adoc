@@ -1,0 +1,41 @@
+
+[[ga-flow-support-aggregation]]
+= Aggregation and Streaming Analytics with Nephron
+
+Large amounts of flows data may result in slow generation of dashboard visualizations, particularly with longer time ranges (last day/week).
+A lot of calculations must occur to render these dashboards, which is challenging to do in real time with large volumes of flow data.
+
+OpenNMS Nephron is a streaming application that reads flows from Kafka, calculates flow aggregates, and persists these aggregates in Elasticsearch, Cortex, or Kafka.
+It pre-computes data as it flows through the pipeline, and stores it in Elasticsearch.
+
+Queries from dashboards are significantly faster (under 10 seconds vs. 30 minutes on billions of documents), as the flow query engine renders Top-N metrics from these pre-aggregated documents stored in Elasticsearch.
+Nephron also helps alleviate compute load on the Elasticsearch cluster, particularly for environments with large volumes of flows (>10,000 flows/sec).
+
+== Before you begin
+
+Make sure you have the following:
+
+* Horizon 26/Meridian 2020 or later
+* Source of valid NetFlow5 or NetFlow9 records
+** A node must exist for the address
+** The node must be in the same location as the Minion receiving the netflow, if using Minions
+* xref:operation:flows/basic.adoc#flows-basic[Basic flows environment set up]
+* xref:operation:flows/distributed.adoc#flows-remote[Minion added to your flows environment]]
+* xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[Sentinel added to your flows environment]
+* link:https://flink.apache.org/[Apache Flink] cluster set up and sized to your flows volume
+* Kafka server with xref:operation:flows/aggregation.adoc#kafka-forwarder-config[forwarder enabled]
+* A fast-caching DNS resolver if using reverse DNS
+
+[[flink]]
+== Run on Flink
+Once you have set up your Flink cluster and sized it to your flows volume, run the following to fun Nephron on Flink:
+
+`./bin/flink run --parallelism 1 --class org.opennms.nephron.Nephron /root/git/nephron/assemblies/flink/target/nephron-flink-bundled-*.jar --runner=FlinkRunner --jobName=nephron --checkpointingInterval=600000 --autoCommit=false`
+
+After Nephron set up, you must do the following:
+
+ * xref:operation:flows/nephron/kafka.adoc#kafka-config[Configure Kafka]
+ * xref:operation:flows/nephron/persistence.adoc#nephron-persistence[Configure persistence]
+ * xref:operation:flows/nephron/monitor.adoc#nephron-monitor[Monitor Nephron]
+
+
