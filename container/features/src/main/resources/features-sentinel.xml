@@ -68,6 +68,9 @@
         <bundle>mvn:org.opennms.features.distributed/shell/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.sentinel/core/${project.version}</bundle>
 
+        <!-- Useful Commands -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.commands/${project.version}</bundle>
+
         <!-- SystemProperties -->
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
     </feature>
