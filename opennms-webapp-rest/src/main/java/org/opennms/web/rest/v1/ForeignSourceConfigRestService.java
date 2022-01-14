@@ -106,7 +106,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
 
         // The following is required, otherwise getWrappers() throws a NPE
         m_foreignSourceService.getPolicyTypes();
-        //m_foreignSourceService.getDetectorTypes();
+        m_foreignSourceService.getDetectorTypes();
     }
 
     /**

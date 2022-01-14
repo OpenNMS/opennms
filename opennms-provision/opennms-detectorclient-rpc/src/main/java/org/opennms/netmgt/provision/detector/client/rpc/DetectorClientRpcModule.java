@@ -132,6 +132,10 @@ public class DetectorClientRpcModule extends AbstractXmlRpcModule<DetectorReques
         return RPC_MODULE_ID;
     }
 
+    public void setServiceDetectorRegistry(ServiceDetectorRegistry serviceDetectorRegistry) {
+        this.serviceDetectorRegistry = serviceDetectorRegistry;
+    }
+
     public void setExecutor(Executor executor) {
         this.executor = executor;
     }
