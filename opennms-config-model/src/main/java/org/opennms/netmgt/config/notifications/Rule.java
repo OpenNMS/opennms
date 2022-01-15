@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,26 +31,13 @@ package org.opennms.netmgt.config.notifications;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
-
-import org.opennms.core.xml.ValidateUsing;
-
-@XmlRootElement(name = "rule")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("notifications.xsd")
 public class Rule implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
-    @XmlValue
     private String content;
 
-    @XmlAttribute(name = "strict", required = false)
-    private Boolean m_strict;
+    private Boolean strict;
 
     public String getContent() {
         return content;
@@ -61,11 +48,11 @@ public class Rule implements Serializable {
     }
 
     public Boolean getStrict() {
-        return m_strict;
+        return this.strict;
     }
 
     public void setStrict(Boolean strict) {
-        this.m_strict = strict;
+        this.strict = strict;
     }
 
     @Override
@@ -74,11 +61,11 @@ public class Rule implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Rule rule = (Rule) o;
         return Objects.equals(content, rule.content) &&
-                Objects.equals(m_strict, rule.m_strict);
+                Objects.equals(this.strict, rule.strict);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(content, m_strict);
+        return Objects.hash(content, this.strict);
     }
 }

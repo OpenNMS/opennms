@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -581,15 +581,8 @@ public class NotificationManagerIT implements InitializingBean {
             super(configManager, dcf);
         }
 
-//        @Override
-//        protected void saveXML(String xmlString) throws IOException {
-//            return;
-//
-//        }
-
         @Override
         public void update() throws IOException {
-            return;
         }
 
         @Override

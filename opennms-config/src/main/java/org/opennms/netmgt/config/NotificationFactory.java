@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,6 +41,8 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.notifications.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,14 +69,9 @@ public class NotificationFactory extends NotificationManager {
     private static boolean initialized = false;
 
     /**
-     * 
+     * Since there is no lastModified for files, replace with loaded thread
      */
-    private File m_noticeConfFile;
-
-    /**
-     * 
-     */
-    private long m_lastModified;
+    private boolean loaded = false;
 
     /**
      *
@@ -82,7 +79,6 @@ public class NotificationFactory extends NotificationManager {
     private NotificationFactory() {
         super(NotifdConfigFactory.getInstance(), DataSourceFactory.getInstance());
     }
-
 
     @PostConstruct
     public void postConstruct() throws IOException {
@@ -122,31 +118,10 @@ public class NotificationFactory extends NotificationManager {
      *
      * @throws java.io.IOException if any.
      */
-    public synchronized void reload() throws IOException {
-        m_noticeConfFile = ConfigFileConstants.getFile(ConfigFileConstants.NOTIFICATIONS_CONF_FILE_NAME);
-
-        InputStream configIn = null;
-        try {
-            configIn = new FileInputStream(m_noticeConfFile);
-            m_lastModified = m_noticeConfFile.lastModified();
-            parseXML(configIn);
-        } finally {
-            if (configIn != null) {
-                IOUtils.closeQuietly(configIn);
-            }
-        }
+    public synchronized void reload() {
+        m_notifications = this.loadConfig();
+        postReload();
     }
-
-//    /** {@inheritDoc} */
-//    @Override
-//    protected void saveXML(String xmlString) throws IOException {
-//        if (xmlString != null) {
-//            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_noticeConfFile), StandardCharsets.UTF_8);
-//            fileWriter.write(xmlString);
-//            fileWriter.flush();
-//            fileWriter.close();
-//        }
-//    }
 
     /**
      * <p>update</p>
@@ -155,9 +130,17 @@ public class NotificationFactory extends NotificationManager {
      */
     @Override
     public void update() throws IOException {
-        if (m_lastModified != m_noticeConfFile.lastModified()) {
-            reload();
+        if (loaded) {
+            return;
         }
+        reload();
+        loaded = true;
+    }
+
+    @Override
+    public void updateConfig(Notifications notifications) throws IOException {
+        loaded = false;
+        super.updateConfig(notifications);
     }
 
     @Override

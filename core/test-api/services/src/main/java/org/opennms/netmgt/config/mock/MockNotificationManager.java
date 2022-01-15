@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,31 +28,34 @@
 
 package org.opennms.netmgt.config.mock;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-
-import javax.sql.DataSource;
-
+import com.atlassian.oai.validator.report.ValidationReport;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.exception.ConfigConversionException;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.config.notifications.Notifications;
+
+import javax.sql.DataSource;
+import java.io.IOException;
 
 /**
  * @author david
  */
 public class MockNotificationManager extends NotificationManager {
+    private ConfigDefinition def = XsdHelper.buildConfigDefinition("notification", "notifications.xsd",
+            "notifications", ConfigurationManagerService.BASE_PATH);
 
-    @SuppressWarnings("deprecation")
-    public MockNotificationManager(NotifdConfigManager configManager, DataSource db, String mgrString) {
+    public MockNotificationManager(NotifdConfigManager configManager, DataSource db, String mgrString) throws IOException {
         super(configManager, db);
-        Reader reader = new StringReader(mgrString);
-        parseXML(reader);
+
+        String json = XsdHelper.getConverter(def).xmlToJson(mgrString);
+        this.updateConfig(json);
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.NotificationManager#update()
-     */
     @Override
     public void update() throws IOException {
     }
@@ -62,6 +65,15 @@ public class MockNotificationManager extends NotificationManager {
      */
     protected String getInterfaceFilter(String rule) {
         return "SELECT DISTINCT ipaddr, servicename, nodeid FROM ifservices, service WHERE ifservices.serviceid = service.serviceid";
+    }
+
+    @Override
+    public void updateConfig(String configJsonStr) {
+        ValidationReport report = def.validate(configJsonStr);
+        if (report.hasErrors()) {
+            throw new ConfigConversionException(null, report.getMessages());
+        }
+        m_notifications = ConfigConvertUtil.jsonToObject(configJsonStr, Notifications.class);
     }
 
     @Override

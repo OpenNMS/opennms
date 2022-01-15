@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -102,9 +102,9 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
     private long m_binaryNoticesInterrupted = 0;
     private long m_javaNoticesInterrupted = 0;
     private long m_unknownNoticesInterrupted = 0;
-    
+
     /**
-     * 
+     *
      */
     private Header oldHeader;
     /** Constant <code>PARAM_TYPE="-t"</code> */
@@ -207,26 +207,9 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
     }
 
     /**
-     * <p>parseXML</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
+     * We no longer need parse XML, change name to postReload
      */
-    @Deprecated
-    public synchronized void parseXML(final Reader reader) {
-        m_notifications = JaxbUtils.unmarshal(Notifications.class, reader, true);
-        oldHeader = m_notifications.getHeader();
-    }
-
-    /**
-     * <p>parseXML</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @throws IOException 
-     */
-    public synchronized void parseXML(final InputStream stream) throws IOException {
-        try (final Reader reader = new InputStreamReader(stream)) {
-            m_notifications = JaxbUtils.unmarshal(Notifications.class, reader, true);
-        }
+    public synchronized void postReload() {
         oldHeader = m_notifications.getHeader();
     }
 
@@ -721,7 +704,7 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
      * @throws java.sql.SQLException if any.
      * @throws java.io.IOException if any.
      */
-    private List<Integer> doAcknowledgeNotificationsFromEvent(final Connection connection, final DBUtils dbUtils, int eventID) 
+    private List<Integer> doAcknowledgeNotificationsFromEvent(final Connection connection, final DBUtils dbUtils, int eventID)
             throws SQLException, IOException {
         List<Integer> notifIDs = new LinkedList<>();
         LOG.debug("EventID for notice(s) to be acked: {}", eventID);
@@ -887,7 +870,7 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
 
             // notifications textMsg field
             statement.setString(1, params.get(NotificationManager.PARAM_TEXT_MSG));
-    
+
             // notifications numericMsg field
             String numMsg = params.get(NotificationManager.PARAM_NUM_MSG);
             if (numMsg != null && numMsg.length() > 256) {
@@ -952,7 +935,7 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
 
     /**
      * This method queries the database in search of a service id for a given service name
-     * 
+     *
      * @param service
      *            the name of the service
      * @return the serviceID of the service
@@ -1109,10 +1092,10 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
                 newParam.setName(parameter.getName());
                 newParam.setValue(parameter.getValue());
                 notice.addParameter(newParam);
-            } 
+            }
             saveCurrent();
         }
-        else	
+        else
             addNotification(newNotice);
     }
 
@@ -1142,28 +1125,13 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
      * @throws java.io.IOException if any.
      * @throws java.lang.ClassNotFoundException if any.
      */
-    public synchronized void saveCurrent() throws IOException, ClassNotFoundException {
-//        m_notifications.setHeader(rebuildHeader());
-//
-//        // Marshal to a string first, then write the string to the file. This
-//        // way the original configuration
-//        // isn't lost if the XML from the marshal is hosed.
-//        final String xmlString = JaxbUtils.marshal(m_notifications);
-//        saveXML(xmlString);
+    public synchronized void saveCurrent() throws IOException {
         this.updateConfig(m_notifications);
         update();
     }
 
-//    /**
-//     * <p>saveXML</p>
-//     *
-//     * @param xmlString a {@link java.lang.String} object.
-//     * @throws java.io.IOException if any.
-//     */
-//    protected abstract void saveXML(String xmlString) throws IOException;
-
     /**
-     * 
+     *
      */
     private Header rebuildHeader() {
         Header header = oldHeader;
@@ -1202,30 +1170,30 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
                  * to correctly align with annotated types in the map.
                  */
                 parmMap.put(
-                            NotificationManager.PARAM_TEXT_MSG, 
+                            NotificationManager.PARAM_TEXT_MSG,
                             expandNotifParms(
-                                             resolutionPrefix, 
+                                             resolutionPrefix,
                                              Collections.singletonMap("noticeid", String.valueOf(notifId))
                                     ) + rs.getString("textMsg")
                         );
                 if (skipNumericPrefix) {
                     parmMap.put(
-                                NotificationManager.PARAM_NUM_MSG, 
+                                NotificationManager.PARAM_NUM_MSG,
                                 rs.getString("numericMsg")
                             );
                 } else {
                     parmMap.put(
-                                NotificationManager.PARAM_NUM_MSG, 
+                                NotificationManager.PARAM_NUM_MSG,
                                 expandNotifParms(
-                                                 resolutionPrefix, 
+                                                 resolutionPrefix,
                                                  Collections.singletonMap("noticeid", String.valueOf(notifId))
                                         ) + rs.getString("numericMsg")
                             );
                 }
                 parmMap.put(
-                            NotificationManager.PARAM_SUBJECT, 
+                            NotificationManager.PARAM_SUBJECT,
                             expandNotifParms(
-                                             resolutionPrefix, 
+                                             resolutionPrefix,
                                              Collections.singletonMap("noticeid", String.valueOf(notifId))
                                     ) + rs.getString("subject")
                         );
@@ -1330,11 +1298,11 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
         querier.execute(eventid);
         return event;
     }
-    
+
     public void incrementTasksQueued() {
         m_notifTasksQueued++;
     }
-    
+
     public void incrementAttempted(boolean isBinary) {
         if (isBinary) {
             m_binaryNoticesAttempted++;
@@ -1342,7 +1310,7 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
             m_javaNoticesAttempted++;
         }
     }
-    
+
     public void incrementSucceeded(boolean isBinary) {
         if (isBinary) {
             m_binaryNoticesSucceeded++;
@@ -1350,7 +1318,7 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
             m_javaNoticesSucceeded++;
         }
     }
-    
+
     public void incrementFailed(boolean isBinary) {
         if (isBinary) {
             m_binaryNoticesFailed++;
@@ -1365,11 +1333,11 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
             m_javaNoticesInterrupted++;
         }
     }
-    
+
     public void incrementUnknownInterrupted() {
         m_unknownNoticesInterrupted++;
     }
-    
+
     public long getNotificationTasksQueued() {
         return m_notifTasksQueued;
     }
