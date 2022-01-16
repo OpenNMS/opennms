@@ -28,18 +28,16 @@
 
 package org.opennms.core.ipc.twin.common;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.opentracing.References;
 import io.opentracing.Scope;
 import io.opentracing.Span;
@@ -54,14 +52,17 @@ import org.opennms.distributed.core.api.Identity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchException;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.google.protobuf.InvalidProtocolBufferException;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.TAG_PATCH;
 import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.TAG_SESSION_ID;
@@ -72,7 +73,9 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTwinSubscriber.class);
     protected static final String TAG_TWIN_RPC_REQUEST = "TwinRpcRequest";
-
+    private static final String TWIN_REQUEST_SENT = "requestSent";
+    private static final String TWIN_UPDATE_RECEIVED = "updateReceived";
+    private static final String TWIN_UPDATE_DROPPED = "updateDropped";
     private final Identity identity;
 
     private final Map<String, Subscription> subscriptions = new ConcurrentHashMap<>();
@@ -83,16 +86,19 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
     private final Tracer tracer;
 
+    private final MetricRegistry metrics;
+
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(
             new ThreadFactoryBuilder()
                     .setNameFormat("abstract-twin-subscriber-%d")
                     .build());
 
-    protected AbstractTwinSubscriber(final Identity identity, TracerRegistry tracerRegistry) {
+    protected AbstractTwinSubscriber(final Identity identity, TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
         this.identity = Objects.requireNonNull(identity);
         this.tracerRegistry = tracerRegistry;
         this.tracerRegistry.init(identity.getLocation() + "@" + identity.getId());
         this.tracer = this.tracerRegistry.getTracer();
+        this.metrics = metricRegistry;
     }
 
     protected abstract void sendRpcRequest(TwinRequest twinRequest);
@@ -125,11 +131,13 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         this.executorService.execute(() -> {
             final var subscription = this.subscriptions.computeIfAbsent(twinUpdate.getKey(), Subscription::new);
 
-            try (Scope scope = spanBuilder.startActive(true)){
+            try (Scope scope = spanBuilder.startActive(true)) {
                 addTracingTags(scope.span(), twinUpdate);
                 subscription.update(twinUpdate);
             } catch (final IOException e) {
                 LOG.error("Processing update failed: {}", twinUpdate.getKey(), e);
+                // JMX Metrics
+                updateCounter(MetricRegistry.name(twinUpdate.getKey(), TWIN_UPDATE_DROPPED));
                 subscription.request();
             }
         });
@@ -139,6 +147,11 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         span.setTag(TAG_VERSION, twinUpdate.getVersion());
         span.setTag(TAG_SESSION_ID, twinUpdate.getSessionId());
         span.setTag(TAG_PATCH, twinUpdate.isPatch());
+    }
+
+    private void updateCounter(String counterName) {
+        final Counter counter = metrics.counter(counterName);
+        counter.inc();
     }
 
     protected TwinUpdate mapTwinResponseToProto(byte[] responseBytes) {
@@ -186,6 +199,10 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
     public TracerRegistry getTracerRegistry() {
         return tracerRegistry;
+    }
+
+    public MetricRegistry getMetrics() {
+        return metrics;
     }
 
     public Identity getIdentity() {
@@ -278,6 +295,8 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             // Call all consumers if value has changed
             if (!(this.value != null && Objects.equals(this.value.value, value.value))) {
                 this.consumers.forEach(c -> c.accept(value.value));
+                // JMX Metrics
+                updateCounter(MetricRegistry.name(this.key, TWIN_UPDATE_RECEIVED));
             }
 
             // Remember value
@@ -291,6 +310,8 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             final var request = new TwinRequest(this.key, AbstractTwinSubscriber.this.identity.getLocation());
             updateTracingTags(span, request);
             AbstractTwinSubscriber.this.sendRpcRequest(request);
+            // JMX Metrics
+            updateCounter(MetricRegistry.name(this.key, TWIN_REQUEST_SENT));
             span.finish();
             // Schedule a retry
             this.retry = AbstractTwinSubscriber.this.executorService.schedule(this::request, 5, TimeUnit.SECONDS);
@@ -318,6 +339,8 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                                           update.getVersion(),
                                           AbstractTwinSubscriber.this.objectMapper.readTree(update.getObject())));
                 } else {
+                    // JMX Metrics
+                    updateCounter(MetricRegistry.name(this.key, TWIN_UPDATE_DROPPED));
                     this.request();
                 }
 
@@ -343,12 +366,16 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                             final var value = patch.apply(this.value.value);
 
                             this.accept(new Value(update.getSessionId(), update.getVersion(), value));
+
                         } catch (JsonPatchException e) {
                             throw new IOException("Unable to apply patch", e);
                         }
 
                     } else {
                         // Version jumped
+
+                        // JMX Metrics
+                        updateCounter(MetricRegistry.name(this.key, TWIN_UPDATE_DROPPED));
                         this.request();
                     }
                 }

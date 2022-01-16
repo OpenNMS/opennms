@@ -738,7 +738,7 @@
   dependencies:
     vue-demi "*"
 
-ace-builds@^1.4.12:
+ace-builds@^1.4.13:
   version "1.4.13"
   resolved "https://registry.yarnpkg.com/ace-builds/-/ace-builds-1.4.13.tgz#186f42d3849ebcc6a48b93088a058489897514c1"
   integrity sha512-SOLzdaQkY6ecPKYRDDg+MY1WoGgXA34cIvYJNNoBMGGUswHmlauU2Hy0UL96vW0Fs/LgFbMUjD+6vqzWTldIYQ==
@@ -1885,10 +1885,10 @@ marked@^3.0.4:
   resolved "https://registry.yarnpkg.com/marked/-/marked-3.0.8.tgz#2785f0dc79cbdc6034be4bb4f0f0a396bd3f8aeb"
   integrity sha512-0gVrAjo5m0VZSJb4rpL59K1unJAMb/hm8HRXqasD8VeC8m91ytDPMritgFSlKonfdt+rRYYpP/JfLxgIX8yoSw==
 
-marked@^4.0.8:
-  version "4.0.8"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-4.0.8.tgz#ef127626ac65786460f9420d57cc8d5ffdcacbed"
-  integrity sha512-dkpJMIlJpc833hbjjg8jraw1t51e/eKDoG8TFOgc5O0Z77zaYKigYekTDop5AplRoKFGIaoazhYEhGkMtU3IeA==
+marked@^4.0.9:
+  version "4.0.9"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-4.0.9.tgz#96862d67bd31b4770917f01c93e1d9b3cc73ed96"
+  integrity sha512-HmoFvQwFLxNESeGupeOC+6CLb5WzcCWQmqvVetsErmrI3vrZ6gBumty5IP0ynLPR0zYSoVY7ITC1GffsYIGkog==
 
 mdn-data@2.0.14:
   version "2.0.14"
@@ -2287,10 +2287,10 @@ sass-loader@^12.3.0:
     klona "^2.0.4"
     neo-async "^2.6.2"
 
-sass@^1.46.0:
-  version "1.46.0"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.46.0.tgz#923117049525236026a7ede69715580eb0fac751"
-  integrity sha512-Z4BYTgioAOlMmo4LU3Ky2txR8KR0GRPLXxO38kklaYxgo7qMTgy+mpNN4eKsrXDTFlwS5vdruvazG4cihxHRVQ==
+sass@^1.47.0:
+  version "1.47.0"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.47.0.tgz#c22dd0eed2e4a991430dae0b03c8e694bc41c2b4"
+  integrity sha512-GtXwvwgD7/6MLUZPnlA5/8cdRgC9SzT5kAnnJMRmEZQFRE3J56Foswig4NyyyQGsnmNvg6EUM/FP0Pe9Y2zywQ==
   dependencies:
     chokidar ">=3.0.0 <4.0.0"
     immutable "^4.0.0"
@@ -2691,21 +2691,21 @@ vue-tsc@^0.30.1:
     "@volar/shared" "0.30.1"
     vscode-vue-languageservice "0.30.1"
 
-vue3-ace-editor@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/vue3-ace-editor/-/vue3-ace-editor-2.2.1.tgz#dba9541a43d248937a43fe49c034c2d2a6df5e28"
-  integrity sha512-rtTjXZ0jn4AnpRbMnX3+VF0pS4Fo1w0LqexG+F4KAM5Z8QMckkOIEXUbu0pbLgyg0upwu9F+aF6wE3mH6SL1+A==
+vue3-ace-editor@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/vue3-ace-editor/-/vue3-ace-editor-2.2.2.tgz#7fd694df2f556e8859edd2322703e039461c9ecc"
+  integrity sha512-fZ6OWosbU+odLrtrcGC/536QjCigujYJB0Hf6/tBp+ef/ohTadwQAqyBlVzOmvrmzZyubphpV9zkaZcx5Fuivw==
   dependencies:
-    ace-builds "^1.4.12"
+    ace-builds "^1.4.13"
     resize-observer-polyfill "^1.5.1"
-    vue "^3.0.0"
+    vue "^3.2.26"
 
 vue@^2.0.0:
   version "2.6.14"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.14.tgz#e51aa5250250d569a3fbad3a8a5a687d6036e235"
   integrity sha512-x2284lgYvjOMj3Za7kqzRcUSxBboHqtgRE2zlos1qWaOye5yUmHn42LB1250NJBLRwEcdrB0JRwyPTEPhfQjiQ==
 
-vue@^3.0.0, vue@^3.1.0-0, vue@^3.2.26:
+vue@^3.1.0-0, vue@^3.2.26:
   version "3.2.26"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.2.26.tgz#5db575583ecae495c7caa5c12fd590dffcbb763e"
   integrity sha512-KD4lULmskL5cCsEkfhERVRIOEDrfEL9CwAsLYpzptOGjaGFNWo3BQ9g8MAb7RaIO71rmVOziZ/uEN/rHwcUIhg==

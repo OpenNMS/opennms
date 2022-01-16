@@ -13,7 +13,7 @@ var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlug
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var StringReplacePlugin = require('string-replace-webpack-plugin');
-var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+var TerserPlugin = require("terser-webpack-plugin");
 var createVariants = require('parallel-webpack').createVariants;
 var clonedeep = require('lodash.clonedeep');
 
@@ -530,11 +530,11 @@ function createConfig(options) {
     } else {
       console.log('minimizer exists:',myconf.optimization.minimizer);
     }
-    myconf.optimization.minimizer.push(new UglifyJsPlugin({
+    myconf.optimization.minimizer.push(new TerserPlugin({
       cache: true,
       parallel: true,
       sourceMap: true,
-      uglifyOptions: {
+      terserOptions: {
         mangle: {
           reserved: [ '$element', '$super', '$scope', '$uib', '$', 'jQuery', 'exports', 'require', 'angular', 'c3', 'd3' ]
         },

@@ -483,7 +483,38 @@
             <attrib name="99thPercentile" alias="Duration99" type="gauge"/>
             <attrib name="999thPercentile" alias="Duration999" type="gauge"/>
          </mbean>
-         
+
+         <!-- Twin Metrics -->
+         <mbean name="org.opennms.core.ipc.twin.publisher.sinkUpdateSent" resource-type="twinMetrics"
+                objectname="org.opennms.core.ipc.twin.publisher:name=*.sinkUpdateSent">
+            <attrib name="Count" alias="SinkUpdateSent" type="counter"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.twin.publisher.sinkUpdateSent" resource-type="twinMetrics"
+                objectname="org.opennms.core.ipc.twin.publisher:name=*.twinResponseSent">
+            <attrib name="Count" alias="TwinResponseSent" type="counter"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.twin.publisher.twinEmptyResponseSent" resource-type="twinMetrics"
+                objectname="org.opennms.core.ipc.twin.publisher:name=*.twinEmptyResponseSent">
+            <attrib name="Count" alias="TwinEmptyResponseSent" type="counter"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.twin.subscriber.requestSent" resource-type="twinMetrics"
+                objectname="org.opennms.core.ipc.twin.subscriber:name=*.requestSent">
+            <attrib name="Count" alias="RequestSent" type="counter"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.twin.subscriber.updateReceived" resource-type="twinMetrics"
+                objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateReceived">
+            <attrib name="Count" alias="UpdateReceived" type="counter"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.twin.subscriber.updateDropped" resource-type="twinMetrics"
+                objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateDropped">
+            <attrib name="Count" alias="UpdateDropped" type="counter"/>
+         </mbean>
+
          <!-- Alarmd -->
          <mbean name="drools.alarmd.facts" objectname="org.opennms.features.drools.alarmd:name=facts">
             <attrib name="Value" alias="DroolsAlarmdFacts" type="gauge"/>

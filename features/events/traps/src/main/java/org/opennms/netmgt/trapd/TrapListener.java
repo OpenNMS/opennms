@@ -103,9 +103,11 @@ public class TrapListener implements TrapNotificationListener {
 
     public void start() {
         m_twinSubscription = m_twinSubscriber.subscribe(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, (config) ->  {
-            LOG.info("Got listener config update - reloading");
-            this.close();
-            this.open(config);
+            try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Trapd.LOG4J_CATEGORY)) {
+                LOG.info("Got listener config update - reloading");
+                this.close();
+                this.open(config);
+            }
         });
     }
 

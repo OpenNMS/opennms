@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.contains;
 
 import java.util.Properties;
 
+import com.codahale.metrics.MetricRegistry;
 import io.opentracing.util.GlobalTracer;
 import org.junit.Rule;
 import org.junit.Test;
@@ -75,8 +76,8 @@ public class KafkaTwinIT extends AbstractTwinBrokerIT {
         };
         TracerRegistry tracerRegistry = Mockito.mock(TracerRegistry.class);
         Mockito.when(tracerRegistry.getTracer()).thenReturn(GlobalTracer.get());
-        LocalTwinSubscriber localTwinSubscriber = new LocalTwinSubscriberImpl(new MockMinionIdentity("Default"), tracerRegistry);
-        final var kafkaTwinPublisher = new KafkaTwinPublisher(localTwinSubscriber, config, tracerRegistry);
+        LocalTwinSubscriber localTwinSubscriber = new LocalTwinSubscriberImpl(new MockMinionIdentity("Default"), tracerRegistry, new MetricRegistry());
+        final var kafkaTwinPublisher = new KafkaTwinPublisher(localTwinSubscriber, config, tracerRegistry, new MetricRegistry());
         kafkaTwinPublisher.init();
 
         try {
@@ -97,8 +98,12 @@ public class KafkaTwinIT extends AbstractTwinBrokerIT {
         };
         TracerRegistry tracerRegistry = Mockito.mock(TracerRegistry.class);
         Mockito.when(tracerRegistry.getTracer()).thenReturn(GlobalTracer.get());
-        final var kafkaTwinSubscriber = new KafkaTwinSubscriber(identity, config, tracerRegistry);
-        kafkaTwinSubscriber.init();
+        final var kafkaTwinSubscriber = new KafkaTwinSubscriber(identity, config, tracerRegistry, new MetricRegistry());
+        try {
+            kafkaTwinSubscriber.init();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         try {
             Thread.sleep(5000);
