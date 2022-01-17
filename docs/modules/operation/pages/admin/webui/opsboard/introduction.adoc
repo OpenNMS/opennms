@@ -2,9 +2,9 @@
 [[ops-board]]
 = Operator Board
 
-In a network operation center (NOC) you can use the ops board to visualize monitoring information.
-The monitoring information for various use cases are arranged in configurable dashlets.
-To address different user groups it is possible to create multiple ops boards.
+An operator board helps network operations centers (NOCs) visualize monitoring information.
+Use configurable dashlets to arrange how to display different types of information (alarms, maps, KSC reports, and so on) on the board.
+You can also create multiple ops boards, customized for different user groups.
 
 There are two visualization components to display dashlets:
 
@@ -20,12 +20,12 @@ image::webui/opsboard/02_opsboard-concept.png[]
 == Configuration
 
 You must have administrative permissions to create and configure ops boards.
-Information set here - can choose ops board/ops panel after created.
+After you create an ops board, you can specify how to visualize the information (panel or board).
 
 . Click the gears icon in the top-right corner.
 . In the *Additional Tools* area choose *Ops Board Confirmation*.
 . Click the plus sign beside the *Overview* tab.
-. In the *New Ops Board* dialog type a name for the ops board and click *Save*.
+. In the *New Ops Board* dialog, type a name for the ops board and click *Save*.
 . Click *Add dashlet*.
 . Choose a dashlet from the drop-down list.
 . Specify additional information including the following:
@@ -38,7 +38,7 @@ Information set here - can choose ops board/ops panel after created.
  . Add a dashlet to show {page-component-title} monitoring information
  . Show a preview of the whole ops board
  . List of available dashlets
- . Priority for this dashlet in ops board rotation, lower priority means it will be displayed more often
+ . Priority for this dashlet in ops board rotation. Priority 1 means it will display more often. Priority 10 is the least often.
  . Duration in seconds for this dashlet in the ops board rotation
  . Change Priority if the dashlet is in alert state, this is optional and maybe not available in all dashlets
  . Change Duration if the dashlet is in alert state, it is optional and maybe not available in all dashlets
