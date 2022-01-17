@@ -74,7 +74,7 @@ public class SshScriptingServiceImplIT {
     private Optional<SshScriptingService.Failure> execute(String password, Map<String, String> vars, String... statements) {
         String script = List.of(statements).stream().collect(Collectors.joining("\n"));
         var ss = new SshScriptingServiceImpl();
-        return ss.execute(script, USER, password, "localhost", sshd.getPort(), vars, Duration.ofMillis(4000));
+        return ss.execute(script, USER, password, "localhost", sshd.getPort(), vars, Duration.ofMillis(10000));
     }
 
     private Optional<SshScriptingService.Failure> execute(String... statements) {

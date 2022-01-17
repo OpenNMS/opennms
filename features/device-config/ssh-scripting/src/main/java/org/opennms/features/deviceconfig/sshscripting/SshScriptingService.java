@@ -34,6 +34,18 @@ import java.util.Optional;
 
 public interface SshScriptingService {
 
+    /**
+     * Executes the given script and optionally returns a failure.
+     * <p>
+     * @param script contains statements separated by new lines
+     * @param user the ssh user
+     * @param password the ssh user's password
+     * @param host the ssh host
+     * @param port the ssh port
+     * @param vars variables that can be referenced in the script; variables are referenced by "{@code ${varname}}" expressions
+     * @param timeout used when establishing the ssh interaction and for await statements
+     * @return
+     */
     Optional<Failure> execute(
             String script,
             String user,
@@ -41,7 +53,7 @@ public interface SshScriptingService {
             String host,
             int port,
             Map<String, String> vars,
-            Duration awaitTimeout
+            Duration timeout
     );
 
     class Failure {

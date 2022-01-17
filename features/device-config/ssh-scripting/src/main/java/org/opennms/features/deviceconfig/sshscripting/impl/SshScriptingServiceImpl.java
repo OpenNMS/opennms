@@ -42,13 +42,12 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.sshd.client.SshClient;
+import org.apache.sshd.client.channel.ClientChannel;
+import org.apache.sshd.client.session.ClientSession;
 import org.opennms.features.deviceconfig.sshscripting.SshScriptingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
 
 public class SshScriptingServiceImpl implements SshScriptingService {
 
@@ -62,7 +61,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
             String host,
             int port,
             Map<String, String> vars,
-            Duration awaitTimeout
+            Duration timeout
     ) {
         return Statement.parseScript(script).fold(
                 errorLines -> Optional.of(
@@ -70,7 +69,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 ),
                 statements -> {
                     try {
-                        try (var sshInteraction = new SshInteractionImpl(user, password, host, port, vars, awaitTimeout)) {
+                        try (var sshInteraction = new SshInteractionImpl(user, password, host, port, vars, timeout)) {
                             for (var statement : statements) {
                                 try {
                                     statement.execute(sshInteraction);
@@ -101,9 +100,10 @@ public class SshScriptingServiceImpl implements SshScriptingService {
 
     private static class SshInteractionImpl implements SshInteraction, AutoCloseable {
 
-        private final JSch jsch;
-        private final Session session;
-        private final Channel channel;
+        private final SshClient sshClient;
+        private final ClientSession session;
+        private final ClientChannel channel;
+
         // stdout and stderr capture the complete output of the interaction
         private final ByteArrayOutputStream stdout, stderr;
         // awaitStdout receives the same bytes as stdout but is used to process await statements
@@ -114,7 +114,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
         private final PipedOutputStream pipeToStdin;
         private final Map<String, String> vars = new HashMap<>();
 
-        private final Duration awaitTimeout;
+        private final Duration timeout;
 
         private SshInteractionImpl(
                 String user,
@@ -122,55 +122,62 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 String host,
                 int port,
                 Map<String, String> vars,
-                Duration awaitTimeout
+                Duration timeout
         ) throws Exception {
-            var config = new java.util.Properties();
-            config.put("StrictHostKeyChecking", "no");
-            jsch = new JSch();
-            session = jsch.getSession(user, host, port);
-
-            session.setConfig(config);
-            session.setPassword(password);
-
-            session.connect();
+            sshClient = SshClient.setUpDefaultClient();
+            sshClient.start();
             try {
-
-                channel = session.openChannel("shell");
-
+                session = sshClient
+                        .connect(user, host, port)
+                        .verify(timeout)
+                        .getSession();
                 try {
-                    stdout = new ByteArrayOutputStream();
-                    stderr = new ByteArrayOutputStream();
-                    awaitStdout = new ByteArrayOutputStream();
 
-                    var teeStdout = new TeeOutputStream(stdout, awaitStdout);
-                    var stdin = new PipedInputStream();
-                    pipeToStdin = new PipedOutputStream(stdin);
-                    channel.setInputStream(stdin);
-                    channel.setOutputStream(teeStdout);
-                    channel.setExtOutputStream(stderr);
-                    channel.connect();
-                    this.vars.putAll(vars);
-                    this.vars.put("user", user);
-                    this.vars.put("password", password);
+                    session.addPasswordIdentity(password);
+                    session.auth().verify(timeout);
+
+                    channel = session.createShellChannel();
+
+                    try {
+                        stdout = new ByteArrayOutputStream();
+                        stderr = new ByteArrayOutputStream();
+                        awaitStdout = new ByteArrayOutputStream();
+
+                        var teeStdout = new TeeOutputStream(stdout, awaitStdout);
+                        var stdin = new PipedInputStream();
+                        pipeToStdin = new PipedOutputStream(stdin);
+                        channel.setIn(stdin);
+                        channel.setOut(teeStdout);
+                        channel.setErr(stderr);
+                        channel.open().verify(timeout);
+                        this.vars.putAll(vars);
+                        this.vars.put("user", user);
+                        this.vars.put("password", password);
+                    } catch (Exception e) {
+                        channel.close();
+                        throw e;
+                    }
                 } catch (Exception e) {
-                    channel.disconnect();
+                    session.close();
                     throw e;
                 }
-
             } catch (Exception e) {
-                session.disconnect();
+                sshClient.stop();
                 throw e;
             }
-
-            this.awaitTimeout = awaitTimeout;
+            this.timeout = timeout;
         }
 
         @Override
         public void close() throws Exception {
             try {
-                channel.disconnect();
+                try {
+                    channel.close();
+                } finally {
+                    session.close();
+                }
             } finally {
-                session.disconnect();
+                sshClient.stop();
             }
         }
 
@@ -183,7 +190,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
         @Override
         public void await(String string) throws Exception {
             var search = string.getBytes(StandardCharsets.UTF_8);
-            var awaitUntil = Instant.now().plus(awaitTimeout);
+            var awaitUntil = Instant.now().plus(timeout);
             while (Instant.now().isBefore(awaitUntil)) {
                 synchronized (awaitStdout) {
                     if (matchAndConsume(awaitStdout, search)) {

@@ -31,14 +31,9 @@
     </build>
 
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>com.jcraft</groupId>-->
-<!--            <artifactId>jsch</artifactId>-->
-<!--        </dependency>-->
         <dependency>
-            <groupId>com.github.mwiede</groupId>
-            <artifactId>jsch</artifactId>
-            <version>0.1.72</version>
+          <groupId>org.apache.sshd</groupId>
+          <artifactId>sshd-core</artifactId>
         </dependency>
         <dependency>
             <groupId>io.vavr</groupId>
@@ -62,11 +57,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sshd</groupId>
-            <artifactId>sshd-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
