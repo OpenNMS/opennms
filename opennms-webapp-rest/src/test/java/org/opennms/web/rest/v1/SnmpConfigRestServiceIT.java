@@ -35,9 +35,11 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.bind.JAXBContext;
 
+import com.google.common.io.Resources;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -46,11 +48,14 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.web.rest.v1.SnmpConfigRestService;
 import org.opennms.web.svclayer.model.SnmpInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -73,6 +78,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml",
 		"classpath:/applicationContext-rest-test.xml"
+
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -88,6 +94,9 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
 	private JAXBContext m_jaxbContext;
 	private File m_snmpConfigFile;
+
+	@Autowired
+	SnmpPeerFactory snmpPeerFactory;
 
 	@Override
 	protected void beforeServletStart() throws Exception {
@@ -120,8 +129,11 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 		m_snmpConfigFile = File.createTempFile("snmp-config-", ".xml");
 		m_snmpConfigFile.deleteOnExit();
 		FileUtils.writeStringToFile(m_snmpConfigFile, snmpConfigContent);
-		SnmpPeerFactory.setFile(m_snmpConfigFile);
-		SnmpPeerFactory.init();
+		JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+		String configJson = converter.xmlToJson(snmpConfigContent);
+		SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(configJson, SnmpConfig.class);
+		snmpPeerFactory.updateConfig(snmpConfig);
+		snmpPeerFactory.reload();
 	}
 
 	/**
@@ -391,7 +403,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 	}
 
 	private SnmpInfo createSnmpInfoWithDefaultsForSnmpV3(final String ipAddress) {
-		SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ipAddress));
+		SnmpAgentConfig agentConfig = snmpPeerFactory.getAgentConfig(InetAddressUtils.addr(ipAddress));
 		return new SnmpInfo(agentConfig);
 	}
 	
