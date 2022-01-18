@@ -143,16 +143,17 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
      * {@inheritDoc}
      */
     @Override
-    public void registerConfiguration(final String configName, final String configId, JsonAsString configObject)
+    public void registerConfiguration(final String configName, String configId, JsonAsString configObject)
             throws IOException {
-        Objects.requireNonNull(configId);
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configObject);
         Optional<ConfigDefinition> configDefinition = this.getRegisteredConfigDefinition(configName);
         if (configDefinition.isEmpty()) {
             throw new IllegalArgumentException(String.format("Unknown service with id=%s.", configName));
         }
-
+        if (configId == null) {
+            configId = DEFAULT_CONFIG_ID;
+        }
         final Set<String> configIds = this.getConfigIds(configName);
         if (configIds.contains(configId)) {
             throw new IllegalArgumentException(String.format(
