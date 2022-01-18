@@ -29,6 +29,8 @@
 package org.opennms.netmgt.config.notifications;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.opennms.features.config.util.json.YesNoDeserializer;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
 import java.io.Serializable;
@@ -44,6 +46,7 @@ public class Notification implements Serializable {
 
     private String status;
 
+    @JsonDeserialize(using = YesNoDeserializer.class)
     private Boolean writeable;
 
     private String uei;
