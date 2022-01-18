@@ -13,7 +13,10 @@
     <artifactId>org.opennms.features.device-config</artifactId>
     <packaging>pom</packaging>
     <name>OpenNMS :: Features :: Device Config</name>
+
     <modules>
         <module>persistence</module>
+        <module>ssh-scripting</module>
     </modules>
+
 </project>
