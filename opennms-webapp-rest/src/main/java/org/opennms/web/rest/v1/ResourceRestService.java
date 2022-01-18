@@ -32,6 +32,8 @@ import static org.opennms.web.svclayer.support.DefaultGraphResultsService.RESOUR
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -46,9 +48,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
@@ -79,6 +83,9 @@ public class ResourceRestService extends OnmsRestService {
 
     @Autowired
     private ResourceDao m_resourceDao;
+
+    @Autowired
+    private FilterDao m_filterDao;
 
     @Autowired
     private JsonStore m_jsonStore;
@@ -141,6 +148,117 @@ public class ResourceRestService extends OnmsRestService {
         return ResourceDTO.fromResource(resource, depth);
     }
 
+    /**
+     * Selects nodes and parts of there resource information.
+     * <ul>
+     *   <li>If no {@code nodeSubresources} criteria is given then all subresources are returned but their nested content is not included.</li>
+     *   <li>If no {@code stringProperties} criteria is given then all string properties are included.</li>
+     * </ul>
+     *
+     * @param nodes Comma separated list of node ids; both, database ids and foreign ids are supported
+     * @param filterRules Comma separated list of rule names for selecting nodes
+     * @param nodeSubresources Comma separated list of subresource names (the part after the dot)
+     * @param stringProperties Comma separated list of property names
+     * @return
+     */
+    @GET
+    @Path("select")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly=true)
+    public List<ResourceDTO> select(
+            @DefaultValue("") @QueryParam("nodes") String nodes,
+            @DefaultValue("") @QueryParam("filterRules") String filterRules,
+            @DefaultValue("") @QueryParam("nodeSubresources") String nodeSubresources,
+            @DefaultValue("") @QueryParam("stringProperties") String stringProperties
+    ) {
+        var allNodeIds = Stream.of(nodes.split(","))
+                .map(String::trim)
+                .filter(StringUtils::isNoneBlank)
+                .collect(Collectors.toSet());
+
+        var ruleNodeIds = Stream.of(filterRules.split(","))
+                .map(String::trim)
+                .filter(StringUtils::isNoneBlank)
+                .flatMap(s -> m_filterDao.getNodeMap(s).keySet().stream().map(String::valueOf))
+                .collect(Collectors.toSet());
+
+        allNodeIds.addAll(ruleNodeIds);
+
+        var subresourceNames = Stream.of(nodeSubresources.split(","))
+                .map(String::trim)
+                .filter(StringUtils::isNoneBlank)
+                .distinct()
+                .collect(Collectors.toList());
+
+        var stringPropertyNames = Stream.of(stringProperties.split(","))
+                .map(String::trim)
+                .filter(StringUtils::isNoneBlank)
+                .collect(Collectors.toSet());
+
+        var resources = allNodeIds.stream().sorted()
+                .map(nodeId -> {
+                    if (nodeId.contains(":")) {
+                        var node = m_nodeDao.get(nodeId);
+                        return node != null ? m_resourceDao.getResourceForNode(node) : null;
+                    } else {
+                        return m_resourceDao.getResourceById(ResourceId.get("node", nodeId));
+                    }
+                })
+                .filter(r -> r != null)
+                .map(r -> ResourceDTO.fromResource(r, -1))
+                .map(nodeResource -> {
+                    nodeResource.setRrdGraphAttributes(null);
+                    nodeResource.setStringPropertyAttributes(null);
+                    nodeResource.setExternalValueAttributes(null);
+                    if (nodeResource.getChildren() == null) {
+                        return nodeResource;
+                    }
+                    // prune the node resource
+                    // -> include only selected parts if selections are available
+                    if (subresourceNames.isEmpty()) {
+                        // no subresources are selected
+                        // -> include all subresources but strip their content
+                        // -> information about children but not about their content is required for browsing
+                        for (var c : nodeResource.getChildren()) {
+                            c.setChildren(null);
+                            c.setRrdGraphAttributes(null);
+                            c.setStringPropertyAttributes(null);
+                            c.setExternalValueAttributes(null);
+                        }
+                    } else {
+                        // include only those children that match any of the given subresource names
+                        for (var subresourceIterator = nodeResource.getChildren().iterator(); subresourceIterator.hasNext(); ) {
+                            var subresource = subresourceIterator.next();
+                            if (subresourceNames.stream().anyMatch(name -> subresource.getId().endsWith("." + name))) {
+                                // this subresource is selected
+                                // -> we are not interested in its children, rrd graph attributes, and external value attributes
+                                subresource.setChildren(null);
+                                subresource.setRrdGraphAttributes(null);
+                                subresource.setExternalValueAttributes(null);
+                                // check if specific string properties or external values are selected
+                                // -> in that case only include these ones
+                                // -> otherwise include all
+                                if (!stringPropertyNames.isEmpty()) {
+                                    // -> include only selected stringProperties and externalValues
+                                    for (var iter = subresource.getStringPropertyAttributes().keySet().iterator(); iter.hasNext(); ) {
+                                        var s = iter.next();
+                                        if (!stringPropertyNames.contains(s)) {
+                                            iter.remove();
+                                        }
+                                    }
+                                }
+                            } else {
+                                // subresource is not selected
+                                // -> remove it from result
+                                subresourceIterator.remove();
+                            }
+                        }
+                    }
+                    return nodeResource;
+                });
+
+        return resources.collect(Collectors.toList());
+    }
 
     @POST
     @Path("generateId")

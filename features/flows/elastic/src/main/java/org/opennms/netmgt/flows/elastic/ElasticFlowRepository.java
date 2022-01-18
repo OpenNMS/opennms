@@ -38,6 +38,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 import io.opentracing.Scope;
 import io.opentracing.Tracer;
@@ -76,6 +77,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -90,6 +95,13 @@ public class ElasticFlowRepository implements FlowRepository {
             .withRateLimit(LOG)
             .maxRate(5).every(Duration.ofSeconds(30))
             .build();
+
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("initialize-marker-cache")
+            .build();
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
+
+    private final CountDownLatch markerCacheSyncDone = new CountDownLatch(1);
 
     private static final String INDEX_NAME = "netflow";
 
@@ -205,6 +217,10 @@ public class ElasticFlowRepository implements FlowRepository {
 
         this.startTimer();
 
+        executorService.execute(this::initializeMarkerCache);
+    }
+
+    private void initializeMarkerCache() {
         this.sessionUtils.withTransaction(() -> {
             for (final OnmsNode node : this.nodeDao.findAllHavingIngressFlows()) {
                 this.markerCache.get(Direction.INGRESS).put(node.getId(),
@@ -219,8 +235,17 @@ public class ElasticFlowRepository implements FlowRepository {
                                 .map(OnmsSnmpInterface::getIfIndex)
                                 .collect(Collectors.toCollection(Sets::newConcurrentHashSet)));
             }
+            markerCacheSyncDone.countDown();
             return null;
         });
+    }
+
+    private void waitForMarkerCacheSync() {
+        try {
+            markerCacheSyncDone.await();
+        } catch (InterruptedException e) {
+            LOG.warn("Marker Cache sync wait was interrupted", e);
+        }
     }
 
     public ElasticFlowRepository(final MetricRegistry metricRegistry, final JestClient jestClient, final IndexStrategy indexStrategy,
@@ -287,7 +312,7 @@ public class ElasticFlowRepository implements FlowRepository {
             LOG.info("Received empty flows from {} @ {}. Nothing to do.", source.getSourceAddress(), source.getLocation());
             return;
         }
-
+        waitForMarkerCacheSync();
         LOG.debug("Enriching {} flow documents.", flows.size());
         final List<FlowDocument> flowDocuments;
         try (final Timer.Context ctx = logEnrichementTimer.time()) {
@@ -432,7 +457,8 @@ public class ElasticFlowRepository implements FlowRepository {
 
     public void stop() throws FlowException {
         stopTimer();
-
+        markerCacheSyncDone.countDown();
+        executorService.shutdownNow();
         for(final FlowBulk flowBulk : flowBulks.values()) {
             persistBulk(flowBulk.documents);
         }
