@@ -1010,7 +1010,7 @@
     </feature>
     <feature name="opennms-telemetry-jti" version="${project.version}" description="OpenNMS :: Telemetry :: JTI">
         <feature>opennms-telemetry-collection</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf2Version}</bundle>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.jti/org.opennms.features.telemetry.protocols.jti.adapter/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-nxos" version="${project.version}" description="OpenNMS :: Telemetry :: NX-OS">
