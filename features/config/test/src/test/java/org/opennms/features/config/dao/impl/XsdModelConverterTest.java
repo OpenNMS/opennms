@@ -39,7 +39,9 @@ import org.opennms.features.config.dao.impl.util.XsdModelConverter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class XsdModelConverterTest {
 
@@ -66,5 +68,21 @@ public class XsdModelConverterTest {
         Optional<ConfigItem> invokeItem = serviceItem.getChild("invoke");
         Assert.assertArrayEquals(new String[]{"start", "stop", "status"},
                 invokeItem.get().getChildren().get(0).getChild("at").get().getEnumValues().toArray());
+    }
+
+    @Test
+    public void testExclusive() throws IOException {
+        String xsdStr = Resources.toString(XsdHelper.getSchemaPath("fake-vacuumd-configuration.xsd"), StandardCharsets.UTF_8);
+        XsdModelConverter xsdConverter = new XsdModelConverter(xsdStr);
+        ConfigItem rootItem = xsdConverter.convert("VacuumdConfiguration");
+
+        List<ConfigItem> itemList = rootItem.getChildren().stream().filter(item -> "period-exc".equals(item.getName()))
+                .collect(Collectors.toList());
+        Assert.assertEquals("Should have one period-exc", 1, itemList.size());
+        ConfigItem excludeItem = itemList.get(0);
+        Assert.assertEquals("Should have correct min", 1L, (long) excludeItem.getMin());
+        Assert.assertTrue("Should exclude min", excludeItem.isMinExclusive());
+        Assert.assertEquals("Should have correct max", 100L, (long) excludeItem.getMax());
+        Assert.assertTrue("Should exclude max", excludeItem.isMaxExclusive());
     }
 }

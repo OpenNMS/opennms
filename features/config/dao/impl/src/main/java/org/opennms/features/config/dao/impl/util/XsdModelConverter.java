@@ -241,18 +241,25 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
             }
         }
 
-        // openapi do not support exclusive
         List<XmlSchemaRestriction> maxExclusiveFacets = facets.get(XmlSchemaRestriction.Type.EXCLUSIVE_MAX);
         if ((maxExclusiveFacets != null) && !maxExclusiveFacets.isEmpty()) {
-            throw new SchemaConversionException("maxExclusive are not supported!", null);
+            XmlSchemaRestriction maxExclusiveRestriction = maxExclusiveFacets.get(0);
+            Object maxExclusiveVal = maxExclusiveRestriction.getValue();
+            if (maxExclusiveVal instanceof String) {
+                item.setMaxExclusive(true);
+                item.setMax(Long.valueOf((String) maxExclusiveVal));
+            }
         }
 
         List<XmlSchemaRestriction> minExclusiveFacets = facets.get(XmlSchemaRestriction.Type.EXCLUSIVE_MIN);
         if ((minExclusiveFacets != null) && !minExclusiveFacets.isEmpty()) {
-            throw new SchemaConversionException("minExclusive are not supported!", null);
+            XmlSchemaRestriction minExclusiveRestriction = minExclusiveFacets.get(0);
+            Object minExclusiveVal = minExclusiveRestriction.getValue();
+            if (minExclusiveVal instanceof String) {
+                item.setMinExclusive(true);
+                item.setMin(Long.valueOf((String) minExclusiveVal));
+            }
         }
-
-
     }
 
     private void setRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {

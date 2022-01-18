@@ -46,6 +46,8 @@ public class ConfigItem {
     private List<ConfigItem> children = new LinkedList<>();
     private Long min = null;
     private Long max = null;
+    private boolean maxExclusive = false;
+    private boolean minExclusive = false;
     private Long multipleOf = null;
     private String pattern;
     private Object defaultValue;
@@ -157,6 +159,22 @@ public class ConfigItem {
 
     public void setMax(Long max) {
         this.max = max;
+    }
+
+    public boolean isMaxExclusive() {
+        return maxExclusive;
+    }
+
+    public void setMaxExclusive(boolean maxExclusive) {
+        this.maxExclusive = maxExclusive;
+    }
+
+    public boolean isMinExclusive() {
+        return minExclusive;
+    }
+
+    public void setMinExclusive(boolean minExclusive) {
+        this.minExclusive = minExclusive;
     }
 
     public Long getMultipleOf() {

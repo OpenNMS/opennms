@@ -446,6 +446,12 @@ public class ConfigSwaggerConverter {
             else
                 schema.setMaximum(BigDecimal.valueOf(item.getMax()));
         }
+        if (item.isMinExclusive()) {
+            schema.setExclusiveMinimum(true);
+        }
+        if (item.isMaxExclusive()) {
+            schema.setExclusiveMaximum(true);
+        }
         if (item.getDefaultValue() != null) {
             schema.setDefault(item.getDefaultValue());
         }
