@@ -65,83 +65,6 @@ export interface LocationsApiResponse extends ApiResponse {
   location: MonitoringLocation[]
 }
 
-export interface ResourcesApiResponse extends ApiResponse {
-  resource: Resource[]
-}
-
-export interface ResourceDefinitionsApiResponse extends ApiResponse {
-  name: string[]
-}
-
-export interface Resource {
-  children?: ResourcesApiResponse
-  externalValueAttributes: Record<string, unknown>
-  id: string
-  label: string
-  link: string
-  name: string
-  parentId: string | null
-  rrdGraphAttributes: Record<string, unknown>
-  stringPropertyAttributes: Record<string, unknown>
-  typeLabel: string
-}
-
-export interface PreFabGraph {
-  columns: string[]
-  command: string
-  description: string | null
-  externalValues: string[]
-  height: number | null
-  name: string
-  order: number
-  propertiesValues: string[]
-  suppress: string[]
-  title: string
-  types: string[]
-  width: number | null
-}
-
-export interface Metric {
-  aggregation: string
-  attribute: string
-  label: string
-  resourceId: string
-  transient: true | false
-}
-
-export interface GraphMetricsPayload {
-  end: number
-  start: number
-  step: number
-  source: Metric[]
-}
-
-export interface GraphMetricsResponse {
-  columns: [{ values: number[] }]
-  constants: number[]
-  end: number
-  labels: string[]
-  metadata: {
-    nodes: {
-      id: number
-      label: string
-      'foreign-source': string
-      'foreign-id': string
-    }[]
-    resources: {
-      id: string
-      label: string
-      name: string
-      'node-id': number
-      'parent-id': string
-    }[]
-  }
-  start: number
-  step: number
-  timestamps: number[]
-  formattedTimestamps: string[]
-}
-
 export interface Node {
   location: string
   type: string
@@ -467,4 +390,122 @@ export interface StartEndTime {
   startTime: string | number
   endTime: string | number
   format: string
+}
+
+export interface ResourceDefinitionsApiResponse extends ApiResponse {
+  name: string[]
+}
+
+export interface ResourcesApiResponse extends ApiResponse {
+  resource: Resource[]
+}
+
+export interface Resource {
+  children?: ResourcesApiResponse
+  externalValueAttributes: Record<string, unknown>
+  id: string
+  label: string
+  link: string
+  name: string
+  parentId: string | null
+  rrdGraphAttributes: Record<string, unknown>
+  stringPropertyAttributes: Record<string, unknown>
+  typeLabel: string
+}
+
+export interface PreFabGraph {
+  columns: string[]
+  command: string
+  description: string | null
+  externalValues: string[]
+  height: number | null
+  name: string
+  order: number
+  propertiesValues: string[]
+  suppress: string[]
+  title: string
+  types: string[]
+  width: number | null
+}
+
+export interface Metric {
+  aggregation: string
+  attribute: string
+  label?: string
+  name?: string
+  datasource?: string
+  resourceId: string
+  transient: true | false
+}
+
+export interface GraphMetricsPayload {
+  end: number
+  start: number
+  step: number
+  source: Metric[]
+}
+
+export interface GraphMetricsResponse {
+  columns: [{ values: number[] }]
+  constants: number[]
+  end: number
+  labels: string[]
+  metadata: {
+    nodes: {
+      id: number
+      label: string
+      'foreign-source': string
+      'foreign-id': string
+    }[]
+    resources: {
+      id: string
+      label: string
+      name: string
+      'node-id': number
+      'parent-id': string
+    }[]
+  }
+  start: number
+  step: number
+  timestamps: number[]
+  formattedTimestamps: string[]
+  formattedLabels: string[]
+}
+
+export interface ConvertedGraphData {
+  metrics: Metric[]
+  printStatements: PrintStatement[]
+  series: Series[]
+  properties: Record<string, unknown>
+  name: string
+  values: ConvertedGraphValue[]
+  verticalLabel: string
+}
+
+export interface PrintStatement {
+  format: string
+  header?: string
+  text?: string
+  metric: string
+  value: number | typeof NaN
+}
+
+export interface Series {
+  color: string
+  metric: string
+  name: string
+  type: string
+  title: string
+}
+
+export interface ConvertedGraphValue {
+  name: string
+  expression: Expression
+}
+
+export interface Expression {
+  argument: string | typeof NaN
+  consolidate: () => any
+  functionName: string
+  metricName: string
 }

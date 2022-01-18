@@ -1,7 +1,7 @@
 import { GraphMetricsResponse, PreFabGraph } from '@/types'
 
 export interface State {
-  definitions: { id: string, definitions: string[], label: string }[]
+  definitions: { id: string; definitions: string[]; label: string }[]
   definitionDataObjects: PreFabGraph[]
   graphMetrics: GraphMetricsResponse[]
   definitionsList: string[]

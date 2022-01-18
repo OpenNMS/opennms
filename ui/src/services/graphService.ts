@@ -1,5 +1,12 @@
 import { v2, rest } from './axiosInstances'
-import { QueryParameters, GraphNodesApiResponse, ResourceDefinitionsApiResponse, PreFabGraph, GraphMetricsPayload, GraphMetricsResponse } from '@/types'
+import {
+  QueryParameters,
+  GraphNodesApiResponse,
+  ResourceDefinitionsApiResponse,
+  PreFabGraph,
+  GraphMetricsPayload,
+  GraphMetricsResponse
+} from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
 
 const endpoint = '/graphs/nodes/nodes'

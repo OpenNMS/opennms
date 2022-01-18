@@ -13,7 +13,7 @@ import { useStore } from 'vuex'
 import { RrdGraphConverter } from 'backshift'
 import { LineChart } from 'vue-chart-3'
 import { ChartOptions, TitleOptions, ChartData } from 'chart.js'
-import { formatXLabels } from './utils'
+import { formatTimestamps, getFormattedLegendStatements } from './utils'
 
 interface SeriesObject {
   color: string
@@ -83,17 +83,6 @@ const options = computed<ChartOptions>(() => ({
   }
 }))
 
-const getLabels = (index: number) => {
-  const label = graphData.value.labels[index]
-  for (const item of series.value) {
-    if (item.metric === label) {
-      if (item.name) {
-        return item.name
-      }
-    }
-  }
-}
-
 const getColors = (index: number) => {
   const colors = []
   const label = graphData.value.labels[index]
@@ -129,7 +118,7 @@ const dataSets = computed(() => {
     if (isHidden(index)) continue
 
     sets.push({
-      label: getLabels(index),
+      label: graphData.value.formattedLabels[index],
       data: column.values,
       backgroundColor: getColors(index)
     })
@@ -168,11 +157,10 @@ const render = async () => {
       resourceId: props.resourceId
     })
 
-    console.log(convertedGraphData)
     series.value = convertedGraphData.series
     convertedGraphDataRef.value = convertedGraphData
 
-    const metrics: Metric[] = convertedGraphData.metrics.map((metric: any): Metric => ({
+    const metrics: Metric[] = convertedGraphData.metrics.map((metric: Metric): Metric => ({
       aggregation: metric.aggregation,
       attribute: metric.attribute,
       label: metric.name,
@@ -182,8 +170,10 @@ const render = async () => {
 
     const payload = getGraphMetricsPayload(metrics)
     const graphMetrics = await store.dispatch('graphModule/getGraphMetrics', payload)
-    const formattedMetrics = formatXLabels(graphMetrics, props.time.format)
-    graphData.value = formattedMetrics
+
+    let formattedGraphData = formatTimestamps(graphMetrics, props.time.format)
+    formattedGraphData = getFormattedLegendStatements(graphMetrics, convertedGraphData)
+    graphData.value = formattedGraphData
 
   } catch (error) {
     console.log('Could not render graph for ', props.definition)

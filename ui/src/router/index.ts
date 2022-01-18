@@ -80,7 +80,7 @@ const router = createRouter({
           path: 'graphs',
           name: 'Graphs',
           component: () => import('@/components/Resources/Graphs.vue')
-        }       
+        }
       ]
     },
     {
