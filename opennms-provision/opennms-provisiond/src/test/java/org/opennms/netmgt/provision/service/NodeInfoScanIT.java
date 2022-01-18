@@ -142,8 +142,12 @@ public class NodeInfoScanIT {
         URL url =  getClass().getResource("/snmp-config1.xml");
         try (InputStream configStream = url.openStream()) {
             // Make default scan fail by setting wrong read community.
-            snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(new SnmpConfig());
-            SnmpPeerFactory.setFile(new File(url.getFile()));
+            String configXml = Resources.toString(url, StandardCharsets.UTF_8);
+            JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+            String configJson = converter.xmlToJson(configXml);
+            SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(configJson, SnmpConfig.class);
+            snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(snmpConfig);
+            snmpPeerFactory.setFile(new File(url.getFile()));
             initializeProvisionService();
             FilterDao filterDao = Mockito.mock(FilterDao.class);
             when(filterDao.isValid(Mockito.anyString(), Mockito.contains("IPLIKE"))).thenReturn(true);
@@ -172,7 +176,7 @@ public class NodeInfoScanIT {
             SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(configJson, SnmpConfig.class);
             // Make default scan fail by setting wrong read community.
             snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension2(snmpConfig);
-            SnmpPeerFactory.setFile(new File(url.getFile()));
+            snmpPeerFactory.setFile(new File(url.getFile()));
             initializeProvisionService();
             FilterDao filterDao = Mockito.mock(FilterDao.class);
             when(filterDao.isValid(Mockito.anyString(), Mockito.contains("IPLIKE"))).thenReturn(true);
@@ -217,7 +221,7 @@ public class NodeInfoScanIT {
     static class ProxySnmpAgentConfigFactoryExtension extends ProxySnmpAgentConfigFactory {
 
         ProxySnmpAgentConfigFactoryExtension(SnmpConfig config) throws IOException {
-            super();
+            super(config);
         }
 
         @Override
@@ -234,7 +238,7 @@ public class NodeInfoScanIT {
     class ProxySnmpAgentConfigFactoryExtension2 extends ProxySnmpAgentConfigFactory {
 
         ProxySnmpAgentConfigFactoryExtension2(SnmpConfig config) throws IOException {
-            super();
+            super(config);
         }
 
         @Override
