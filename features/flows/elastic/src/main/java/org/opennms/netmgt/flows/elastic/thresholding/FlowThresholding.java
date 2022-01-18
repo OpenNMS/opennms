@@ -126,6 +126,7 @@ public class FlowThresholding implements Closeable {
         if (timer != null) {
             timer.cancel();
             timer = null;
+            LOG.debug("Timer task stopped.");
         }
 
         this.stepSizeMs = stepSizeMs;
@@ -140,7 +141,8 @@ public class FlowThresholding implements Closeable {
             public void run() {
                 runTimerTask();
             }
-        }, stepSizeMs, stepSizeMs);
+        }, this.stepSizeMs, this.stepSizeMs);
+        LOG.debug("Timer task re-scheduled (stepSizeMs={}ms, idleTimeoutMs={}ms).", this.stepSizeMs, this.idleTimeoutMs);
     }
 
     public long getIdleTimeoutMs() {
@@ -157,9 +159,13 @@ public class FlowThresholding implements Closeable {
 
         final List<ExporterKey> idleSessions = Lists.newArrayList();
 
+        LOG.debug("Running Timer task for {} session(s)...", this.sessions.entrySet().size());
+
         for (final Map.Entry<ExporterKey, Session> entry : this.sessions.entrySet()) {
             final var exporterKey = entry.getKey();
             final var session = entry.getValue();
+
+            LOG.debug("Processing session={} for exporterKey={}...", session, exporterKey);
 
             // Check whether session is idle and mark it for removal
             if (session.lastUpdate.isBefore(Instant.now().minus(this.idleTimeoutMs, ChronoUnit.MILLIS))) {
@@ -200,10 +206,22 @@ public class FlowThresholding implements Closeable {
                             .build();
 
                     if (session.thresholding) {
+                        LOG.trace("Checking thresholds for collection-set value={}, ifName={}, application={}, ds={}",
+                                application.getValue().get(),
+                                ifName,
+                                application.getKey().application,
+                                application.getKey().direction == Direction.INGRESS ? "bytesIn" : "bytesOut");
+
                         session.thresholdingSession.accept(collectionSet);
                     }
 
                     if (session.dataCollection) {
+                        LOG.trace("Persisting data for collection-set value={}, ifName={}, application={}, ds={}",
+                                application.getValue().get(),
+                                ifName,
+                                application.getKey().application,
+                                application.getKey().direction == Direction.INGRESS ? "bytesIn" : "bytesOut");
+
                         final var repository = new RrdRepository();
                         repository.setStep(session.packageDefinition.getRrd().getStep());
                         repository.setHeartBeat(repository.getStep() * 2);
@@ -215,6 +233,7 @@ public class FlowThresholding implements Closeable {
                                                                                   false,
                                                                                   false,
                                                                                   true));
+
                     }
                 } catch (ThresholdInitializationException e) {
                     LOG.warn("Error initializing thresholding session", e);
@@ -224,7 +243,7 @@ public class FlowThresholding implements Closeable {
 
         // Cleanup idle sessions
         for (ExporterKey exporterKey : idleSessions) {
-            LOG.debug("Dropping session for {}", exporterKey);
+            LOG.debug("Dropping session for exporterKey={}", exporterKey);
             this.sessions.remove(exporterKey);
         }
     }
@@ -253,7 +272,7 @@ public class FlowThresholding implements Closeable {
                 final var exporterKey = new ExporterKey(document.getNodeExporter().getInterfaceId());
 
                 final var session = this.sessions.computeIfAbsent(exporterKey, key -> {
-                    LOG.debug("Accepting session for {}", exporterKey);
+                    LOG.debug("Accepting session for exporterKey={}", exporterKey);
 
                     final OnmsIpInterface iface = this.ipInterfaceDao.get(exporterKey.interfaceId);
 
@@ -346,6 +365,16 @@ public class FlowThresholding implements Closeable {
 
         public Instant getLastUpdate() {
             return this.lastUpdate;
+        }
+
+        @Override
+        public String toString() {
+            return "Session{" +
+                    "thresholding=" + thresholding +
+                    ", dataCollection=" + dataCollection +
+                    ", lastUpdate=" + lastUpdate +
+                    ", sequenceNumber=" + sequenceNumber +
+                    '}';
         }
     }
 

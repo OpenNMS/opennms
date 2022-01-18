@@ -53,4 +53,11 @@ public class ExporterKey {
     public int hashCode() {
         return Objects.hash(this.interfaceId);
     }
+
+    @Override
+    public String toString() {
+        return "ExporterKey{" +
+                "interfaceId=" + interfaceId +
+                '}';
+    }
 }
