@@ -16,6 +16,8 @@
 
     <modules>
         <module>persistence</module>
+        <module>tftp</module>
+        <module>shell</module>
         <module>ssh-scripting</module>
     </modules>
 

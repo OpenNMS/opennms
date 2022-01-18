@@ -180,6 +180,6 @@
     <module>karaf-health</module>
     <module>perspectivepoller</module>
     <module>openconfig</module>
-      <module>device-config</module>
+    <module>device-config</module>
   </modules>
 </project>

@@ -73,6 +73,7 @@
                                 <feature>minion-health-check</feature>
                                 <feature>minion-api-layer</feature>
                                 <feature>minion-plugin-sample</feature>
+                                <feature>opennms-deviceconfig</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -453,6 +454,16 @@
         <dependency>
             <groupId>org.opennms.features.api-layer</groupId>
             <artifactId>org.opennms.features.api-layer.minion</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.device-config</groupId>
+            <artifactId>org.opennms.features.device-config.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.device-config</groupId>
+            <artifactId>org.opennms.features.device-config.tftp</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
