@@ -1,0 +1,92 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *     http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.features.deviceconfig.rest.api;
+
+import java.util.Date;
+
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
+
+public class DeviceConfigDto {
+
+    private final long id;
+    private final int ipInterfaceId;
+    private final int version;
+    private final byte[] config;
+    private final String encoding;
+    private final String deviceType;
+    private final Date createdTime;
+
+    public DeviceConfigDto(long id, int ipInterfaceId, int version, byte[] config, String encoding, String deviceType, Date createdTime) {
+        this.id = id;
+        this.ipInterfaceId = ipInterfaceId;
+        this.version = version;
+        this.config = config;
+        this.encoding = encoding;
+        this.deviceType = deviceType;
+        this.createdTime = createdTime;
+    }
+
+    public DeviceConfigDto(DeviceConfig deviceConfig) {
+        this.id = deviceConfig.getId();
+        this.ipInterfaceId = deviceConfig.getIpInterface().getId();
+        this.version = deviceConfig.getVersion();
+        this.config = deviceConfig.getConfig();
+        this.encoding = deviceConfig.getEncoding();
+        this.deviceType = deviceConfig.getDeviceType();
+        this.createdTime = deviceConfig.getCreatedTime();
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public int getIpInterfaceId() {
+        return ipInterfaceId;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public byte[] getConfig() {
+        return config;
+    }
+
+    public String getEncoding() {
+        return encoding;
+    }
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+}
