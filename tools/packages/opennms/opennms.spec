@@ -208,8 +208,6 @@ Requires(pre):	%{name}-plugin-protocol-nsclient
 Requires:	%{name}-plugin-protocol-nsclient
 Requires(pre):	%{name}-plugin-protocol-radius
 Requires:	%{name}-plugin-protocol-radius
-Requires(pre):	%{name}-plugin-protocol-xmp
-Requires:	%{name}-plugin-protocol-xmp
 Requires(pre):	%{name}-plugin-collector-vtdxml-handler
 Requires:	%{name}-plugin-collector-vtdxml-handler
 
@@ -420,19 +418,6 @@ monitor, and Spring Security authorization mechanism for RADIUS.
 %{extrainfo2}
 
 
-%package plugin-protocol-xmp
-Summary:	XMP Poller
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-protocol-xmp
-The XMP protocol plugin provides a capsd plugin and poller monitor for XMP.
-
-%{extrainfo}
-%{extrainfo2}
-
-
 %package plugin-collector-juniper-tca
 Summary:	Juniper TCA Collector
 Group:		Applications/System
@@ -638,8 +623,6 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v 'wsman-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v '/users.xml' | \
-	grep -v 'xmp-config.xml' | \
-	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
 	sort > %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/etc ! -type d -name \*.cfg | \
@@ -663,8 +646,6 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'wsman-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
-	grep -v 'xmp-config.xml' | \
-	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/bin ! -type d | \
@@ -676,8 +657,6 @@ find %{buildroot}%{sharedir} ! -type d | \
 	grep -v 'etc-pristine' | \
 	grep -v 'nsclient-config.xsd' | \
 	grep -v 'nsclient-datacollection.xsd' | \
-	grep -v 'xmp-config.xsd' | \
-	grep -v 'xmp-datacollection-config.xsd' | \
 	grep -v 'tca-datacollection-config.xml' | \
 	grep -v 'juniper-tca' | \
 	sort >> %{_tmppath}/files.main
@@ -695,11 +674,9 @@ find %{buildroot}%{instprefix}/lib ! -type d | \
 	grep -v 'org.opennms.protocols.cifs' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
-	grep -v 'org.opennms.protocols.xmp' | \
 	grep -v 'opennms-vtdxml-collector-handler' | \
 	grep -v 'provisioning-adapter' | \
 	grep -v 'vtd-xml' | \
-	grep -v 'xmp' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/system ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
@@ -859,14 +836,6 @@ rm -rf %{buildroot}
 %defattr(664 opennms opennms 775)
 %{instprefix}/lib/*jradius-*.jar
 %{instprefix}/lib/org.opennms.protocols.radius*.jar
-
-%files plugin-protocol-xmp
-%defattr(664 opennms opennms 775)
-%config(noreplace) %{instprefix}/etc/xmp*.xml
-%{instprefix}/lib/org.opennms.protocols.xmp-*.jar
-%{instprefix}/lib/xmp-*.jar
-%{sharedir}/etc-pristine/xmp*.xml
-%{sharedir}/xsds/xmp*.xsd
 
 %files plugin-collector-juniper-tca
 %defattr(664 opennms opennms 775)
@@ -1074,9 +1043,6 @@ fi
 
 %post plugin-protocol-radius
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-protocol-radius"
-
-%post plugin-protocol-xmp
-"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-protocol-xmp"
 
 %post plugin-collector-juniper-tca
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-collector-juniper-tca"

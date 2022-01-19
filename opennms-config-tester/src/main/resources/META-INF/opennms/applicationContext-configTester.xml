@@ -108,8 +108,6 @@
         <entry key="vmware-cim-datacollection-config.xml" value="VmwareCimDatacollectionConfigDao"/>
         <entry key="vmware-datacollection-config.xml" value="VmwareDatacollectionConfigDao"/>
         <entry key="vmware-config.xml" value="VmwareConfigDao"/>
-        <!-- <entry key="xmp-config.xml" value="xmpConfigFactory"/> --><!-- Not part of standard build -->
-        <!-- <entry key="xmp-datacollection-config.xml" value="xmpCollectionFactory"/> --><!-- Not part of standard build -->
         <!-- <entry key="xmpp-configuration.properties" value="unknown"/> --><!-- config code not in its own class -->
 
         <!-- WS-Man configuration files -->
@@ -559,18 +557,4 @@
     <property name="configResource" value="file:${opennms.home}/etc/snmp-metadata-adapter-configuration.xml" />
   </bean>
 
-  <!--
-  <bean id="xmpConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="xmpConfigFactory" class="org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory" depends-on="xmpConfigFactory-init" factory-method="getInstance"/>
- 
-  <bean id="xmpCollectionFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.protocols.xmp.collector.XmpCollectionFactory.init</value></property>
-  </bean>
-
-  <bean id="xmpCollectionFactory" class="org.opennms.netmgt.protocols.xmp.collector.XmpCollectionFactory" depends-on="xmpCollectionFactory-init" factory-method="getInstance"/>
-  -->
- 
 </beans>

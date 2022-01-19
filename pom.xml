@@ -4715,11 +4715,6 @@
         <version>${xmlApisExtVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.krupczak</groupId>
-        <artifactId>xmp</artifactId>
-        <version>1.40</version>
-      </dependency>
-      <dependency>
         <groupId>xmlunit</groupId>
         <artifactId>xmlunit</artifactId>
         <version>1.5</version>
