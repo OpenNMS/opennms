@@ -325,6 +325,7 @@
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.commands/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.criteria/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.logging/${project.version}</bundle>
