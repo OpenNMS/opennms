@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>org.opennms.features.events</artifactId>
+    <version>30.0.0-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>org.opennms.features.events.rest</artifactId>
+  <name>OpenNMS :: Features :: Events :: Rest</name>
+  <packaging>bundle</packaging>
+
+  <properties>
+    <aries.jax.rs.version>2.0.1</aries.jax.rs.version>
+  </properties>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>false</filtering>
+      </testResource>
+      <testResource>
+        <directory>src/test/resources-filtered</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
+    <plugins>
+
+      <plugin> <!-- for writing the bundle's manifest -->
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Import-Package>
+              org.eclipse.persistence.internal.jaxb;resolution:=optional,
+              org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
+              org.eclipse.persistence.jaxb;resolution:=optional,
+              org.apache.karaf.jaas.config;resolution:=optional,
+              *
+            </Import-Package>
+            <Export-Package>
+              org.opennms.netmgt.events.rest;version="${project.version}"
+            </Export-Package>
+            <Private-Package>
+              org.opennms.netmgt.events.rest.internal,
+              org.opennms.netmgt.events.rest.cxf,
+              org.opennms.netmgt.events.rest.jaxrs
+            </Private-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.features.rest</groupId>
+      <artifactId>org.opennms.features.rest.mapper</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.criteria</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.karaf.jaas</groupId>
+      <artifactId>org.apache.karaf.jaas.boot</artifactId>
+      <version>${karafVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>org.opennms.container.jaas-login-module-simple</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.jaxrs</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.aries.jax.rs</groupId>
+      <artifactId>org.apache.aries.jax.rs.whiteboard</artifactId>
+      <version>${aries.jax.rs.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+</project>
