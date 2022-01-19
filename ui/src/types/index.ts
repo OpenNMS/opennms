@@ -469,7 +469,7 @@ export interface GraphMetricsResponse {
   step: number
   timestamps: number[]
   formattedTimestamps: string[]
-  formattedLabels: string[]
+  formattedLabels: { name: string; statement: string }[]
 }
 
 export interface ConvertedGraphData {
@@ -505,7 +505,7 @@ export interface ConvertedGraphValue {
 
 export interface Expression {
   argument: string | typeof NaN
-  consolidate: () => any
+  consolidate: (metrics: GraphMetricsResponse) => any
   functionName: string
   metricName: string
 }

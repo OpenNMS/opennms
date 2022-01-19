@@ -1,19 +1,24 @@
 <template>
   <div class="feather-row">
     <div class="feather-col-12">
-      <LineChart :chartData="lineChartData" :options="options" v-if="graphData.columns" />
+      <div class="canvas-wrapper">
+        <canvas :id="definition"></canvas>
+      </div>
     </div>
   </div>
 </template>
   
 <script setup lang=ts>
-import { GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph, StartEndTime } from '@/types'
-import { onMounted, ref, computed, PropType, watch } from 'vue'
+import { ConvertedGraphData, GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph, StartEndTime } from '@/types'
+import { onMounted, ref, computed, PropType, watch, reactive } from 'vue'
 import { useStore } from 'vuex'
 import { RrdGraphConverter } from 'backshift'
-import { LineChart } from 'vue-chart-3'
 import { ChartOptions, TitleOptions, ChartData } from 'chart.js'
 import { formatTimestamps, getFormattedLegendStatements } from './utils'
+import { Chart, registerables } from 'chart.js'
+import zoomPlugin from 'chartjs-plugin-zoom'
+Chart.register(...registerables)
+Chart.register(zoomPlugin)
 
 interface SeriesObject {
   color: string
@@ -42,14 +47,16 @@ const props = defineProps({
 const store = useStore()
 const graphData = ref<GraphMetricsResponse>({} as GraphMetricsResponse)
 const series = ref<SeriesObject[]>([])
-const convertedGraphDataRef = ref({
+const convertedGraphDataRef = ref<any>({
   title: '',
   verticalLabel: '',
   metrics: []
 })
+let chart: any = {}
 
 const options = computed<ChartOptions>(() => ({
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
       display: true,
@@ -83,51 +90,58 @@ const options = computed<ChartOptions>(() => ({
   }
 }))
 
-const getColors = (index: number) => {
-  const colors = []
+const getDatasetsForColumn = (index: number, columnValues: number[], datasetLabels: { name: string, statement: string }[]) => {
   const label = graphData.value.labels[index]
-  for (const item of series.value) {
-    if (item.metric === label) {
-      if (item.name) {
-        colors.push(item.color)
-      }
-    }
-  }
-
-  return colors
-}
-
-const isHidden = (index: number) => {
-  const label = graphData.value.labels[index]
+  const datasetLabelObj = datasetLabels.filter((datasetLabel) => datasetLabel.name === label)[0]
+  const seriesObjs = []
+  const datasets = []
 
   for (const item of series.value) {
     if (item.metric === label) {
-      if (item.type === 'hidden') {
-        return true
-      }
+      seriesObjs.push(item)
     }
   }
 
-  return false
+  let area: any = false
+  for (const obj of seriesObjs) {
+    if (obj.type === 'area') {
+      area = obj.color
+      break
+    }
+  }
+
+  for (const obj of seriesObjs) {
+    if (obj.name !== undefined) {
+      const index = series.value.findIndex((series) => series.name === obj.name)
+      datasets.push({
+        hidden: Boolean(obj.type === 'hidden'),
+        fill: area ? {
+          target: 'origin',
+          above: area
+        } : false,
+        label: datasetLabelObj.statement,
+        data: columnValues,
+        backgroundColor: obj.color,
+        order: series.value.length - index
+      })
+    }
+  }
+
+  return datasets
 }
 
 const dataSets = computed(() => {
-  const sets = []
+  let sets: any = []
 
   for (const [index, column] of graphData.value.columns.entries()) {
-    if (isHidden(index)) continue
-
-    sets.push({
-      label: graphData.value.formattedLabels[index],
-      data: column.values,
-      backgroundColor: getColors(index)
-    })
+    const datasets = getDatasetsForColumn(index, column.values, graphData.value.formattedLabels)
+    sets = [...sets, ...datasets]
   }
 
   return sets
 })
 
-const lineChartData = computed<ChartData<any>>(() => {
+const chartData = computed<ChartData<any>>(() => {
   return {
     labels: graphData.value.formattedTimestamps,
     datasets: dataSets.value
@@ -148,17 +162,19 @@ const getGraphMetricsPayload = (source: Metric[]): GraphMetricsPayload => {
   }
 }
 
-const render = async () => {
+const render = async (update?: boolean) => {
   const definitionData: PreFabGraph = await store.dispatch('graphModule/getDefinitionData', props.definition)
 
   try {
-    const convertedGraphData = RrdGraphConverter.getData({
+    const convertedGraphData: ConvertedGraphData = RrdGraphConverter.getData({
       graphDef: definitionData,
       resourceId: props.resourceId
     })
 
     series.value = convertedGraphData.series
     convertedGraphDataRef.value = convertedGraphData
+
+    console.log(convertedGraphData)
 
     const metrics: Metric[] = convertedGraphData.metrics.map((metric: Metric): Metric => ({
       aggregation: metric.aggregation,
@@ -175,16 +191,32 @@ const render = async () => {
     formattedGraphData = getFormattedLegendStatements(graphMetrics, convertedGraphData)
     graphData.value = formattedGraphData
 
+    if (update) {
+      chart.data = chartData.value
+      chart.update()
+    } else {
+      const ctx: any = document.getElementById(props.definition)
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: chartData.value,
+        options: options.value
+      })
+    }
   } catch (error) {
     console.log('Could not render graph for ', props.definition)
     emit('addGraphDefinition') // adds another to infinite scroll
   }
 }
 
-watch(props.time, () => render())
+watch(props.time, () => render(true))
 onMounted(() => render())
 </script>
   
 <style scoped lang="scss">
+.canvas-wrapper {
+  display: block;
+  height: 320px;
+  margin-top: 20px;
+}
 </style>
   

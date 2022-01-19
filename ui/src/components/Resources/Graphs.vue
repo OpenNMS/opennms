@@ -19,14 +19,9 @@ import { computed, reactive, watch, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import GraphContainer from './GraphContainer.vue'
 import TimeControls from './TimeControls.vue'
-import { Chart, registerables } from 'chart.js'
-import zoomPlugin from 'chartjs-plugin-zoom'
 import { sub, getUnixTime } from 'date-fns'
 import { StartEndTime } from '@/types'
 import { useScroll } from '@vueuse/core'
-
-Chart.register(...registerables)
-Chart.register(zoomPlugin)
 
 const el = document.getElementById('card')
 const { arrivedState } = useScroll(el)
@@ -51,7 +46,6 @@ const updateTime = (newStartEndTime: StartEndTime) => {
 
 const addGraphDefinition = () => {
   const next = definitionsList.shift()
-  console.log(next)
   definitionsToDisplay.value = [...definitionsToDisplay.value, next]
 }
 
@@ -61,7 +55,6 @@ watch(arrivedState, () => {
   }
 })
 onMounted(() => {
-  console.log(definitionsList)
   addGraphDefinition()
   addGraphDefinition()
   addGraphDefinition()

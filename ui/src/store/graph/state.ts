@@ -5,13 +5,15 @@ export interface State {
   definitionDataObjects: PreFabGraph[]
   graphMetrics: GraphMetricsResponse[]
   definitionsList: string[]
+  nameOrderMap: { [name: string]: number }
 }
 
 const state: State = {
   definitions: [],
   definitionDataObjects: [],
   graphMetrics: [],
-  definitionsList: []
+  definitionsList: [],
+  nameOrderMap: {}
 }
 
 export default state

@@ -54,13 +54,11 @@
     "splitpanes": "^3.0.6",
     "vite-svg-loader": "^3.1.1",
     "vue": "^3.2.26",
-    "vue-chart-3": "^3.0.7",
     "vue-router": "4",
     "vue3-ace-editor": "^2.2.1",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
-    "@types/chart.js": "^2.9.35",
     "@types/d3": "^7.1.0",
     "@types/leaflet": "^1.7.7",
     "@types/leaflet.markercluster": "^1.4.6",

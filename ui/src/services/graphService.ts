@@ -41,6 +41,15 @@ const getGraphDefinitionsByResourceId = async (id: string): Promise<ResourceDefi
   }
 }
 
+const getPreFabGraphs = async (node: string): Promise<PreFabGraph[]> => {
+  try {
+    const resp = await rest.get(`/graphs/fornode/${node}`)
+    return resp.data['prefab-graphs']['prefab-graph']
+  } catch (err) {
+    return []
+  }
+}
+
 const getDefinitionData = async (definition: string): Promise<PreFabGraph | null> => {
   try {
     const resp = await rest.get(`/graphs/${definition}`)
@@ -59,4 +68,4 @@ const getGraphMetrics = async (payload: GraphMetricsPayload): Promise<GraphMetri
   }
 }
 
-export { getGraphNodesNodes, getGraphDefinitionsByResourceId, getDefinitionData, getGraphMetrics }
+export { getGraphNodesNodes, getGraphDefinitionsByResourceId, getDefinitionData, getGraphMetrics, getPreFabGraphs }

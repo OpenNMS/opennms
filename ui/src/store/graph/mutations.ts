@@ -17,9 +17,20 @@ const SAVE_GRAPH_METRICS = (state: State, graphMetrics: GraphMetricsResponse) =>
   state.graphMetrics = [...state.graphMetrics, graphMetrics]
 }
 
+const SAVE_NAME_ORDER_MAP = (state: State, preFabGraphs: PreFabGraph[]) => {
+  const nameOrderMap: { [name: string]: number } = {}
+
+  for (const graph of preFabGraphs) {
+    nameOrderMap[graph.name] = graph.order
+  }
+
+  state.nameOrderMap = nameOrderMap
+}
+
 export default {
   SAVE_DEFINITIONS,
   SAVE_DEFINITION_DATA,
   SAVE_GRAPH_METRICS,
-  SAVE_DEFINITIONS_LIST
+  SAVE_DEFINITIONS_LIST,
+  SAVE_NAME_ORDER_MAP
 }

@@ -1,4 +1,4 @@
-import { GraphMetricsResponse } from '@/types'
+import { ConvertedGraphData, GraphMetricsResponse } from '@/types'
 import { fromUnixTime, format } from 'date-fns'
 import { PrintStatement } from '@/types'
 import { formatPrefix } from 'd3'
@@ -39,7 +39,7 @@ const formatTimestamp = (timestamp: number, formatStr: string) => {
 
 const getFormattedLegendStatements = (
   graphMetrics: GraphMetricsResponse,
-  convertedGraphData: any
+  convertedGraphData: ConvertedGraphData
 ): GraphMetricsResponse => {
   const metrics = convertedGraphData.metrics
   const printStatements = convertedGraphData.printStatements
@@ -76,22 +76,22 @@ const getFormattedLegendStatements = (
   for (const metric of metrics) {
     const statementsForMetric = []
     for (const statement of printStatements) {
-      if (statement.metric.includes(metric.name)) {
+      if (statement.metric.includes(metric.name as string)) {
         statementsForMetric.push(statement)
       }
     }
-    legendArrays.push(statementsForMetric)
+    legendArrays.push({ metricName: metric.name as string, statements: statementsForMetric })
   }
 
   // combine each legend array into a legend statement
-  const legendStatements: string[] = []
+  const legendStatements: { name: string; statement: string }[] = []
   for (const legendArray of legendArrays) {
-    let statement: string[] = []
-    for (const obj of legendArray) {
+    let statement: any[] = []
+    for (const obj of legendArray.statements) {
       statement = [...statement, obj.header, obj.text]
     }
 
-    legendStatements.push(statement.join(' '))
+    legendStatements.push({ name: legendArray.metricName, statement: statement.join(' ') })
   }
 
   graphMetrics.formattedLabels = legendStatements

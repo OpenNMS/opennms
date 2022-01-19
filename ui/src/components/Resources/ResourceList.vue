@@ -36,7 +36,10 @@ const searchValue = ref('')
 const resources = computed<Resource[]>(() => store.getters['resourceModule/getFilteredResourcesList'])
 
 const search = (val: string) => store.dispatch('resourceModule/setSearchValue', val || '')
-const selectResource = (name: string) => store.dispatch('resourceModule/getResourcesForNode', name)
+const selectResource = (name: string) => { 
+  store.dispatch('resourceModule/getResourcesForNode', name)
+  store.dispatch('graphModule/getPreFabGraphs', name)
+}
 </script>
   
 <style scoped lang="scss">
