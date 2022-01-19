@@ -38,9 +38,11 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 
+import com.google.common.io.Resources;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +51,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.provision.DetectRequest;
@@ -93,9 +97,13 @@ public class SnmpDetectorWithProfilesTest {
 
         URL url = getClass().getResource("/org/opennms/netmgt/provision/detector/snmp-config-with-profiles.xml");
         try (InputStream configStream = url.openStream()) {
-            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(new SnmpConfig());
+            String configXml = Resources.toString(url, StandardCharsets.UTF_8);
+            JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+            String configJson = converter.xmlToJson(configXml);
+            SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(configJson, SnmpConfig.class);
+            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(snmpConfig);
             // This is to not override snmp-config from etc
-            SnmpPeerFactory.setFile(new File(url.getFile()));
+            snmpPeerFactory.setFile(new File(url.getFile()));
             m_detectorFactory.setAgentConfigFactory(snmpPeerFactory);
             m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null, Collections.emptyMap());
             assertTrue(m_detector.detect(m_request).isServiceDetected());
@@ -108,9 +116,13 @@ public class SnmpDetectorWithProfilesTest {
 
         URL url = getClass().getResource("/org/opennms/netmgt/provision/detector/snmp-config-with-invalid-profiles.xml");
         try (InputStream configStream = url.openStream()) {
-            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(new SnmpConfig());
+            String configXml = Resources.toString(url, StandardCharsets.UTF_8);
+            JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+            String configJson = converter.xmlToJson(configXml);
+            SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(configJson, SnmpConfig.class);
+            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(snmpConfig);
             // This is to not override snmp-config from etc
-            SnmpPeerFactory.setFile(new File(url.getFile()));
+            snmpPeerFactory.setFile(new File(url.getFile()));
             m_detectorFactory.setAgentConfigFactory(snmpPeerFactory);
             m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null, Collections.emptyMap());
             assertFalse(m_detector.detect(m_request).isServiceDetected());
@@ -124,7 +136,7 @@ public class SnmpDetectorWithProfilesTest {
     static class ProxySnmpAgentConfigFactoryExtension extends ProxySnmpAgentConfigFactory {
 
         ProxySnmpAgentConfigFactoryExtension(SnmpConfig config) throws IOException {
-            super();
+            super(config);
         }
 
         @Override
