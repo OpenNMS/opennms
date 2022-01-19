@@ -198,7 +198,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
             // check for org.opennms.features.datachoices.cfg
             Optional<JSONObject> config = this.cm.getJSONConfiguration("org.opennms.features.datachoices", "default");
-            assertEquals(7, config.get().keySet().size());
+            assertEquals(3, config.get().keySet().size());
             // boolean in openable is impossible to be null
             assertEquals(false, config.get().get("enabled"));
             assertEquals(JSONObject.NULL, config.get().get("acknowledged-by"));

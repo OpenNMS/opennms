@@ -424,6 +424,9 @@
         <bundle>mvn:org.opennms/opennms-config-model/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-config-jaxb/${project.version}</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle>mvn:org.opennms.features.config/org.opennms.features.config.util/${project.version}</bundle>
     </feature>
     <feature name="opennms-config-jaxb" version="${project.version}" description="OpenNMS :: Configuration :: JAXB">
         <feature>hibernate36</feature>
