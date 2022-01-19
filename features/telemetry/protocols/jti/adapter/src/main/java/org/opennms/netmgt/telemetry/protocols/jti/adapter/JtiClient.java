@@ -35,8 +35,9 @@ import java.net.InetAddress;
 import java.util.Date;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port;
 import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop;
+import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port;
+
 
 /**
  * Example code for generating JTI messages.
@@ -50,8 +51,9 @@ import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop;
 public class JtiClient {
 
     private static TelemetryTop.TelemetryStream buildJtiMessage(String ipAddress, String ifName, long ifInOctets, long ifOutOctets) {
-        final Port.GPort port = Port.GPort.newBuilder()
-                .addInterfaceStats(Port.InterfaceInfos.newBuilder()
+        final Port.GPort port =
+               Port.GPort.newBuilder()
+                .addInterfaceStats(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port.InterfaceInfos.newBuilder()
                         .setIfName(ifName)
                         .setInitTime(1457647123)
                         .setSnmpIfIndex(517)

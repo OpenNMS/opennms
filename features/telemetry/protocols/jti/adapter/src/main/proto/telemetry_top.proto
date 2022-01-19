@@ -29,6 +29,7 @@
 //
 
 import "google/protobuf/descriptor.proto";
+option java_package = "org.opennms.netmgt.telemetry.protocols.jti.adapter.proto";
 
 extend google.protobuf.FieldOptions {
     optional TelemetryFieldOptions telemetry_options = 1024;
