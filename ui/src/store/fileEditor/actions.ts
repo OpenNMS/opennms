@@ -1,4 +1,4 @@
-import API from "@/services"
+import API from '@/services'
 import { FileEditorResponseLog, VuexContext } from '@/types'
 import { IFile, State } from './state'
 
@@ -68,11 +68,12 @@ const deleteFile = async (context: ContextWithState, fileName: string) => {
     context.commit('SET_IS_CONSOLE_OPEN', true)
   }
 
-  context.dispatch('setFileToDelete', null)  // closes confirmation modal
+  context.dispatch('setFileToDelete', null) // closes confirmation modal
 }
 
 const saveModifiedFile = async (context: ContextWithState) => {
-  const xml = 'xml', plain = 'plain'
+  const xml = 'xml',
+    plain = 'plain'
   const filename = context.state.selectedFileName
   if (!filename) return
 

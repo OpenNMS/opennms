@@ -58,7 +58,6 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
     Set<ServiceDetectorFactory<?>> m_detectorFactories;
 
     private final Map<String, String> m_classNameByServiceName = new LinkedHashMap<>();
-    private final Map<String, ServiceDetectorFactory<? extends ServiceDetector>> m_factoriesByServiceName = new LinkedHashMap<>();
     private final Map<String, ServiceDetectorFactory<? extends ServiceDetector>> m_factoriesByClassName = new LinkedHashMap<>();
 
     @Override
@@ -94,9 +93,8 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
         if (factory != null) {
             final String serviceName = getServiceName(factory);
             final String className = factory.getDetectorClass().getCanonicalName();
-            m_factoriesByServiceName.put(serviceName, factory);
-            m_factoriesByClassName.put(className, factory);
             m_classNameByServiceName.put(serviceName, className);
+            m_factoriesByClassName.put(className, factory);
         }
     }
 
@@ -106,9 +104,8 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
         if (factory != null) {
             final String serviceName = getServiceName(factory);
             final String className = factory.getDetectorClass().getCanonicalName();
-            m_factoriesByServiceName.remove(serviceName, factory);
-            m_factoriesByClassName.remove(className, factory);
-            m_classNameByServiceName.remove(serviceName, className);
+            m_factoriesByClassName.remove(className);
+            m_classNameByServiceName.remove(serviceName);
         }
     }
 
@@ -118,23 +115,8 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
     }
 
     @Override
-    public Set<String> getServiceNames() {
-        return ImmutableSet.copyOf(m_factoriesByServiceName.keySet());
-    }
-
-    @Override
-    public ServiceDetector getDetectorByServiceName(String serviceName) {
-        return getDetectorByServiceName(serviceName, Collections.emptyMap());
-    }
-
-    @Override
-    public ServiceDetector getDetectorByServiceName(String serviceName, Map<String, String> properties) {
-        return createDetector(m_factoriesByServiceName.get(serviceName), properties);
-    }
-
-    @Override
-    public ServiceDetectorFactory<?> getDetectorFactoryByServiceName(String serviceName) {
-        return m_factoriesByServiceName.get(serviceName);
+    public synchronized Set<String> getServiceNames() {
+        return ImmutableSet.copyOf(m_classNameByServiceName.keySet());
     }
 
     @Override
@@ -143,18 +125,20 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
     }
 
     @Override
+    public Class<?> getDetectorClassByServiceName(String serviceName) {
+        String className = m_classNameByServiceName.get(serviceName);
+        return m_factoriesByClassName.get(className).getDetectorClass();
+    }
+
+    @Override
     public Set<String> getClassNames() {
         return ImmutableSet.copyOf(m_factoriesByClassName.keySet());
     }
 
     @Override
-    public ServiceDetector getDetectorByClassName(String className) {
-        return getDetectorByClassName(className, Collections.emptyMap());
-    }
-
-    @Override
     public ServiceDetector getDetectorByClassName(String className, Map<String, String> properties) {
-        return createDetector(m_factoriesByClassName.get(className), properties);
+        ServiceDetectorFactory<? extends ServiceDetector> factory = getDetectorFactoryByClassName(className);
+        return createDetector(factory, properties);
     }
 
     @Override
@@ -163,11 +147,7 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
     }
 
     private static ServiceDetector createDetector(ServiceDetectorFactory<? extends ServiceDetector> factory, Map<String, String> properties) {
-        if (factory == null) {
-            return null;
-        }
-        final ServiceDetector detector = factory.createDetector(properties);
-        return detector;
+        return factory == null? null: factory.createDetector(properties);
     }
 
     private static String getServiceName(ServiceDetectorFactory<? extends ServiceDetector> factory) {

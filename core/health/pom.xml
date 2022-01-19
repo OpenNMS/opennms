@@ -32,6 +32,7 @@
         <module>api</module>
         <module>impl</module>
         <module>rest</module>
+        <module>rest-cxf</module>
         <module>shell</module>
     </modules>
 </project>

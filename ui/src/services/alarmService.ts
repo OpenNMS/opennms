@@ -1,11 +1,6 @@
 import { v2, rest } from './axiosInstances'
-import {
-  QueryParameters,
-  AlarmQueryParameters,
-  AlarmApiResponse
-} from '@/types'
+import { QueryParameters, AlarmQueryParameters, AlarmApiResponse } from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
-
 
 const endpoint = '/alarms'
 
@@ -31,21 +26,18 @@ const getAlarms = async (queryParameters?: QueryParameters): Promise<AlarmApiRes
 }
 
 const modifyAlarm = async (alarmId: string, alarmQueryParameters: AlarmQueryParameters): Promise<string | false> => {
-  let endpointWithQueryString = ""
+  let endpointWithQueryString = ''
 
   if (alarmQueryParameters) {
-    endpointWithQueryString = queryParametersHandler(alarmQueryParameters, endpoint + "/" + alarmId)
+    endpointWithQueryString = queryParametersHandler(alarmQueryParameters, endpoint + '/' + alarmId)
   }
 
   try {
-    const resp = await rest.put(endpointWithQueryString, "")
+    const resp = await rest.put(endpointWithQueryString, '')
     return resp.data
   } catch (err) {
     return false
   }
 }
 
-export {
-  getAlarms,
-  modifyAlarm
-}
+export { getAlarms, modifyAlarm }

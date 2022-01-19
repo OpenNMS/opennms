@@ -7,7 +7,7 @@
       <div class="timeline" ref="timeline">{{ availability.availability }}%</div>
     </div>
 
-    <template v-for="ipinterface of availability.ipinterfaces">
+    <template v-for="ipinterface of availability.ipinterfaces" :key="ipinterface.id">
       <div v-if="ipinterface.services.length">
         <hr class="divider" />
         <div class="flex-container">
@@ -21,7 +21,7 @@
         </div>
       </div>
 
-      <template v-for="service of ipinterface.services">
+      <template v-for="service of ipinterface.services" :key="service.name">
         <div class="flex-container">
           <div class="service subtitle2">{{ service.name }}</div>
           <div>
@@ -40,16 +40,16 @@
 import { onMounted, ref, onUnmounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import dayjs from 'dayjs'
 import { debounce } from 'lodash'
+import { sub, getUnixTime } from 'date-fns'
 
 const baseUrl = ref(import.meta.env.VITE_BASE_URL || '')
 const store = useStore()
 const route = useRoute()
 const nodeId = ref(route.params.id as string)
-const now = dayjs()
-const startTime = ref(now.subtract(1, 'day').unix())
-const endTime = ref(now.unix())
+const now = new Date()
+const startTime = ref(getUnixTime(sub(now, { days: 1 })))
+const endTime = ref(getUnixTime(now))
 const width = ref(200)
 const timeline = ref<any>(null)
 const recalculateWidth = () => {
@@ -59,12 +59,12 @@ const recalculateWidth = () => {
 onMounted(async () => {
   store.dispatch('nodesModule/getNodeAvailabilityPercentage', nodeId.value)
   recalculateWidth()
-  window.addEventListener("resize", debounce(recalculateWidth, 100))
+  window.addEventListener('resize', debounce(recalculateWidth, 100))
 })
 
 const availability = computed(() => store.state.nodesModule.availability)
 
-onUnmounted(() => window.removeEventListener("resize", recalculateWidth))
+onUnmounted(() => window.removeEventListener('resize', recalculateWidth))
 </script>
 
 <style lang="scss" scoped>
@@ -93,5 +93,11 @@ onUnmounted(() => window.removeEventListener("resize", recalculateWidth))
 }
 .divider {
   width: 98%;
+}
+.flex-container {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
 }
 </style>

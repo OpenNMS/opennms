@@ -11,5 +11,6 @@ import Logo from './OpenNMS_Horizontal-Logo_Light-BG.svg'
 <style>
 .logo {
   width: 8em !important;
+  color: var(--feather-primary-text-on-color) !important;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="breadcrumbs subtitle2">
-    <template v-for="item of items">
+    <template v-for="item of items" :key="item.label">
       <div class="link">
         <router-link :to="item.to">{{ item.label }}</router-link>
         <FeatherIcon :icon="ChevronRight" :class="'link-icon' + ` ${item.position}`" />
@@ -10,10 +10,10 @@
 </template>
   
 <script setup lang="ts">
-import { PropType } from 'vue';
-import { BreadCrumb } from '@/types';
-import { FeatherIcon } from "@featherds/icon"
-import ChevronRight from "@featherds/icon/navigation/ChevronRight"
+import { PropType } from 'vue'
+import { BreadCrumb } from '@/types'
+import { FeatherIcon } from '@featherds/icon'
+import ChevronRight from '@featherds/icon/navigation/ChevronRight'
 defineProps({
   items: {
     required: true,

@@ -8,8 +8,8 @@ const getWhoAmI = async (): Promise<WhoAmIResponse> => {
     const resp = await rest.get(endpoint)
     return resp.data
   } catch (err) {
-    return { 
-      roles: ([] as string[]) 
+    return {
+      roles: [] as string[]
     } as WhoAmIResponse
   }
 }
