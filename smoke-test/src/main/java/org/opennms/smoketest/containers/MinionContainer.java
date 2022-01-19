@@ -248,7 +248,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         protected void waitUntilReady() {
             LOG.info("Waiting for Minion health check...");
             try {
-                RestHealthClient client = new RestHealthClient(container.getWebUrl(), ALIAS);
+                RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
                 await().atMost(5, MINUTES)
                         .pollInterval(10, SECONDS)
                         .ignoreExceptions()

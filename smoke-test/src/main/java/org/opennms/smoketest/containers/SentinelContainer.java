@@ -264,7 +264,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         protected void waitUntilReady() {
             LOG.info("Waiting for Sentinel health check...");
             try {
-                RestHealthClient client = new RestHealthClient(container.getWebUrl(), ALIAS);
+                RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
                 await().atMost(5, MINUTES)
                         .pollInterval(10, SECONDS)
                         .ignoreExceptions()
