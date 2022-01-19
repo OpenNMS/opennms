@@ -121,9 +121,13 @@ public class NodeInfoScanIT {
     public void testNodeInfoScanWithDefaultConfig() throws InterruptedException {
         URL url =  getClass().getResource("/snmp-config1.xml");
         try (InputStream configStream = url.openStream()) {
-            snmpPeerFactory = new ProxySnmpAgentConfigFactory();
+            String configXml = Resources.toString(url, StandardCharsets.UTF_8);
+            JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+            String configJson = converter.xmlToJson(configXml);
+            SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(configJson, SnmpConfig.class);
+            snmpPeerFactory = new ProxySnmpAgentConfigFactory(snmpConfig);
             // This is to not override snmp-config from etc
-            SnmpPeerFactory.setFile(new File(url.getFile()));
+            //snmpPeerFactory.setFile(new File(url.getFile()));
             initializeProvisionService();
             nodeInfoScan = new NodeInfoScan(node, InetAddressUtils.getInetAddress("192.0.1.206"),
                     "fs", monitoringLocation, scanProgress, snmpPeerFactory, provisionService, 1, null);
@@ -147,7 +151,7 @@ public class NodeInfoScanIT {
             String configJson = converter.xmlToJson(configXml);
             SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(configJson, SnmpConfig.class);
             snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(snmpConfig);
-            snmpPeerFactory.setFile(new File(url.getFile()));
+           // snmpPeerFactory.setFile(new File(url.getFile()));
             initializeProvisionService();
             FilterDao filterDao = Mockito.mock(FilterDao.class);
             when(filterDao.isValid(Mockito.anyString(), Mockito.contains("IPLIKE"))).thenReturn(true);
@@ -176,7 +180,7 @@ public class NodeInfoScanIT {
             SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(configJson, SnmpConfig.class);
             // Make default scan fail by setting wrong read community.
             snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension2(snmpConfig);
-            snmpPeerFactory.setFile(new File(url.getFile()));
+           // snmpPeerFactory.setFile(new File(url.getFile()));
             initializeProvisionService();
             FilterDao filterDao = Mockito.mock(FilterDao.class);
             when(filterDao.isValid(Mockito.anyString(), Mockito.contains("IPLIKE"))).thenReturn(true);

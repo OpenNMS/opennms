@@ -34,20 +34,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.opennms.core.xml.ValidateUsing;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Top-level element for the snmp-config.xml configuration file.
  */
-
+@XmlRootElement(name="snmp-config")
+@XmlAccessorType(XmlAccessType.NONE)
+@ValidateUsing("snmp-config.xsd")
 public class SnmpConfig extends Configuration implements Serializable {
     private static final long serialVersionUID = -5963402509661530467L;
 
     /**
      * Maps IP addresses to specific SNMP parameters (retries, timeouts...)
      */
+    @XmlElement(name="definition")
     @JsonProperty("definition")
     private List<Definition> definitions = new ArrayList<>();
 
+    @XmlElement(name="profiles")
     @JsonProperty("profiles")
     private SnmpProfiles profiles;
 

@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.snmp;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +42,9 @@ import java.util.List;
  * and/or IP address ranges with a set of SNMP parms which will be used in
  * place of the default values during SNMP data collection.
  */
-
+@XmlRootElement(name="definition")
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlType(propOrder={"ranges","specifics","ipMatches"})
 @JsonPropertyOrder({"ranges","specifics","ipMatches"})
 public class Definition extends Configuration implements Serializable {
     private static final long serialVersionUID = 5646937263626185373L;
@@ -49,6 +52,7 @@ public class Definition extends Configuration implements Serializable {
      * IP address range to which this definition
      *  applies.
      */
+    @XmlElement(name="range")
     @JsonProperty("range")
     private List<Range> ranges = new ArrayList<>();
 
@@ -56,18 +60,22 @@ public class Definition extends Configuration implements Serializable {
      * Specific IP address to which this definition
      *  applies.
      */
+    @XmlElement(name="specific")
     @JsonProperty("specific")
     private List<String> specifics = new ArrayList<>();
 
     /**
      * Match Octets (as in IPLIKE)
      */
+    @XmlElement(name="ip-match")
     @JsonProperty("ip-match")
     private List<String> ipMatches = new ArrayList<>();
 
+    @XmlAttribute(name="location")
     @JsonProperty("location")
     private String location;
 
+    @XmlAttribute(name="profile-label")
     @JsonProperty("profile-label")
     private String profileLabel;
 
