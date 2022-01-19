@@ -442,6 +442,7 @@
           <workingDirectory>${project.build.directory}</workingDirectory>
           <skipIfExist>true</skipIfExist>
           <keystore>${test.keystore}</keystore>
+          <keyalg>RSA</keyalg>
           <storepass>${test.storepass}</storepass>
           <alias>${test.keyalias}</alias>
           <keypass>${test.keypass}</keypass>
