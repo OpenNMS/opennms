@@ -14,6 +14,7 @@
     <opennms.doc.stability>sustained</opennms.doc.stability>
   </properties>
   <name>OpenNMS :: Features :: Events</name>
+
   <modules>
     <module>api</module>
     <module>daemon</module>
@@ -21,5 +22,6 @@
     <module>traps</module>
     <module>shell-commands</module>
     <module>sink</module>
+    <module>rest</module>
   </modules>
 </project>

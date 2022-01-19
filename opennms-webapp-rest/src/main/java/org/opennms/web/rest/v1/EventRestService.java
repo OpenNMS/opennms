@@ -67,6 +67,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @Component("eventRestService")
 @Path("events")
 public class EventRestService extends OnmsRestService {

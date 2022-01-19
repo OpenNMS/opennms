@@ -57,6 +57,9 @@
                 <wait>
                   <log>(?s)PostgreSQL init process complete; ready for start up..*database system is ready to accept connections</log>
                 </wait>
+                <ports>
+                  <port>postgresql.port:5432</port>
+                </ports>
                 <network>
                   <mode>custom</mode>
                   <name>alarm-docker-it-network</name>
@@ -165,6 +168,10 @@
               <useSystemClassLoader>false</useSystemClassLoader>
               <systemProperties>
                 <property>
+                  <name>database.url</name>
+                  <value>jdbc:postgresql://localhost:${postgresql.port}/opennms</value>
+                </property>
+                <property>
                   <name>application.base-url</name>
                   <value>http://localhost:${karaf-http-port}</value>
                 </property>
@@ -204,6 +211,11 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+    
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>

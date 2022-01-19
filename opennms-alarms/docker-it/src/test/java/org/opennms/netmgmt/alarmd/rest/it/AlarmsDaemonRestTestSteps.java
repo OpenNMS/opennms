@@ -33,16 +33,22 @@ import io.cucumber.java.en.Then;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+import io.restassured.internal.util.IOUtils;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
@@ -54,7 +60,6 @@ public class AlarmsDaemonRestTestSteps {
     public static final int DEFAULT_HTTP_SOCKET_TIMEOUT = 15_000;
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(AlarmsDaemonRestTestSteps.class);
-//    private static final io.restassured.config.HttpClientConfig HttpClientConfig = ;
 
     private Logger log = DEFAULT_LOGGER;
 
@@ -67,11 +72,16 @@ public class AlarmsDaemonRestTestSteps {
     //
     // Test Configuration
     //
+    private String databaseUrl;
+    private String dbUsername;
+    private String dbPassword;
+
     private String applicationBaseUrl;
-    private String path;
     private String username;
     private String password;
     private String acceptEncoding;
+    private String contentType;
+    private String postPayload;
 
 
     //
@@ -101,17 +111,54 @@ public class AlarmsDaemonRestTestSteps {
         this.log.info("Using BASE URL {}", this.applicationBaseUrl);
     }
 
+    @Given("DB url in system property {string}")
+    public void dbUrlInSystemProperty(String systemProperty) {
+        this.databaseUrl = System.getProperty(systemProperty);
+
+        this.log.info("Using DB URL {}", this.databaseUrl);
+    }
+
+    @Given("DB username {string} and password {string}")
+    public void dbUsernameAndPassword(String username, String password) {
+        this.dbUsername = username;
+        this.dbPassword = password;
+    }
+
     @Given("^http username \"([^\"]*)\" password \"([^\"]*)\"$")
     public void httpUsernamePassword(String username, String password) throws Throwable {
         this.username = username;
         this.password = password;
     }
+
     @Given("^JSON accept encoding$")
     public void jsonAcceptEncoding() throws Throwable {
         this.acceptEncoding = "application/json";
     }
 
-    @Then("^send GET request at path \"([^\"]*)\" with retry timeout (\\d+)$")
+    @Given("^JSON content type$")
+    public void jsonContentType() throws Throwable {
+        this.contentType = "application/json";
+    }
+
+    @Given("^XML content type$")
+    public void xmlContentType() throws Throwable {
+        this.contentType = "application/xml";
+    }
+
+    @Given("^POST request body in resource \"([^\"]*)\"$")
+    public void postRequestBodyInResource(String path) throws Throwable {
+        this.postPayload = this.loadResource(path);
+    }
+
+    @Then("execute SQL statement {string}")
+    public void executeSQLStatement(String sqlStatement) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(this.databaseUrl, this.dbUsername, this.dbPassword)) {
+            Statement statement = connection.createStatement();
+            statement.execute(sqlStatement);
+        }
+    }
+
+    @Then("send GET request at path {string} with retry timeout {int}")
     public void sendGETRequestAtPath(String path, int retryTimeout) throws Throwable {
         URL requestUrl = new URL(new URL(this.applicationBaseUrl), path);
 
@@ -151,7 +198,57 @@ public class AlarmsDaemonRestTestSteps {
         // Retry the operation until success or timeout
         //
         this.restAssuredResponse =
-            this.retryUtils.retry(operation, (response) -> ( ( response != null ) && ( response.getStatusCode() != 500 ) ), 1000, retryTimeout, null);
+            this.retryUtils.retry(
+                    operation,
+                    (response) -> ( ( response != null ) && ( response.getStatusCode() != 500 ) && ( response.getStatusCode() != 404 ) ),
+                    1000,
+                    retryTimeout,
+                    null);
+
+        assertNotNull(this.restAssuredResponse);
+    }
+
+    @Then("^send POST request at path \"([^\"]*)\"$")
+    public void sendPOSTRequestAtPath(String path) throws Throwable {
+        URL requestUrl = new URL(new URL(this.applicationBaseUrl), path);
+
+        RestAssuredConfig restAssuredConfig = this.createRestAssuredTestConfig();
+
+        RequestSpecification requestSpecification =
+                RestAssured
+                        .given()
+                        .config(restAssuredConfig)
+                        ;
+
+        if (this.username != null) {
+            requestSpecification =
+                    requestSpecification
+                            .auth()
+                            .preemptive()
+                            .basic(this.username, this.password)
+                            ;
+        }
+
+        if (this.contentType!= null) {
+            requestSpecification =
+                    requestSpecification
+                            .header("Content-Type", this.contentType)
+                            ;
+        }
+
+        if (this.acceptEncoding != null) {
+            requestSpecification =
+                    requestSpecification
+                            .header("Accept", this.acceptEncoding)
+                            ;
+        }
+
+        this.restAssuredResponse =
+            requestSpecification
+                    .body(this.postPayload)
+                    .post(requestUrl)
+                    .thenReturn()
+            ;
 
         assertNotNull(this.restAssuredResponse);
     }
@@ -173,9 +270,19 @@ public class AlarmsDaemonRestTestSteps {
         }
     }
 
+
+    //========================================
+    // Utility Rules
+    //----------------------------------------
+
     @Then("^DEBUG dump the response body$")
     public void debugDumpTheResponseBody() {
         this.log.info("RESPONSE BODY = {}", this.restAssuredResponse.getBody().asString());
+    }
+
+    @Then("delay {int}ms")
+    public void delayMs(int ms) throws Exception {
+        Thread.sleep(ms);
     }
 
 //========================================
@@ -204,6 +311,14 @@ public class AlarmsDaemonRestTestSteps {
         } else {
             // Just an expression - evaluate as a boolean
             assertTrue("verifying JSON path expression " + pathExpression, jsonPath.getBoolean(pathExpression));
+        }
+    }
+
+    private String loadResource(String path) throws IOException {
+        try (InputStream inputStream = this.getClass().getResourceAsStream(path)) {
+            byte[] payloadBytes = IOUtils.toByteArray(inputStream);
+
+            return new String(payloadBytes, StandardCharsets.UTF_8);
         }
     }
 }
