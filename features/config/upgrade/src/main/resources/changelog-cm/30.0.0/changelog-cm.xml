@@ -69,7 +69,7 @@
     </changeSet>
     <changeSet author="psuthar" id="1.0-register-schema-snmp">
         <cm:registerSchema id="snmp"/>
-        <cm:importSchemaFromXsd id="snmp" xsdFileName="snmp-config.xsd" xsdFileHash="731b7a0642261bc3b71d883e8bc36cfb3c4b41b3d2061b5ab972764729a2a689" rootElement="snmp-config"/>
+        <cm:importSchemaFromXsd id="snmp" xsdFileName="snmp-config.xsd" xsdFileHash="0d1a0c83acd21b95089193e72f020e49ad3b91e812223704829337ee92cfd81d" rootElement="snmp-config"/>
         <cm:importConfig schemaId="snmp" configId="default" filePath="snmp-config.xml"/>
     </changeSet>
 
