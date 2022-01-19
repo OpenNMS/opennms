@@ -28,12 +28,10 @@
 
 package org.opennms.netmgt.events.rest;
 
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.web.rest.model.v2.EventCollectionDTO;
 import org.opennms.web.rest.model.v2.EventDTO;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -65,7 +63,7 @@ public interface EventRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{eventId}")
-    @Transactional
+    @RolesAllowed({"user", "admin"})
     EventDTO getEvent(@PathParam("eventId") Integer eventId);
 
     /**
@@ -76,7 +74,7 @@ public interface EventRestService {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("count")
-    @Transactional
+    @RolesAllowed({"user", "admin"})
     String getCount();
 
     /**
@@ -89,7 +87,7 @@ public interface EventRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    @Transactional
+    @RolesAllowed({"user", "admin"})
     EventCollectionDTO getEvents(@Context UriInfo uriInfo) throws ParseException;
 
     /**
@@ -103,7 +101,7 @@ public interface EventRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("between")
-    @Transactional
+    @RolesAllowed({"user", "admin"})
     EventCollectionDTO getEventsBetween(@Context UriInfo uriInfo) throws ParseException;
 
     /**
@@ -119,7 +117,7 @@ public interface EventRestService {
     @PUT
     @Path("{eventId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Transactional
+    @RolesAllowed({"admin"})
     Response updateEvent(@Context SecurityContext securityContext, @PathParam("eventId") Integer eventId, @FormParam("ack") Boolean ack);
 
     /**
@@ -132,13 +130,12 @@ public interface EventRestService {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Transactional
+    @RolesAllowed({"admin"})
     Response updateEvents(@Context SecurityContext securityContext, MultivaluedHashMap<String, String> formProperties);
 
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    @Transactional
+    @RolesAllowed({"admin"})
     Response publishEvent(final org.opennms.netmgt.xml.event.Event event);
 }
-

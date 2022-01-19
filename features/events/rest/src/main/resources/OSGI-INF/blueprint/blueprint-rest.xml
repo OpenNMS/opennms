@@ -83,11 +83,12 @@
     </service>
 
     <!-- TODO: reusable RolesAllowedDynamicFeature -->
-    <!---->
-    <!--<service ref="rolesAllowedDynamicFeature" interface="javax.ws.rs.container.DynamicFeature">-->
-        <!--<service-properties>-->
-            <!--<entry key="osgi.jaxrs.extension" value="true"/>-->
-        <!--</service-properties>-->
-    <!--</service>-->
+    <bean id="rolesAllowedDynamicFeature" class="org.opennms.netmgt.events.rest.jaxrs.RolesAllowedDynamicFeature"/>
+
+    <service ref="rolesAllowedDynamicFeature" interface="javax.ws.rs.container.DynamicFeature">
+        <service-properties>
+            <entry key="osgi.jaxrs.extension" value="true"/>
+        </service-properties>
+    </service>
 
 </blueprint>

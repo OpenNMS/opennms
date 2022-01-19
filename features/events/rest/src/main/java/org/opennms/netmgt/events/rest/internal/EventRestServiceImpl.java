@@ -55,13 +55,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.transaction.annotation.Transactional;
 
 //import javax.validation.Configuration;
 //import javax.validation.ConstraintViolation;
 //import javax.validation.Validation;
 //import javax.validation.Validator;
 //import javax.validation.ValidatorFactory;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -181,6 +181,7 @@ public class EventRestServiceImpl implements EventRestService {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("count")
+    @RolesAllowed({"user", "admin"})
     public String getCount() {
         return Integer.toString(m_eventDao.countAll());
     }
@@ -195,6 +196,7 @@ public class EventRestServiceImpl implements EventRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @RolesAllowed({"user", "admin"})
     public EventCollectionDTO getEvents(@Context final UriInfo uriInfo) throws ParseException {
         CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
         builder.orderBy("eventTime").asc();
@@ -214,6 +216,7 @@ public class EventRestServiceImpl implements EventRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("between")
+    @RolesAllowed({"user", "admin"})
     public EventCollectionDTO getEventsBetween(@Context UriInfo uriInfo) throws ParseException {
         MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 
@@ -235,6 +238,7 @@ public class EventRestServiceImpl implements EventRestService {
     @PUT
     @Path("{eventId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @RolesAllowed({"admin"})
     public Response updateEvent(@Context SecurityContext securityContext, @PathParam("eventId") Integer eventId, @FormParam("ack") Boolean ack) {
         if (ack == null) {
             throw new WebApplicationException(
@@ -261,6 +265,7 @@ public class EventRestServiceImpl implements EventRestService {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @RolesAllowed({"admin"})
     public Response updateEvents(@Context SecurityContext securityContext, MultivaluedHashMap<String, String> formProperties) {
         Boolean ack = false;
         if (formProperties.containsKey("ack")) {
@@ -282,6 +287,7 @@ public class EventRestServiceImpl implements EventRestService {
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @RolesAllowed({"admin"})
     public Response publishEvent(final org.opennms.netmgt.xml.event.Event event) {
         if (event.getSource() == null) {
             event.setSource("ReST");

@@ -28,6 +28,9 @@
     <suppress files="org[\\/]opennms[\\/]netmgt[\\/]collectd[\\/]vmware[\\/]VmwareViJavaAccessTest.java" checks=".*"/>
     <suppress files="org[\\/]opennms[\\/]netmgt[\\/]alarmd[\\/]rest[\\/]jaxrs[\\/]AnnotatedMethod.java" checks=".*"/>
     <suppress files="org[\\/]opennms[\\/]netmgt[\\/]alarmd[\\/]rest[\\/]jaxrs[\\/]RolesAllowedDynamicFeature.java" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]netmgt[\\/]alarmd[\\/]rest[\\/]jaxrs[\\/]AnnotatedMethod.java" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]netmgt[\\/]events[\\/]rest[\\/]jaxrs[\\/]RolesAllowedDynamicFeature.java" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]netmgt[\\/]events[\\/]rest[\\/]jaxrs[\\/]AnnotatedMethod.java" checks=".*"/>
     <!-- LGPLv3 -->
     <suppress files="org[\\/]opennms[\\/]reporting[\\/]jasperreports[\\/]compiler[\\/]CustomJRJdtCompiler.java" checks=".*"/>
 </suppressions>
