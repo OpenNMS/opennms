@@ -26,6 +26,7 @@
 
 
 import "telemetry_top.proto";
+option java_package = "org.opennms.netmgt.telemetry.protocols.jti.adapter.proto";
 
 
 //
