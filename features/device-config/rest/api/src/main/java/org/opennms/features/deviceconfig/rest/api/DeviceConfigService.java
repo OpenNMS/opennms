@@ -38,6 +38,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("device-config")
 @Produces(MediaType.APPLICATION_JSON)
@@ -59,7 +60,7 @@ public interface DeviceConfigService {
      * @return
      */
     @GET
-    List<DeviceConfigDto> getDeviceConfigs(
+    Response getDeviceConfigs(
             @QueryParam("limit") @DefaultValue("10") Integer limit,
             @QueryParam("offset") @DefaultValue("0") Integer offset,
             @QueryParam("orderBy") @DefaultValue("version") String orderBy,

@@ -29,8 +29,9 @@
 package org.opennms.features.deviceconfig.rest.impl;
 
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -38,6 +39,7 @@ import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDto;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigService;
+import org.opennms.web.utils.ResponseUtils;
 
 public class DefaultDeviceConfigService implements DeviceConfigService {
 
@@ -48,7 +50,7 @@ public class DefaultDeviceConfigService implements DeviceConfigService {
     }
 
     @Override
-    public List<DeviceConfigDto> getDeviceConfigs(
+    public Response getDeviceConfigs(
             Integer limit,
             Integer offset,
             String orderBy,
@@ -67,11 +69,11 @@ public class DefaultDeviceConfigService implements DeviceConfigService {
             criteriaBuilder.offset(offset);
         }
         if (orderBy != null) {
-            criteriaBuilder.orderBy(orderBy, "desc".equals(order));
+            criteriaBuilder.orderBy(orderBy, "asc".equals(order));
         }
 
         if (ipInterfaceId != null) {
-            criteriaBuilder.eq("interface_id", ipInterfaceId);
+            criteriaBuilder.eq("ipInterface.id", ipInterfaceId);
         }
 
         if (StringUtils.isNoneBlank(deviceType)) {
@@ -79,20 +81,30 @@ public class DefaultDeviceConfigService implements DeviceConfigService {
         }
 
         if (createdAfter != null) {
-            criteriaBuilder.ge("created_time", new Date(createdAfter));
+            criteriaBuilder.ge("createdTime", new Date(createdAfter));
         }
 
         if (createdBefore != null) {
-            criteriaBuilder.le("created_time", new Date(createdBefore));
+            criteriaBuilder.le("createdTime", new Date(createdBefore));
         }
 
         var criteria = criteriaBuilder.toCriteria();
 
         var deviceConfigs = deviceConfigDao.findMatching(criteria);
-
         var dtos = deviceConfigs.stream().map(DeviceConfigDto::new).collect(Collectors.toList());
 
-        return dtos;
+        if (limit != null || offset != null) {
+            criteria.setLimit(null);
+            criteria.setOffset(null);
+            var total = deviceConfigDao.countMatching(criteria);
+            return ResponseUtils.createResponse(dtos, offset, total);
+        } else {
+            if (dtos.isEmpty()) {
+                return Response.noContent().build();
+            } else {
+                return Response.ok(dtos).build();
+            }
+        }
     }
 
     @Override
