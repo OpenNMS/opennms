@@ -84,7 +84,7 @@ jobs:
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: .circleci/main.yml
-          parameters: { "trigger-setup": false, "trigger-coverage": true }
+          parameters: { "trigger-coverage": true }
 
   trigger-path-filtering:
     docker:
