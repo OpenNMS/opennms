@@ -54,7 +54,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDto;
-import org.opennms.features.deviceconfig.rest.api.DeviceConfigService;
+import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -76,7 +76,7 @@ import org.springframework.transaction.support.TransactionOperations;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DefaultDeviceConfigServiceIT {
+public class DefaultDeviceConfigRestServiceIT {
 
     @Autowired
     private NodeDao nodeDao;
@@ -87,7 +87,7 @@ public class DefaultDeviceConfigServiceIT {
     @Autowired
     private TransactionOperations operations;
 
-    private DeviceConfigService deviceConfigService;
+    private DeviceConfigRestService deviceConfigRestService;
 
     private static int INTERFACES = 2;
     private static int VERSIONS = 35;
@@ -105,7 +105,7 @@ public class DefaultDeviceConfigServiceIT {
             }
             return null;
         });
-        deviceConfigService = new DefaultDeviceConfigService(deviceConfigDao);
+        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao);
     }
 
     @After
@@ -131,7 +131,7 @@ public class DefaultDeviceConfigServiceIT {
             Long createdAfter,
             Long createdBefore
     ) {
-        var response = deviceConfigService.getDeviceConfigs(limit, offset, orderBy, order, ipInterfaceId, deviceType, createdAfter, createdBefore);
+        var response = deviceConfigRestService.getDeviceConfigs(limit, offset, orderBy, order, ipInterfaceId, deviceType, createdAfter, createdBefore);
         if (response.hasEntity()) {
             return (List<DeviceConfigDto>) response.getEntity();
         } else {

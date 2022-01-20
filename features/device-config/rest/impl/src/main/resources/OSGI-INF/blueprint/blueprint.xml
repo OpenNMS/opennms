@@ -5,10 +5,10 @@
 
     <reference id="deviceConfigDao" interface="org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao" availability="mandatory"/>
 
-    <bean id="defaultDeviceConfigService" class="org.opennms.features.deviceconfig.rest.impl.DefaultDeviceConfigService">
+    <bean id="defaultDeviceConfigRestService" class="org.opennms.features.deviceconfig.rest.impl.DefaultDeviceConfigRestService">
         <argument ref="deviceConfigDao" />
     </bean>
 
-    <service interface="org.opennms.features.deviceconfig.rest.api.DeviceConfigService" ref="defaultDeviceConfigService"/>
+    <service interface="org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService" ref="defaultDeviceConfigRestService"/>
 
 </blueprint>

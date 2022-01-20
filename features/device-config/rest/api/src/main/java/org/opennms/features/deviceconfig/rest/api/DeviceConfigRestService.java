@@ -42,7 +42,7 @@ import javax.ws.rs.core.Response;
 
 @Path("device-config")
 @Produces(MediaType.APPLICATION_JSON)
-public interface DeviceConfigService {
+public interface DeviceConfigRestService {
 
     // paging, filter by ipaddressId, created time, device type
     // order by created time (asc, desc)

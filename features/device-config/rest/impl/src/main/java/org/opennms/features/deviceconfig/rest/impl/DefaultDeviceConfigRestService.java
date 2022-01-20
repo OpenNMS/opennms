@@ -38,14 +38,14 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDto;
-import org.opennms.features.deviceconfig.rest.api.DeviceConfigService;
+import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.web.utils.ResponseUtils;
 
-public class DefaultDeviceConfigService implements DeviceConfigService {
+public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     private final DeviceConfigDao deviceConfigDao;
 
-    public DefaultDeviceConfigService(DeviceConfigDao deviceConfigDao) {
+    public DefaultDeviceConfigRestService(DeviceConfigDao deviceConfigDao) {
         this.deviceConfigDao = deviceConfigDao;
     }
 
