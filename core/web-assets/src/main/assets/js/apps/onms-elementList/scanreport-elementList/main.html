@@ -8,7 +8,7 @@
 				<div class="modal-body">
 					<!-- Filter form -->
 					<label>Add Filter</label>
-					<form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
+					<form class="form-inline" onsubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
 						<div class="input-group">
 						<select class="form-control custom-select" ng-model="clause.property" ng-init="clause.property = 'id'">
 							<option value="id">ID</option>
@@ -23,8 +23,8 @@
 							<option value="GT">&gt;</option>
 							<option value="GE">&gt;=</option>
 						</select>
-						<input class="form-control" type="text" ng-model="clause.value" ng-if="clause.property !== 'timestamp'" />
-						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-if="clause.property === 'timestamp'"/>
+						<input class="form-control" type="text" ng-model="clause.value" ng-if="clause.property !== 'timestamp'">
+						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-if="clause.property === 'timestamp'">
 						</div>
 						<button class="btn btn-secondary btn-sm mt-2" type="submit">Submit</button>
 					</form>
@@ -70,7 +70,7 @@
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<div class="modal-body">
-					<scan-report-details report="selectedScanReport"/>
+					<scan-report-details report="selectedScanReport"></scan-report-details>
 				</div>
 			</div>
 		</div>
@@ -81,7 +81,7 @@
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<div class="modal-body">
-					<scan-report-logs report="selectedScanReport"/>
+					<scan-report-logs report="selectedScanReport"></scan-report-logs>
 				</div>
 			</div>
 		</div>
@@ -165,7 +165,7 @@
 								<i class="fa fa-th-list"></i>
 							</div>
 						</div>
-						<input class="form-control" type="number" ng-model="query.newLimit"/>
+						<input class="form-control" type="number" ng-model="query.newLimit">
 					</div>
 
 					<div class="btn-group mr-1">
@@ -184,7 +184,7 @@
 		</div>
 	</div>
 
-	<br/>
+	<br>
 
 	<div class="card">
 		<!-- The style is here to override a weird Chrome user agent stylesheet issue -->
@@ -193,23 +193,23 @@
 				<tr>
 					<th class="text-nowrap">
 						<a ng-click="changeOrderBy('id')">ID</a>
-						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
+						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
 					</th>
 					<th class="text-nowrap">
 						<a ng-click="changeOrderBy('location')">Location</a>
-						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
+						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
 					</th>
 					<th class="text-nowrap">
 						<a ng-click="changeOrderBy('applications')">Application</a>
-						<i ng-show="query.orderBy === 'applications' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'applications' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'applications' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
+						<i ng-show="query.orderBy === 'applications' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
 					</th>
 					<th class="text-nowrap">
 						<a ng-click="changeOrderBy('timestamp')">Scan Time</a>
-						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
+						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
 					</th>
 					<!--
 					<th class="col-sm-6 text-nowrap">
@@ -224,32 +224,32 @@
 				<tr ng-repeat="item in items track by item.id">
 					<td class="text-nowrap" style="line-height:24px;">
 						<a ng-click="selectScanReport(item)" onClick="$('#scanReportDetailsModal').modal()"><samp>{{item.id}}</samp></a>
-						<a style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash-o fa-lg"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash-o fa-lg"></i></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"></i></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o fa-lg"></i></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						{{item.location}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o fa-lg"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o fa-lg"></i></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"></i></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.properties.applications !== undefined &amp;&amp; item.properties.applications !== null &amp;&amp; item.properties.applications !== ''">
 							{{item.properties.applications}}
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'applications',operator:'EQ',value:item.properties.applications})"><i class="fa fa-plus-square-o fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'applications',operator:'NE',value:item.properties.applications})"><i class="fa fa-minus-square-o fa-lg"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'applications',operator:'EQ',value:item.properties.applications})"><i class="fa fa-plus-square-o fa-lg"></i></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'applications',operator:'NE',value:item.properties.applications})"><i class="fa fa-minus-square-o fa-lg"></i></a>
 						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.timestamp !== null">
 							{{item.timestamp | onmsDate}}
-							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'timestamp',operator:'GE',value:item.timestamp})"><i class="fa fa-toggle-left fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'timestamp',operator:'LE',value:item.timestamp})"><i class="fa fa-toggle-right fa-lg"/></a>
+							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'timestamp',operator:'GE',value:item.timestamp})"><i class="fa fa-toggle-left fa-lg"></i></a>
+							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'timestamp',operator:'LE',value:item.timestamp})"><i class="fa fa-toggle-right fa-lg"></i></a>
 						</span>
 					</td>
 					<!--
 					<td>
-						<onms-list-edit-map-in-place values="item.properties" value-type="'text'" on-edit="update(item)"/>
+						<onms-list-edit-map-in-place values="item.properties" value-type="'text'" on-edit="update(item)"></onms-list-edit-map-in-place>
 					</td>
 					-->
 					<td>

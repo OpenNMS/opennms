@@ -32,7 +32,7 @@
                    ng-required="true"
                    ng-model="geocoder.config.apiKey"
                    ng-class="{ 'is-invalid' : form.googleApiKey.$invalid || configError.apiKey }"
-            />
+            >
             <p id="configError.apiKey" class="invalid-feedback">{{configError.apiKey || "Please provide a value"}}</p>
         </div>
         <div class="form-group" ng-if="geocoder.config.useEnterpriseCredentials">
@@ -44,7 +44,7 @@
                    ng-required="true"
                    ng-model="geocoder.config.clientId"
                    ng-class="{ 'is-invalid' : form.googleClientId.$invalid || configError.clientId }"
-            />
+            >
             <p id="configError.clientId" class="invalid-feedback">{{configError.clientId || "Please provide a value"}}</p>
         </div>
         <div class="form-group" ng-if="geocoder.config.useEnterpriseCredentials">
@@ -56,7 +56,7 @@
                    ng-required="true"
                    ng-model="geocoder.config.signature"
                    ng-class="{ 'is-invalid' : form.googleClientKey.$invalid || configError.signature }"
-            />
+            >
             <p id="configError.signature" class="invalid-feedback">{{configError.signature || "Please provide a value"}}</p>
         </div>
         <div class="form-group">
@@ -68,8 +68,8 @@
                    type="number"
                    ng-model="geocoder.config.timeout"
                    ng-class="{ 'is-invalid' : form.googleTimeout.$invalid || configError.timeout }"
-            />
-            <p id="configError.timeout" class="invalid-feedback">{{configError.timeout || "Timeout must be >= 0"}}</p>
+            >
+            <p id="configError.timeout" class="invalid-feedback">{{configError.timeout || "Timeout must be &gt;= 0"}}</p>
         </div>
         <div class="form-group">
             <label class="mr-2" for="googleSystemProxy">Use System Proxy</label>
@@ -80,7 +80,7 @@
                     off="No"
                     size="btn-sm"
                     ng-class="{ 'is-invalid' : form.googleSystemProxy.$invalid || configError.useSystemProxy }"
-            />
+            ></toggle>
             <p id="configError.useSystemProxy" class="invalid-feedback">{{configError.useSystemProxy}}</p>
         </div>
 
