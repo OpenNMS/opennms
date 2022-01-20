@@ -120,12 +120,12 @@ public class ConfigSwaggerConverter {
      * @return
      */
     public static OpenAPI setupServers(OpenAPI openapi, List<String> urls) {
-        final List<Server> servers = new ArrayList<>(urls.size());
-        urls.forEach(url -> {
+        final List<Server> servers = urls.stream().map(url -> {
             Server server = new Server();
             server.setUrl(url);
-            servers.add(server);
-        });
+            return server;
+        }).collect(Collectors.toList());
+
         openapi.setServers(servers);
         return openapi;
     }

@@ -86,7 +86,7 @@ public class ImportConfiguration extends AbstractCmChange {
         validationErrors.checkRequiredField("filePath", this.filePath);
 
         String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
-        this.etcFile = Path.of(opennmsHome + "/etc/" + this.filePath);
+        this.etcFile = Path.of(opennmsHome).resolve("etc").resolve(this.filePath);
         configResource = new FileSystemResource(etcFile.toString()); // check etc dir first
         if (!configResource.isReadable()) {
             configResource = new ClassPathResource("/defaults/"+this.filePath); // fallback: default config

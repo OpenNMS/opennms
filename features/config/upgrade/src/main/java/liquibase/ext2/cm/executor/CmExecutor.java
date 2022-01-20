@@ -45,13 +45,6 @@ import liquibase.statement.SqlStatement;
  */
 @LiquibaseService
 public class CmExecutor extends JdbcExecutor {
-
-// Liqui 4.4.3
-//    @Override
-//    public int getPriority() {
-//        return PRIORITY_SPECIALIZED;
-//    }
-
     @Override
     public void execute(final SqlStatement sql, final List<SqlVisitor> sqlVisitors) throws DatabaseException {
         if (sql instanceof AbstractCmStatement && this.database instanceof CmDatabase) {
@@ -62,5 +55,4 @@ public class CmExecutor extends JdbcExecutor {
         // not our statement => delegate to parent
         super.execute(sql, sqlVisitors);
     }
-
 }

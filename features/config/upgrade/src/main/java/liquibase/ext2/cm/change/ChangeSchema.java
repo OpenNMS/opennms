@@ -92,14 +92,13 @@ public class ChangeSchema extends AbstractCmChange {
                     Optional<ConfigDefinition> definitionOpt = null;
                     definitionOpt = ((CmDatabase) database).getConfigurationManager().getRegisteredConfigDefinition(this.schemaId);
                     ConfigDefinition definition;
-                    if (definitionOpt.isEmpty()) {
+                    definition = definitionOpt.orElseGet(()->{
                         // Create a new one
-                        definition = new ConfigDefinition(this.schemaId);
-                        definition.setConfigName(this.schemaId);
-                        cm.registerConfigDefinition(this.schemaId, definition);
-                    } else {
-                        definition = definitionOpt.get();
-                    }
+                        ConfigDefinition newDefinition = new ConfigDefinition(this.schemaId);
+                        newDefinition.setConfigName(this.schemaId);
+                        cm.registerConfigDefinition(this.schemaId, newDefinition);
+                        return newDefinition;
+                    });
 
                     OpenAPIBuilder builder = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, ConfigurationManagerService.BASE_PATH, definition.getSchema());
 
