@@ -12,9 +12,9 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - source-v2-{{ .Branch }}-{{ .Revision }}
-              - source-v2-{{ .Branch }}-
-              - source-v2-
+              - source-v3-{{ .Branch }}-{{ .Revision }}
+              - source-v3-{{ .Branch }}-
+              - source-v3-
         - checkout
         - run:
             name: git config merge.renameLimit

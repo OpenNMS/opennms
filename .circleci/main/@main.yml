@@ -60,9 +60,9 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - source-v2-{{ .Branch }}-{{ .Revision }}
-              - source-v2-{{ .Branch }}-
-              - source-v2-
+              - source-v3-{{ .Branch }}-{{ .Revision }}
+              - source-v3-{{ .Branch }}-
+              - source-v3-
         - checkout
         - run:
             name: git config merge.renameLimit
@@ -70,8 +70,11 @@ commands:
         - run:
             name: git fetch origin
             command: git fetch origin
+  save-cached-checkout:
+      description: "Cache a checkout"
+      steps:
         - save_cache:
-            key: source-v2-{{ .Branch }}-{{ .Revision }}
+            key: source-v3-{{ .Branch }}-{{ .Revision }}
             paths:
               - ".git"
   cached-checkout-for-pushing:
@@ -250,6 +253,7 @@ commands:
         type: string
     steps:
       - cached-checkout
+      - save-cached-checkout
       - extract-pom-version
       - run:
           name: Check for Releasability
