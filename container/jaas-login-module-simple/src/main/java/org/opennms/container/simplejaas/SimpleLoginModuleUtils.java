@@ -57,6 +57,12 @@ public abstract class SimpleLoginModuleUtils {
 
     public static boolean doLogin(final SimpleOpenNMSLoginHandler handler, final Subject subject, final Map<String, ?> sharedState, final Map<String, ?> options) throws LoginException {
         LOG.debug("OpenNMSLoginModule: login(): handler={}, subject={}, sharedState={}, options={}", handler.getClass(), subject.getClass(), sharedState, options);
+
+        if (handler.callbackHandler() == null) {
+            // Shortcut if we have no callback handler - there is nothing to do here
+            return false;
+        }
+
         final Callback[] callbacks = new Callback[2];
 
         // A U T H E N T I C A T I O N
@@ -111,13 +117,11 @@ public abstract class SimpleLoginModuleUtils {
             throw new FailedLoginException(msg);
         }
 
-        /* temporary remove, taking too long during debug
         if (!userConfig.comparePasswords(user, password)) {
             final String msg = "Login failed: passwords did not match for User "+ user + " in OpenNMS UserConfig.";
             LOG.debug(msg);
             throw new FailedLoginException(msg);
         };
-        */
 
         final Set<Principal> principals = SimpleLoginModuleUtils.createPrincipals(handler, configUser);
         handler.setPrincipals(principals);
@@ -152,11 +156,26 @@ public abstract class SimpleLoginModuleUtils {
     */
     private static Set<Principal> createPrincipals(SimpleOpenNMSLoginHandler handler, User configUser) {
         final Set<Principal> principals = new LinkedHashSet<>();
+
+        principals.add(new UserPrincipal(configUser.getUserId()));
+
         for (final String role : configUser.getRoles()) {
-            principals.add(new UserPrincipal(role));
             principals.add(new RolePrincipal(role));
+
+            //
+            // ALSO add the normalized role name (e.g. ROLE_ADMIN => admin) unless it is the same.  This may eventually
+            //  be reworked to only support one or the other (that is either [A] support ROLE_* in config with * in
+            //  code, or [B] require the config and code IDs to match).
+            //
+            String normalizedRoleName = SimpleLoginModuleUtils.normalizeRoleName(role);
+            if (! normalizedRoleName.equals(role)) {
+                principals.add(new RolePrincipal(normalizedRoleName));
+            }
         }
         return principals;
     }
 
+    private static String normalizeRoleName(String role) {
+        return role.toLowerCase().replaceAll("^role_", "");
+    }
 }

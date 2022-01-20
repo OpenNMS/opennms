@@ -1,0 +1,50 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ This file is part of OpenNMS(R).
+  ~
+  ~ Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+  ~ OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+  ~
+  ~ OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+  ~
+  ~ OpenNMS(R) is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as published
+  ~ by the Free Software Foundation, either version 3 of the License,
+  ~ or (at your option) any later version.
+  ~
+  ~ OpenNMS(R) is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with OpenNMS(R).  If not, see:
+  ~      http://www.gnu.org/licenses/
+  ~
+  ~ For more information contact:
+  ~     OpenNMS(R) Licensing <license@opennms.org>
+  ~     http://www.opennms.org/
+  ~     http://www.opennms.com/
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+    <cm:property-placeholder id="datasourceProperties" persistent-id="org.opennms.core.schema-liquibase" update-strategy="reload">
+    </cm:property-placeholder>
+
+    <bean id="opennmsLiquibaseChangeLogProvider" class="org.opennms.core.schema.liquibase.internal.OpennmsLiquibaseChangeLogProviderImpl"/>
+
+    <service ref="opennmsLiquibaseChangeLogProvider" interface="org.opennms.core.schema.liquibase.OpennmsLiquibaseChangeLogProvider"/>
+</blueprint>

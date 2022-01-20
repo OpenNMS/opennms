@@ -45,159 +45,25 @@
             </Export-Package>
             <Private-Package>
               org.opennms.web.rest.support,
-              org.opennms.netmgt.alarmd.rest.internal
+              org.opennms.netmgt.alarmd.rest.internal,
+              org.opennms.netmgt.alarmd.rest.cxf,
+              org.opennms.netmgt.alarmd.rest.jaxrs
             </Private-Package>
           </instructions>
         </configuration>
       </plugin>
-
-      <plugin> <!-- for starting/loading the container for the IT -->
-        <groupId>io.fabric8</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <version>0.23.0</version>
-        <configuration>
-          <skip>${skipTests}</skip>
-          <showLogs>true</showLogs>
-          <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
-          <images>
-            <image>
-              <name>alarm-application-it-image</name>
-              <alias>application</alias>
-              <build>
-                <from>apache/karaf:4.3.2</from>
-                <!-- <from>artnaseef/karaf:4.3.3</from> -->
-                <!-- <from>artnaseef/karaf:4.3.3</from>  4.3.2 shouldn't be necessary since hotdeploy works locally -->
-                <!-- 4.3.3 checks for stdin (tty) it shuts down shell, which shuts down the container: entryPoint -->
-                <!-- <from>mkroli/karaf:4.3</from>  4.2 in case hotdeploy is broken -->
-
-                <assembly>
-                  <!-- <user>karaf:users:karaf</user> -->
-                  <targetDir>/</targetDir>
-
-                  <inline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                          xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-                          xsi:schemaLocation="
-                                             http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2
-                                             http://maven.apache.org/xsd/assembly-1.1.2.xsd
-                                             ">
-                    <files> <!-- ~~~~~~~~~~CONFIG~~~~~~~~~~~ -->
-                      <file>
-                        <source> <!-- use the local dkcer karaf mounted .m2 -->
-                          ${project.build.testOutputDirectory}/org.ops4j.pax.url.mvn.cfg
-                        </source>
-                        <outputDirectory>/opt/karaf/etc</outputDirectory>
-                        <!-- <outputDirectory>/opt/apache-karaf/etc</outputDirectory> -->
-                        <destName>org.ops4j.pax.url.mvn.cfg</destName>
-                      </file>
-                      <file>
-                        <source> <!-- config for alarm rest service is currently empty -->
-                          ${project.build.testOutputDirectory}/custom.system.properties
-                        </source>
-                        <outputDirectory>/opt/karaf/etc</outputDirectory>
-                        <!-- <outputDirectory>/opt/apache-karaf/etc</outputDirectory> -->
-                        <destName>custom.system.properties</destName>
-                      </file>
-                    </files>
-
-                  </inline>
-                </assembly>
-                <!--
-                <entryPoint>
-                  <exec>
-                    <arg>/opt/karaf/bin/karaf</arg>
-                    <arg>run</arg>
-                  </exec>
-                </entryPoint>
-                -->
-              </build>
-              <run>
-                <ports>
-                  <port>karaf-ssh-port:8101</port>
-                  <port>karaf-http-port:8181</port>
-                </ports>
-                <wait>
-                  <http>
-                    <!-- // curl -X GET http://localhost:8181/cxf/alarmservice/alarms/list -->
-                    <url>http://localhost:${karaf-http-port}/cxf/alarmservice</url>
-                    <method>GET</method>
-                  </http>
-                  <time>100000</time> <!-- local hotdeploy takes about 10000 -->
-                </wait>
-                <volumes> <!-- ~~~~~~~~~~DEPLOY~~~~~~~~~~~ -->
-                  <bind>
-                    <!--<volume>${user.home}/.m2:/opt/karaf/.m2</volume>-->
-                    <volume>${user.home}/.m2:/opt/apache-karaf/.m2</volume>
-                    <!--<volume>${project.build.testOutputDirectory}/deploy:/opt/karaf/deploy</volume>-->
-                    <volume>${project.build.testOutputDirectory}/deploy:/opt/apache-karaf/deploy</volume>
-                  </bind>
-                </volumes>
-                <network>
-                  <mode>custom</mode>
-                  <name>alarm-network</name>
-                  <alias>application</alias>
-                </network>
-              </run>
-            </image>
-          </images>
-        </configuration>
-        <executions>
-          <execution>
-            <id>start-before-integration-test</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>build</goal>
-              <goal>start</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>stop-after-integration-test</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>stop</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin> <!-- for running the integration tests -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.18</version>
-        <inherited>false</inherited>
-        <configuration>
-            <skipITs>${skipTests}</skipITs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-            </goals>
-            <configuration>
-              <reuseForks>true</reuseForks>
-              <useSystemClassLoader>false</useSystemClassLoader>
-              <systemProperties>
-                <property>
-                  <name>alarm.service.url</name>
-                  <value>http://localhost:${karaf-http-port}</value>
-                </property>
-              </systemProperties>
-            </configuration>
-          </execution>
-          <execution>
-            <id>verify-it</id>
-            <goals>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
     </plugins>
   </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.features.rest</groupId>
+      <artifactId>org.opennms.features.rest.mapper</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- needed for pulling the principle from the container -->
@@ -211,6 +77,20 @@
       <groupId>org.opennms.container</groupId>
       <artifactId>org.opennms.container.jaas-login-module-simple</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.jaxrs</artifactId>
+      <version>1.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.component.annotations</artifactId>
+      <version>1.4.0</version>
       <scope>provided</scope>
     </dependency>
 

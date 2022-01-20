@@ -357,12 +357,16 @@ feature:install scv-jceks-impl
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
     </feature>
 
+    <feature name="sentinel-jackson">
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson2Version}</bundle>
+    </feature>
 
-    <!-- factor out hard-coded versions -->
-    <feature name="sentinel-alarmd" description="OpenNMS :: Alarms :: Daemon" version="${project.version}">
-
-        <feature>sentinel-eventd</feature>
-
+    <feature name="sentinel-kie-drools">
         <!-- org.kie.api.KieServices -->
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/1.4.8_1</bundle>
         <bundle>mvn:org.kie.soup/kie-soup-commons/7.31.0.Final</bundle>
@@ -386,9 +390,21 @@ feature:install scv-jceks-impl
         <bundle>wrap:mvn:org.eclipse.jdt.core.compiler/ecj/4.4.2$Bundle-SymbolicName=Eclipse-JDT-Compiler&amp;Bundle-Version=4.4.2</bundle>
         <bundle>wrap:mvn:org.codehaus.janino/janino/2.5.16$Bundle-SymbolicName=Codehaus-Janino&amp;Bundle-Version=2.5.16</bundle>
         <bundle>mvn:org.apache.geronimo.specs/geronimo-atinject_1.0_spec/1.0</bundle>
+    </feature>
 
-        <bundle>mvn:org.opennms/opennms-alarm-api/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle>
+    <!-- factor out hard-coded versions -->
+    <feature name="sentinel-alarmd" description="OpenNMS :: Alarms :: Daemon" version="${project.version}">
+
+        <feature>sentinel-eventd</feature>
+
+        <feature>sentinel-kie-drools</feature>
+
+        <bundle>mvn:org.opennms/opennms-alarm-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-alarmd/${project.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson2Version}</bundle>
+        <bundle>mvn:org.opennms.features.rest/org.opennms.features.rest.model/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.rest/org.opennms.features.rest.mapper/${project.version}</bundle>
+
     </feature>
 
     <!--
@@ -399,30 +415,56 @@ feature:install scv-jceks-impl
     bundle:install -s wrap:mvn:org.opennms/opennms-webapp-rest/30.0.0-SNAPSHOT  mvn:javax.annotation/javax.annotation-api/1.3.2 mvn:org.opennms.container/org.opennms.container.jaas-login-module-simple/30.0.0-SNAPSHOT mvn:org.opennms/opennms-alarm-rest/30.0.0-SNAPSHOT
     -->
     <feature name="sentinel-alarmd-rest" description="OpenNMS :: Alarms :: Rest"  version="${project.version}">
-        <feature>scv-jceks-impl</feature>
-
         <feature>http</feature>
         <feature>jetty</feature>
         <feature>cxf-jaxrs</feature>
+        <feature>cxf-sse</feature>
 
-        <!-- below already loaded in feature "opennms-core", so might not be necessary
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson.version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson.version}</bundle>
-        -->
-        <!--
-        bundle:install -s wrap:mvn:org.opennms/opennms-webapp-rest/30.0.0-SNAPSHOT
-        bundle:install -s mvn:javax.annotation/javax.annotation-api/1.3.2
-        bundle:install -s mvn:org.opennms/opennms-alarm-rest/30.0.0-SNAPSHOT
-        -->
+        <feature>aries-blueprint</feature>
+        <feature>sentinel-jackson</feature>
+        <feature>scv-jceks-impl</feature>
+
+        <feature>opennms-config</feature>
         <feature>sentinel-alarmd</feature>
         <feature>jaas-deployer</feature>
-        <bundle>mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
-        <bundle>mvn:org.opennms.container/org.opennms.container.jaas-login-module-simple/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms/opennms-alarm-rest/30.0.0-SNAPSHOT</bundle>
 
+        <bundle>mvn:org.apache.aries.component-dsl/org.apache.aries.component-dsl.component-dsl/1.2.2</bundle>
+        <feature>aries-jax-rs-whiteboard</feature>
+        <feature>aries-jax-rs-whiteboard-jackson</feature>
+
+        <bundle>mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
+        <bundle>mvn:org.opennms.container/org.opennms.container.jaas-login-module-simple/${project.version}</bundle>
+
+        <bundle>mvn:org.opennms/opennms-alarm-rest/${project.version}</bundle>
+
+    </feature>
+
+    <feature name="sentinel-events-rest" description="OpenNMS :: Features :: Events :: Rest"  version="${project.version}">
+        <feature>http</feature>
+        <feature>jetty</feature>
+        <feature>cxf-jaxrs</feature>
+        <feature>cxf-sse</feature>
+
+        <feature>aries-blueprint</feature>
+        <feature>sentinel-jackson</feature>
+        <feature>scv-jceks-impl</feature>
+
+        <feature>sentinel-kie-drools</feature>
+        <feature>sentinel-eventd</feature>
+
+        <feature>opennms-config</feature>
+        <feature>jaas-deployer</feature>
+
+        <bundle>mvn:org.apache.aries.component-dsl/org.apache.aries.component-dsl.component-dsl/1.2.2</bundle>
+        <feature>aries-jax-rs-whiteboard</feature>
+        <feature>aries-jax-rs-whiteboard-jackson</feature>
+
+        <bundle>mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
+        <bundle>mvn:org.opennms.container/org.opennms.container.jaas-login-module-simple/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.rest/org.opennms.features.rest.model/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.rest/org.opennms.features.rest.mapper/${project.version}</bundle>
+
+        <bundle>mvn:org.opennms.features/org.opennms.features.events.rest/${project.version}</bundle>
     </feature>
 
 </features>

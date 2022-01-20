@@ -47,6 +47,15 @@
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.db</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.schema</artifactId>
+        </dependency>
+        <!-- <dependency> -->
+            <!-- <groupId>org.opennms.core</groupId> -->
+            <!-- <artifactId>org.opennms.core.schema</artifactId> -->
+            <!-- <classifier>liquibase</classifier> -->
+        <!-- </dependency> -->
     </dependencies>
 
 </project>

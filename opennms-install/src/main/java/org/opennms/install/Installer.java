@@ -69,7 +69,10 @@ import org.opennms.bootstrap.FilesystemPermissionValidator;
 import org.opennms.core.db.DataSourceConfigurationFactory;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.logging.Logging;
-import org.opennms.core.schema.Migrator;
+import org.opennms.core.schema.MigratorAdminInitialize;
+import org.opennms.core.schema.migrator.Migrator;
+import org.opennms.core.schema.migrator.SpringContextBasedLiquibaseExecutor;
+import org.opennms.core.schema.migrator.SpringContextBasedMigratorResourceProvider;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
@@ -77,6 +80,7 @@ import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.best.BestMatchPingerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.StringUtils;
 
@@ -124,7 +128,6 @@ public class Installer {
 
     protected Options options = new Options();
     protected CommandLine m_commandLine;
-    private Migrator m_migrator = new Migrator();
 
     Properties m_properties = null;
 
@@ -154,38 +157,6 @@ public class Installer {
         parseArguments(argv);
 
         final boolean doDatabase = (m_update_database || m_update_iplike);
-
-        GenericApplicationContext context = null;
-        if (doDatabase) {
-            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
-
-            InputStream is = new FileInputStream(cfgFile);
-            final JdbcDataSource adminDsConfig = new DataSourceConfigurationFactory(is).getJdbcDataSource(ADMIN_DATA_SOURCE_NAME);
-            final DataSource adminDs = new SimpleDataSource(adminDsConfig);
-            is.close();
-
-            is = new FileInputStream(cfgFile);
-            final JdbcDataSource dsConfig = new DataSourceConfigurationFactory(is).getJdbcDataSource(OPENNMS_DATA_SOURCE_NAME);
-            final DataSource ds = new SimpleDataSource(dsConfig);
-            is.close();
-
-            context = new GenericApplicationContext();
-            context.setClassLoader(Bootstrap.loadClasses(new File(m_opennms_home), true));
-
-            m_migrator.setApplicationContext(context);
-            m_migrator.getLiquibaseChangelogs(true);
-
-            m_migrator.setDataSource(ds);
-            m_migrator.setAdminDataSource(adminDs);
-            m_migrator.setValidateDatabaseVersion(!m_ignore_database_version);
-
-            m_migrator.setDatabaseName(dsConfig.getDatabaseName());
-            m_migrator.setSchemaName(dsConfig.getSchemaName());
-            m_migrator.setAdminUser(adminDsConfig.getUserName());
-            m_migrator.setAdminPassword(adminDsConfig.getPassword());
-            m_migrator.setDatabaseUser(dsConfig.getUserName());
-            m_migrator.setDatabasePassword(dsConfig.getPassword());
-        }
 
         checkIPv6();
 
@@ -231,17 +202,46 @@ public class Installer {
         }
 
         if (doDatabase) {
-            LOG.info(String.format("* using '%s' as the PostgreSQL user for OpenNMS", m_migrator.getAdminUser()));
-            LOG.info(String.format("* using '%s' as the PostgreSQL database name for OpenNMS", m_migrator.getDatabaseName()));
-            if (m_migrator.getSchemaName() != null) {
-                LOG.info(String.format("* using '%s' as the PostgreSQL schema name for OpenNMS", m_migrator.getSchemaName()));
+
+            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
+
+            InputStream is = new FileInputStream(cfgFile);
+            final JdbcDataSource adminDsConfig = new DataSourceConfigurationFactory(is).getJdbcDataSource(ADMIN_DATA_SOURCE_NAME);
+            final DataSource adminDs = new SimpleDataSource(adminDsConfig);
+            is.close();
+
+            is = new FileInputStream(cfgFile);
+            final JdbcDataSource dsConfig = new DataSourceConfigurationFactory(is).getJdbcDataSource(OPENNMS_DATA_SOURCE_NAME);
+            final DataSource ds = new SimpleDataSource(dsConfig);
+            is.close();
+
+            GenericApplicationContext context = new GenericApplicationContext();
+            context.setClassLoader(Bootstrap.loadClasses(new File(m_opennms_home), true));
+
+            //
+            // STEP 1 - Initialize the Database
+            //
+            MigratorAdminInitialize migratorAdminInitialize = this.prepareMigratorAdminInitialize(adminDs, adminDsConfig, dsConfig);
+
+            LOG.info(String.format("* using '%s' as the PostgreSQL user for OpenNMS", migratorAdminInitialize.getAdminUser()));
+            LOG.info(String.format("* using '%s' as the PostgreSQL database name for OpenNMS", migratorAdminInitialize.getDatabaseName()));
+            if (migratorAdminInitialize.getSchemaName() != null) {
+                LOG.info(String.format("* using '%s' as the PostgreSQL schema name for OpenNMS", migratorAdminInitialize.getSchemaName()));
             }
 
-            m_migrator.setupDatabase(m_update_database, m_do_vacuum, m_do_vacuum, m_update_iplike, m_timescaleDB);
+            migratorAdminInitialize.initializeDatabase(m_update_database, m_timescaleDB);
+
+
+            //
+            // STEP 2 - Migrate
+            //
+            Migrator migrator = this.prepareMigrator(context, adminDs, adminDsConfig, ds, dsConfig);
+            // TODO: what about m_do_full_vacuum?
+            migrator.setupDatabase(m_update_database, m_do_vacuum, m_do_vacuum, m_update_iplike, m_timescaleDB);
 
             // XXX why do both options need to be set to remove the database?
             if (m_update_database && m_remove_database) {
-                m_migrator.dropDatabase();
+                migratorAdminInitialize.dropDatabase();
             }
 
             if (m_update_database) {
@@ -268,6 +268,50 @@ public class Installer {
             System.setProperty("opennms.manager.class", "org.opennms.upgrade.support.Upgrade");
             Bootstrap.main(new String[] {});
         }
+    }
+
+    private MigratorAdminInitialize prepareMigratorAdminInitialize(DataSource adminDataSource, JdbcDataSource adminDsConfig, JdbcDataSource dsConfig) {
+        MigratorAdminInitialize migratorAdminInitialize = new MigratorAdminInitialize();
+
+        migratorAdminInitialize.setAdminDataSource(adminDataSource);
+        migratorAdminInitialize.setAdminUser(adminDsConfig.getUserName());
+        migratorAdminInitialize.setAdminPassword(adminDsConfig.getPassword());
+
+        migratorAdminInitialize.setDatabaseName(dsConfig.getDatabaseName());
+        migratorAdminInitialize.setSchemaName(dsConfig.getSchemaName());
+        migratorAdminInitialize.setDatabaseUser(dsConfig.getUserName());
+        migratorAdminInitialize.setDatabasePassword(dsConfig.getPassword());
+        migratorAdminInitialize.setValidateDatabaseVersion(! this.m_ignore_database_version);
+
+        return migratorAdminInitialize;
+    }
+
+    private Migrator prepareMigrator(
+            ApplicationContext applicationContext,
+            DataSource adminDataSource,
+            JdbcDataSource adminDsConfig,
+            DataSource dataSource,
+            JdbcDataSource dataSourceConfig
+    ) {
+
+        SpringContextBasedMigratorResourceProvider resourceProvider =
+                new SpringContextBasedMigratorResourceProvider(applicationContext);
+        SpringContextBasedLiquibaseExecutor liquibaseExecutor =
+                new SpringContextBasedLiquibaseExecutor(applicationContext);
+
+        Migrator migrator = new Migrator(resourceProvider, liquibaseExecutor);
+
+        migrator.setAdminDataSource(adminDataSource);
+        migrator.setAdminUser(adminDsConfig.getUserName());
+        migrator.setAdminPassword(adminDsConfig.getPassword());
+
+        migrator.setDataSource(dataSource);
+        migrator.setDatabaseName(dataSourceConfig.getDatabaseName());
+        migrator.setSchemaName(dataSourceConfig.getSchemaName());
+        migrator.setDatabaseUser(dataSourceConfig.getUserName());
+        migrator.setDatabasePassword(dataSourceConfig.getPassword());
+
+        return migrator;
     }
 
     private void checkIPv6() {

@@ -1387,6 +1387,7 @@
     <concurrentTreesVersion>2.5.0</concurrentTreesVersion>
     <c3p0Version>0.9.5.4</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
+    <cucumberVersion>7.1.0</cucumberVersion>
     <cxfVersion>3.4.5</cxfVersion>
     <cxfServiceDescriptionOpenapiVersion>3.2.4</cxfServiceDescriptionOpenapiVersion>
     <cxfXjcVersion>3.3.0</cxfXjcVersion>
@@ -1487,6 +1488,7 @@
     <rancidApiVersion>1.0.5</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.1</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
+    <restAssuredVersion>4.3.3</restAssuredVersion>
     <rocksdbjniVersion>6.19.3</rocksdbjniVersion>
     <scalaLibraryVersion>2.13.7</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.4</scalaLoggingVersion>
@@ -2005,8 +2007,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
-        <artifactId>org.opennms.core.schema</artifactId>
-        <classifier>liquibase</classifier>
+        <artifactId>org.opennms.core.schema-liquibase</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2180,6 +2181,11 @@
       <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.phonebook</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.rest</groupId>
+        <artifactId>org.opennms.features.rest.mapper</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3298,6 +3304,26 @@
         <version>2.2.2</version>
       </dependency>
       <dependency>
+        <groupId>io.cucumber</groupId>
+          <artifactId>cucumber-core</artifactId>
+        <version>${cucumberVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.cucumber</groupId>
+        <artifactId>cucumber-java</artifactId>
+        <version>${cucumberVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.cucumber</groupId>
+        <artifactId>cucumber-junit</artifactId>
+        <version>${cucumberVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.cucumber</groupId>
+        <artifactId>cucumber-picocontainer</artifactId>
+        <version>${cucumberVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>com.helger</groupId>
         <artifactId>dhcp4java</artifactId>
         <version>${dhcp4javaVersion}</version>
@@ -3672,6 +3698,11 @@
         <artifactId>powermock-api-mockito2</artifactId>
         <version>${powermockVersion}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.rest-assured</groupId>
+        <artifactId>rest-assured</artifactId>
+        <version>${restAssuredVersion}</version>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>

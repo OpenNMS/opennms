@@ -1,0 +1,265 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>opennms-alarms</artifactId>
+    <version>30.0.0-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>opennms-alarm-rest-docker-it</artifactId>
+  <name>OpenNMS :: Alarms :: Rest</name>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>false</filtering>
+      </testResource>
+      <testResource>
+        <directory>src/test/resources-filtered</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
+    <plugins>
+
+      <!--         -->
+      <!--  DOCKER -->
+      <!--         -->
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.23.0</version>
+        <configuration>
+          <skip>${skipTests}</skip>
+          <showLogs>true</showLogs>
+          <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
+          <images>
+
+            <!--                -->
+            <!-- POSTGRES IMAGE -->
+            <!--                -->
+            <image>
+              <name>postgres-it-image</name>
+              <alias>postgres-host</alias>
+              <build>
+                <!-- POSTGRES VERSION PROPERTY -->
+                <from>postgres:13.3-alpine</from>
+              </build>
+              <run>
+                <env>
+                  <POSTGRES_HOST_AUTH_METHOD>trust</POSTGRES_HOST_AUTH_METHOD>
+                </env>
+                <ports>
+                  <port>postgres-db-port:5432</port>
+                </ports>
+                <wait>
+                  <log>(?s)PostgreSQL init process complete; ready for start up..*database system is ready to accept connections</log>
+                </wait>
+                <ports>
+                  <port>postgresql.port:5432</port>
+                </ports>
+                <network>
+                  <mode>custom</mode>
+                  <name>alarm-docker-it-network</name>
+                  <alias>postgres-host</alias>
+                </network>
+              </run>
+            </image>
+
+
+            <!--                    -->
+            <!-- APPLICATION IMAGE  -->
+            <!--                    -->
+            <image>
+              <name>alarm-application-it-image</name>
+              <alias>application</alias>
+              <build>
+                <from>apache/karaf:${karafVersion}</from>
+                <assembly>
+                  <!-- <user>karaf:users:karaf</user> -->
+                  <targetDir>/</targetDir>
+
+                  <inline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+                          xsi:schemaLocation="
+                                             http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2
+                                             http://maven.apache.org/xsd/assembly-1.1.2.xsd
+                                             ">
+
+                    <fileSets>
+                      <fileSet>
+                        <directory>${project.build.testOutputDirectory}/karaf/etc</directory>
+                        <outputDirectory>/opt/apache-karaf-${karafVersion}/etc</outputDirectory>
+                      </fileSet>
+                    </fileSets>
+                  </inline>
+                </assembly>
+                <!--<cmd>-->
+                  <!--<arg>karaf</arg>-->
+                  <!--<arg>run</arg>-->
+                  <!--<arg>debug</arg>-->
+                <!--</cmd>-->
+              </build>
+              <run>
+                <ports>
+                  <port>karaf-ssh-port:8101</port>
+                  <port>karaf-http-port:8181</port>
+                  <!--<port>5005:5005</port>-->
+                </ports>
+                <env>
+                  <!-- Need to make sure address=* is in the DEBUG OPTS otherwise it listens on the container's localhost only -->
+                  <JAVA_DEBUG_OPTS>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005</JAVA_DEBUG_OPTS>
+                </env>
+                <wait>
+                  <log>Blueprint bundle org.opennms.opennms-alarm-rest/.* has been started</log>
+                  <time>120000</time>
+                </wait>
+                <volumes>
+                  <bind>
+                    <volume>${user.home}/.m2:/opt/apache-karaf/.m2</volume>
+                    <volume>${project.basedir}/../../opennms-base-assembly/target/classes:/opt/opennms</volume>
+                  </bind>
+                </volumes>
+                <network>
+                  <mode>custom</mode>
+                  <name>alarm-docker-it-network</name>
+                  <alias>application</alias>
+                </network>
+              </run>
+            </image>
+          </images>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-before-integration-test</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+              <goal>start</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>stop-after-integration-test</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin> <!-- for running the integration tests -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.18</version>
+        <inherited>false</inherited>
+        <configuration>
+            <skipITs>${skipTests}</skipITs>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+            <configuration>
+              <reuseForks>true</reuseForks>
+              <useSystemClassLoader>false</useSystemClassLoader>
+              <systemProperties>
+                <property>
+                  <name>database.url</name>
+                  <value>jdbc:postgresql://localhost:${postgresql.port}/opennms</value>
+                </property>
+                <property>
+                  <name>application.base-url</name>
+                  <value>http://localhost:${karaf-http-port}</value>
+                </property>
+              </systemProperties>
+            </configuration>
+          </execution>
+          <execution>
+            <id>verify-it</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-java</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-picocontainer</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+
+    <!--      -->
+    <!-- JAXB -->
+    <!--      -->
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.3.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-core</artifactId>
+      <version>2.3.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>2.3.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>2.11.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+</project>

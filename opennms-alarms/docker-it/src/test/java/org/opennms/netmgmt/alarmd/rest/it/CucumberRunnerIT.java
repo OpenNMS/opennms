@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -24,40 +24,18 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ ******************************************************************************/
 
-package org.opennms.core.schema;
+package org.opennms.netmgmt.alarmd.rest.it;
 
-import static org.junit.Assert.assertEquals;
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+import org.junit.runner.RunWith;
 
-import org.junit.Before;
-import org.junit.Test;
-
-//This is test Migrator not directly doing operation on DB
-public class MigratorTest {
-    private Migrator migrator;
-
-    @Before
-    public void setup() {
-        migrator = new Migrator();
-    }
-
-
-    @Test
-    public void testGetUserForONMSDBWithHostname() {
-        String userName = "opennms@test-env-onms";
-        Migrator migrator = new Migrator();
-        migrator.setDatabaseUser(userName);
-        assertEquals("opennms",  migrator.getUserForONMSDB());
-    }
-
-
-    @Test
-    public void testGetUserForONMSDBWithoutHostname() {
-        String userName = "opennms";
-        Migrator migrator = new Migrator();
-        migrator.setDatabaseUser(userName);
-        assertEquals("opennms",  migrator.getUserForONMSDB());
-    }
-
+/**
+ *
+ */
+@RunWith(Cucumber.class)
+@CucumberOptions(plugin = {"json:target/cucumber-report.json", "html:target/cucumber.html", "pretty"})
+public class CucumberRunnerIT {
 }

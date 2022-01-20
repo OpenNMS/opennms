@@ -1,0 +1,94 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ This file is part of OpenNMS(R).
+  ~
+  ~ Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+  ~ OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+  ~
+  ~ OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+  ~
+  ~ OpenNMS(R) is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as published
+  ~ by the Free Software Foundation, either version 3 of the License,
+  ~ or (at your option) any later version.
+  ~
+  ~ OpenNMS(R) is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with OpenNMS(R).  If not, see:
+  ~      http://www.gnu.org/licenses/
+  ~
+  ~ For more information contact:
+  ~     OpenNMS(R) Licensing <license@opennms.org>
+  ~     http://www.opennms.org/
+  ~     http://www.opennms.com/
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+        xmlns:cxf="http://cxf.apache.org/blueprint/core"
+        xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
+        xmlns:jaas="http://karaf.apache.org/xmlns/jaas/v1.0.0"
+        xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0
+        http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs.xsd
+        http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/core.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
+
+
+    <reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao" />
+    <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventForwarder" />
+    <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" />
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
+
+
+    <!-- IMPLEMENTATION OF EVENT REST SERVICE -->
+    <!-- TODO: provide a service via the Rest Mapper module? -->
+    <bean id="eventMapper" class="org.opennms.web.rest.mapper.v2.EventMapperImpl">
+        <property name="eventConfDao" ref="eventConfDao" />
+    </bean>
+
+    <bean id="eventRestServiceImpl" class="org.opennms.netmgt.events.rest.internal.EventRestServiceImpl" scope="singleton">
+        <property name="eventDao" ref="eventDao" />
+        <property name="eventForwarder" ref="eventIpcManager" />
+        <property name="eventMapper" ref="eventMapper" />
+        <property name="sessionUtils" ref="sessionUtils"/>
+    </bean>
+
+
+    <!--                                -->
+    <!-- JAX-RS WIRING WITH WHITE-BOARD -->
+    <!--                                -->
+    <service id="eventRestService" ref="eventRestServiceImpl" interface="org.opennms.netmgt.events.rest.EventRestService">
+        <service-properties>
+            <entry key="osgi.jaxrs.resource" value="true"/>
+        </service-properties>
+    </service>
+
+    <bean id="jaasAuthenticationFeature" class="org.apache.cxf.interceptor.security.JAASAuthenticationFeature" scope="singleton">
+        <property name="contextName" value="karaf" /> <!-- karaf later  _customize for opennms -->
+        <property name="reportFault" value="true" />
+    </bean>
+
+    <service ref="jaasAuthenticationFeature" interface="org.apache.cxf.feature.Feature">
+        <service-properties>
+            <entry key="cxf.extension" value="true"/>
+        </service-properties>
+    </service>
+
+    <!-- TODO: reusable RolesAllowedDynamicFeature -->
+    <bean id="rolesAllowedDynamicFeature" class="org.opennms.netmgt.events.rest.jaxrs.RolesAllowedDynamicFeature"/>
+
+    <service ref="rolesAllowedDynamicFeature" interface="javax.ws.rs.container.DynamicFeature">
+        <service-properties>
+            <entry key="osgi.jaxrs.extension" value="true"/>
+        </service-properties>
+    </service>
+
+</blueprint>

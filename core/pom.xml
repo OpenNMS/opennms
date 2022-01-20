@@ -49,6 +49,7 @@
     <module>profiler</module>
     <module>runtime</module>
     <module>schema</module>
+    <module>schema-liquibase</module>
     <module>snmp</module>
     <module>soa</module>
     <module>spring</module>
