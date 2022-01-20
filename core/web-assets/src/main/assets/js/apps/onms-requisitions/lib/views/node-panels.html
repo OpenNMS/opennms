@@ -22,7 +22,7 @@
       <button type="button" class="btn btn-secondary" id="go-horizontal" ng-click="goHorizontalLayout()">
         <span class="fa fa-align-justify"></span> Use Horizontal Layout
       </button>
-      <button type="button" class="btn btn-primary" id="save-node" ng-click="save()" ng-show="nodeForm.$dirty" ng-disabled="nodeForm.$invalid" ng-disabled="timingStatus.isRunning">
+      <button type="button" class="btn btn-primary" id="save-node" ng-click="save()" ng-show="nodeForm.$dirty" ng-disabled="nodeForm.$invalid || timingStatus.isRunning">
         <span class="fa fa-save"></span> Save
       </button>
       <button type="button" class="btn btn-secondary" id="go-back" ng-click="goBack()">
@@ -42,7 +42,7 @@
         <div class="card-header">
           <span>Basic Information</span>
         </div>
-        <div class="card-body" ng-include="nodeBasicView"/>
+        <div class="card-body" ng-include="nodeBasicView"></div>
       </div>
     </div>
     <!-- Path Outage Tab -->
@@ -51,7 +51,7 @@
         <div class="card-header">
           <span>Path Outage</span>
         </div>
-        <div class="card-body" ng-include="nodePathoutagesView"/>
+        <div class="card-body" ng-include="nodePathoutagesView"></div>
       </div>
     </div>
   </div> <!-- row -->
@@ -63,7 +63,7 @@
         <div class="card-header">
           <span>IP Interfaces</span>
         </div>
-        <div class="card-body" ng-include="nodeInterfacesView"/>
+        <div class="card-body" ng-include="nodeInterfacesView"></div>
       </div>
     </div>
   </div> <!-- row -->
@@ -76,7 +76,7 @@
         <div class="card-header">
           <span>Meta-Data</span>
         </div>
-        <div class="card-body" ng-include="nodeMetaDataView"/>
+        <div class="card-body" ng-include="nodeMetaDataView"></div>
       </div>
     </div>
   </div>
@@ -88,7 +88,7 @@
         <div class="card-header">
           <span>Assets</span>
         </div>
-        <div class="card-body" ng-include="nodeAssetsView"/>
+        <div class="card-body" ng-include="nodeAssetsView"></div>
       </div>
     </div>
     <!-- Categories Tab -->
@@ -97,7 +97,7 @@
         <div class="card-header">
           <span>Categories</span>
         </div>
-        <div class="card-body" ng-include="nodeCategoriesView"/>
+        <div class="card-body" ng-include="nodeCategoriesView"></div>
       </div>
     </div>
   </div> <!-- row -->
