@@ -43,3 +43,7 @@ parameters:
     description: whether to trigger the featherds UI build
     type: boolean
     default: false
+  trigger-coverage:
+    description: whether to trigger a code coverage build
+    type: boolean
+    default: false
