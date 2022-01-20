@@ -74,6 +74,7 @@
                                 <feature>minion-api-layer</feature>
                                 <feature>minion-plugin-sample</feature>
                                 <feature>opennms-deviceconfig</feature>
+                                <feature>opennms-deviceconfig-rest</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>

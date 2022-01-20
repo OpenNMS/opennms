@@ -47,7 +47,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -75,7 +74,6 @@ import org.springframework.transaction.support.TransactionOperations;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DefaultDeviceConfigRestServiceIT {
 
     @Autowired
