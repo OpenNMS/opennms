@@ -58,7 +58,7 @@ public interface ConfigStoreDao<T> {
      * @return list of config name
      * @throws JsonProcessingException
      */
-    Optional<Set<String>> getConfigNames();
+    Set<String> getConfigNames();
 
     Map<String, ConfigDefinition> getAllConfigDefinitions();
 
@@ -90,7 +90,7 @@ public interface ConfigStoreDao<T> {
      * @see #getConfig(String, String)
      * @see ConfigData
      */
-    Optional<ConfigData<T>> getConfigData(String configName);
+    Optional<ConfigData<T>> getConfigs(String configName);
 
     /**
      * add configs for the registered service name, throws exception if config already exist
@@ -160,6 +160,6 @@ public interface ConfigStoreDao<T> {
      * @param configName
      * @return configs
      */
-    Optional<Map<String, T>> getConfigs(String configName);
+    Map<String, T> get(String configName);
 }
 

@@ -43,4 +43,11 @@ public class ValidationException extends ConfigRuntimeException {
     public ValidationReport getReport() {
         return report;
     }
+
+    @Override
+    public String getMessage() {
+        StringBuilder sb = new StringBuilder();
+        report.getMessages().forEach(m -> sb.append(m.getMessage()));
+        return sb.toString();
+    }
 }

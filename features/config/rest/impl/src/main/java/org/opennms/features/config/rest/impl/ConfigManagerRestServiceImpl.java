@@ -42,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <b>Currently for testing OSGI integration</b>
@@ -60,17 +61,13 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     @Override
     public Response getAllOpenApiSchema(String acceptType, HttpServletRequest request) {
         Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinitions();
-
-        Map<String, OpenAPI> apis = new HashMap<>(defs.size());
-        defs.forEach((key, def) -> {
-            OpenAPI api = def.getSchema();
-            if (api != null && api.getPaths() != null) {
-                apis.put(key, api);
-            }
-        });
+        Map<String, OpenAPI> apis = defs.entrySet().stream().filter(entry -> {
+            OpenAPI api = entry.getValue().getSchema();
+            return (api != null && api.getPaths() != null);
+        }).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getSchema()));
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
         OpenAPI allAPI = configSwaggerConverter.mergeAllPathsWithRemoteRef(apis, request.getContextPath() + ConfigurationManagerService.BASE_PATH);
-        allAPI = configSwaggerConverter.setupServers(allAPI, Arrays.asList(new String[]{request.getContextPath()}));
+        allAPI = ConfigSwaggerConverter.setupServers(allAPI, Arrays.asList(new String[]{request.getContextPath()}));
         String outStr = configSwaggerConverter.convertOpenAPIToString(allAPI, acceptType);
         return Response.ok(outStr).build();
     }
@@ -84,7 +81,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             }
             ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
             OpenAPI openapi = def.get().getSchema();
-            openapi = configSwaggerConverter.setupServers(openapi, Arrays.asList(new String[]{request.getContextPath()}));
+            openapi = ConfigSwaggerConverter.setupServers(openapi, Arrays.asList(new String[]{request.getContextPath()}));
             String outStr = configSwaggerConverter.convertOpenAPIToString(openapi, acceptType);
             return Response.ok(outStr).build();
         } catch (ConfigRuntimeException e) {

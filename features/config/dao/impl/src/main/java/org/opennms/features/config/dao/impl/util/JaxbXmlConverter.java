@@ -52,10 +52,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.sax.SAXSource;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -157,16 +154,25 @@ public class JaxbXmlConverter implements ConfigConverter {
      * @param json
      * @return json without empty value tag
      */
-    private JSONObject removeEmptyValueTag(JSONObject json) {
-        json.toMap().forEach((key, value) -> {
-            if (VALUE_TAG.equals(key) && value instanceof String && ((String) value).trim().length() == 0) {
+    public JSONObject removeEmptyValueTag(JSONObject json) {
+        Objects.requireNonNull(json);
+        final Set<String> keys = new HashSet<>(json.keySet());
+        keys.forEach(key -> {
+            Object value;
+            synchronized (this) {
+                if (!json.has(key))
+                    return;
+                value = json.get(key);
+            }
+            if (VALUE_TAG.equals(key) && value instanceof String && ((String) value).isEmpty()) {
                 json.remove(key);
             } else if (value instanceof JSONObject) {
                 removeEmptyValueTag((JSONObject) value);
             } else if (value instanceof JSONArray) {
-                ((JSONArray) value).forEach(arrayItem -> {
-                    if (arrayItem instanceof JSONObject)
-                        this.removeEmptyValueTag((JSONObject) arrayItem);
+                ((JSONArray) value).forEach(item -> {
+                    if (item instanceof JSONObject) {
+                        this.removeEmptyValueTag((JSONObject) item);
+                    }
                 });
             }
         });

@@ -51,7 +51,7 @@ public interface ConfigManagerRestService {
     Response listConfigs();
 
     @GET
-    @Path("/schema/all")
+    @Path("/schema")
     Response getAllOpenApiSchema(@HeaderParam("accept") String acceptType, @Context HttpServletRequest request);
 
     /**
@@ -117,7 +117,6 @@ public interface ConfigManagerRestService {
      * @return
      */
     @DELETE
-    @Consumes({MediaType.APPLICATION_JSON})
     @Path("/{configName}/{configId}")
     Response deleteConfig(@PathParam("configName") String configName, @PathParam("configId") String configId);
 }

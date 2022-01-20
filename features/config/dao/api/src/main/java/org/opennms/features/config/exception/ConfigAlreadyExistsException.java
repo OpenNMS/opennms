@@ -26,18 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.dao.impl.util;
+package org.opennms.features.config.exception;
 
-import static org.junit.Assert.assertEquals;
-import static org.opennms.features.config.dao.impl.util.TopLevelElementToClass.topLevelElementToClass;
+/**
+ * It throws when CM config is already exist
+ */
+public class ConfigAlreadyExistsException extends ConfigRuntimeException {
+    public ConfigAlreadyExistsException() {
+        super();
+    }
 
-import org.junit.Test;
+    public ConfigAlreadyExistsException(String message) {
+        super(message);
+    }
 
-public class TopLevelElementToClassTest {
-
-    @Test
-    public void shouldConvert() {
-        assertEquals("VacuumdConfiguration", topLevelElementToClass("VacuumdConfiguration"));
-        assertEquals("ProvisiondConfiguration", topLevelElementToClass("provisiond-configuration"));
+    public ConfigAlreadyExistsException(String message, Throwable e) {
+        super(message, e);
     }
 }

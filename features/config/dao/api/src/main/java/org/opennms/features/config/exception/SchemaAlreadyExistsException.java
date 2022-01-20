@@ -24,19 +24,19 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- ******************************************************************************/
+ *******************************************************************************/
 
-package org.opennms.features.config.dao.impl.util;
+package org.opennms.features.config.exception;
 
-// Reverse engineering the naming conventions of Jaxb Dynamic classes.
-public class TopLevelElementToClass {
+/**
+ * It throws when CM schema already exist
+ */
+public class SchemaAlreadyExistsException extends ConfigRuntimeException {
+    public SchemaAlreadyExistsException(String message) {
+        super(message);
+    }
 
-    public static String topLevelElementToClass(String topLevelElement) {
-        // Java classes start with capital letters:
-        String s = topLevelElement.substring(0,1).toUpperCase() + topLevelElement.substring(1);
-
-        //replace dash
-        s = s.replace("-c", "C");
-        return s;
+    public SchemaAlreadyExistsException(String message, Throwable e) {
+        super(message, e);
     }
 }

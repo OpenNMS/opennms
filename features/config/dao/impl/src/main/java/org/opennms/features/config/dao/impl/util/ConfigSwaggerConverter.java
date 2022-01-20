@@ -105,7 +105,6 @@ public class ConfigSwaggerConverter {
     }
 
     private Info genInfo() {
-        // TODO: Freddy handle version properly
         Info info = new Info();
         info.setDescription("OpenNMS Data Model");
         info.setVersion("1.0.0");
@@ -120,7 +119,7 @@ public class ConfigSwaggerConverter {
      * @param urls
      * @return
      */
-    public OpenAPI setupServers(OpenAPI openapi, List<String> urls) {
+    public static OpenAPI setupServers(OpenAPI openapi, List<String> urls) {
         final List<Server> servers = new ArrayList<>(urls.size());
         urls.forEach(url -> {
             Server server = new Server();

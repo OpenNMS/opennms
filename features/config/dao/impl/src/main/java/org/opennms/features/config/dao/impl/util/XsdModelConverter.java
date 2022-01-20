@@ -136,12 +136,6 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         }
         configItemStack.add(currentConfigItem);
 
-//        FIXME: Requirements are attributes of the parent/child relations and are not directly on the objects themselves
-//        // if there is a minimum, then the element is required
-//        if (xmlSchemaElement.getMinOccurs() > 0) {
-//            currentConfigItem.setRequired(true);
-//        }
-
         ConfigItem configItemForParent = getConfigItemForParentElement();
         if (configItemForParent != null) {
             if (xmlSchemaElement.getMaxOccurs() > 1) {

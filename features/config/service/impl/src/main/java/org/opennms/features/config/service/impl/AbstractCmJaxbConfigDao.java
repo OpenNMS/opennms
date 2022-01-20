@@ -96,8 +96,8 @@ public abstract class AbstractCmJaxbConfigDao<E> {
      * @see #getUpdateCallback()
      */
     protected AbstractCmJaxbConfigDao(final Class<E> entityClass, final String description) {
-        this.entityClass = entityClass;
-        this.description = description;
+        this.entityClass = Objects.requireNonNull(entityClass);
+        this.description = Objects.requireNonNull(description);
     }
 
     /**
@@ -157,10 +157,10 @@ public abstract class AbstractCmJaxbConfigDao<E> {
     public E getConfig(String configId) {
         // cannot use computeIfAbsent, it will cause IllegalStateException
         E config = lastKnownEntityMap.get(configId);
-        if (config == null) {
-            return this.loadConfig(configId);
+        if (config != null) {
+            return config;
         }
-        return lastKnownEntityMap.computeIfAbsent(configId, this::loadConfig);
+        return this.loadConfig(configId);
     }
 
     /**

@@ -32,8 +32,8 @@ import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.config.exception.ConfigExistException;
-import org.opennms.features.config.exception.SchemaExistException;
+import org.opennms.features.config.exception.ConfigAlreadyExistsException;
+import org.opennms.features.config.exception.SchemaAlreadyExistsException;
 import org.opennms.features.config.exception.SchemaNotFoundException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
@@ -64,7 +64,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         Objects.requireNonNull(configDefinition);
 
         if (this.getRegisteredConfigDefinition(configName).isPresent()) {
-            throw new SchemaExistException(String.format("Schema with configName=%s is already registered.", configName), null);
+            throw new SchemaAlreadyExistsException(String.format("Schema with configName=%s is already registered.", configName), null);
         }
         configStoreDao.register(configDefinition);
     }
@@ -92,16 +92,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 
     @Override
     public void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer) {
-        onloadNotifyMap.compute(info, (k, v) -> {
-            if (v == null) {
-                ArrayList<Consumer<ConfigUpdateInfo>> consumers = new ArrayList<>();
-                consumers.add(consumer);
-                return consumers;
-            } else {
-                v.add(consumer);
-                return v;
-            }
-        });
+        onloadNotifyMap.computeIfAbsent(info, (k) -> new ArrayList<>()).add(consumer);
     }
 
     /**
@@ -137,7 +128,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
             throw new SchemaNotFoundException(String.format("Unknown service with configName: %s.", configName));
         }
         if (this.getJSONConfiguration(configName, configId).isPresent()) {
-            throw new ConfigExistException(String.format(
+            throw new ConfigAlreadyExistsException(String.format(
                     "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
         }
 
@@ -186,7 +177,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 
     @Override
     public Set<String> getConfigNames() {
-        return configStoreDao.getConfigNames().get();
+        return configStoreDao.getConfigNames();
     }
 
     @Override
@@ -196,7 +187,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 
     @Override
     public Set<String> getConfigIds(String configName) {
-        Optional<ConfigData<JSONObject>> configData = configStoreDao.getConfigData(configName);
+        Optional<ConfigData<JSONObject>> configData = configStoreDao.getConfigs(configName);
         if (configData.isEmpty()) {
             return new HashSet<>();
         }
@@ -205,6 +196,6 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 
     @Override
     public Optional<ConfigData<JSONObject>> getConfigData(String configName) {
-        return configStoreDao.getConfigData(configName);
+        return configStoreDao.getConfigs(configName);
     }
 }

@@ -82,8 +82,7 @@ public class JaxbXmlConverterTest {
     }
 
     @Test
-    public void testValidate() throws IOException {
-        JaxbXmlConverter converter = new JaxbXmlConverter("trapd-configuration.xsd", "trapd-configuration", null);
+    public void testValidate() {
         FakeXsdForTest test = new FakeXsdForTest(1024, "127.0.0.1");
         Snmpv3User user = new Snmpv3User();
         user.setSecurityName("SecurityName");
