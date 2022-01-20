@@ -1,10 +1,20 @@
 version: 2.1
 
-setup: true
-
 orbs:
   continuation: circleci/continuation@0.2.0
   # path-filtering: circleci/path-filtering@0.1.1
+
+parameters:
+  trigger-setup:
+    description: whether to trigger a pre-build evaluation
+    type: boolean
+    default: true
+  trigger-coverage:
+    description: whether to trigger a code coverage build
+    type: boolean
+    default: false
+
+setup: << pipeline.parameters.trigger-setup >>
 
 commands:
   cached-checkout:
@@ -22,20 +32,59 @@ commands:
         - run:
             name: git fetch origin
             command: git fetch origin
+  pack-config:
+    description: "Pack the dynamic config in .circleci/main/"
+    steps:
+      - run:
+          name: Pack Dynamic Config
+          command: |
+            CIRCLE_BIN_DIR="$HOME/.local/bin"
+            mkdir -p "$CIRCLE_BIN_DIR"
+            export PATH="$CIRCLE_BIN_DIR:$PATH"
+            curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | DESTDIR="$CIRCLE_BIN_DIR" bash
+            "$CIRCLE_BIN_DIR/circleci" version
+            "$CIRCLE_BIN_DIR/circleci" config pack .circleci/main --skip-update-check > .circleci/main.yml || exit 1
+      - store_artifacts:
+          path: .circleci/main.yml
+          destination: main.yml
 
 workflows:
-  pre-build:
+  coverage:
+    when:
+      equal: [ true, << pipeline.parameters.trigger-coverage >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
           mapping: |
-            ((?!docs/).)*     trigger-build true
-            docs/.*           trigger-docs  true
-            ui/.*             trigger-ui    true
-            .circleci/.*      trigger-docs  true
-            .circleci/.*      trigger-ui    true
+            .*                trigger-coverage true
+
+  pre-build:
+    when:
+      equal: [ true, << pipeline.parameters.trigger-setup >> ]
+    jobs:
+      - trigger-path-filtering:
+          base-revision: << pipeline.git.branch >>
+          mapping: |
+            .*                trigger-coverage false
+            ((?!docs/).)*     trigger-build    true
+            docs/.*           trigger-docs     true
+            ui/.*             trigger-ui       true
+            .circleci/.*      trigger-build    true
+            .circleci/.*      trigger-docs     true
+            .circleci/.*      trigger-ui       true
 
 jobs:
+  trigger-coverage:
+    docker:
+      - image: cimg/python:3.10.1
+    steps:
+      - cached-checkout
+      - pack-config
+      - continuation/continue:
+          circleci_domain: circleci.com
+          configuration_path: .circleci/main.yml
+          parameters: { "trigger-setup": false, "trigger-coverage": true }
+
   trigger-path-filtering:
     docker:
       - image: cimg/python:3.10.1
@@ -141,18 +190,7 @@ jobs:
             with open(output_path, 'w') as fp:
               fp.write(json.dumps(mappings))
 
-      - run:
-          name: Pack Dynamic Config
-          command: |
-            CIRCLE_BIN_DIR="$HOME/.local/bin"
-            mkdir -p "$CIRCLE_BIN_DIR"
-            export PATH="$CIRCLE_BIN_DIR:$PATH"
-            curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | DESTDIR="$CIRCLE_BIN_DIR" bash
-            "$CIRCLE_BIN_DIR/circleci" version
-            "$CIRCLE_BIN_DIR/circleci" config pack .circleci/main --skip-update-check > .circleci/main.yml || exit 1
-      - store_artifacts:
-          path: .circleci/main.yml
-          destination: main.yml
+      - pack-config
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json
