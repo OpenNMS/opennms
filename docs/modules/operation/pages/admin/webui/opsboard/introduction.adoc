@@ -27,11 +27,22 @@ After you create an ops board, you can specify how to visualize the information 
 . Click the plus sign beside the *Overview* tab.
 . In the *New Ops Board* dialog, type a name for the ops board and click *Save*.
 . Click *Add dashlet*.
-. Choose a dashlet from the drop-down list.
+. Choose a dashlet from the drop-down.
 . Specify additional information including the following:
 +
 * Title (name for the chart)
-* Priority (how often it is displayed in ops board rotation. Lower priority means it will be displayed more often)
+* Priority (How often it displays in rotation. Priority 1 is highest and appears more often.)
+* Duration (how long dashlet displays in rotation)
+* Boost-Priority (Change priority if dashlet is in alert state. Optional, not available with all dashlets.)
+* Boost-Duration (Change duration if dashlet is in alert state. Optional, not available in all dashlets.)
+* Properties associated with the dashlet (alarm severity, type of chart, filter criteria, and so on)
+
+. Use the up/down arrows to change the order the dashlet appears in rotation on the ops board and the tile view in the ops panel.
+. Click *Preview* in the dashlet area to view the dashlet.
+. Click *Preview* on the top left to view the ops board and all its dashlets.
+
+To view the ops board, select *Dashboards>Ops Board*.
+. Click *Ops Panel* or *Ops Board* to view that type of visualization.
 
 . Create a new ops board to organize and arrange different dashlets
  . The name to identify the ops board
