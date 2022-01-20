@@ -38,10 +38,12 @@ import java.util.Map;
 
 public class OpenAPIConfigHelper {
     // hide public constructor
-    private OpenAPIConfigHelper(){}
+    private OpenAPIConfigHelper() {
+    }
 
     /**
      * It will walk through all properties in schema and insert default value / null into json if property not found.
+     *
      * @param openapi
      * @param topLevelElement
      * @param configJsonObj
@@ -52,27 +54,29 @@ public class OpenAPIConfigHelper {
         }
         Map<String, Schema> schemaMap = openapi.getComponents().getSchemas();
         Schema<?> rootSchema = schemaMap.get(topLevelElement);
-        (rootSchema.getProperties()).forEach((key, schema) -> {
+        if (rootSchema == null) {
+            return;
+        }
+        for (var entry : rootSchema.getProperties().entrySet()) {
+            var key = entry.getKey();
+            var schema = entry.getValue();
             if (!configJsonObj.has(key)) {
                 fillSingleValue(key, configJsonObj, schema, openapi);
             } else {
                 Object property = configJsonObj.get(key);
-                if(property instanceof JSONObject){
+                if (property instanceof JSONObject) {
                     JSONObject object = (JSONObject) property;
                     fillSingleValue(key, object, schema, openapi);
-                } else if (property instanceof JSONArray){
-                    JSONArray array = (JSONArray) property;
-                    if(array.length() > 0) {
-                        array.forEach(item -> {
-                            if (item instanceof JSONObject && schema instanceof ArraySchema) {
-                                String schemaName = ((ArraySchema) schema).getItems().get$ref().replaceAll("^" + OpenAPIBuilder.SCHEMA_REF_TAG, "");
-                                fillWithDefaultValue(openapi, schemaName, (JSONObject) item);
-                            }
-                        });
+                } else if (property instanceof JSONArray) {
+                    for (var item : (JSONArray) property) {
+                        if (item instanceof JSONObject && schema instanceof ArraySchema) {
+                            String schemaName = ((ArraySchema) schema).getItems().get$ref().replaceAll("^" + OpenAPIBuilder.SCHEMA_REF_TAG, "");
+                            fillWithDefaultValue(openapi, schemaName, (JSONObject) item);
+                        }
                     }
                 }
             }
-        });
+        }
     }
 
     private static void fillSingleValue(String key, final JSONObject configJsonObj, Schema<?> propertySchema, OpenAPI openapi) {

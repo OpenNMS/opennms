@@ -31,7 +31,6 @@ package org.opennms.features.config.service.api;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.exception.ValidationException;
 
 import java.util.Map;
 import java.util.Optional;

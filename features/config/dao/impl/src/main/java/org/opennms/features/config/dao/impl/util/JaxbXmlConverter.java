@@ -157,14 +157,15 @@ public class JaxbXmlConverter implements ConfigConverter {
     public JSONObject removeEmptyValueTag(JSONObject json) {
         Objects.requireNonNull(json);
         final Set<String> keys = new HashSet<>(json.keySet());
-        keys.forEach(key -> {
+        for (String key : keys) {
             Object value;
             synchronized (this) {
                 if (!json.has(key))
-                    return;
+                    continue;
                 value = json.get(key);
             }
-            if (VALUE_TAG.equals(key) && value instanceof String && ((String) value).isEmpty()) {
+            // trim is important, it always contains return character
+            if (VALUE_TAG.equals(key) && value instanceof String && ((String) value).trim().isEmpty()) {
                 json.remove(key);
             } else if (value instanceof JSONObject) {
                 removeEmptyValueTag((JSONObject) value);
@@ -175,7 +176,7 @@ public class JaxbXmlConverter implements ConfigConverter {
                     }
                 });
             }
-        });
+        }
         return json;
     }
 
