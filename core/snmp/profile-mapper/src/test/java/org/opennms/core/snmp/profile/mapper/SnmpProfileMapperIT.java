@@ -109,7 +109,7 @@ public class SnmpProfileMapperIT {
             Optional<SnmpAgentConfig> agentConfig = future.get();
             assertTrue(agentConfig.isPresent());
            // assertEquals(ttl, agentConfig.get().getTTL().longValue());
-           // assertEquals(timeout, agentConfig.get().getTimeout());
+            assertEquals(timeout, agentConfig.get().getTimeout());
             snmpPeerFactory.saveAgentConfigAsDefinition(agentConfig.get(), "Default", "test");
             List<Definition> definitions = snmpPeerFactory.getSnmpConfig().getDefinitions();
             Optional<Definition> definition = definitions.stream().filter(def -> def.getTimeout() == timeout).findFirst();
@@ -162,7 +162,7 @@ public class SnmpProfileMapperIT {
                 snmpAgentConfig = agentConfig.get();
             }
             assertNotNull(snmpAgentConfig);
-//            assertEquals(snmpAgentConfig.getTTL().longValue(), ttl);
+            //assertEquals(snmpAgentConfig.getTTL().longValue(), ttl);
             assertEquals(snmpAgentConfig.getTimeout(), timeout);
             // Check that fit profile doesn't actually save definitions in the config.
             List<Definition> definitions = snmpPeerFactory.getSnmpConfig().getDefinitions();
