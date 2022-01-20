@@ -51,7 +51,7 @@ The following table shows all supported query string parameters and their defaul
 | '' 
 |===
 
-Requests without parameters will return all HealthCheck components available 
+Requests without parameters will return all available health check components. 
 
 .Response
 [source,javascript]
