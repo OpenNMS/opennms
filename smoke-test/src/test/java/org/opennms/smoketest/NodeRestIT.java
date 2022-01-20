@@ -90,11 +90,6 @@ public class NodeRestIT {
         ipInterface2 = restClient.getInterface("test:node1", "192.168.1.2");
         assertEquals(node.getId(), ipInterface2.getNode().getId());
         assertEquals("192.168.1.2", ipInterface2.getIpHostName());
-        // Test invalid IP addresses when adding interfaces
-        response = restClient.addInterface("test:node1", "192.168");
-        assertEquals(400, response.getStatus());
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS)
-                .until(() -> restClient.getResponseForInterface("test:node1", "192.168").getStatus(), is(404));
         // Delete interface (192.168.1.2), (asynchronous call, response will be 202)
         response = restClient.deleteInterface("test:node1", "192.168.1.2");
         assertEquals(202, response.getStatus());
