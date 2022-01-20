@@ -25,12 +25,8 @@ aliases:
       echo "export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=\"$DCT_DELEGATE_KEY_PASSPHRASE\"" >> $BASH_ENV
       echo "export MINION_DK_REPO=docker.io/opennms/minion" >> $BASH_ENV
       echo "export MINION_IMAGE_VERSION=\"$MINION_IMAGE_VERSION\"" >> $BASH_ENV
-<<<<<<< HEAD
       echo "export MINION_AZ_REPO=opennmspubacr.azurecr.io/opennms/minion" >> $BASH_ENV
       echo "export KEY_FOLDER=~/.docker/trust/private" >> $BASH_ENV
-=======
-      echo "export MINION_AZ_IMAGE=opennmspubacr.azurecr.io/opennms/minion" >> $BASH_ENV
->>>>>>> CLOUD-475: Push to azure public registry
   - &setup_dct_key
     name: Setup DCT key
     command: |
@@ -1023,18 +1019,12 @@ jobs:
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
-<<<<<<< HEAD
             docker push ${MINION_DK_REPO}:${TAG}
             docker tag ${MINION_DK_REPO}:${TAG} ${MINION_AZ_REPO}:${TAG}
             export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${AZURE_DCT_CI_PASSPHRASE}
             docker trust key load $KEY_FOLDER/$AZURE_DCT_CI_KEY_NAME.key
             docker push ${MINION_AZ_REPO}:${TAG}
             echo "pushed"
-=======
-            docker push ${MINION_IMAGE}:${TAG}
-            docker tag ${MINION_IMAGE}:${TAG} ${PUBACR}/${MINION_AZ_IMAGE}:${TAG}
-            docker push ${PUBACR}/${MINION_AZ_IMAGE}:${TAG}
->>>>>>> CLOUD-475: Push to azure public registry
 
   minion-image-multi-arch:
     machine:
