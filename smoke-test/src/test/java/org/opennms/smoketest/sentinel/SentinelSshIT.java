@@ -51,7 +51,7 @@ public class SentinelSshIT {
     public static final OpenNMSStack stack = OpenNMSStack.SENTINEL;
 
     @Test
-    public void testSshHealthOnMinion(){
+    public void testSshHealthOnSentinel(){
         //Test for no exception to occur
         LOG.info("Waiting for Sentinel ssh health check...");
         final InetSocketAddress karafSsh = stack.sentinel().getSshAddress();
