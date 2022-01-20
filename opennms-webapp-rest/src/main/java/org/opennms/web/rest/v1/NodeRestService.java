@@ -208,7 +208,7 @@ public class NodeRestService extends OnmsRestService {
         
         final Event e = EventUtils.createNodeRescanEvent("ReST", node.getId());
         sendEvent(e);
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     /**
@@ -408,8 +408,7 @@ public class NodeRestService extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, "Category {} was not found.", categoryName);
             }
             if (!node.getCategories().contains(found)) {
-                LOG.debug("a" +
-                        "ddCategory: Adding category {} to node {}", found, nodeCriteria);
+                LOG.debug("addCategory: Adding category {} to node {}", found, nodeCriteria);
                 node.addCategory(found);
                 m_nodeDao.save(node);
                 return Response.created(getRedirectUri(uriInfo, categoryName)).build();

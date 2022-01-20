@@ -187,12 +187,12 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 .setNodeid(1)
                 .getEvent());
 
-        xml = sendRequest(PUT, rescanUrl, 200);
+        xml = sendRequest(PUT, rescanUrl, 204); // All PUT requests return 204 on success
 
         m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
 
-        assertNotNull(xml); // TODO - what should the response contain / what should we check for
+        assertNotNull(xml); 
 
         // Testing DELETE
         m_mockEventIpcManager.getEventAnticipator().reset();

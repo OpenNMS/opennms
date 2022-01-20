@@ -417,13 +417,6 @@ public abstract class EventUtils {
         return bldr.getEvent();
     }
     
-    /**
-     * <p>createRescanNodeEvent</p>
-     *
-     * @param source a {@link java.lang.String} object.
-     * @param nodeId a {@link java.lang.Integer} object.
-     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     public static Event createNodeRescanEvent(String source, Integer nodeId) {
         debug("CreateNodeUpdatedEvent: nodedId: %d", nodeId);
         EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, source);
