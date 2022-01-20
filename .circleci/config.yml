@@ -22,10 +22,6 @@ commands:
         - run:
             name: git fetch origin
             command: git fetch origin
-        - save_cache:
-            key: source-v2-{{ .Branch }}-{{ .Revision }}
-            paths:
-              - ".git"
 
 workflows:
   pre-build:
