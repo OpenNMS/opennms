@@ -1,3 +1,4 @@
+<span>
     <div class="jumbotron" ng-show="snmpInterfaces.length == 0">
       <div class="container">
         <p>There are no SNMP interfaces for this node</p>
@@ -29,7 +30,7 @@
             <td>{{ intf.ifName  || 'N/A' }}</td>
             <td>{{ intf.ifAlias || 'N/A' }}</td>
             <td>
-              <input type="checkbox" ng-checked="isCollectionEnabled(intf)" ng-click="updateCollection($event, intf)" uib-tooltip="Check to enable collection, or uncheck to disable collection"></input>
+              <input type="checkbox" ng-checked="isCollectionEnabled(intf)" ng-click="updateCollection($event, intf)" uib-tooltip="Check to enable collection, or uncheck to disable collection">
             </td>
           </tr>
        </tbody>
@@ -42,3 +43,4 @@
       max-size="snmpInterfacesMaxSize"
       boundary-links="true"
       ng-show="filteredSnmpInterfaces.length > snmpInterfacesPageSize"></ul>
+</span>
