@@ -1,22 +1,46 @@
 <template>
   <div class="feather-row">
-    <div class="feather-col-12">
-      <div class="canvas-wrapper">
-        <canvas :id="definition"></canvas>
-      </div>
+    <div class="feather-col-12 container">
+      <FeatherButton secondary @click="openSingleGraph" class="single-graph-btn">
+        Open
+      </FeatherButton>
+      <FeatherTabContainer class="graph-data-tabs">
+        <template v-slot:tabs>
+          <FeatherTab>Graph</FeatherTab>
+          <FeatherTab>Data</FeatherTab>
+        </template>
+        <FeatherTabPanel>
+          <div class="canvas-wrapper">
+            <canvas :id="definition"></canvas>
+          </div>
+        </FeatherTabPanel>
+        <FeatherTabPanel>
+          <div class="canvas-wrapper" v-if="graphData">
+            <GraphDataTable :convertedGraphData="convertedGraphDataRef" :graphData="graphData" />
+          </div>
+        </FeatherTabPanel>
+      </FeatherTabContainer>
     </div>
   </div>
 </template>
   
 <script setup lang=ts>
+import GraphDataTable from './GraphDataTable.vue'
 import { ConvertedGraphData, GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph, StartEndTime } from '@/types'
-import { onMounted, ref, computed, PropType, watch, reactive } from 'vue'
+import { onMounted, ref, computed, PropType, watch } from 'vue'
 import { useStore } from 'vuex'
 import { RrdGraphConverter } from 'backshift'
 import { ChartOptions, TitleOptions, ChartData } from 'chart.js'
 import { formatTimestamps, getFormattedLegendStatements } from './utils'
 import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
+import { format } from 'd3'
+import { FeatherButton } from '@featherds/button'
+import {
+  FeatherTab,
+  FeatherTabContainer,
+  FeatherTabPanel,
+} from '@featherds/tabs'
 Chart.register(...registerables)
 Chart.register(zoomPlugin)
 
@@ -53,6 +77,7 @@ const convertedGraphDataRef = ref<any>({
   metrics: []
 })
 let chart: any = {}
+const yAxisFormatter = format('.3s')
 
 const options = computed<ChartOptions>(() => ({
   responsive: true,
@@ -72,7 +97,7 @@ const options = computed<ChartOptions>(() => ({
         wheel: {
           enabled: true,
         },
-        mode: 'xy',
+        mode: 'x',
       },
       pan: {
         enabled: true,
@@ -85,7 +110,12 @@ const options = computed<ChartOptions>(() => ({
       title: {
         display: true,
         text: convertedGraphDataRef.value.verticalLabel,
-      } as TitleOptions
+      } as TitleOptions,
+      ticks: {
+        callback: function (value) {
+          return yAxisFormatter(value as number)
+        }
+      }
     }
   }
 }))
@@ -174,8 +204,6 @@ const render = async (update?: boolean) => {
     series.value = convertedGraphData.series
     convertedGraphDataRef.value = convertedGraphData
 
-    console.log(convertedGraphData)
-
     const metrics: Metric[] = convertedGraphData.metrics.map((metric: Metric): Metric => ({
       aggregation: metric.aggregation,
       attribute: metric.attribute,
@@ -208,15 +236,37 @@ const render = async (update?: boolean) => {
   }
 }
 
+const openSingleGraph = () => {
+  console.log('ran')
+}
+
 watch(props.time, () => render(true))
 onMounted(() => render())
 </script>
   
 <style scoped lang="scss">
+.container {
+  position: relative;
+}
 .canvas-wrapper {
   display: block;
   height: 320px;
-  margin-top: 20px;
+}
+.graph-data-tabs {
+  margin-top: 30px;
+}
+.single-graph-btn {
+  position: absolute;
+  top: 12px;
+  right: 70px;
+  z-index: 1;
 }
 </style>
-  
+
+<style lang="scss">
+.graph-data-tabs {
+  ul {
+    margin-left: 37px !important;
+  }
+}
+</style>
