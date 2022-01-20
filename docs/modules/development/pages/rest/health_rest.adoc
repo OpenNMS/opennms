@@ -39,7 +39,7 @@ The following table shows all supported query string parameters and their defaul
 | Max age to live milliseconds
 | 90000 
 | tag                     
-| Use tag to filter Health Check components. A tag could be: +
+| Use tag to filter health check components. A tag could be: +
  * local + 
  * rest +
  * broker +
