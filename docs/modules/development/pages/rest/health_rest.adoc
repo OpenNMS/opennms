@@ -77,7 +77,7 @@ Requests without parameters will return all available health check components.
 
 ----
 
-== Http Error Codes
+== HTTP Error Codes
 
 [options="header", cols="5,10"]
 |===
