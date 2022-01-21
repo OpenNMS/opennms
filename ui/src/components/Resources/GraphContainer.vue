@@ -9,6 +9,8 @@
             :definition="definition"
             :resourceId="resource.id"
             :time="time"
+            :label="resource.label"
+            :isSingleGraph="isSingleGraph"
             @addGraphDefinition="$emit('addGraphDefinition')"
           />
         </div>
@@ -36,6 +38,10 @@ const props = defineProps({
   definitionsToDisplay: {
     required: true,
     type: Array as PropType<string[]>
+  },
+  isSingleGraph: {
+    required: true,
+    type: Boolean
   }
 })
 

@@ -1,9 +1,13 @@
 <template>
   <div class="feather-row">
     <div class="feather-col-12 container">
-      <FeatherButton secondary @click="openSingleGraph" class="single-graph-btn">
-        Open
-      </FeatherButton>
+      <router-link
+        v-if="!isSingleGraph"
+        :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
+        target="_blank"
+      >
+        <FeatherButton secondary class="single-graph-btn">Open</FeatherButton>
+      </router-link>
       <FeatherTabContainer class="graph-data-tabs">
         <template v-slot:tabs>
           <FeatherTab>Graph</FeatherTab>
@@ -65,6 +69,14 @@ const props = defineProps({
   time: {
     required: true,
     type: Object as PropType<StartEndTime>
+  },
+  label: {
+    required: true,
+    type: String
+  },
+  isSingleGraph: {
+    required: true,
+    type: Boolean
   }
 })
 

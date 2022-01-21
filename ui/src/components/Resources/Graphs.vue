@@ -8,6 +8,7 @@
         :key="resource.id"
         :time="time"
         :definitionsToDisplay="definitionsToDisplay"
+        :isSingleGraph="Boolean(singleGraphDefinition)"
         @addGraphDefinition="addGraphDefinition"
       />
     </div>
@@ -28,8 +29,24 @@ const { arrivedState } = useScroll(el)
 const definitionsToDisplay = ref<any>([])
 const store = useStore()
 const now = new Date()
+const initNumOfGraphs = 4
 
-const resources = computed<{ id: string, definitions: string[], label: string }[]>(() => store.state.graphModule.definitions)
+const props = defineProps({
+  singleGraphDefinition: {
+    type: String
+  },
+  singleGraphResourceId: {
+    type: String
+  },
+  label: {
+    type: String
+  }
+})
+
+const resources = props.singleGraphResourceId ?
+  ref([{ id: props.singleGraphResourceId, definitions: [props.singleGraphDefinition as string], label: props.label as string }]) :
+  computed<{ id: string, definitions: string[], label: string }[]>(() => store.state.graphModule.definitions)
+
 const definitionsList: string[] = JSON.parse(JSON.stringify(store.state.graphModule.definitionsList))
 
 const time = reactive<StartEndTime>({
@@ -46,19 +63,28 @@ const updateTime = (newStartEndTime: StartEndTime) => {
 
 const addGraphDefinition = () => {
   const next = definitionsList.shift()
-  definitionsToDisplay.value = [...definitionsToDisplay.value, next]
+  if (next) {
+    definitionsToDisplay.value = [...definitionsToDisplay.value, next]
+  }
 }
 
 watch(arrivedState, () => {
-  if (arrivedState.bottom) {
+  // add a new graph when the scroll bar hits the bottom
+  if (arrivedState.bottom && !props.singleGraphDefinition) {
     addGraphDefinition()
   }
 })
+
 onMounted(() => {
-  addGraphDefinition()
-  addGraphDefinition()
-  addGraphDefinition()
-  addGraphDefinition()
+  // for displaying only selected graph
+  if (props.singleGraphDefinition) {
+    definitionsToDisplay.value = [props.singleGraphDefinition]
+    return
+  }
+
+  [...Array(initNumOfGraphs)].forEach(() => {
+    addGraphDefinition()
+  })
 })
 </script>
   

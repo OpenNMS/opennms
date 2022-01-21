@@ -77,6 +77,11 @@ const router = createRouter({
           component: () => import('@/components/Resources/Resources.vue')
         },
         {
+          path: 'graphs/:label/:singleGraphDefinition/:singleGraphResourceId',
+          component: () => import('@/components/Resources/Graphs.vue'),
+          props: true
+        },
+        {
           path: 'graphs',
           name: 'Graphs',
           component: () => import('@/components/Resources/Graphs.vue')
