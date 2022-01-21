@@ -1,7 +1,7 @@
 [OpenNMS][]
 ===========
 
-[OpenNMS][] is an open-source network monitoring platform that helps you visualize and monitor everything on your local and distributed networks. OpenNMS offers comprehensive fault, performance, traffic monitoring, and alarm generation in one place. Highly customizable and scalable, OpenNMS integrates with your core business applications and workflows.
+[OpenNMS][] is an open-source network monitoring platform that helps you visualize and monitor everything on your local and distributed networks. OpenNMS offers comprehensive fault, performance, and traffic monitoring, and alarm generation in one place. Highly customizable and scalable, OpenNMS integrates with your core business applications and workflows.
 
   .
 
