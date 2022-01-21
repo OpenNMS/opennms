@@ -572,6 +572,9 @@ workflows:
               ignore:
                 - /^from-foundation.*/
       - tarball-assembly:
+          context:
+            - docker-content-trust
+            - Service Principal
           requires:
             - build
       - minion-image-single-arch:
