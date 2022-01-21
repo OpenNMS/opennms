@@ -1010,6 +1010,13 @@ jobs:
             with open(output_path, 'w') as fp:
               fp.write(json.dumps(mappings))
 
+      - run:
+          name: check for empty trigger config
+          command: |
+            if [ "$(grep -c trigger-setup /tmp/pipeline-parameters.json)" -eq 0 ]; then
+              # this can happen in the case of merges or other similar "empty" commits
+              echo '{ "trigger-setup": false, "trigger-build": true }' > /tmp/pipeline-parameters.json
+            fi
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json
