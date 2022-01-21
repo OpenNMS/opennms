@@ -9,7 +9,7 @@ parameters:
     description: whether to trigger a pre-build evaluation
     type: boolean
     default: true
-  trigger-coverage:
+  trigger-coverage-api:
     description: whether to trigger a code coverage build
     type: boolean
     default: false
@@ -53,7 +53,7 @@ workflows:
   coverage:
     when:
       and:
-        - equal: [ true, << pipeline.parameters.trigger-coverage >> ]
+        - equal: [ true, << pipeline.parameters.trigger-coverage-api >> ]
         - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
     jobs:
       - trigger-path-filtering:
@@ -64,7 +64,7 @@ workflows:
   pre-build:
     when:
       and:
-        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
+        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
         - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
     jobs:
       - trigger-path-filtering:
