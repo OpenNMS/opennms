@@ -178,8 +178,8 @@ commands:
           name: Login to ACR
           command: |
             PUBACR=opennmspubacr.azurecr.io
-            if [ -n "${$AZURE_SP_PASSWORD}" ]; then
-              docker login -u ${$AZURE_SP} -p ${$AZURE_SP_PASSWORD} ${PUBACR}
+            if [ -n "${AZURE_SP_PASSWORD}" ]; then
+              docker login -u ${AZURE_SP} -p ${AZURE_SP_PASSWORD} ${PUBACR}
             else
               echo "WARNING: Azure credentials not found. Assuming this is a PR or other external branch build."
             fi
