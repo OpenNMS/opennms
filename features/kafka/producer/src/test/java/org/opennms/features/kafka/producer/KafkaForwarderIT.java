@@ -48,7 +48,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -78,15 +77,18 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.StreamsConfig;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
@@ -132,6 +134,7 @@ import com.google.common.base.Strings;
         "classpath:/applicationContext-test-kafka-producer.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = false, tempDbClass = MockDatabase.class, reuseDatabase = false)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaForwarderIT.class);
 
@@ -274,7 +277,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
         // Send a unrelated newSuspect event (should not be forwarded)
         eventdIpcMgr.sendNow(MockEventUtil.createNewSuspectEventBuilder("test",
-                EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "192.168.1.1")
+                EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, InetAddressUtils.str(InetAddressUtils.UNPINGABLE_ADDRESS))
                 .getEvent());
 
         // Send a node up (should be forwarded)
@@ -342,7 +345,8 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         assertThat(kafkaConsumer.getAlarmByReductionKey(alarmReductionKey).getDescription(), equalTo("node down"));
         // Verify the consumed Node objects
         List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node> nodes = kafkaConsumer.getNodes();
-        assertThat(nodes.size(), equalTo(2));
+        LOG.debug("got nodes: {}", nodes);
+        assertThat(nodes, hasSize(greaterThanOrEqualTo(2)));
         // Verify the first node has hwInventory DAG including the Port with a hwEntAlias
         assertThat(nodes.get(0), not(nullValue()));
         assertThat(nodes.get(0).getHwInventory(), not(nullValue()));
@@ -708,6 +712,8 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
             executor.shutdown();
             executor.awaitTermination(2, TimeUnit.MINUTES);
         }
+        eventdIpcMgr.reset();
+        alarmDao.findAll().forEach(alarm -> alarmDao.delete(alarm));
         databasePopulator.resetDatabase();
     }
 
