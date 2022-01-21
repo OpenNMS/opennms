@@ -25,12 +25,8 @@ aliases:
       echo "export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=\"$DCT_DELEGATE_KEY_PASSPHRASE\"" >> $BASH_ENV
       echo "export MINION_DK_REPO=docker.io/opennms/minion" >> $BASH_ENV
       echo "export MINION_IMAGE_VERSION=\"$MINION_IMAGE_VERSION\"" >> $BASH_ENV
-<<<<<<< HEAD
       echo "export MINION_AZ_REPO=opennmspubacr.azurecr.io/opennms/minion" >> $BASH_ENV
       echo "export KEY_FOLDER=~/.docker/trust/private" >> $BASH_ENV
-=======
-      echo "export MINION_AZ_IMAGE=opennmspubacr.azurecr.io/opennms/minion" >> $BASH_ENV
->>>>>>> CLOUD-475: Push to azure public registry
   - &setup_dct_key
     name: Setup DCT key
     command: |
@@ -185,12 +181,17 @@ commands:
           command: |
             PUBACR=opennmspubacr.azurecr.io
 <<<<<<< HEAD
+<<<<<<< HEAD
             if [ -n "${AZURE_SP_PASSWORD}" ]; then
               docker login -u ${AZURE_SP} -p ${AZURE_SP_PASSWORD} ${PUBACR}
 =======
             if [ -n "${$AZURE_SP_PASSWORD}" ]; then
               docker login -u ${$AZURE_SP} -p ${$AZURE_SP_PASSWORD} ${PUBACR}
 >>>>>>> CLOUD-475: Create Azure public registry
+=======
+            if [ -n "${AZURE_SP_PASSWORD}" ]; then
+              docker login -u ${AZURE_SP} -p ${AZURE_SP_PASSWORD} ${PUBACR}
+>>>>>>> CLOUD-475: Add Azure Context r1
             else
               echo "WARNING: Azure credentials not found. Assuming this is a PR or other external branch build."
             fi
