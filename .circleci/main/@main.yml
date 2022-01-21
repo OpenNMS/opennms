@@ -478,7 +478,7 @@ commands:
 workflows:
   weekly-coverage:
     when:
-      equal: [ true, << pipeline.parameters.trigger-coverage-api >> ]
+      equal: [ true, << pipeline.parameters.trigger-coverage >> ]
     jobs:
       - build
       - integration-test-with-coverage:
@@ -490,7 +490,7 @@ workflows:
   build-minimal:
     when:
       and:
-        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
         - equal: [ true, << pipeline.parameters.trigger-build >> ]
         - equal: [ true, << pipeline.parameters.minimal >> ]
     jobs:
@@ -525,7 +525,7 @@ workflows:
   docs:
     when:
       and:
-        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
         - equal: [ true,  << pipeline.parameters.trigger-docs >> ]
         - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
@@ -537,7 +537,7 @@ workflows:
   ui:
     when:
       and:
-        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
         - equal: [ true,  << pipeline.parameters.trigger-ui >> ]
         - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
@@ -549,7 +549,7 @@ workflows:
   build-deploy:
     when:
       and:
-        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
         - equal: [ true,  << pipeline.parameters.trigger-build >> ]
         - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
