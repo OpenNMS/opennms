@@ -248,10 +248,6 @@ const render = async (update?: boolean) => {
   }
 }
 
-const openSingleGraph = () => {
-  console.log('ran')
-}
-
 watch(props.time, () => render(true))
 onMounted(() => render())
 </script>
