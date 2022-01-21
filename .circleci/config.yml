@@ -5,16 +5,16 @@ orbs:
   # path-filtering: circleci/path-filtering@0.1.1
 
 parameters:
-  trigger-setup:
+  trigger-prebuild:
     description: whether to trigger a pre-build evaluation
     type: boolean
     default: true
-  trigger-coverage:
+  trigger-coverage-api:
     description: whether to trigger a code coverage build
     type: boolean
     default: false
 
-setup: << pipeline.parameters.trigger-setup >>
+setup: true
 
 commands:
   cached-checkout:
@@ -52,7 +52,9 @@ commands:
 workflows:
   coverage:
     when:
-      equal: [ true, << pipeline.parameters.trigger-coverage >> ]
+      and:
+        - equal: [ true, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
@@ -61,7 +63,9 @@ workflows:
 
   pre-build:
     when:
-      equal: [ true, << pipeline.parameters.trigger-setup >> ]
+      and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
@@ -84,7 +88,7 @@ jobs:
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: .circleci/main.yml
-          parameters: { "trigger-coverage": true }
+          parameters: '{ "trigger-coverage": true }'
 
   trigger-path-filtering:
     docker:
