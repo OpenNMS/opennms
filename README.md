@@ -1,38 +1,40 @@
 [OpenNMS][]
 ===========
 
-[OpenNMS][] is an open-source solution that helps you visualize and monitor everything on your local and remote networks. It offers comprehensive fault, performance, traffic monitoring, and alarm generation in one place. Highly customizable and scalable, OpenNMS easily integrates with your core business applications and workflows.
+[OpenNMS][] is an open-source network monitoring platform that helps you visualize and monitor everything on your local and distributed networks. OpenNMS offers comprehensive fault, performance, traffic monitoring, and alarm generation in one place. Highly customizable and scalable, OpenNMS integrates with your core business applications and workflows.
+
+  .
 
 Features
 ---------
 
 * **Full inventory management**
 
-	Supports any type of provisioning and interoperates with virtually any configuration management system.
+	Flexible provisioning system provides many ways to interoperate with configuration management systems.
 
 * **Extensive data collection**
 
-	Most industry-standard data collection protocols (14) with no need to write or maintain plugins.
+	Works with many industry-standard data collection protocols (14) with no need to write or maintain third-party plugins: SNMP, JSON, WinRM, XML, SQL, JMX, SFTP, FTP, JDBC, HTTP, HTTPS, VMware, WS-Management, Prometheus.
 
 * **Robust traffic management**
 
-	Four flow protocols (NetFlow v.5/9, IPFIX, sFlow). 300,000+ flows/sec. Deep-dive analysis, enterprise reporting.
+	Supports four flow protocols (NetFlow v.5/9, IPFIX, sFlow). 300,000+ flows/sec. Deep-dive analysis, enterprise reporting.
 
-* **Digital Experience Monitoring**
+* **Digital experience monitoring**
 
-	Use the distributed Minion infrastructure to monitor a service’s latency and availability from different perspectives.
+	 Use the OpenNMS Minion to monitor a service’s latency and availability from different perspectives.
 
-* **High Configurability**
+* **Robust configuration**
 
-	Configure most features through the webUI or XML scripting.
+	Configure most features through the web UI or XML scripting, including thresholding, provisioning, event and flow management, service monitoring, and performance measurement.
 
 * **Scalability**
 
-	Monitor tens of thousands of devices via a distributed and tiered system.
+	Monitor hundreds of thousands of nodes using a distributed and tiered system.
 
-* **Enterprise Reporting and  Visualization**
+* **Enterprise reporting and  visualization**
 
-	Real-time notifications for high-priority response
+	Customizable dashboards that you can export as a PDF. Resource graphs, database reports, charts. Define and customize complex layered topologies to integrate topology maps into your service problem management workflow.
 
 Install OpenNMS
 ==================
