@@ -257,6 +257,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     }
 
     @Test
+    @JUnitTemporaryDatabase(dirtiesContext=true, tempDbClass=MockDatabase.class, reuseDatabase=false)
     public void canProduceAndConsumeMessages() throws Exception {
         // Send a node down event (should be forwarded)
         eventdIpcMgr.sendNow(MockEventUtil.createNodeDownEventBuilder("test", databasePopulator.getNode1()).getEvent());
