@@ -48,13 +48,6 @@ import {
 Chart.register(...registerables)
 Chart.register(zoomPlugin)
 
-interface SeriesObject {
-  color: string
-  metric: string
-  name: string
-  type: string
-}
-
 const emit = defineEmits(['addGraphDefinition'])
 
 const props = defineProps({
@@ -82,11 +75,15 @@ const props = defineProps({
 
 const store = useStore()
 const graphData = ref<GraphMetricsResponse>({} as GraphMetricsResponse)
-const series = ref<SeriesObject[]>([])
-const convertedGraphDataRef = ref<any>({
+const convertedGraphDataRef = ref<ConvertedGraphData>({
+  name: '',
   title: '',
   verticalLabel: '',
-  metrics: []
+  series: [],
+  values: [],
+  metrics: [],
+  printStatements: [],
+  properties: {},
 })
 let chart: any = {}
 const yAxisFormatter = format('.3s')
@@ -138,33 +135,35 @@ const getDatasetsForColumn = (index: number, columnValues: number[], datasetLabe
   const seriesObjs = []
   const datasets = []
 
-  for (const item of series.value) {
+  for (const item of convertedGraphDataRef.value.series) {
     if (item.metric === label) {
       seriesObjs.push(item)
     }
   }
 
-  let area: any = false
+  let area = false
+  let areaColor = ''
   for (const obj of seriesObjs) {
     if (obj.type === 'area') {
-      area = obj.color
+      area = true
+      areaColor = obj.color
       break
     }
   }
 
   for (const obj of seriesObjs) {
     if (obj.name !== undefined) {
-      const index = series.value.findIndex((series) => series.name === obj.name)
+      const index = convertedGraphDataRef.value.series.findIndex((series) => series.name === obj.name)
       datasets.push({
         hidden: Boolean(obj.type === 'hidden'),
         fill: area ? {
           target: 'origin',
-          above: area
+          above: areaColor
         } : false,
         label: datasetLabelObj.statement,
         data: columnValues,
         backgroundColor: obj.color,
-        order: series.value.length - index
+        order: convertedGraphDataRef.value.series.length - index
       })
     }
   }
@@ -213,7 +212,6 @@ const render = async (update?: boolean) => {
       resourceId: props.resourceId
     })
 
-    series.value = convertedGraphData.series
     convertedGraphDataRef.value = convertedGraphData
 
     const metrics: Metric[] = convertedGraphData.metrics.map((metric: Metric): Metric => ({

@@ -261,4 +261,4 @@ const formatStatement = (statement: PrintStatement, renderer: Renderer) => {
   }
 }
 
-export { formatTimestamps, getFormattedLegendStatements }
+export { TOKENS, tokenizeStatement, formatTimestamps, getFormattedLegendStatements, formatStatement }

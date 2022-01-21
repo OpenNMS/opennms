@@ -473,6 +473,7 @@ export interface GraphMetricsResponse {
 }
 
 export interface ConvertedGraphData {
+  title: string
   metrics: Metric[]
   printStatements: PrintStatement[]
   series: Series[]
