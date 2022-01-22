@@ -26,19 +26,19 @@
       </div>
       <div class="pl-1 ml-auto my-4">
         <button type="button" class="btn btn-secondary" ng-click="refreshData()" id="refresh-requisitions" ng-disabled="timingStatus.isRunning">
-          <span class="fa fa-refresh"/> Refresh
+          <span class="fa fa-refresh"></span> Refresh
         </button>
         <button type="button" class="btn btn-secondary" ng-click="quickAddNode()" id="quick-add-node" ng-disabled="timingStatus.isRunning" ng-show="requisitionsData.requisitions.length > 0">
-          <span class="fa fa-upload"/> Quick Add Node
+          <span class="fa fa-upload"></span> Quick Add Node
         </button>
         <button type="button" class="btn btn-secondary" ng-click="editDefaultForeignSource()" id="edit-default-foreign-source">
-          <span class="fa fa-edit"/> Edit Default FS
+          <span class="fa fa-edit"></span> Edit Default FS
         </button>
         <button type="button" class="btn btn-secondary" ng-click="resetDefaultForeignSource()" id="reset-default-foreign-source" ng-disabled="timingStatus.isRunning">
-          <span class="fa fa-retweet"/> Reset Default
+          <span class="fa fa-retweet"></span> Reset Default
         </button>
         <button type="button" class="btn btn-secondary" ng-click="add()" id="add-requisition" ng-disabled="timingStatus.isRunning">
-          <span class="fa fa-plus"/> Add Requisition
+          <span class="fa fa-plus"></span> Add Requisition
         </button>
       </div>
     </form>
@@ -110,25 +110,24 @@
                     <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="refresh(requisition)">
-                      <span class="fa fa-refresh"/>&nbsp;&nbsp;Refresh deployed stats</a></li>
+                      <span class="fa fa-refresh"></span>&nbsp;&nbsp;Refresh deployed stats</a></li>
                     <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
                                            id="editForeignSource-{{requisition.foreignSource}}"
                                            ng-click="editForeignSource(requisition.foreignSource)">
-                      <span class="fa fa-edit"/>&nbsp;&nbsp;Edit detectors &amp; policies</a></li>
+                      <span class="fa fa-edit"></span>&nbsp;&nbsp;Edit detectors &amp; policies</a></li>
                     <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="clone(requisition.foreignSource)">
-                      <span class="fa fa-random"/>&nbsp;&nbsp;Clone detectors &amp; policies</a></li>
+                      <span class="fa fa-random"></span>&nbsp;&nbsp;Clone detectors &amp; policies</a></li>
                     <li class="divider"></li>
                     <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="removeAllNodes(requisition.foreignSource)">
-                      <span class="fa fa-remove"/>&nbsp;&nbsp;Remove all nodes</a></li>
+                      <span class="fa fa-remove"></span>&nbsp;&nbsp;Remove all nodes</a></li>
                     <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
-                                           ng-disabled="requisition.nodesInDatabase > 0"
-                                           ng-disabled="timingStatus.isRunning"
+                                           ng-disabled="requisition.nodesInDatabase &gt; 0 || timingStatus.isRunning"
                                            ng-click="delete(requisition.foreignSource)">
-                      <span class="fa fa-trash"/>&nbsp;&nbsp;Delete requisition</a></li>
+                      <span class="fa fa-trash"></span>&nbsp;&nbsp;Delete requisition</a></li>
                   </ul>
                 </div>
               </span>
