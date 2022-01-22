@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,6 +48,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -140,6 +141,8 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private static final String METRIC_TOPIC_NAME = "test-metrics";
     private static final String ALARM_FEEDBACK_TOPIC_NAME = "test-alarm-feedback";
 
+    private int _id = 1;
+
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -182,6 +185,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     @Before
     public void setUp() throws IOException {
         File data = tempFolder.newFolder("data");
+
         eventdIpcMgr.setEventWriter(mockDatabase);
 
         databasePopulator.addExtension(new DatabasePopulator.Extension<HwEntityDao>() {
@@ -193,8 +197,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
             @Override
             public void onPopulate(DatabasePopulator populator, HwEntityDao dao) {
-                OnmsNode node = new OnmsNode();
-                node.setId(1);
+                OnmsNode node = databasePopulator.getNode1();
                 OnmsHwEntity port = getHwEntityPort(node);
                 dao.save(port);
                 OnmsHwEntity container = getHwEntityContainer(node);
@@ -209,6 +212,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                 chassis.addChildEntity(module);
                 chassis.addChildEntity(powerSupply);
                 dao.save(chassis);
+                dao.flush();
             }
 
             @Override
@@ -470,14 +474,14 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private OnmsAlarm nodeDownAlarmWithRelatedAlarm() {
         OnmsAlarm alarm = nodeDownAlarm();
         OnmsAlarm relatedAlarm = nodeDownAlarm();
-        relatedAlarm.setId(2);
+        relatedAlarm.setId(_id++);
         alarm.addRelatedAlarm(relatedAlarm);        
         return alarm;
     }
     
     private OnmsAlarm nodeDownAlarm() {
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(1);
+        alarm.setId(_id++);
         alarm.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
         alarm.setNode(databasePopulator.getNode1());
         alarm.setCounter(1);
@@ -500,13 +504,6 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         return kafkaConsumer.getNodes().stream()
                 .filter(Objects::nonNull)
                 .map(n -> (int)n.getId())
-                .collect(Collectors.toSet());
-    }
-
-    private Set<String> getReductionKeysForConsumedAlarms() {
-        return kafkaConsumer.getAlarms().stream()
-                .filter(Objects::nonNull)
-                .map(OpennmsModelProtos.Alarm::getReductionKey)
                 .collect(Collectors.toSet());
     }
 
@@ -699,12 +696,20 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        if (kafkaAlarmaDataStore != null) {
+            kafkaAlarmaDataStore.destroy();
+        }
+        if (kafkaProducer != null) {
+            kafkaProducer.destroy();
+        }
         if (kafkaConsumer != null) {
+            alarmLifecycleListenerManager.onListenerUnregistered(kafkaProducer, Collections.emptyMap());
             kafkaConsumer.shutdown();
         }
         if (executor != null) {
             executor.shutdown();
+            executor.awaitTermination(2, TimeUnit.MINUTES);
         }
         databasePopulator.resetDatabase();
     }
