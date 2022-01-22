@@ -23,7 +23,7 @@
                    ng-required="true"
                    ng-model="geocoder.config.email"
                    ng-class="{ 'is-invalid' : form.nominatimEmail.$invalid || configError.email }"
-            />
+            >
             <p id="configError.email" class="invalid-feedback">{{configError.email || "Please provide a valid email address"}}</p>
         </div>
         <div class="form-group">
@@ -35,7 +35,7 @@
                    ng-model="geocoder.config.userAgent"
                    ng-change="validateFieldsManually()"
                    ng-class="{ 'is-invalid' : form.nominatimUserAgent.$invalid || configError.userAgent }"
-            />
+            >
             <p id="configError.userAgent" class="invalid-feedback">{{configError.userAgent || "User Agent or Referer must be set"}}</p>
         </div>
         <div class="form-group">
@@ -47,11 +47,11 @@
                    ng-model="geocoder.config.referer"
                    ng-change="validateFieldsManually()"
                    ng-class="{ 'is-invalid' : form.nominatimReferer.$invalid || configError.referer }"
-            />
+            >
             <p id="configError.referer" class="invalid-feedback">{{configError.referer || "User Agent or Referer must be set"}}</p>
         </div>
         <div class="form-group">
-            <label style="width: 180px" for="nominatimAcceptUsageTerms">Accept <a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank">Usage Terms <i class="fa fa-share-square-o"/></a></label>
+            <label style="width: 180px" for="nominatimAcceptUsageTerms">Accept <a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank">Usage Terms <i class="fa fa-share-square-o"></i></a></label>
             <toggle id="nominatimAcceptUsageTerms"
                     name="nominatimAcceptUsageTerms"
                     on="Yes"
@@ -59,7 +59,7 @@
                     size="btn-sm"
                     ng-model="geocoder.config.acceptUsageTerms"
                     ng-class="{ 'is-invalid' : form.nominatimAcceptUsageTerms.$invalid || geocoder.config.acceptUsageTerms === false || configError.acceptUsageTerms }"
-            />
+            ></toggle>
             <p id="configError.acceptUsageTerms" class="invalid-feedback">{{configError.acceptUsageTerms || "Please accept the usage terms"}}</p>
         </div>
         <div class="form-group">
@@ -71,7 +71,7 @@
                     size="btn-sm"
                     ng-model="geocoder.config.useSystemProxy"
                     ng-class="{ 'is-invalid' : form.nominatimSystemProxy.$invalid || configError.useSystemProxy }"
-            />
+            ></toggle>
             <p id="configError.useSystemProxy" class="invalid-feedback">{{configError.useSystemProxy}}</p>
         </div>
 
