@@ -52,12 +52,15 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.netmgt.model.OnmsUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.restassured.http.ContentType;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class ReportRestIT extends AbstractRestIT {
+    private static final Logger LOG = LoggerFactory.getLogger(ReportRestIT.class);
 
     private final static String REPORT_ID = "local_Early-Morning-Report";
     private final static String INSTANCE_ID_TEMPLATE = REPORT_ID + "-" + ReportRestIT.class.getSimpleName() + "_%user%";
@@ -141,9 +144,11 @@ public class ReportRestIT extends AbstractRestIT {
              * Delivered Reports
              */
             // Verify list already persisted reports (none yet)
+            LOG.debug("validating no persisted reports exist");
             given().get("persisted").then().statusCode(204);
 
             // Verify deliver report works
+            LOG.debug("delivering a report for {}", user[0]);
             deliveryOptions.put("instanceId", INSTANCE_ID_TEMPLATE.replaceAll("%user%", user[0]));
             given().body(reportParameters.toString())
                     .contentType(ContentType.JSON)
@@ -151,7 +156,8 @@ public class ReportRestIT extends AbstractRestIT {
                     .post("persisted")
                     .then().statusCode(202);
 
-            // Verify list already persisted reports work (one yet)
+            // Verify list already persisted reports work (one)
+            LOG.debug("validating report for {} is persisted", user[0]);
             final AtomicReference<Integer> persistedId = new AtomicReference<>(-1);
             await().atMost(5, MINUTES).pollInterval(5, SECONDS).until(() -> {
                         final String response = given().get("persisted")
@@ -169,6 +175,8 @@ public class ReportRestIT extends AbstractRestIT {
                     }
             );
 
+            LOG.debug("deleting persisted report");
+
             // Verify deleting existing persisted report
             given().delete("persisted/" + persistedId.get()).then().statusCode(202);
 
@@ -179,9 +187,11 @@ public class ReportRestIT extends AbstractRestIT {
              * Scheduled Reports
              */
             // Verify listing scheduled report works (none yet)
+            LOG.debug("validating no scheduled reports exist");
             given().get("scheduled").then().statusCode(204);
 
             // Verify Creating a scheduled Report works
+            LOG.debug("scheduling a report for {}", user[0]);
             deliveryOptions.put("instanceId", INSTANCE_ID_TEMPLATE.replaceAll("%user%", user[0]));
             given().body(reportParameters.toString())
                     .contentType(ContentType.JSON)
@@ -189,7 +199,8 @@ public class ReportRestIT extends AbstractRestIT {
                     .post("scheduled")
                     .then().statusCode(202);
 
-            // Verify listing scheduled report works (one yet)
+            // Verify listing scheduled report works (one)
+            LOG.debug("validating report for {} is scheduled", user[0]);
             final String response = given().get("scheduled")
                     .then().log().status()
                     .assertThat()
@@ -201,6 +212,8 @@ public class ReportRestIT extends AbstractRestIT {
                 throw new IllegalStateException("Expected one result, but got " + scheduledReports.length());
             }
             final String scheduledId = scheduledReports.getJSONObject(0).getString("triggerName");
+
+            LOG.debug("deleting report schedule");
 
             // Verify deleting specific scheduled report works
             given().delete("scheduled/" + scheduledId).then().statusCode(202);
@@ -241,10 +254,12 @@ public class ReportRestIT extends AbstractRestIT {
     }
 
     protected void clearReports() {
+        LOG.debug("deleting existing reports");
         // Clear all reports created/scheduled
         given().delete("persisted").then().statusCode(202);
         given().delete("scheduled").then().statusCode(202);
 
+        LOG.debug("verifying reports have been deleted");
         await().atMost(30, SECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
