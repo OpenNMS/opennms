@@ -72,5 +72,5 @@ This example shows how to map values of `dot1dStpPortState` and `dot1dStpPortEna
 ----
 <1> Port STP state enumerated integer attribute
 <2> Port enablement status enumerated integer attribute
-<3> Derived port STP state textual attribute `dot1dStpPortStateText`
+<3> Derived port STP state text attribute `dot1dStpPortStateText`
 <4> Derived port enablement status textual attribute `dot1dStpPortEnableText`
