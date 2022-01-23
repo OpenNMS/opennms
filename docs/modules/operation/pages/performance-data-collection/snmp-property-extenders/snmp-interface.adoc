@@ -41,7 +41,7 @@ ifEntry OBJECT-TYPE
 
 By using this extender, it's possible to import string attributes from the `ifTable`, `ifXTable`, or another table that augments the `ifTable`.
 
-=== Configuring the SNMP Interface Property Extender
+== Configure the SNMP Interface Property Extender
 
 The SNMP Interface property extender expects two or three parameters:
 
