@@ -3,7 +3,7 @@
 The SNMP Interface property extender does much the same job as the Pointer-Like Index property extender, but it is specialized for importing properties from the `ifTable`.
 Resources representing rows in the `ifTable` are modeled differently in {page-component-title} compared to other tabular resource types, and this extender accounts for those differences.
 
-=== When to Use the SNMP Interface Property Extender
+== When to Use the SNMP Interface Property Extender
 
 Use the SNMP Interface property extender when the string property you want to import is associated with a network interface which is represented by a row in the `ifTable`.
 For example, the `dot1dBasePortTable` has its own index which does not share any components with any other table, but its `dot1dBasePortIfIndex` column contains a value that is a valid `ifIndex`.
