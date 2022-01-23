@@ -51,7 +51,7 @@ The Regex property extender expects three parameters, all of which are required:
 | The alias name of the string property to import from the source MIB table.
 
 | index-pattern
-| A regular expression containing one matching group
+| A regular expression containing one matching group.
 |===
 
 The `index-pattern` expression must meet the same criteria as for the Index Split property extender.
