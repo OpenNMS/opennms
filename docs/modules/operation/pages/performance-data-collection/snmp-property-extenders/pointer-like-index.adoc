@@ -114,6 +114,6 @@ The target resource gains a pair of string properties, which we will call `cpmCP
 </groups>
 ----
 <1>, <2> First we collect `entPhysicalDescr` and `entPhysicalName` in the source group, which uses a resource type associated with the `entPhysicalTable`.
-<3> Then we collect the pointer-like `cpmCPUTotalPhysicalIndex` in the target group, whose resource-type is associated with the `cpmCPUTotalTable`
+<3> Then we collect the pointer-like `cpmCPUTotalPhysicalIndex` in the target group, whose resource type is associated with the `cpmCPUTotalTable`.
 <4> We derive `cpmCPUTotalName` in the target group telling the extender to use the pointer-like property's value as an index into the source table, and specify that we want to "pull over" the source attribute `entPhysicalName` <5>
 <6> Deriving `cpmCPUTotalDescr` is almost identical, except that this time we are pulling over the value of `entPhysicalDescr` <7>
