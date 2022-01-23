@@ -56,7 +56,7 @@ By treating `cpmCPUTotalPhysicalIndex` somewhat like a link:https://en.wikipedia
 NOTE: Some combinations of Cisco hardware and software appear to use values of `cpmCPUTotalIndex` that are directly interchangeable with `entPhysicalIndex`.
 This relationship does not hold across all product lines or software revisions.
 
-=== Configuring the Pointer-Like Index Property Extender
+== Configure the Pointer-Like Index Property Extender
 
 The Pointer-Like Index property extender expects three parameters, all of which are required:
 
