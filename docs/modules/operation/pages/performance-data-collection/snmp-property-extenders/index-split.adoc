@@ -44,4 +44,5 @@ This example shows how to extract just the `bsnAPIfSlotId` index component as a 
 </group>
 ----
 <1> Derived string property `slotNumber`
-<2> Regular expression; the portion in parentheses is what gets extracted. `\d+` means "one or more decimal digit characters".
+<2> Regular expression; the portion in parentheses is what gets extracted.
+`\d+` means "one or more decimal digit characters".
