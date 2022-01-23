@@ -31,7 +31,7 @@ This extender enables persisting the values of these enumerated integer columns 
 
 NOTE: While this extender is intended primarily for translating integer values to more descriptive ones as shown in the example below, it could also be used to translate from one set of alphanumeric values to another set.
 
-=== Configuring the Enum Lookup Property Extender
+== Configure the Enum Lookup Property Extender
 The Enum Lookup property extender expects zero or more parameters.
 Only the `default-value` parameter has a fixed name; if it is present, its value is used any time a lookup cannot be completed.
 If `default-value` is not provided and a lookup fails, no value will be returned for the property.
