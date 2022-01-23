@@ -55,7 +55,7 @@ The SNMP Interface property extender expects two or three parameters:
 3+| *Required*
 
 | source-attribute
-| The alias name of the string property to be imported from the source MIB table.
+| The alias name of the string property to import from the source MIB table.
 | n/a
 
 | target-ifindex-pointer-column
