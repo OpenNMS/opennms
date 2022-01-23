@@ -115,4 +115,5 @@ This example shows how to use `dot1dBasePortIfIndex` as a pointer-like index to 
 <4> From the source group
 <5> Deriving `dot1dBasePortIfName` is almost identical, except that we want the property `interfaceName`.
 <6> From the source group instead
-<7> Again with `dot1dBasePortIfAlias`, we repeat ourselves except that our desired property from the source group is `interfaceAlias` <8>
+<7> Again with `dot1dBasePortIfAlias`, we repeat ourselves except that our desired property from the source group is `interfaceAlias`
+<8> From the source group
