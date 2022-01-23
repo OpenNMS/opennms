@@ -45,7 +45,7 @@ The Regex property extender expects three parameters, all of which are required:
 | Description
 
 | source-type
-| The name of the `resourceType` associated with the source MIB table
+| The name of the `resourceType` associated with the source MIB table.
 
 | source-alias
 | The alias name of the string property to be imported from the source MIB table
