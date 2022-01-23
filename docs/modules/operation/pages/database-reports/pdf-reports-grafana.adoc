@@ -44,7 +44,7 @@ image::database-reports/grafana-endpoint.png[Endpoint, 400]
 
 You can now use {page-component-title} to create PDF reports of Grafana dashboards.
 
-=== Create a PDF of a Grafana dashboard
+== Create a PDF of a Grafana dashboard
 
 . In the {page-component-title} UI, choose menu:Reports[Database Reports].
 . In the *Report Templates* area, click *Grafana Dashboard Report <Xppp>*, where <Xppp> represents the number of panels per page you want to display.
