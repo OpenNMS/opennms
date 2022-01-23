@@ -36,7 +36,7 @@ ifEntry OBJECT-TYPE
     ::= { ifTable 1 }
 ----
 <1> The entry type for `dot1dBasePortTable` is indexed on `dot1dBasePort`, which has no significance outside this table.
-<2> But `dot1dBasePortTable` contains column `dot1dBasePortIfIndex`, which tells us the `ifIndex` corresponding to the physical port underlying to the associated bridge base port
+<2> But `dot1dBasePortTable` contains column `dot1dBasePortIfIndex`, which tells us the `ifIndex` corresponding to the physical port underlying the associated bridge base port.
 <3> `ifIndex` is the index of the `ifTable` entry type (and also of the `ifXTable` entry type)
 
 By using this extender, it's possible to import string attributes from the `ifTable`, `ifXTable`, or another table that augments the `ifTable`.
