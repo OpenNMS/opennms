@@ -26,7 +26,7 @@ bsnAPIfLoadParametersEntry OBJECT-TYPE
 
 This extender enables extraction of just the `bsnAPIfSlotId` component for use in a resource label.
 
-=== Configuring the Index Split Property Extender
+== Configure the Index Split Property Extender
 
 The Index Split property extender expects a single parameter, `index-pattern`, whose value is a regular expression.
 The expression must be general enough to match all possible index values for the table at hand, and should include one capturing group.
