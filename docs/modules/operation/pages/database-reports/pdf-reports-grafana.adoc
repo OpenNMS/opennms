@@ -12,7 +12,7 @@ Dashboard to PDF:
 
 image::database-reports/Dashboard-pdf.png[PDF report]
 
-=== Before you begin
+== Before you begin
 
 This feature requires {page-component-title} and an instance of Grafana with at least one dashboard and panel.
 OpenNMS lets you create a report for any Grafana dashboard, not just those created using link:http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
