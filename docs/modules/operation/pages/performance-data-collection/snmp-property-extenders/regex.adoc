@@ -1,8 +1,8 @@
-== Regex Property Extender
+= Regex Property Extender
 
 The Regex property extender works similarly to the Index Split property extender, with the added capability of importing a string property from a source table.
 
-=== When to Use the Regex Property Extender
+== When to Use the Regex Property Extender
 
 The Regex property extender is useful when some portion of the target MIB table's index can be used as an index to the source MIB table.
 For example, the Cisco Airespace `bsnAPIfLoadParametersTable` is indexed using the tuple of `bsnAPDot3MacAdddress` and `bsnAPIfSlotId`, whereas the `bsnAPTable` is indexed on `bsnAPDot3MacAddress` alone.
