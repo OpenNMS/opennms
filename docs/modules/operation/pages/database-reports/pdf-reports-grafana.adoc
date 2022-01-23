@@ -20,7 +20,7 @@ OpenNMS lets you create a report for any Grafana dashboard, not just those creat
 You must set up Grafana as a data source by xref:grafana-endpoint[configuring the Grafana endpoint] in {page-component-title}.
 
 [[grafana-endpoint]]
-=== Configure the Grafana endpoint
+== Configure the Grafana endpoint
 
 Configuring the Grafana endpoint sets up Grafana as the data source for the dashboards from which you create PDFs.
 
