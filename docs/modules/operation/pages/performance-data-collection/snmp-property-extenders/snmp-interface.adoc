@@ -1,4 +1,4 @@
-== SNMP Interface Property Extender
+= SNMP Interface Property Extender
 
 The SNMP Interface property extender does much the same job as the Pointer-Like Index property extender, but it is specialized for importing properties from the `ifTable`.
 Resources representing rows in the `ifTable` are modeled differently in {page-component-title} compared to other tabular resource types, and this extender accounts for those differences.
