@@ -73,7 +73,7 @@ The Pointer-Like Index property extender expects three parameters, all of which 
 | The alias name of the string property to import from the source MIB table.
 
 | target-index-pointer-column
-| The alias name of the column in the target MIB table whose value may be used as an index into the source MIB table
+| The alias name of the column in the target MIB table whose value may be used as an index into the source MIB table.
 |===
 
 This example shows how to use `cpmCPUTotalPhysicalIndex` as a pointer-like index into the `entPhysicalTable`.
