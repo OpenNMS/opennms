@@ -1193,6 +1193,12 @@
       <artifactId>org.opennms.features.perspectivepoller</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- Device Config -->
+    <dependency>
+      <groupId>org.opennms.features.device-config.persistence</groupId>
+      <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>

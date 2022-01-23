@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.opennms.core.criteria.Alias;
@@ -46,12 +47,17 @@ import org.opennms.core.criteria.restrictions.AnyRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.NeRestriction;
 import org.opennms.core.criteria.restrictions.NullRestriction;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -84,7 +90,14 @@ public class QueryManagerDaoImpl implements QueryManager {
     private MonitoredServiceDao m_monitoredServiceDao;
 
     @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
+
+    @Autowired
     private TransactionOperations m_transcationOps;
+
+    @Autowired
+    private DeviceConfigDao deviceConfigDao;
+
 
     /** {@inheritDoc} */
     @Override
@@ -360,6 +373,38 @@ public class QueryManagerDaoImpl implements QueryManager {
             LOG.error("Failed to set the last good/fail timestamp for service named {} on node id {} and interface {} for {}.",
                     serviceName, nodeId,  ipAddr, status, e);
         }
+    }
+
+    @Override
+    public void persistDeviceConfig(PollableService service, Map<String, Object> attributes, byte[] deviceConfigBytes) {
+
+        // Assume default encoding as ASCII.
+        String encoding = getObjectAsString(attributes.get("encoding"));
+        String  deviceType = getObjectAsString(attributes.get("device-type"));
+        // Retrieve interface
+        final OnmsIpInterface ipInterface = m_ipInterfaceDao.findByNodeIdAndIpAddress(service.getNodeId(), service.getIpAddr());
+        // Fetch last known config for the interface
+        List<DeviceConfig> deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface);
+        // Update config if it's updated
+        DeviceConfig deviceConfig = deviceConfigList.isEmpty() ? null : deviceConfigList.get(0);
+        if (deviceConfig == null || !Arrays.equals(deviceConfig.getConfig(), deviceConfigBytes)) {
+            deviceConfig = new DeviceConfig();
+            deviceConfig.setConfig(deviceConfigBytes);
+            deviceConfig.setCreatedTime(new Date());
+            deviceConfig.setIpInterface(ipInterface);
+            deviceConfig.setEncoding(encoding);
+            deviceConfig.setDeviceType(deviceType);
+            int version = deviceConfig.getVersion() != null ? deviceConfig.getVersion() + 1 : 1;
+            deviceConfig.setVersion(version);
+            deviceConfigDao.saveOrUpdate(deviceConfig);
+        }
+    }
+
+    private String getObjectAsString(Object object) {
+        if (object instanceof String) {
+            return (String) object;
+        }
+        return null;
     }
 
 }

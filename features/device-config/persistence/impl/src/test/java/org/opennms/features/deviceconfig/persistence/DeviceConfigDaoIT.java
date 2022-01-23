@@ -54,6 +54,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static java.time.temporal.ChronoUnit.HOURS;
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -111,6 +113,41 @@ public class DeviceConfigDaoIT {
         OnmsIpInterface ipInterface = ipInterfaces.iterator().next();
         Assert.assertNotNull(ipInterface);
         return ipInterface;
+    }
+
+    @Test
+    public void testFetchDeviceConfigSortedByDate() {
+        int count = 10;
+        populateDeviceConfigs(count);
+        List<DeviceConfig> deviceConfigList = deviceConfigDao.findAll();
+        Assert.assertEquals(count, deviceConfigList.size());
+        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface);
+        Assert.assertEquals(count, deviceConfigList.size());
+        DeviceConfig deviceConfig = deviceConfigList.get(0);
+        Assert.assertNotNull(deviceConfig);
+        Assert.assertEquals(count, (long) deviceConfig.getVersion());
+        // Take middle element and update it's created time.
+        // This is not the way we should update versions of the latest. This is just for the test.
+        DeviceConfig middleElement = deviceConfigList.stream().filter(config -> config.getVersion() == count/2).findFirst().get();
+        middleElement.setCreatedTime(Date.from(Instant.now().plus(12, HOURS)));
+        deviceConfigDao.saveOrUpdate(middleElement);
+        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface);
+        DeviceConfig retrievedMiddleElement = deviceConfigList.get(0);
+        Assert.assertEquals(middleElement.getVersion(), retrievedMiddleElement.getVersion());
+    }
+
+    private void populateDeviceConfigs(int count) {
+
+        for (int i = 0; i < count; i++) {
+            DeviceConfig deviceConfig = new DeviceConfig();
+            deviceConfig.setIpInterface(ipInterface);
+            deviceConfig.setConfig(UUID.randomUUID().toString().getBytes(StandardCharsets.US_ASCII));
+            deviceConfig.setEncoding("ASCII");
+            deviceConfig.setCreatedTime(Date.from(Instant.now().plusSeconds(i * 60)));
+            deviceConfig.setDeviceType("Cisco-IOS");
+            deviceConfig.setVersion(i+1);
+            deviceConfigDao.saveOrUpdate(deviceConfig);
+        }
     }
 
 }

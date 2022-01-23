@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.poller.PollStatus;
@@ -181,6 +182,11 @@ public class MockQueryManager implements QueryManager {
 
     @Override
     public void updateLastGoodOrFail(PollableService pollableService, PollStatus status) {
+        // pass
+    }
+
+    @Override
+    public void persistDeviceConfig(PollableService pollableService, Map<String, Object> parameters, byte[] deviceConfig) {
         // pass
     }
 

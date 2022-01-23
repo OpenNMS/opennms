@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.Map;
 
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
@@ -107,4 +108,6 @@ public interface PollContext {
     public boolean isServiceUnresponsiveEnabled();
 
     void trackPoll(PollableService service, PollStatus result);
+
+    void persistDeviceConfig(PollableService pollableService, Map<String, Object> parameters, byte[] deviceConfig);
 }

@@ -31,10 +31,19 @@ package org.opennms.features.deviceconfig.persistence.impl;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
+import org.opennms.netmgt.model.OnmsIpInterface;
+
+import java.util.List;
 
 public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long> implements DeviceConfigDao {
 
     public DeviceConfigDaoImpl() {
         super(DeviceConfig.class);
+    }
+
+    @Override
+    public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface) {
+
+        return find("from DeviceConfig dc where dc.ipInterface.id = ? ORDER BY createdTime desc", ipInterface.getId());
     }
 }

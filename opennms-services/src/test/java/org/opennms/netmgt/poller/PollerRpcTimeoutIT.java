@@ -96,7 +96,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
         "classpath:/META-INF/opennms/applicationContext-pollerd.xml",
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
-        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-deviceConfigDao.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger",
