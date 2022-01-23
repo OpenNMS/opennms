@@ -51,7 +51,6 @@
 *** xref:performance-data-collection/snmp-property-extenders/cisco-cbqos.adoc[]
 *** xref:performance-data-collection/snmp-property-extenders/enum-lookup.adoc[]
 *** xref:performance-data-collection/snmp-property-extenders/index-split.adoc[]
-*** xref:performance-data-collection/snmp-property-extenders/regex.adoc[]
 *** xref:performance-data-collection/snmp-property-extenders/pointer-like-index.adoc[]
 *** xref:performance-data-collection/snmp-property-extenders/regex.adoc[]
 *** xref:performance-data-collection/snmp-property-extenders/snmp-interface.adoc[]
