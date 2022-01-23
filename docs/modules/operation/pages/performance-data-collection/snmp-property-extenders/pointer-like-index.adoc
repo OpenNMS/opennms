@@ -1,4 +1,4 @@
-== Pointer-Like Index Property Extender
+= Pointer-Like Index Property Extender
 
 The Pointer-Like Index property extender makes it possible to use the value of an attribute from the target MIB table as the index into the source MIB table.
 Unlike the Index Split and Regex extenders, this extender class does not require the target and source MIB tables to share any index components.
