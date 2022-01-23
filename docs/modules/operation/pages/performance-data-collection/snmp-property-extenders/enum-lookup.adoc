@@ -37,7 +37,7 @@ Only the `default-value` parameter has a fixed name; if it is present, its value
 If `default-value` is not provided and a lookup fails, no value will be returned for the property.
 The remaining parameters are named for the input values, and their values represent the output values.
 
-This example shows how to map values of `dot1dStpPortState` and `dot1dStpPortEnable` to their textual equivalents.
+This example shows how to map values of `dot1dStpPortState` and `dot1dStpPortEnable` to their text equivalents.
 
 [source, xml]
 ----
