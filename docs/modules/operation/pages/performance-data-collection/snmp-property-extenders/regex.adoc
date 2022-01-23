@@ -34,7 +34,7 @@ bsnAPEntry OBJECT-TYPE
 
 By extracting just the first index component and using the result as an index into the source MIB table, it's possible to import the human-sensible `bsnAPName` string property from the source MIB table.
 
-=== Configuring the Regex Property Extender
+== Configure the Regex Property Extender
 
 The Regex property extender expects three parameters, all of which are required:
 
