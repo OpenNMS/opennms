@@ -1,0 +1,56 @@
+= Create Asset-Based Topologies Using {page-component-title} Events
+
+The Asset Topology Provider listens for events that trigger the generation and installation or removal of topologies.
+The Asset Topology Provider events are defined in the file:
+
+[source, path]
+----
+${OPENNMS_HOME}/etc/events/GraphMLAssetPluginEvents.xml
+----
+
+These events use the default parameters if parameters are not supplied.
+
+To create a new topology from the current OpenNMS inventory, use the following:
+
+[source, console]
+----
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/create localhost
+
+(or with parameters)
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/create localhost  -p 'providerId test' -p 'label test' -p 'assetLayers asset-country,asset-city,asset-building'
+
+other sample possible parameters are
+
+-p 'filters asset-displaycategory=!testDisplayCategory'
+-p 'preferredLayout Grid Layout'
+-p 'breadcrumbStrategy SHORTEST_PATH_TO_ROOT'
+----
+
+To uninstall an asset topology use
+
+[source, console]
+----
+(for default topology providerId)
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/remove localhost
+
+(or with specific providerId)
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/remove localhost -p 'providerId test'
+----
+
+To regenerate an existing asset topology use
+
+[source, console]
+----
+(for default topology providerId)
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/regenerate localhost
+
+(or with specific providerId)
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/regenerate localhost-p 'providerId test'
+----
+
+To regenerate all existing asset topologies use
+
+[source, console]
+----
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/regenerateall localhost
+----
