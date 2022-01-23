@@ -74,6 +74,6 @@ These extenders are useful to deal with partial indices and other similar operat
 Use SNMP property extenders in the context of a `property` element inside an SNMP data-collection `group` parent element.
 The `property` element, when it appears, is a sibling of any `mibObj` elements beneath the same parent `group`.
 The `instance` and `alias` attributes of the `property` element are both required, and serve the same purpose as the same attributes of `mibObj`.
-The `class-name` attribute of the `property` element contains the full class name (including package) of the Property Extender class needed to join the source and target tables.
+The `class-name` attribute of the `property` element contains the full class name (including package) of the property extender class needed to join the source and target tables.
 The `property` element takes a number of `parameter` child elements; use these parameters to configure the property extender class named in `class-name`.
 Each extender class recognizes a different set of parameters.
