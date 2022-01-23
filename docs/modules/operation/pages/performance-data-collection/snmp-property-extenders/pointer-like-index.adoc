@@ -3,7 +3,7 @@
 The Pointer-Like Index property extender makes it possible to use the value of an attribute from the target MIB table as the index into the source MIB table.
 Unlike the Index Split and Regex extenders, this extender class does not require the target and source MIB tables to share any index components.
 
-=== When to Use the Pointer-Like Index Property Extender
+== When to Use the Pointer-Like Index Property Extender
 
 The Pointer-Like Index property extender is useful when the target MIB table contains a column whose value can be used as an index into the source MIB table.
 For example, the Cisco Process MIB's `cpmCPUTotalTable` has its own index that is not shared with any other tables, but its `cpmCPUTotalPhysicalIndex` column contains an integer which can be used as an index into the `entPhysicalTable`.
