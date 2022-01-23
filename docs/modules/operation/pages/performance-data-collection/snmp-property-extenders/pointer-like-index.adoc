@@ -67,7 +67,7 @@ The Pointer-Like Index property extender expects three parameters, all of which 
 | Description
 
 | source-type
-| The name of the `resourceType` associated with the source MIB table
+| The name of the `resourceType` associated with the source MIB table.
 
 | source-attribute
 | The alias name of the string property to be imported from the source MIB table
