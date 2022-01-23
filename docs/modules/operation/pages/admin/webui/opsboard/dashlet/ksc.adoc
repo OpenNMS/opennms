@@ -15,7 +15,7 @@ KSC Reports provide a way to generate prefabricated graphical views of collected
 
 == KSC Report Configuration
 
-KSC Reports are configured through the GUI in `Reports` -> `KSC Reports`. 
+Configure KSC reports through the UI in *Reports -> KSC Reports*. 
 
 Here is an example report entry that uses a custom index and graphs:
 [source, xml]
