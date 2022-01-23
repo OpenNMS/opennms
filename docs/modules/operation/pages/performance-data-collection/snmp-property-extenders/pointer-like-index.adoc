@@ -47,7 +47,7 @@ entPhysicalEntry       OBJECT-TYPE
     INDEX   { entPhysicalIndex } <3>
     -- ...
 ----
-<1> The `cpmCPUTotalTable` entry type is indexed on `cpmCPUTotalIndex`, which has no meaning outside this table
+<1> The `cpmCPUTotalTable` entry type is indexed on `cpmCPUTotalIndex`, which has no meaning outside this table.
 <2> The `cpmCPUTotalPhysicalIndex` column contains a value of `entPhysicalIndex` corresponding to the CPU referenced in a given row
 <3> The `entPhysicalTable` entry type is indexed on `entPhysicalIndex` and provides many useful textual columns.
 
