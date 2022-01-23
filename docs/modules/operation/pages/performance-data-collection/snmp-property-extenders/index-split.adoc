@@ -1,8 +1,8 @@
-== Index Split Property Extender
+= Index Split Property Extender
 
 The Index Split property extender enables extraction of part of a resource's local instance identifier.
 
-=== When to Use the Index Split Property Extender
+== When to Use the Index Split Property Extender
 
 Use the Index Split property extender when collecting data from tables with compound indices, because it enables extraction of a single index component.
 For example, the Cisco Airespace `bsnAPIfLoadParametersTable` is indexed using the tuple of `bsnAPDot3MacAdddress` and `bsnAPIfSlotId`.
