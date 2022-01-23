@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -399,7 +400,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
     private volatile boolean shutdownServer;
     private TFTP serverTftp_;
     private int port_ = 69;
-    private InetAddress laddr_;
+    private InetAddress laddr_ = new InetSocketAddress(0).getAddress();
 
     private Exception serverException;
 
@@ -587,8 +588,11 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
     }
 
     @Override
-    public void register(TftpFileReceiver receiver) {
+    public void register(TftpFileReceiver receiver) throws IOException {
         synchronized (receivers) {
+            if (serverTftp_ == null) {
+                launch();
+            }
             receivers.add(receiver);
         }
     }
@@ -597,6 +601,10 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
     public void deregister(TftpFileReceiver receiver) {
         synchronized (receivers) {
             receivers.remove(receiver);
+            if(receivers.isEmpty()) {
+                close();
+                serverTftp_ = null;
+            }
         }
     }
 

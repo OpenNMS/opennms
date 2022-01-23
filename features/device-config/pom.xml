@@ -15,6 +15,7 @@
     <name>OpenNMS :: Features :: Device Config</name>
 
     <modules>
+        <module>monitor</module>
         <module>persistence</module>
         <module>tftp</module>
         <module>shell</module>
