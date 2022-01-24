@@ -326,30 +326,30 @@ categories:
                 key: "/ipc/sink/kafka"
                 example: "compression.type: gzip"
       # IPC Configuration :: Kafka IPC
-       - name: "kafka"
-         label: "Kafka IPC"
-         description: "Configuration settings for Kafka IPC"
-         config:
-           - name: "bootstrap-servers"
-             type:
-               name: "collection"
-               strategy: "concat"
-               items:
-                 label: "Server"
-                 type:
-                   name: "host-with-port"
-                 separator: ","
-             label: "Bootstrap Servers"
-             description: "Kafka bootstrap servers"
-             key: "/ipc/kafka/bootstrap.servers"
-             example: "kafka-01-ip:9092, kafka-02-ip:9092"
-           - name: "properties"
-             type:
-               name: "properties"
-             label: "Properties"
-             description: "Additional Kafka configuration properties"
-             key: "/ipc/kafka"
-             example: "compression.type: gzip"
+      - name: "kafka"
+        label: "Kafka IPC"
+        description: "Configuration settings for Kafka IPC"
+        config:
+          - name: "bootstrap-servers"
+            type:
+              name: "collection"
+              strategy: "concat"
+              items:
+                label: "Server"
+                type:
+                  name: "host-with-port"
+                separator: ","
+            label: "Bootstrap Servers"
+            description: "Kafka bootstrap servers"
+            key: "/ipc/kafka/bootstrap.servers"
+            example: "kafka-01-ip:9092, kafka-02-ip:9092"
+          - name: "properties"
+            type:
+              name: "properties"
+            label: "Properties"
+            description: "Additional Kafka configuration properties"
+            key: "/ipc/kafka"
+            example: "compression.type: gzip"
 
   # Netmgt
   - name: "netmgt"
