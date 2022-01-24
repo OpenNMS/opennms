@@ -1850,9 +1850,6 @@
     <feature name="opennms-deviceconfig-rest" description="OpenNMS :: Features :: Device Config :: Rest">
         <feature>opennms-osgi-core-rest</feature>
         <feature>opennms-dao-api</feature>
-        <feature version="${netty4Version}">netty4</feature>
-        <bundle dependency="true">mvn:org.opennms.features.device-config.persistence/org.opennms.features.device-config.persistence.api/${project.version}</bundle>
-        <bundle dependency="true">mvn:org.opennms.features.device-config.persistence/org.opennms.features.device-config.persistence.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config.rest/org.opennms.features.device-config.rest.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config.rest/org.opennms.features.device-config.rest.impl/${project.version}</bundle>
     </feature>
