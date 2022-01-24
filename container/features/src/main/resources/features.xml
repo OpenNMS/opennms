@@ -1849,7 +1849,7 @@
 
     <feature name="opennms-deviceconfig-rest" description="OpenNMS :: Features :: Device Config :: Rest">
         <feature>opennms-osgi-core-rest</feature>
-        <feature>opennms-dao-api</feature>
+        <feature>opennms-dao</feature>
         <bundle>mvn:org.opennms.features.device-config.rest/org.opennms.features.device-config.rest.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config.rest/org.opennms.features.device-config.rest.impl/${project.version}</bundle>
     </feature>
