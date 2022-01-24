@@ -93,7 +93,7 @@
         "bootstrap": "~4.6.1",
         "c3": "^0.4.24",
         "core-js": "^3.19.3",
-        "cron-parser": "^3.5.0",
+        "cron-parser": "^4.2.1",
         "cross-env": "^6.0.3",
         "d3": "^3.5.17",
         "flot": "https://github.com/flot/flot.git#v0.8.3",
