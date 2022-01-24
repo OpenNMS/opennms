@@ -1,7 +1,7 @@
 [OpenNMS][]
 ===========
 
-[OpenNMS][] is an open-source network monitoring platform that helps you visualize and monitor everything on your local and distributed networks. OpenNMS offers comprehensive fault, performance, and traffic monitoring, and alarm generation in one place. Highly customizable and scalable, OpenNMS integrates with your core business applications and workflows.
+[OpenNMS][] is an open-source network monitoring platform that helps you visualize and monitor everything on your local and distributed networks. OpenNMS offers comprehensive fault, performance, and traffic monitoring with alarm generation in one place. Highly customizable and scalable, OpenNMS integrates with your core business applications and workflows.
 
 
 Features
@@ -17,7 +17,7 @@ Features
 
 * **Robust traffic management**
 
-	Supports four flow protocols (NetFlow v.5/9, IPFIX, sFlow). 300,000+ flows/sec. Deep-dive analysis, enterprise reporting.
+	Supports the following flow protocols: (NetFlow v5/v9, IPFIX, sFlow). 300,000+ flows/sec. BGP Monitoring support implementing the OpenBMP standards for BGP messages and metrics. Deep-dive analysis, enterprise reporting.
 
 * **Digital experience monitoring**
 
@@ -29,7 +29,7 @@ Features
 
 * **Scalability**
 
-	Monitor hundreds of thousands of nodes using a distributed and tiered system.
+	Scale through Sentinels for flow persistence, Minions for Flow, BMP, SNMP trap, and Syslog ingest, and embedded ActiveMQ to Kafka message brokers.
 
 * **Enterprise reporting and  visualization**
 
