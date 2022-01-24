@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,9 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.sampler;
+package org.opennms.smoketest.sentinel;
 
-import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
 
-public class SamplerCollectionSet extends MultiResourceCollectionSet<SamplerCollectionResource> {
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opennms.smoketest.junit.SentinelTests;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.InetSocketAddress;
+
+import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
+
+
+@Category(SentinelTests.class)
+public class SentinelSshIT {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SentinelSshIT.class);
+
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.SENTINEL;
+
+    @Test
+    public void testSshHealthOnSentinel(){
+        //Test for no exception to occur
+        LOG.info("Waiting for Sentinel ssh health check...");
+        final InetSocketAddress karafSsh = stack.sentinel().getSshAddress();
+        awaitHealthCheckSucceeded(karafSsh, 3, "Sentinel");
+    }
 }

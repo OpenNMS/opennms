@@ -60,9 +60,9 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - source-v2-{{ .Branch }}-{{ .Revision }}
-              - source-v2-{{ .Branch }}-
-              - source-v2-
+              - source-v3-{{ .Branch }}-{{ .Revision }}
+              - source-v3-{{ .Branch }}-
+              - source-v3-
         - checkout
         - run:
             name: git config merge.renameLimit
@@ -70,8 +70,11 @@ commands:
         - run:
             name: git fetch origin
             command: git fetch origin
+  save-cached-checkout:
+      description: "Cache a checkout"
+      steps:
         - save_cache:
-            key: source-v2-{{ .Branch }}-{{ .Revision }}
+            key: source-v3-{{ .Branch }}-{{ .Revision }}
             paths:
               - ".git"
   cached-checkout-for-pushing:
@@ -250,6 +253,7 @@ commands:
         type: string
     steps:
       - cached-checkout
+      - save-cached-checkout
       - extract-pom-version
       - run:
           name: Check for Releasability
@@ -261,10 +265,18 @@ commands:
       - run:
           name: Compile OpenNMS
           command: |
+            export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
             ./clean.pl
             << parameters.node-memory >>
             export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
+            MAVEN_TARGETS="install"
+            case "${CIRCLE_BRANCH}" in
+              "master-"*|"release-"*|develop|jira/NMS-13820)
+                mkdir -p target/artifacts
+                MAVEN_TARGETS="$MAVEN_TARGETS javadoc:aggregate"
+                ;;
+            esac
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -273,7 +285,13 @@ commands:
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
               -Psmoke \
-              install --batch-mode
+              --batch-mode \
+              $MAVEN_TARGETS
+            if [ -d target/site/apidocs ]; then
+              pushd target/site/apidocs
+                tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+              popd
+            fi
       - update-maven-cache
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
@@ -289,6 +307,9 @@ commands:
             # now move them back so they end up in the workspace for builds further down the workflow
             mv /tmp/maven-keep/* ~/.m2/repository/org/opennms/
       - save-nodejs-cache
+      - store_artifacts:
+          path: ~/project/target/artifacts
+          destination: artifacts
       - persist_to_workspace:
           root: ~/
           paths:
@@ -455,28 +476,21 @@ commands:
             done
 
 workflows:
-#  weekly-coverage:
-#    when:
-#      equal: [ false, << pipeline.parameters.minimal >> ]
-#    triggers:
-#      - schedule:
-#          # Saturday at 12:00 AM
-#          cron: "0 0 * * 6"
-#          filters:
-#            branches:
-#              only:
-#                - develop
-#    jobs:
-#      - build
-#      - integration-test-with-coverage:
-#          requires:
-#            - build
-#      - code-coverage:
-#          requires:
-#            - integration-test-with-coverage
+  weekly-coverage:
+    when:
+      equal: [ true, << pipeline.parameters.trigger-coverage >> ]
+    jobs:
+      - build
+      - integration-test-with-coverage:
+          requires:
+            - build
+      - code-coverage:
+          requires:
+            - integration-test-with-coverage
   build-minimal:
     when:
       and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
         - equal: [ true, << pipeline.parameters.trigger-build >> ]
         - equal: [ true, << pipeline.parameters.minimal >> ]
     jobs:
@@ -511,6 +525,7 @@ workflows:
   docs:
     when:
       and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
         - equal: [ true,  << pipeline.parameters.trigger-docs >> ]
         - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
@@ -522,6 +537,7 @@ workflows:
   ui:
     when:
       and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
         - equal: [ true,  << pipeline.parameters.trigger-ui >> ]
         - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
@@ -533,6 +549,7 @@ workflows:
   build-deploy:
     when:
       and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage >> ]
         - equal: [ true,  << pipeline.parameters.trigger-build >> ]
         - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
@@ -895,27 +912,6 @@ jobs:
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
               install --batch-mode
-            # javadoc
-            date
-            case "${CIRCLE_BRANCH}" in
-              "master-"*|"release-"*)
-                ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
-                  -DupdatePolicy=never \
-                  -Daether.connector.resumeDownloads=false \
-                  -Daether.connector.basic.threads=1 \
-                  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-                  -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
-                  -DmaxCpus=<< parameters.number-vcpu >> \
-                  -Pbuild-bamboo \
-                  -Prun-expensive-tasks \
-                  -Dopennms.home=/opt/opennms \
-                  javadoc:aggregate --batch-mode
-                date
-                ;;
-              *)
-                echo "Skipping Javadoc compilation; it is enabled only on master/release branches."
-                ;;
-            esac
       - run:
           name: Build Minion OCI
           command: |
@@ -936,11 +932,6 @@ jobs:
             find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
-            if [ -d target/site/apidocs ]; then
-              pushd target/site/apidocs
-                tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
-              popd
-            fi
             cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
             cp target/*-source.tar.gz ./target/artifacts/
             cp opennms-container/minion/minion-config-schema.yml "./target/config-schema/"

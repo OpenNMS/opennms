@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,21 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.container.web;
+package org.opennms.smoketest.minion;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
 
-public final class MyActivator implements BundleActivator {
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opennms.smoketest.junit.MinionTests;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-	@Override
-	public void start(BundleContext arg0) throws Exception {
-		System.err.println("My Activator is started!!!");
-	}
+import java.net.InetSocketAddress;
 
-	@Override
-	public void stop(BundleContext arg0) throws Exception {
-		System.err.println("My Activator is stopped!!!");
-	}
-	
+import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
+
+
+@Category(MinionTests.class)
+public class MinionSshIT {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MinionSshIT.class);
+
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.MINION;
+
+    @Test
+    public void testSshHealthOnMinion(){
+        //Test for no exception to occur
+        LOG.info("Waiting for Minion ssh health check...");
+        final InetSocketAddress karafSsh = stack.minion().getSshAddress();
+        awaitHealthCheckSucceeded(karafSsh, 3, "Minion");
+    }
 }
