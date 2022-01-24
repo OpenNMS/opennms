@@ -9,6 +9,10 @@
         <argument ref="deviceConfigDao" />
     </bean>
 
-    <service interface="org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService" ref="defaultDeviceConfigRestService"/>
+    <service interface="org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService" ref="defaultDeviceConfigRestService">
+        <service-properties>
+            <entry key="application-path" value="/rest" />
+        </service-properties>
+    </service>
 
 </blueprint>
