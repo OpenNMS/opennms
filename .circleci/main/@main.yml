@@ -187,11 +187,6 @@ commands:
 =======
             if [ -n "${$AZURE_SP_PASSWORD}" ]; then
               docker login -u ${$AZURE_SP} -p ${$AZURE_SP_PASSWORD} ${PUBACR}
->>>>>>> CLOUD-475: Create Azure public registry
-=======
-            if [ -n "${AZURE_SP_PASSWORD}" ]; then
-              docker login -u ${AZURE_SP} -p ${AZURE_SP_PASSWORD} ${PUBACR}
->>>>>>> CLOUD-475: Add Azure Context r1
             else
               echo "WARNING: Azure credentials not found. Assuming this is a PR or other external branch build."
             fi
@@ -595,7 +590,11 @@ workflows:
               architecture: [linux/amd64,linux/arm64,linux/arm/v7]
           context:
             - docker-content-trust
+<<<<<<< HEAD
             - azure-sp-dct
+=======
+            - Service Principal
+>>>>>>> Add Azure Context test 2
           requires:
             - horizon-deb-build
             - minion-deb-build
