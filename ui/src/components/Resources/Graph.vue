@@ -194,13 +194,31 @@ const getGraphMetricsPayload = (source: Metric[]): GraphMetricsPayload => {
   const start = props.time.startTime as number * 1000
   const end = props.time.endTime as number * 1000
   const step = Math.floor((end - start) / resolution)
+  const expression = []
 
-  return {
+  const metricsWithExpressions = source.filter((metric) => Boolean(metric.expression))
+  const metricsWithoutExpressions = source.filter((metric) => Boolean(!metric.expression))
+
+  for (const metric of metricsWithExpressions) {
+    expression.push({
+      value: metric.expression as string,
+      label: metric.label as string,
+      transient: metric.transient
+    })
+  }
+
+  const payload: GraphMetricsPayload = {
     start,
     end,
     step,
-    source
+    source: metricsWithoutExpressions,
   }
+
+  if (metricsWithExpressions.length) {
+    payload.expression = expression
+  }
+
+  return payload
 }
 
 const render = async (update?: boolean) => {
@@ -219,7 +237,8 @@ const render = async (update?: boolean) => {
       attribute: metric.attribute,
       label: metric.name,
       resourceId: metric.resourceId,
-      transient: metric.transient
+      transient: metric.transient,
+      expression: metric.expression
     }))
 
     const payload = getGraphMetricsPayload(metrics)
@@ -241,6 +260,7 @@ const render = async (update?: boolean) => {
       })
     }
   } catch (error) {
+    console.log(error)
     console.log('Could not render graph for ', props.definition)
     emit('addGraphDefinition') // adds another to infinite scroll
   }

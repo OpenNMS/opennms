@@ -1013,7 +1013,7 @@ babel-walk@3.0.0-canary-5:
 
 "backshift@https://github.com/mikewrosey/backshift#master":
   version "1.2.4-SNAPSHOT"
-  resolved "https://github.com/mikewrosey/backshift#beac13730833b725bfc152a00b5727a4e9811917"
+  resolved "https://github.com/mikewrosey/backshift#df302f8251cc0c0632cec161b162c34e018aa831"
   optionalDependencies:
     fsevents "^2.3.2"
 

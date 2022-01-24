@@ -429,6 +429,7 @@ export interface PreFabGraph {
 }
 
 export interface Metric {
+  expression?: string
   aggregation: string
   attribute: string
   label?: string
@@ -443,6 +444,7 @@ export interface GraphMetricsPayload {
   start: number
   step: number
   source: Metric[]
+  expression?: { label: string, transient: boolean, value: string }[]
 }
 
 export interface GraphMetricsResponse {
