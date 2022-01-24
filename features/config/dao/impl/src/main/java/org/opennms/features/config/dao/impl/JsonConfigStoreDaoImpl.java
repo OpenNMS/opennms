@@ -70,7 +70,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     private Set<String> getIds(String context) {
         Map<String, String> allMap = jsonStore.enumerateContext(context);
         if (allMap == null) {
-            return new HashSet<>();
+            return Collections.emptySet();
         }
         return allMap.keySet();
     }
@@ -209,7 +209,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     public Map<String, JSONObject> get(String configName) {
         Optional<ConfigData<JSONObject>> configData = this.getConfigs(configName);
         if (configData.isEmpty()) {
-            return new HashMap<>();
+            return Collections.emptyMap();
         }
         return configData.get().getConfigs();
     }

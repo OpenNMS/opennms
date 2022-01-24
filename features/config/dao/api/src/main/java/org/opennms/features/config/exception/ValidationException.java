@@ -30,6 +30,8 @@ package org.opennms.features.config.exception;
 
 import com.atlassian.oai.validator.report.ValidationReport;
 
+import java.util.stream.Collectors;
+
 /**
  * This exception is about config validation.
  **/
@@ -46,8 +48,7 @@ public class ValidationException extends ConfigRuntimeException {
 
     @Override
     public String getMessage() {
-        StringBuilder sb = new StringBuilder();
-        report.getMessages().forEach(m -> sb.append(m.getMessage()));
-        return sb.toString();
+        return report.getMessages().stream().map(ValidationReport.Message::getMessage)
+                .collect(Collectors.joining("\n"));
     }
 }
