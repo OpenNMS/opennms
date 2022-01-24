@@ -78,7 +78,7 @@ public class SnmpProfileMapperTest {
         assertEquals(161, agentConfig.getPort());
         assertEquals(3, agentConfig.getRetries());
         assertEquals(3000, agentConfig.getTimeout());
-        //assertEquals(3000L, agentConfig.getTTL().longValue());
+        assertEquals(3000L, agentConfig.getTTL().longValue());
         assertEquals("private", agentConfig.getWriteCommunity());
         // Check that it picks up config from defaults.
         assertEquals("MD5", agentConfig.getAuthProtocol());
