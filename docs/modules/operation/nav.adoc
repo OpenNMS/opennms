@@ -119,7 +119,9 @@
 **** xref:topology/enlinkd/layer-3/ospf-discovery.adoc[]
 **** xref:topology/enlinkd/layer-3/is-is-discovery.adoc[]
 
-* xref:database-reports/database.adoc[]
+*  xref:database-reports/introduction.adoc[]
+** xref:database-reports/jasper-reports.adoc[]
+** xref:database-reports/pdf-reports-grafana.adoc[]
 
 * xref:ticketing/introduction.adoc[]
 
