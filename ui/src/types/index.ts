@@ -436,7 +436,7 @@ export interface Metric {
   name?: string
   datasource?: string
   resourceId: string
-  transient: true | false
+  transient?: true | false
 }
 
 export interface GraphMetricsPayload {
@@ -444,12 +444,12 @@ export interface GraphMetricsPayload {
   start: number
   step: number
   source: Metric[]
-  expression?: { label: string, transient: boolean, value: string }[]
+  expression?: { label: string; transient: boolean; value: string }[]
 }
 
 export interface GraphMetricsResponse {
   columns: [{ values: number[] }]
-  constants: number[]
+  constants: Record<string, any>[]
   end: number
   labels: string[]
   metadata: {
@@ -480,7 +480,6 @@ export interface ConvertedGraphData {
   printStatements: PrintStatement[]
   series: Series[]
   properties: Record<string, unknown>
-  name: string
   values: ConvertedGraphValue[]
   verticalLabel: string
 }
@@ -499,6 +498,7 @@ export interface Series {
   name: string
   type: string
   title: string
+  legend?: string
 }
 
 export interface ConvertedGraphValue {

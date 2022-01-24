@@ -1,7 +1,7 @@
 import { PrintStatement } from '@/types'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { tokenizeStatement, TOKENS, formatStatement } from '../src/components/Resources/utils'
+import { tokenizeStatement, TOKENS, formatStatement } from '../src/components/Resources/utils/LegendFormatter'
 
 test('Tokenizing a statement', () => {
   let tokens = tokenizeStatement('Max  : %8.2lf %s\\n')

@@ -29,13 +29,13 @@
 </template>
   
 <script setup lang=ts>
+import RrdGraphConverter from './utils/RrdGraphConverter.class'
+import { formatTimestamps, getFormattedLegendStatements } from './utils/LegendFormatter'
 import GraphDataTable from './GraphDataTable.vue'
 import { ConvertedGraphData, GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph, StartEndTime } from '@/types'
 import { onMounted, ref, computed, PropType, watch } from 'vue'
 import { useStore } from 'vuex'
-import { RrdGraphConverter } from 'backshift'
 import { ChartOptions, TitleOptions, ChartData } from 'chart.js'
-import { formatTimestamps, getFormattedLegendStatements } from './utils'
 import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import { format } from 'd3'
@@ -76,7 +76,6 @@ const props = defineProps({
 const store = useStore()
 const graphData = ref<GraphMetricsResponse>({} as GraphMetricsResponse)
 const convertedGraphDataRef = ref<ConvertedGraphData>({
-  name: '',
   title: '',
   verticalLabel: '',
   series: [],
@@ -203,7 +202,7 @@ const getGraphMetricsPayload = (source: Metric[]): GraphMetricsPayload => {
     expression.push({
       value: metric.expression as string,
       label: metric.label as string,
-      transient: metric.transient
+      transient: metric.transient as boolean
     })
   }
 
@@ -225,14 +224,15 @@ const render = async (update?: boolean) => {
   const definitionData: PreFabGraph = await store.dispatch('graphModule/getDefinitionData', props.definition)
 
   try {
-    const convertedGraphData: ConvertedGraphData = RrdGraphConverter.getData({
+    const rrdGraphConverter = new RrdGraphConverter({
       graphDef: definitionData,
       resourceId: props.resourceId
     })
 
-    convertedGraphDataRef.value = convertedGraphData
+    const rrdGraphConverterModel = rrdGraphConverter.model
+    convertedGraphDataRef.value = rrdGraphConverterModel
 
-    const metrics: Metric[] = convertedGraphData.metrics.map((metric: Metric): Metric => ({
+    const metrics: Metric[] = rrdGraphConverterModel.metrics.map((metric: Metric): Metric => ({
       aggregation: metric.aggregation,
       attribute: metric.attribute,
       label: metric.name,
@@ -245,7 +245,7 @@ const render = async (update?: boolean) => {
     const graphMetrics = await store.dispatch('graphModule/getGraphMetrics', payload)
 
     let formattedGraphData = formatTimestamps(graphMetrics, props.time.format)
-    formattedGraphData = getFormattedLegendStatements(graphMetrics, convertedGraphData)
+    formattedGraphData = getFormattedLegendStatements(graphMetrics, rrdGraphConverterModel)
     graphData.value = formattedGraphData
 
     if (update) {

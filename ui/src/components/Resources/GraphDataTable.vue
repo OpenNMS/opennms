@@ -22,7 +22,7 @@
           <td v-for="metric of convertedGraphData.metrics" :key="metric.name">
             {{
               !displayRawValues ?
-                d3format(getColumnFromMetricName(metric.name as string)[index]) :
+                formatColumnValue(getColumnFromMetricName(metric.name as string)[index]) :
                 getColumnFromMetricName(metric.name as string)[index]
             }}
           </td>
@@ -40,6 +40,10 @@ import { format } from 'd3'
 
 const displayRawValues = ref(false)
 const d3format = format('.3s')
+const formatColumnValue = (num: number) => {
+  if (isNaN(num)) return 'N/A'
+  return d3format(num)
+}
 
 const props = defineProps({
   graphData: {
