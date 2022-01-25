@@ -180,11 +180,6 @@ commands:
           name: Login to ACR
           command: |
             PUBACR=opennmspubacr.azurecr.io
-<<<<<<< HEAD
-<<<<<<< HEAD
-            if [ -n "${AZURE_SP_PASSWORD}" ]; then
-              docker login -u ${AZURE_SP} -p ${AZURE_SP_PASSWORD} ${PUBACR}
-=======
             if [ -n "${$AZURE_SP_PASSWORD}" ]; then
               docker login -u ${$AZURE_SP} -p ${$AZURE_SP_PASSWORD} ${PUBACR}
             else
@@ -590,11 +585,7 @@ workflows:
               architecture: [linux/amd64,linux/arm64,linux/arm/v7]
           context:
             - docker-content-trust
-<<<<<<< HEAD
             - azure-sp-dct
-=======
-            - Service Principal
->>>>>>> Add Azure Context test 2
           requires:
             - horizon-deb-build
             - minion-deb-build
@@ -1035,6 +1026,7 @@ jobs:
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
 <<<<<<< HEAD
+<<<<<<< HEAD
             echo "docker push ${MINION_IMAGE}:${TAG}"
             docker tag ${MINION_IMAGE}:${TAG} ${MINION_AZ_IMAGE}:${TAG}
             export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${AZURE_DCT_CI_PASSPHRASE}
@@ -1043,6 +1035,8 @@ jobs:
             echo "pushed"
 =======
           #  docker push ${MINION_IMAGE}:${TAG}
+=======
+>>>>>>> Add Azure Context test 7
             docker tag ${MINION_IMAGE}:${TAG} ${PUBACR}/${MINION_AZ_IMAGE}:${TAG}
             docker push ${PUBACR}/${MINION_AZ_IMAGE}:${TAG}
 >>>>>>> Add Azure Context test 6
