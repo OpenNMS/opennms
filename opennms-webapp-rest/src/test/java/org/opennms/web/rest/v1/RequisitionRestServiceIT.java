@@ -185,7 +185,13 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml, xml.contains("descr=\"Total Crap\""));
         assertTrue(xml, xml.contains("snmp-primary=\"N\""));
         assertTrue(xml, xml.contains("status=\"3\""));
- 
+
+        // Attempt to set an invalid interface IP
+        sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"not.a.host\" descr=\"invalid-interface\"></interface>", 500, null);
+        xml = sendRequest(GET, url, 200);
+        assertFalse(xml, xml.contains("not.a.host"));
+        assertFalse(xml, xml.contains("invalid-interface"));
+
         // delete interface
         xml = sendRequest(DELETE, url, 202);
         xml = sendRequest(GET, url, 404);
