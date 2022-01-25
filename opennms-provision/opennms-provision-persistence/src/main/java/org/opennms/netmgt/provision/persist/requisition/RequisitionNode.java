@@ -183,7 +183,7 @@ public class RequisitionNode {
      * @param iface a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
      */
     public void putInterface(RequisitionInterface iface) {
-        deleteInterface(iface.getIpAddr().getHostAddress());
+        deleteInterface(iface.getIpAddr() == null ? null : iface.getIpAddr().getHostAddress());
         m_interfaces.add(0, iface);
     }
 
