@@ -17,5 +17,10 @@
 	<bean id="deviceConfigDao" class="org.opennms.features.deviceconfig.persistence.impl.DeviceConfigDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-	<onmsgi:service interface="org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao" ref="deviceConfigDao" />
+	<onmsgi:service interface="org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao" ref="deviceConfigDao" >
+		<onmsgi:service-properties>
+			<entry key="registration.export" value="true" />
+		</onmsgi:service-properties>
+	</onmsgi:service>
+
 </beans>
