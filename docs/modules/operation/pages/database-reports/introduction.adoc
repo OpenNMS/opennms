@@ -1,0 +1,3 @@
+## Database reports
+
+This section describes how to modify existing reports and create custom reports using the JasperReport and also how to create PDF reports based on Grafana dashboards.
