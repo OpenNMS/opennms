@@ -32,7 +32,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import org.opennms.netmgt.config.NotificationCommandFactory;
 import org.opennms.netmgt.config.NotificationCommandManager;
+import org.opennms.netmgt.config.NotificationFactory;
 
 /**
  * @author david hustace <david@opennms.org>
@@ -47,5 +49,15 @@ public class MockNotificationCommandManager extends NotificationCommandManager {
     @Override
     public void update() throws Exception {
         
+    }
+
+    @Override
+    protected String getConfigName() {
+        return NotificationCommandFactory.CONFIG_NAME;
+    }
+
+    @Override
+    protected String getDefaultConfigId() {
+        return NotificationCommandFactory.DEFAULT_CONFIG_ID;
     }
 }

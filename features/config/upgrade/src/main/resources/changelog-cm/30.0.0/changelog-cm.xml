@@ -82,7 +82,11 @@
         <cm:importSchemaFromXsd id="wmi" xsdFileName="wmi-config.xsd" xsdFileHash="94eec2289088d1bb2654adf382f8120624edfccd4517dca20e304b2fac614111" rootElement="wmi-config"/>
         <cm:importConfig schemaId="wmi" filePath="wmi-config.xml"/>
     </changeSet>
-
+    <changeSet author="psuthar" id="1.0-register-schema-notificationCommands">
+        <cm:registerSchema id="notificationCommands"/>
+        <cm:importSchemaFromXsd id="notificationCommands" xsdFileName="notificationCommands.xsd" xsdFileHash="31ff0ec6801b7b977ddc585272f82b5454c18513f3debbf9b11fcbfaa5620063" rootElement="notification-commands"/>
+        <cm:importConfig schemaId="notificationCommands" configId="default" filePath="notificationCommands.xml"/>
+    </changeSet>
     <!--TODO check which schemas can have multiple configurations-->
     <!-- to create schema with multiple configurations use allowMultiple="true" in  <cm:registerSchema ...>
     <changeSet author="..." id="...">

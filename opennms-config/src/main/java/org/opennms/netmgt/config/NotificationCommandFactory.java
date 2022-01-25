@@ -33,7 +33,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
 
 /**
  * <p>NotificationCommandFactory class.</p>
@@ -42,6 +48,13 @@ import org.opennms.core.utils.ConfigFileConstants;
  * @version $Id: $
  */
 public class NotificationCommandFactory extends NotificationCommandManager {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationCommandFactory.class);
+
+    public static final String CONFIG_NAME = "notificationCommands";
+
+    public static final String DEFAULT_CONFIG_ID = "default";
+
     /**
      */
     private static NotificationCommandFactory instance;
@@ -54,9 +67,17 @@ public class NotificationCommandFactory extends NotificationCommandManager {
     /**
      * 
      */
-    private NotificationCommandFactory() {
+    public NotificationCommandFactory() {
+        super();
     }
 
+    public NotificationCommandFactory(NotificationCommands config) {
+        super(config);
+    }
+
+    @PostConstruct
+    public void postConstruct() throws IOException {
+    }
     /**
      * <p>init</p>
      *
@@ -93,5 +114,15 @@ public class NotificationCommandFactory extends NotificationCommandManager {
     public void update() throws FileNotFoundException, IOException {
         InputStream configIn = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.NOTIF_COMMANDS_CONF_FILE_NAME));
         parseXML(configIn);
+    }
+
+    @Override
+    public String getConfigName() {
+        return CONFIG_NAME;
+    }
+
+    @Override
+    protected String getDefaultConfigId() {
+        return DEFAULT_CONFIG_ID;
     }
 }

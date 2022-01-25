@@ -38,10 +38,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
+import org.opennms.netmgt.config.notifications.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.sql.DataSource;
 
 /**
  * <p>Abstract NotificationCommandManager class.</p>
@@ -49,12 +53,23 @@ import org.slf4j.LoggerFactory;
  * @author David Hustace <david@opennms.org>
  * @version $Id: $
  */
-public abstract class NotificationCommandManager {
+public abstract class NotificationCommandManager extends AbstractCmJaxbConfigDao<NotificationCommands> {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationCommandManager.class);
     /**
      * List of all configuration notification commands.  parseXml must be called to populate this.
      */
     private Map<String, Command> m_commands;
+
+    NotificationCommands m_config;
+
+    public NotificationCommandManager() {
+        super(NotificationCommands.class, "NotificationCommands");
+    }
+
+    public NotificationCommandManager(final NotificationCommands config) {
+        super(NotificationCommands.class, "NotificationCommands");
+        m_config = config;
+    }
 
     /**
      * Populate the internal list of notification commands from an XML file.
