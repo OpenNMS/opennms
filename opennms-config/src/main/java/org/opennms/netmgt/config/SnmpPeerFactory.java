@@ -28,51 +28,34 @@
 
 package org.opennms.netmgt.config;
 
-import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_LEVEL;
-import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_NAME;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-
-import org.apache.commons.io.IOUtils;
-import org.opennms.core.spring.BeanUtils;
+import com.googlecode.concurentlocks.ReadWriteUpdateLock;
+import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.core.spring.FileReloadContainer;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
-import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
-import org.opennms.netmgt.config.snmp.AddressSnmpConfigVisitor;
-import org.opennms.netmgt.config.snmp.Definition;
-import org.opennms.netmgt.config.snmp.Range;
-import org.opennms.netmgt.config.snmp.SnmpConfig;
-import org.opennms.netmgt.config.snmp.SnmpProfile;
+import org.opennms.netmgt.config.snmp.*;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.googlecode.concurentlocks.ReadWriteUpdateLock;
-import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
-
 import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+
+import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_LEVEL;
+import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_NAME;
 
 /**
  * This class is the main repository for SNMP configuration information used by
@@ -246,34 +229,7 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
          * @throws java.io.IOException if any.
          */
         public void saveCurrent() throws IOException {
-            saveToFile(getFile());
-        }
-
-        public void saveToFile(final File file) throws UnsupportedEncodingException, FileNotFoundException, IOException {
-            // Marshal to a string first, then write the string to the file. This
-            // way the original config isn't lost if the XML from the marshal is hosed.
-            getWriteLock().lock();
-
-            final String marshalledConfig = getSnmpConfigAsString();
-
-            FileOutputStream out = null;
-            Writer fileWriter = null;
-            try {
-                if (marshalledConfig != null) {
-                    out = new FileOutputStream(file);
-                    fileWriter = new OutputStreamWriter(out, StandardCharsets.UTF_8);
-                    fileWriter.write(marshalledConfig);
-                    fileWriter.flush();
-                    fileWriter.close();
-                    if (m_container != null) {
-                        m_container.reload();
-                    }
-                }
-            } finally {
-                IOUtils.closeQuietly(fileWriter);
-                IOUtils.closeQuietly(out);
-                getWriteLock().unlock();
-            }
+            this.updateConfig(this.getSnmpConfig());
         }
 
         /** {@inheritDoc} */
@@ -598,35 +554,17 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
             return new ArrayList<>();
         }
 
-        /**
-         * Creates a string containing the XML of the current SnmpConfig
-         *
-         * @return Marshalled SnmpConfig
-         */
-        public String getSnmpConfigAsString() {
-            String marshalledConfig = null;
-            StringWriter writer = null;
-            try {
-                writer = new StringWriter();
-                JaxbUtils.marshal(getSnmpConfig(), writer);
-                marshalledConfig = writer.toString();
-            } finally {
-                IOUtils.closeQuietly(writer);
-            }
-            return marshalledConfig;
-        }
+    public String getSnmpConfigAsJson() {
+        return ConfigConvertUtil.objectToJson(getSnmpConfig());
+    }
 
-        public String getSnmpConfigAsJson() {
-            return ConfigConvertUtil.objectToJson(getSnmpConfig());
-        }
+    @Override
+    public String getConfigName() {
+        return CONFIG_NAME;
+    }
 
-            @Override
-            public String getConfigName() {
-            return CONFIG_NAME;
-            }
-
-            @Override
-            public String getDefaultConfigId() {
-            return DEFAULT_CONFIG_ID;
-            }
+    @Override
+    public String getDefaultConfigId() {
+        return DEFAULT_CONFIG_ID;
+    }
 }

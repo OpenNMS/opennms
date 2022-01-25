@@ -155,9 +155,7 @@ public class ScanManager {
             m_ipAddressTable = IpAddressTable.createTable(m_address, ipAddresses);
 
             AggregateTracker tracker = new AggregateTracker(Lists.newArrayList(m_systemGroup, m_ipAddrTable, m_ipAddressTable));
-            final SnmpAgentConfig agentConfig = null;
-                   // SnmpPeerFactory.getInstance().getAgentConfig(m_address, MonitoringLocationUtils.getLocationNameOrNullIfDefault(node));
-
+            final SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_address, MonitoringLocationUtils.getLocationNameOrNullIfDefault(node));
             try {
                 m_locationAwareSnmpClient.walk(agentConfig, tracker)
                     .withDescription("system/ipAddrTable/ipAddressTable")

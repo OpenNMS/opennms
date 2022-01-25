@@ -210,9 +210,8 @@ public class ConfigureSnmpTest extends TestCase {
         assertEquals("10.1.1.7", SnmpPeerFactory.getInstance().getSnmpConfig().getDefinitions().get(3).getSpecifics().get(0));
         assertEquals("10.1.1.10", SnmpPeerFactory.getInstance().getSnmpConfig().getDefinitions().get(3).getRanges().get(0).getBegin());
 
-        String marshalledConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
-        assertNotNull(marshalledConfig);
-        
+        String jsonConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsJson();
+        assertFalse(jsonConfig.isEmpty());
     }
 
     private EventBuilder createConfigureSnmpEventBuilder(final String firstIp, final String lastIp) {
