@@ -1019,8 +1019,9 @@ jobs:
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
-            docker tag ${MINION_IMAGE}:${TAG} ${PUBACR}/${MINION_AZ_IMAGE}:${TAG}
-            docker push ${PUBACR}/${MINION_AZ_IMAGE}:${TAG}
+            echo "docker push ${MINION_IMAGE}:${TAG}""
+            docker tag ${MINION_IMAGE}:${TAG} ${MINION_AZ_IMAGE}:${TAG}
+            docker push ${MINION_AZ_IMAGE}:${TAG}
 
   minion-image-multi-arch:
     machine:
