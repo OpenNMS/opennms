@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -78,7 +78,7 @@ class Server implements Runnable {
     @Override
     public void run() {
         try {
-            m_socket = new DatagramSocket(m_port);
+            m_socket = new DatagramSocket(m_port, InetAddress.getLocalHost());
             m_socket.setSoTimeout(500);
             m_latch.countDown();
             if (m_port == 0) {
