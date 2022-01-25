@@ -296,7 +296,7 @@ To get the appropriate interface descriptor depends on the input parameter.
 
 To establish a secure connection to the Measurements API, you must import the public certificate of the running {page-component-title} to the Java Truststore.
 In addition, you must configure {page-component-title} to use that Java Truststore.
-Please follow the instructions in this <<operation/ssl/ssl.adoc#ga-operation-ssl-opennms-trust-store,chapter>> to set up the Java Truststore correctly.
+Please follow the instructions in this <<admin/http-ssl.adoc#ga-operation-ssl-opennms-trust-store,chapter>> to set up the Java Truststore correctly.
 
 In addition, set the property `org.opennms.netmgt.jasper.measurement.ssl.enable` in `$OPENNMS_HOME\etc\opennms.properties` to "true" to ensure that only secure connections are established.
 
@@ -322,7 +322,7 @@ The PDF report displays each of the panels from the specified dashboard, with on
 
 Dashboard to PDF:
 
-image:database-reports/Dashboard-pdf.png[PDF report]
+image::database-reports/Dashboard-pdf.png[PDF report]
 
 === Before you begin
 
@@ -346,13 +346,13 @@ Configuring the Grafana endpoint sets up Grafana as the data source for the dash
 .. Leave the time to live blank so that the key never expires.
 . Copy the key so that you can paste it into the {page-component-title} UI.
 +
-image:database-reports/API-Key.png[Grafana API, 400]
+image::database-reports/API-Key.png[Grafana API, 400]
 
 .. If desired, use the cURL command provided in the API key dialog to test the key.
 . In OpenNMS, click *Please add a Grafana endpoint*:
 
 +
-image:database-reports/grafana-endpoint.png[Endpoint, 400]
+image::database-reports/grafana-endpoint.png[Endpoint, 400]
 
 . In the *Endpoint Configuration* screen click the plus sign on the right to add a new endpoint.
 . Fill in the information and click *Test Connection*.

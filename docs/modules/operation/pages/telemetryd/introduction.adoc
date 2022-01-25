@@ -28,6 +28,8 @@ Parsers and listeners must work together closely.
 Therefore, they cannot be combined in any random way.
 Which parser is supported by which listener is described in the documentation of each respective parser.
 
+For information on supported listeners and how to configure them, see xref:reference:telemetryd/listeners/introduction.adoc[telemetryd listeners reference section].
+
 == Connectors
 
 Connectors initiate a connection and maintain a session with an agent. 

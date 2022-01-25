@@ -1,11 +1,13 @@
 version: 2
 updates:
+
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
-    directory: "/core/web-assets/"
-    target-branch: "foundation-2019"
+    directory: "/ui"
+    target-branch: "develop"
     reviewers:
       - "rangerrick"
+      - "mikewrosey"
     labels:
       - "dependency update"
     commit-message:
@@ -13,13 +15,11 @@ updates:
       include: "scope"
     schedule:
       interval: "weekly"
-    ignore:
-      - dependency-name: "d3"
-      - dependency-name: "ionicons"
 
-  - package-ecosystem: "maven"
-    directory: "/"
-    target-branch: "foundation-2019"
+  - package-ecosystem: "npm"
+    # Look for `package.json` and `lock` files in the `root` directory
+    directory: "/core/web-assets/"
+    target-branch: "foundation-2021"
     versioning-strategy: "increase-if-necessary"
     reviewers:
       - "rangerrick"
@@ -29,4 +29,20 @@ updates:
       prefix: "build"
       include: "scope"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+    ignore:
+      - dependency-name: "d3"
+      - dependency-name: "ionicons"
+
+  - package-ecosystem: "maven"
+    directory: "/"
+    target-branch: "foundation-2019"
+    reviewers:
+      - "rangerrick"
+    labels:
+      - "dependency update"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    schedule:
+      interval: "daily"

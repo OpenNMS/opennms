@@ -143,7 +143,7 @@ COMMAND=""
 
 show_help () {
 	cat <<END
-Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] <command> [<service>]
+Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] [-s] <command> [<service>]
 
   command options: start|stop|restart|status|ssh|check|pause|resume|kill
 
@@ -166,6 +166,7 @@ Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] <command> [<service>]
       -Q  Quick mode.  Don't wait for ${install.package.description} to start up.
           Useful if you want to watch the logs while ${install.package.description} starts up
           without wanting to open another terminal window.
+      -s  systemd mode. The foreground mode option, -f, is ignored when this option is used.
 
 END
 	return
@@ -454,7 +455,6 @@ doStart(){
 		echo "running ulimit -a"
 		ulimit -a
 		runCmd "${CMD[@]}" &
-		exit 0
 	else
 		if [ "$BACKGROUND" = 1 ]; then
 			# shellcheck disable=SC2129
@@ -478,7 +478,7 @@ doStart(){
 
 	if [ "$START_TIMEOUT" -eq 0 ]; then
 		# don't wait for startup
-		$opennms_echo "(not waiting for startup) \c"
+		$opennms_echo "(not waiting for startup) \\c"
 		return 0
 	fi
 
@@ -670,13 +670,13 @@ else
 	done
 fi
 
-if [ "$(echo "\000\c" | wc -c)" -eq 1 ]; then
+if [ "$(echo "\\000\\c" | wc -c)" -eq 1 ]; then
 	opennms_echo="echo"
-elif [ "$(echo -e "\000\c" | wc -c)" -eq 1 ]; then
+elif [ "$(echo -e "\\000\\c" | wc -c)" -eq 1 ]; then
 	opennms_echo="echo -e"
-elif [ "$(/bin/echo "\000\c" | wc -c)" -eq 1 ]; then
+elif [ "$(/bin/echo "\\000\\c" | wc -c)" -eq 1 ]; then
 	opennms_echo="/bin/echo"
-elif [ "$(/bin/echo -e "\000\c" | wc -c)" -eq 1 ]; then
+elif [ "$(/bin/echo -e "\\000\\c" | wc -c)" -eq 1 ]; then
 	opennms_echo="/bin/echo -e"
 else
 	echo "ERROR: could not get 'echo' to emit just a null character" >&2
@@ -686,7 +686,7 @@ fi
 ulimit -s $MAXIMUM_SIZE_STACK_SEGMENT > /dev/null 2>&1
 ulimit -n $MAXIMUM_FILE_DESCRIPTORS > /dev/null 2>&1
 if [ "$(uname)" = "Darwin" ]; then
-	for flag in "-d" "-f" "-l" "-m" "-n" "-s" "-u" "-v"; do
+	for flag in "-d" "-f" "-l" "-m" "-n" "-u" "-v"; do
 		ulimit $flag unlimited >/dev/null 2>&1
 	done
 fi
@@ -791,6 +791,11 @@ fi
 #if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Djava.security.debug=)" -eq 0 ]; then
 #	ADDITIONAL_MANAGER_OPTIONS+=("-Djava.security.debug=all")
 #fi
+
+# see NMS-13437
+if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Djdk.attach.allowAttachSelf=)" -eq 0 ]; then
+	ADDITIONAL_MANAGER_OPTIONS+=("-Djdk.attach.allowAttachSelf=true")
+fi
 
 if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -DisThreadContextMapInheritable=)" -eq 0 ]; then
 	ADDITIONAL_MANAGER_OPTIONS+=("-DisThreadContextMapInheritable=true")
@@ -932,7 +937,7 @@ fi
 
 case "$COMMAND" in
 	start|spawn)
-		$opennms_echo "Starting ${install.package.description}: \c"
+		$opennms_echo "Starting ${install.package.description}: \\c"
 
 		doStart "$@"
 		__ret="$?"
@@ -961,7 +966,7 @@ case "$COMMAND" in
 		;;
 
 	stop)
-		$opennms_echo "Stopping ${install.package.description}: \c"
+		$opennms_echo "Stopping ${install.package.description}: \\c"
 
 		doStop "$@"
 		__ret="$?"
@@ -1015,7 +1020,7 @@ case "$COMMAND" in
 
 	status)
 		if [ -f /etc/SuSE-release ]; then
-			$opennms_echo "Checking for ${install.package.description}: \c"
+			$opennms_echo "Checking for ${install.package.description}: \\c"
 			if [ "$VERBOSE" -gt 0 ]; then
 				echo ""
 			fi
@@ -1047,7 +1052,7 @@ case "$COMMAND" in
 		;;
 
 	configtest)
-		$opennms_echo "Validating XML files: \c"
+		$opennms_echo "Validating XML files: \\c"
 		if checkXmlFiles; then
 			echo "PASSED"
 		fi

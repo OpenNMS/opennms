@@ -26,20 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+
 package org.opennms.core.ipc.twin.grpc.common;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
 import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncClientStreamingCall;
 import static io.grpc.stub.ClientCalls.asyncServerStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncUnaryCall;
 import static io.grpc.stub.ClientCalls.blockingServerStreamingCall;
-import static io.grpc.stub.ClientCalls.blockingUnaryCall;
-import static io.grpc.stub.ClientCalls.futureUnaryCall;
 import static io.grpc.stub.ServerCalls.asyncBidiStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncClientStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncServerStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncUnaryCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
@@ -58,29 +53,29 @@ public final class OpenNMSTwinIpcGrpc {
   public static final String SERVICE_NAME = "OpenNMSTwinIpc";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<org.opennms.core.ipc.twin.grpc.common.TwinRequestProto,
-      org.opennms.core.ipc.twin.grpc.common.TwinResponseProto> getRpcStreamingMethod;
+  private static volatile io.grpc.MethodDescriptor<org.opennms.core.ipc.twin.model.TwinRequestProto,
+      org.opennms.core.ipc.twin.model.TwinResponseProto> getRpcStreamingMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "RpcStreaming",
-      requestType = org.opennms.core.ipc.twin.grpc.common.TwinRequestProto.class,
-      responseType = org.opennms.core.ipc.twin.grpc.common.TwinResponseProto.class,
+      requestType = org.opennms.core.ipc.twin.model.TwinRequestProto.class,
+      responseType = org.opennms.core.ipc.twin.model.TwinResponseProto.class,
       methodType = io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
-  public static io.grpc.MethodDescriptor<org.opennms.core.ipc.twin.grpc.common.TwinRequestProto,
-      org.opennms.core.ipc.twin.grpc.common.TwinResponseProto> getRpcStreamingMethod() {
-    io.grpc.MethodDescriptor<org.opennms.core.ipc.twin.grpc.common.TwinRequestProto, org.opennms.core.ipc.twin.grpc.common.TwinResponseProto> getRpcStreamingMethod;
+  public static io.grpc.MethodDescriptor<org.opennms.core.ipc.twin.model.TwinRequestProto,
+      org.opennms.core.ipc.twin.model.TwinResponseProto> getRpcStreamingMethod() {
+    io.grpc.MethodDescriptor<org.opennms.core.ipc.twin.model.TwinRequestProto, org.opennms.core.ipc.twin.model.TwinResponseProto> getRpcStreamingMethod;
     if ((getRpcStreamingMethod = OpenNMSTwinIpcGrpc.getRpcStreamingMethod) == null) {
       synchronized (OpenNMSTwinIpcGrpc.class) {
         if ((getRpcStreamingMethod = OpenNMSTwinIpcGrpc.getRpcStreamingMethod) == null) {
           OpenNMSTwinIpcGrpc.getRpcStreamingMethod = getRpcStreamingMethod =
-              io.grpc.MethodDescriptor.<org.opennms.core.ipc.twin.grpc.common.TwinRequestProto, org.opennms.core.ipc.twin.grpc.common.TwinResponseProto>newBuilder()
+              io.grpc.MethodDescriptor.<org.opennms.core.ipc.twin.model.TwinRequestProto, org.opennms.core.ipc.twin.model.TwinResponseProto>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "RpcStreaming"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.opennms.core.ipc.twin.grpc.common.TwinRequestProto.getDefaultInstance()))
+                  org.opennms.core.ipc.twin.model.TwinRequestProto.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.opennms.core.ipc.twin.grpc.common.TwinResponseProto.getDefaultInstance()))
+                  org.opennms.core.ipc.twin.model.TwinResponseProto.getDefaultInstance()))
               .setSchemaDescriptor(new OpenNMSTwinIpcMethodDescriptorSupplier("RpcStreaming"))
               .build();
         }
@@ -89,29 +84,29 @@ public final class OpenNMSTwinIpcGrpc {
     return getRpcStreamingMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<org.opennms.core.ipc.twin.grpc.common.MinionHeader,
-      org.opennms.core.ipc.twin.grpc.common.TwinResponseProto> getSinkStreamingMethod;
+  private static volatile io.grpc.MethodDescriptor<MinionHeader,
+      org.opennms.core.ipc.twin.model.TwinResponseProto> getSinkStreamingMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "SinkStreaming",
-      requestType = org.opennms.core.ipc.twin.grpc.common.MinionHeader.class,
-      responseType = org.opennms.core.ipc.twin.grpc.common.TwinResponseProto.class,
+      requestType = MinionHeader.class,
+      responseType = org.opennms.core.ipc.twin.model.TwinResponseProto.class,
       methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-  public static io.grpc.MethodDescriptor<org.opennms.core.ipc.twin.grpc.common.MinionHeader,
-      org.opennms.core.ipc.twin.grpc.common.TwinResponseProto> getSinkStreamingMethod() {
-    io.grpc.MethodDescriptor<org.opennms.core.ipc.twin.grpc.common.MinionHeader, org.opennms.core.ipc.twin.grpc.common.TwinResponseProto> getSinkStreamingMethod;
+  public static io.grpc.MethodDescriptor<MinionHeader,
+      org.opennms.core.ipc.twin.model.TwinResponseProto> getSinkStreamingMethod() {
+    io.grpc.MethodDescriptor<MinionHeader, org.opennms.core.ipc.twin.model.TwinResponseProto> getSinkStreamingMethod;
     if ((getSinkStreamingMethod = OpenNMSTwinIpcGrpc.getSinkStreamingMethod) == null) {
       synchronized (OpenNMSTwinIpcGrpc.class) {
         if ((getSinkStreamingMethod = OpenNMSTwinIpcGrpc.getSinkStreamingMethod) == null) {
           OpenNMSTwinIpcGrpc.getSinkStreamingMethod = getSinkStreamingMethod =
-              io.grpc.MethodDescriptor.<org.opennms.core.ipc.twin.grpc.common.MinionHeader, org.opennms.core.ipc.twin.grpc.common.TwinResponseProto>newBuilder()
+              io.grpc.MethodDescriptor.<MinionHeader, org.opennms.core.ipc.twin.model.TwinResponseProto>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "SinkStreaming"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.opennms.core.ipc.twin.grpc.common.MinionHeader.getDefaultInstance()))
+                  MinionHeader.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.opennms.core.ipc.twin.grpc.common.TwinResponseProto.getDefaultInstance()))
+                  org.opennms.core.ipc.twin.model.TwinResponseProto.getDefaultInstance()))
               .setSchemaDescriptor(new OpenNMSTwinIpcMethodDescriptorSupplier("SinkStreaming"))
               .build();
         }
@@ -126,7 +121,7 @@ public final class OpenNMSTwinIpcGrpc {
   public static OpenNMSTwinIpcStub newStub(io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<OpenNMSTwinIpcStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<OpenNMSTwinIpcStub>() {
-        @java.lang.Override
+        @Override
         public OpenNMSTwinIpcStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new OpenNMSTwinIpcStub(channel, callOptions);
         }
@@ -141,7 +136,7 @@ public final class OpenNMSTwinIpcGrpc {
       io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<OpenNMSTwinIpcBlockingStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<OpenNMSTwinIpcBlockingStub>() {
-        @java.lang.Override
+        @Override
         public OpenNMSTwinIpcBlockingStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new OpenNMSTwinIpcBlockingStub(channel, callOptions);
         }
@@ -156,7 +151,7 @@ public final class OpenNMSTwinIpcGrpc {
       io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<OpenNMSTwinIpcFutureStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<OpenNMSTwinIpcFutureStub>() {
-        @java.lang.Override
+        @Override
         public OpenNMSTwinIpcFutureStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new OpenNMSTwinIpcFutureStub(channel, callOptions);
         }
@@ -176,8 +171,8 @@ public final class OpenNMSTwinIpcGrpc {
      * Streams Twin request/Response from Minion to OpenNMS
      * </pre>
      */
-    public io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.grpc.common.TwinRequestProto> rpcStreaming(
-        io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.grpc.common.TwinResponseProto> responseObserver) {
+    public io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinRequestProto> rpcStreaming(
+        io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinResponseProto> responseObserver) {
       return asyncUnimplementedStreamingCall(getRpcStreamingMethod(), responseObserver);
     }
 
@@ -186,26 +181,26 @@ public final class OpenNMSTwinIpcGrpc {
      * Stream Twin updates from OpenNMS to Minion.
      * </pre>
      */
-    public void sinkStreaming(org.opennms.core.ipc.twin.grpc.common.MinionHeader request,
-        io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.grpc.common.TwinResponseProto> responseObserver) {
+    public void sinkStreaming(MinionHeader request,
+                              io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinResponseProto> responseObserver) {
       asyncUnimplementedUnaryCall(getSinkStreamingMethod(), responseObserver);
     }
 
-    @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
+    @Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
             getRpcStreamingMethod(),
             asyncBidiStreamingCall(
               new MethodHandlers<
-                org.opennms.core.ipc.twin.grpc.common.TwinRequestProto,
-                org.opennms.core.ipc.twin.grpc.common.TwinResponseProto>(
+                org.opennms.core.ipc.twin.model.TwinRequestProto,
+                org.opennms.core.ipc.twin.model.TwinResponseProto>(
                   this, METHODID_RPC_STREAMING)))
           .addMethod(
             getSinkStreamingMethod(),
             asyncServerStreamingCall(
               new MethodHandlers<
-                org.opennms.core.ipc.twin.grpc.common.MinionHeader,
-                org.opennms.core.ipc.twin.grpc.common.TwinResponseProto>(
+                MinionHeader,
+                org.opennms.core.ipc.twin.model.TwinResponseProto>(
                   this, METHODID_SINK_STREAMING)))
           .build();
     }
@@ -222,7 +217,7 @@ public final class OpenNMSTwinIpcGrpc {
       super(channel, callOptions);
     }
 
-    @java.lang.Override
+    @Override
     protected OpenNMSTwinIpcStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new OpenNMSTwinIpcStub(channel, callOptions);
@@ -233,8 +228,8 @@ public final class OpenNMSTwinIpcGrpc {
      * Streams Twin request/Response from Minion to OpenNMS
      * </pre>
      */
-    public io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.grpc.common.TwinRequestProto> rpcStreaming(
-        io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.grpc.common.TwinResponseProto> responseObserver) {
+    public io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinRequestProto> rpcStreaming(
+        io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinResponseProto> responseObserver) {
       return asyncBidiStreamingCall(
           getChannel().newCall(getRpcStreamingMethod(), getCallOptions()), responseObserver);
     }
@@ -244,8 +239,8 @@ public final class OpenNMSTwinIpcGrpc {
      * Stream Twin updates from OpenNMS to Minion.
      * </pre>
      */
-    public void sinkStreaming(org.opennms.core.ipc.twin.grpc.common.MinionHeader request,
-        io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.grpc.common.TwinResponseProto> responseObserver) {
+    public void sinkStreaming(MinionHeader request,
+                              io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinResponseProto> responseObserver) {
       asyncServerStreamingCall(
           getChannel().newCall(getSinkStreamingMethod(), getCallOptions()), request, responseObserver);
     }
@@ -262,7 +257,7 @@ public final class OpenNMSTwinIpcGrpc {
       super(channel, callOptions);
     }
 
-    @java.lang.Override
+    @Override
     protected OpenNMSTwinIpcBlockingStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new OpenNMSTwinIpcBlockingStub(channel, callOptions);
@@ -273,8 +268,8 @@ public final class OpenNMSTwinIpcGrpc {
      * Stream Twin updates from OpenNMS to Minion.
      * </pre>
      */
-    public java.util.Iterator<org.opennms.core.ipc.twin.grpc.common.TwinResponseProto> sinkStreaming(
-        org.opennms.core.ipc.twin.grpc.common.MinionHeader request) {
+    public java.util.Iterator<org.opennms.core.ipc.twin.model.TwinResponseProto> sinkStreaming(
+        MinionHeader request) {
       return blockingServerStreamingCall(
           getChannel(), getSinkStreamingMethod(), getCallOptions(), request);
     }
@@ -291,7 +286,7 @@ public final class OpenNMSTwinIpcGrpc {
       super(channel, callOptions);
     }
 
-    @java.lang.Override
+    @Override
     protected OpenNMSTwinIpcFutureStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new OpenNMSTwinIpcFutureStub(channel, callOptions);
@@ -314,27 +309,27 @@ public final class OpenNMSTwinIpcGrpc {
       this.methodId = methodId;
     }
 
-    @java.lang.Override
-    @java.lang.SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_SINK_STREAMING:
-          serviceImpl.sinkStreaming((org.opennms.core.ipc.twin.grpc.common.MinionHeader) request,
-              (io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.grpc.common.TwinResponseProto>) responseObserver);
+          serviceImpl.sinkStreaming((MinionHeader) request,
+              (io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinResponseProto>) responseObserver);
           break;
         default:
           throw new AssertionError();
       }
     }
 
-    @java.lang.Override
-    @java.lang.SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public io.grpc.stub.StreamObserver<Req> invoke(
         io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_RPC_STREAMING:
           return (io.grpc.stub.StreamObserver<Req>) serviceImpl.rpcStreaming(
-              (io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.grpc.common.TwinResponseProto>) responseObserver);
+              (io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinResponseProto>) responseObserver);
         default:
           throw new AssertionError();
       }
@@ -345,12 +340,12 @@ public final class OpenNMSTwinIpcGrpc {
       implements io.grpc.protobuf.ProtoFileDescriptorSupplier, io.grpc.protobuf.ProtoServiceDescriptorSupplier {
     OpenNMSTwinIpcBaseDescriptorSupplier() {}
 
-    @java.lang.Override
+    @Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
-      return org.opennms.core.ipc.twin.grpc.common.TwinGrpcIpc.getDescriptor();
+      return TwinGrpcIpc.getDescriptor();
     }
 
-    @java.lang.Override
+    @Override
     public com.google.protobuf.Descriptors.ServiceDescriptor getServiceDescriptor() {
       return getFileDescriptor().findServiceByName("OpenNMSTwinIpc");
     }
@@ -370,7 +365,7 @@ public final class OpenNMSTwinIpcGrpc {
       this.methodName = methodName;
     }
 
-    @java.lang.Override
+    @Override
     public com.google.protobuf.Descriptors.MethodDescriptor getMethodDescriptor() {
       return getServiceDescriptor().findMethodByName(methodName);
     }

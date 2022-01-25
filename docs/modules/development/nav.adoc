@@ -1,5 +1,6 @@
-.Development
-* xref:overview/overview.adoc[]
+.xref:development.adoc[]
+
+* xref:build-from-source.adoc[]
 
 * xref:minion/introduction.adoc[]
 ** xref:minion/container.adoc[]
@@ -30,6 +31,7 @@
 *** xref:rest/graph.adoc[]
 *** xref:rest/groups.adoc[]
 *** xref:rest/heatmap.adoc[]
+*** xref:rest/health_rest.adoc[]
 *** xref:rest/ifservices.adoc[]
 *** xref:rest/ipinterfaces.adoc[]
 *** xref:rest/ksc_reports.adoc[]
@@ -48,6 +50,7 @@
 *** xref:rest/scheduled_outages.adoc[]
 *** xref:rest/snmp_configuration.adoc[]
 *** xref:rest/snmpinterfaces.adoc[]
+*** xref:rest/snmpmetadata.adoc[]
 *** xref:rest/users.adoc[]
 *** xref:rest/user-defined-links.adoc[]
 *** xref:rest/snmptrapnbi-config.adoc[]

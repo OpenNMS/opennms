@@ -1,0 +1,6 @@
+[[ref-ticketer]]
+= Ticketer
+
+This section describes all available built-in ticketers for use with our xref:operation:ticketing/introduction.adoc[ticketing] service.
+
+For information on how to extend the functionality of these ticketers or to create new ones, see the xref:development:development.adoc#development[Development section] to contribute to the project.

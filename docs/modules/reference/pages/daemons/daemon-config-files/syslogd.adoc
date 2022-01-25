@@ -1,0 +1,25 @@
+
+[[ref-daemon-config-files-syslogd]]
+= Syslogd
+
+.Syslogd configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| syslogd-configuration.xml
+| Configure generic behavior of Syslogd; for example, port numbers or matching behavior.
+| yes
+| no
+
+| syslogd/*.xml
+| Defines individual mappings between message text and UEIs.
+Files in this folder must be specified as an include directive in `syslog-configuration.xml`.
+| yes
+| no
+|===

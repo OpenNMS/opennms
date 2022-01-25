@@ -38,7 +38,7 @@ public interface MinionHeaderOrBuilder extends
   /**
    * <code>string system_id = 1;</code>
    */
-  java.lang.String getSystemId();
+  String getSystemId();
   /**
    * <code>string system_id = 1;</code>
    */
@@ -48,7 +48,7 @@ public interface MinionHeaderOrBuilder extends
   /**
    * <code>string location = 2;</code>
    */
-  java.lang.String getLocation();
+  String getLocation();
   /**
    * <code>string location = 2;</code>
    */

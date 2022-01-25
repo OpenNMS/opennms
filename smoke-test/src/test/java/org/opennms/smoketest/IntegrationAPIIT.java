@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,21 +48,36 @@ public class IntegrationAPIIT {
     private static final Logger LOG = LoggerFactory.getLogger(IntegrationAPIIT.class);
 
     @ClassRule
-    public static OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static OpenNMSStack stack = OpenNMSStack.MINION;
 
     @Test
     public void canLoadSampleProject() throws Exception {
-        final InetSocketAddress karafSsh = stack.opennms().getSshAddress();
-        // Install the sample project
-        try (final SshClient sshClient = new SshClient(karafSsh, "admin", "admin")) {
+        // Install the sample plugin on OpenNMS
+        final InetSocketAddress opennmsSsh = stack.opennms().getSshAddress();
+        try (final SshClient sshClient = new SshClient(opennmsSsh, "admin", "admin")) {
             PrintStream pipe = sshClient.openShell();
-            pipe.println("feature:install opennms-integration-api-sample-project");
+            pipe.println("feature:install opennms-plugin-sample");
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
         }
 
-        // Now wait until the health check passes
-        verifyHealthCheckWithDescription(karafSsh, "Sample Project :: Health Check");
+        // Install the sample plugin on Minion
+        final InetSocketAddress minionSsh = stack.minion().getSshAddress();
+        try (final SshClient sshClient = new SshClient(minionSsh, "admin", "admin")) {
+            PrintStream pipe = sshClient.openShell();
+            pipe.println("feature:install minion-plugin-sample");
+            pipe.println("logout");
+            await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
+        }
+
+        // Now wait until the health check passes on OpenNMS
+        verifyHealthCheckWithDescription(opennmsSsh, "Sample Project :: Health Check");
+
+        // Now do the same on Minion
+        verifyHealthCheckWithDescription(minionSsh, "Sample Project :: Minion");
+
+        // Now ensure that we're able to invoke the extensions on Minion from OpenNMS
+        verifyHealthCheckWithDescription(opennmsSsh, "Sample Project :: Service Extensions on Minion");
     }
 
     private static void verifyHealthCheckWithDescription(final InetSocketAddress sshAddress, String healthCheckDescription) {
@@ -84,9 +99,10 @@ public class IntegrationAPIIT {
                         for (String line : shellOutput.split("\\r?\\n")) {
                             if (line.contains(healthCheckDescription)) {
                                 LOG.info("Health check result: {}", line);
-                            }
-                            if (line.contains("Success")) {
-                                healthCheckSuccess = true;
+                                if (line.contains("Success")) {
+                                    healthCheckSuccess = true;
+                                    break;
+                                }
                             }
                         }
                         return healthCheckSuccess;

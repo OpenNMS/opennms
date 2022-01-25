@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>29.0.0-SNAPSHOT</version>
+    <version>30.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -851,11 +851,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.ipc.rpc</groupId>
-      <artifactId>org.opennms.core.ipc.rpc.aws-sqs-impl</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.core.ipc.sink.camel</groupId>
       <artifactId>org.opennms.core.ipc.sink.camel.client</artifactId>
       <version>${project.version}</version>
@@ -876,16 +871,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
-      <artifactId>org.opennms.core.ipc.sink.aws.sqs.client</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
-      <artifactId>org.opennms.core.ipc.sink.aws.sqs.server</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.core.ipc.sink</groupId>
       <artifactId>org.opennms.core.ipc.sink.offheap</artifactId>
       <version>${project.version}</version>
@@ -898,6 +883,16 @@
     <dependency>
       <groupId>org.opennms.core.ipc.twin.grpc</groupId>
       <artifactId>org.opennms.core.ipc.twin.grpc.publisher</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.twin.jms</groupId>
+      <artifactId>org.opennms.core.ipc.twin.jms.publisher</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.twin.kafka</groupId>
+      <artifactId>org.opennms.core.ipc.twin.kafka.publisher</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -5,7 +5,7 @@
     <relativePath>../../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>29.0.0-SNAPSHOT</version>
+    <version>30.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -113,12 +113,12 @@
     
         <dependency>
            <groupId>org.osgi</groupId>
-           <artifactId>org.osgi.core</artifactId>
+           <artifactId>osgi.core</artifactId>
            <scope>provided</scope>
         </dependency>
             <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>osgi.cmpn</artifactId>
             <scope>provided</scope>
         </dependency>
       <dependency>
@@ -126,6 +126,11 @@
           <artifactId>mockito-core</artifactId>
           <scope>test</scope>
       </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.features.topologies</groupId>
       <artifactId>org.opennms.features.topologies.service.impl</artifactId>
@@ -190,6 +195,11 @@
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.generator</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,8 @@ package org.opennms.smoketest.selenium;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
+import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 import java.io.File;
 import java.io.IOException;
@@ -993,6 +995,10 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     protected void clickId(final String id, final boolean refresh) throws InterruptedException {
         LOG.debug("clickId: id={}, refresh={}", id, refresh);
         WebElement element = null;
+
+        waitUntil(visibilityOfElementLocated(By.id(id)));
+        waitUntil(elementToBeClickable(By.id(id)));
+
         try {
             setImplicitWait(10, TimeUnit.MILLISECONDS);
 

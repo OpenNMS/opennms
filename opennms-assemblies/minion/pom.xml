@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>29.0.0-SNAPSHOT</version>
+    <version>30.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -15,7 +15,7 @@
     <NAME_DISPLAY>Minion</NAME_DISPLAY>
     <NAME_LC>minion</NAME_LC>
     <INSTPREFIX>/opt/minion</INSTPREFIX>
-    <RUNAS>opennms</RUNAS>
+    <RUNAS>minion</RUNAS>
     <INITDIR>/etc/init.d</INITDIR>
     <SYSCONFDIR>/opt/minion/etc</SYSCONFDIR>
     <PIDFILE>/opt/minion/data/log/minion.pid</PIDFILE>

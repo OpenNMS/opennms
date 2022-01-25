@@ -1,0 +1,27 @@
+[[ref-daemon-config-files-eventd]]
+= Eventd
+
+.Eventd configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| eventd-configuration.xml
+| Configure generic behavior of Eventd; for example, TCP and UDP port numbers with IP addresses to listen for events and socket timeouts.
+| no
+| yes
+
+| eventconf.xml
+| Main configuration file for Eventd.
+| yes
+| no
+
+| events/*.xml
+| Files in this folder must be specified as an include directive in `eventconf.xml`.
+| yes
+| no
+|===

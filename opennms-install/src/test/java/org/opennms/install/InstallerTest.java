@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,9 @@ import static org.junit.Assert.assertEquals;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.Properties;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -126,5 +128,15 @@ public class InstallerTest {
         Files.writeString(etcDir.resolve("opennms.conf"), "RUNAS=rivjaylen");
         final String runas = installer.getRunas();
         assertEquals("rivjaylen", runas);
+    }
+
+    @Test
+    public void testRunasGitDirectory() throws Exception {
+        final var lolDir = Files.createDirectories(etcDir.resolve(".git").resolve("objects"));
+        final var lol = lolDir.resolve("42042042042042042042042042042042031337");
+        Files.writeString(lol, "");
+        Files.setPosixFilePermissions(lol, Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.GROUP_READ, PosixFilePermission.OTHERS_READ));
+
+        installer.verifyFilesAndDirectories();
     }
 }

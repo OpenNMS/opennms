@@ -18,7 +18,7 @@ For further details, see:
 
 == How can I enable CORS support?
 
-Engalbe CORS support for the REST interface (or any other part of the Web UI) as follows:
+Enable CORS support for the REST interface (or any other part of the Web UI) as follows:
 
 . Open '$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/web.xml' for editing.
 

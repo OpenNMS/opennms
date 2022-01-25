@@ -47,6 +47,7 @@ import java.util.UUID;
 
 import org.hibernate.ObjectNotFoundException;
 import org.junit.Test;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
@@ -54,8 +55,10 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
@@ -69,6 +72,10 @@ public class ProtoBufMapperTest {
 
     private final ProtobufMapper protobufMapper = new ProtobufMapper(mock(EventConfDao.class), mock(HwEntityDao.class),
             mock(SessionUtils.class), mock(NodeDao.class),  1);
+
+    private final String FOREIGN_ID = "foreignId";
+    private final String FOREIGN_SOURCE = "foreignSource";
+    private final String NODE_LABEL = "test";
 
     /**
      * Tests that the mapper can handle related alarms.
@@ -100,6 +107,10 @@ public class ProtoBufMapperTest {
         assertEquals(childId, childProtoAlarm.getId());
         assertEquals(reductionKey, childProtoAlarm.getReductionKey());
         assertEquals(childLogMsg, childProtoAlarm.getLogMessage());
+        assertEquals(FOREIGN_ID, mappedAlarm.getNodeCriteria().getForeignId());
+        assertEquals(FOREIGN_SOURCE, mappedAlarm.getNodeCriteria().getForeignSource());
+        assertEquals(NODE_LABEL, mappedAlarm.getNodeCriteria().getNodeLabel());
+        assertEquals(LocationUtils.DEFAULT_LOCATION_NAME, mappedAlarm.getNodeCriteria().getLocation());
     }
 
     private OnmsAlarm generateTestAlarm() {
@@ -108,6 +119,13 @@ public class ProtoBufMapperTest {
         testAlarm.setSeverity(OnmsSeverity.MAJOR);
         testAlarm.setAlarmType(1);
 
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
+        node.setLabel(NODE_LABEL);
+        node.setForeignId(FOREIGN_ID);
+        node.setForeignSource(FOREIGN_SOURCE);
+        node.setLocation(new OnmsMonitoringLocation(LocationUtils.DEFAULT_LOCATION_NAME, LocationUtils.DEFAULT_LOCATION_NAME));
+        testAlarm.setNode(node);
         return testAlarm;
     }
 

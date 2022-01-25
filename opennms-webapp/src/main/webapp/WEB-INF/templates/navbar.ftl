@@ -144,6 +144,7 @@
         </#if>
         </ul>
     </div>
+    <a href="${baseHref}ui/index.html"><button type="button" class="btn btn-primary" id="ui-preview-btn">UI Preview</button></a>
 </nav>
 
 <#-- hide the header if not displayed in a toplevel window (iFrame) -->

@@ -1,0 +1,61 @@
+<geoip-config enabled="false" overwrite="true" database="/path/to/GeoLite2-City.mmdb" resolve="public">
+
+    <location name="Default">
+        <subnet cidr="192.168.0.0/16">
+            <asset name="longitude" value="9.67484665470827"/>
+            <asset name="latitude" value="50.553159563701065"/>
+            <asset name="city" value="Fulda"/>
+            <asset name="country" value="Germany"/>
+            <asset name="building" value="A"/>
+        </subnet>
+        <subnet cidr="10.0.0.0/8">
+            <asset name="longitude" value="9.67484665470827"/>
+            <asset name="latitude" value="50.553159563701065"/>
+            <asset name="city" value="Fulda"/>
+            <asset name="country" value="Germany"/>
+            <asset name="building" value="B"/>
+        </subnet>
+        <subnet cidr="172.16.0.0/12">
+            <asset name="longitude" value="9.67484665470827"/>
+            <asset name="latitude" value="50.553159563701065"/>
+            <asset name="city" value="Fulda"/>
+            <asset name="country" value="Germany"/>
+            <asset name="building" value="C"/>
+        </subnet>
+    </location>
+
+    <location name="Office-Pittsboro">
+        <subnet cidr="192.168.1.0/24">
+            <asset name="longitude" value="-79.1625700509753"/>
+            <asset name="latitude" value="35.71572416796933"/>
+            <asset name="city" value="Pittsboro"/>
+            <asset name="country" value="USA"/>
+            <asset name="building" value="X"/>
+        </subnet>
+        <subnet cidr="10.20.0.0/16">
+            <asset name="longitude" value="-79.1625700509753"/>
+            <asset name="latitude" value="35.71572416796933"/>
+            <asset name="city" value="Pittsboro"/>
+            <asset name="country" value="USA"/>
+            <asset name="building" value="Z"/>
+        </subnet>
+    </location>
+
+    <location name="Office-Apex">,
+        <subnet cidr="192.168.0.0/16">
+            <asset name="longitude" value="-78.84409459259584"/>
+            <asset name="latitude" value="35.74610980037554"/>
+            <asset name="city" value="Apex"/>
+            <asset name="country" value="USA"/>
+            <asset name="building" value="1"/>
+        </subnet>
+        <subnet cidr="172.16.0.0/12">
+            <asset name="longitude" value="-78.84409459259584"/>
+            <asset name="latitude" value="35.74610980037554"/>
+            <asset name="city" value="Apex"/>
+            <asset name="country" value="USA"/>
+            <asset name="building" value="1"/>
+        </subnet>
+    </location>
+
+</geoip-config>

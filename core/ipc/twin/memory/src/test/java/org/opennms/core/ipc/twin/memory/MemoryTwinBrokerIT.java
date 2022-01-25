@@ -31,6 +31,7 @@ package org.opennms.core.ipc.twin.memory;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
+import org.opennms.distributed.core.api.MinionIdentity;
 
 public class MemoryTwinBrokerIT extends AbstractTwinBrokerIT {
 
@@ -44,7 +45,7 @@ public class MemoryTwinBrokerIT extends AbstractTwinBrokerIT {
     }
 
     @Override
-    protected TwinSubscriber createSubscriber() {
-        return new MemoryTwinSubscriber(this.broker, "Somewhere");
+    protected TwinSubscriber createSubscriber(final MinionIdentity identity) {
+        return new MemoryTwinSubscriber(this.broker, identity.getLocation());
     }
 }

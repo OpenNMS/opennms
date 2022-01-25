@@ -1,0 +1,105 @@
+[[ref-daemon-config-files-collectd]]
+= Collectd
+
+.Collectd configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| collectd-configuration.xml
+| This file defines which collections are being collected and assigned to which nodes. +
+Restart is required in case new collectors are created or removed. +
+Reload event loads changed configuration parameters of existing collectors but will not load new collectors.
+| yes
+| yes
+
+| datacollection-config.xml
+| Defines data collections via SNMP.
+Configuration is reprocessed when the file is modified.
+| no
+| no
+
+| datacollection/*.xml
+| Defines data collections via SNMP.
+Files in this folder must be specified as an include directive in `datacollection-config.xml`.
+| no
+| no
+
+| jdbc-datacollection-config.xml
+| Defines JDBC data collections.
+Attributes are retrieved using SQL queries.
+| no
+| yes
+
+| jmx-datacollection-config.xml
+| Defines data collections via JMX.
+| no
+| yes
+
+| jmx-datacollection-config.d/*.xml
+| Defines data collections via JMX.
+| no
+| yes
+
+| http-datacollection-config.xml
+| Defines HTTP data collections.
+Attributes are extracted from the HTTP responses using a regular expression.
+| no
+| yes
+
+| prometheus-datacollection-config.xml
+| Defines data collections via Prometheus Exporter.
+| no
+| yes
+
+| prometheus-datacollection.d/*.xml
+| Defines data collections via Prometheus Exporter.
+| no
+| yes
+
+| snmp-config.xml
+| Defines per-host security settings for SNMP communication.
+| no
+| no
+
+| wmi-config.xml
+| Defines per-host security settings for WMI communication.
+| no
+| no
+
+| wmi-datacollection-config.xml
+| Defines data collections via WMI.
+| no
+| yes
+
+| wsman-config.xml
+| Defines per-host security settings for WSMAN communication.
+| no
+| no
+
+| wsman-datacollection-config.xml
+| Defines data collections via WSMAN.
+| no
+| yes
+
+| wsman-datacollection.d/*.xml
+| Files in this folder must be specified as an include directive in `wsman-datacollection-config.xml`.
+| no
+| yes
+
+| xml-datacollection-config.xml
+| Defines data collections that can be extracted from XML or JSON documents.
+| no
+| yes
+
+| xml-datacollection/*.xml
+| Files in this folder must be specified as an include directive in `xml-datacollection-config.xml`.
+| no
+| yes
+
+|===

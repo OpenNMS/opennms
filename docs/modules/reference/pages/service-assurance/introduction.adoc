@@ -1,0 +1,85 @@
+[[service-monitors]]
+= Service Monitors
+
+This section describes all available built-in monitors for xref:operation:service-assurance/introduction.adoc[service assurance].
+You can configure them to allow complex monitoring to meet the needs of your environment.
+
+For information on how to extend the functionality of these monitors, see the xref:development:development.adoc#development[Development section] to contribute to the project.
+
+[[ref-service-assurance-monitors-common-parameters]]
+== Common configuration parameters
+
+Application- or device-specific monitors are based on a generic API that provides common configuration parameters.
+These minimum configuration parameters are available in all monitors and describe the behavior for timeouts, retries, and so on.
+
+.Optional common configuration parameters
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| retry
+| Number of attempts to test a service's status (up or down).
+| 3
+
+| timeout
+| Timeout for the isReachable method, in milliseconds.
+| 3000
+
+| invert-status
+| Invert the up/down behavior of the monitor.
+| false
+|===
+
+TIP: If the monitor uses SNMP, the default configuration for timeout and retry are taken from the SNMP configuration (`snmp-config.xml`).
+
+[[ref-service-assurance-monitors-minion-parameters]]
+=== Minion configuration parameters
+
+When nodes are configured with a non-default location, the associated service monitors run on a Minion configured with that same location.
+If a given location has multiple Minions, the service monitor may run on any of the Minions that are currently available.
+To run a service monitor on a specific Minion, specify the System ID of the Minion.
+Use this mechanism to monitor the Minions individually.
+
+Use the following parameters to override this behavior and control where the service monitors run.
+
+.Optional Minion configuration parameters
+[options="header"]
+[cols="1,3,2"]
+
+|===
+| Parameter
+| Description
+| Default
+
+| location
+| Specify the location to run the service monitor.
+| The location of the associated node.
+
+| system-id
+| Specify the system ID on which to run the service monitor.
+| n/a
+
+| use-foreign-id-as-system-id
+| Use the foreign id of the associated node as the system ID.
+| false
+|===
+
+NOTE: When you specify a system ID, also set the location to the corresponding location for that system.
+
+[[ref-service-assurance-monitors-placeholder-substitution-parameters]]
+== Use placeholders in parameters
+Some monitor parameters support placeholder substitution.
+You can reference some node, interface, and asset record properties by enclosing them in `{` and `}`.
+The supported properties are:
+
+* nodeId
+* nodeLabel
+* foreignSource
+* foreignId
+* ipAddr (or ipAddress)
+* all node asset record fields (for example: username, password)
+
+Parameters that support placeholder substitution have a kbd:[{}] icon beside them in the *Configuration and use* section of the monitor documentation.

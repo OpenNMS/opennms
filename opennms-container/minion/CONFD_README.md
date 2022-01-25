@@ -28,25 +28,6 @@ org.opennms.instance.id: "<instance id>"
 ```
 Config specified will be written to `etc/instance-id.properties`.
 
-### AWS SQS
-```yaml
----
-aws:
-    aws_region: "us-east-1"
-    aws_access_key_id: "XXXXXXXXXXX"
-    aws_secret_access_key: "XXXXXXXXXXX"
-
-ipc:
-    sqs:
-        sink.DelaySeconds: 0
-        sink.MaximumMessageSize: 262144
-        sink.FifoQueue: true
-        rpc.DelaySeconds: 0
-        rpc.MaximumMessagesize: 262144
-        # Any other keys necessary can be specified here
-```
-Config specified will be written to `etc/org.opennms.core.ipc.aws.sqs.cfg`.
-
 ### Kafka RPC
 ```yaml
 --- 
@@ -118,7 +99,7 @@ telemetry:
             NXOS-Listener:
                 class-name: "org.opennms.netmgt.telemetry.listeners.UdpListener"
                 parameters:
-                    # List all the parameters you wish to specifiy here
+                    # List all the parameters you wish to specify here
                     port: 50002
                 parsers:
                     # List all the parsers you wish to specify here

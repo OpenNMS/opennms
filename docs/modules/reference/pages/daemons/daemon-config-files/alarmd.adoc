@@ -1,0 +1,17 @@
+[[ref-daemon-config-files-alarmd]]
+= Alarmd
+
+.Alarmd configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| alarmd/drools-rules.d/*.drl
+| Configure specific Drools rules.
+| yes
+| no
+|===

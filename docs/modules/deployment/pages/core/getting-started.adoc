@@ -32,6 +32,9 @@ NOTE: On Debian, you must install and configure `sudo` yourself.
 
 endif::[]
 
+include::../time-sync.adoc[]
+
+[[setup-postgresql]]
 == Set up PostgreSQL
 
 [{tabs}]
@@ -63,6 +66,7 @@ include::docker/postgresql.adoc[]
 endif::[]
 ====
 
+[[install-core-instance]]
 == Install the Core instance
 
 [{tabs}]
@@ -100,6 +104,7 @@ include::docker/core.adoc[]
 endif::[]
 ====
 
+[[set-up-core-instance]]
 == Set up the Core instance
 
 [{tabs}]

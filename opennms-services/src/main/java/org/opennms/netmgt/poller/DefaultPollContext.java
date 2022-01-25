@@ -442,7 +442,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     public void trackPoll(PollableService service, PollStatus result) {
         try {
             if (!result.isUnknown() && !DISABLE_POLL_TIMESTAMP_TRACKING) {
-                getQueryManager().updateLastGoodOrFail(service.getNodeId(), service.getAddress(), service.getSvcName(), result);
+                getQueryManager().updateLastGoodOrFail(service, result);
             }
         } catch (Exception e) {
             LOG.warn("Error occurred while tracking poll for service: {}", service, e);

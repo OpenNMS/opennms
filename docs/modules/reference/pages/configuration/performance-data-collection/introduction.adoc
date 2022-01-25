@@ -1,0 +1,8 @@
+[[ref-performance-data-collectors]]
+= Collectors
+
+This section describes all available built-in xref:operation:performance-data-collection/introduction.adoc[performance data collectors].
+You can configure them to allow complex monitoring to meet the needs of your environment.
+You can use xref:operation:meta-data.adoc#ga-meta-data-dsl[Metadata-DSL] to dynamically interpolate metadata into parameter values during the collection process.
+
+For information on how to extend the functionality of these monitors, see the xref:development:development.adoc#development[Development section] to contribute to the project.

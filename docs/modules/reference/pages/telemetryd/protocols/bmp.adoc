@@ -1,0 +1,274 @@
+
+= BGP Monitoring Protocol
+
+The BGP Monitoring Protocol (BMP) provides a convenient interface for obtaining route views.
+The integration in {page-component-title} lets you use these route views, status updates, and statistics for monitoring and management.
+
+.BMP integration overview
+image::bmp/bmp_integration_overview.png[width=70%]
+
+[[telemetryd-bmp-parser]]
+
+== BMP TCP Parser
+
+The BMP parser accepts BMP connections from router packets using a <<telemetryd/listeners/tcp.adoc#telemetryd-listener-tcp, TCP Listener>>.
+
+=== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser`
+|===
+
+=== Configuration and use
+
+.Optional parameters for the BMP Parser
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| dnsLookupsEnabled
+| Enable or disable DNS resolution of router and peer hostnames.
+| true
+
+| bulkhead.maxConcurrentCalls
+| Limit the number of parallel parsing operations.
+| 1000
+
+| bulkhead.maxWaitDurationMs
+| Limit the amount of time to wait for a saturated bulkhead (in milliseconds).
+| 5 minutes
+|===
+
+== Configure BMP listener on a Minion
+
+To enable and configure a TCP listener for BMP on Minion, connect to the Karaf Console and set the following properties:
+
+NOTE: The protocol must also be enabled on {page-component-title} for the messages to be processed.
+
+.From the Minion's Karaf console
+[source, karaf]
+----
+config:edit --alias tcp-5000 --factory org.opennms.features.telemetry.listeners
+config:property-set name BMP
+config:property-set class-name org.opennms.netmgt.telemetry.listeners.TcpListener
+config:property-set parameters.port 5000
+config:property-set parsers.0.name BMP
+config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser
+config:update
+----
+
+If you do not specify the queue name, the fallback is the name of the parser.
+
+[[telemetryd-bmp-statistics-adapter]]
+== BMP telemetry adapter
+
+The BMP telemetry adapter handles BMP statistics received and parsed by the <<telemetryd-bmp-parser, BMP parser>>.
+Statistics received from the router are associated as performance data with that router.
+The router must exist as a regular node in {page-component-title}.
+
+{page-component-title} uses the IP address exported in BMP messages to associate a router with the appropriate {page-component-title} node.
+In addition, the node's metadata can be used to specify a BGP ID, which will be used to associate routers.
+If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, which will be used to look up a node that has stored the queried BGP ID as a value in the specified key.
+
+=== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpTelemetryAdapter`
+|===
+
+=== Configuration and use
+
+.Optional parameters for the BMP telemetry adapter
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| metaDataNodeLookup
+| Enables lookup using BGP IDs.
+| n/a
+|===
+
+[[telemetryd-bmp-peer-status-adapter]]
+== BMP Peer Status Adapter
+
+The BMP peer status adapter creates events for peer status changes.
+It handles BMP Peer Up and Down messages that the <<telemetryd-bmp-parser, BMP Parser>> receives and parses, and converts to {page-component-title} events.
+{page-component-title} associates the created events with the router sending the messages.
+This router must exist as regular node in {page-component-title}.
+
+The events are called `uei.opennms.org/bmp/peerUp` and `uei.opennms.org/bmp/peerDown`.
+
+{page-component-title} uses the IP address exporting BMP messages to associate a router with the particular {page-component-title} node.
+In addition, the node's metadata can specify a BGP ID, which will then be used to associate routers.
+If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, which will be used to lookup a node that has stored the queried BGP ID as a value in exactly this key.
+
+=== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPeerStatusAdapter`
+|===
+
+=== Configuration and use
+
+.Optional parameters for the BMP telemetry adapter
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| metaDataNodeLookup
+| Enables lookup using BGP IDs.
+| n/a
+|===
+
+
+[[telemetryd-openbmp-integration-adapter]]
+== OpenBMP integration adapter
+
+The OpenBMP integration adapter can integrate with an existing https://github.com/OpenBMP[OpenBMP] installation.
+It handles BMP messages the <<telemetryd-bmp-parser, BMP Parser>> receives and parses, and creates OpenBMP-compatible messages, which are then passed to the OpenBMP Kafka cluster.
+
+This setup replaces the collector component of OpenBMP.
+
+=== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpIntegrationAdapter`
+|===
+
+=== Configuration and use
+
+.Optional parameters for the OpenBMP Integration Adapter
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+| kafka.*
+| Uses options to create OpenBMP Kafka producer.
+Enables all known Kafka settings, but with `kafka.` prefixed.
+| n/a
+
+| topicPrefix
+| Prefix used before each Kafka topic.
+| n/a
+|===
+
+[[telemetryd-bmp-persisting-adapter]]
+== BMP persisting adapter
+
+The BMP Persisting adapter persists OpenBMP messages received without the need for any additional OpenBMP components.
+It handles BMP messages the <<telemetryd-bmp-parser, BMP Parser>> receives and parses, and creates OpenBMP-compatible messages, which are then
+persisted in OpenNMS Postgres DB.
+
+=== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPersistingAdapter`
+|===
+
+Stats and retrieving data from external data for rpki/routeinfo/asinfo are handled only on {page-component-title}.
+The `opennms-telemetry-bmp-stats` feature needs to be installed on {page-component-title}.
+
+BMP Stats are stored as time series data in Postgres with TimescaleDB extension.
+TimescaleDB 2.x extension link:https://docs.timescale.com/latest/getting-started/installation[installation instructions].
+For `opennms` schema, TimescaleDB extension can be added with -t option on install DB script(for example, `$OPENNMS_HOME/bin/install -dist`).
+If the TimescaleDB extension is not installed, stat tables will not be converted to hypertables.
+
+To load the adapter while {page-component-title} is running, use the following command in the Karaf shell.
+
+[source, console]
+----
+feature:install opennms-telemetry-bmp-stats
+----
+
+To ensure that the feature continues to be installed on subsequent restarts, add `opennms-telemetry-bmp-stats` to the `featuresBoot` property in `$OPENNMS_HOME/etc/org.apache.karaf.features.cfg`.
+
+=== Configuration BMP persistence for external sources
+
+You can configure the following parameters when connecting to external sources like RPKI or RouteInfo DB tables.
+
+[options="header", cols="1,3,2"]
+|===
+| Name
+| Description
+| Default
+
+| rpkiUrl
+| Rest API URL to retrieve RPKI ROAs.
+| \http://localhost:8080/api/export.json
+
+| rpkiUsername
+| Username for RPKI Rest API.
+|
+
+| rpkiPassword
+| Password for RPKI Rest API.
+|
+
+| routeInfoDbPath
+| Path for RouteInfo DB tables.
+| ${karaf.etc}/routeinfo
+|===
+
+Configure the above parameters as follows on the core via Karaf:
+
+[source, karaf]
+----
+config:edit org.opennms.features.telemetry.protocols.bmp.adapter.persist
+config:property-set rpkiUrl http://localhost:8080/api/export.json
+config:update
+----
+
+==== Running BMP Adapter on Sentinel
+
+BMP Persisting Adapter can also run on Sentinel.
+Sentinel must start the appropriate BMP adapter.
+In Sentinel, adapters are configured either by placing a .cfg file in `$\{SENTINEL_HOME}/etc` or via a `config:edit` statement.
+
+The following example configures the consumption of `BMP` messages and saves the configuration in `$\{SENTINEL_HOME}/etc/org.opennms.features.telemetry.adapters-bmp.cfg`.
+
+First, login to the Karaf Shell.
+
+[source, console]
+----
+$ ssh -p 8301 admin@localhost
+----
+
+[source, karaf]
+----
+config:edit --alias BMP --factory org.opennms.features.telemetry.adapters
+config:property-set name BMP
+config:property-set adapters.0.name BMP-Persisting-Adapter
+config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPersistingAdapter
+config:update
+----
+
+Install the following features via Karaf shell to start processing BMP messages on Sentinel.
+
+[source, karaf]
+----
+feature:install sentinel-core
+feature:install sentinel-persistence <1>
+feature:install sentinel-jms <2>
+feature:install sentinel-blobstore-noop
+feature:install sentinel-jsonstore-postgres
+feature:install sentinel-telemetry-bmp-persist
+----
+
+<1> Needs datasource configuration setup per xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[Sentinel Flow Processing].
+<2> Can alternatively be set to `sentinel-kafka` based on your selected message broker.
+Refer to xref:reference:configuration/sentinel-features.adoc#ga-kafka-configuration[Sentinel Kafka Configuration].
+
+NOTE: When running Kafka as the broker, the consumer config needs to have the `auto.offset.reset=earliest` setting, otherwise
+the BMP Adapter may miss some of the early messages, like the PeerUp notification, which are essential for proper BMP state.

@@ -34,8 +34,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 @Path("/health")
@@ -44,9 +44,9 @@ public interface HealthCheckRestService {
     @GET
     @Path("probe")
     @Produces(MediaType.TEXT_PLAIN)
-    Response probeHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs, @Context final UriInfo uriInfo);
+    Response probeHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs, @QueryParam("maxAgeMs") @DefaultValue("90000") int maxAgeMs, @Context final UriInfo uriInfo);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    Response getHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs, @Context final UriInfo uriInfo);
+    Response getHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs, @QueryParam("maxAgeMs") @DefaultValue("90000") int maxAgeMs, @Context final UriInfo uriInfo);
 }

@@ -23,7 +23,7 @@ Additionally, anywhere you use "id" in the queries below, you can use the foreig
 | `/nodes/\{id}/categories`                                     | Get the list of categories associated with the given node.
 | `/nodes/\{id}/categories/\{categoryname}`                     | Get the category associated with the given node and category name.
 | `/nodes/\{id}/assetRecord`                                    | Get the asset record associated with the given node.
-| `/nodes/\{id}/hardwareInventory`                              | Get the hardware inventory information collected by the xref:operation:provisioning/hardware-inventory.adoc#hardware-inventory-plugin[hardware inventory plugin].
+| `/nodes/\{id}/hardwareInventory`                              | Get the hardware inventory information collected by the xref:reference:provisioning/adapters/hardware-inventory.adoc[hardware inventory plugin].
 | `/nodes/\{id}/hardwareInventory/\{entPhysicalIndex}`          | Get a specific entity from the hardware inventory information.
 |===
 
@@ -35,6 +35,7 @@ POST requires XML using application/xml as its Content-Type.
 |===
 | Resource                                             | Description
 | `/nodes`                                             | Add a node.
+| `/nodes/\{id}/rescan`                                | Rescan the node for new interfaces.
 | `/nodes/\{id}/ipinterfaces`                          | Add an IP interface to the node.
 | `/nodes/\{id}/ipinterfaces/\{ipaddress}/services`    | Add a service to the interface for the given node.
 | `/nodes/\{id}/snmpinterfaces`                        | Add an SNMP interface to the node.

@@ -1,0 +1,81 @@
+
+
+[[webui-grafana-dashboard-box]]
+= Grafana Dashboard Box
+
+http://grafana.org/[Grafana] provides an API key which gives access for 3rd party application like {page-component-title}.
+The Grafana Dashboard Box on the start page shows dashboards related to {page-component-title}.
+To filter relevant dashboards, you can use a tag for dashboards and make them accessible.
+If no tag is provided all dashboards from Grafana will be shown.
+
+The feature is by default deactivated and is configured by defining a `.properties` file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
+Please note that this feature works with Grafana v2.5.0+.
+
+.Quick access to Grafana dashboards from the {page-component-title} start page
+image::webui/startpage/01_grafana-box.png[]
+
+.Grafana Dashboard configuration properties
+[options="header" cols="2,3,1,1"]
+|===
+| Name
+| Description
+| Type
+| Default
+
+| org.opennms.grafanaBox.show
+| This setting controls whether a grafana box showing the available dashboards is placed on the landing page.
+| Boolean
+| false
+
+| org.opennms.grafanaBox.hostname
+| If the box is enabled you also need to specify hostname of the Grafana server
+| String
+| localhost
+
+| org.opennms.grafanaBox.port
+| The port of the Grafana server ReST API.
+| Integer
+| 3000
+
+| org.opennms.grafanaBox.basePath
+| The Grafana base path to use.
+| String
+|
+
+| org.opennms.grafanaBox.apiKey
+| The API key is needed for the ReST calls to work
+| String
+|
+
+| org.opennms.grafanaBox.tag
+| When a tag is specified only dashboards with this given tag will be displayed.
+When no tag is given all dashboards will be displayed
+| String
+|
+
+| org.opennms.grafanaBox.protocol
+| The protocol for the ReST call can also be specified.
+| String
+| http
+
+| org.opennms.grafanaBox.connectionTimeout
+| Timeout in milliseconds for getting information from the Grafana server
+| Integer
+| 500
+
+| org.opennms.grafanaBox.soTimeout
+| Socket timeout
+| Integer
+| 500
+
+| org.opennms.grafanaBox.dashboardLimit
+| Maximum number of entries to be displayed (0 for unlimited)
+| Integer
+| 0
+|===
+
+TIP: If you have Grafana behind a proxy it is important the `org.opennms.grafanaBox.hostname` is reachable.
+     This host name is used to generate links to the Grafana dashboards.
+
+The process to generate a Grafana API Key can be found in the https://grafana.com/docs/grafana/latest/http_api/[HTTP API documentation].
+Copy the API Key to `opennms.properties` as `org.opennms.grafanaBox.apiKey`.

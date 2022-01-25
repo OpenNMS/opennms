@@ -27,7 +27,7 @@
  *******************************************************************************/
 package org.opennms.netmgt.flows.classification.internal.decision;
 
-import org.opennms.core.network.IPAddress;
+import org.opennms.netmgt.flows.classification.IpAddr;
 
 /**
  * Bundles bounds for the different aspects of flows that are used for classification.
@@ -40,9 +40,9 @@ public class Bounds {
 
     public final Bound<Integer> protocol;
     public final Bound<Integer> srcPort, dstPort;
-    public final Bound<IPAddress> srcAddr, dstAddr;
+    public final Bound<IpAddr> srcAddr, dstAddr;
 
-    public Bounds(Bound<Integer> protocol, Bound<Integer> srcPort, Bound<Integer> dstPort, Bound<IPAddress> srcAddr, Bound<IPAddress> dstAddr) {
+    public Bounds(Bound<Integer> protocol, Bound<Integer> srcPort, Bound<Integer> dstPort, Bound<IpAddr> srcAddr, Bound<IpAddr> dstAddr) {
         this.protocol = protocol;
         this.srcPort = srcPort;
         this.dstPort = dstPort;

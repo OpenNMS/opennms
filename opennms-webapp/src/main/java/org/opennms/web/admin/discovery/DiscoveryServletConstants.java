@@ -59,6 +59,11 @@ public class DiscoveryServletConstants {
     /** Constant <code>removeIncludeUrlAction="RemoveIncludeUrl"</code> */
     public static final String removeIncludeUrlAction = "RemoveIncludeUrl";
 
+    /** Constant <code>addExcludeUrlAction="AddExcludeUrl"</code> */
+    public static final String addExcludeUrlAction = "AddExcludeUrl";
+    /** Constant <code>removeExcludeUrlAction="RemoveExcludeUrl"</code> */
+    public static final String removeExcludeUrlAction = "RemoveExcludeUrl";
+
     /** Constant <code>addExcludeRangeAction="AddExcludeRange"</code> */
     public static final String addExcludeRangeAction = "AddExcludeRange";
     /** Constant <code>removeExcludeRangeAction="RemoveExcludeRange"</code> */

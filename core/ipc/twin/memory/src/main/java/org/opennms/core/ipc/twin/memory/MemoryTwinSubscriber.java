@@ -50,4 +50,8 @@ public class MemoryTwinSubscriber implements TwinSubscriber {
     public <T> Closeable subscribe(final String key, final Class<T> clazz, final Consumer<T> consumer) {
         return this.publisher.subscribe(key, this.location, clazz, consumer);
     }
+
+    @Override
+    public void close() {
+    }
 }

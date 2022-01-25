@@ -56,4 +56,11 @@ public interface IpNetToMediaDao extends OnmsDao<IpNetToMedia, Integer> {
     
     public void deleteBySourceNodeId(Integer nodeId);
 
+    /**
+     * Finds all {@link IpNetToMedia} instances that have a physical address that is equal to the mac address
+     * of a {@code BridgeMacLink} of the addressed {@code node}.
+     * @param nodeId
+     * @return
+     */
+    List<IpNetToMedia> findByMacLinksOfNode(Integer nodeId);
 }

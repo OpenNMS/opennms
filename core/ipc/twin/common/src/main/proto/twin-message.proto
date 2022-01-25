@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.opennms.core.ipc.twin.model";
+option java_outer_classname = "TwinMessageProto";
+/*
+   Twin Request object used by Minion to make RPC Request.
+ */
+message TwinRequestProto {
+  string consumer_key = 1;
+  string system_id = 2;
+  string location = 3;
+  map<string, string> tracing_info = 4;
+}
+
+/*
+    Twin Response object sent by OpenNMS for RPC response as well as for Sink update.
+ */
+message TwinResponseProto {
+  string consumer_key = 1;
+  bytes twin_object = 2;
+  string system_id = 3;
+  string location = 4;
+  bool is_patch_object = 5;
+  string session_id = 6;
+  int32 version = 7;
+  map<string, string> tracing_info = 8;
+}

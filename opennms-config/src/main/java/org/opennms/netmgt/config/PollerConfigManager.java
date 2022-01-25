@@ -44,6 +44,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
@@ -55,7 +56,6 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.poller.CriticalService;
 import org.opennms.netmgt.config.poller.ExcludeRange;
 import org.opennms.netmgt.config.poller.IncludeRange;
@@ -161,12 +161,12 @@ abstract public class PollerConfigManager implements PollerConfig {
      * A mapping of the configured package to a list of IPs selected via filter
      * rules, so as to avoid repetitive database access.
      */
-    private AtomicReference<Map<Package, List<InetAddress>>> m_pkgIpMap = new AtomicReference<Map<Package, List<InetAddress>>>();;
+    private AtomicReference<Map<Package, List<InetAddress>>> m_pkgIpMap = new AtomicReference<>();
     /**
      * A mapp of service names to service monitors. Constructed based on data in
      * the configuration file.
      */
-    private Map<String, ServiceMonitor> m_svcMonitors = new ConcurrentSkipListMap<String, ServiceMonitor>();
+    private Map<String, ServiceMonitor> m_svcMonitors = new ConcurrentSkipListMap<>();
 
     /**
      * Go through the poller configuration and build a mapping of each
@@ -174,7 +174,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * time so that repeated file reads can be avoided
      */
     private void createUrlIpMap() {
-        m_urlIPMap = new HashMap<String, List<String>>();
+        m_urlIPMap = new HashMap<>();
     
         for(final Package pkg : packages()) {
             for(final String url : includeURLs(pkg)) {
@@ -242,7 +242,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public ServiceSelector getServiceSelectorForPackage(final Package pkg) {
         try {
             getReadLock().lock();
-            final List<String> svcNames = new LinkedList<String>();
+            final List<String> svcNames = new LinkedList<>();
             for(Service svc : services(pkg)) {
                 svcNames.add(svc.getName());
             }
@@ -449,7 +449,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         getReadLock().lock();
         
         try {
-            Map<Package, List<InetAddress>> pkgIpMap = new HashMap<Package, List<InetAddress>>();
+            Map<Package, List<InetAddress>> pkgIpMap = new HashMap<>();
             
             for(final Package pkg : packages()) {
         
@@ -704,7 +704,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     @Override
     public List<String> getAllPackageMatches(final String ipaddr) {
-        List<String> matchingPkgs = new ArrayList<String>();
+        List<String> matchingPkgs = new ArrayList<>();
 
         try {
             getReadLock().lock();
@@ -981,10 +981,12 @@ abstract public class PollerConfigManager implements PollerConfig {
         final Collection<ServiceMonitorLocator> locators = getServiceMonitorLocators();
         
         for (final ServiceMonitorLocator locator : locators) {
-            try {
-                m_svcMonitors.put(locator.getServiceName(), locator.getServiceMonitor(s_serviceMonitorRegistry));
-            } catch (Throwable t) {
-                LOG.warn("start: Failed to create monitor {} for service {}", locator.getServiceLocatorKey(), locator.getServiceName(), t);
+            CompletableFuture<ServiceMonitor> monitorFuture = locator.getServiceMonitor(s_serviceMonitorRegistry);
+            monitorFuture.whenComplete((monitor, ex) -> {
+                m_svcMonitors.put(locator.getServiceName(), monitor);
+            });
+            if(!monitorFuture.isDone()) {
+                LOG.warn("The monitor with class {} not available yet, if the feature is installed correctly it will be available later.", locator.getServiceName());
             }
         }
     }
@@ -1027,18 +1029,15 @@ abstract public class PollerConfigManager implements PollerConfig {
     /** {@inheritDoc} */
     @Override
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators() {
-        List<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
+        List<ServiceMonitorLocator> locators = new ArrayList<>();
 
         try {
             getReadLock().lock();
             for(final Monitor monitor : monitors()) {
                 try {
-                    final Class<? extends ServiceMonitor> mc = findServiceMonitorClass(monitor);
-                    final ServiceMonitorLocator locator = new DefaultServiceMonitorLocator(monitor.getService(), mc);
+                    final ServiceMonitorLocator locator = new DefaultServiceMonitorLocator(monitor.getService(), monitor.getClassName());
                     locators.add(locator);
                     LOG.debug("Loaded monitor for service: {}, class-name: {}", monitor.getService(), monitor.getClassName());
-                } catch (final ClassNotFoundException e) {
-                    LOG.warn("Unable to load monitor for service: {}, class-name: {}: {}", monitor.getService(), monitor.getClassName(), e.getMessage());
                 } catch (ConfigObjectRetrievalFailureException e) {
                     LOG.warn("{} {}", e.getMessage(), e.getRootCause(), e);
                 }
@@ -1049,14 +1048,6 @@ abstract public class PollerConfigManager implements PollerConfig {
 
         return locators;
         
-    }
-
-    private Class<? extends ServiceMonitor> findServiceMonitorClass(final Monitor monitor) throws ClassNotFoundException {
-        final Class<? extends ServiceMonitor> mc = Class.forName(monitor.getClassName()).asSubclass(ServiceMonitor.class);
-        if (!ServiceMonitor.class.isAssignableFrom(mc)) {
-            throw new MarshallingResourceFailureException("The monitor for service: "+monitor.getService()+" class-name: "+monitor.getClassName()+" must implement ServiceMonitor");
-        }
-        return mc;
     }
 
     @Override
@@ -1079,4 +1070,8 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
+    @Override
+    public List<Monitor> getConfiguredMonitors() {
+        return m_config.getMonitors();
+    }
 }

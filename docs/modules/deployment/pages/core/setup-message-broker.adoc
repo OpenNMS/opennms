@@ -2,7 +2,7 @@
 = Set up Message Broker
 
 Distributing {page-component-title} components like Minions and Sentinel require a messaging infrastructure.
-This section describes how to set up your {page-component-title} Core instance to use an existing messaging infrasturce based on ActiveMQ or Apache Kafka.
+This section describes how to set up your {page-component-title} Core instance to use an existing messaging infrastructure based on ActiveMQ or Apache Kafka.
 
 {page-component-title} Core comes with an embedded ActiveMQ system, which by default an external network cannot reach.
 To get started quickly, this guide describes how to enable and configure the embedded ActiveMQ instance.
@@ -64,11 +64,5 @@ gRPC::
 +
 --
 include::message-broker/grpc.adoc[]
---
-
-AWS SQS::
-+
---
-include::message-broker/aws-sqs.adoc[]
 --
 ====

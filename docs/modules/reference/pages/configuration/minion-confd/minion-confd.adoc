@@ -20,7 +20,7 @@ http-url: "<http url>"
 id: "<id>"
 location: "<location>"
 ```
-Writes specified configuartion to `etc/org.opennms.minion.controller.cfg`.
+Writes specified configuration to `etc/org.opennms.minion.controller.cfg`.
 
 === User/Password
 It is not possible to supply the http or broker username/password via yaml file for configuration via confd.
@@ -30,24 +30,6 @@ It is not possible to supply the http or broker username/password via yaml file 
 org.opennms.instance.id: "<instance id>"
 ```
 Writes specified configuration to `etc/instance-id.properties`.
-
-=== AWS SQS
-```yaml
-aws:
-    aws_region: "us-east-1"
-    aws_access_key_id: "XXXXXXXXXXX"
-    aws_secret_access_key: "XXXXXXXXXXX"
-
-ipc:
-    sqs:
-        sink.DelaySeconds: 0
-        sink.MaximumMessageSize: 262144
-        sink.FifoQueue: true
-        rpc.DelaySeconds: 0
-        rpc.MaximumMessagesize: 262144
-        # Any other keys necessary can be specified here
-```
-Writes specified configuration to `etc/org.opennms.core.ipc.aws.sqs.cfg`.
 
 === Kafka RPC
 ```yaml
@@ -117,7 +99,7 @@ telemetry:
             NXOS-Listener:
                 class-name: "org.opennms.netmgt.telemetry.listeners.UdpListener"
                 parameters:
-                    # List all the parameters you wish to specifiy here
+                    # List all the parameters you wish to specify here
                     port: 50002
                 parsers:
                     # List all the parsers you wish to specify here

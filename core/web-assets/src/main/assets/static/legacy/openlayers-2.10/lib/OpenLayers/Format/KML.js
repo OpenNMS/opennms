@@ -320,7 +320,7 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
      * color and opacity or null if the color is invalid.
      *
      * Parameters: 
-     * kmlColor - {String} a kml formated color
+     * kmlColor - {String} a kml formatted color
      *
      * Returns:
      * {Object}

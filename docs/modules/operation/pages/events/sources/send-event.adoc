@@ -58,7 +58,7 @@ You can also define your own UEIs.
 
 | -p (-parameter)
 | Parameter in key=value form.
-For example, `-p 'url http://www.opennms.com/'`
+For example, `-p 'url \http://www.opennms.com/'`
 
 | -s (--service)
 | Name of the associated service
@@ -89,7 +89,7 @@ Note that parameter descriptions use the percentage sign (%) as a delimiter to m
 If a literal % sign appears in your description, you must escape it with a %.
 For example:
 
-`'testUrl https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`
+`'testUrl \https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`
 
 == Example
 
