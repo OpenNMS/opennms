@@ -80,7 +80,7 @@ const getFormattedLegendStatements = (
   for (const metric of metrics) {
     const statementsForMetric = []
     for (const statement of printStatements) {
-      if (statement.metric.split('_')[0] === metric.name as string) {
+      if (statement.metric.split('_')[0] === (metric.name as string)) {
         statementsForMetric.push(statement)
       }
     }

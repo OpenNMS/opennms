@@ -57,9 +57,9 @@ test('Format statement', () => {
   formatStatement(statement, renderer)
 
   assert.equal(renderer.texts.length, 5)
-  assert.equal(renderer.texts[0], 'Avg: ')
+  assert.equal(renderer.texts[0], '&nbsp; Avg: ')
   assert.equal(renderer.texts[1].trim(), '1.02k')
-  assert.equal(renderer.texts[4], '\n')
+  assert.equal(renderer.texts[4], '<br/>')
 })
 
 test.run()
