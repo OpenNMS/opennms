@@ -13,7 +13,7 @@ Features
 
 * **Extensive data collection**
 
-	Works with many industry-standard data collection protocols (14) with no need to write or maintain third-party plugins: SNMP, JSON, WinRM, XML, SQL, JMX, SFTP, FTP, JDBC, HTTP, HTTPS, VMware, WS-Management, Prometheus.
+	Works with many industry-standard data collection protocols with no need to write or maintain third-party plugins: SNMP, JSON, WinRM, XML, SQL, JMX, SFTP, FTP, JDBC, HTTP, HTTPS, VMware, WS-Management, Prometheus.
 
 * **Robust traffic management**
 
