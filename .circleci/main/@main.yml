@@ -1021,7 +1021,9 @@ jobs:
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
             echo "docker push ${MINION_IMAGE}:${TAG}"
             docker tag ${MINION_IMAGE}:${TAG} ${MINION_AZ_IMAGE}:${TAG}
+            export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="NbbWsX3phw2kN4ywtH5nn6uTk6sMdmSt"
             docker push ${MINION_AZ_IMAGE}:${TAG}
+            echo "pushed"
 
   minion-image-multi-arch:
     machine:
