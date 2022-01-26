@@ -180,5 +180,8 @@
     <module>karaf-health</module>
     <module>perspectivepoller</module>
     <module>openconfig</module>
+
+    <!-- Configuration Manager -->
+    <module>config</module>
   </modules>
 </project>

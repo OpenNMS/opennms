@@ -30,14 +30,10 @@ package org.opennms.netmgt.bsm.persistence;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Properties;
-
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -63,6 +59,7 @@ import org.springframework.test.context.ContextConfiguration;
     "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
     "classpath:/META-INF/opennms/applicationContext-soa.xml",
     "classpath:/META-INF/opennms/applicationContext-dao.xml",
+    "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
     "classpath*:/META-INF/opennms/component-dao.xml",
     "classpath:/META-INF/opennms/mockEventIpcManager.xml",
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
