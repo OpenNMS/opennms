@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -80,8 +80,7 @@ public class ConfigSwaggerConverterAllTest {
     @Test
     public void canConvertAllXsd() throws Exception {
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
-        Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinition();
-        Map<String, ConfigItem> items = new HashMap<>();
+        Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinitions();
         Map<String, OpenAPI> apis = new HashMap<>(defs.size());
         defs.forEach((key, def) -> {
             OpenAPI api = def.getSchema();
@@ -90,7 +89,7 @@ public class ConfigSwaggerConverterAllTest {
             }
         });
 
-        OpenAPI openapi = configSwaggerConverter.mergeAllPathsWithRemoteRef(apis, "/opennms/rest/cm/");
+        OpenAPI openapi = configSwaggerConverter.mergeAllPathsWithRemoteRef(apis, "/opennms/rest/cm");
         String yaml = configSwaggerConverter.convertOpenAPIToString(openapi, "application/yaml");
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());

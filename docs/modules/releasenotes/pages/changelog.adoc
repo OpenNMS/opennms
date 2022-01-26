@@ -2,20 +2,64 @@
 
 = Changelog
 
+[releasenotes-changelog-29.0.5]
+
+==== Release 29.0.5
+
+Release 29.0.5 contains a number of bug and security fixes, as well as a few enhancements.
+
+It include an update to the latest Log4j2 release.
+It is not believed that we are vulnerable to the Log4j issues fixed in these newer releases,
+but are updating anyway link:https://www.merriam-webster.com/dictionary/belt-and-suspenders[just to be sure].
+
+The codename for Horizon 29.0.5 is https://wikipedia.org/wiki/$$Kingfisher$$[_Kingfisher_].
+
+===== Bug
+
+* TimescaleDB extension can't added to existing opennms DB. (Issue http://issues.opennms.org/browse/NMS-13441[NMS-13441])
+* Enlinkd API response extremely slow for some nodes (Issue http://issues.opennms.org/browse/NMS-13507[NMS-13507])
+* Customer is not able to view Topology (Issue http://issues.opennms.org/browse/NMS-13851[NMS-13851])
+* Javascript security updates (December, 2021) (Issue http://issues.opennms.org/browse/NMS-13857[NMS-13857])
+* Very large node caches can cause telemetry adapters to fail on Sentinel (Issue http://issues.opennms.org/browse/NMS-13859[NMS-13859])
+* Permission check in ./install -dis flags unwriteable files in the .git directory - redux (Issue http://issues.opennms.org/browse/NMS-13860[NMS-13860])
+* CVE-2021-45105: Update to Log4j 2.17.0 (Issue http://issues.opennms.org/browse/NMS-13868[NMS-13868])
+* upgrade to log4j2 2.17.1 and pax-logging 1.11.13/2.0.14 (Issue http://issues.opennms.org/browse/NMS-13878[NMS-13878])
+
+===== Enhancement
+
+* Consolidate all IPC features into one / need conf.d changes (Issue http://issues.opennms.org/browse/NMS-13610[NMS-13610])
+* Add metrics about twin communication (Issue http://issues.opennms.org/browse/NMS-13649[NMS-13649])
+* Extend SnmpMetadataProvisioningAdapter configuration to support exact OID matches (Issue http://issues.opennms.org/browse/NMS-13842[NMS-13842])
+* Support an endpoint that allows to access parts of resources (Issue http://issues.opennms.org/browse/NMS-13863[NMS-13863])
+* Minion Kafka docs missing reference to custom.system.properties (Issue http://issues.opennms.org/browse/NMS-13885[NMS-13885])
+
+[[releasenotes-changelog-29.0.4]]
+
+== Release 29.0.4
+
+Release 29.0.4 is a re-release of 29.0.3 with additional fixes relating to
+Log4j2 vulnerabilities.
+
+The codename for Horizon 29.0.4 is https://wikipedia.org/wiki/$$Bird_(gesture)$$[_The Bird_].
+
+=== Bug
+
+* CVE-2021-45046: incomplete Log4j2 vulnerability mitigation (Issue http://issues.opennms.org/browse/NMS-13858[NMS-13858])
+
 [[releasenotes-changelog-29.0.3]]
 
-==== Release 29.0.3
+== Release 29.0.3
 
 Release 29.0.3 is an out-of-band release with a fix for the Log4j2 security issue,
 plus an enhancement to support `exclude-url` in discovery's configuration.
 
 The codename for Horizon 29.0.3 is https://wikipedia.org/wiki/$$Penguin$$[_Penguin_].
 
-===== Bug
+=== Bug
 
 * Log4j2 0-day: CVE-2021-44228 (Issue http://issues.opennms.org/browse/NMS-13850[NMS-13850])
 
-===== Enhancement
+=== Enhancement
 
 * Update VMWare import documentation regarding multiple parameters (Issue http://issues.opennms.org/browse/NMS-9889[NMS-9889])
 * Add "exclude-url" to Discoverd's configuration (Issue http://issues.opennms.org/browse/NMS-13718[NMS-13718])
@@ -181,4 +225,3 @@ The codename for Horizon 29.0.0 is https://wikipedia.org/wiki/$$Turkey_(bird)$$[
 * GeoIP Provisioning Adapter (Issue http://issues.opennms.org/browse/NMS-13704[NMS-13704])
 * Allow PostgreSQL 14 (Issue http://issues.opennms.org/browse/NMS-13714[NMS-13714])
 * Add hint for time sync on OpenNMS components (Issue http://issues.opennms.org/browse/NMS-13724[NMS-13724])
-

@@ -49,7 +49,7 @@
     <dependencies>
         <dependency>
             <groupId>org.opennms.features.api-layer</groupId>
-            <artifactId>org.opennms.features.api-layer.common</artifactId>
+            <artifactId>org.opennms.features.api-layer.dao-common</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -67,16 +67,6 @@
             <artifactId>opennms-config-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opennms.integration.api</groupId>
-            <artifactId>api</artifactId>
-            <version>${opennmsApiVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.integration.api</groupId>
-            <artifactId>common</artifactId>
-            <version>${opennmsApiVersion}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.api</artifactId>
         </dependency>
@@ -89,18 +79,8 @@
             <artifactId>opennms-config</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opennms.core.health</groupId>
-            <artifactId>org.opennms.core.health.api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-alarm-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.situation-feedback</groupId>
-            <artifactId>org.opennms.features.situation-feedback.api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -110,11 +90,6 @@
         <dependency>
             <groupId>org.opennms.features.topology</groupId>
             <artifactId>org.opennms.features.topology.api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.topologies</groupId>
-            <artifactId>org.opennms.features.topologies.service.api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

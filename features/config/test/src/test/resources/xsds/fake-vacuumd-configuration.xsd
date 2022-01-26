@@ -88,6 +88,20 @@
           </restriction>
         </simpleType>
       </attribute>
+
+      <attribute name="period-exc" use="required">
+        <annotation>
+          <documentation>how often to vacuum the database in
+            seconds</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minExclusive value="1"/>
+            <maxExclusive value="100"/>
+          </restriction>
+        </simpleType>
+      </attribute>
     </complexType>
   </element>
 

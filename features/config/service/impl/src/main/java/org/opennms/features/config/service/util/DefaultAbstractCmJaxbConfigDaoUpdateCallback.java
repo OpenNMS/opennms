@@ -36,12 +36,12 @@ import java.util.function.Consumer;
 /**
  * It is default update notifier for AbstractCmJaxbConfigDao.
  *`
- * @param <ENTITY_CLASS>
+ * @param <E> entity class
  */
-public class DefaultAbstractCmJaxbConfigDaoUpdateCallback<ENTITY_CLASS> implements Consumer<ConfigUpdateInfo> {
-    private AbstractCmJaxbConfigDao<ENTITY_CLASS> abstractCmJaxbConfigDao;
+public class DefaultAbstractCmJaxbConfigDaoUpdateCallback<E> implements Consumer<ConfigUpdateInfo> {
+    private AbstractCmJaxbConfigDao<E> abstractCmJaxbConfigDao;
 
-    public DefaultAbstractCmJaxbConfigDaoUpdateCallback(AbstractCmJaxbConfigDao<ENTITY_CLASS> abstractCmJaxbConfigDao) {
+    public DefaultAbstractCmJaxbConfigDaoUpdateCallback(AbstractCmJaxbConfigDao<E> abstractCmJaxbConfigDao) {
         this.abstractCmJaxbConfigDao = abstractCmJaxbConfigDao;
     }
 

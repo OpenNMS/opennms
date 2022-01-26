@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,85 +28,73 @@
 
 package org.opennms.features.config.dao.impl;
 
-import com.atlassian.oai.validator.report.ValidationReport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.config.dao.impl.util.JSONObjectDeserializer;
-import org.opennms.features.config.dao.impl.util.JSONObjectSerialIzer;
+import org.opennms.features.config.exception.*;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
+import java.util.*;
 
 @Component
 public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
-    private static final Logger LOG = LoggerFactory.getLogger(ConfigStoreDao.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonConfigStoreDaoImpl.class);
     public static final String CONTEXT_CONFIG = "CM_CONFIG";
     public static final String CONTEXT_SCHEMA = "CM_SCHEMA";
-    private final ObjectMapper mapper;
+    private final ObjectMapper mapper = new ObjectMapper().registerModule(new JsonOrgModule());
 
     private final JsonStore jsonStore;
 
     public JsonConfigStoreDaoImpl(JsonStore jsonStore) {
-        this.jsonStore = jsonStore;
-        mapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(JSONObject.class, new JSONObjectDeserializer());
-        module.addSerializer(JSONObject.class, new JSONObjectSerialIzer());
-        mapper.registerModule(module);
+        this.jsonStore = Objects.requireNonNull(jsonStore);
     }
 
     @Override
-    public void register(ConfigDefinition configDefinition) throws IOException {
+    public void register(ConfigDefinition configDefinition) {
         this.putConfigDefinition(configDefinition);
     }
 
     @Override
-    public Optional<Set<String>> getConfigNames() {
+    public Set<String> getConfigNames() {
         return this.getIds(CONTEXT_SCHEMA);
     }
 
-    private Optional<Set<String>> getIds(String context) {
+    private Set<String> getIds(String context) {
         Map<String, String> allMap = jsonStore.enumerateContext(context);
-        if (allMap == null || allMap.isEmpty()) {
-            return Optional.empty();
+        if (allMap == null) {
+            return Collections.emptySet();
         }
-        return Optional.of(allMap.keySet());
+        return allMap.keySet();
     }
 
     @Override
-    public Map<String, ConfigDefinition> getAllConfigDefinition() {
+    public Map<String, ConfigDefinition> getAllConfigDefinitions() {
         Map<String, ConfigDefinition> output = new HashMap<>();
-        jsonStore.enumerateContext(CONTEXT_SCHEMA).forEach((key, value) -> {
-            try {
-                output.put(key, this.deserializeConfigDefinition(value));
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        jsonStore.enumerateContext(CONTEXT_SCHEMA).forEach((key, value) ->
+                output.put(key, this.deserializeConfigDefinition(value))
+        );
         return output;
     }
 
-    private ConfigDefinition deserializeConfigDefinition(String jsonStr) throws JsonProcessingException {
-        return mapper.readValue(jsonStr, ConfigDefinition.class);
+    private ConfigDefinition deserializeConfigDefinition(String jsonStr) {
+        try {
+            return mapper.readValue(jsonStr, ConfigDefinition.class);
+        } catch (JsonProcessingException e) {
+            throw new SchemaConversionException(jsonStr, e);
+        }
     }
 
     @Override
-    public Optional<ConfigDefinition> getConfigDefinition(String configName) throws JsonProcessingException {
-        Optional<String> jsonStr = jsonStore.get(configName, CONTEXT_SCHEMA);
+    public Optional<ConfigDefinition> getConfigDefinition(String configName) {
+        var jsonStr = jsonStore.get(configName, CONTEXT_SCHEMA);
         if (jsonStr.isEmpty()) {
             return Optional.empty();
         }
@@ -114,106 +102,99 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public void updateConfigDefinition(ConfigDefinition configDefinition) throws IOException {
+    public void updateConfigDefinition(ConfigDefinition configDefinition) throws ValidationException {
         Optional<ConfigDefinition> oldDef = this.getConfigDefinition(configDefinition.getConfigName());
         if (oldDef.isEmpty()) {
-            throw new IllegalArgumentException("ConfigName not found: " + configDefinition.getConfigName());
+            throw new SchemaNotFoundException("ConfigName not found: " + configDefinition.getConfigName());
         }
         // check config are still valid for the new schema
-        Optional<ConfigData<JSONObject>> configData = this.getConfigData(configDefinition.getConfigName());
-        if(configData.isPresent()) {
-            this.validateConfigData(Optional.of(configDefinition), configData.get());
-        }
+        Optional<ConfigData<JSONObject>> configData = this.getConfigs(configDefinition.getConfigName());
+        configData.ifPresent(jsonObjectConfigData -> this.validateConfigData(configDefinition, jsonObjectConfigData));
         this.putConfigDefinition(configDefinition);
     }
 
     @Override
-    public Optional<ConfigData<JSONObject>> getConfigData(final String configName) throws IOException {
+    public Optional<ConfigData<JSONObject>> getConfigs(final String configName) {
         Optional<String> configDataJsonStr = jsonStore.get(configName, CONTEXT_CONFIG);
         if (configDataJsonStr.isEmpty()) {
             return Optional.empty();
         }
         JavaType type = mapper.getTypeFactory().constructParametricType(ConfigData.class, JSONObject.class);
-        return Optional.of(mapper.readValue(configDataJsonStr.get(), type));
+        try {
+            return Optional.of(mapper.readValue(configDataJsonStr.get(), type));
+        } catch (JsonProcessingException e) {
+            throw new ConfigConversionException(configDataJsonStr.get(), e);
+        }
     }
 
     @Override
-    public void addConfigs(String configName, ConfigData<JSONObject> configData) throws IOException {
-        Optional<ConfigData<JSONObject>> exist = this.getConfigData(configName);
+    public void addConfigs(String configName, ConfigData<JSONObject> configData) throws ValidationException {
+        Optional<ConfigData<JSONObject>> exist = this.getConfigs(configName);
         if (exist.isPresent()) {
-            throw new IllegalArgumentException("Duplicate config found for service: " + configName);
+            throw new ConfigAlreadyExistsException("Duplicate config found for service: " + configName);
         }
         this.validateConfigData(configName, configData);
         this.putConfig(configName, configData);
     }
 
     @Override
-    public void addConfig(String configName, String configId, JSONObject configObject) throws IOException {
-        Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
-        if (configData.isEmpty()) {
-            configData = Optional.of(new ConfigData<>());
-        }
-        Map<String, JSONObject> configs = configData.get().getConfigs();
+    public void addConfig(String configName, String configId, JSONObject configObject) throws ValidationException {
+        var configData = this.getConfigs(configName).orElse(new ConfigData<>());
+        Map<String, JSONObject> configs = configData.getConfigs();
         if (configs.containsKey(configId)) {
-            throw new IllegalArgumentException("Duplicate config found for configId: " + configId);
+            throw new ConfigAlreadyExistsException("Duplicate config found for configId: " + configId);
         }
-        ValidationReport report = this.validateConfig(configName, configObject);
-        if (report.hasErrors()) {
-            throw new IllegalArgumentException(mapper.writeValueAsString(report));
-        }
+        this.validateConfig(configName, configObject);
         configs.put(configId, configObject);
-        this.putConfig(configName, configData.get());
+        this.putConfig(configName, configData);
     }
 
     @Override
-    public Optional<JSONObject> getConfig(String configName, String configId) throws IOException {
-        Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
-        if (configData.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(configData.get().getConfigs().get(configId));
+    public Optional<JSONObject> getConfig(String configName, String configId) {
+        return getConfigs(configName).flatMap(configData -> Optional.ofNullable(configData.getConfigs().get(configId)));
     }
 
     @Override
-    public void updateConfig(String configName, String configId, JSONObject config) throws IOException {
-        Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
+    public void updateConfig(String configName, String configId, JSONObject config, boolean isReplace) throws ValidationException {
+        Optional<ConfigData<JSONObject>> configData = this.getConfigs(configName);
         if (configData.isEmpty()) {
-            throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
+            throw new ConfigNotFoundException("ConfigData not found configName: " + configName);
         }
         Map<String, JSONObject> configs = configData.get().getConfigs();
         if (!configs.containsKey(configId)) {
-            throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
+            throw new ConfigNotFoundException("Config not found configName: " + configName + ", configId: " + configId);
         }
-        JSONObject existingJson = configs.get(configId);
+        JSONObject configToUpdate;
+        if (isReplace) {
+            configToUpdate = config;
+            configs.put(configId, configToUpdate);
+        } else {
+            configToUpdate = configs.get(configId);
 
-        // copy all first level keys' value into existing config
-        config.keySet().forEach((key) -> {
-            existingJson.put(key, config.get(key));
-        });
-        ValidationReport report = this.validateConfig(configName, existingJson);
-        if (report.hasErrors()) {
-            throw new IllegalArgumentException(mapper.writeValueAsString(report));
+            // copy all first level keys' value into existing config
+            config.keySet().forEach(key -> configToUpdate.put(key, config.get(key)));
         }
+        this.validateConfig(configName, configToUpdate);
         this.putConfig(configName, configData.get());
     }
 
     @Override
-    public void updateConfigs(String configName, ConfigData<JSONObject> configData) throws IOException {
+    public void updateConfigs(String configName, ConfigData<JSONObject> configData) throws ValidationException {
         this.validateConfigData(configName, configData);
         this.putConfig(configName, configData);
     }
 
     @Override
-    public void deleteConfig(String configName, String configId) throws IOException {
-        Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
+    public void deleteConfig(String configName, String configId) {
+        Optional<ConfigData<JSONObject>> configData = this.getConfigs(configName);
         if (configData.isEmpty()) {
-            throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
+            throw new ConfigNotFoundException("Config not found for config " + configName + ", configId " + configId);
         }
-        if (configData.get().getConfigs().size() <= 1 ) {
-            throw new IllegalArgumentException("Deletion of the last config is not allowed. " + configName + ", configId " + configId);
+        if (configData.get().getConfigs().size() <= 1) {
+            throw new ConfigRuntimeException("Deletion of the last config is not allowed. " + configName + ", configId " + configId, null);
         }
         if (configData.get().getConfigs().remove(configId) == null) {
-            throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
+            throw new ConfigNotFoundException("Config not found for config " + configName + ", configId " + configId);
         }
         this.putConfig(configName, configData.get());
     }
@@ -225,79 +206,73 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public Optional<Map<String, JSONObject>> getConfigs(String configName) throws IOException {
-        Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
+    public Map<String, JSONObject> get(String configName) {
+        Optional<ConfigData<JSONObject>> configData = this.getConfigs(configName);
         if (configData.isEmpty()) {
-            return Optional.empty();
+            return Collections.emptyMap();
         }
-        return Optional.of(configData.get().getConfigs());
+        return configData.get().getConfigs();
     }
 
-    private void putConfigDefinition(ConfigDefinition configDefinition) throws IOException {
-        long timestamp = jsonStore.put(configDefinition.getConfigName(), mapper.writeValueAsString(configDefinition),
-                CONTEXT_SCHEMA);
-        if (timestamp < 0) {
-            throw new RuntimeException("Fail to put data in JsonStore!");
+    private void putConfigDefinition(ConfigDefinition configDefinition) {
+        try {
+            long timestamp = jsonStore.put(configDefinition.getConfigName(), mapper.writeValueAsString(configDefinition),
+                    CONTEXT_SCHEMA);
+            if (timestamp < 0) {
+                throw new ConfigIOException("Fail to put ConfigDefinition in JsonStore! configName: " + configDefinition.getConfigName(), null);
+            }
+        } catch (JsonProcessingException e) {
+            throw new SchemaConversionException("Fail to convert Definition to String! configName: " + configDefinition.getConfigName(), e);
         }
     }
 
-    private void putConfig(String configName, ConfigData<JSONObject> configData) throws IOException {
-        long timestamp = jsonStore.put(configName, mapper.writeValueAsString(configData), CONTEXT_CONFIG);
-        if (timestamp < 0) {
-            throw new RuntimeException("Fail to put data in JsonStore!");
+    private void putConfig(String configName, ConfigData<JSONObject> configData) {
+        try {
+            long timestamp = jsonStore.put(configName, mapper.writeValueAsString(configData), CONTEXT_CONFIG);
+            if (timestamp < 0) {
+                throw new ConfigIOException("Fail to put data in JsonStore! configName: " + configName, null);
+            }
+        } catch (JsonProcessingException e) {
+            throw new ConfigConversionException("Fail to convert ConfigData to String! configName: " + configName, e);
         }
     }
 
     /**
      * Validate the whole config set
+     *
      * @param configName
      * @param configData
-     * @throws IOException
+     * @throws ValidationException
      */
-    private void validateConfigData(final String configName, final ConfigData<JSONObject> configData) throws IOException {
-        this.validateConfigData(this.getConfigDefinition(configName), configData);
+    private void validateConfigData(final String configName, final ConfigData<JSONObject> configData) throws ValidationException {
+        this.getConfigDefinition(configName).ifPresentOrElse(
+                def -> this.validateConfigData(def, configData),
+                () -> {
+                    LOG.error("ConfigDefinition not found! configName: " + configName);
+                    throw new ConfigNotFoundException("ConfigDefinition not found! configName: " + configName);
+                });
     }
 
-    private void validateConfigData(final Optional<ConfigDefinition> configDefinition, final ConfigData<JSONObject> configData) throws IOException {
-        if (configDefinition.isEmpty()) {
-            LOG.error("ConfigDefinition not found!");
-            throw new RuntimeException("ConfigDefinition not found!");
-        }
-        ValidationReport finalReport = ValidationReport.empty();
-        configData.getConfigs().forEach((key, config) -> {
-            ValidationReport report = this.validateConfig(configDefinition, config);
-            if (report.hasErrors()) {
-                finalReport.merge(report);
-            }
-        });
-        if (finalReport.hasErrors()) {
-            throw new IllegalArgumentException(mapper.writeValueAsString(finalReport));
-        }
+    private void validateConfigData(final ConfigDefinition configDefinition, final ConfigData<JSONObject> configData) throws ValidationException {
+        configData.getConfigs().forEach((key, config) -> this.validateConfig(configDefinition, config));
     }
 
     /**
      * Validate a single config
+     *
      * @param configName
      * @param configObject
-     * @return
-     * @throws JsonProcessingException
      */
-    private ValidationReport validateConfig(final String configName, final JSONObject configObject) throws JsonProcessingException {
-        Optional<ConfigDefinition> configDefinition = this.getConfigDefinition(configName);
-        if (configDefinition.isEmpty()) {
-            LOG.error("ConfigDefinition not found!");
-            throw new RuntimeException("ConfigDefinition not found!");
-        }
-        ValidationReport report = configDefinition.get().validate(configObject.toString());
-        return report;
+    private void validateConfig(final String configName, final JSONObject configObject) {
+        this.getConfigDefinition(configName).ifPresentOrElse(
+                def -> this.validateConfig(def, configObject),
+                () -> {
+                    LOG.error("ConfigDefinition not found! configName: " + configName);
+                    throw new ConfigNotFoundException("ConfigDefinition not found! configName: " + configName);
+                });
     }
 
-    private ValidationReport validateConfig(final Optional<ConfigDefinition> configDefinition, final JSONObject configObject) {
-        if (configDefinition.isEmpty()) {
-            LOG.error("ConfigDefinition not found!");
-            throw new RuntimeException("ConfigDefinition not found!");
-        }
-        ValidationReport report = configDefinition.get().validate(configObject.toString());
-        return report;
+    private void validateConfig(final ConfigDefinition configDefinition, final JSONObject configObject) {
+        configDefinition.validate(configObject.toString());
     }
 }

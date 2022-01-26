@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -34,6 +34,7 @@ import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.exception.SchemaConversionException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -76,7 +77,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public Map<String, ConfigDefinition> getAllConfigDefinition() {
+    public Map<String, ConfigDefinition> getAllConfigDefinitions() {
         return null;
     }
 
@@ -96,32 +97,37 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public void registerConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
+    public void registerConfiguration(String configName, String configId, JsonAsString configObject) {
     }
 
     @Override
-    public void unregisterConfiguration(String configName, String configId) throws IOException {
+    public void unregisterConfiguration(String configName, String configId) {
 
     }
 
     @Override
-    public void updateConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
+    public void updateConfiguration(String configName, String configId, JsonAsString configObject, boolean isReplace) {
         configOptional = Optional.of(configObject.toString());
     }
 
     @Override
-    public Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException {
+    public Optional<JSONObject> getJSONConfiguration(String configName, String configId) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<String> getJSONStrConfiguration(String configName, String configId) throws IOException {
+    public Optional<String> getJSONStrConfiguration(String configName, String configId) {
         String xmlStr = this.getXmlConfiguration(configName, configId).get();
-        ConfigConverter converter = XsdHelper.getConverter(this.getRegisteredConfigDefinition(configName).get());
-        return Optional.ofNullable(converter.xmlToJson(xmlStr));
+        try {
+            ConfigConverter converter = XsdHelper.getConverter(this.getRegisteredConfigDefinition(configName).get());
+            return Optional.ofNullable(converter.xmlToJson(xmlStr));
+        } catch (IOException e) {
+            throw new SchemaConversionException("Fail to getConverter configName: " + configName, e);
+        }
+
     }
 
-    private Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
+    private Optional<String> getXmlConfiguration(String configName, String configId) {
         if (configOptional != null) {
             return configOptional;
         }
@@ -135,7 +141,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
             String xmlStr = IOUtils.toString(in, StandardCharsets.UTF_8);
             configOptional = Optional.of(xmlStr);
             LOG.debug("xmlStr: {}", xmlStr);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOG.error("FAIL TO LOAD XML: {}", configFile, e);
         }
 
@@ -143,22 +149,22 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public Optional<ConfigData<JSONObject>> getConfigData(String configName) throws IOException {
+    public Optional<ConfigData<JSONObject>> getConfigData(String configName) {
         return Optional.empty();
     }
 
     @Override
-    public Set<String> getConfigNames() throws IOException {
+    public Set<String> getConfigNames() {
         return new HashSet<>();
     }
 
     @Override
-    public void unregisterSchema(String configName) throws IOException {
+    public void unregisterSchema(String configName) {
 
     }
 
     @Override
-    public Set<String> getConfigIds(String configName) throws IOException {
+    public Set<String> getConfigIds(String configName) {
         return new HashSet<>();
     }
 }

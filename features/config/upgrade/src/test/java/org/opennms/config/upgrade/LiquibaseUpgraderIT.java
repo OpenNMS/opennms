@@ -48,6 +48,7 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
+import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -150,7 +151,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     }
 
     @Test
-    public void shouldRunChangelog() throws LiquibaseException, IOException, SQLException, JAXBException, URISyntaxException {
+    public void shouldRunChangelog() throws LiquibaseException, ValidationException, SQLException {
         try {
             assertFalse(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROPERTIES).isPresent());
 
@@ -223,12 +224,12 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     public void shouldAbortInCaseOfErrorDuringRun() throws SQLException, URISyntaxException, IOException {
         try {
             // Make sure it trigger Liquibase logic
-            PreparedStatement statement = connection.prepareStatement("TRUNCATE " + TABLE_NAME_DATABASECHANGELOG);
+            PreparedStatement statement = connection.prepareStatement("DROP TABLE IF EXISTS " + TABLE_NAME_DATABASECHANGELOG );
             statement.execute();
-            ConfigurationManagerService cm = null; // will lead to Nullpointer
+            ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class); // will lead to Exception
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
             assertThrowsException(MigrationFailedException.class,
-                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog2.xml", connection));
+                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", connection));
         } finally {
             this.db.cleanUp();
         }

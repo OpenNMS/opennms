@@ -28,85 +28,65 @@
 
 package org.opennms.smoketest.cm;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.smoketest.OpenNMSSeleniumIT;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
-public class GenericSchemaIT extends OpenNMSSeleniumIT {
+import java.io.IOException;
+
+import static io.restassured.RestAssured.preemptive;
+import static org.junit.Assert.assertTrue;
+import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD;
+import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME;
+
+public class GenericSchemaIT {
     private static final Logger LOG = LoggerFactory.getLogger(GenericSchemaIT.class);
+    private static final String CM_BASEPATH = "/opennms/rest/cm";
 
-    private HttpResponse queryUri(final String uri, final String header) throws IOException {
-        final HttpGet httpGet = new HttpGet(getBaseUrlExternal() + uri);
-        httpGet.setHeader(HttpHeaders.ACCEPT, header);
-        final HttpHost targetHost = new HttpHost(httpGet.getURI().getHost(), httpGet.getURI().getPort(), httpGet.getURI().getScheme());
-        final CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(new AuthScope(targetHost.getHostName(), targetHost.getPort()), new UsernamePasswordCredentials("admin", "admin"));
-        final AuthCache authCache = new BasicAuthCache();
-        final BasicScheme basicAuth = new BasicScheme();
-        authCache.put(targetHost, basicAuth);
-        final HttpClientContext context = HttpClientContext.create();
-        context.setCredentialsProvider(credsProvider);
-        context.setAuthCache(authCache);
-        final HttpResponse closeableHttpResponse = HttpClients.createDefault().execute(targetHost, httpGet, context);
-        System.out.println(closeableHttpResponse.getEntity());
-        return closeableHttpResponse;
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+
+    @Before
+    public void before() {
+        RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
+        RestAssured.port = stack.opennms().getWebPort();
+        RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
     }
-
 
     @Test
     public void testConfigurationLoadFromConfiguration() throws IOException {
-
-        final String uri = "/opennms/rest/cm";
-        HttpResponse configNames  = queryUri(uri, "application/json");
-        LOG.info("Checking for data loading from db for provisiond'{}'", uri);
-        HttpEntity entity = configNames.getEntity();
-        String entityBody = IOUtils.toString(entity.getContent(), StandardCharsets.UTF_8);
-        JSONArray schemaNamesList = new JSONArray(entityBody);
-        for(int i =0;i<schemaNamesList.length();i++) {
-            String schemaName=  schemaNamesList.get(i).toString().replaceAll("\"", "");
-            String schemaUri = uri + "/schema/" + schemaName;
-
-            HttpResponse schema = queryUri(schemaUri, "application/json");
-            HttpEntity schemaEntity = schema.getEntity();
-            String jsonString = EntityUtils.toString(schemaEntity);
-            JSONObject jsonObject = new JSONObject(jsonString);
-
+        RestAssured.basePath = CM_BASEPATH;
+        Response response = RestAssured.get();
+        response.then().assertThat()
+                .statusCode(200)
+                .contentType(ContentType.JSON);
+        JSONArray schemaNamesList = new JSONArray(response.getBody().print());
+        for (var schemaNameObject : schemaNamesList) {
+            LOG.info("Working on {}", schemaNameObject.toString());
+            String schemaName = schemaNameObject.toString();
+            RestAssured.basePath = CM_BASEPATH + "/schema/" + schemaName;
+            Response schemaResponse = RestAssured.given().header("accept", ContentType.JSON).when().get();
+            schemaResponse.then().assertThat()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON);
+            JSONObject jsonObject = new JSONObject(schemaResponse.getBody().print());
             JSONObject path = new JSONObject(jsonObject.get("paths").toString());
             LOG.info("path : " + path);
             JSONObject get = new JSONObject(path.get("/rest/cm/" + schemaName).toString());
             JSONObject getDetails = new JSONObject(get.get("get").toString());
             boolean responseCodeCheck = getDetails.get("responses").toString().contains("200");
             boolean tagCheck = getDetails.get("tags").toString().contains(schemaName);
-            assertEquals(true, tagCheck);
-            assertEquals(true, responseCodeCheck);
+            assertTrue(tagCheck);
+            assertTrue(responseCodeCheck);
         }
-    }
 
+    }
 }

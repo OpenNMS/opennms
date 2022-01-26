@@ -5,8 +5,8 @@ export interface State {
 }
 
 const state: State = {
-  whoAmi: { 
-    roles: ([] as string[]) 
+  whoAmi: {
+    roles: [] as string[]
   } as WhoAmIResponse
 }
 

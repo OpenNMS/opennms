@@ -2,14 +2,16 @@ import { createApp, h } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import Notifications from "@kyvg/vue3-notification"
-import "@featherds/styles"
-import "@featherds/styles/themes/open-light.css"
+
+import '@featherds/styles'
+import '@featherds/styles/themes/open-light.css'
+
+import dateFormatDirective from './directives/v-date'
 
 createApp({
   render: () => h(App)
 })
   .use(router)
   .use(store)
-  .use(Notifications)
+  .directive('date', dateFormatDirective)
   .mount('#app')

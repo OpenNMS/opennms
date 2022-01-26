@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,14 +28,10 @@
 
 package org.opennms.features.config.convert;
 
-import com.atlassian.oai.validator.report.ValidationReport;
-import org.eclipse.persistence.jpa.jpql.Assert;
 import org.hamcrest.beans.SamePropertyValuesAs;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
@@ -73,8 +69,8 @@ abstract public class CmConfigTest<T> {
 
     @Test
     public void jsonValidation() throws IOException {
-        ValidationReport report = configDefinition.validate(getJsonStr());
-        Assert.isFalse(report.hasErrors(), "It should pass validation.");
+        // It should not throw exception ValidationException
+        configDefinition.validate(getJsonStr());
     }
 
     @Test

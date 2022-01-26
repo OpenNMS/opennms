@@ -1,10 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Nodes from '@/containers/Nodes.vue'
 import NodeDetails from '@/containers/NodeDetails.vue'
-import EditNode from '../components/Common/Demo/EditNode.vue'
-import ProvisionDConfig from '../components/Configuration/ProvisionDConfig.vue'
-import RequisitionDefinitionsLayout from '../components/Configuration/RequisitionDefinitionsLayout.vue'
-import ThreadPools from '../components/Configuration/ThreadPoolForm.vue'
 import FileEditor from '@/containers/FileEditor.vue'
 import Logs from '@/containers/Logs.vue'
 
@@ -32,26 +28,26 @@ const router = createRouter({
       component: Logs
     },
     {
-      path: '/provisionDConfig',
-      name: 'provisionDConfig',
-      component: ProvisionDConfig,
+      path: '/map',
+      name: 'Map',
+      component: () => import('@/containers/Map.vue'),
       children: [
         {
           path: '',
-          name: 'requisitionDefinitionsLayout',
-          component: RequisitionDefinitionsLayout
+          name: 'MapAlarms',
+          component: () => import('@/components/Map/MapAlarmsGrid.vue')
         },
         {
-          path: '/threadPools',
-          name: 'threadPools',
-          component: ThreadPools
-        },
-        {
-          path: '/edit/:id',
-          name: 'reqDefEdit',
-          component: EditNode
+          path: 'nodes',
+          name: 'MapNodes',
+          component: () => import('@/components/Map/MapNodesGrid.vue')
         }
       ]
+    },
+    {
+      path: '/open-api',
+      name: 'OpenAPI',
+      component: () => import('@/containers/OpenAPI.vue')
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

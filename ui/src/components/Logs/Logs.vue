@@ -20,7 +20,7 @@
         :key="log"
         @click="getLog(log)"
       >
-        <span class="subtitle1">{{ Number(index) + 1 }}:&nbsp</span>
+        <span class="subtitle1">{{ Number(index) + 1 }}:&nbsp;</span>
         <span class="subtitle2">{{ log }}</span>
       </p>
     </div>
@@ -32,7 +32,7 @@ import { computed } from 'vue'
 import { useStore } from 'vuex'
 import Search from './Search.vue'
 import { FeatherIcon } from '@featherds/icon'
-import { FeatherButton } from "@featherds/button"
+import { FeatherButton } from '@featherds/button'
 import SupportCenter from '@featherds/icon/action/SupportCenter'
 
 const store = useStore()
@@ -41,7 +41,7 @@ const logs = computed(() => store.getters['logsModule/getFilteredLogs'])
 const getLog = (log: string) => store.dispatch('logsModule/getLog', log)
 
 const scrollToSelectedLog = () => {
-  const selected = document.getElementById("selected")
+  const selected = document.getElementById('selected')
   if (selected) {
     selected.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }

@@ -306,7 +306,7 @@ public abstract class JaxbUtils {
     }
 
     public static XMLFilter getXMLFilterForNamespace(final String namespace) throws SAXException {
-        XMLFilter filter = namespace == null? new SimpleNamespaceFilter("", false) : new SimpleNamespaceFilter(namespace, true);
+        XMLFilter filter = namespace == null ? new SimpleNamespaceFilter("", false) : new SimpleNamespaceFilter(namespace, true);
 
         LOG.trace("namespace filter for namesapce {}: {}", namespace, filter);
         final XMLReader xmlReader = XMLReaderFactory.createXMLReader();

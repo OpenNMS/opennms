@@ -7,28 +7,33 @@ import {
   getNodeAvailabilityPercentage
 } from './nodeService'
 
+import { getAlarms, modifyAlarm } from './alarmService'
+
+import { getGraphNodesNodes } from './graphService'
+
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { search } from './searchService'
-import { getDropdownTypes, getSchedulePeriod, getAdvancedDropdown, getProvisionDService } from './configurationService'
+import { getInfo } from './infoService'
+import { getOpenApi } from './helpService'
 
 export default {
   search,
+  getInfo,
   getNodes,
+  getAlarms,
   getEvents,
+  modifyAlarm,
   getNodeById,
   getNodeOutages,
   getNodeIfServices,
+  getGraphNodesNodes,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage,
-  getDropdownTypes,
-  getSchedulePeriod,
-  getAdvancedDropdown,
-  getProvisionDService,
   getLog,
   getLogs,
   getFile,
@@ -38,4 +43,5 @@ export default {
   getSnippets,
   getFileNames,
   getFileExtensions,
+  getOpenApi
 }

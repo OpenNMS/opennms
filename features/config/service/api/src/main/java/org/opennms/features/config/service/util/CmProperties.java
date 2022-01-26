@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,18 +28,19 @@
 
 package org.opennms.features.config.service.util;
 
-import static org.opennms.features.config.service.util.PropertiesConversionUtil.mapToJsonString;
+import org.opennms.features.config.exception.ValidationException;
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.opennms.features.config.service.api.ConfigUpdateInfo;
-import org.opennms.features.config.service.api.ConfigurationManagerService;
+import static org.opennms.features.config.service.util.PropertiesConversionUtil.mapToJsonString;
 
 /**
  * Wrapper around CM to read and write properties.
@@ -48,8 +49,6 @@ import org.opennms.features.config.service.api.ConfigurationManagerService;
  */
 public class CmProperties {
 
-    public static final String CHECK_LAST_MODIFY_STRING = "org.opennms.utils.propertiesCache.enableCheckFileModified";
-
     private Map<String, Object> properties;
     private final ConfigurationManagerService cm;
     private final ConfigUpdateInfo configIdentifier;
@@ -57,37 +56,28 @@ public class CmProperties {
     private boolean needReload = false;
 
     public CmProperties(final ConfigurationManagerService cm, ConfigUpdateInfo configIdentifier) {
-        this.cm = cm;
-        this.configIdentifier = configIdentifier;
-        boolean shouldListenToConfigChanges = Boolean.getBoolean(CHECK_LAST_MODIFY_STRING);
-        if (shouldListenToConfigChanges) {
-            // we want to be notified when config has changed
-            cm.registerReloadConsumer(configIdentifier, (ConfigUpdateInfo key) -> this.needReload = true);
-        }
-        properties = null;
+        this.cm = Objects.requireNonNull(cm);
+        this.configIdentifier = Objects.requireNonNull(configIdentifier);
+        cm.registerReloadConsumer(configIdentifier, (ConfigUpdateInfo key) -> this.needReload = true);
     }
 
     private Optional<Map<String, Object>> read() {
         Optional<Map<String, Object>> result;
-        try {
-            result = this.cm.getJSONStrConfiguration(configIdentifier.getConfigName(), configIdentifier.getConfigId())
-                    .map(PropertiesConversionUtil::jsonToMap);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        result = this.cm.getJSONStrConfiguration(configIdentifier.getConfigName(), configIdentifier.getConfigId())
+                .map(PropertiesConversionUtil::jsonToMap);
         needReload = false;
         return result;
     }
 
-    private void write() throws IOException {
+    private void write() throws ValidationException {
         Map<String, Object> entries = new HashMap<>();
         for (Map.Entry<?, ?> entry : this.properties.entrySet()) {
             entries.put(entry.getKey().toString(), entry.getValue());
         }
-        this.cm.updateConfiguration(this.configIdentifier.getConfigName(), this.configIdentifier.getConfigId(), mapToJsonString(entries));
+        this.cm.updateConfiguration(this.configIdentifier.getConfigName(), this.configIdentifier.getConfigId(), mapToJsonString(entries), false);
     }
 
-    public Map<String, Object> get() throws IOException {
+    public Map<String, Object> get() {
         lock.lock();
         try {
             if (properties == null || needReload) {
@@ -99,11 +89,9 @@ public class CmProperties {
         }
     }
 
-    public void setProperty(final String key, final Object value) throws IOException {
+    public void setProperty(final String key, final Object value) throws ValidationException {
         lock.lock();
         try {
-            // first we do get to make sure the properties are loaded
-            get();
             if (!value.equals(get().get(key))) {
                 get().put(key, value);
                 write();
@@ -113,7 +101,7 @@ public class CmProperties {
         }
     }
 
-    public Object getProperty(final String key) throws IOException {
+    public Object getProperty(final String key) {
         lock.lock();
         try {
             return get().get(key);

@@ -28,6 +28,7 @@
 
 package org.opennms.core.ipc.twin.jms.publisher;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.opentracing.References;
 import io.opentracing.Scope;
@@ -75,7 +76,7 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
 
     public static String JMS_QUEUE_NAME_HEADER = "JmsQueueName";
 
-    private CamelContext rpcCamelContext;
+    private final CamelContext rpcCamelContext;
 
     private final ExecutorService executor = Executors.newFixedThreadPool(10, threadFactory);
 
@@ -85,8 +86,9 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
     @EndpointInject(uri = "direct:sendTwinUpdate", context = "twinSinkClient")
     private Endpoint endpoint;
 
-    public JmsTwinPublisher(CamelContext camelContext, LocalTwinSubscriber twinSubscriber, TracerRegistry tracerRegistry) {
-        super(twinSubscriber, tracerRegistry);
+    public JmsTwinPublisher(CamelContext camelContext, LocalTwinSubscriber twinSubscriber,
+                            TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
+        super(twinSubscriber, tracerRegistry, metricRegistry);
         this.rpcCamelContext = camelContext;
     }
 

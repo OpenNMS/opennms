@@ -28,8 +28,7 @@
 
 package org.opennms.core.ipc.twin.jms.subscriber;
 
-import java.io.IOException;
-
+import com.codahale.metrics.MetricRegistry;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
 import org.apache.camel.Endpoint;
@@ -52,6 +51,8 @@ import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Processor {
 
     private static final String TWIN_QUEUE_NAME_FORMAT = "%s.%s";
@@ -73,8 +74,9 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
     private final CamelContext sinkCamelContext = new DefaultCamelContext();
 
     public JmsTwinSubscriber(MinionIdentity minionIdentity, Component queuingservice,
-                             TracerRegistry tracerRegistry, String debugMaxChar) {
-        super(minionIdentity, tracerRegistry);
+                             TracerRegistry tracerRegistry, MetricRegistry metricRegistry,
+                             String debugMaxChar) {
+        super(minionIdentity, tracerRegistry, metricRegistry);
         this.queuingservice = queuingservice;
         this.debugMaxChar = debugMaxChar;
     }

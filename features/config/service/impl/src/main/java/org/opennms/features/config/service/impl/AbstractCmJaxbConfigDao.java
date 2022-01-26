@@ -28,8 +28,8 @@
 
 package org.opennms.features.config.service.impl;
 
-import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.exception.ConfigConversionException;
+import org.opennms.features.config.exception.ConfigNotFoundException;
+import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -41,7 +41,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -51,18 +50,18 @@ import java.util.function.Consumer;
 /**
  * <p>Abstract AbstractCmJaxbConfigDao class.</p>
  *
- * @param <ENTITY_CLASS> Configuration class
+ * @param <E> Configuration class
  * @version $Id: $
  */
-public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
+public abstract class AbstractCmJaxbConfigDao<E> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCmJaxbConfigDao.class);
 
     @Autowired
     protected ConfigurationManagerService configurationManagerService;
 
-    private Class<ENTITY_CLASS> entityClass;
+    private Class<E> entityClass;
     private String description;
-    private ConcurrentHashMap<String, ENTITY_CLASS> lastKnownEntityMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, E> lastKnownEntityMap = new ConcurrentHashMap<>();
 
     /**
      * ConfigName use for the Config and Schema
@@ -96,16 +95,16 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      * @param description a {@link java.lang.String} object.
      * @see #getUpdateCallback()
      */
-    protected AbstractCmJaxbConfigDao(final Class<ENTITY_CLASS> entityClass, final String description) {
-        this.entityClass = entityClass;
-        this.description = description;
+    protected AbstractCmJaxbConfigDao(final Class<E> entityClass, final String description) {
+        this.entityClass = Objects.requireNonNull(entityClass);
+        this.description = Objects.requireNonNull(description);
     }
 
     /**
      * Add default callback
      */
     @PostConstruct
-    public void postConstruct() throws IOException {
+    public void postConstruct() {
         Set<String> configIds = configurationManagerService.getConfigIds(this.getConfigName());
         configIds.forEach(configId -> this.addOnReloadedCallback(configId, getUpdateCallback()));
     }
@@ -115,7 +114,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      *
      * @return ConfigObject
      */
-    public ENTITY_CLASS loadConfig() {
+    public E loadConfig() {
         return this.loadConfig(this.getDefaultConfigId());
     }
 
@@ -125,25 +124,16 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      * @param configId
      * @return ConfigObject
      */
-    public ENTITY_CLASS loadConfig(final String configId) {
+    public E loadConfig(final String configId) {
         long startTime = System.currentTimeMillis();
 
         LOG.debug("Loading {} configuration from {}", description, configId);
-        Optional<ENTITY_CLASS> configOptional;
-
-        try {
-            configOptional = configurationManagerService.getJSONStrConfiguration(this.getConfigName(), configId)
-                    .map(s -> ConfigConvertUtil.jsonToObject(s, entityClass)); // no validation since we validated already at write time
-        } catch (ConfigConversionException e) {
-            throw e;
-        } catch (IOException e) {
-            throw new ConfigConversionException(e);
-        }
-
+        Optional<E> configOptional = configurationManagerService.getJSONStrConfiguration(this.getConfigName(), configId)
+                .map(s -> ConfigConvertUtil.jsonToObject(s, entityClass)); // no validation since we validated already at write time
         if (configOptional.isEmpty()) {
-            throw new RuntimeException("NOT_FOUND: configName=" + this.getConfigName() + " configId=" + configId);
+            throw new ConfigNotFoundException("NOT_FOUND: configName: " + this.getConfigName() + " configId: " + configId);
         }
-        final ENTITY_CLASS config = configOptional.get();
+        final E config = configOptional.get();
         long endTime = System.currentTimeMillis();
         LOG.info("Loaded {} in {} ms", getDescription(), (endTime - startTime));
 
@@ -160,16 +150,17 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
     /**
      * It will the config in cache, if nothing found it will load from db.
      * <b>Please notice that, config can be different in db.</b>
+     *
      * @param configId
      * @return config
      */
-    public ENTITY_CLASS getConfig(String configId){
+    public E getConfig(String configId) {
         // cannot use computeIfAbsent, it will cause IllegalStateException
-        ENTITY_CLASS config = lastKnownEntityMap.get(configId);
-        if (config == null){
-            return this.loadConfig(configId);
+        E config = lastKnownEntityMap.get(configId);
+        if (config != null) {
+            return config;
         }
-        return lastKnownEntityMap.computeIfAbsent(configId, this::loadConfig);
+        return this.loadConfig(configId);
     }
 
     /**
@@ -177,9 +168,9 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      *
      * @param configId
      * @param config
-     * @throws IOException
+     * @throws ValidationException
      */
-    public void updateConfig(String configId, ENTITY_CLASS config) throws IOException {
+    public void updateConfig(String configId, E config) throws ValidationException {
         this.updateConfig(configId, ConfigConvertUtil.objectToJson(config));
     }
 
@@ -188,24 +179,29 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      *
      * @param configId
      * @param jsonConfigString
-     * @throws IOException
+     * @throws ValidationException
      */
-    public void updateConfig(String configId, String jsonConfigString) throws IOException {
-        configurationManagerService.updateConfiguration(this.getConfigName(), configId, new JsonAsString(jsonConfigString));
+    public void updateConfig(String configId, String jsonConfigString) throws ValidationException {
+        this.updateConfig(configId, jsonConfigString, false);
     }
+
+    public void updateConfig(String configId, String jsonConfigString, boolean isReplace) throws ValidationException {
+        configurationManagerService.updateConfiguration(this.getConfigName(), configId, new JsonAsString(jsonConfigString), isReplace);
+    }
+
 
     /**
      * it will update the default config
      *
      * @param configJsonStr
-     * @throws IOException
+     * @throws ValidationException
      * @see #updateConfig(String, String)
      */
-    public void updateConfig(String configJsonStr) throws IOException {
+    public void updateConfig(String configJsonStr) throws ValidationException {
         this.updateConfig(this.getDefaultConfigId(), configJsonStr);
     }
 
-    public void updateConfig(ENTITY_CLASS config) throws IOException {
+    public void updateConfig(E config) throws ValidationException {
         this.updateConfig(this.getDefaultConfigId(), config);
     }
 
