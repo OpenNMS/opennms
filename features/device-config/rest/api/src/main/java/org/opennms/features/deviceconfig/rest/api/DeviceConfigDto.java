@@ -52,16 +52,6 @@ public class DeviceConfigDto {
         this.createdTime = createdTime;
     }
 
-    public DeviceConfigDto(DeviceConfig deviceConfig) {
-        this.id = deviceConfig.getId();
-        this.ipInterfaceId = deviceConfig.getIpInterface().getId();
-        this.version = deviceConfig.getVersion();
-        this.config = deviceConfig.getConfig();
-        this.encoding = deviceConfig.getEncoding();
-        this.deviceType = deviceConfig.getDeviceType();
-        this.createdTime = deviceConfig.getCreatedTime();
-    }
-
     public long getId() {
         return id;
     }

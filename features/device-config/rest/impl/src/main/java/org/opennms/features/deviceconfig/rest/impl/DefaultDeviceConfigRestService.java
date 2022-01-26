@@ -91,7 +91,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         var criteria = criteriaBuilder.toCriteria();
 
         var deviceConfigs = deviceConfigDao.findMatching(criteria);
-        var dtos = deviceConfigs.stream().map(DeviceConfigDto::new).collect(Collectors.toList());
+        var dtos = deviceConfigs.stream().map(DefaultDeviceConfigRestService::deviceConfigDto).collect(Collectors.toList());
 
         if (limit != null || offset != null) {
             criteria.setLimit(null);
@@ -110,11 +110,23 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     @Override
     public DeviceConfigDto getDeviceConfig(long id) {
         var dc = deviceConfigDao.get(id);
-        return new DeviceConfigDto(dc);
+        return deviceConfigDto(dc);
     }
 
     @Override
     public void deleteDeviceConfig(long id) {
         deviceConfigDao.delete(id);
+    }
+
+    private static DeviceConfigDto deviceConfigDto(DeviceConfig deviceConfig) {
+        return new DeviceConfigDto(
+                deviceConfig.getId(),
+                deviceConfig.getIpInterface().getId(),
+                deviceConfig.getVersion(),
+                deviceConfig.getConfig(),
+                deviceConfig.getEncoding(),
+                deviceConfig.getDeviceType(),
+                deviceConfig.getCreatedTime()
+        );
     }
 }
