@@ -76,7 +76,7 @@ const options = [
   { label: 'Last 4 hours', time: { hours: '4' } },
   { label: 'Last 8 hours', time: { hours: '5' } },
   { label: 'Last 12 hours', time: { hours: '12' } },
-  { label: 'Last day', time: { days: '1' } },
+  { label: 'Last day', time: { hours: '24' } },
   { label: 'Last week', time: { days: '7' } },
   { label: 'Last month', time: { months: '1' } },
   { label: 'Last year', time: { years: '1' } }

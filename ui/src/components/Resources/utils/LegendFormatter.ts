@@ -61,7 +61,7 @@ const getFormattedLegendStatements = (
             renderer.texts.push(text)
           },
           drawNewline: () => {
-            renderer.texts.push('\n')
+            renderer.texts.push('</br>')
           }
         }
 
@@ -212,7 +212,7 @@ const tokenizeStatement = (value: string) => {
     numTokensWithType(TOKENS.Unit) === 0 &&
     tokens[tokens.length - 1].type === TOKENS.Lf
   ) {
-    stack.push(' ')
+    stack.push('&nbsp;')
   }
 
   // Convert any remaining characters on the stack to a text token
@@ -226,23 +226,16 @@ const formatStatement = (statement: PrintStatement, renderer: Renderer) => {
   const tokens = tokenizeStatement(statement.format)
   // Used to store the unit symbol from the last LF statement, we need this in the following UNIT statement
 
-  let lastSymbol = ''
-
   for (const token of tokens) {
     if (token.type === TOKENS.Text) {
-      if (token.value) renderer.drawText(token.value)
+      if (token.value) renderer.drawText('&nbsp; ' + token.value)
     } else if (token.type === TOKENS.Newline) {
       renderer.drawNewline()
     } else if (token.type === TOKENS.Unit) {
-      if (lastSymbol === '') {
-        lastSymbol = ' '
-      }
-
-      renderer.drawText(lastSymbol + ' ')
+      renderer.drawText('&nbsp;')
     } else if (token.type === TOKENS.Lf) {
       const value = statement.value
       let scaledValue: string | number = value
-      lastSymbol = ''
       let format = ''
 
       if (token.length !== null) {

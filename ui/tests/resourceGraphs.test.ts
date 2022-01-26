@@ -44,7 +44,7 @@ test('Format statement', () => {
       renderer.texts.push(text)
     },
     drawNewline: () => {
-      renderer.texts.push('\n')
+      renderer.texts.push('<br/>')
     }
   }
 

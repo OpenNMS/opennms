@@ -16,11 +16,16 @@
         <FeatherTabPanel>
           <div class="canvas-wrapper">
             <canvas :id="definition"></canvas>
+            <div ref="legendRef" class="lc" :id="`${definition}-lc`"></div>
           </div>
         </FeatherTabPanel>
         <FeatherTabPanel>
           <div class="canvas-wrapper" v-if="graphData">
-            <GraphDataTable :convertedGraphData="convertedGraphDataRef" :graphData="graphData" />
+            <GraphDataTable
+              :definition="definition"
+              :convertedGraphData="convertedGraphDataRef"
+              :graphData="graphData"
+            />
           </div>
         </FeatherTabPanel>
       </FeatherTabContainer>
@@ -35,9 +40,11 @@ import GraphDataTable from './GraphDataTable.vue'
 import { ConvertedGraphData, GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph, StartEndTime } from '@/types'
 import { onMounted, ref, computed, PropType, watch } from 'vue'
 import { useStore } from 'vuex'
+import { useElementSize } from '@vueuse/core'
 import { ChartOptions, TitleOptions, ChartData } from 'chart.js'
 import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
+import HtmlLegendPlugin from './plugins/HtmlLegendPlugin'
 import { format } from 'd3'
 import { FeatherButton } from '@featherds/button'
 import {
@@ -85,16 +92,22 @@ const convertedGraphDataRef = ref<ConvertedGraphData>({
   properties: {},
 })
 let chart: any = {}
+const legendRef = ref()
+const { height } = useElementSize(legendRef)
 const yAxisFormatter = format('.3s')
+
+const legendHeight = computed(() => height.value + 'px')
 
 const options = computed<ChartOptions>(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
+    htmlLegend: {
+      // ID of the container to put the legend in
+      containerID: `${props.definition}-lc`,
+    },
     legend: {
-      display: true,
-      position: 'bottom',
-      align: 'start'
+      display: false
     },
     title: {
       display: true,
@@ -122,7 +135,13 @@ const options = computed<ChartOptions>(() => ({
       ticks: {
         callback: function (value) {
           return yAxisFormatter(value as number)
-        }
+        },
+        maxTicksLimit: 8
+      }
+    },
+    x: {
+      ticks: {
+        maxTicksLimit: 12
       }
     }
   }
@@ -161,8 +180,12 @@ const getDatasetsForColumn = (index: number, columnValues: number[], datasetLabe
         } : false,
         label: datasetLabelObj.statement,
         data: columnValues,
+        borderColor: obj.color,
         backgroundColor: obj.color,
-        order: convertedGraphDataRef.value.series.length - index
+        radius: 0,
+        hitRadius: 5,
+        hoverRadius: 6,
+        order: convertedGraphDataRef.value.series.length - index,
       })
     }
   }
@@ -189,10 +212,9 @@ const chartData = computed<ChartData<any>>(() => {
 })
 
 const getGraphMetricsPayload = (source: Metric[]): GraphMetricsPayload => {
-  const resolution = 1000
   const start = props.time.startTime as number * 1000
   const end = props.time.endTime as number * 1000
-  const step = Math.floor((end - start) / resolution)
+  const step = Math.floor((end - start) / 1000)
   const expression = []
 
   const metricsWithExpressions = source.filter((metric) => Boolean(metric.expression))
@@ -256,7 +278,8 @@ const render = async (update?: boolean) => {
       chart = new Chart(ctx, {
         type: 'line',
         data: chartData.value,
-        options: options.value
+        options: options.value,
+        plugins: [HtmlLegendPlugin]
       })
     }
   } catch (error) {
@@ -271,21 +294,26 @@ onMounted(() => render())
 </script>
   
 <style scoped lang="scss">
+@import "@featherds/styles/mixins/typography";
 .container {
   position: relative;
 }
 .canvas-wrapper {
   display: block;
-  height: 320px;
+  height: 370px;
 }
 .graph-data-tabs {
   margin-top: 30px;
+  margin-bottom: v-bind(legendHeight);
 }
 .single-graph-btn {
   position: absolute;
   top: 12px;
   right: 70px;
   z-index: 1;
+}
+.lc {
+  @include body-small
 }
 </style>
 

@@ -5,7 +5,7 @@
       @update:modelValue="valueDisplayHandler"
       class="raw-checkbox"
     >Raw values</FeatherCheckbox>
-    <table summary="Graph values">
+    <table summary="Graph values" :id="`${definition}-table`" @dblclick="highlightTableText">
       <thead>
         <tr>
           <th class="time-column" scope="col">Date/Time</th>
@@ -53,6 +53,10 @@ const props = defineProps({
   convertedGraphData: {
     required: true,
     type: Object as PropType<ConvertedGraphData>
+  },
+  definition: {
+    required: true,
+    type: String
   }
 })
 
@@ -75,6 +79,20 @@ const getColumnFromMetricName = (metricName: string): number[] => {
 }
 
 const valueDisplayHandler = () => displayRawValues.value = !displayRawValues.value
+
+const highlightTableText = () => {
+  const table = document.getElementById(`${props.definition}-table`)
+
+  if (table) {
+    const selection = window.getSelection()
+    const range = document.createRange()
+    range.selectNodeContents(table)
+    if (selection) {
+      selection.removeAllRanges()
+      selection.addRange(range)
+    }
+  }
+}
 </script>
 
 <style lang="scss">
