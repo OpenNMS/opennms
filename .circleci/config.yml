@@ -57,6 +57,8 @@ workflows:
         - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
     jobs:
       - trigger-path-filtering:
+          empty_check: trigger-coverage-api
+          empty_action: trigger-coverage
           base-revision: << pipeline.git.branch >>
           mapping: |
             .*                trigger-coverage true
@@ -94,6 +96,11 @@ jobs:
     docker:
       - image: cimg/python:3.10.1
     parameters:
+      empty_check:
+        default: trigger-prebuild
+        type: string
+      empty_action:
+        default: trigger-build
       base-revision:
         default: main
         description: The revision to compare the current one against for the purpose of determining changed files.
@@ -199,11 +206,8 @@ jobs:
       - run:
           name: check for empty trigger config
           command: |
-            if [ "$(grep -c trigger-coverage-api /tmp/pipeline-parameters.json)" -ne 0 ]; then
-              if [ "$(grep -c trigger-prebuild /tmp/pipeline-parameters.json)" -eq 0 ]; then
-                # this can happen in the case of merges or other similar "empty" commits
-                echo '{ "trigger-prebuild": false, "trigger-build": true }' > /tmp/pipeline-parameters.json
-              fi
+            if [ "$(grep -c << parameters.empty_check >> /tmp/pipeline-parameters.json)" -eq 0 ]; then
+              echo '{ "trigger-prebuild": false, "<< parameters.empty_action >>": true }' > /tmp/pipeline-parameters.json
             fi
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
