@@ -30,7 +30,8 @@
               <!-- org.opennms.core.utils.*;version="${project.version}", -->
               org.opennms.core.utils.url.*;version="${project.version}",
               org.opennms.core.utils.http.*;version="${project.version}",
-              org.opennms.core.utils.jexl.*;version="${project.version}"
+              org.opennms.core.utils.jexl.*;version="${project.version}",
+              org.opennms.core.utils.properties.*;version="${project.version}"
             </Export-Package>
           </instructions>
         </configuration>
