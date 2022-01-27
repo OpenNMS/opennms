@@ -2,7 +2,7 @@
 = Thresholding flow applications
 
 Flows are categorized in applications using the <<flows/classification-engine.adoc#ga-flow-support-classification-engine, Classification Engine>>.
-OpenNMS supports to sum up bytesIn/bytesOut data of flow records based on these Flow applications.
+OpenNMS supports summing up the bytesIn/bytesOut data of flow records based on these flow applications.
 Users can define thresholds on this data to generate alarms when the amount of traffic violates these thresholds.
 
 == Configure thresholding for flow applications

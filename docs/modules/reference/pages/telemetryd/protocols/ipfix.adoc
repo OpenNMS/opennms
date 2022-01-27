@@ -167,7 +167,7 @@ Received flows are decoded from the messages into the canonical flow format and 
 | Default
 
 | applicationDataCollection
-| Enables data-collection of bytesIn/bytesOut based on flow applications.
+| Enables data collection of bytesIn/bytesOut based on flow applications.
 | false
 
 | applicationThresholding
