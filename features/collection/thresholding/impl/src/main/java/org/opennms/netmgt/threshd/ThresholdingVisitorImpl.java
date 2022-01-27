@@ -39,7 +39,6 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.opennms.netmgt.threshd.api.ThresholdingVisitor;
@@ -86,7 +85,7 @@ public class ThresholdingVisitorImpl extends AbstractCollectionSetVisitor implem
     
     private final Long m_sequenceNumber;
 
-    protected ThresholdingVisitorImpl(ThresholdingSetImpl thresholdingSet, ResourceStorageDao resourceStorageDao,
+    protected ThresholdingVisitorImpl(ThresholdingSetImpl thresholdingSet,
                                       ThresholdingEventProxy eventProxy, Long sequenceNumber) {
         m_thresholdingSet = thresholdingSet;
         m_thresholdingEventProxy = eventProxy;

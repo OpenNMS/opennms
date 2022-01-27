@@ -31,8 +31,6 @@ package org.opennms.netmgt.threshd;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
@@ -48,10 +46,6 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
 
     protected final ThresholdingSessionKey sessionKey;
 
-    protected final ResourceStorageDao resourceStorageDao;
-
-    protected final RrdRepository rrdRepository;
-
     private ServiceParameters serviceParameters;
     
     private final BlobStore blobStore;
@@ -60,13 +54,11 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
     
     private final ThresholdStateMonitor thresholdStateMonitor;
 
-    public ThresholdingSessionImpl(ThresholdingServiceImpl service, ThresholdingSessionKey sessionKey, ResourceStorageDao resourceStorageDao, RrdRepository rrdRepository,
+    public ThresholdingSessionImpl(ThresholdingServiceImpl service, ThresholdingSessionKey sessionKey,
                                    ServiceParameters serviceParams, BlobStore blobStore, boolean isDistributed,
                                    ThresholdStateMonitor thresholdStateMonitor) {
         this.service = service;
         this.sessionKey = sessionKey;
-        this.resourceStorageDao = resourceStorageDao;
-        this.rrdRepository = rrdRepository;
         this.serviceParameters = serviceParams;
         this.blobStore = blobStore;
         this.isDistributed = isDistributed;
@@ -91,14 +83,6 @@ public class ThresholdingSessionImpl implements ThresholdingSession {
     @Override
     public BlobStore getBlobStore() {
         return blobStore;
-    }
-
-    public ResourceStorageDao getResourceDao() {
-        return resourceStorageDao;
-    }
-
-    public RrdRepository getRrdRepository() {
-        return rrdRepository;
     }
 
     public ServiceParameters getServiceParameters() {

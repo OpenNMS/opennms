@@ -58,8 +58,6 @@ import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.threshd.FilterOperator;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
 import org.opennms.netmgt.dao.api.IfLabel;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
@@ -80,13 +78,10 @@ public class ThresholdingSetImpl implements ThresholdingSet {
     protected final int m_nodeId;
     protected final String m_hostAddress;
     protected final String m_serviceName;
-    protected final RrdRepository m_repository;
 
     protected ThresholdsDao m_thresholdsDao;
 
     protected ThresholdingEventProxy m_eventProxy;
-
-    protected ResourceStorageDao m_resourceStorageDao;
 
     private boolean m_initialized = false;
     private boolean m_hasThresholds = false;
@@ -103,7 +98,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
     private final IfLabel m_ifLabelDao;
     private final EntityScopeProvider m_entityScopeProvider;
 
-    public ThresholdingSetImpl(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao,
+    public ThresholdingSetImpl(int nodeId, String hostAddress, String serviceName, ServiceParameters svcParams,
                                ThresholdingEventProxy eventProxy, ThresholdingSession thresholdingSession, ReadableThreshdDao threshdDao,
                                ReadableThresholdingDao thresholdingDao, ReadablePollOutagesDao pollOutagesDao,
                                IfLabel ifLabelDao, EntityScopeProvider entityScopeProvider)
@@ -111,9 +106,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         m_nodeId = nodeId;
         m_hostAddress = (hostAddress == null ? null : hostAddress.intern());
         m_serviceName = (serviceName == null ? null : serviceName.intern());
-        m_repository = repository;
         m_svcParams = svcParams;
-        m_resourceStorageDao = resourceStorageDao;
         m_eventProxy = eventProxy;
         m_thresholdingSession = Objects.requireNonNull(thresholdingSession);
         m_threshdDao = Objects.requireNonNull(threshdDao);
@@ -540,8 +533,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
             return new LinkedList<>();
         }
         CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(collectionTimestamp, m_nodeId,
-                m_hostAddress, m_serviceName, m_repository, resource, attributesMap, m_resourceStorageDao,
-                m_ifLabelDao, sequenceNumber);
+                m_hostAddress, m_serviceName, resource, attributesMap, m_ifLabelDao, sequenceNumber);
         resourceWrapper.setCounterReset(m_counterReset);
         return Collections.unmodifiableList(applyThresholds(resourceWrapper, attributesMap));
     }

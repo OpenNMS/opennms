@@ -182,7 +182,7 @@ public class CollectdIntegrationTest {
 
         ThresholdingService mockThresholdingService = m_mockUtils.createMock(ThresholdingService.class);
         ThresholdingSession mockThresholdingSession = m_mockUtils.createMock(ThresholdingSession.class);
-        EasyMock.expect(mockThresholdingService.createSession(EasyMock.anyInt(), EasyMock.anyString(), EasyMock.anyString(), EasyMock.anyObject(),
+        EasyMock.expect(mockThresholdingService.createSession(EasyMock.anyInt(), EasyMock.anyString(), EasyMock.anyString(),
                                                               EasyMock.anyObject())).andReturn(mockThresholdingSession);
         m_collectd.setThresholdingService(mockThresholdingService);
 
