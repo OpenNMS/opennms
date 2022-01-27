@@ -70,6 +70,8 @@ workflows:
         - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
     jobs:
       - trigger-path-filtering:
+          empty_check: trigger-prebuild
+          empty_action: trigger-build
           base-revision: << pipeline.git.branch >>
           mapping: |
             .*                trigger-coverage false
