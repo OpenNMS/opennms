@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,8 +67,8 @@ public abstract class Discovery implements ReadyRunnable {
      * as the collection point. The collection does not occur until the
      * <code>run</code> method is invoked.
      * 
-     * @param nodeid
-     * @param config
+     * @param interval
+     * @param initial
      *            The SnmpPeer object to collect from.
      */
     public Discovery(long interval, long initial) {
@@ -110,7 +110,7 @@ public abstract class Discovery implements ReadyRunnable {
      * getScheduler
      * </p>
      * 
-     * @return a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler} object.
+     * @return a {@link org.opennms.netmgt.scheduler.LegacyScheduler} object.
      */
     public LegacyScheduler getScheduler() {
         return m_scheduler;
@@ -122,7 +122,7 @@ public abstract class Discovery implements ReadyRunnable {
      * </p>
      * 
      * @param scheduler
-     *            a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler}
+     *            a {@link org.opennms.netmgt.scheduler.LegacyScheduler}
      *            object.
      */
     public void setScheduler(LegacyScheduler scheduler) {

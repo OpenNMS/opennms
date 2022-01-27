@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.config;
 
-
-import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -43,33 +41,31 @@ import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @version $Id: $
  */
-abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao<EnlinkdConfiguration> implements EnhancedLinkdConfig {
-    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
-    private final Lock m_readLock = m_globalLock.readLock();
-    private final Lock m_writeLock = m_globalLock.writeLock();
+public abstract class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao<EnlinkdConfiguration> implements EnhancedLinkdConfig {
+    private final ReadWriteLock globalLock = new ReentrantReadWriteLock();
+    private final Lock readLock = globalLock.readLock();
+    private final Lock writeLock = globalLock.writeLock();
 
     /**
      * Object containing all EnhancedLinkd-configuration objects parsed from the XML
      * file
      */
-    protected static EnlinkdConfiguration m_config;
+    protected static EnlinkdConfiguration config;
 
     /**
      * <p>Constructor for LinkdConfigManager.</p>
      *
-     * @param stream a {@link java.io.InputStream} object.
-     * @throws java.io.IOException if any.
      */
-    public EnhancedLinkdConfigManager() {
+    protected EnhancedLinkdConfigManager() {
         super(EnlinkdConfiguration.class ,"Enlinkd-Configuration");
     }
 
     public Lock getReadLock() {
-        return m_readLock;
+        return readLock;
     }
 
     public Lock getWriteLock() {
-        return m_writeLock;
+        return writeLock;
     }
 
 
@@ -81,7 +77,7 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
     public EnlinkdConfiguration getConfiguration() {
         getReadLock().lock();
         try {
-            return m_config;
+            return config;
         } finally {
             getReadLock().unlock();
         }
@@ -94,7 +90,7 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
      * @return a boolean.
      */
     public boolean useCdpDiscovery() {
-        if (m_config.getUseCdpDiscovery() != null) return m_config.getUseCdpDiscovery();
+        if (config.getUseCdpDiscovery() != null) return config.getUseCdpDiscovery();
         return true;
     }
 
@@ -104,7 +100,7 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
      * @return a boolean.
      */
     public boolean useBridgeDiscovery() {
-        if (m_config.getUseBridgeDiscovery() != null) return m_config.getUseBridgeDiscovery();
+        if (config.getUseBridgeDiscovery() != null) return config.getUseBridgeDiscovery();
         return true;
     }
 
@@ -114,7 +110,7 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
      * @return a boolean.
      */
     public boolean useLldpDiscovery() {
-        if (m_config.getUseLldpDiscovery() != null) return m_config.getUseLldpDiscovery();
+        if (config.getUseLldpDiscovery() != null) return config.getUseLldpDiscovery();
         return true;
     }
 
@@ -124,7 +120,7 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
      * @return a boolean.
      */
     public boolean useOspfDiscovery() {
-        if (m_config.getUseOspfDiscovery() != null) return m_config.getUseOspfDiscovery();
+        if (config.getUseOspfDiscovery() != null) return config.getUseOspfDiscovery();
         return true;
     }
 
@@ -134,28 +130,28 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
      * @return a boolean.
      */
     public boolean useIsisDiscovery() {
-        if (m_config.getUseIsisDiscovery() != null) return m_config.getUseIsisDiscovery();
+        if (config.getUseIsisDiscovery() != null) return config.getUseIsisDiscovery();
         return true;
     }
 
     public boolean disableBridgeVlanDiscovery() {
-        return Boolean.TRUE.equals(m_config.getDisableBridgeVlanDiscovery());
+        return Boolean.TRUE.equals(config.getDisableBridgeVlanDiscovery());
     }
 
     public long getInitialSleepTime() {
-        return m_config.getInitialSleepTime();
+        return config.getInitialSleepTime();
     }
 
     public long getRescanInterval() {
-        return m_config.getRescanInterval();
+        return config.getRescanInterval();
     }
 
     public long getBridgeTopologyInterval() {
-        return m_config.getBridgeTopologyInterval();
+        return config.getBridgeTopologyInterval();
     }
 
     public long getTopologyInterval() {
-        return m_config.getTopologyInterval();
+        return config.getTopologyInterval();
     }
 
 
@@ -165,17 +161,17 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
      * @return a int.
      */
     public int getThreads() {
-        if (m_config.getThreads() != null) return m_config.getThreads();
+        if (config.getThreads() != null) return config.getThreads();
         return 5;
     }
 
     public int getMaxBft() {
-        if (m_config.getMaxBft() != null) return m_config.getMaxBft();
+        if (config.getMaxBft() != null) return config.getMaxBft();
         return 100;
     }
 
     public int getDiscoveryBridgeThreads() {
-        if (m_config.getDiscoveryBridgeThreads() != null) return m_config.getDiscoveryBridgeThreads();
+        if (config.getDiscoveryBridgeThreads() != null) return config.getDiscoveryBridgeThreads();
         return 1;
     }
 }

@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * This class is the main repository for WMI configuration information used by
  * the capabilities daemon. When this class is loaded it reads the WMI
  * configuration into memory, and uses the configuration to find the
- * {@link org.opennms.protocols.wmi.WmiAgentConfig WmiAgentConfig} objects for specific
+ * {@link org.opennms.netmgt.config.wmi.WmiAgentConfig WmiAgentConfig} objects for specific
  * addresses. If an address cannot be located in the configuration then a
  * default peer instance is returned to the caller.
  *
@@ -114,11 +114,6 @@ public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
     /**
      * Reload the config from the default config file
      *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be
-     *                read/loaded
-     * @throws java.io.IOException
-     *             if any.
      */
     public void reload() {
         this.m_config = this.loadConfig(this.getDefaultConfigId());
@@ -309,7 +304,7 @@ public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
      * <p>getAgentConfig</p>
      *
      * @param agentInetAddress a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.protocols.wmi.WmiAgentConfig} object.
+     * @return a {@link org.opennms.netmgt.config.wmi.WmiAgentConfig} object.
      */
     public synchronized WmiAgentConfig getAgentConfig(InetAddress agentInetAddress) {
 

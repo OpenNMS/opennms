@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,12 +36,12 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
 import org.opennms.features.config.exception.ConfigConversionException;
+import org.opennms.features.config.exception.ConfigRuntimeException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
@@ -72,9 +72,9 @@ public class ImportConfiguration extends AbstractCmChange {
 
     private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
     private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
-    private final static String CONFIG_ID = "default";
 
     private String schemaId;
+    private String configId;
     private String filePath;
     private Path archivePath;
     private Path etcFile = null; // user defined file
@@ -133,29 +133,34 @@ public class ImportConfiguration extends AbstractCmChange {
 
     @Override
     public String getConfirmationMessage() {
-        return String.format("Imported configuration from %s with id=default for schema=%s", this.filePath, this.schemaId);
+        return String.format("Imported configuration from %s with id=%s for schema=%s", this.filePath, this.configId, this.schemaId);
     }
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
         return new SqlStatement[] {
                 new GenericCmStatement((ConfigurationManagerService m) -> {
-                    LOG.info("Importing configuration from {} with id=default for schema={}", this.filePath, this.schemaId);
+                    LOG.info("Importing configuration from {} with id={} for schema={}", this.filePath, this.configId, this.schemaId);
                     try {
-                        Optional<ConfigDefinition> configDefinition = m.getRegisteredConfigDefinition(this.schemaId);
+                        ConfigDefinition configDefinition = m.getRegisteredConfigDefinition(this.schemaId).get();
+
+                        if (!configDefinition.getAllowMultiple() && !ConfigDefinition.DEFAULT_CONFIG_ID.equals(this.getConfigId())) {
+                            throw new IllegalArgumentException(String.format("For the '%s' only one configuration can be provided (configId='%s')", this.schemaId, ConfigDefinition.DEFAULT_CONFIG_ID));
+                        }
 
                         String fileType = FilenameUtils.getExtension(this.filePath);
                         JsonAsString configObject;
                         if("xml".equalsIgnoreCase(fileType)) {
-                            configObject = new XmlToJson(asString(this.configResource), configDefinition.get()).getJson();
+                            configObject = new XmlToJson(asString(this.configResource), configDefinition).getJson();
                         } else if("cfg".equalsIgnoreCase(fileType)) {
-                            ConfigItem schema = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, "", configDefinition.get().getSchema()).getRootConfig();
+                            // TODO: Patrick: adopt builder to make this easier
+                            ConfigItem schema = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, "", configDefinition.getSchema()).getRootConfig();
                             configObject = new PropertiesToJson(this.configResource.getInputStream(), schema).getJson();
                         } else {
                             throw new ConfigConversionException(String.format("Unknown file type: '%s'", fileType));
                         }
-                        m.registerConfiguration(this.schemaId, CONFIG_ID, configObject);
-                        LOG.info("Configuration with configName={} and configId=default imported.", this.schemaId);
+                        m.registerConfiguration(this.schemaId, this.configId, configObject);
+                        LOG.info("Configuration with id={} imported.", this.configId);
                         if(etcFile != null) {
                             // we imported a user defined config file => move to archive
                             Path archiveFile = Path.of(this.archivePath + "/" + etcFile.getFileName());
@@ -163,7 +168,7 @@ public class ImportConfiguration extends AbstractCmChange {
                             LOG.info("Configuration file {} moved to {}", etcFile, this.archivePath);
                         }
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        throw new ConfigRuntimeException("Error in generateStatements.", e);
                     }
                 })
         };
@@ -181,6 +186,14 @@ public class ImportConfiguration extends AbstractCmChange {
 
     public void setSchemaId(String schemaId) {
         this.schemaId = schemaId;
+    }
+
+    public String getConfigId() {
+        return configId == null ? ConfigDefinition.DEFAULT_CONFIG_ID : configId;
+    }
+
+    public void setConfigId(String configId) {
+        this.configId = configId;
     }
 
     public String getFilePath() {

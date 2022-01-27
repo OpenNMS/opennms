@@ -80,7 +80,7 @@
     <changeSet author="tmohanta" id="1.0-register-schema-wmi">
         <cm:registerSchema id="wmi"/>
         <cm:importSchemaFromXsd id="wmi" xsdFileName="wmi-config.xsd" xsdFileHash="94eec2289088d1bb2654adf382f8120624edfccd4517dca20e304b2fac614111" rootElement="wmi-config"/>
-        <cm:importConfig schemaId="wmi" configId="default" filePath="wmi-config.xml"/>
+        <cm:importConfig schemaId="wmi" filePath="wmi-config.xml"/>
     </changeSet>
 
     <!--TODO check which schemas can have multiple configurations-->
