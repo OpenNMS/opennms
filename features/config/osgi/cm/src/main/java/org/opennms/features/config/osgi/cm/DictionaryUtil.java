@@ -45,7 +45,7 @@ public class DictionaryUtil {
                 .toMap()
                 .entrySet()
                 .stream()
-                .filter(e -> e.getValue()!=null) // remove null values => not allowed in dictionary
+                .filter(e -> e.getValue() != null) // remove null values => not allowed in dictionary
                 .forEach(e -> props.put(e.getKey(), e.getValue()));
         return props;
     }

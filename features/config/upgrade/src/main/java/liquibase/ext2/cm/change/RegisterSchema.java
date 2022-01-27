@@ -28,13 +28,6 @@
 
 package liquibase.ext2.cm.change;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-
-import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
@@ -42,15 +35,18 @@ import liquibase.exception.ValidationErrors;
 import liquibase.ext2.cm.database.CmDatabase;
 import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Used in changelog.xml */
 @DatabaseChange(name = "registerSchema", description = "Registers a new schema", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class RegisterSchema extends AbstractCmChange {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractSchemaChange.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
 
-    private String id;
-    private Boolean allowMultiple = false;
+    protected String id;
 
     @Override
     public ValidationErrors validate(CmDatabase database, ValidationErrors validationErrors) {
@@ -70,7 +66,7 @@ public class RegisterSchema extends AbstractCmChange {
                     LOG.info("Registering new schema with schemaName={}",
                             this.id);
                     try {
-                        ConfigDefinition definition = new ConfigDefinition(this.id, this.allowMultiple);
+                        ConfigDefinition definition = new ConfigDefinition(this.id);
                         m.registerConfigDefinition(id, definition);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -86,15 +82,6 @@ public class RegisterSchema extends AbstractCmChange {
     public void setId(String id) {
         this.id = id;
     }
-
-    public Boolean getAllowMultiple() {
-        return defaultIfNull(this.allowMultiple, false);
-    }
-
-    public void setAllowMultiple(Boolean allowMultiple) {
-        this.allowMultiple = defaultIfNull(allowMultiple, false);
-    }
-
 }
 
 

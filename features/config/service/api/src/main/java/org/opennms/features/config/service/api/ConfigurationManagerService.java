@@ -28,18 +28,15 @@
 
 package org.opennms.features.config.service.api;
 
-import java.io.IOException;
+
+import org.json.JSONObject;
+import org.opennms.features.config.dao.api.ConfigData;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-
-import javax.xml.bind.JAXBException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.json.JSONObject;
-import org.opennms.features.config.dao.api.ConfigData;
-import org.opennms.features.config.dao.api.ConfigDefinition;
 
 /**
  * Responsible for managing Schemas and Configurations.
@@ -51,15 +48,19 @@ import org.opennms.features.config.dao.api.ConfigDefinition;
 public interface ConfigurationManagerService {
     String BASE_PATH = "/rest/cm";
 
-    /** Registers a ConfigDefinition under a unique configName. If the schema id is present it will throw an IllegalArgumentException. */
-    void registerConfigDefinition(String configName, ConfigDefinition configDefinition) throws JsonProcessingException;
+    /**
+     * Registers a ConfigDefinition under a unique configName. If the schema id is present it will throw an IllegalArgumentException.
+     */
+    void registerConfigDefinition(String configName, ConfigDefinition configDefinition);
 
-    /** Changes a ConfigDefinition. If the configName is not present it will throw an  IllegalArgumentException. */
-    void changeConfigDefinition(String configName, ConfigDefinition configDefinition) throws IOException;
+    /**
+     * Changes a ConfigDefinition. If the configName is not present it will throw an  IllegalArgumentException.
+     */
+    void changeConfigDefinition(String configName, ConfigDefinition configDefinition);
 
-    Map<String, ConfigDefinition> getAllConfigDefinition();
+    Map<String, ConfigDefinition> getAllConfigDefinitions();
 
-    Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) throws JsonProcessingException;
+    Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName);
 
     void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer);
 
@@ -70,20 +71,18 @@ public interface ConfigurationManagerService {
      * @param configName
      * @param configId
      * @param configObject (config object / JSONObject)
-     * @throws IOException
      */
-    void registerConfiguration(String configName, String configId, JsonAsString configObject) throws IOException;
+    void registerConfiguration(String configName, String configId, JsonAsString configObject);
 
     /**
      * remove configure from service
      *
      * @param configId
-     * @throws IOException
      */
-    void unregisterConfiguration(String configName, String configId) throws IOException;
+    void unregisterConfiguration(String configName, String configId);
 
     void updateConfiguration(String configName, String configId,
-                             JsonAsString configObject) throws IOException, IllegalArgumentException;
+                             JsonAsString configObject, boolean isReplace);
 
     /**
      * get config as json by configName, configId
@@ -91,9 +90,8 @@ public interface ConfigurationManagerService {
      * @param configName
      * @param configId
      * @return JSONObject
-     * @throws IOException
      */
-    Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException;
+    Optional<JSONObject> getJSONConfiguration(String configName, String configId);
 
     /**
      * Use for osgi API
@@ -101,50 +99,34 @@ public interface ConfigurationManagerService {
      * @return config in json string
      * @see #getJSONStrConfiguration(String, String)
      */
-    Optional<String> getJSONStrConfiguration(String configName, String configId) throws IOException;
+    Optional<String> getJSONStrConfiguration(String configName, String configId);
 
     /**
      * get whole ConfigData by configName
      *
      * @param configName
      * @return ConfigData
-     * @throws IOException
      */
-    Optional<ConfigData<JSONObject>> getConfigData(String configName) throws IOException;
+    Optional<ConfigData<JSONObject>> getConfigData(String configName);
 
     /**
      * get a list of registered configName
      *
      * @return configName set
-     * @throws IOException
      */
-    Set<String> getConfigNames() throws IOException;
+    Set<String> getConfigNames();
 
     /**
      * it will remove both config and schema
      *
      * @param configName
-     * @throws IOException
      */
-    void unregisterSchema(String configName) throws IOException;
+    void unregisterSchema(String configName);
 
     /**
      * return configIds by configName
      *
      * @param configName
      */
-    Set<String> getConfigIds(String configName) throws IOException;
-
-// TODO: next phase for xml conversion work
-//    /** add: inserts a child into a parent element */
-//    void addConfiguration(final String configId, final String path, final String content);
-//
-//    /** Inserts or updates an configuration element at the given path. */
-//    void putConfiguration(final String configId, final String path, final String content);
-//
-//    void putConfiguration(final String configId, JSONObject object);
-//
-//    /** Removes all configuration objects which can be found with the given xpath expression. */
-//
-//    void removeConfiguration(final String configId, final String path);
+    Set<String> getConfigIds(String configName);
 }

@@ -56,7 +56,7 @@ public class Activator implements BundleActivator {
         Hashtable<String, Object> config = new Hashtable<>();
         config.put("name", CmPersistenceManager.class.getName());
 
-        LOG.info( "Registering service {}.", CmPersistenceManager.class.getSimpleName() );
+        LOG.info("Registering service {}.", CmPersistenceManager.class.getSimpleName());
         final ConfigurationManagerService cm = findService(context, ConfigurationManagerService.class);
         CmPersistenceManager persistenceManager = new CmPersistenceManager(cm);
         registration = context.registerService(PersistenceManager.class, persistenceManager, config);
@@ -79,7 +79,7 @@ public class Activator implements BundleActivator {
                     .getConfiguration(pid)
                     .update();
         } catch (IOException e) {
-            LOG.info("Cannot load configuration for pid=" + pid, e );
+            LOG.error("Cannot load configuration for pid=" + pid, e);
         }
     }
 

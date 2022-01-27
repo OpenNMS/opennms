@@ -10,6 +10,6 @@
     <changeSet author="LiquibaseUpgraderIT2" id="1.0-register-schema-provisiond">
         <cm:registerSchema id="provisiond" />
         <cm:importSchemaFromXsd id="provisiond" xsdFileName="provisiond-configuration.xsd" xsdFileHash="8a501f54269c52b7ba5c49d89a99b5967c33acfab3d953444828fa47d76dfbab" rootElement="provisiond-configuration"/>
-        <cm:importConfig schemaId="provisiond" configId="provisiond" filePath="file:../test/src/test/resources/provisiond-configuration.xml"/>
+        <cm:importConfig schemaId="provisiond" filePath="file:../test/src/test/resources/provisiond-configuration.xml"/>
     </changeSet>
 </databaseChangeLog>

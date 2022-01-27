@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -40,8 +40,7 @@ import java.io.IOException;
  * OpenAPI have its own deserializer, ObjectMapper may have problem
  */
 public class OpenAPIDeserializer extends JsonDeserializer<OpenAPI> {
-
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     public OpenAPIDeserializer() {
         mapper = Json.mapper();

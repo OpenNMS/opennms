@@ -28,6 +28,8 @@
 
 package org.opennms.config.upgrade;
 
+import java.util.Objects;
+
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
@@ -53,8 +55,8 @@ public class UpgradeConfigService implements InitializingBean {
                                 final DataSource dataSource,
                                 @Value( "${skipConfigUpgrades:false}" )
                                 final boolean skipConfigUpgrades) {
-        this.cm = cm;
-        this.dataSource = dataSource;
+        this.cm = Objects.requireNonNull(cm);
+        this.dataSource = Objects.requireNonNull(dataSource);
         this.skipConfigUpgrades = skipConfigUpgrades;
     }
 

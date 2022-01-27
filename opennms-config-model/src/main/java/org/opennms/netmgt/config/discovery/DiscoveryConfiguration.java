@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.config.discovery;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 

@@ -59,6 +59,9 @@ public class TrapdConfigConfigUpdater {
     @Autowired
     private Trapd trapd;
 
+    @Autowired
+    private Trapd trapd;
+
     // Hacky way of overwriting configuration settings for test execution.
     @PostConstruct
     public void init() throws IOException {

@@ -148,7 +148,8 @@ public interface ForeignSourceService {
      *
      * @return a {@link java.util.Map} object.
      */
-    Map<String,String> getDetectorTypes();
+    Map<String, Class<?>> getDetectorTypes();
+
     /**
      * <p>getPolicyTypes</p>
      *

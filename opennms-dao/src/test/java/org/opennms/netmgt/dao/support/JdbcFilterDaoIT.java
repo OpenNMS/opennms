@@ -49,8 +49,10 @@ import javax.sql.DataSource;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.spring.BeanUtils;
@@ -242,7 +244,7 @@ public class JdbcFilterDaoIT implements InitializingBean {
     public void testGetNodeIPAddressServiceMapMatch() throws Exception {
         Map<Integer, Map<InetAddress, Set<String>>> nodeMap = m_dao.getNodeIPAddressServiceMap("ipaddr == '192.168.1.1'");
         assertThat(nodeMap.entrySet(), hasSize(1));
-        Map<InetAddress, Set<String>> map = nodeMap.get(1);
+        Map<InetAddress, Set<String>> map = nodeMap.entrySet().iterator().next().getValue();
         Set<String> services = map.get(InetAddressUtils.addr("192.168.1.1"));
         assertEquals("services size", 2, services.size());
         assertTrue(services.contains("ICMP"));

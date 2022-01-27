@@ -263,7 +263,19 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @Path("policies")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public SimplePluginConfigList getAvailablePolicies() {
-        return getPlugins(true);
+        SimplePluginConfigList plugins = new SimplePluginConfigList();
+        Map<String,String> typesMap = m_foreignSourceService.getPolicyTypes();
+        for(String pluginClass: typesMap.keySet()) {
+            final PluginWrapper wrapper = m_foreignSourceService.getWrappers().get(pluginClass);
+            if (wrapper == null) {
+                LOG.warn("No wrapper found for plugin class {}. See previous log messages for wrapping failures.", pluginClass);
+                continue;
+            }
+            String pluginName = typesMap.get(pluginClass);
+            SimplePluginConfig cfg = createPluginConfig(pluginName, pluginClass, wrapper);
+            plugins.add(cfg);
+        }
+        return plugins;
     }
 
     /**
@@ -275,7 +287,44 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @Path("detectors")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public SimplePluginConfigList getAvailableDetectors() {
-        return getPlugins(false);
+        SimplePluginConfigList plugins = new SimplePluginConfigList();
+        Map<String, Class<?>> detectorMap = m_foreignSourceService.getDetectorTypes();
+        for(String serviceName: detectorMap.keySet()) {
+            Class<?> clazz = detectorMap.get(serviceName);
+            PluginWrapper wrapper = m_foreignSourceService.getWrappers().get(clazz.getCanonicalName());
+            if (wrapper == null) {
+                LOG.warn("No wrapper found for detector class {}. See previous log messages for wrapping failures.", clazz.getCanonicalName());
+                continue;
+            }
+            SimplePluginConfig cfg = createPluginConfig(serviceName, clazz.getCanonicalName(), wrapper);
+            plugins.add(cfg);
+        }
+        plugins.getPlugins().sort(Comparator.comparing(cfg0 -> cfg0.name));
+        return plugins;
+    }
+
+    private SimplePluginConfig createPluginConfig(String serviceName, String className, PluginWrapper wrapper) {
+        SimplePluginConfig cfg = new SimplePluginConfig(serviceName, className);
+        List<SimplePluginParameter> requiredParams = new ArrayList<>();
+        List<SimplePluginParameter> optionalParams = new ArrayList<>();
+        for(Map.Entry<String, Boolean> paramEntry: wrapper.getRequired().entrySet()) {
+            final Boolean required = paramEntry.getValue();
+            final String paramName = paramEntry.getKey();
+            final Set<String> options = required ? wrapper.getRequiredItems().get(paramName) : wrapper.getOptionalItems().get(paramName);
+            final List<String> optionList = new ArrayList<>(options);
+            Collections.sort(optionList);
+            SimplePluginParameter param = new SimplePluginParameter(paramName, required, optionList);
+            if (required) {
+                requiredParams.add(param);
+            } else {
+                optionalParams.add(param);
+            }
+        }
+        Collections.sort(requiredParams, new ParameterComparator());
+        Collections.sort(optionalParams, new ParameterComparator());
+        cfg.parameters.addAll(requiredParams);
+        cfg.parameters.addAll(optionalParams);
+        return cfg;
     }
 
     /**
@@ -349,46 +398,4 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
                 .collect(Collectors.toSet());
         return new ElementList(categories);
     }
-
-    /**
-     * Gets the Plugins.
-     *
-     * @param isPolicies the is policies
-     * @return the Plugins
-     */
-    protected SimplePluginConfigList getPlugins(boolean isPolicies) {
-        SimplePluginConfigList plugins = new SimplePluginConfigList();
-        Map<String,String> typesMap = isPolicies ? m_foreignSourceService.getPolicyTypes(): m_foreignSourceService.getDetectorTypes();
-        for (String pluginClass : typesMap.keySet()) {
-            final PluginWrapper wrapper = m_foreignSourceService.getWrappers().get(pluginClass);
-            if (wrapper == null) {
-                LOG.warn("No wrapper found for plugin class {}. See previous log messages for wrapping failures.", pluginClass);
-                continue;
-            }
-            final String pluginName = typesMap.get(pluginClass);
-            SimplePluginConfig cfg = new SimplePluginConfig(pluginName, pluginClass);
-            List<SimplePluginParameter> requiredParams = new ArrayList<>();
-            List<SimplePluginParameter> optionalParams = new ArrayList<>();
-            for (Map.Entry<String,Boolean> paramEntry : wrapper.getRequired().entrySet()) {
-                final Boolean required = paramEntry.getValue();
-                final String paramName = paramEntry.getKey();
-                final Set<String> options = required ? wrapper.getRequiredItems().get(paramName) : wrapper.getOptionalItems().get(paramName);
-                final List<String> optionList = new ArrayList<String>(options);
-                Collections.sort(optionList);
-                SimplePluginParameter param = new SimplePluginParameter(paramName, required, optionList);
-                if (required) {
-                    requiredParams.add(param);
-                } else {
-                    optionalParams.add(param);
-                }
-            }
-            Collections.sort(requiredParams, new ParameterComparator());
-            Collections.sort(optionalParams, new ParameterComparator());
-            cfg.parameters.addAll(requiredParams);
-            cfg.parameters.addAll(optionalParams);
-            plugins.add(cfg);
-        }
-        return plugins;
-    }
-
 }

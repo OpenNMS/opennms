@@ -28,12 +28,20 @@
 
 package org.opennms.netmgt.provision;
 
-import com.google.common.base.Strings;
-import org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfigDao;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmpmetadata.Config;
 import org.opennms.netmgt.config.snmpmetadata.Container;
 import org.opennms.netmgt.config.snmpmetadata.Entry;
+import org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -55,14 +63,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
+import com.google.common.base.Strings;
 
 @EventListener(name = SnmpMetadataProvisioningAdapter.NAME)
 public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAdapter implements InitializingBean {
@@ -211,7 +212,7 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
             // leaf outside table, output single value
 
             final Optional<SnmpResult> result = walk.stream()
-                    .filter(s -> s.getAbsoluteInstance().equals(baseOId.append(".0")))
+                    .filter(s -> s.getAbsoluteInstance().equals(entry.isExact() ? baseOId : baseOId.append(".0")))
                     .findFirst();
 
             if (result.isPresent()) {

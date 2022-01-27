@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,20 +28,7 @@
 
 package org.opennms.netmgt.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import junit.framework.AssertionFailedError;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.Difference;
@@ -54,6 +41,7 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.ifttt.config.IfTttConfig;
+import org.opennms.features.jest.client.credentials.ElasticCredentials;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
@@ -75,8 +63,6 @@ import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.ResourceTypes;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
-import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
-import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.geoip.GeoIpConfig;
@@ -85,11 +71,9 @@ import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
 import org.opennms.netmgt.config.javamail.JavamailConfiguration;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
-import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
 import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
-import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
@@ -108,7 +92,6 @@ import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmpAsset.adapter.SnmpAssetAdapterConfiguration;
 import org.opennms.netmgt.config.snmpinterfacepoller.SnmpInterfacePollerConfiguration;
 import org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfig;
-import org.opennms.netmgt.config.wsmanAsset.adapter.WsManAssetAdapterConfiguration;
 import org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration;
 import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
@@ -116,28 +99,37 @@ import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.netmgt.config.tl1d.Tl1dConfiguration;
 import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
-import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.config.trend.TrendConfiguration;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
-import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
 import org.opennms.netmgt.config.vmware.vijava.VmwareDatacollectionConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
-import org.opennms.netmgt.config.wmi.agent.WmiConfig;
-import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
+import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
+import org.opennms.netmgt.config.wsmanAsset.adapter.WsManAssetAdapterConfiguration;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.search.providers.action.Actions;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.features.jest.client.credentials.ElasticCredentials;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
-import junit.framework.AssertionFailedError;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory;
 
 /**
  * This is an integration test checking if all provided example XML files can be
@@ -239,6 +231,8 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, false, null);
         addFile(Source.CONFIG, "poll-outages.xml", Outages.class, true, null);
         addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, true, null);
+        // moved to CmWillItUnmarshalIT
+        //addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, false, null);
         addFile(Source.CONFIG, "rancid-configuration.xml", RancidConfiguration.class, true, null);
         addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, true, null);
         addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, false, null);

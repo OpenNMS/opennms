@@ -18,7 +18,7 @@ import { ref, computed } from 'vue'
 import { debounce } from 'lodash'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { FeatherAutocomplete } from "@featherds/autocomplete"
+import { FeatherAutocomplete } from '@featherds/autocomplete'
 
 const router = useRouter()
 const store = useStore()
@@ -49,7 +49,7 @@ const results = computed(() => {
   
 <style lang="scss">
 .menubar-search {
-  width: 400px !important;
+  width: 350px !important;
   margin-right: 20px;
   .feather-input-border {
     background: var(--feather-surface);

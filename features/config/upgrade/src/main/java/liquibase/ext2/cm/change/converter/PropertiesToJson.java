@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -59,7 +59,7 @@ public class PropertiesToJson {
     }
 
     private Object cast(Map.Entry<?,?> entry) {
-        if(null == entry.getValue()) {
+        if (null == entry.getValue()) {
             return null;
         }
         ConfigItem.Type type = schema

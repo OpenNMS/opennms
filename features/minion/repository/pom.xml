@@ -69,7 +69,7 @@
                                 <feature>scv-jceks-impl</feature>
                                 <feature>dominion-grpc-client</feature>
                                 <feature>dominion-secure-credentials-vault</feature>
-                                <featue>minion-rest-service</featue>
+                                <feature>opennms-health-rest-service</feature>
                                 <feature>minion-health-check</feature>
                                 <feature>minion-api-layer</feature>
                                 <feature>minion-plugin-sample</feature>
@@ -441,8 +441,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.minion</groupId>
-            <artifactId>minion-rest-service</artifactId>
+            <groupId>org.opennms.core.health</groupId>
+            <artifactId>org.opennms.core.health.rest-cxf</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

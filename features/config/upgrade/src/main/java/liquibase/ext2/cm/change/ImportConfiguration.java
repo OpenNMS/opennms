@@ -36,10 +36,12 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
+import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
@@ -60,6 +62,8 @@ import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
 import liquibase.util.file.FilenameUtils;
 
+import javax.xml.bind.JAXBException;
+
 /**
  * Imports an existing configuration. It can either live in {opennms.home}/etc (user defined) or in the class path (default).
  */
@@ -68,9 +72,9 @@ public class ImportConfiguration extends AbstractCmChange {
 
     private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
     private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
+    private final static String CONFIG_ID = "default";
 
     private String schemaId;
-    private String configId;
     private String filePath;
     private Path archivePath;
     private Path etcFile = null; // user defined file
@@ -82,7 +86,7 @@ public class ImportConfiguration extends AbstractCmChange {
         validationErrors.checkRequiredField("filePath", this.filePath);
 
         String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
-        this.etcFile = Path.of(opennmsHome + "/etc/"+this.filePath);
+        this.etcFile = Path.of(opennmsHome).resolve("etc").resolve(this.filePath);
         configResource = new FileSystemResource(etcFile.toString()); // check etc dir first
         if (!configResource.isReadable()) {
             configResource = new ClassPathResource("/defaults/"+this.filePath); // fallback: default config
@@ -117,7 +121,9 @@ public class ImportConfiguration extends AbstractCmChange {
 
     void checkFileType(ValidationErrors validationErrors) {
 
-        if(this.filePath == null) return; // nothing to do
+        if (this.filePath == null) {
+            return; // nothing to do
+        }
 
         String fileType = FilenameUtils.getExtension(this.filePath);
         if (!"xml".equalsIgnoreCase(fileType) && !"cfg".equalsIgnoreCase(fileType)) {
@@ -127,34 +133,29 @@ public class ImportConfiguration extends AbstractCmChange {
 
     @Override
     public String getConfirmationMessage() {
-        return String.format("Imported configuration from %s with id=%s for schema=%s", this.filePath, this.configId, this.schemaId);
+        return String.format("Imported configuration from %s with id=default for schema=%s", this.filePath, this.schemaId);
     }
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
         return new SqlStatement[] {
                 new GenericCmStatement((ConfigurationManagerService m) -> {
-                    LOG.info("Importing configuration from {} with id={} for schema={}", this.filePath, this.configId, this.schemaId);
+                    LOG.info("Importing configuration from {} with id=default for schema={}", this.filePath, this.schemaId);
                     try {
-                        ConfigDefinition configDefinition = m.getRegisteredConfigDefinition(this.schemaId).get();
-
-                        if (!configDefinition.getAllowMultiple() && !ConfigDefinition.DEFAULT_CONFIG_ID.equals(this.getConfigId())) {
-                            throw new IllegalArgumentException(String.format("For the '%s' only one configuration can be provided (configId='%s')", this.schemaId, ConfigDefinition.DEFAULT_CONFIG_ID));
-                        }
+                        Optional<ConfigDefinition> configDefinition = m.getRegisteredConfigDefinition(this.schemaId);
 
                         String fileType = FilenameUtils.getExtension(this.filePath);
                         JsonAsString configObject;
                         if("xml".equalsIgnoreCase(fileType)) {
-                            configObject = new XmlToJson(asString(this.configResource), configDefinition).getJson();
+                            configObject = new XmlToJson(asString(this.configResource), configDefinition.get()).getJson();
                         } else if("cfg".equalsIgnoreCase(fileType)) {
-                            // TODO: Patrick: adopt builder to make this easier
-                            ConfigItem schema = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, "", configDefinition.getSchema()).getRootConfig();
+                            ConfigItem schema = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, "", configDefinition.get().getSchema()).getRootConfig();
                             configObject = new PropertiesToJson(this.configResource.getInputStream(), schema).getJson();
                         } else {
-                            throw new IllegalArgumentException(String.format("Unknown file type: '%s'", fileType));
+                            throw new ConfigConversionException(String.format("Unknown file type: '%s'", fileType));
                         }
-                        m.registerConfiguration(this.schemaId, this.configId, configObject);
-                        LOG.info("Configuration with id={} imported.", this.configId);
+                        m.registerConfiguration(this.schemaId, CONFIG_ID, configObject);
+                        LOG.info("Configuration with configName={} and configId=default imported.", this.schemaId);
                         if(etcFile != null) {
                             // we imported a user defined config file => move to archive
                             Path archiveFile = Path.of(this.archivePath + "/" + etcFile.getFileName());
@@ -180,14 +181,6 @@ public class ImportConfiguration extends AbstractCmChange {
 
     public void setSchemaId(String schemaId) {
         this.schemaId = schemaId;
-    }
-
-    public String getConfigId() {
-        return configId == null ? ConfigDefinition.DEFAULT_CONFIG_ID : configId;
-    }
-
-    public void setConfigId(String configId) {
-        this.configId = configId;
     }
 
     public String getFilePath() {

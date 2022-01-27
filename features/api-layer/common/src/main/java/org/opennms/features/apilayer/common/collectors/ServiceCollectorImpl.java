@@ -98,9 +98,6 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
 
     @Override
     public RrdRepository getRrdRepository(String collectionName) {
-        ResourcePath opennmsHome = ResourcePath.fromString(System.getProperty("opennms.home"));
-        String path = ResourcePath.get(opennmsHome, "share", "rrd", collectionName.toLowerCase()).toString();
-        rrdRepo.setRrdBaseDir(new File(path));
         return rrdRepo;
     }
 

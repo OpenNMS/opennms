@@ -28,33 +28,10 @@
 
 package org.opennms.config.upgrade;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
-import static org.opennms.core.test.OnmsAssert.assertThrowsException;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Optional;
-
-import javax.sql.DataSource;
-import javax.xml.bind.JAXBException;
+import io.swagger.v3.oas.models.OpenAPI;
+import liquibase.exception.LiquibaseException;
+import liquibase.exception.MigrationFailedException;
+import liquibase.exception.ValidationFailedException;
 
 import org.json.JSONObject;
 import org.junit.After;
@@ -71,16 +48,36 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
+import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.util.FileSystemUtils;
 
-import io.swagger.v3.oas.models.OpenAPI;
-import liquibase.exception.LiquibaseException;
-import liquibase.exception.MigrationFailedException;
-import liquibase.exception.ValidationFailedException;
+import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
+import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({TemporaryDatabaseExecutionListener.class})
@@ -96,7 +93,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     private final static String SCHEMA_NAME_PROVISIOND = "provisiond";
     private final static String SCHEMA_NAME_EVENTD = "eventd";
     private final static String SCHEMA_NAME_PROPERTIES = "propertiesTest";
-    private final static String CONFIG_ID = ConfigDefinition.DEFAULT_CONFIG_ID;
+    private final static String CONFIG_ID = "default";
     private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
 
     private DataSource dataSource;
@@ -154,7 +151,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     }
 
     @Test
-    public void shouldRunChangelog() throws LiquibaseException, IOException, SQLException, JAXBException, URISyntaxException {
+    public void shouldRunChangelog() throws LiquibaseException, ValidationException, SQLException {
         try {
             assertFalse(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROPERTIES).isPresent());
 
@@ -202,8 +199,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             // check for org.opennms.features.datachoices.cfg
             Optional<JSONObject> config = this.cm.getJSONConfiguration("org.opennms.features.datachoices", "default");
             assertEquals(7, config.get().keySet().size());
-            // boolean in openable is impossible to be null
-            assertEquals(false, config.get().get("enabled"));
+            assertEquals(JSONObject.NULL, config.get().get("enabled"));
             assertEquals(JSONObject.NULL, config.get().get("acknowledged-by"));
             assertEquals(BigDecimal.valueOf(86400000), config.get().get("interval"));
             assertEquals("http://stats.opennms.org/datachoices/", config.get().get("url"));
@@ -228,12 +224,12 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     public void shouldAbortInCaseOfErrorDuringRun() throws SQLException, URISyntaxException, IOException {
         try {
             // Make sure it trigger Liquibase logic
-            PreparedStatement statement = connection.prepareStatement("TRUNCATE " + TABLE_NAME_DATABASECHANGELOG);
+            PreparedStatement statement = connection.prepareStatement("DROP TABLE IF EXISTS " + TABLE_NAME_DATABASECHANGELOG );
             statement.execute();
-            ConfigurationManagerService cm = null; // will lead to Nullpointer
+            ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class); // will lead to Exception
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
             assertThrowsException(MigrationFailedException.class,
-                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog2.xml", connection));
+                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", connection));
         } finally {
             this.db.cleanUp();
         }

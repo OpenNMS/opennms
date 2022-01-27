@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -56,7 +56,7 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
     }
 
     @PostConstruct
-    public void postConstruct() throws IOException {
+    public void postConstruct() {
         reload();
     }
 
@@ -100,7 +100,7 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
     }
 
     @Override
-    public void reload() throws IOException {
+    public void reload() {
         m_config = this.loadConfig(this.getDefaultConfigId());
     }
 }

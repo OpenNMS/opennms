@@ -539,7 +539,6 @@
 
   <bean id="VmwareConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareConfigDaoJaxb"/>
 
-
   <bean id="wsManDataCollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.WSManDataCollectionConfigDaoJaxb" />
 
   <bean id="wsManConfigDao" class="org.opennms.netmgt.dao.jaxb.WSManConfigDaoJaxb">

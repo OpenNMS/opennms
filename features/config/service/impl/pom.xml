@@ -128,12 +128,6 @@
         <type>pom</type>
       </dependency>
       <dependency>
-        <!-- We only need the apache common pool dependency. However, in order to hardcode the version in our side, it seems better to use the global one. -->
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>camel-dependencies</artifactId>
-        <type>pom</type>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.features.distributed</groupId>
         <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
         <version>${project.version}</version>

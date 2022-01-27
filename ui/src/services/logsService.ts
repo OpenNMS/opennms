@@ -20,7 +20,4 @@ const getLog = async (fileName: string, reverseLog: boolean): Promise<string> =>
   }
 }
 
-export {
-  getLogs,
-  getLog
-}
+export { getLogs, getLog }

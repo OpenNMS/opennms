@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -111,9 +111,9 @@ public class OpenAPIBuilderTest {
                 .addDateTimeAttribute("att1", null, true, "date time doc")
                 .addDateTimeAttribute("att2", null, true, "date time doc")
                 .addObject("obj1", OpenAPIBuilder.createBuilder()
-                        .addStringAttribute("name", 3L, 10L, null, null, true, "val1")
+                        .addStringAttribute("name", 3L, 10L, "[A-Z]*", null, true, "val1")
                         .addNumberAttribute("digit", ConfigItem.Type.INTEGER, 3L, 10L, null, null, true, "digit")
-                        .addDateAttribute("data", null, false, "date field"), true, "test array")
+                        .addDateAttribute("data", null, false, "date field"), true, "test object")
                 .addArray("arr1", ConfigItem.Type.INTEGER, null, 100L, 20L, null, 10L, null, null, true, "test array")
                 .addArray("arr2", OpenAPIBuilder.createBuilder()
                         .addStringAttribute("name", 3L, 10L, null, null, true, "val1")
@@ -122,7 +122,6 @@ public class OpenAPIBuilderTest {
         OpenAPI openapi = builder.build(false);
         OpenAPIBuilder newBuilder = OpenAPIBuilder.createBuilder(configName, elementName, ConfigurationManagerService.BASE_PATH, openapi);
         OpenAPI newOpenapi = newBuilder.build(false);
-
 
         ConfigSwaggerConverter converter = new ConfigSwaggerConverter();
         String json = converter.convertOpenAPIToString(openapi, "application/json");

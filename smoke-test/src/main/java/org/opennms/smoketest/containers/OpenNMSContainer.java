@@ -334,6 +334,9 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             props.put("org.opennms.newts.config.port", Integer.toString(CassandraContainer.CQL_PORT));
             props.put("org.opennms.rrd.storeByForeignSource", Boolean.TRUE.toString());
         }
+
+        // output Karaf logs to the console to help in debugging intermittent container startup failures
+        props.put("karaf.log.console", "INFO");
         return props;
     }
 
