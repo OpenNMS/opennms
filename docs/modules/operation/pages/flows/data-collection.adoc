@@ -1,5 +1,5 @@
 [[ga-flow-support-data-collection]]
-= Data-collection of Flow applications
+= Data collection of flow applications
 
 Flows are categorized in applications using the <<flows/classification-engine.adoc#ga-flow-support-classification-engine, Classification Engine>>.
 OpenNMS supports to sum up bytesIn/bytesOut data of flow records based on these Flow applications.
