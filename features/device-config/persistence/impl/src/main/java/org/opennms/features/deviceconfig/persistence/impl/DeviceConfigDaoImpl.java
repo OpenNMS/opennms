@@ -34,6 +34,7 @@ import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.model.OnmsIpInterface;
 
 import java.util.List;
+import java.util.Optional;
 
 public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long> implements DeviceConfigDao {
 
@@ -44,6 +45,18 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     @Override
     public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface) {
 
-        return find("from DeviceConfig dc where dc.ipInterface.id = ? ORDER BY createdTime desc", ipInterface.getId());
+        return find("from DeviceConfig dc where dc.ipInterface.id = ? ORDER BY createdTime DESC", ipInterface.getId());
+    }
+
+    @Override
+    public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface) {
+
+        List<DeviceConfig> deviceConfigs =
+                findObjects(DeviceConfig.class,
+                        "from DeviceConfig dc where dc.ipInterface.id = ? ORDER BY createdTime DESC LIMIT 1", ipInterface.getId());
+        if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
+            return Optional.of(deviceConfigs.get(0));
+        }
+        return Optional.empty();
     }
 }
