@@ -143,14 +143,12 @@ public class ThresholdingVisitorImpl extends AbstractCollectionSetVisitor implem
      * (The way to get attribute is against {@link AttributeGroup} object contained on {@link CollectionResource}
      * implementations).
      */
-    @Override    
+    @Override
     public void visitAttribute(CollectionAttribute attribute) {
-        if (m_thresholdingSet.hasThresholds(attribute)) {
-            String name = attribute.getName();
-            m_attributesMap.put(name, attribute);
-            LOG.debug("visitAttribute: storing value {} for attribute named {}",
-                    attribute.getNumericValue() != null ? attribute.getNumericValue() : attribute.getStringValue(), name);
-        }
+        final String name = attribute.getName();
+        m_attributesMap.put(name, attribute);
+        LOG.debug("visitAttribute: storing value {} for attribute named {}",
+                attribute.getNumericValue() != null ? attribute.getNumericValue() : attribute.getStringValue(), name);
     }
 
     /**
