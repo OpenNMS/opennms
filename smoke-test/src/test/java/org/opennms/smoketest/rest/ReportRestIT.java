@@ -144,8 +144,10 @@ public class ReportRestIT extends AbstractRestIT {
              * Delivered Reports
              */
             // Verify list already persisted reports (none yet)
-            LOG.debug("validating no persisted reports exist");
-            given().get("persisted").then().statusCode(204);
+            await().atMost(1, MINUTE).until(() -> {
+                LOG.debug("validating no persisted reports exist");
+                given().get("persisted").then().statusCode(204);
+            }); 
 
             // Verify deliver report works
             LOG.debug("delivering a report for {}", user[0]);
@@ -187,8 +189,10 @@ public class ReportRestIT extends AbstractRestIT {
              * Scheduled Reports
              */
             // Verify listing scheduled report works (none yet)
-            LOG.debug("validating no scheduled reports exist");
-            given().get("scheduled").then().statusCode(204);
+            await().atMost(1, MINUTE).until(() -> {
+                LOG.debug("validating no scheduled reports exist");
+                given().get("scheduled").then().statusCode(204);
+            });
 
             // Verify Creating a scheduled Report works
             LOG.debug("scheduling a report for {}", user[0]);
@@ -260,7 +264,7 @@ public class ReportRestIT extends AbstractRestIT {
         given().delete("scheduled").then().statusCode(202);
 
         LOG.debug("verifying reports have been deleted");
-        await().atMost(30, SECONDS).until(new Callable<Boolean>() {
+        await().atMost(1, MINUTE).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 try {
