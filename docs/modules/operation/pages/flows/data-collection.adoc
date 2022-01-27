@@ -1,0 +1,34 @@
+[[ga-flow-support-data-collection]]
+= Data-collection of Flow applications
+
+Flows are categorized in applications using the <<flows/classification-engine.adoc#ga-flow-support-classification-engine, Classification Engine>>.
+OpenNMS supports to sum up bytesIn/bytesOut data of flow records based on these Flow applications.
+OpenNMS supports the data-collection of this data.
+This enables a user to profile traffic in a network and to also graph this data.
+
+== Configure data-collection
+
+In order to enable data-collection for Flows you need to enable the flag `applicationDataCollection` in the adapter's definition.
+Furthermore you have to assure that a valid package definition exists inside the adapter's definition.
+
+.Example of enabling data-collection for the NetFlow v9 adapter in telemetryd-configuration.xml
+[source, xml]
+----
+...
+    <queue name="Netflow-9">
+        <adapter name="Netflow-9-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter" enabled="true">
+            <parameter key="applicationDataCollection" value="true"/>
+            <parameter key="applicationThresholding" value="false"/>
+            <package name="Netflow-9-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
+    </queue>
+...
+----

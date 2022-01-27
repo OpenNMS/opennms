@@ -79,7 +79,16 @@ Using the script extension, you can extract the desired metrics from the sFlow m
 | script
 | Full path to the script used to handle the sFlow messages.
 | none
+
+| applicationDataCollection
+| Used to enable data-collection of bytesIn/bytesOut based on flow applications.
+| false
+
+| applicationThresholding
+| Used to enable thresholding based on flow applications.
+| false
 |===
+NOTE: In order the data-collection to work properly you must also define a valid package definition inside your adapter configuration.
 
 === Scripting
 

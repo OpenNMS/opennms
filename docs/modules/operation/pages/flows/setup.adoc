@@ -40,6 +40,17 @@ NOTE: In this example we enable the NetFlow v5 protocol, but you can repeat the 
 
 <queue name="Netflow-5">
     <adapter name="Netflow-5-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter" enabled="true">
+        <parameter key="applicationDataCollection" value="false"/>
+        <parameter key="applicationThresholding" value="false"/>
+        <package name="Netflow-5-Default">
+            <rrd step="300">
+                <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                <rra>RRA:AVERAGE:0.5:288:366</rra>
+                <rra>RRA:MAX:0.5:288:366</rra>
+                <rra>RRA:MIN:0.5:288:366</rra>
+            </rrd>
+        </package>
     </adapter>
 </queue>
 ----
