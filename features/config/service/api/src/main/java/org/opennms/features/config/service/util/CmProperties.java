@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static org.opennms.features.config.service.api.EventType.UPDATE;
 import static org.opennms.features.config.service.util.PropertiesConversionUtil.mapToJsonString;
 
 /**
@@ -58,7 +59,7 @@ public class CmProperties {
     public CmProperties(final ConfigurationManagerService cm, ConfigUpdateInfo configIdentifier) {
         this.cm = Objects.requireNonNull(cm);
         this.configIdentifier = Objects.requireNonNull(configIdentifier);
-        cm.registerReloadConsumer(configIdentifier, (ConfigUpdateInfo key) -> this.needReload = true);
+        cm.registerEventHandler(UPDATE, configIdentifier, (ConfigUpdateInfo key) -> this.needReload = true);
     }
 
     private Optional<Map<String, Object>> read() {

@@ -28,51 +28,6 @@
 
 package org.opennms.features.config.service.api;
 
-import java.util.Objects;
-
-public class ConfigUpdateInfo {
-
-    public static String DEFAULT_ID = "default";
-    public static String WILDCARD_ID = "*";
-
-
-    private String configName;
-    private String configId;
-
-    /**
-     * ConfigId is nullable, when it is null. It will reload all configIds.
-     *
-     * @param configName
-     * @param configId
-     */
-    public ConfigUpdateInfo(String configName, String configId) {
-        this.configName = Objects.requireNonNull(configName);
-        this.configId = Objects.requireNonNull(configId);
-    }
-
-    public ConfigUpdateInfo(String configName) {
-        this(configName, DEFAULT_ID);
-    }
-
-    public String getConfigName() {
-        return configName;
-    }
-
-    public String getConfigId() {
-        return configId;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(configName, configId);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (!(obj instanceof ConfigUpdateInfo)) {
-            return false;
-        }
-        return ((ConfigUpdateInfo) obj).configName.equals(this.configName)
-                && ((ConfigUpdateInfo) obj).configId.equals(this.configId);
-    }
+public enum EventType {
+    CREATE, UPDATE, DELETE;
 }

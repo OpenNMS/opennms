@@ -142,5 +142,10 @@
         <artifactId>spring-web-dependencies</artifactId>
         <type>pom</type>
       </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
 </project>
