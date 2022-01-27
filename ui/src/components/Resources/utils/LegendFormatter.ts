@@ -61,7 +61,7 @@ const getFormattedLegendStatements = (
             renderer.texts.push(text)
           },
           drawNewline: () => {
-            renderer.texts.push('</br>')
+            renderer.texts.push('\n')
           }
         }
 
@@ -212,7 +212,7 @@ const tokenizeStatement = (value: string) => {
     numTokensWithType(TOKENS.Unit) === 0 &&
     tokens[tokens.length - 1].type === TOKENS.Lf
   ) {
-    stack.push('&nbsp;')
+    stack.push(' ')
   }
 
   // Convert any remaining characters on the stack to a text token
@@ -228,11 +228,11 @@ const formatStatement = (statement: PrintStatement, renderer: Renderer) => {
 
   for (const token of tokens) {
     if (token.type === TOKENS.Text) {
-      if (token.value) renderer.drawText('&nbsp; ' + token.value)
+      if (token.value) renderer.drawText(' ' + token.value)
     } else if (token.type === TOKENS.Newline) {
       renderer.drawNewline()
     } else if (token.type === TOKENS.Unit) {
-      renderer.drawText('&nbsp;')
+      renderer.drawText(' ')
     } else if (token.type === TOKENS.Lf) {
       const value = statement.value
       let scaledValue: string | number = value

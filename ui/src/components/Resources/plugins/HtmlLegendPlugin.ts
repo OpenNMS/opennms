@@ -7,8 +7,7 @@ const getOrCreateLegendList = (id: string) => {
 
   if (!listContainer) {
     listContainer = document.createElement('ul')
-    listContainer.style.display = 'flex'
-    listContainer.style.flexDirection = 'column'
+    listContainer.style.display = 'inline-block'
     listContainer.style.margin = '0'
     listContainer.style.padding = '0'
 
@@ -37,8 +36,7 @@ const HtmlLegendPlugin = {
       const li = document.createElement('li')
       li.style.alignItems = 'left'
       li.style.cursor = 'pointer'
-      li.style.display = 'flex'
-      li.style.flexDirection = 'row'
+      li.style.display = 'inline-block'
       li.style.marginLeft = '10px'
 
       li.onclick = () => {
@@ -54,7 +52,7 @@ const HtmlLegendPlugin = {
       boxSpan.style.display = 'inline-block'
       boxSpan.style.height = '15px'
       boxSpan.style.marginRight = '10px'
-      boxSpan.style.marginTop = '4px'
+      boxSpan.style.marginBottom = '-2px'
       boxSpan.style.width = '15px'
 
       // Text
@@ -63,11 +61,18 @@ const HtmlLegendPlugin = {
       textContainer.style.margin = '0'
       textContainer.style.padding = '0'
       textContainer.style.textDecoration = item.hidden ? 'line-through' : ''
-      textContainer.innerHTML = item.text
+      textContainer.style.display = 'inline-block'
+      textContainer.style.whiteSpace = 'pre'
+      textContainer.innerText = item.text
+
+      const linebreak = document.createElement('br')
 
       li.appendChild(boxSpan)
       li.appendChild(textContainer)
       ul.appendChild(li)
+      if (item.text.split('\n')[1] !== undefined) {
+        ul.append(linebreak)
+      }
     })
   }
 }
