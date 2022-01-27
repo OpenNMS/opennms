@@ -39,7 +39,7 @@ import org.opennms.netmgt.model.ResourcePath;
 public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
 
     public MockCollectionResourceWrapper(final String instance) {
-        super(new Date(), 0, null, null, null, new CollectionResource() {
+        super(new Date(), 0, null, null, new CollectionResource() {
             @Override
             public String getInstance() {
                 return instance;
@@ -83,7 +83,7 @@ public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
             public ResourcePath getPath() {
                 return null;
             }
-        }, null, null, null, null);
+        }, null, null, null);
     }
 
 }

@@ -55,7 +55,6 @@ import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.elastic.Direction;
@@ -80,8 +79,6 @@ public class FlowThresholding implements Closeable {
     public static final String SERVICE_NAME = "Flow-Threshold";
     public static final String RESOURCE_TYPE_NAME = "flowApp";
     public static final String RESOURCE_GROUP = "application";
-
-    private final static RrdRepository FLOW_APP_RRD_REPO = new RrdRepository();
 
     private final ThresholdingService thresholdingService;
     private final CollectionAgentFactory collectionAgentFactory;
@@ -283,7 +280,6 @@ public class FlowThresholding implements Closeable {
                         thresholdingSession = FlowThresholding.this.thresholdingService.createSession(iface.getNodeId(),
                                                                                                       collectionAgent.getHostAddress(),
                                                                                                       SERVICE_NAME,
-                                                                                                      FLOW_APP_RRD_REPO,
                                                                                                       new ServiceParameters(Collections.emptyMap()));
                     } catch (ThresholdInitializationException e) {
                         throw new RuntimeException("Error initializing thresholding session", e);

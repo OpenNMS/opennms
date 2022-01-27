@@ -52,7 +52,6 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.model.IParm;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
@@ -177,9 +176,8 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     }
 
     @Override
-    public ThresholdingSession createSession(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters serviceParams)
+    public ThresholdingSession createSession(int nodeId, String hostAddress, String serviceName, ServiceParameters serviceParams)
             throws ThresholdInitializationException {
-        Objects.requireNonNull(repository, "RrdRepository must not be null");
         Objects.requireNonNull(serviceParams, "ServiceParameters must not be null");
 
         synchronized (kvStore) {
@@ -188,18 +186,14 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
             }
         }
         
-        String resource = "";
-        if (repository.getRrdBaseDir() != null && repository.getRrdBaseDir().getPath() != null) {
-            resource = repository.getRrdBaseDir().getPath();
-        }
-        ThresholdingSessionKey sessionKey = new ThresholdingSessionKeyImpl(nodeId, hostAddress, serviceName, resource);
-        return new ThresholdingSessionImpl(this, sessionKey, resourceStorageDao, repository, serviceParams,
-                kvStore.get(), isDistributed, thresholdStateMonitor);
+        ThresholdingSessionKey sessionKey = new ThresholdingSessionKeyImpl(nodeId, hostAddress, serviceName);
+        return new ThresholdingSessionImpl(this, sessionKey, serviceParams,
+                                           kvStore.get(), isDistributed, thresholdStateMonitor);
     }
 
     public ThresholdingVisitorImpl getThresholdingVistor(ThresholdingSession session, Long sequenceNumber) throws ThresholdInitializationException {
         ThresholdingSetImpl thresholdingSet = (ThresholdingSetImpl) thresholdingSetPersister.getThresholdingSet(session, eventProxy);
-        return new ThresholdingVisitorImpl(thresholdingSet, ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy, sequenceNumber);
+        return new ThresholdingVisitorImpl(thresholdingSet, eventProxy, sequenceNumber);
     }
 
     public EventIpcManager getEventIpcManager() {

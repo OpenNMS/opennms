@@ -156,7 +156,7 @@ public abstract class AbstractCollectionAdapter extends AbstractAdapter {
             // Thresholding
             try {
                 if (isThresholdingEnabled.get()) {
-                    ThresholdingSession session = getSessionForAgent(result.getAgent(), repository);
+                    ThresholdingSession session = getSessionForAgent(result.getAgent());
                     session.accept(collectionSet);
                 }
             } catch (ThresholdInitializationException e) {
@@ -165,7 +165,7 @@ public abstract class AbstractCollectionAdapter extends AbstractAdapter {
         });
     }
 
-    private ThresholdingSession getSessionForAgent(CollectionAgent agent, RrdRepository repository) throws ThresholdInitializationException {
+    private ThresholdingSession getSessionForAgent(CollectionAgent agent) throws ThresholdInitializationException {
         if (thresholdingService == null) {
             // If we don't have a ThresholdingService,
             // we are running in the OSGi container (i.e. on a Sentinal) with no Thresholding Service Configured
@@ -181,7 +181,7 @@ public abstract class AbstractCollectionAdapter extends AbstractAdapter {
 
         ThresholdingSession session = agentThresholdingSessions.getIfPresent(sessionKey);
         if (session == null) {
-            session = thresholdingService.createSession(nodeId, hostAddress, serviceName, repository, EMPTY_SERVICE_PARAMETERS);
+            session = thresholdingService.createSession(nodeId, hostAddress, serviceName, EMPTY_SERVICE_PARAMETERS);
             agentThresholdingSessions.put(sessionKey, session);
         }
         return session;

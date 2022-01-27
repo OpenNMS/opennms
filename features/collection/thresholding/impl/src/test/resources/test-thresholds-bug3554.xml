@@ -9,11 +9,11 @@
             trigger="2" ds-label="ifName" expression="ifInDiscards + ifOutDiscards"/>
         <expression type="high" ds-type="if" value="90.0" rearm="75.0"
             trigger="3" ds-label="ifName" expression="ifHCInOctets * 8 / 1000000 / ifHighSpeed * 100">
-            <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
+            <resource-filter field="snmpifspeed">^[1-9]+[0-9]*$</resource-filter>
         </expression>
         <expression type="high" ds-type="if" value="90.0" rearm="75.0"
             trigger="3" ds-label="ifName" expression="ifHCOutOctets * 8 / 1000000 / ifHighSpeed * 100">
-            <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
+            <resource-filter field="snmpifspeed">^[1-9]+[0-9]*$</resource-filter>
         </expression>
     </group>
     <group name="hrstorage" rrdRepository="/opt/opennms/share/rrd/snmp/">
@@ -37,11 +37,11 @@
     <group name="extreme" rrdRepository="/opt/opennms/share/rrd/snmp/">
         <expression type="absoluteChange" ds-type="if" value="5.0"
             rearm="0.0" trigger="1" ds-label="ifName" expression="math.abs(ifHCOutOctets * 8 / ifHighSpeed /1000000 * 100)">
-            <resource-filter field="ifHighSpeed">^[1-9][0-9]+$</resource-filter>
+            <resource-filter field="snmpifspeed">^[1-9][0-9]+$</resource-filter>
         </expression>
         <expression type="absoluteChange" ds-type="if" value="5.0"
             rearm="0.0" trigger="1" ds-label="ifName" expression="math.abs(ifHCInOctets * 8 / ifHighSpeed / 1000000 * 100)">
-            <resource-filter field="ifHighSpeed">^[1-9][0-9]+$</resource-filter>
+            <resource-filter field="snmpifspeed">^[1-9][0-9]+$</resource-filter>
         </expression>
     </group>
     <group name="TestThresholds" rrdRepository="/opt/opennms/share/rrd/snmp/">
@@ -49,11 +49,11 @@
             rearm="0.0" trigger="1" ds-label="ifName" ds-name="locIfInCRC"/>
         <expression type="absoluteChange" ds-type="if" value="12.0"
             rearm="0.0" trigger="1" ds-label="ifName" expression="math.abs(ifHCInOctets * 8 / ifHighSpeed / 1000000 * 100)">
-            <resource-filter field="ifHighSpeed">^[1-9][0-9]+$</resource-filter>
+            <resource-filter field="snmpifspeed">^[1-9][0-9]+$</resource-filter>
         </expression>
         <expression type="absoluteChange" ds-type="if" value="12.0"
             rearm="0.0" trigger="1" ds-label="ifName" expression="math.abs(ifHCOutOctets * 8 / ifHighSpeed / 1000000 * 100)">
-            <resource-filter field="ifHighSpeed">^[1-9][0-9]+$</resource-filter>
+            <resource-filter field="snmpifspeed">^[1-9][0-9]+$</resource-filter>
         </expression>
     </group>
     <group name="netsnmp" rrdRepository="/opt/opennms/share/rrd/snmp/">
