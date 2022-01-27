@@ -267,7 +267,11 @@ public class Invoker {
             }
         }
 
-        LOG.debug("Invoking {} on object {}", invoke.getMethod(), mbean.getObjectName());
+        if ("status".equals(invoke.getMethod())) {
+            LOG.debug("Invoking {} on object {}", invoke.getMethod(), mbean.getObjectName());
+        } else {
+            LOG.info("Invoking {} on object {}", invoke.getMethod(), mbean.getObjectName());
+        }
         
 
         Object object;
@@ -283,7 +287,11 @@ public class Invoker {
             throw t;
         }
 
-	LOG.debug("Invocation {} successful for MBean {}", invoke.getMethod(), mbean.getObjectName());
+        if ("status".equals(invoke.getMethod())) {
+            LOG.debug("Invocation {} successful for MBean {}", invoke.getMethod(), mbean.getObjectName());
+        } else {
+            LOG.info("Invocation {} successful for MBean {}", invoke.getMethod(), mbean.getObjectName());
+        }
 
         return object;
     }

@@ -72,6 +72,11 @@
         </Route>
       </Routes>
     </Routing>
+    <Console name="console" target="SYSTEM_OUT" follow="true">
+      <PatternLayout>
+        <pattern>[%p] %m%n</pattern>
+      </PatternLayout>
+    </Console>
   </appenders>
 
   <loggers>
@@ -79,6 +84,12 @@
     <!-- we always want this at info for the instrumentation log reader -->
     <logger name="org.opennms.netmgt.collectd.DefaultCollectdInstrumentation" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.opennms.netmgt.vmmgr.Invoker" additivity="false" level="INFO">
+      <appender-ref ref="console"/>
+    </logger>
+    <logger name="org.opennms.netmgt.vmmgr.Manager" additivity="false" level="INFO">
+      <appender-ref ref="console"/>
     </logger>
     <!-- 
       Set the threshold for individual loggers that may be too chatty at the default 
