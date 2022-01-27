@@ -161,6 +161,8 @@ fruits:
 ---
 Input: '${fruits:apple|fruits:banana|vegetables:tomato|blue}'
 Output: 'red'
+Details:
+  Part: '${fruits:apple|fruits:banana|vegetables:tomato|blue}' => match='fruits:apple', value='red', scope='SERVICE'
 admin@opennms>
 ----
 
