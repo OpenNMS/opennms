@@ -70,11 +70,11 @@ Flows are decoded from the messages into the canonical flow format and published
 | Default
 
 | applicationDataCollection
-| Used to enable data-collection of bytesIn/bytesOut based on flow applications.
+| Enables data collection of bytesIn/bytesOut based on flow applications.
 | false
 
 | applicationThresholding
-| Used to enable thresholding based on flow applications.
+| Enables thresholding based on flow applications.
 | false
 |===
-NOTE: In order the data-collection to work properly you must also define a valid package definition inside your adapter configuration.
+NOTE: For data collection to work properly you must also define a valid package definition inside your adapter configuration.

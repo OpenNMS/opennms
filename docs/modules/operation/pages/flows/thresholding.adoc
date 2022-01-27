@@ -1,13 +1,13 @@
 [[ga-flow-support-data-collection]]
-= Thresholding Flow applications
+= Thresholding flow applications
 
 Flows are categorized in applications using the <<flows/classification-engine.adoc#ga-flow-support-classification-engine, Classification Engine>>.
 OpenNMS supports to sum up bytesIn/bytesOut data of flow records based on these Flow applications.
-Users can define thresholds on this data to generate alarms in the case the amount of traffic violates these thresholds.
+Users can define thresholds on this data to generate alarms when the amount of traffic violates these thresholds.
 
-== Configure thresholding for Flow applications
+== Configure thresholding for flow applications
 
-In order to enable thresholding for Flows you need to enable the flag `applicationThresholding` in the adapter's definition.
+To enable thresholding for flows you need to enable the `applicationThresholding` flag in the adapter's definition.
 
 .Example of enabling thresholding for the NetFlow v9 adapter in telemetryd-configuration.xml
 [source, xml]
@@ -51,8 +51,8 @@ Next, you need an additional package definition in your `threshd-configuration.x
 </threshd-configuration>
 ----
 
-Finally, you define the thresholds in the `thresholds.xml`.
-Use need to use `flowApp` for the `ds-type`.
+Finally, define the thresholds in the `thresholds.xml` file.
+Use `flowApp` for the `ds-type`.
 The following example defines thresholds for HTTPS traffic exceeding 4096000 bytes/second.
 
 .Example of thresholds for https traffic in thresholds.xml

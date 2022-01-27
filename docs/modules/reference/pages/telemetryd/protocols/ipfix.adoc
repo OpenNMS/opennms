@@ -64,7 +64,7 @@ NOTE: The parameter `maxClockSkew` in your parser definition enables clock skew 
 It specifies the maximum delta in seconds between exporter and Minion timestamps.
 If exceeded, an alarm will be generated for the exporting device.
 The default value is 0, so clock skew detection is disabled.
-Furthermore, you can use a parameter `clockSkewEventRate` to rate limit clock skew events.
+Furthermore, you can use the `clockSkewEventRate` parameter to rate limit clock skew events.
 The default is `3600` seconds, so every hour an event will be sent.
 
 [[telemetryd-ipfix-parser-tcp]]
@@ -93,11 +93,11 @@ The IPFIX TCP parser accepts packets received by a <<telemetryd/listeners/tcp.ad
 | 0
 
 | clockSkewEventRate
-| Used to rate-limit clock skew events in seconds.
+| Rate limits clock skew events, in seconds.
 | 3600
 
 | dnsLookupsEnabled
-| Used to enable or disable DNS resolution for flows.
+| Enables or disables DNS resolution for flows.
 | true
 
 | sequenceNumberPatience
@@ -121,7 +121,7 @@ NOTE: The parameter `maxClockSkew` in your parser definition enables clock skew 
 It specifies the maximum delta in seconds between exporter and Minion timestamps.
 If exceeded, an alarm will be generated for the exporting device.
 The default value is 0, so clock skew detection is disabled.
-Furthermore, you can use a parameter `clockSkewEventRate` to rate limit clock skew events.
+Furthermore, you can use the `clockSkewEventRate`  parameter to rate limit clock skew events.
 The default is `3600` seconds, so every hour an event will be sent.
 
 == Configure IPFIX listener on a Minion
@@ -167,11 +167,11 @@ Received flows are decoded from the messages into the canonical flow format and 
 | Default
 
 | applicationDataCollection
-| Used to enable data-collection of bytesIn/bytesOut based on flow applications.
+| Enables data-collection of bytesIn/bytesOut based on flow applications.
 | false
 
 | applicationThresholding
-| Used to enable thresholding based on flow applications.
+| Enables thresholding based on flow applications.
 | false
 |===
-NOTE: In order the data-collection to work properly you must also define a valid package definition inside your adapter configuration.
+NOTE: For data collection to work properly you must also define a valid package definition inside your adapter configuration.
