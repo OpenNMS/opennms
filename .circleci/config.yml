@@ -70,8 +70,6 @@ workflows:
         - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
     jobs:
       - trigger-path-filtering:
-          empty_check: trigger-prebuild
-          empty_action: trigger-build
           base-revision: << pipeline.git.branch >>
           mapping: |
             .*                trigger-coverage false
@@ -103,6 +101,7 @@ jobs:
         type: string
       empty_action:
         default: trigger-build
+        typr: string
       base-revision:
         default: main
         description: The revision to compare the current one against for the purpose of determining changed files.
