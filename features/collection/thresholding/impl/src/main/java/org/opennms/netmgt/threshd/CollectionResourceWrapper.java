@@ -505,10 +505,9 @@ public class CollectionResourceWrapper {
             }
 
             // Find values saved in string attributes
-            ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, m_resource.getPath());
-            retval = m_resourceStorageDao.getStringAttribute(path, ds);
-            if (retval != null) {
-                return retval;
+            final var attr = m_attributes.get(ds);
+            if (attr != null && attr.getType() == AttributeType.STRING) {
+                return attr.getStringValue();
             }
         } catch (Throwable e) {
             LOG.info("getFieldValue: Can't get value for attribute {} for resource {}.", ds, m_resource, e);
