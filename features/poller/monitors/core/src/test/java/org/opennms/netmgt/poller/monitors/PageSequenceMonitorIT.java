@@ -116,7 +116,7 @@ public class PageSequenceMonitorIT {
         PollStatus notLikely = m_monitor.poll(getHttpService("bogus", InetAddressUtils.addr("1.1.1.1")), m_params);
         assertTrue("Should not be available", notLikely.isUnavailable());
         // Check to make sure that the connection message is nice
-        assertEquals("Connect to 1.1.1.1:10342 [/1.1.1.1] failed: connect timed out", notLikely.getReason());
+        assertEquals("connect to 1.1.1.1:10342 [/1.1.1.1] failed: connect timed out", notLikely.getReason().toLowerCase());
         assertTrue("Expected a DS called 'response-time' but did not find one", notLikely.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 
