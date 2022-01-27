@@ -57,7 +57,7 @@ class EventHandlerManager {
     void callEventHandlers(EventType type, ConfigUpdateInfo specificIdent) {
         LOG.debug("Call {} handlers for {}.", type, specificIdent);
         Map<ConfigUpdateInfo, Collection<Consumer<ConfigUpdateInfo>>> map = handlerMap.get(type);
-        ConfigUpdateInfo wildcardIdent = new ConfigUpdateInfo(specificIdent.getConfigName());
+        ConfigUpdateInfo wildcardIdent = new ConfigUpdateInfo(specificIdent.getConfigName(), WILDCARD_ID);
         callEventHandlers(map, specificIdent, specificIdent); // specific
         callEventHandlers(map, wildcardIdent, specificIdent); // wildcard
     }
