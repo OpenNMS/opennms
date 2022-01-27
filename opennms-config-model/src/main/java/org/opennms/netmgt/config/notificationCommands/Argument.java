@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
@@ -49,44 +50,47 @@ public class Argument implements Serializable {
     private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "streamed", required = true)
-    private Boolean m_streamed;
+    @JsonProperty(value = "streamed", required = true)
+    private Boolean streamed;
 
     @XmlElement(name = "substitution")
-    private String m_substitution;
+    @JsonProperty("substitution")
+    private String substitution;
 
     @XmlElement(name = "switch")
-    private String m_switch;
+    @JsonProperty("switch")
+    private String swiitch;
 
     public Argument() {
     }
 
     public Boolean getStreamed() {
-        return m_streamed;
+        return this.streamed;
     }
 
     public void setStreamed(final Boolean streamed) {
-        m_streamed = ConfigUtils.assertNotNull(streamed, "streamed");
+        this.streamed = ConfigUtils.assertNotNull(streamed, "streamed");
     }
 
     public Optional<String> getSubstitution() {
-        return Optional.ofNullable(m_substitution);
+        return Optional.ofNullable(substitution);
     }
 
     public void setSubstitution(final String substitution) {
-        m_substitution = ConfigUtils.normalizeString(substitution);
+        this.substitution = ConfigUtils.normalizeString(substitution);
     }
 
-    public Optional<String> getSwitch() {
-        return Optional.ofNullable(this.m_switch);
+    public Optional<String> getSwiitch() {
+        return Optional.ofNullable(this.swiitch);
     }
 
-    public void setSwitch(final String s) {
-        m_switch = ConfigUtils.normalizeString(s);
+    public void setSwiitch(final String s) {
+        this.swiitch = ConfigUtils.normalizeString(s);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_streamed, m_substitution,  m_switch);
+        return Objects.hash(this.streamed, this.substitution,  this.swiitch);
     }
 
     @Override
@@ -97,9 +101,9 @@ public class Argument implements Serializable {
 
         if (obj instanceof Argument) {
             final Argument that = (Argument)obj;
-            return Objects.equals(this.m_streamed, that.m_streamed)
-                    && Objects.equals(this.m_substitution, that.m_substitution)
-                    && Objects.equals(this.m_switch, that.m_switch);
+            return Objects.equals(this.streamed, that.streamed)
+                    && Objects.equals(this.substitution, that.substitution)
+                    && Objects.equals(this.swiitch, that.swiitch);
         }
         return false;
     }

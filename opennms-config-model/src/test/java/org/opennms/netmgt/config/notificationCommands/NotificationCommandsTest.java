@@ -85,7 +85,7 @@ public class NotificationCommandsTest extends XmlTestNoCastor<NotificationComman
 
         Argument arg = new Argument();
         arg.setStreamed(false);
-        arg.setSwitch("-subject");
+        arg.setSwiitch("-subject");
         command.addArgument(arg);
 
         return commands;

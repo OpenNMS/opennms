@@ -325,9 +325,9 @@ public class NotificationTask implements Runnable {
         List<org.opennms.netmgt.model.notifd.Argument> commandArgs = new ArrayList<>();
 
         for (Argument curArg : notifArgs) {
-            LOG.debug("argument: {} {} '{}' {}", curArg.getSwitch().orElse(null), curArg.getSubstitution().orElse(null), getArgumentValue(curArg.getSwitch().orElse(null)), curArg.getStreamed());
+            LOG.debug("argument: {} {} '{}' {}", curArg.getSwiitch().orElse(null), curArg.getSubstitution().orElse(null), getArgumentValue(curArg.getSwiitch().orElse(null)), curArg.getStreamed());
 
-            commandArgs.add(new org.opennms.netmgt.model.notifd.Argument(curArg.getSwitch().orElse(null), curArg.getSubstitution().orElse(null), getArgumentValue(curArg.getSwitch().orElse(null)), curArg.getStreamed()));
+            commandArgs.add(new org.opennms.netmgt.model.notifd.Argument(curArg.getSwiitch().orElse(null), curArg.getSubstitution().orElse(null), getArgumentValue(curArg.getSwiitch().orElse(null)), curArg.getStreamed()));
         }
 
         return commandArgs;
