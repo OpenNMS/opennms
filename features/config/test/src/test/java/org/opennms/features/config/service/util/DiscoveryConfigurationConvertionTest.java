@@ -85,7 +85,7 @@ public class DiscoveryConfigurationConvertionTest {
     @Test
     public void testConvert() throws IOException {
         ConfigDefinition def = XsdHelper.buildConfigDefinition("discovery", "discovery-configuration.xsd",
-                "discovery-configuration", ConfigurationManagerService.BASE_PATH);
+                "discovery-configuration", ConfigurationManagerService.BASE_PATH, false);
         ConfigConverter converter = XsdHelper.getConverter(def);
         String jsonStr = converter.xmlToJson(xmlStr);
 

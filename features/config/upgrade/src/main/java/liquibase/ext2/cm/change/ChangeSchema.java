@@ -94,7 +94,7 @@ public class ChangeSchema extends AbstractCmChange {
                     ConfigDefinition definition;
                     definition = definitionOpt.orElseGet(()->{
                         // Create a new one
-                        ConfigDefinition newDefinition = new ConfigDefinition(this.schemaId);
+                        ConfigDefinition newDefinition = new ConfigDefinition(this.schemaId, false);
                         newDefinition.setConfigName(this.schemaId);
                         cm.registerConfigDefinition(this.schemaId, newDefinition);
                         return newDefinition;

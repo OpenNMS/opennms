@@ -69,7 +69,7 @@ public class ConfigStoreDaoImplTest {
     public void testData() {
         // register
         ConfigDefinition def = XsdHelper.buildConfigDefinition(configName, "provisiond-configuration.xsd",
-                "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
+                "provisiond-configuration", ConfigurationManagerService.BASE_PATH, false);
         configStoreDao.register(def);
 
         // config
@@ -91,7 +91,7 @@ public class ConfigStoreDaoImplTest {
         // register more and update
         String configName2 = configName + "_2";
         ConfigDefinition def2 = XsdHelper.buildConfigDefinition(configName2, "provisiond-configuration.xsd",
-                "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
+                "provisiond-configuration", ConfigurationManagerService.BASE_PATH, false);
         configStoreDao.register(def2);
         configStoreDao.updateConfigDefinition(def2);
         Optional<ConfigDefinition> tmpConfigSchema2 = configStoreDao.getConfigDefinition(configName2);

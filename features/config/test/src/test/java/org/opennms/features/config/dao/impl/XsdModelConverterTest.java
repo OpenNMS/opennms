@@ -29,41 +29,24 @@
 package org.opennms.features.config.dao.impl;
 
 import com.google.common.io.Resources;
-<<<<<<< HEAD
-import org.junit.Assert;
-import org.junit.Test;
-import org.opennms.features.config.dao.api.ConfigItem;
-import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
-=======
 import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
->>>>>>> develop
 import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.dao.impl.util.XsdModelConverter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-<<<<<<< HEAD
-
-=======
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
->>>>>>> develop
 
 public class XsdModelConverterTest {
 
     @Test
     public void testData() throws IOException {
-<<<<<<< HEAD
-        // register
-        JaxbXmlConverter converter = new JaxbXmlConverter("provisiond-configuration.xsd", "provisiond-configuration", null);
-
-=======
->>>>>>> develop
         String xsdStr = Resources.toString(XsdHelper.getSchemaPath("provisiond-configuration.xsd"), StandardCharsets.UTF_8);
         XsdModelConverter xsdConverter = new XsdModelConverter(xsdStr);
         ConfigItem item = xsdConverter.convert("provisiond-configuration");
@@ -73,8 +56,6 @@ public class XsdModelConverterTest {
                 "{http://xmlns.opennms.org/xsd/config/provisiond-configuration}provisiond-configuration", item.getSchemaRef());
         Assert.assertNotNull("Should have documentation", item.getDocumentation());
     }
-<<<<<<< HEAD
-=======
 
     @Test
     public void testEnum() throws IOException {
@@ -104,5 +85,4 @@ public class XsdModelConverterTest {
         Assert.assertEquals("Should have correct max", 100L, (long) excludeItem.getMax());
         Assert.assertTrue("Should exclude max", excludeItem.isMaxExclusive());
     }
->>>>>>> develop
 }

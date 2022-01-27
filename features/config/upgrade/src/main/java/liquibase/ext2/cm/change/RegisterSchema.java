@@ -66,7 +66,7 @@ public class RegisterSchema extends AbstractCmChange {
                     LOG.info("Registering new schema with schemaName={}",
                             this.id);
                     try {
-                        ConfigDefinition definition = new ConfigDefinition(this.id);
+                        ConfigDefinition definition = new ConfigDefinition(this.id, false);
                         m.registerConfigDefinition(id, definition);
                     } catch (Exception e) {
                         throw new RuntimeException(e);

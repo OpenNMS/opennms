@@ -64,7 +64,6 @@ import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFI
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath*:/META-INF/opennms/applicationContext-config-service.xml",
