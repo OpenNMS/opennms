@@ -1,23 +1,27 @@
 
 = Grafana
 
-This dashlet shows a Grafana dashboard for a given time range.
-The <<admin/webui/grafana-dashboard-box.adoc#webui-grafana-dashboard-box, Grafana Dashboard Box>> configuration defined in the `opennms.properties` file is used to access the Grafana instance.
+This dashlet displays a Grafana dashboard for a given time range in the xref:admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
+The <<admin/webui/grafana-dashboard-box.adoc#webui-grafana-dashboard-box, Grafana Dashboard Box>> configuration is used to access the Grafana instance.
 
-[options="autowidth", cols="1,2"]
+.Grafana dashlet configuration options
+[options="header,autowidth", cols="1,2"]
 |===
+| Field
+| Description
+
 | Boost support
-| false
+| not available
 
-| title
-| Title of the Grafana dashboard to be displayed
+| Properties: Title
+| Title of the Grafana dashboard to display.
 
-| uri
-| URI to the Grafana Dashboard to be displayed
+| Properties: uri
+| URI to the Grafana Dashboard to display.
 
-| from
+| Properties: from
 | Start of time range
 
-| to
+| Properties: to
 | End of time range
 |===
