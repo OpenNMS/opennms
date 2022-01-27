@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
@@ -50,103 +51,110 @@ public class Command implements Serializable {
     private static final long serialVersionUID = 3L;
 
     @XmlAttribute(name = "binary")
-    private Boolean m_binary;
+    @JsonProperty("binary")
+    private Boolean binary;
 
     @XmlAttribute(name = "service-registry")
-    private Boolean m_serviceRegistry;
+    @JsonProperty("service-registry")
+    private Boolean serviceRegistry;
 
     @XmlElement(name = "name", required = true)
-    private String m_name;
+    @JsonProperty("name")
+    private String name;
 
     @XmlElement(name = "execute", required = true)
-    private String m_execute;
+    @JsonProperty("execute")
+    private String execute;
 
     @XmlElement(name = "comment")
-    private String m_comment;
+    @JsonProperty("comment")
+    private String comment;
 
     @XmlElement(name = "contact-type")
-    private String m_contactType;
+    @JsonProperty("contact-type")
+    private String contactType;
 
     @XmlElement(name = "argument")
-    private List<Argument> m_arguments = new ArrayList<>();
+    @JsonProperty("argument")
+    private List<Argument> arguments = new ArrayList<>();
 
     public Command() { }
 
     public Boolean getBinary() {
-        return m_binary != null ? m_binary : Boolean.TRUE;
+        return binary != null ? binary : Boolean.TRUE;
     }
 
     public void setBinary(final Boolean binary) {
-        m_binary = binary;
+        this.binary = binary;
     }
 
     public Boolean getServiceRegistry() {
-        return m_serviceRegistry != null ? m_serviceRegistry : Boolean.FALSE;
+        return serviceRegistry != null ? serviceRegistry : Boolean.FALSE;
     }
 
     public void setServiceRegistry(final Boolean serviceRegistry) {
-        m_serviceRegistry = serviceRegistry;
+        this.serviceRegistry = serviceRegistry;
     }
 
     public String getName() {
-        return m_name;
+        return name;
     }
 
     public void setName(final String name) {
-        m_name = ConfigUtils.assertNotEmpty(name, "name");
+        this.name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
     public String getExecute() {
-        return m_execute;
+        return execute;
     }
 
     public void setExecute(final String execute) {
-        m_execute = ConfigUtils.assertNotEmpty(execute, "execute");
+        this.execute = ConfigUtils.assertNotEmpty(execute, "execute");
     }
 
     public Optional<String> getComment() {
-        return Optional.ofNullable(m_comment);
+        return Optional.ofNullable(comment);
     }
 
     public void setComment(final String comment) {
-        m_comment = ConfigUtils.normalizeString(comment);
+        this.comment = ConfigUtils.normalizeString(comment);
     }
 
     public Optional<String> getContactType() {
-        return Optional.ofNullable(m_contactType);
+        return Optional.ofNullable(contactType);
     }
 
     public void setContactType(final String contactType) {
-        m_contactType = ConfigUtils.normalizeString(contactType);
+        this.contactType = ConfigUtils.normalizeString(contactType);
     }
 
     public List<Argument> getArguments() {
-        return m_arguments;
+        return arguments;
     }
 
     public void setArguments(final List<Argument> arguments) {
-        if (arguments == m_arguments) return;
-        m_arguments.clear();
-        if (arguments != null) m_arguments.addAll(arguments);
+        if (arguments == this.arguments) return;
+        this.arguments.clear();
+        if (arguments != null) this.arguments.addAll(arguments);
     }
 
     public void addArgument(final Argument argument) {
-        m_arguments.add(argument);
+        this.arguments.add(argument);
     }
 
     public boolean removeArgument(final Argument argument) {
-        return m_arguments.remove(argument);
+        return this.arguments.remove(argument);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_binary,
-                            m_serviceRegistry,
-                            m_name, 
-                            m_execute, 
-                            m_comment, 
-                            m_contactType, 
-                            m_arguments);
+        return Objects.hash(binary,
+                            serviceRegistry,
+                            name,
+                            execute,
+                            comment,
+                            contactType,
+                            arguments);
     }
 
     @Override
@@ -157,13 +165,13 @@ public class Command implements Serializable {
 
         if (obj instanceof Command) {
             final Command that = (Command)obj;
-            return Objects.equals(this.m_binary, that.m_binary)
-                    && Objects.equals(this.m_serviceRegistry, that.m_serviceRegistry)
-                    && Objects.equals(this.m_name, that.m_name)
-                    && Objects.equals(this.m_execute, that.m_execute)
-                    && Objects.equals(this.m_comment, that.m_comment)
-                    && Objects.equals(this.m_contactType, that.m_contactType)
-                    && Objects.equals(this.m_arguments, that.m_arguments);
+            return Objects.equals(this.binary, that.binary)
+                    && Objects.equals(this.serviceRegistry, that.serviceRegistry)
+                    && Objects.equals(this.name, that.name)
+                    && Objects.equals(this.execute, that.execute)
+                    && Objects.equals(this.comment, that.comment)
+                    && Objects.equals(this.contactType, that.contactType)
+                    && Objects.equals(this.arguments, that.arguments);
         }
         return false;
     }

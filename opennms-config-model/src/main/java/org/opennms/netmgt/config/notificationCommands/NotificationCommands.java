@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
@@ -52,42 +53,44 @@ public class NotificationCommands implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XmlElement(name = "header", required = true)
-    private Header m_header;
+    @JsonProperty("header")
+    private Header header;
 
     @XmlElement(name = "command", required = true)
-    private List<Command> m_commands = new ArrayList<>();
+    @JsonProperty("command")
+    private List<Command> commands = new ArrayList<>();
 
     public NotificationCommands() { }
 
     public Header getHeader() {
-        return m_header;
+        return this.header;
     }
 
     public void setHeader(final Header header) {
-        m_header = ConfigUtils.assertNotNull(header, "header");
+        this.header = ConfigUtils.assertNotNull(header, "header");
     }
 
     public List<Command> getCommands() {
-        return m_commands;
+        return this.commands;
     }
 
     public void setCommands(final List<Command> commands) {
-        if (commands == m_commands) return;
-        m_commands.clear();
-        if (commands != null) m_commands.addAll(commands);
+        if (commands == this.commands) return;
+        this.commands.clear();
+        if (commands != null) this.commands.addAll(commands);
     }
 
     public void addCommand(final Command command) {
-        m_commands.add(command);
+        this.commands.add(command);
     }
 
     public boolean removeCommand(final Command command) {
-        return m_commands.remove(command);
+        return this.commands.remove(command);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_header, m_commands);
+        return Objects.hash(this.header, this.commands);
     }
 
     @Override
@@ -98,8 +101,8 @@ public class NotificationCommands implements Serializable {
 
         if (obj instanceof NotificationCommands) {
             final NotificationCommands that = (NotificationCommands)obj;
-            return Objects.equals(this.m_header, that.m_header)
-                    && Objects.equals(this.m_commands, that.m_commands);
+            return Objects.equals(this.header, that.header)
+                    && Objects.equals(this.commands, that.commands);
         }
         return false;
     }
