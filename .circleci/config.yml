@@ -101,7 +101,7 @@ jobs:
         type: string
       empty_action:
         default: trigger-build
-        typr: string
+        type: string
       base-revision:
         default: main
         description: The revision to compare the current one against for the purpose of determining changed files.
