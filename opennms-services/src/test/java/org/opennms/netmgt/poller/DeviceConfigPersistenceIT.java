@@ -90,7 +90,7 @@ public class DeviceConfigPersistenceIT {
 
     @Before
     public void init() {
-        populateIpInterfaceAndGet();
+        populateIpInterface();
     }
 
     @Test
@@ -116,7 +116,13 @@ public class DeviceConfigPersistenceIT {
         // Make use of encoding
         String retrievedConfig = new String(retrievedConfigInBytes, Charset.forName(deviceConfigOptional.get().getEncoding()));
         Assert.assertEquals(config, retrievedConfig);
-
+        // Try to persist same config again.
+        queryManager.persistDeviceConfig(service, attributes, configInBytes);
+        Optional<DeviceConfig> deviceConfigOptional1 = deviceConfigDao.getLatestConfigForInterface(ipInterface);
+        Assert.assertTrue(deviceConfigOptional1.isPresent());
+        // Verify that version and config doesn't change
+        Assert.assertEquals(deviceConfigOptional1.get().getVersion(), deviceConfigOptional.get().getVersion());
+        Assert.assertArrayEquals(deviceConfigOptional1.get().getConfig(), deviceConfigOptional.get().getConfig());
     }
 
     private void populateDeviceConfigs(int count) {
@@ -134,7 +140,7 @@ public class DeviceConfigPersistenceIT {
         }
     }
 
-    private void populateIpInterfaceAndGet() {
+    private void populateIpInterface() {
         NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("node2").setForeignSource("device-config").setForeignId("2").setType(OnmsNode.NodeType.ACTIVE);
         builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P");
