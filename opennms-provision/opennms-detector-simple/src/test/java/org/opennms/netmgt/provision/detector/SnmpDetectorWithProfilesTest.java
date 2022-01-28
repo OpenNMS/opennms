@@ -103,7 +103,6 @@ public class SnmpDetectorWithProfilesTest {
             SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(configJson, SnmpConfig.class);
             SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(snmpConfig);
             // This is to not override snmp-config from etc
-            snmpPeerFactory.setFile(new File(url.getFile()));
             m_detectorFactory.setAgentConfigFactory(snmpPeerFactory);
             m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null, Collections.emptyMap());
             assertTrue(m_detector.detect(m_request).isServiceDetected());
@@ -122,7 +121,6 @@ public class SnmpDetectorWithProfilesTest {
             SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(configJson, SnmpConfig.class);
             SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(snmpConfig);
             // This is to not override snmp-config from etc
-            snmpPeerFactory.setFile(new File(url.getFile()));
             m_detectorFactory.setAgentConfigFactory(snmpPeerFactory);
             m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null, Collections.emptyMap());
             assertFalse(m_detector.detect(m_request).isServiceDetected());

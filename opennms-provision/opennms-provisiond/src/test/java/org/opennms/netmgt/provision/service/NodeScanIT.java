@@ -150,7 +150,6 @@ public class NodeScanIT {
             SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(configJson, SnmpConfig.class);
             SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactory(snmpConfig);
             // This is to not override snmp-config from etc
-            snmpPeerFactory.setFile(new File(url.getFile()));
             m_provisioner.setAgentConfigFactory(snmpPeerFactory);
             LocationAwareSnmpClient locationAwareSnmpClient = m_provisionService.getLocationAwareSnmpClient();
             FilterDao filterDao = Mockito.mock(FilterDao.class);
