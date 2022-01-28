@@ -84,7 +84,7 @@ Send a `reloadDaemonConfig` event via the CLI to apply the changes without resta
 
 [source, console]
 ----
-$\{OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+${OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
 This opens a UDP socket bound to `0.0.0.0:8877` to which NetFlow v5 messages are forwarded.
@@ -128,16 +128,17 @@ It supports placeholders for `$nodeId`, `$ifIndex`, `$start`, and `$end`.
 
 Once configured, an icon appears on the top-right corner of a resource graph for an SNMP interface if there is flow data for that interface.
 
-*You have completed a basic flows set up.*
+You have completed a basic flows set up.
 If you have issues, refer to the troubleshooting flows section.
 
 == Beyond basic flows setup
 
 You may want to do the following:
 
-* *Classify data flows*
+* Classify data flows
 ** OpenNMS resolves flows to application names.
 Create rules to override the default classifications, to customize for your preference.
 See xref:flows/classification-engine.adoc#ga-flow-support-classification-engine[Application Classification].
 
-* *Enable remote flows data collection* (Add cross-reference to Minion section.)
+* xref:operation:flows/distributed.adoc#flows-remote[Enable remote flows data collection]
+* xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[Scale to manage large volumes of flows data]
