@@ -591,14 +591,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.device-config.rest</groupId>
-      <artifactId>org.opennms.features.device-config.rest.api</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.device-config.rest</groupId>
-      <artifactId>org.opennms.features.device-config.rest.impl</artifactId>
+      <artifactId>org.opennms.features.device-config.rest</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
