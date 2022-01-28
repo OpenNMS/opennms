@@ -1,20 +1,24 @@
 
 = Topology
 
-This dashlet shows a <<topology/topology.adoc#topology-map, Topology Map>>.
+This dashlet shows a <<topology/topology.adoc#topology-map, Topology Map>> in the xref:admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
 Configure the topology map with the following parameters.
 
-[options="autowidth", cols="1,2"]
+.Topology dashlet configuration options
+[options="header, autowidth", cols="1,2"]
 |===
+| Field
+| Description
+
 | Boost support
-| false
+| not available
 
 | focusNodes
-| Which node(s) is in focus for the topology
+| Which node(s) is in focus for the topology.
 
 | provider
-| Which topology should be displayed, for example, Linkd, VMware
+| Which topology to display; for example, Linkd, VMware.
 
 | szl
-| Set the zoom level for the topology
+| Set the zoom level for the topology.
 |===
