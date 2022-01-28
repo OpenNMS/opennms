@@ -32,7 +32,6 @@ import java.io.IOException;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.annotation.PostConstruct;
 
 /**
@@ -109,8 +108,6 @@ public class NotificationCommandFactory extends NotificationCommandManager {
      */
     @Override
     public void update() throws FileNotFoundException, IOException {
-        //InputStream configIn = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.NOTIF_COMMANDS_CONF_FILE_NAME));
-        //parseXML(configIn);
         config = this.loadConfig(this.getDefaultConfigId());
         initialized = true;
     }
