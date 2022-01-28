@@ -25,7 +25,7 @@
 </template>
   
 <script setup lang=ts>
-import { computed, reactive, watch, onMounted, ref } from 'vue'
+import { computed, reactive, watch, onMounted, onBeforeMount, ref } from 'vue'
 import { useStore } from 'vuex'
 import GraphContainer from './GraphContainer.vue'
 import TimeControls from './TimeControls.vue'
@@ -33,12 +33,13 @@ import { sub, getUnixTime } from 'date-fns'
 import { StartEndTime } from '@/types'
 import { useScroll, useDebounceFn } from '@vueuse/core'
 import { FeatherInput } from '@featherds/input'
-
+import { useRouter } from 'vue-router'
 
 const el = document.getElementById('card')
 const { arrivedState } = useScroll(el, { offset: { bottom: 100 } })
 const definitionsToDisplay = ref<string[]>([])
 const store = useStore()
+const router = useRouter()
 const now = new Date()
 const initNumOfGraphs = 4
 const searchVal = ref<string>('')
@@ -121,6 +122,15 @@ onMounted(() => {
   [...Array(initNumOfGraphs)].forEach(() => {
     addGraphDefinition()
   })
+})
+
+onBeforeMount(() => {
+  // if no resources, route to resource selection
+  const resources = store.state.resourceModule.resources
+
+  if (!resources.length) {
+    router.push('/resource-graphs')
+  }
 })
 </script>
 

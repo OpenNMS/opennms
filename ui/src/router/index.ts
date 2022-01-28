@@ -1,6 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import FileEditor from '@/containers/FileEditor.vue'
 import Logs from '@/containers/Logs.vue'
+import Resources from '@/components/Resources/Resources.vue'
+import Graphs from '@/components/Resources/Graphs.vue'
 
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
@@ -58,6 +60,28 @@ const router = createRouter({
           path: 'nodes',
           name: 'MapNodes',
           component: () => import('@/components/Map/MapNodesGrid.vue')
+        }
+      ]
+    },
+    {
+      path: '/resource-graphs',
+      name: 'ResourceGraphs',
+      component: () => import('@/containers/ResourceGraphs.vue'),
+      children: [
+        {
+          path: '',
+          name: 'Resources',
+          component: Resources
+        },
+        {
+          path: 'graphs/:label/:singleGraphDefinition/:singleGraphResourceId',
+          component: () => Graphs,
+          props: true
+        },
+        {
+          path: 'graphs',
+          name: 'Graphs',
+          component: () => Graphs
         }
       ]
     },

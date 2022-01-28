@@ -16,6 +16,7 @@ import {
   getGraphMetrics,
   getPreFabGraphs
 } from './graphService'
+
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { search } from './searchService'
@@ -57,9 +58,9 @@ export default {
   getFileExtensions,
   getOpenApi,
   getResources,
-  getResourceForNode,
-  getDefinitionData,
-  getGraphDefinitionsByResourceId,
   getGraphMetrics,
-  getPreFabGraphs
+  getPreFabGraphs,
+  getDefinitionData,
+  getResourceForNode,
+  getGraphDefinitionsByResourceId
 }

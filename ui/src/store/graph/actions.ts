@@ -45,7 +45,7 @@ const getGraphDefinitionsByResourceIds = async (context: ActionContext<State, an
       definitions = [...definitions, ...result.name]
     }
 
-    // sorts by order preFabGraph order value
+    // sorts by preFabGraph order value
     const sortedDefinitions = sortBy(
       definitions.map((definition) => ({ name: definition, order: context.state.nameOrderMap[definition] })),
       ['order']

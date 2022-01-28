@@ -1,9 +1,9 @@
 <template>
   <div class="feather-row">
-    <div class="feather-col-2">
+    <div class="feather-col-3">
       <ResourceList />
     </div>
-    <div class="feather-col-9">
+    <div class="feather-col-8">
       <NodeResourceList />
     </div>
   </div>

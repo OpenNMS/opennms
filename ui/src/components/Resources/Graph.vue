@@ -133,9 +133,7 @@ const options = computed<ChartOptions>(() => ({
         text: convertedGraphDataRef.value.verticalLabel,
       } as TitleOptions,
       ticks: {
-        callback: function (value) {
-          return yAxisFormatter(value as number)
-        },
+        callback: (value) => yAxisFormatter(value as number),
         maxTicksLimit: 8
       },
       stacked: false
