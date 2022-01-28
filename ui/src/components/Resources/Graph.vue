@@ -137,7 +137,8 @@ const options = computed<ChartOptions>(() => ({
           return yAxisFormatter(value as number)
         },
         maxTicksLimit: 8
-      }
+      },
+      stacked: false
     },
     x: {
       ticks: {
@@ -159,12 +160,17 @@ const getDatasetsForColumn = (index: number, columnValues: number[], datasetLabe
     }
   }
 
-  let area = false
-  let areaColor = ''
+  let areaOrStack = false
+  let areaOrStackColor = ''
   for (const obj of seriesObjs) {
-    if (obj.type === 'area') {
-      area = true
-      areaColor = obj.color
+    if (obj.type === 'area' || obj.type === 'stack') {
+      areaOrStack = true
+      areaOrStackColor = obj.color
+
+      if (obj.type === 'stack') {
+        (options.value.scales as any).y.stacked = true
+      }
+
       break
     }
   }
@@ -174,9 +180,9 @@ const getDatasetsForColumn = (index: number, columnValues: number[], datasetLabe
       const index = convertedGraphDataRef.value.series.findIndex((series) => series.name === obj.name)
       datasets.push({
         hidden: Boolean(obj.type === 'hidden'),
-        fill: area ? {
+        fill: areaOrStack ? {
           target: 'origin',
-          above: areaColor
+          above: areaOrStackColor
         } : false,
         label: datasetLabelObj.statement,
         data: columnValues,
@@ -303,7 +309,7 @@ onMounted(() => render())
   height: 370px;
 }
 .graph-data-tabs {
-  margin-top: 30px;
+  margin-top: 50px;
   margin-bottom: v-bind(legendHeight);
 }
 .single-graph-btn {

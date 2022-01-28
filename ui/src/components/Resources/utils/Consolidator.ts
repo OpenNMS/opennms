@@ -235,7 +235,7 @@ const Consolidator = () => {
       sortedValues.push(values[i])
     }
 
-    sortedValues.sort(function (a, b) {
+    sortedValues.sort((a, b) => {
       if (isNaN(a)) return -1
       if (isNaN(b)) return 1
 
