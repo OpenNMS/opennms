@@ -62,8 +62,6 @@ import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
 import liquibase.util.file.FilenameUtils;
 
-import javax.xml.bind.JAXBException;
-
 /**
  * Imports an existing configuration. It can either live in {opennms.home}/etc (user defined) or in the class path (default).
  */

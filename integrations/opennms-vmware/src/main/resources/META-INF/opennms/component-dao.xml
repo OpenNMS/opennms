@@ -32,9 +32,7 @@
         <property name="configResource" ref="vmwareDatacollectionConfigResourceLocation"/>
     </bean>
 
-    <bean id="vmwareConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareConfigDaoJaxb">
-        <property name="configResource" ref="vmwareConfigResourceLocation"/>
-    </bean>
+    <bean id="vmwareConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareConfigDaoJaxb"/>
 
     <!-- The 'vmware' provider -->
     <bean id="vmwareRequisitionProvider" class="org.opennms.netmgt.provision.service.vmware.VmwareRequisitionProvider" />

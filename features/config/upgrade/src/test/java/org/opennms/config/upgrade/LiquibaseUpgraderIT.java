@@ -93,7 +93,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     private final static String SCHEMA_NAME_PROVISIOND = "provisiond";
     private final static String SCHEMA_NAME_EVENTD = "eventd";
     private final static String SCHEMA_NAME_PROPERTIES = "propertiesTest";
-    private final static String CONFIG_ID = "default";
+    private final static String CONFIG_ID = ConfigDefinition.DEFAULT_CONFIG_ID;
     private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
 
     private DataSource dataSource;
@@ -199,7 +199,8 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             // check for org.opennms.features.datachoices.cfg
             Optional<JSONObject> config = this.cm.getJSONConfiguration("org.opennms.features.datachoices", "default");
             assertEquals(7, config.get().keySet().size());
-            assertEquals(JSONObject.NULL, config.get().get("enabled"));
+            // boolean in openable is impossible to be null
+            assertEquals(false, config.get().get("enabled"));
             assertEquals(JSONObject.NULL, config.get().get("acknowledged-by"));
             assertEquals(BigDecimal.valueOf(86400000), config.get().get("interval"));
             assertEquals("http://stats.opennms.org/datachoices/", config.get().get("url"));
@@ -229,7 +230,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class); // will lead to Exception
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
             assertThrowsException(MigrationFailedException.class,
-                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", connection));
+                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog2.xml", connection));
         } finally {
             this.db.cleanUp();
         }
