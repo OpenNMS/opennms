@@ -1,0 +1,179 @@
+<template>
+  <FeatherExpansionPanel
+    id="advanced-panel"
+    class="expansion-panel advanced-panel"
+    title="Advanced Options (not required)"
+    :modelValue="props.active"
+    @update:modelValue="props.activeUpdate"
+  >
+    <div class="icon" v-if="!props?.helpState?.open">
+      <FeatherButton icon="Help" @click="() => forceOpenHelp()">
+        <FeatherIcon class="help-icon" :icon="Help"></FeatherIcon>
+      </FeatherButton>
+    </div>
+    <div>
+      <div v-bind:key="index" v-for="(item, index) in props.items" class="item-wrapper">
+        <FeatherAutocomplete
+          type="single"
+          label="Key"
+          textProp="name"
+          @search="(query: string) => search(query, index)"
+          v-model="item.key"
+          :results="results.list[index]"
+        ></FeatherAutocomplete>
+        <FeatherInput label="Value" hint="Hint Text" v-model="item.value" />
+        <FeatherButton icon="Delete" @click="() => deleteAdvancedOption(index)">
+          <FeatherIcon class="delete-icon" :icon="Delete"></FeatherIcon>
+        </FeatherButton>
+      </div>
+      <div class="button-wrapper">
+        <FeatherButton @click="addAdvancedOption" primary>
+          <FeatherIcon :icon="Add" class="button-icon" />Add Advanced Option
+        </FeatherButton>
+      </div>
+    </div>
+  </FeatherExpansionPanel>
+</template>
+
+<script setup lang="ts">
+import { reactive, PropType, watch } from 'vue'
+
+import { FeatherExpansionPanel } from '@featherds/expansion'
+import { FeatherIcon } from '@featherds/icon'
+import { FeatherButton } from '@featherds/button'
+import { FeatherInput } from '@featherds/input'
+import { FeatherAutocomplete } from '@featherds/autocomplete'
+
+import Add from '@featherds/icon/action/Add'
+import Delete from '@featherds/icon/action/Delete'
+import Help from '@featherds/icon/action/Help'
+
+import { advancedKeys } from './copy/advancedKeys'
+
+/**
+ * Props
+ */
+const props = defineProps({
+  items: { type: Array as PropType<Array<AdvancedOption>>, required: true },
+  addAdvancedOption: { type: Function, required: true },
+  deleteAdvancedOption: { type: Function, required: true },
+  active: { type: Boolean, required: true },
+  activeUpdate: Function,
+  helpState: Object,
+})
+
+/**
+ * Local State
+ */
+const results = reactive({
+  list: [[{}]]
+})
+
+/**
+ * 
+ * @param searchVal The Key Name to search for
+ * @param index Since there are multiple search boxes, we need to know which one for which to generate results.
+ */
+const search = (searchVal: string, index: number) => {
+  const newResu = advancedKeys.filter((key) => key.name.includes(searchVal) || key.name === searchVal)
+  if (newResu.length === 0) {
+    newResu.push({ name: searchVal, _text: searchVal, id: props.items?.length || 1 })
+  }
+  results.list[index] = [...newResu]
+}
+
+/**
+ * If help has been closed manually by the user, 
+ * this will reopen upon explicit click.
+ */
+const forceOpenHelp = () => {
+  localStorage.removeItem('disable-help')
+  if (props.activeUpdate) {
+    props.activeUpdate(true)
+  }
+}
+
+/**
+ * Fills in the <textarea> within the FeatherAutocomplete.
+ * This is currently a gap with the component and may be removed in the future
+ * if this gap is filled.
+ */
+const fillAutoComplete = () => {
+  if (props.items) {
+    const inputs = document.querySelectorAll('#advanced-panel .feather-autocomplete-input')
+    props.items.forEach((item: any, index) => {
+      if (inputs[index]) {
+        inputs[index].textContent = item?.key.name
+      }
+    })
+  }
+}
+
+/**
+ * When you activate the advanced section, our code waits
+ * for 150 milliseconds to give FeatherExpansion panel a chance to populate the DOM 
+ * If FeatherAutoComplete ever includes the option to set a single value 
+ * by default to the textarea, then this can be removed.
+ */
+watch(props, () => {
+  if (props.active) {
+    setTimeout(() => {
+      fillAutoComplete()
+    }, 150)
+  }
+})
+
+</script>
+
+<style lang="scss">
+@import "@featherds/styles/mixins/typography";
+#advanced-panel {
+  position: relative;
+  a[data-ref-id="feather-form-element-clear"] {
+    display: none;
+  }
+  .feather-expansion-header-button-text {
+    @include headline4();
+    color: var(--feather-primary);
+  }
+}
+</style>
+<style lang="scss" scoped>
+.icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 13px;
+  right: 60px;
+  > button {
+    margin: 0;
+  }
+}
+.item-wrapper {
+  display: flex;
+  > div {
+    width: 100%;
+  }
+  > div:first-child {
+    margin-right: 16px;
+  }
+  > button:last-child {
+    margin-left: 8px;
+  }
+}
+.button-icon {
+  font-size: 24px;
+  padding-top: 2px;
+  margin-right: 8px;
+}
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+.delete-icon {
+  color: var(--feather-error);
+}
+</style>

@@ -7,6 +7,8 @@ import {
   getNodeAvailabilityPercentage
 } from './nodeService'
 
+import * as ConfigurationService from './configurationService'
+
 import { getAlarms, modifyAlarm } from './alarmService'
 
 import { getGraphNodesNodes } from './graphService'
@@ -43,5 +45,6 @@ export default {
   getSnippets,
   getFileNames,
   getFileExtensions,
-  getOpenApi
+  getOpenApi,
+  ...ConfigurationService
 }

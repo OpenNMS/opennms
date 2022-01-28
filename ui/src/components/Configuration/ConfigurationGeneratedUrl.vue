@@ -1,0 +1,54 @@
+<template>
+  <div class="white-bg" v-if="convertedItem?.url !== ':///'">
+    <div class="title">URL:</div>
+    <div class="url">{{ convertedItem?.url }}</div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { computed } from 'vue'
+import { ConfigurationService } from './ConfigurationService'
+
+/**
+ * Props
+ */
+const props = defineProps({
+  config: Object
+})
+
+/**
+ * Local State
+ */
+const convertedItem = computed(() => {
+  const converted = props.config?.item?.type ?
+    ConfigurationService.convertLocalToServer(props.config?.item) :
+    { 'import-url-resource': '' }
+  return {
+    item: converted,
+    url: converted['import-url-resource']
+  }
+})
+
+</script>
+
+<style lang="scss" scoped>
+@import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/mixins/elevation";
+.white-bg {
+  background-color: var(--feather-surface);
+  display: flex;
+  align-items: flex-start;
+  padding: 16px 24px;
+  @include elevation(2);
+}
+.title {
+  @include headline4();
+  color: var(--feather-primary);
+}
+.url {
+  margin-top: 6px;
+  margin-left: 3px;
+  @include subtitle2();
+  color: #a0a1a4;
+}
+</style>

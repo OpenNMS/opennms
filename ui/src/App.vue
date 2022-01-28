@@ -43,12 +43,13 @@ onMounted(() => {
 @import "@featherds/styles/lib/grid";
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/themes/open-mixins";
+
 html {
-  overflow: hidden;
+  overflow-x: hidden;
 }
 .main-content {
-  transform: translate(v-bind(contentMargin));
-  transition: transform 0.28s ease-in-out v-bind(ease);
+  margin-left: v-bind(contentMargin);
+  transition: margin-left 0.28s ease-in-out v-bind(ease);
   max-width: calc(100% - v-bind(maxWidth));
 }
 a {

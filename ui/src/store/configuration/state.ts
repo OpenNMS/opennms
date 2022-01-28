@@ -1,7 +1,5 @@
 const state = {
   types: [],
-  schedulePeriod: [],
-  advancedDropdown: [],
   provisionDService: null,
   sendModifiedData: null
 }
