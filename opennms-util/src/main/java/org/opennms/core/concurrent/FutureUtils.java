@@ -116,10 +116,30 @@ public class FutureUtils {
             Consumer<CompletableFuture<T>> onTimeout,
             ExecutorService executorService
     ) {
+        return completionStage(result -> result.complete(callable.call()), timeout, onTimeout, executorService);
+    }
+
+    /**
+     * Returns a completion stage that is guaranteed to complete.
+     * <p>
+     * The future is completed by the given completer. In case the invocation of the completer throws
+     * an exception it completes exceptionally. In case of a timeout the given callback must
+     * complete the completable future either with a value or exceptionally.
+     * <p>
+     * Note: The execution of the given callable is cancelled on timeout.
+     *
+     * @param executorService The executor service for executing the completer.
+     */
+    public static <T> CompletionStage<T> completionStage(
+            Completer<T> completer,
+            Duration timeout,
+            Consumer<CompletableFuture<T>> onTimeout,
+            ExecutorService executorService
+    ) {
         var result = new CompletableFuture<T>();
         var future = executorService.submit(() -> {
             try {
-                result.complete(callable.call());
+                completer.completeNowOrLater(result);
             } catch (Throwable e) {
                 result.completeExceptionally(e);
             }
@@ -138,6 +158,19 @@ public class FutureUtils {
         timer.schedule(timerTask, timeout.toMillis());
         result.thenRun(timerTask::cancel);
         return result;
+    }
+
+    /**
+     * Allows to complete futures.
+     */
+    @FunctionalInterface
+    public interface Completer<T> {
+        /**
+         * Complete the given future either immediately or trigger its asynchronous completion.
+         * <p>
+         * Invocations of this method execute on a separate thread pool and may block.
+         */
+        void completeNowOrLater(CompletableFuture<T> future) throws Exception;
     }
 
     /**
