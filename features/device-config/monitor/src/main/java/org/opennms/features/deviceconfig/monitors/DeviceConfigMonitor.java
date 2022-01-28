@@ -69,30 +69,42 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         TftpReceiver tftpReceiver = new TftpReceiver(svc.getAddress());
         try {
             tftpServer.register(tftpReceiver);
+            try {
+                String script = getObjectAsStringFromParams(parameters, "script");
+                String user = getObjectAsStringFromParams(parameters, "username");
+                String password = getObjectAsStringFromParams(parameters, "password");
+                Integer portValue = getObjectAsIntFromParams(parameters, "port");
+                int port = portValue != null ? portValue : DEFAULT_SSH_PORT;
+                Long timeout = getObjectAsLongFromParams(parameters, "timeout");
+                Duration duration = timeout != null ? Duration.ofMillis(timeout) : DEFAULT_DURATION;
+                Long ttlValue = getObjectAsLongFromParams(parameters, "ttl");
+                long ttl = ttlValue != null ? ttlValue : DEFAULT_TTL;
+                Optional<SshScriptingService.Failure> sshResult =
+                        sshScriptingService.execute(script, user, password, svc.getIpAddr(), port, new HashMap<>(), duration);
+                return sshResult.map(failure -> {
+                    var reason = "Config retrieval could not be triggered - message: " + failure.message
+                            + "\nstdout: " + failure.stdout
+                            + "\nstderr: " + failure.stderr;
+                    LOG.error(reason);
+                    return PollStatus.unavailable(reason);
+                }).orElseGet(() -> {
+                    CompletableFuture<byte[]> configObj = tftpReceiver.getConfigFuture();
+                    try {
+                        byte[] config = configObj.get(ttl, TimeUnit.MILLISECONDS);
+                        PollStatus pollStatus = PollStatus.up();
+                        pollStatus.setDeviceConfig(config);
+                        return pollStatus;
+                    } catch (TimeoutException | InterruptedException | ExecutionException e) {
+                        LOG.error("Config retrieval failed", e);
+                        return PollStatus.unresponsive("Config retrieval failed : " + e.getMessage());
+                    }
+                });
+            } finally {
+                tftpServer.deregister(tftpReceiver);
+            }
         } catch (IOException e) {
             LOG.error("Exception while connecting to TFTP Server ", e);
-            return PollStatus.down("Couldn't connect to Tftp Server");
-        }
-        String script = getObjectAsStringFromParams(parameters, "script");
-        String user = getObjectAsStringFromParams(parameters, "username");
-        String password = getObjectAsStringFromParams(parameters, "password");
-        Integer portValue = getObjectAsIntFromParams(parameters, "port");
-        int port = portValue != null ? portValue : DEFAULT_SSH_PORT;
-        Long timeout = getObjectAsLongFromParams(parameters, "timeout");
-        Duration duration = timeout != null ? Duration.ofMillis(timeout) : DEFAULT_DURATION;
-        Long ttlValue = getObjectAsLongFromParams(parameters, "ttl");
-        long ttl = ttlValue != null ? ttlValue : DEFAULT_TTL;
-        Optional<SshScriptingService.Failure> sshResult =
-                sshScriptingService.execute(script, user, password, svc.getIpAddr(), port, new HashMap<>(), duration);
-        CompletableFuture<byte[]> configObj = tftpReceiver.getConfigFuture();
-        try {
-            byte[] config = configObj.get(ttl, TimeUnit.MILLISECONDS);
-            PollStatus pollStatus = PollStatus.up();
-            pollStatus.setDeviceConfig(config);
-            return pollStatus;
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            LOG.error("Config retrieval failed", e);
-            return PollStatus.unresponsive("Config retrieval failed : " + e.getMessage());
+            return PollStatus.down("Couldn't connect to Tftp Server" + e.getMessage());
         }
     }
 
@@ -130,7 +142,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         if (obj instanceof String) {
             return (String) obj;
         }
-        return null;
+        throw new IllegalArgumentException(key + " is not an instance of String");
     }
 
     private Integer getObjectAsIntFromParams(Map<String, Object> params, String key) {

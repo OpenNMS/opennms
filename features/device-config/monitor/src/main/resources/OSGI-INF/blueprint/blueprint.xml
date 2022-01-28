@@ -10,8 +10,8 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-    <bean id="deviceconfigMonitor" class="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor" />
-    <service ref="deviceconfigMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+    <bean id="deviceConfigMonitor" class="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor" />
+    <service ref="deviceConfigMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
         <service-properties>
             <entry key="type"
                    value="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor" />
