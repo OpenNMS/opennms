@@ -100,16 +100,7 @@
 
 * xref:topology/introduction.adoc[]
 ** xref:topology/topology.adoc[]
-** xref:topology/asset-topology-provider/introduction.adoc[]
-*** xref:topology/asset-topology-provider/asset-layers.adoc[]
-*** xref:topology/asset-topology-provider/node-filtering.adoc[]
-*** xref:topology/asset-topology-provider/configuration.adoc[]
-*** xref:topology/asset-topology-provider/create-asset-based-topologies-karaf.adoc[]
-*** xref:topology/asset-topology-provider/create-asset-based-topologies-events.adoc[]
-*** xref:topology/asset-topology-provider/view-additional-notes.adoc[]
-
-
-
+** xref:topology/graphml-asset-topology-provider.adoc[]
 ** xref:topology/enlinkd/introduction.adoc[]
 *** xref:topology/enlinkd/layer-2-discovery.adoc[]
 **** xref:topology/enlinkd/layer-2/lldp-discovery.adoc[]
@@ -119,9 +110,7 @@
 **** xref:topology/enlinkd/layer-3/ospf-discovery.adoc[]
 **** xref:topology/enlinkd/layer-3/is-is-discovery.adoc[]
 
-*  xref:database-reports/introduction.adoc[]
-** xref:database-reports/jasper-reports.adoc[]
-** xref:database-reports/pdf-reports-grafana.adoc[]
+* xref:database-reports/database.adoc[]
 
 * xref:ticketing/introduction.adoc[]
 
@@ -141,8 +130,11 @@
 
 * xref:flows/introduction.adoc[]
 ** xref:flows/basic.adoc[]
+** xref:flows/distributed.adoc[]
+** xref:flows/sentinel/sentinel.adoc[]
 ** xref:flows/classification-engine.adoc[]
 ** xref:flows/aggregation.adoc[]
+** xref:flows/nephron.adoc[]
 
 * xref:kafka-producer/kafka-producer.adoc[]
 ** xref:kafka-producer/enable-kafka.adoc[]
@@ -159,6 +151,7 @@
 *** xref:admin/webui/dashboard.adoc[]
 *** xref:admin/webui/grafana-dashboard-box.adoc[]
 *** xref:admin/webui/heatmap.adoc[]
+*** xref:admin/webui/search.adoc[]
 *** xref:admin/webui/jmx-config-generator/introduction.adoc[]
 **** xref:admin/webui/jmx-config-generator/webui.adoc[]
 **** xref:admin/webui/jmx-config-generator/cli.adoc[]
