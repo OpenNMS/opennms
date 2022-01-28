@@ -57,5 +57,12 @@
       <artifactId>xmlunit</artifactId>
       <scope>compile</scope>
     </dependency>
+    <!-- Due to discovery using CM -->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${jsonVersion}</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>

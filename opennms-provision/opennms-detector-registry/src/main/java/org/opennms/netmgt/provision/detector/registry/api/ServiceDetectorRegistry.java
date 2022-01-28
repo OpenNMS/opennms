@@ -46,20 +46,14 @@ public interface ServiceDetectorRegistry {
 
     Set<String> getClassNames();
 
-    ServiceDetector getDetectorByClassName(String className);
-
     ServiceDetector getDetectorByClassName(String className, Map<String, String> properties);
 
     ServiceDetectorFactory<?> getDetectorFactoryByClassName(String className);
 
     Set<String> getServiceNames();
 
-    ServiceDetector getDetectorByServiceName(String serviceName);
-
-    ServiceDetector getDetectorByServiceName(String serviceName, Map<String, String> properties);
-
-    ServiceDetectorFactory<?> getDetectorFactoryByServiceName(String serviceName);
-
     String getDetectorClassNameFromServiceName(String serviceName);
+
+    Class<?> getDetectorClassByServiceName(String serviceName);
 
 }

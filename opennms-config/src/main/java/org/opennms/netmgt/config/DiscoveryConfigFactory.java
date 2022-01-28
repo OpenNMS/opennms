@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -130,7 +130,7 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
     }
 
     @PostConstruct
-    public void postConstruct() throws IOException {
+    public void postConstruct() {
         reload();
     }
 
@@ -150,19 +150,15 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
      *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
      */
-    public synchronized void reload() throws IOException {
+    public synchronized void reload() {
         this.m_config = this.loadConfig(this.getDefaultConfigId());
-        try {
-            clearUrlSpecifics();
-            clearExcludeRanges();
-            clearExcludeUrls();
-            getInitialSleepTime();
-            getRestartSleepTime();
-            getIntraPacketDelay();
-            getConfiguredAddresses();
-        } catch (final Throwable e) {
-            throw new IOException("An error occurred while validating the configuration: " + e.getMessage(), e);
-        }
+        clearUrlSpecifics();
+        clearExcludeRanges();
+        clearExcludeUrls();
+        getInitialSleepTime();
+        getRestartSleepTime();
+        getIntraPacketDelay();
+        getConfiguredAddresses();
     }
 
     /**

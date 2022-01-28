@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -72,7 +72,7 @@ public class AbstractCmJaxbConfigDaoTest {
     public void init() throws Exception {
         ConfigDefinition def = XsdHelper.buildConfigDefinition(provisiondCmJaxbConfigTestDao.getConfigName(),
                 "provisiond-configuration.xsd", "provisiond-configuration",
-                ConfigurationManagerService.BASE_PATH);
+                ConfigurationManagerService.BASE_PATH, false);
 
         configurationManagerService.registerConfigDefinition(provisiondCmJaxbConfigTestDao.getConfigName(), def);
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");

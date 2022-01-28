@@ -25,8 +25,8 @@
 							<option value="GT">&gt;</option>
 							<option value="GE">&gt;=</option>
 						</select>
-						<input class="form-control" type="text" ng-model="clause.value" ng-if="clause.property !== 'lastUpdated'" />
-						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-if="clause.property === 'lastUpdated'"/>
+						<input class="form-control" type="text" ng-model="clause.value" ng-if="clause.property !== 'lastUpdated'">
+						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-if="clause.property === 'lastUpdated'">
 						</div>
 						<button class="btn btn-secondary" type="submit">Submit</button>
 					</form>
@@ -135,7 +135,7 @@
 						<div class="input-group-prepend">
 							<span class="input-group-text"><i class="fa fa-th-list"></i></span>
 						</div>
-						<input class="form-control" type="number" ng-model="query.newLimit"/>
+						<input class="form-control" type="number" ng-model="query.newLimit">
 					</div>
 
 					<button type="button" role="button" class="btn btn-secondary mx-2 {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
@@ -153,7 +153,7 @@
 		</div>
 	</div>
 
-	<br/>
+	<br>
 
 	<div class="card">
 		<!-- The style is here to override a weird Chrome user agent stylesheet issue -->
@@ -162,33 +162,33 @@
 				<tr>
 					<th>
 						<a href ng-click="changeOrderBy('id')">ID</a>
-						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
+						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
 					</th>
 					<th>
 						<a href ng-click="changeOrderBy('label')">Label</a>
-						<i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
+						<i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
 					</th>
 					<th>
 						<a href ng-click="changeOrderBy('location')">Location</a>
-						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
+						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
 					</th>
 					<th>
 						<a href ng-click="changeOrderBy('type')">Type</a>
-						<i ng-show="query.orderBy === 'type' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'type' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'type' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
+						<i ng-show="query.orderBy === 'type' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
 					</th>
 					<th>
 						<a href ng-click="changeOrderBy('status')">Status</a>
-						<i ng-show="query.orderBy === 'status' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'status' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'status' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
+						<i ng-show="query.orderBy === 'status' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
 					</th>
 					<th>
 						<a href ng-click="changeOrderBy('date')">Last Updated</a>
-						<i ng-show="query.orderBy === 'date' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'date' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'date' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
+						<i ng-show="query.orderBy === 'date' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
 					</th>
 					<th>
 						Properties
@@ -206,45 +206,45 @@
 						<span ng-if="!getLink(item)">
 							{{item.id}}
 						</span>
-						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"/></a>
-						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o fa-lg"/></a>
+						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"></i></a>
+						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o fa-lg"></i></a>
 					</td>
 					<td class="text-nowrap">
 						<!-- TODO: Figure out how to handle null/blank label, it should still be editable -->
 						<onms-list-edit-in-place item="item" value="item.label" value-type="'text'" on-submit="update(item)">
-							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'EQ',value:item.label})"><i class="fa fa-plus-square-o fa-lg"/></a>
-							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'NE',value:item.label})"><i class="fa fa-minus-square-o fa-lg"/></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'EQ',value:item.label})"><i class="fa fa-plus-square-o fa-lg"></i></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'NE',value:item.label})"><i class="fa fa-minus-square-o fa-lg"></i></a>
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
 						{{item.location}}
-						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o fa-lg"/></a>
-						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"/></a>
+						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o fa-lg"></i></a>
+						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"></i></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						{{item.type}}
-						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'EQ',value:item.type})"><i class="fa fa-plus-square-o fa-lg"/></a>
-						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'NE',value:item.type})"><i class="fa fa-minus-square-o fa-lg"/></a>
+						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'EQ',value:item.type})"><i class="fa fa-plus-square-o fa-lg"></i></a>
+						<a href style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'NE',value:item.type})"><i class="fa fa-minus-square-o fa-lg"></i></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.status !== null">
 							{{item.status}}
-							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'EQ',value:item.status})"><i class="fa fa-plus-square-o fa-lg"/></a>
-							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'NE',value:item.status})"><i class="fa fa-minus-square-o fa-lg"/></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'EQ',value:item.status})"><i class="fa fa-plus-square-o fa-lg"></i></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'NE',value:item.status})"><i class="fa fa-minus-square-o fa-lg"></i></a>
 						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.date !== null">
 							{{item.date | onmsDate}}
-							<a href style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'GE',value:item.date})"><i class="fa fa-toggle-left fa-lg"/></a>
-							<a href style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'LE',value:item.date})"><i class="fa fa-toggle-right fa-lg"/></a>
+							<a href style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'GE',value:item.date})"><i class="fa fa-toggle-left fa-lg"></i></a>
+							<a href style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'LE',value:item.date})"><i class="fa fa-toggle-right fa-lg"></i></a>
 						</span>
 					</td>
 					<td>
-						<onms-list-edit-map-in-place values="item.properties" value-type="'text'" on-edit="update(item)"/>
+						<onms-list-edit-map-in-place values="item.properties" value-type="'text'" on-edit="update(item)"></onms-list-edit-map-in-place>
 					</td>
 					<td>
-						<a href style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash fa-lg"/></a>
+						<a href style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash fa-lg"></i></a>
 					</td>
 				</tr>
 			</tbody>

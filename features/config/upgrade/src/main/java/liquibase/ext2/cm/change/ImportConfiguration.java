@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,6 +40,8 @@ import java.nio.file.Paths;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
+import org.opennms.features.config.exception.ConfigConversionException;
+import org.opennms.features.config.exception.ConfigRuntimeException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
@@ -82,7 +84,7 @@ public class ImportConfiguration extends AbstractCmChange {
         validationErrors.checkRequiredField("filePath", this.filePath);
 
         String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
-        this.etcFile = Path.of(opennmsHome + "/etc/"+this.filePath);
+        this.etcFile = Path.of(opennmsHome).resolve("etc").resolve(this.filePath);
         configResource = new FileSystemResource(etcFile.toString()); // check etc dir first
         if (!configResource.isReadable()) {
             configResource = new ClassPathResource("/defaults/"+this.filePath); // fallback: default config
@@ -117,7 +119,9 @@ public class ImportConfiguration extends AbstractCmChange {
 
     void checkFileType(ValidationErrors validationErrors) {
 
-        if(this.filePath == null) return; // nothing to do
+        if (this.filePath == null) {
+            return; // nothing to do
+        }
 
         String fileType = FilenameUtils.getExtension(this.filePath);
         if (!"xml".equalsIgnoreCase(fileType) && !"cfg".equalsIgnoreCase(fileType)) {
@@ -151,7 +155,7 @@ public class ImportConfiguration extends AbstractCmChange {
                             ConfigItem schema = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, "", configDefinition.getSchema()).getRootConfig();
                             configObject = new PropertiesToJson(this.configResource.getInputStream(), schema).getJson();
                         } else {
-                            throw new IllegalArgumentException(String.format("Unknown file type: '%s'", fileType));
+                            throw new ConfigConversionException(String.format("Unknown file type: '%s'", fileType));
                         }
                         m.registerConfiguration(this.schemaId, this.configId, configObject);
                         LOG.info("Configuration with id={} imported.", this.configId);
@@ -162,7 +166,7 @@ public class ImportConfiguration extends AbstractCmChange {
                             LOG.info("Configuration file {} moved to {}", etcFile, this.archivePath);
                         }
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        throw new ConfigRuntimeException("Error in generateStatements.", e);
                     }
                 })
         };

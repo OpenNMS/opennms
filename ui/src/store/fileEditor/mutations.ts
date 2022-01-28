@@ -29,7 +29,7 @@ const SAVE_NEW_FILE_TO_STATE = (state: State, newFilePath: string) => {
 }
 
 const REMOVE_UNSAVED_FILE_FROM_STATE = (state: State, newFilePath: string) => {
-  state.fileNames = state.fileNames.filter(path => path !== newFilePath)
+  state.fileNames = state.fileNames.filter((path) => path !== newFilePath)
   SAVE_FOLDER_FILE_STRUCTURE(state, state.fileNames)
 }
 
@@ -102,7 +102,7 @@ const ADD_TO_UNSAVED_FILES_LIST = (state: State, unsavedFile: string) => {
 }
 
 const REMOVE_FROM_UNSAVED_FILES_LIST = (state: State, unsavedFile: string) => {
-  state.unsavedFiles = state.unsavedFiles.filter(path => path !== unsavedFile)
+  state.unsavedFiles = state.unsavedFiles.filter((path) => path !== unsavedFile)
 }
 
 export default {

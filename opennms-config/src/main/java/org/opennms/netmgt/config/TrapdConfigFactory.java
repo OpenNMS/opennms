@@ -92,7 +92,7 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
     }
 
     @PostConstruct
-    public void postConstruct() throws IOException {
+    public void postConstruct() {
         reload();
     }
 
@@ -122,7 +122,7 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
      *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
      */
-    public static synchronized void reload() throws IOException {
+    public static synchronized void reload() {
         m_singleton.m_config = m_singleton.loadConfig(m_singleton.getDefaultConfigId());
     }
 

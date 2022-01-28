@@ -29,19 +29,17 @@
 package org.opennms.core.ipc.twin.grpc.subscriber;
 
 
-import java.io.IOException;
-import java.util.Properties;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.grpc.ConnectivityState;
+import io.grpc.ManagedChannel;
+import io.grpc.stub.StreamObserver;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.common.AbstractTwinSubscriber;
 import org.opennms.core.ipc.twin.common.TwinRequest;
 import org.opennms.core.ipc.twin.common.TwinUpdate;
-import org.opennms.core.ipc.twin.grpc.common.*;
+import org.opennms.core.ipc.twin.grpc.common.MinionHeader;
+import org.opennms.core.ipc.twin.grpc.common.OpenNMSTwinIpcGrpc;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.core.tracing.api.TracerRegistry;
@@ -50,9 +48,17 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.grpc.ConnectivityState;
-import io.grpc.ManagedChannel;
-import io.grpc.stub.StreamObserver;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 
 public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
@@ -74,8 +80,12 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     private final ScheduledExecutorService twinRequestSenderExecutor = Executors.newScheduledThreadPool(TWIN_REQUEST_POOL_SIZE,
             twinRequestSenderThreadFactory);
 
-    public GrpcTwinSubscriber(MinionIdentity minionIdentity, ConfigurationAdmin configAdmin, TracerRegistry tracerRegistry,  int port) {
-        super(minionIdentity, tracerRegistry);
+    public GrpcTwinSubscriber(MinionIdentity minionIdentity,
+                              ConfigurationAdmin configAdmin,
+                              TracerRegistry tracerRegistry,
+                              MetricRegistry metricRegistry,
+                              int port) {
+        super(minionIdentity, tracerRegistry, metricRegistry);
         this.configAdmin = configAdmin;
         this.port = port;
     }

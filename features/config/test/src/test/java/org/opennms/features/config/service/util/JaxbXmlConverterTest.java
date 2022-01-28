@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,7 +40,6 @@ import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -75,7 +74,7 @@ public class JaxbXmlConverterTest {
     }
 
     @Test
-    public void testXsdSearch() throws IOException, JAXBException {
+    public void testXsdSearch() throws IOException {
         // check if xsd is not located in xsds path
         JaxbXmlConverter converter = new JaxbXmlConverter("trapd-configuration.xsd", "trapd-configuration", null);
         XmlSchema schema = converter.getXmlSchema();
@@ -83,8 +82,7 @@ public class JaxbXmlConverterTest {
     }
 
     @Test
-    public void testValidate() throws JAXBException, IOException {
-        JaxbXmlConverter converter = new JaxbXmlConverter("trapd-configuration.xsd", "trapd-configuration", null);
+    public void testValidate() {
         FakeXsdForTest test = new FakeXsdForTest(1024, "127.0.0.1");
         Snmpv3User user = new Snmpv3User();
         user.setSecurityName("SecurityName");
@@ -100,31 +98,4 @@ public class JaxbXmlConverterTest {
         Assert.assertEquals("Snmpv3User is wrong after conversion!",
                 "SecurityName", convertedTest.getSnmpv3User(0).getSecurityName());
     }
-
-//    /**
-//     * it is expected to have exception due to not xsd validation. importThreads > 0
-//     * @throws IOException
-//     * @throws ClassNotFoundException
-//     */
-//    @Test(expected = RuntimeException.class)
-//    public void testValidateFail() throws JAXBException, IOException {
-//        XmlConverter converter = new XmlConverter("trapd-configuration.xsd", "trapd-configuration");
-//        FakeXsdForTest test = new FakeXsdForTest();
-//        test.setSnmpTrapPort(-1);
-//        converter.validate(JaxbUtils.marshal(test), ConfigConverter.SCHEMA_TYPE.XML);
-//    }
-
-//    /**
-//     * it is expected to have exception due to not xsd validation.
-//     * @throws IOException
-//     * @throws ClassNotFoundException
-//     */
-//
-//    @Test(expected = RuntimeException.class)
-//    public void testJsonValidateFail() throws JAXBException, IOException {
-//        final String invalidJson = Resources.toString(
-//                Resources.getResource("provisiond_invalid.json"), StandardCharsets.UTF_8);
-//        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
-//        converter.validate(converter.jsonToXml(invalidJson), ConfigConverter.SCHEMA_TYPE.XML);
-//    }
 }

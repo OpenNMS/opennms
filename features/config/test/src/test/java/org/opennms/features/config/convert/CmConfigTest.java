@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,8 +28,6 @@
 
 package org.opennms.features.config.convert;
 
-import com.atlassian.oai.validator.report.ValidationReport;
-import org.eclipse.persistence.jpa.jpql.Assert;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.beans.SamePropertyValuesAs;
 import org.junit.Test;
@@ -43,6 +41,8 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 @RunWith(Parameterized.class)
 abstract public class CmConfigTest<T> {
     private Class<?> objectClass;
@@ -54,7 +54,7 @@ abstract public class CmConfigTest<T> {
         this.objectClass = sampleObject.getClass();
         this.simpleObject = sampleObject;
         this.simpleXml = sampleXml;
-        this.configDefinition = XsdHelper.buildConfigDefinition(this.getClass().getName(), schemaFile, topLevelElement, "/cm");
+        this.configDefinition = XsdHelper.buildConfigDefinition(this.getClass().getName(), schemaFile, topLevelElement, "/cm", false);
     }
 
     private String getJsonStr() throws IOException {
@@ -73,8 +73,8 @@ abstract public class CmConfigTest<T> {
 
     @Test
     public void jsonValidation() throws IOException {
-        ValidationReport report = configDefinition.validate(getJsonStr());
-        Assert.isFalse(report.hasErrors(), "It should pass validation. JSON: " + getJsonStr() + " \nMessages: " + report.getMessages());
+        // It should not throw exception ValidationException
+        configDefinition.validate(getJsonStr());
     }
 
     @Test

@@ -101,6 +101,31 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.config.service</groupId>
+      <artifactId>org.opennms.features.config.service.impl</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <!--exclusion>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-models</artifactId>
+        </exclusion-->
+        <exclusion>
+          <groupId>io.swagger.parser.v3</groupId>
+          <artifactId>swagger-parser</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>${jackson2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>${snakeyamlVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
       <scope>test</scope>
@@ -130,29 +155,10 @@
       <artifactId>concurrent-locks</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.config.service</groupId>
-      <artifactId>org.opennms.features.config.service.impl</artifactId>
-      <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>io.swagger.core.v3</groupId>
-          <artifactId>swagger-models</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.swagger.parser.v3</groupId>
-          <artifactId>swagger-parser</artifactId>
-        </exclusion>
-    </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.config</groupId>
       <artifactId>org.opennms.features.config.mock</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.config</groupId>
-      <artifactId>org.opennms.features.config.mock</artifactId>
-      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

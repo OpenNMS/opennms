@@ -18,10 +18,6 @@
         <constructor-arg value="file:src/test/resources/etc/vmware-datacollection-config.xml"/>
     </bean>
 
-    <bean id="vmwareConfigResourceLocation" class="java.lang.String">
-        <constructor-arg value="file:src/test/resources/etc/vmware-config.xml"/>
-    </bean>
-
     <bean id="vmwareCimDatacollectionConfigDao"
           class="org.opennms.netmgt.dao.vmware.jaxb.VmwareCimDatacollectionConfigDaoJaxb">
         <property name="configResource" ref="vmwareCimDatacollectionConfigResourceLocation"/>
@@ -32,6 +28,4 @@
     </bean>
 
     <bean id="vmwareConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareConfigDaoJaxb"/>
-
-
 </beans>

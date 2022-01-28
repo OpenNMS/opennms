@@ -28,6 +28,7 @@
 
 package org.opennms.core.ipc.twin.grpc;
 
+import com.codahale.metrics.MetricRegistry;
 import io.opentracing.util.GlobalTracer;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +66,7 @@ public class GrpcTwinIT extends AbstractTwinBrokerIT {
 
         TracerRegistry tracerRegistry = Mockito.mock(TracerRegistry.class);
         Mockito.when(tracerRegistry.getTracer()).thenReturn(GlobalTracer.get());
-        LocalTwinSubscriber localTwinSubscriber = new LocalTwinSubscriberImpl(new MockMinionIdentity("Default"), tracerRegistry);
+        LocalTwinSubscriber localTwinSubscriber = new LocalTwinSubscriberImpl(new MockMinionIdentity("Default"), tracerRegistry, new MetricRegistry());
         final var publisher = new GrpcTwinPublisher(localTwinSubscriber, grpcIpcServer);
         publisher.start();
 
@@ -78,7 +79,7 @@ public class GrpcTwinIT extends AbstractTwinBrokerIT {
 
         TracerRegistry tracerRegistry = Mockito.mock(TracerRegistry.class);
         Mockito.when(tracerRegistry.getTracer()).thenReturn(GlobalTracer.get());
-        final var subscriber = new GrpcTwinSubscriber(minionIdentity, this.configAdmin, tracerRegistry, this.port);
+        final var subscriber = new GrpcTwinSubscriber(minionIdentity, this.configAdmin, tracerRegistry, new MetricRegistry(), this.port);
         subscriber.start();
 
         return subscriber;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -27,33 +27,36 @@
  ******************************************************************************/
 package org.opennms.features.config.dao.impl;
 
-import com.atlassian.oai.validator.report.EmptyValidationReport;
-import com.atlassian.oai.validator.report.ValidationReport;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.springframework.util.Assert;
 
 public class XmlConfigDefinitionTest {
     ConfigDefinition def = XsdHelper.buildConfigDefinition("provisiond", "provisiond-configuration.xsd",
-            "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
+            "provisiond-configuration", ConfigurationManagerService.BASE_PATH, false);
 
     @Test
     public void testPassValidation() {
-        ValidationReport report = def.validate("{\"importThreads\": 11}");
-        Assert.isInstanceOf(EmptyValidationReport.class, report, "It should be empty report!");
+        def.validate("{\"importThreads\": 11}");
     }
 
-    @Test
-    public void testFailValidation() {
-        ValidationReport report = def.validate("{\"importThreads\": -1}");
-        Assert.isTrue(report.hasErrors(), "It should detect -1.");
+    @Test(expected = ValidationException.class)
+    public void testInvalidValue() {
+        // It should detect -1.
+        def.validate("{\"importThreads\": -1}");
+    }
 
-        report = def.validate("{\"importThreads\": \"test\"}");
-        Assert.isTrue(report.hasErrors(), "It should detect invalid datatype.");
+    @Test(expected = ValidationException.class)
+    public void testWrongType() {
+        // It should detect invalid datatype.
+        def.validate("{\"importThreads\": \"test\"}");
+    }
 
-        report = def.validate("{\"test\": 11}");
-        Assert.isTrue(report.hasErrors(), "It should detect invalid attribute.");
+    @Test(expected = ValidationException.class)
+    public void testInvalidAttribute() {
+        // It should detect invalid attribute.
+        def.validate("{\"test\": 11}");
     }
 }

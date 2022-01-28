@@ -28,23 +28,14 @@
 
 package org.opennms.features.config.service.impl;
 
-import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
+import org.opennms.features.config.exception.ConfigAlreadyExistsException;
+import org.opennms.features.config.exception.ConfigRuntimeException;
+import org.opennms.features.config.exception.SchemaAlreadyExistsException;
+import org.opennms.features.config.exception.SchemaNotFoundException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -53,7 +44,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+
+import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
 
 @Component
 public class ConfigurationManagerServiceImpl implements ConfigurationManagerService {
@@ -67,27 +62,23 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public void registerConfigDefinition(String configName, ConfigDefinition configDefinition) throws JsonProcessingException {
+    public void registerConfigDefinition(String configName, ConfigDefinition configDefinition) {
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configDefinition);
 
         if (this.getRegisteredConfigDefinition(configName).isPresent()) {
-            throw new IllegalArgumentException(String.format("Schema with id=%s is already registered.", configName));
+            throw new SchemaAlreadyExistsException(String.format("Schema with configName=%s is already registered.", configName), null);
         }
-        try {
-            configStoreDao.register(configDefinition);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        configStoreDao.register(configDefinition);
     }
 
     @Override
-    public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) throws IOException {
+    public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) {
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configDefinition);
         final Optional<ConfigDefinition> existingDefinition = this.getRegisteredConfigDefinition(configName);
         if (existingDefinition.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Schema with id=%s is not present. Use registerSchema instead.", configName));
+            throw new SchemaNotFoundException(String.format("Schema with configName=%s is not present. Use registerSchema instead.", configName));
         }
         //allowMultiple must be preserved. It is set only once on creation
         configDefinition.setAllowMultiple(existingDefinition.get().getAllowMultiple());
@@ -95,28 +86,19 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public Map<String, ConfigDefinition> getAllConfigDefinition() {
-        return configStoreDao.getAllConfigDefinition();
+    public Map<String, ConfigDefinition> getAllConfigDefinitions() {
+        return configStoreDao.getAllConfigDefinitions();
     }
 
     @Override
-    public Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) throws JsonProcessingException {
+    public Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) {
         Objects.requireNonNull(configName);
         return configStoreDao.getConfigDefinition(configName);
     }
 
     @Override
     public void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer) {
-        onloadNotifyMap.compute(info, (k, v) -> {
-            if (v == null) {
-                ArrayList<Consumer<ConfigUpdateInfo>> consumers = new ArrayList<>();
-                consumers.add(consumer);
-                return consumers;
-            } else {
-                v.add(consumer);
-                return v;
-            }
-        });
+        onloadNotifyMap.computeIfAbsent(info, (k) -> new ArrayList<>()).add(consumer);
     }
 
     /**
@@ -143,52 +125,51 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
      * {@inheritDoc}
      */
     @Override
-    public void registerConfiguration(final String configName, String configId, JsonAsString configObject)
-            throws IOException {
+    public void registerConfiguration(final String configName, final String inConfigId, JsonAsString configObject) {
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configObject);
         Optional<ConfigDefinition> configDefinition = this.getRegisteredConfigDefinition(configName);
         if (configDefinition.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Unknown service with id=%s.", configName));
+            throw new SchemaNotFoundException(String.format("Unknown service with configName: %s.", configName));
         }
+        String configId = inConfigId;
         if (configId == null) {
             configId = DEFAULT_CONFIG_ID;
         }
         final Set<String> configIds = this.getConfigIds(configName);
         if (configIds.contains(configId)) {
-            throw new IllegalArgumentException(String.format(
+            throw new ConfigAlreadyExistsException(String.format(
                     "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
         }
-
-        if (!configDefinition.get().getAllowMultiple()){
+        if (!configDefinition.get().getAllowMultiple()) {
             if (!DEFAULT_CONFIG_ID.equals(configId)) {
-                throw new IllegalArgumentException(String.format(
+                throw new ConfigRuntimeException(String.format(
                         "For the service '%s' is only one configuration with id='%s' allowed; provided was id '%s'", configName, DEFAULT_CONFIG_ID, configId));
             }
             if (!configIds.isEmpty()) {
-                throw new IllegalStateException(String.format(
+                throw new ConfigAlreadyExistsException(String.format(
                         "For the service '%s' found existing configuration(s) with id(s) other than '%s'", configName, DEFAULT_CONFIG_ID));
             }
         }
 
         configStoreDao.addConfig(configName, configId, new JSONObject(configObject.toString()));
-        LOG.info("ConfigurationManager.registeredConfiguration(service={}, id={}, config={});", configName, configId, configObject);
+        LOG.info("ConfigurationManager.registeredConfiguration(configName={}, configId={}, config={});", configName, configId, configObject);
     }
 
     @Override
-    public void unregisterConfiguration(final String configName, final String configId) throws IOException {
+    public void unregisterConfiguration(final String configName, final String configId) {
         this.configStoreDao.deleteConfig(configName, configId);
     }
 
     @Override
-    public void updateConfiguration(String configName, String configId, JsonAsString config) throws IOException {
-        configStoreDao.updateConfig(configName, configId, new JSONObject(config.toString()));
+    public void updateConfiguration(String configName, String configId, JsonAsString config, boolean isReplace) {
+        configStoreDao.updateConfig(configName, configId, new JSONObject(config.toString()), isReplace);
         ConfigUpdateInfo updateInfo = new ConfigUpdateInfo(configName, configId);
         this.triggerReloadConsumer(updateInfo);
     }
 
     @Override
-    public Optional<JSONObject> getJSONConfiguration(final String configName, final String configId) throws IOException {
+    public Optional<JSONObject> getJSONConfiguration(final String configName, final String configId) {
         Optional<JSONObject> configObj = configStoreDao.getConfig(configName, configId);
         if (configObj.isEmpty()) {
             return configObj;
@@ -206,7 +187,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public Optional<String> getJSONStrConfiguration(String configName, String configId) throws IOException, IllegalArgumentException {
+    public Optional<String> getJSONStrConfiguration(String configName, String configId) {
         Optional<JSONObject> config = this.getJSONConfiguration(configName, configId);
         if (config.isEmpty()) {
             return Optional.empty();
@@ -216,17 +197,17 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 
     @Override
     public Set<String> getConfigNames() {
-        return configStoreDao.getConfigNames().get();
+        return configStoreDao.getConfigNames();
     }
 
     @Override
-    public void unregisterSchema(String configName) throws IOException {
+    public void unregisterSchema(String configName) {
         configStoreDao.unregister(configName);
     }
 
     @Override
-    public Set<String> getConfigIds(String configName) throws IOException {
-        Optional<ConfigData<JSONObject>> configData = configStoreDao.getConfigData(configName);
+    public Set<String> getConfigIds(String configName) {
+        Optional<ConfigData<JSONObject>> configData = configStoreDao.getConfigs(configName);
         if (configData.isEmpty()) {
             return new HashSet<>();
         }
@@ -234,133 +215,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public Optional<ConfigData<JSONObject>> getConfigData(String configName) throws IOException {
-        return configStoreDao.getConfigData(configName);
+    public Optional<ConfigData<JSONObject>> getConfigData(String configName) {
+        return configStoreDao.getConfigs(configName);
     }
-
-
-//    //TODO: CHECK WHAT IS THAT FOR
-//    @Override
-//    public Optional<ConfigData<JSONObject>> getConfigurationMetaData(String configName) {
-//        Objects.requireNonNull(serviceId);
-//        return configStoreDao.getConfigData(configName).get();
-//    }
-/*
-    @Override
-    public ConfigData getSchemaForConfiguration(String configName) {
-        return configStoreDao.getConfigSchema()
-    }
-*/
-//    //TODO: CHECK later
-//    @Override
-//    public ConfigData<JSONObject> getSchemaForConfiguration(String configName) {
-//        return null;
-//    }
-
-
-//    @Override
-//    public void putConfiguration(final String configId, final JSONObject configContent) {
-//        Objects.requireNonNull(configId);
-//        Objects.requireNonNull(configContent);
-//        if(!this.isConfigurationRegistered(configId)) {
-//            throw new IllegalArgumentException(String.format("Unknown configuration with configId=%s. Please register first.", configId));
-//        }
-//        store.put(configId, configContent.toString(), STORE_CONTEXT_CONFIG);
-//    }
-//
-//    private String getNamespaceForConfigId(final String configId) {
-//        return getSchemaForConfiguration(configId)
-//                .getXmlSchema()
-//                .getNamespace();
-//    }
-//
-//    @Override
-//    public void putConfiguration(String configId, JSONObject object) {
-//
-//    }
-//
-//    @Override
-//    public void removeConfiguration(String configId, String path) {
-//
-//    }
-
-
-//    private void putConfigurationWithException(final String configId, final String path, final String content) throws DocumentException, IOException, SAXException {
-//        Objects.requireNonNull(configId);
-//        Objects.requireNonNull(path);
-//        Document config = getConfigurationAsDocument(configId);
-//        int index;
-//        String namespace = getNamespaceForConfigId(configId);
-//        final Element element = (Element) PathUtil.selectSingleNode(config, path, namespace);
-//        Branch parent;
-//        if (element == null) {
-//            parent = (Branch) config.selectSingleNode(PathUtil.getParentPath(path));
-//            index = Optional.ofNullable(parent).map(Branch::content).map(List::size).orElse(0);
-//        } else {
-//            // node exists, we need to replace it. Lets remove the old one
-//            parent = element.getParent();
-//            index = Optional.ofNullable(parent).map(Branch::content).map(list -> list.indexOf(element)).orElse(0);
-//            if (parent == null) {
-//                config.remove(element);
-//            } else {
-//                parent.remove(element);
-//            }
-//        }
-//
-//        String elementName = PathUtil.getElementName(PathUtil.getLastElement(path));
-//        Element newElement = DocumentHelper.createElement(elementName);
-//        setContentOfElement(newElement, content);
-//        if (parent == null) {
-//            config.add(newElement);
-//        } else {
-//            parent.content().add(index, newElement); // changes to list is reflected in parent
-//        }
-//        writeConfiguration(configId, config);
-//    }
-
-//    private void writeConfiguration(final String configId, final Document configDoc) throws IOException, SAXException, DocumentException {
-//        Configuration config = this.getConfigurationMetaData(configId)
-//                .orElseThrow(() -> new NullPointerException(String.format("Config with id=%s does not exist. Register first.", configId)));
-//        XMLSchema schema = this.getSchemaForConfiguration(config.getSchemaId()).getXmlSchema();
-//        String xml = configDoc.asXML();
-//
-//        // validate
-//        XMLValidator.validate(xml, schema);
-//
-//        // write
-//        String json = xmlMapper.xmlToJson(configId, xml);
-//        putConfiguration(configId, new JSONObject(json));
-//    }
-//
-//    private Document getConfigurationAsDocument(final String configId) throws DocumentException {
-//        Objects.requireNonNull(configId);
-//        Document config;
-//        Optional<String> configAsString = this.getConfiguration(configId)
-//                .map(json -> xmlMapper.jsonToXml(configId, json.toString()));
-//        if (configAsString.isPresent()) {
-//            SAXReader reader = new SAXReader();
-//            config = reader.read(new StringReader(configAsString.get()));
-//        } else {
-//            config = DocumentHelper.createDocument();
-//        }
-//        return config;
-//    }
-//    private String getNamespaceForConfigId(final String configId) {
-//        return getSchemaForConfiguration(configId)
-//                .getXmlSchema()
-//                .getNamespace();
-//    }
-
-//    private void removeConfigurationWithException(final String configId, final String path) throws DocumentException, IOException, SAXException {
-//        Objects.requireNonNull(configId);
-//        Objects.requireNonNull(path);
-//        Document config = getConfigurationAsDocument(configId);
-//
-//        for (Object nodeObj : PathUtil.selectNodes(config, path, getNamespaceForConfigId(configId))) {
-//            Node node = (Node) nodeObj;
-//            node.getParent().remove(node);
-//        }
-//
-//        writeConfiguration(configId, config);
-//    }
 }

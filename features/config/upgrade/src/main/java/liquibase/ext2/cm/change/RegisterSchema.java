@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,6 @@
 
 package liquibase.ext2.cm.change;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-
-import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
@@ -42,12 +35,18 @@ import liquibase.exception.ValidationErrors;
 import liquibase.ext2.cm.database.CmDatabase;
 import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 /** Used in changelog.xml */
 @DatabaseChange(name = "registerSchema", description = "Registers a new schema", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class RegisterSchema extends AbstractCmChange {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractSchemaChange.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
 
     private String id;
     private Boolean allowMultiple = false;
@@ -94,7 +93,6 @@ public class RegisterSchema extends AbstractCmChange {
     public void setAllowMultiple(Boolean allowMultiple) {
         this.allowMultiple = defaultIfNull(allowMultiple, false);
     }
-
 }
 
 

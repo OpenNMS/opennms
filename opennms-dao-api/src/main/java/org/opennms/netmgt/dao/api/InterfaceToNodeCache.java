@@ -35,8 +35,6 @@ public interface InterfaceToNodeCache {
 
 	void dataSourceSync();
 
-	Iterable<Integer> getNodeId(String location, InetAddress ipAddr);
-
 	boolean setNodeId(String location, InetAddress ipAddr, int nodeId);
 
 	boolean removeNodeId(String location, InetAddress ipAddr, int nodeId);

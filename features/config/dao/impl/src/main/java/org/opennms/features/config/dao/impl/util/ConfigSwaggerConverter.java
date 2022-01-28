@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -31,7 +31,6 @@ package org.opennms.features.config.dao.impl.util;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.Yaml;
@@ -39,17 +38,21 @@ import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.*;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.PathParameter;
+import io.swagger.v3.oas.models.parameters.QueryParameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.servers.Server;
 import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.exception.SchemaConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 /**
  * Convert ConfigItem into OpenAPI
@@ -67,7 +70,7 @@ public class ConfigSwaggerConverter {
 
     private final OpenAPI openAPI = new OpenAPI();
 
-    public String convertToString(ConfigItem item, String prefix, String acceptType) throws JsonProcessingException {
+    public String convertToString(ConfigItem item, String prefix, String acceptType) throws SchemaConversionException {
         OpenAPI openapi = convert(item, prefix);
         return convertOpenAPIToString(openapi, acceptType);
     }
@@ -80,7 +83,7 @@ public class ConfigSwaggerConverter {
      * @return
      * @throws JsonProcessingException
      */
-    public String convertOpenAPIToString(OpenAPI openapi, String acceptType) throws JsonProcessingException {
+    public String convertOpenAPIToString(OpenAPI openapi, String acceptType) throws SchemaConversionException {
         ObjectMapper objectMapper;
         try {
             if (APPLICATION_JSON.equals(acceptType)) {
@@ -94,11 +97,14 @@ public class ConfigSwaggerConverter {
         }
 
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        return objectMapper.writeValueAsString(openapi);
+        try {
+            return objectMapper.writeValueAsString(openapi);
+        } catch (JsonProcessingException e) {
+            throw new SchemaConversionException("Fail to convertOpenAPIToString. ", e);
+        }
     }
 
     private Info genInfo() {
-        // TODO: Freddy handle version properly
         Info info = new Info();
         info.setDescription("OpenNMS Data Model");
         info.setVersion("1.0.0");
@@ -113,13 +119,13 @@ public class ConfigSwaggerConverter {
      * @param urls
      * @return
      */
-    public OpenAPI setupServers(OpenAPI openapi, List<String> urls) {
-        final List<Server> servers = new ArrayList<>(1);
-        urls.forEach(url -> {
+    public static OpenAPI setupServers(OpenAPI openapi, List<String> urls) {
+        final List<Server> servers = urls.stream().map(url -> {
             Server server = new Server();
             server.setUrl(url);
-            servers.add(server);
-        });
+            return server;
+        }).collect(Collectors.toList());
+
         openapi.setServers(servers);
         return openapi;
     }
@@ -139,15 +145,15 @@ public class ConfigSwaggerConverter {
         openapiMap.forEach((configName, openapi) -> {
             Paths paths = openapi.getPaths();
             paths.forEach((name, path) -> {
-                if (path.readOperations() == null)
+                if (path.readOperations() == null) {
                     return;
+                }
                 path.readOperations().forEach((oper -> {
                     if (oper.getResponses() != null) {
                         oper.getResponses().forEach((resK, resV) -> {
                             if (resV.getContent() != null) {
                                 resV.getContent().forEach((ck, cv) -> {
                                     if (cv.getSchema().get$ref() != null) {
-
                                         cv.getSchema().set$ref(prefix + "/schema/" + configName + cv.getSchema().get$ref());
                                     }
                                 });
@@ -203,7 +209,7 @@ public class ConfigSwaggerConverter {
             openAPI.setPaths(paths);
 
             // Generate paths for the items
-            this.generatePathsForItems(item,prefix , null, isSingleConfig);
+            this.generatePathsForItems(item, prefix, null, isSingleConfig);
             pathItemsByPath.forEach(paths::addPathItem);
         }
 
@@ -245,10 +251,9 @@ public class ConfigSwaggerConverter {
 
         // configId path param
         List<Parameter> parameters = new ArrayList<>();
-        Parameter configIdParam = new Parameter();
+        PathParameter configIdParam = new PathParameter();
         configIdParam.setName("configId");
         configIdParam.setRequired(true);
-        configIdParam.in("path");
         configIdParam.setSchema(new StringSchema());
         parameters.add(configIdParam);
 
@@ -260,8 +265,17 @@ public class ConfigSwaggerConverter {
         }
 
         //============== PUT =================
+        List<Parameter> putParameters = new ArrayList<>();
+        if (!isSingleConfig) {
+            putParameters.addAll(parameters);
+        }
+        QueryParameter replaceParameter = new QueryParameter();
+        replaceParameter.setName("replace");
+        replaceParameter.setSchema(new BooleanSchema());
+        replaceParameter.setDescription("Set to true for replace the whole config");
+        putParameters.add(replaceParameter);
         Operation put = this.generateOperation(tagName, "Overwrite " + item.getName() + " configuration", "OK",
-                isSingleConfig ? null : parameters, jsonObjectContent, null);
+                isSingleConfig ? null : putParameters, jsonObjectContent, null);
         configIdPathItem.setPut(put);
 
         //============== GET =================
@@ -281,7 +295,7 @@ public class ConfigSwaggerConverter {
         }
 
         // Save
-        if(!isSingleConfig) {
+        if (!isSingleConfig) {
             pathItemsByPath.put(path, configNamePathItem);
             pathItemsByPath.put(path + "/{configId}", configIdPathItem);
         } else {
@@ -370,9 +384,6 @@ public class ConfigSwaggerConverter {
                 break;
             case STRING:
                 schema = new StringSchema();
-                if (item.getPattern() != null) { // pattern only work on string
-                    schema.setPattern(item.getPattern());
-                }
                 break;
             case NUMBER:
                 schema = new NumberSchema();
@@ -406,15 +417,17 @@ public class ConfigSwaggerConverter {
                 schema = new DateSchema();
                 break;
             default:
-                throw new RuntimeException("Unsupported type " + item);
+                throw new SchemaConversionException("Unsupported type " + item);
         }
         schema.setName(item.getName());
         if (item.getDocumentation() != null && !"".equals(item.getDocumentation().trim())) {
             schema.setDescription(item.getDocumentation());
         }
-        if (item.getMultipleOf() != null) {
-            if (schema instanceof NumberSchema || schema instanceof IntegerSchema)
-                schema.setMultipleOf(BigDecimal.valueOf(item.getMultipleOf()));
+        if (item.getPattern() != null) {
+            schema.setPattern(item.getPattern());
+        }
+        if (item.getMultipleOf() != null && (schema instanceof NumberSchema || schema instanceof IntegerSchema)) {
+            schema.setMultipleOf(BigDecimal.valueOf(item.getMultipleOf()));
         }
         if (item.getMin() != null) {
             if (schema instanceof StringSchema)
@@ -432,11 +445,27 @@ public class ConfigSwaggerConverter {
             else
                 schema.setMaximum(BigDecimal.valueOf(item.getMax()));
         }
-
+        if (item.isMinExclusive()) {
+            schema.setExclusiveMinimum(true);
+        }
+        if (item.isMaxExclusive()) {
+            schema.setExclusiveMaximum(true);
+        }
         if (item.getDefaultValue() != null) {
             schema.setDefault(item.getDefaultValue());
         }
-
+        if (item.getEnumValues() != null) {
+            if (schema instanceof StringSchema)
+                ((StringSchema) schema).setEnum(item.getEnumValues());
+            else if (schema instanceof IntegerSchema || schema instanceof NumberSchema) {
+                try {
+                    List<BigDecimal> tmp = item.getEnumValues().stream().map(BigDecimal::new).collect(Collectors.toList());
+                    ((NumberSchema) schema).setEnum(tmp);
+                } catch (NumberFormatException e) {
+                    throw new SchemaConversionException("Fail to convert enum values to Number.", e);
+                }
+            }
+        }
         if (parent != null) {
             // Add the item to the parent
             Schema<?> schemaForParent = schemasByItem.get(parent);
@@ -478,8 +507,9 @@ public class ConfigSwaggerConverter {
     private String generate$ref(ConfigItem item, String configName) {
         if (configName != null) {
             return REMOTE_REF_PATH + configName + SCHEMA_PATH + item.getName();
-        } else
+        } else {
             return SCHEMA_PATH + item.getName();
+        }
     }
 
     public void walk(ConfigItem parent, ConfigItem item, BiConsumer<ConfigItem, ConfigItem> consumer) {

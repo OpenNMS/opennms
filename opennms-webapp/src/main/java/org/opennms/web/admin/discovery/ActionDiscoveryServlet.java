@@ -290,6 +290,39 @@ public class ActionDiscoveryServlet extends HttpServlet {
             LOG.debug("Removing Exclude URL result = {}", result);
         }
 
+        //add an 'Exclude URL'
+        if(action.equals(addExcludeUrlAction)){
+            LOG.debug("Adding Exclude URL");
+            String url = request.getParameter("euurl");
+            String foreignSource = request.getParameter("euforeignsource");
+            String location = request.getParameter("eulocation");
+
+            ExcludeUrl eu = new ExcludeUrl();
+            eu.setUrl(url);
+
+            if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource().orElse(null))){
+                eu.setForeignSource(foreignSource);
+            }
+
+            if (!LocationUtils.doesLocationsMatch(location,
+                    config.getLocation().orElse(LocationUtils.DEFAULT_LOCATION_NAME))) {
+                eu.setLocation(location);
+            }
+
+            config.addExcludeUrl(eu);
+        }
+
+        //remove 'Exclude URL' from configuration
+        if(action.equals(removeExcludeUrlAction)){
+            LOG.debug("Removing Exclude URL");
+            String specificIndex = request.getParameter("index");
+            int index = WebSecurityUtils.safeParseInt(specificIndex);
+            final int index1 = index;
+            ExcludeUrl eu = config.getExcludeUrls().get(index1);
+            boolean result = config.removeExcludeUrl(eu);
+            LOG.debug("Removing Exclude URL result = {}", result);
+        }
+
         //add an 'Exclude Range'
         if (action.equals(addExcludeRangeAction)) {
             LOG.debug("Adding Exclude Range");

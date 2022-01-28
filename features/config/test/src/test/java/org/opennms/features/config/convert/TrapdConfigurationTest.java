@@ -28,10 +28,8 @@
 
 package org.opennms.features.config.convert;
 
-import com.atlassian.oai.validator.report.ValidationReport;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
@@ -40,8 +38,6 @@ import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
-
-import static org.junit.Assert.fail;
 
 public class TrapdConfigurationTest extends CmConfigTest<TrapdConfiguration> {
 
@@ -194,10 +190,7 @@ public class TrapdConfigurationTest extends CmConfigTest<TrapdConfiguration> {
 					+ "/>";
 			ConfigConverter converter = XsdHelper.getConverter(configDefinition);
 			String json = converter.xmlToJson(validConfig);
-			ValidationReport report = configDefinition.validate(json);
-			if(report.hasErrors()){
-				fail();
-			}
+			configDefinition.validate(json);
         } catch (Exception e) {
         }
 
@@ -208,10 +201,7 @@ public class TrapdConfigurationTest extends CmConfigTest<TrapdConfiguration> {
 					+ "/>";
 			ConfigConverter converter = XsdHelper.getConverter(configDefinition);
 			String json = converter.xmlToJson(missingPortConfig);
-			ValidationReport report = configDefinition.validate(json);
-			if(!report.hasErrors()){
-				fail();
-			}
+			configDefinition.validate(json);
         } catch (Exception e) {
         }
 
@@ -221,10 +211,7 @@ public class TrapdConfigurationTest extends CmConfigTest<TrapdConfiguration> {
 					+ "/>";
 			ConfigConverter converter = XsdHelper.getConverter(configDefinition);
 			String json = converter.xmlToJson(missingNewSuspectOnTrapConfig);
-			ValidationReport report = configDefinition.validate(json);
-			if(!report.hasErrors()){
-				fail();
-			}
+			configDefinition.validate(json);
         } catch (Exception e) {
         }
 
@@ -237,10 +224,7 @@ public class TrapdConfigurationTest extends CmConfigTest<TrapdConfiguration> {
 					+ "/>";
 			ConfigConverter converter = XsdHelper.getConverter(configDefinition);
 			String json = converter.xmlToJson(misspelledConfig);
-			ValidationReport report = configDefinition.validate(json);
-			if(!report.hasErrors()){
-				fail();
-			}
+			configDefinition.validate(json);
         } catch (Exception e) {
         }
 

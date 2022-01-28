@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -39,6 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigConverter;
+import org.opennms.features.config.exception.SchemaConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -51,10 +52,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.sax.SAXSource;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -97,8 +95,8 @@ public class JaxbXmlConverter implements ConfigConverter {
                 .filter(targetNamespace -> targetNamespace.contains("opennms")).collect(Collectors.toList());
 
         if (namespaces.size() != 1) {
-            LOG.error("XSD must contain one 'opennms' namespaces!");
-            throw new IllegalArgumentException("XSD must contain one 'opennms' namespaces!");
+            LOG.error("XSD must contain one 'opennms' namespace!");
+            throw new SchemaConversionException("XSD must contain one 'opennms' namespace!");
         }
 
         return new XmlSchema(xsdStr, namespaces.get(0), rootElement);
@@ -146,8 +144,7 @@ public class JaxbXmlConverter implements ConfigConverter {
                 return jsonStr;
             }
         } catch (JAXBException | SAXException e) {
-            LOG.warn("Exception: {} {}\nSource XML: {}", e.getClass(), e.getMessage(), sourceXml);
-            throw new RuntimeException(e);
+            throw new SchemaConversionException(sourceXml, e);
         }
     }
 
@@ -157,19 +154,29 @@ public class JaxbXmlConverter implements ConfigConverter {
      * @param json
      * @return json without empty value tag
      */
-    private JSONObject removeEmptyValueTag(JSONObject json) {
-        json.toMap().forEach((key, value) -> {
-            if (VALUE_TAG.equals(key) && value instanceof String && ((String) value).trim().length() == 0) {
+    public JSONObject removeEmptyValueTag(JSONObject json) {
+        Objects.requireNonNull(json);
+        final Set<String> keys = new HashSet<>(json.keySet());
+        for (String key : keys) {
+            Object value;
+            synchronized (this) {
+                if (!json.has(key))
+                    continue;
+                value = json.get(key);
+            }
+            // trim is important, it always contains return character
+            if (VALUE_TAG.equals(key) && value instanceof String && ((String) value).trim().isEmpty()) {
                 json.remove(key);
             } else if (value instanceof JSONObject) {
                 removeEmptyValueTag((JSONObject) value);
             } else if (value instanceof JSONArray) {
-                ((JSONArray) value).forEach(arrayItem -> {
-                    if (arrayItem instanceof JSONObject)
-                        this.removeEmptyValueTag((JSONObject) arrayItem);
+                ((JSONArray) value).forEach(item -> {
+                    if (item instanceof JSONObject) {
+                        this.removeEmptyValueTag((JSONObject) item);
+                    }
                 });
             }
-        });
+        }
         return json;
     }
 
@@ -177,7 +184,7 @@ public class JaxbXmlConverter implements ConfigConverter {
      * Help to replace XmlValue tag (value) to expected attributeName
      *
      * @param json
-     * @return json with replacedvalue
+     * @return json with replaced value
      */
     private JSONObject replaceXmlValueAttributeName(JSONObject json) {
         this.elementNameToValueNameMap.forEach((elementName, valueName) -> {
@@ -202,8 +209,9 @@ public class JaxbXmlConverter implements ConfigConverter {
                 this.replaceXmlValueAttributeName((JSONObject) value);
             } else if (value instanceof JSONArray) {
                 ((JSONArray) value).forEach(arrayItem -> {
-                    if (arrayItem instanceof JSONObject)
+                    if (arrayItem instanceof JSONObject) {
                         this.replaceXmlValueAttributeName((JSONObject) arrayItem);
+                    }
                 });
             }
         });
@@ -221,7 +229,7 @@ public class JaxbXmlConverter implements ConfigConverter {
         try (InputStream is = new ByteArrayInputStream(xsd.getBytes(StandardCharsets.UTF_8))) {
             return DynamicJAXBContextFactory.createContextFromXSD(is, null, null, null);
         } catch (JAXBException | IOException e) {
-            throw new RuntimeException(e);
+            throw new SchemaConversionException(xsd, e);
         }
     }
 

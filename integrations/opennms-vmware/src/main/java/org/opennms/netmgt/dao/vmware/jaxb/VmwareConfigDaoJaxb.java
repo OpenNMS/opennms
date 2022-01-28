@@ -28,16 +28,15 @@
 
 package org.opennms.netmgt.dao.vmware.jaxb;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The Class VmwareConfigDaoJaxb
@@ -60,7 +59,7 @@ public class VmwareConfigDaoJaxb extends AbstractCmJaxbConfigDao<VmwareConfig> i
 
 
     @PostConstruct
-    public void postConstruct() throws IOException {
+    public void postConstruct() {
         this.m_config = this.loadConfig(this.getDefaultConfigId());
     }
 

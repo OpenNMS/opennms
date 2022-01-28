@@ -13,7 +13,7 @@
 import { ref, onMounted, PropType, computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
-import { IFile } from "@/store/fileEditor/state"
+import { IFile } from '@/store/fileEditor/state'
 import { getExtensionFromFilenameSafely } from './utils'
 
 const store = useStore()
@@ -28,6 +28,7 @@ const props = defineProps({
     type: Object as PropType<IFile>
   }
 })
+// eslint-disable-next-line vue/no-setup-props-destructure
 const { item } = props
 
 const addNewFile = () => {
@@ -53,8 +54,7 @@ const addNewFile = () => {
 
   // check if it is a duplicated file name
   if (fileNames.value.includes(fullPath)) {
-    console.log('ran')
-    store.dispatch('fileEditorModule/addLog', { success: false, msg: `File not added: Duplicate file names are not allowed.` })
+    store.dispatch('fileEditorModule/addLog', { success: false, msg: 'File not added: Duplicate file names are not allowed.' })
     store.dispatch('fileEditorModule/setIsConsoleOpen', true)
     item.isHidden = true
     return

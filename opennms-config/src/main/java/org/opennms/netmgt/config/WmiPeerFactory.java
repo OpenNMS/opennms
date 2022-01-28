@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * This class is the main repository for WMI configuration information used by
  * the capabilities daemon. When this class is loaded it reads the WMI
  * configuration into memory, and uses the configuration to find the
- * {@link org.opennms.protocols.wmi.WmiAgentConfig WmiAgentConfig} objects for specific
+ * {@link org.opennms.netmgt.config.wmi.WmiAgentConfig WmiAgentConfig} objects for specific
  * addresses. If an address cannot be located in the configuration then a
  * default peer instance is returned to the caller.
  *
@@ -69,6 +69,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(WmiPeerFactory.class);
+    private static final String CONFIG_NAME = "wmi";
 
     /**
      * The singleton instance of this factory
@@ -76,10 +77,6 @@ public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
     private static WmiPeerFactory m_singleton = null;
 
     private WmiConfig m_config;
-
-    private static final String CONFIG_NAME = "wmi";
-
-    private static final String DEFAULT_CONFIG_ID = "default";
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -91,7 +88,7 @@ public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
     }
 
     @PostConstruct
-    public void postConstruct() throws IOException {
+    public void postConstruct() {
         reload();
     }
     /**
@@ -117,13 +114,8 @@ public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
     /**
      * Reload the config from the default config file
      *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be
-     *                read/loaded
-     * @throws java.io.IOException
-     *             if any.
      */
-    public void reload() throws IOException {
+    public void reload() {
         this.m_config = this.loadConfig(this.getDefaultConfigId());
     }
 
@@ -312,7 +304,7 @@ public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
      * <p>getAgentConfig</p>
      *
      * @param agentInetAddress a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.protocols.wmi.WmiAgentConfig} object.
+     * @return a {@link org.opennms.netmgt.config.wmi.WmiAgentConfig} object.
      */
     public synchronized WmiAgentConfig getAgentConfig(InetAddress agentInetAddress) {
 
@@ -436,10 +428,4 @@ public class WmiPeerFactory extends AbstractCmJaxbConfigDao<WmiConfig> {
     public String getConfigName() {
         return CONFIG_NAME;
     }
-
-    @Override
-    public String getDefaultConfigId() {
-        return DEFAULT_CONFIG_ID;
-    }
-
 }

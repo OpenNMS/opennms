@@ -20,7 +20,7 @@
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherIcon } from '@featherds/icon'
-import Error from "@featherds/icon/notification/Error"
+import Error from '@featherds/icon/notification/Error'
 import { FileEditorResponseLog } from '@/types'
 
 const store = useStore()

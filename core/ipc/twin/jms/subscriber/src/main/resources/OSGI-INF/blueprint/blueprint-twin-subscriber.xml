@@ -30,6 +30,7 @@
         <argument ref="minionIdentity"/>
         <argument ref="queuingservice"/>
         <argument ref="tracerRegistry"/>
+        <argument ref="metricRegistry"/>
         <argument value="${body.debug}"/>
     </bean>
 
@@ -53,5 +54,27 @@
         </route>
     </camelContext>
 
+    <!-- JMS Twin Metrics -->
+    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <service ref="metricRegistry" interface="com.codahale.metrics.MetricSet">
+        <service-properties>
+            <entry key="name" value="JMS Twin Subscriber" />
+            <entry key="description" value="JMS Twin Metrics on Minion" />
+        </service-properties>
+    </service>
+
+    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+        <argument ref="metricRegistry"/>
+    </bean>
+
+    <bean id="metricRegistryDomainedJmxReporterBuilder" factory-ref="metricRegistryJmxReporterBuilder" factory-method="inDomain">
+        <argument value="org.opennms.core.ipc.twin.subscriber"/>
+    </bean>
+
+    <bean id="metricRegistryJmxReporter"
+          factory-ref="metricRegistryJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
 
 </blueprint>

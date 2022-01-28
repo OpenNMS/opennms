@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.IOException;
-
-import javax.annotation.PostConstruct;
-
+import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -55,52 +55,47 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
         // move to postConstruct to prevent dao bean not ready
     }
 
+    /**
+     * <p>Constructor for LinkdConfigFactory.</p>
+     *
+     * @param config EnlinkdConfiguration.
+     */
+    public EnhancedLinkdConfigFactory(EnlinkdConfiguration config) {
+        this.config = config;
+    }
+
     @PostConstruct
-    public void postConstruct() throws IOException {
+    public void postConstruct() {
         reload();
     }
 
     /**
-     * <p>Constructor for LinkdConfigFactory.</p>
-     *
-     * @param currentVersion a long.
-     * @param stream a {@link java.io.InputStream} object.
-     * @throws java.io.IOException if any.
-     */
-
-
-    /** {@inheritDoc} */
-
-
-    /**
      * <p>reload</p>
      *
-     * @throws java.io.IOException if any.
      */
-
-
-    /**
-     * <p>reloadXML</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @throws java.io.IOException if any.
-     */
-
+    @Override
+    public void reload() {
+        getReadLock().lock();
+        this.config = this.loadConfig(this.getDefaultConfigId());
+        getReadLock().unlock();
+    }
 
     /**
      * Saves the current in-memory configuration to disk
      *
      * @throws java.io.IOException if any.
      */
-
+    public void save() throws IOException {
+        getWriteLock().lock();
+        try {
+            this.updateConfig(config);
+        } finally {
+            getWriteLock().unlock();
+        }
+    }
 
     @Override
     public String getConfigName() {
         return CONFIG_NAME;
-    }
-
-    @Override
-    public void reload() throws IOException {
-        m_config = this.loadConfig(this.getDefaultConfigId());
     }
 }

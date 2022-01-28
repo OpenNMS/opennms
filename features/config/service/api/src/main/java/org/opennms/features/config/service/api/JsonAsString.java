@@ -33,11 +33,12 @@ import com.google.common.base.Objects;
 /**
  * Ideally we would use JSONObject instead. BUT: we can't make Osgi and Spring to load only once. We run into
  * classloader problems when calling ConfigurationManagerService from Osgi. This is a workaround to still be type safe.
- * */
+ */
 public class JsonAsString {
     private final String json;
-    public JsonAsString (final String json) {
-        this.json = json;
+
+    public JsonAsString(final String json) {
+        this.json = java.util.Objects.requireNonNull(json);
     }
 
     @Override

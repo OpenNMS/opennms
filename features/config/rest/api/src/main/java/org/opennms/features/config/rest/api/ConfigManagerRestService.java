@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,8 +28,6 @@
 
 package org.opennms.features.config.rest.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -45,27 +43,20 @@ import javax.ws.rs.core.Response;
 public interface ConfigManagerRestService {
     /**
      * list registered configNames
+     *
      * @return
      */
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
     Response listConfigs();
 
-    /**
-     * get raw OpenApi schema (for debug use, <b>SHOULD REMOVE BEFORE PRODUCTION</b>)
-     * @param configName
-     * @return
-     */
     @GET
-    @Path("/schema/raw/{configName}")
-    Response getRawSchema(@PathParam("configName") String configName);
-
-    @GET
-    @Path("/schema/all")
-    Response getAllOpenApiSchema(@HeaderParam("accept") String acceptType, @Context HttpServletRequest request) throws JsonProcessingException;
+    @Path("/schema")
+    Response getAllOpenApiSchema(@HeaderParam("accept") String acceptType, @Context HttpServletRequest request);
 
     /**
      * get filtered OpenApi schema
+     *
      * @param configName
      * @param acceptType
      * @return
@@ -76,6 +67,7 @@ public interface ConfigManagerRestService {
 
     /**
      * get configIds
+     *
      * @param configName
      * @return
      */
@@ -85,6 +77,7 @@ public interface ConfigManagerRestService {
 
     /**
      * get config by configName and configId
+     *
      * @param configName
      * @param configId
      * @return
@@ -95,6 +88,7 @@ public interface ConfigManagerRestService {
 
     /**
      * add new config by
+     *
      * @param configName
      * @param configId
      * @param jsonStr
@@ -105,25 +99,24 @@ public interface ConfigManagerRestService {
     Response addConfig(@PathParam("configName") String configName, @PathParam("configId") String configId, String jsonStr);
 
     /**
-     *
      * @param configName
      * @param configId
      * @param jsonStr
+     * @param isReplace
      * @return
      */
     @PUT
     @Path("/{configName}/{configId}")
-    Response updateConfig(@PathParam("configName") String configName, @PathParam("configId") String configId, String jsonStr);
-
+    Response updateConfig(@PathParam("configName") String configName, @PathParam("configId") String configId, @QueryParam("replace") boolean isReplace, String jsonStr);
 
     /**
      * delete config by configName and configId
+     *
      * @param configName
      * @param configId
      * @return
      */
     @DELETE
-    @Consumes({MediaType.APPLICATION_JSON})
     @Path("/{configName}/{configId}")
     Response deleteConfig(@PathParam("configName") String configName, @PathParam("configId") String configId);
 }

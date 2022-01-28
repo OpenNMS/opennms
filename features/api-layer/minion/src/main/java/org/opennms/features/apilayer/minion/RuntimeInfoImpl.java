@@ -28,33 +28,14 @@
 
 package org.opennms.features.apilayer.minion;
 
-import java.util.Objects;
-
 import org.opennms.distributed.core.api.Identity;
-import org.opennms.features.apilayer.common.VersionBean;
+import org.opennms.features.apilayer.common.AbstractRuntimeInfo;
 import org.opennms.integration.api.v1.runtime.Container;
-import org.opennms.integration.api.v1.runtime.RuntimeInfo;
-import org.opennms.integration.api.v1.runtime.Version;
-import org.osgi.framework.FrameworkUtil;
 
-public class RuntimeInfoImpl implements RuntimeInfo {
-
-    private final Version version;
-    private final Identity identity;
+public class RuntimeInfoImpl extends AbstractRuntimeInfo {
 
     public RuntimeInfoImpl(Identity identity) {
-        version = new VersionBean(FrameworkUtil.getBundle(getClass()).getVersion().toString());
-        this.identity = Objects.requireNonNull(identity);
-    }
-
-    @Override
-    public Version getVersion() {
-        return version;
-    }
-
-    @Override
-    public boolean isMeridian() {
-        return version.getMajor() >= 2015;
+        super(identity);
     }
 
     @Override
@@ -62,13 +43,4 @@ public class RuntimeInfoImpl implements RuntimeInfo {
         return Container.MINION;
     }
 
-    @Override
-    public String getSystemId() {
-        return identity.getId();
-    }
-
-    @Override
-    public String getSystemLocation() {
-        return identity.getLocation();
-    }
 }

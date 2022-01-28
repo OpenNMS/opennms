@@ -74,7 +74,7 @@ public final class NotifdConfigFactory extends NotifdConfigManager {
     }
 
     @PostConstruct
-    public void postConstruct() throws IOException {
+    public void postConstruct() {
         reload();
     }
 
@@ -111,7 +111,7 @@ public final class NotifdConfigFactory extends NotifdConfigManager {
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
      */
-    public synchronized void reload() throws IOException {
+    public synchronized void reload() {
         configuration = this.loadConfig(this.getDefaultConfigId());
     }
 

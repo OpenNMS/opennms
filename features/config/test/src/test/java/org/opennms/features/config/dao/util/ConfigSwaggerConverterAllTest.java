@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -70,9 +70,9 @@ public class ConfigSwaggerConverterAllTest {
     @Before
     public void init() throws IOException {
         ConfigDefinition def = XsdHelper.buildConfigDefinition(CONFIG_NAME, XSD_PATH, TOP_ELEMENT,
-                ConfigurationManagerService.BASE_PATH);
+                ConfigurationManagerService.BASE_PATH, false);
         ConfigDefinition def2 = XsdHelper.buildConfigDefinition(CONFIG_NAME + "2", XSD2_PATH, TOP_ELEMENT,
-                ConfigurationManagerService.BASE_PATH);
+                ConfigurationManagerService.BASE_PATH, false);
         configurationManagerService.registerConfigDefinition(CONFIG_NAME, def);
         configurationManagerService.registerConfigDefinition(CONFIG_NAME + "2", def2);
     }
@@ -80,8 +80,7 @@ public class ConfigSwaggerConverterAllTest {
     @Test
     public void canConvertAllXsd() throws Exception {
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
-        Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinition();
-        Map<String, ConfigItem> items = new HashMap<>();
+        Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinitions();
         Map<String, OpenAPI> apis = new HashMap<>(defs.size());
         defs.forEach((key, def) -> {
             OpenAPI api = def.getSchema();

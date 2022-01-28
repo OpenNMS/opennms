@@ -9,7 +9,7 @@
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherIcon } from '@featherds/icon'
-import Close from "@featherds/icon/navigation/Cancel"
+import Close from '@featherds/icon/navigation/Cancel'
 
 const store = useStore()
 const snippets = computed(() => store.state.fileEditorModule.snippets)

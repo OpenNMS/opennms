@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -42,7 +42,7 @@ import java.io.IOException;
  * Custom serializer to prevent too much null write into database
  */
 public class OpenAPISerializer extends JsonSerializer<OpenAPI> {
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     public OpenAPISerializer() {
         mapper = Json.mapper();

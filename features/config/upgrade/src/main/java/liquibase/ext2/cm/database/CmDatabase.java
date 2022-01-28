@@ -28,6 +28,8 @@
 
 package liquibase.ext2.cm.database;
 
+import java.util.Objects;
+
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 
 import liquibase.database.core.PostgresDatabase;
@@ -43,7 +45,7 @@ public class CmDatabase extends PostgresDatabase {
     final ConfigurationManagerService configurationManager;
 
     public CmDatabase(final ConfigurationManagerService configurationManager) {
-        this.configurationManager = configurationManager;
+        this.configurationManager = Objects.requireNonNull(configurationManager);
     }
 
     @Override
