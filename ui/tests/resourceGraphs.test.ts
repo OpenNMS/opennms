@@ -44,7 +44,7 @@ test('Format statement', () => {
       renderer.texts.push(text)
     },
     drawNewline: () => {
-      renderer.texts.push('<br/>')
+      renderer.texts.push('\n')
     }
   }
 
@@ -59,7 +59,7 @@ test('Format statement', () => {
   assert.equal(renderer.texts.length, 5)
   assert.equal(renderer.texts[0], ' Avg: ')
   assert.equal(renderer.texts[1].trim(), '1.02k')
-  assert.equal(renderer.texts[4], '<br/>')
+  assert.equal(renderer.texts[4], '\n')
 })
 
 test.run()
