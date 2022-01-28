@@ -96,7 +96,7 @@ public class SnmpProfileMapperIT {
 
 
     @Test(timeout = 30000)
-    public void testSnmpProfileMapper() throws UnknownHostException {
+    public void testSnmpProfileMapper() {
 
         // timeout and ttl from first profile.
         int timeout = 5000;

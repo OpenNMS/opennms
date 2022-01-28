@@ -119,35 +119,6 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
             reload();
         }
 
-    /**
-         * <p>Constructor for SnmpPeerFactory.</p>
-         *
-         * @param resource a {@link org.springframework.core.io.Resource} object.
-         */
-       /* public SnmpPeerFactory(final Resource resource) {
-            LOG.debug("creating new instance for resource {}: {}", resource, this);
-
-            final SnmpConfig config = JaxbUtils.unmarshal(SnmpConfig.class, resource);
-
-            try {
-                final File file = resource.getFile();
-                if (file != null) {
-                    m_callback = new FileReloadCallback<SnmpConfig>() {
-                        @Override
-                        public SnmpConfig reload(final SnmpConfig object, final Resource resource) throws IOException {
-                            return JaxbUtils.unmarshal(SnmpConfig.class, resource);
-                        }
-                    };
-                    m_container = new FileReloadContainer<SnmpConfig>(config, resource, m_callback);
-                    return;
-                }
-            } catch (final IOException e) {
-                LOG.debug("No file associated with resource {}, skipping reload container initialization. Reason: ", resource, e.getMessage());
-            }
-
-            // if we fall through to here, then the file was null, or something else went wrong store the config directly
-            m_config = config;
-        }*/
 
         protected Lock getReadLock() {
             return m_readLock;
@@ -163,11 +134,6 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
 
         public static synchronized void init() throws IOException {
             if (!s_loaded.get()) {
-                /*final File cfgFile = getFile();
-                LOG.debug("init: config file path: {}", cfgFile.getPath());
-                final FileSystemResource resource = new FileSystemResource(cfgFile);
-
-                s_singleton = new SnmpPeerFactory(resource);*/
                 s_singleton = new SnmpPeerFactory();
                 s_loaded.set(true);
             }
