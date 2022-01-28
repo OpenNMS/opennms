@@ -15,14 +15,14 @@
         </template>
         <FeatherTabPanel>
           <div class="canvas-wrapper">
-            <canvas :id="definition"></canvas>
-            <div ref="legendRef" class="lc" :id="`${definition}-lc`"></div>
+            <canvas :id="`${label}-${definition}`"></canvas>
+            <div ref="legendRef" class="lc" :id="`${label}-${definition}-lc`"></div>
           </div>
         </FeatherTabPanel>
         <FeatherTabPanel>
           <div class="canvas-wrapper" v-if="graphData">
             <GraphDataTable
-              :definition="definition"
+              :id="`${label}-${definition}`"
               :convertedGraphData="convertedGraphDataRef"
               :graphData="graphData"
             />
@@ -104,7 +104,7 @@ const options = computed<ChartOptions>(() => ({
   plugins: {
     htmlLegend: {
       // ID of the container to put the legend in
-      containerID: `${props.definition}-lc`,
+      containerID: `${props.label}-${props.definition}-lc`,
     },
     legend: {
       display: false
@@ -280,7 +280,7 @@ const render = async (update?: boolean) => {
       chart.data = chartData.value
       chart.update()
     } else {
-      const ctx: any = document.getElementById(props.definition)
+      const ctx: any = document.getElementById(`${props.label}-${props.definition}`)
       chart = new Chart(ctx, {
         type: 'line',
         data: chartData.value,
@@ -319,7 +319,7 @@ onMounted(() => render())
   z-index: 1;
 }
 .lc {
-  @include body-small
+  @include body-small;
 }
 </style>
 

@@ -45,18 +45,16 @@ const getGraphDefinitionsByResourceIds = async (context: ActionContext<State, an
       definitions = [...definitions, ...result.name]
     }
 
-    const uniqueDefinitions = uniq(definitions)
-
     // sorts by order preFabGraph order value
     const sortedDefinitions = sortBy(
-      uniqueDefinitions.map((definition) => ({ name: definition, order: context.state.nameOrderMap[definition] })),
+      definitions.map((definition) => ({ name: definition, order: context.state.nameOrderMap[definition] })),
       ['order']
     ).map((definition) => definition.name)
 
     idsWithDefinitions = [...idsWithDefinitions, { id, definitions: sortedDefinitions, label: getLabelFromId(id) }]
   }
 
-  const totalDefinitionsList = idsWithDefinitions.map((item) => item.definitions).flat()
+  const totalDefinitionsList = uniq(idsWithDefinitions.map((item) => item.definitions).flat())
 
   context.commit('SAVE_DEFINITIONS_LIST', totalDefinitionsList)
   context.commit('SAVE_DEFINITIONS', idsWithDefinitions)
