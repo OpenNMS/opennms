@@ -1,5 +1,5 @@
 name: horizon
-version: '29.0.6-SNAPSHOT'
+version: '29-SNAPSHOT'
 title: Horizon
 prerelease: true
 asciidoc:
@@ -31,3 +31,4 @@ nav:
 - modules/operation/nav.adoc
 - modules/development/nav.adoc
 - modules/reference/nav.adoc
+
