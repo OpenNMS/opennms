@@ -32,6 +32,7 @@ import static liquibase.ext2.cm.change.ConfigFileUtil.asString;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.features.config.dao.api.ConfigDefinition;
@@ -58,6 +59,10 @@ public class ImportConfigurationUtil {
             final Resource configResource,
             final ConfigUpdateInfo configurationIdentifier,
             final Path archivePath) {
+        Objects.requireNonNull(configurationManagerService);
+        Objects.requireNonNull(configResource);
+        Objects.requireNonNull(configurationIdentifier);
+        Objects.requireNonNull(archivePath);
         LOG.info("Importing configuration from {} for {}", configResource.getFilename(), configurationIdentifier);
         try {
             Optional<ConfigDefinition> configDefinition = configurationManagerService.getRegisteredConfigDefinition(configurationIdentifier.getConfigName());

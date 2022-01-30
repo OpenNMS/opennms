@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.opennms.features.config.exception.ConfigIOException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.FileCopyUtils;
@@ -94,7 +95,7 @@ class ConfigFileUtil {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ConfigIOException("An Exception occurred while trying to find files for " + resourcePattern, e);
         }
         return configs;
     }

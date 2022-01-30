@@ -28,21 +28,33 @@
 
 package liquibase.ext2.cm.change;
 
+import java.util.Objects;
+
 public class Substring {
 
     private String value;
 
     public Substring(String value) {
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
     }
 
     public Substring getBeforeLast(String delimiter) {
-        this.value = this.value.substring(0, this.value.lastIndexOf(delimiter));
+        int index = this.value.lastIndexOf(delimiter);
+        if(index > -1) {
+            this.value = this.value.substring(0, this.value.lastIndexOf(delimiter));
+        } else {
+            // we keep the current string
+        }
         return this;
     }
 
     public Substring getAfterLast(String delimiter) {
-        this.value = this.value.substring(this.value.lastIndexOf(delimiter) + delimiter.length());
+        int index = this.value.lastIndexOf(delimiter);
+        if(index > -1) {
+            this.value = this.value.substring(this.value.lastIndexOf(delimiter) + delimiter.length());
+        } else {
+            this.value = "";
+        }
         return this;
     }
 

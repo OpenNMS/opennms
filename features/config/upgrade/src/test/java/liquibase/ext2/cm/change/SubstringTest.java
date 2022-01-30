@@ -26,38 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.osgi.cm;
 
-import java.util.Objects;
+package liquibase.ext2.cm.change;
 
-import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import static org.junit.Assert.*;
 
-public class CmIdentifierUtil {
+import org.junit.Test;
 
-    final static String CONFIG_ID = "default";
+public class SubstringTest {
 
-    public static ConfigUpdateInfo pidToCmIdentifier(String pid) {
-        Objects.requireNonNull(pid);
-        String configName;
-        String configId;
-        int lastIndexOf = pid.lastIndexOf("-");
-        if (lastIndexOf > 0) {
-            configName = pid.substring(0, lastIndexOf);
-            configId = pid.substring(lastIndexOf + 1);
-        } else {
-            configName = pid;
-            configId = CONFIG_ID;
-        }
-        return new ConfigUpdateInfo(configName, configId);
+    @Test
+    public void shouldDoBeforeLastIndex() {
+        assertEquals("abc-def", new Substring("abc-def-ghi").getBeforeLast("-").toString());
+        assertEquals("-abc-def-", new Substring("-abc-def-ghi").getBeforeLast("-").toString());
+        assertEquals("-abc", new Substring("").getBeforeLast("-").toString());
+        assertEquals("abc", new Substring("abc").getBeforeLast("-").toString());
     }
 
-    public static String cmIdentifierToPid(ConfigUpdateInfo identifier) {
-        Objects.requireNonNull(identifier);
-        StringBuilder b = new StringBuilder(identifier.getConfigName());
-        if (!CONFIG_ID.equals(identifier.getConfigId())) {
-            b.append("-")
-                    .append(identifier.getConfigId());
-        }
-        return b.toString();
+    @Test
+    public void shouldDoAfterLastIndex() {
+        assertEquals("abc-def", new Substring("def").getAfterLast("-").toString());
+        assertEquals("", new Substring("-abc-def-ghi-").getAfterLast("-").toString());
+        assertEquals("-", new Substring("").getAfterLast("-").toString());
+        assertEquals("", new Substring("abc").getAfterLast("-").toString());
     }
+
 }
