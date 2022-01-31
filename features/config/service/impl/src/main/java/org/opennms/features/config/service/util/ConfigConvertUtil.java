@@ -28,6 +28,7 @@
 
 package org.opennms.features.config.service.util;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +40,15 @@ public class ConfigConvertUtil {
     private static final ObjectMapper mapper = new ObjectMapper().registerModule(new Jdk8Module())
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
             .setPropertyNamingStrategy(new PropertyNamingStrategies.KebabCaseStrategy());
+
+    static {
+        ConfigConvertUtil.mapper.setVisibility(
+                ConfigConvertUtil.mapper.getSerializationConfig().getDefaultVisibilityChecker()
+                        .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+                        .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                        .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+                        .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
+    }
 
     private ConfigConvertUtil() {
         throw new IllegalStateException("Utility class");

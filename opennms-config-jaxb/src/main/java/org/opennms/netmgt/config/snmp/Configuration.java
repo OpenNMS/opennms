@@ -30,12 +30,11 @@ package org.opennms.netmgt.config.snmp;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.Serializable;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 @XmlRootElement(name="configuration")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -174,7 +173,6 @@ public class Configuration implements Serializable {
      * Default number of retries
      */
     @XmlAttribute(name="retry")
-    @JsonProperty("retry")
     private Integer retry;
 
     /**
@@ -182,11 +180,9 @@ public class Configuration implements Serializable {
      * requests are sent.
      */
     @XmlAttribute(name="port")
-    @JsonProperty("port")
     private Integer port;
 
     @XmlAttribute(name="ttl")
-    @JsonProperty("ttl")
     private Long ttl;
 
     public Configuration() {
@@ -781,7 +777,7 @@ public class Configuration implements Serializable {
     }
 
     public void setTTL(Long ttl) {
-        ttl = ttl;
+        this.ttl = ttl;
     }
 
     @Override

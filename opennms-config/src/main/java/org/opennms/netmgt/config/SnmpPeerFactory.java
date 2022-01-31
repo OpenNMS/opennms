@@ -105,18 +105,22 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
 
         private FileReloadCallback<SnmpConfig> m_callback;
 
-        public SnmpPeerFactory() throws IOException {
+        // for init use only
+        private SnmpPeerFactory() {
             super(SnmpConfig.class, "snmp Config");
         }
 
-        public SnmpPeerFactory (SnmpConfig config) {
+        public SnmpPeerFactory (SnmpConfig config) throws IOException {
             super(SnmpConfig.class, "snmp Config");
             this.m_config = config;
+            s_loaded.set(true);
         }
 
         @PostConstruct
         public void postConstruct() throws IOException {
-            reload();
+            if (!s_loaded.get()) {
+                reload();
+            }
         }
 
 
@@ -130,6 +134,7 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
 
         public void reload() {
             this.m_config = this.loadConfig(this.getDefaultConfigId());
+            s_loaded.set(true);
         }
 
         public static synchronized void init() throws IOException {
