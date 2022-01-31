@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.flows.classification.internal.csv;
 
-import static org.easymock.EasyMock.createNiceMock;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -62,7 +61,7 @@ public class CsvServiceTest {
     @Test
     public void verifyExportForEmptyRule() {
         // create a csv for a completely empty rule
-        final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
+        final CsvService csvService = new CsvServiceImpl(org.mockito.Mockito.mock(RuleValidator.class));
         final Rule rule = new RuleBuilder().withGroup(group).withName("dummy").build();
         final String response = csvService.createCSV(Lists.newArrayList(rule));
         final String[] rows = response.split("\n");
@@ -75,7 +74,7 @@ public class CsvServiceTest {
     @Test
     public void verifyExportForFullyDefinedRule() {
         // create a csv for a completely empty rule
-        final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
+        final CsvService csvService = new CsvServiceImpl(org.mockito.Mockito.mock(RuleValidator.class));
         final Rule rule = new RuleBuilder()
                 .withGroup(group)
                 .withName("dummy")
@@ -95,7 +94,7 @@ public class CsvServiceTest {
 
     @Test
     public void verifyParsingFullyDefined() {
-        final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
+        final CsvService csvService = new CsvServiceImpl(org.mockito.Mockito.mock(RuleValidator.class));
         final List<Rule> rules = csvService.parseCSV(group,
                 new ByteArrayInputStream(
                         ("dummy;tcp,udp,icmp;10.0.0.1;55555;8.8.8.8;80,1234;categoryName = 'Databases';true").getBytes()),
@@ -116,7 +115,7 @@ public class CsvServiceTest {
 
     @Test
     public void verifyParsingEmpty() {
-        final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
+        final CsvService csvService = new CsvServiceImpl(org.mockito.Mockito.mock(RuleValidator.class));
 
         final List<Rule> rules = csvService.parseCSV(group, new ByteArrayInputStream(";;;;;;;".getBytes()), false).getRules();
         assertThat(rules, hasSize(1));
@@ -131,7 +130,7 @@ public class CsvServiceTest {
 
     @Test
     public void verifyParsingWithErrors() {
-        final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
+        final CsvService csvService = new CsvServiceImpl(org.mockito.Mockito.mock(RuleValidator.class));
         final CsvImportResult csvImportResult = csvService.parseCSV(group, new ByteArrayInputStream("\n\n".getBytes()), false);
         assertThat(csvImportResult.getErrorMap().size(), is(2));
     }
