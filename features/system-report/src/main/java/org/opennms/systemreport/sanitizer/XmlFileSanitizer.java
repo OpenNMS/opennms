@@ -65,7 +65,8 @@ public class XmlFileSanitizer implements ConfigFileSanitizer {
 
     private final Transformer transformer;
 
-    private final Set<String> ATTRIBUTES_TO_SANITIZE = new LinkedHashSet<>(Arrays.asList("password", "authen-password", "oauth-consumer-secret", "oauth-access-token-secret", "writeCommunity"));
+    private final Set<String> ATTRIBUTES_TO_SANITIZE = new LinkedHashSet<>(Arrays.asList("password", "authen-password", "oauth-consumer-secret", "oauth-access-token-secret", "writeCommunity", "auth-passphrase", "privacy-passphrase",
+            "read-community", "write-community"));
 
     private final Set<String> PARAM_KEYS_TO_SANITIZE = new LinkedHashSet<>(Arrays.asList("password", "j_password", "login:command/password"));
 
@@ -132,7 +133,7 @@ public class XmlFileSanitizer implements ConfigFileSanitizer {
 
     private int replaceParamValue(Node rootNode, String keyName) throws XPathExpressionException {
         NodeList nodesWithAttribute = (NodeList) xPath.evaluate(String.format("//*[@key='%s']", keyName),
-                    rootNode, XPathConstants.NODESET);
+                rootNode, XPathConstants.NODESET);
 
         for (int i = 0; i < nodesWithAttribute.getLength(); i++) {
             if (nodesWithAttribute.item(i).getAttributes().getNamedItem("value") != null) {
@@ -145,7 +146,7 @@ public class XmlFileSanitizer implements ConfigFileSanitizer {
 
     private int replaceTagValue(Node rootNode, String tagName) throws XPathExpressionException {
         NodeList nodesWithAttribute = (NodeList) xPath.evaluate(String.format("//%s", tagName),
-                    rootNode, XPathConstants.NODESET);
+                rootNode, XPathConstants.NODESET);
 
         for (int i = 0; i < nodesWithAttribute.getLength(); i++) {
             nodesWithAttribute.item(i).setTextContent(SANITIZED_VALUE);

@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 public class PropertiesFileSanitizer implements ConfigFileSanitizer {
 
-    private static final Set<String> PROPERTIES_TO_SANITIZE = new LinkedHashSet<>(Arrays.asList("password", "pass", "trustStorePassword"));
+    private static final Set<String> PROPERTIES_TO_SANITIZE = new LinkedHashSet<>(Arrays.asList("password", "pass", "authenticatePassword", "truststorePassword"));
 
     private final String SANITIZED_VALUE = "***";
 

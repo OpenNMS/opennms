@@ -28,6 +28,7 @@
 
 package org.opennms.systemreport.opennms;
 
+import org.opennms.netmgt.config.snmpmetadata.Config;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.opennms.systemreport.sanitizer.ConfigurationSanitizer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,10 @@ public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
     @Override
     public boolean getOutputsFiles() {
         return true;
+    }
+
+    protected void setConfigurationSanitizer(ConfigurationSanitizer configurationSanitizer) {
+        this.configurationSanitizer = configurationSanitizer;
     }
 
     @Override

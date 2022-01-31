@@ -40,7 +40,7 @@ public class ConfigurationSanitizer {
 
     private final Map<String, ConfigFileSanitizer> sanitizers = new HashMap<>();
 
-    public ConfigurationSanitizer(XmlFileSanitizer xmlFileSanitizer, PropertiesFileSanitizer propertiesFileSanitizer) {
+    public ConfigurationSanitizer(ConfigFileSanitizer xmlFileSanitizer, ConfigFileSanitizer propertiesFileSanitizer) {
         // TODO Refactor to depend on a list of ConfigFileSanitizer instead of individual beans
         sanitizers.put(xmlFileSanitizer.getFileType(), xmlFileSanitizer);
         sanitizers.put(propertiesFileSanitizer.getFileType(), propertiesFileSanitizer);
