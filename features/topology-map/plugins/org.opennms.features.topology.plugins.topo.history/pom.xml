@@ -47,11 +47,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.features.topology</groupId>
             <artifactId>org.opennms.features.topology.app</artifactId>
             <version>${project.version}</version>

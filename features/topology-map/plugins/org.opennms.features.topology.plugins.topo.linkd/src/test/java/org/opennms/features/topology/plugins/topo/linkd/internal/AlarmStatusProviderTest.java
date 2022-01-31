@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,10 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -37,16 +41,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.easymock.EasyMock;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Ref;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
@@ -61,13 +65,16 @@ public class AlarmStatusProviderTest {
     
     @Before
     public void setUp() {
-        m_alarmDao = EasyMock.createMock(AlarmDao.class);
+        m_alarmDao = mock(AlarmDao.class);
         m_statusProvider = new LinkdStatusProvider(m_alarmDao);
 
-        m_graph = EasyMock.createMock(BackendGraph.class);
-        EasyMock.replay(m_graph);
+        m_graph = mock(BackendGraph.class);
     }
     
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_graph);
+    }
     
     @Test
     public void testGetAlarmStatus() {
@@ -76,19 +83,14 @@ public class AlarmStatusProviderTest {
         Vertex vertex3 = createVertex(3);
         List<VertexRef> vertexList = Lists.newArrayList(vertex, vertex2, vertex3);
 
-        EasyMock.expect(
-                m_alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(EasyMock.anyObject())).andReturn(createNormalAlarmSummaryList());
-        
-        EasyMock.replay(m_alarmDao);
-        
+        when(m_alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(any())).thenReturn(createNormalAlarmSummaryList());
+
         Map<VertexRef, Status> statusMap = m_statusProvider.getStatusForVertices(m_graph, vertexList, new Criteria[0]);
         assertEquals(3, statusMap.size());
         assertEquals(vertex, statusMap.keySet().stream().sorted(Comparator.comparing(Ref::getId)).collect(Collectors.toList()).get(0));
         assertEquals("major", statusMap.get(vertex).computeStatus()); // use defined status
         assertEquals("normal", statusMap.get(vertex2).computeStatus()); // fallback to normal
         assertEquals("indeterminate", statusMap.get(vertex3).computeStatus()); // use defined status
-        
-        EasyMock.verify(m_alarmDao);
     }
 
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,10 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
-import org.easymock.EasyMock;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
@@ -45,8 +48,8 @@ public class BusinessServiceGraphTest {
     @Test
     public void testVertexRefId() {
         // Mock the manager to return a node label
-        BusinessServiceManager managerMock = EasyMock.createNiceMock(BusinessServiceManager.class);
-        EasyMock.expect(managerMock.getNodeById(EasyMock.anyInt())).andReturn(new Node() {
+        BusinessServiceManager managerMock = mock(BusinessServiceManager.class);
+        when(managerMock.getNodeById(anyInt())).thenReturn(new Node() {
             @Override
             public String getLabel() {
                 return "localhost";
@@ -56,8 +59,7 @@ public class BusinessServiceGraphTest {
             public Integer getId() {
                 return 1;
             }
-        }).anyTimes();
-        EasyMock.replay(managerMock);
+        });
 
         // create 3 business service vertices, where the first 2 should be equal
         BusinessServiceEntityBuilder builder = new BusinessServiceEntityBuilder().id(10L).name("Name");
@@ -102,7 +104,5 @@ public class BusinessServiceGraphTest {
         Assert.assertSame(rkVertex2, businessServiceGraph.getVertex(rkVertex2));
         Assert.assertNotSame(rkVertex1, businessServiceGraph.getVertex(rkVertex3));
         Assert.assertSame(rkVertex3, businessServiceGraph.getVertex(rkVertex3));
-
-        EasyMock.verify(managerMock);
     }
 }

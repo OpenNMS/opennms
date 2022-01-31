@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,13 +30,14 @@ package org.opennms.features.topology.app.internal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.Graph;
@@ -223,12 +224,11 @@ public class OSGiVerticesUpdateManagerTest {
     private GraphContainer createGraph(int... vertIds) {
         final List<Vertex> vertexRefsWithIds = createVerticsWithIds(vertIds);
 
-        final Graph graphMock = EasyMock.createNiceMock(Graph.class);
-        final GraphContainer graphContainerMock = EasyMock.createNiceMock(GraphContainer.class);
+        final Graph graphMock = mock(Graph.class);
+        final GraphContainer graphContainerMock = mock(GraphContainer.class);
 
-        EasyMock.expect(graphMock.getDisplayVertices()).andReturn(vertexRefsWithIds).anyTimes();
-        EasyMock.expect(graphContainerMock.getGraph()).andReturn(graphMock).anyTimes();
-        EasyMock.replay(graphMock, graphContainerMock);
+        when(graphMock.getDisplayVertices()).thenReturn(vertexRefsWithIds);
+        when(graphContainerMock.getGraph()).thenReturn(graphMock);
 
         return graphContainerMock;
     }
