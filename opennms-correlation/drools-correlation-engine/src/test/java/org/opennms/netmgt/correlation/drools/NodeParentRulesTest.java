@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,28 +28,26 @@
 
 package org.opennms.netmgt.correlation.drools;
 
-import static org.easymock.EasyMock.expect;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.mock.EasyMockUtils;
 
 
 public class NodeParentRulesTest extends CorrelationRulesTestCase {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    
     @Test
     public void testParentNodeDown() throws Exception {
         
         //anticipate(createRootCauseEvent(1, 1));
         
-        NodeService nodeService = m_mocks.createMock(NodeService.class);
+        NodeService nodeService = mock(NodeService.class);
         
-        expect(nodeService.getParentNode(1L)).andReturn(null).atLeastOnce();
-        
-        m_mocks.replayAll();
+        when(nodeService.getParentNode(1L)).thenReturn(null);
         
         DroolsCorrelationEngine engine = findEngineByName("nodeParentRules");
         engine.setGlobal("nodeService", nodeService);
@@ -58,8 +56,8 @@ public class NodeParentRulesTest extends CorrelationRulesTestCase {
 
         // event + root cause
         m_anticipatedMemorySize = 2;
-        
-        m_mocks.verifyAll();
+
+        Mockito.verify(nodeService, atLeastOnce()).getParentNode(1L);
         verify(engine);
         
         anticipate(createRootCauseResolvedEvent(1, 1));
@@ -68,14 +66,7 @@ public class NodeParentRulesTest extends CorrelationRulesTestCase {
     
     private Event createRootCauseResolvedEvent(int symptom, int cause) {
         return new EventBuilder(createNodeEvent("rootCauseResolved", cause)).getEvent();
-
     }
-
-    // Currently unused
-//    private Event createRootCauseEvent(int symptom, int cause) {
-//        return new EventBuilder(createNodeEvent("rootCauseEvent", cause)).getEvent();
-//    }
-
 
     public Event createNodeDownEvent(int nodeid) {
         return createNodeEvent(EventConstants.NODE_DOWN_EVENT_UEI, nodeid);
