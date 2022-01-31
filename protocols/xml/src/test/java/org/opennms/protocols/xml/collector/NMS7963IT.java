@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,16 @@
 
 package org.opennms.protocols.xml.collector;
 
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.easymock.EasyMock;
 import org.jrobin.core.Datasource;
 import org.jrobin.core.RrdDb;
 import org.junit.After;
@@ -48,6 +52,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.http.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.test.http.annotations.Webapp;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -64,7 +69,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
-import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlDataCollectionConfig;
 import org.opennms.protocols.xml.config.XmlRrd;
@@ -121,15 +125,14 @@ public class NMS7963IT {
         m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
         m_persisterFactory.setRrdStrategy(m_rrdStrategy);
 
-        m_collectionAgent = new MockCollectionAgent(1, "mynode.local", InetAddrUtils.addr("127.0.0.1"));
+        m_collectionAgent = new MockCollectionAgent(1, "mynode.local", InetAddressUtils.addr("127.0.0.1"));
 
-        m_nodeDao = EasyMock.createMock(NodeDao.class);
+        m_nodeDao = mock(NodeDao.class);
         OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setLabel("mynode.local");
         node.setAssetRecord(new OnmsAssetRecord());
-        EasyMock.expect(m_nodeDao.get(1)).andReturn(node).anyTimes();
-        EasyMock.replay(m_nodeDao);
+        when(m_nodeDao.get(1)).thenReturn(node);
     }
 
     /**
@@ -139,7 +142,7 @@ public class NMS7963IT {
      */
     @After
     public void tearDown() throws Exception {
-        EasyMock.verify(m_nodeDao);
+        verify(m_nodeDao, atLeastOnce()).get(1);
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
@@ -177,7 +180,7 @@ public class NMS7963IT {
         Assert.assertEquals(1, jrb.getDsCount());
         Datasource ds = jrb.getDatasource("xml-wipo-paco");
         Assert.assertNotNull(ds);
-        Assert.assertEquals(new Double(903), Double.valueOf(ds.getLastValue()));
+        Assert.assertEquals(Double.valueOf(903), Double.valueOf(ds.getLastValue()));
     }
 
     /**

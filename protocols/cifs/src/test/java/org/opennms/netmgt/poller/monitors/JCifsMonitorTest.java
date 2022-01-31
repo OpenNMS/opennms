@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,17 +28,17 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.isA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.powermock.api.easymock.PowerMock.createNiceMock;
-import static org.powermock.api.easymock.PowerMock.expectNew;
-import static org.powermock.api.easymock.PowerMock.replay;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Map;
@@ -80,35 +80,37 @@ public class JCifsMonitorTest {
 
     @Before
     public void setUp() throws Exception {
-        mockSmbFileValidPath = createNiceMock(SmbFile.class);
-        expect(mockSmbFileValidPath.exists()).andReturn(true).anyTimes();
-        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://10.123.123.123/validPath"), isA(CIFSContext.class)).andReturn(mockSmbFileValidPath).anyTimes();
+        jcifs.Config.registerSmbURLHandler();
 
-        mockSmbFileInvalidPath = createNiceMock(SmbFile.class);
-        expect(mockSmbFileInvalidPath.exists()).andReturn(false).anyTimes();
-        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://10.123.123.123/invalidPath"), isA(CIFSContext.class)).andReturn(mockSmbFileInvalidPath).anyTimes();
+        mockSmbFileValidPath = mock(SmbFile.class);
+        when(mockSmbFileValidPath.exists()).thenReturn(true);
+        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://10.123.123.123/validPath"), isA(CIFSContext.class)).thenReturn(mockSmbFileValidPath);
 
-        mockSmbFolderEmpty = createNiceMock(SmbFile.class);
-        expect(mockSmbFolderEmpty.exists()).andReturn(true).anyTimes();
-        expect(mockSmbFolderEmpty.list((SmbFilenameFilter) anyObject())).andReturn(new String[]{}).anyTimes();
-        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://10.123.123.123/folderEmpty"), isA(CIFSContext.class)).andReturn(mockSmbFolderEmpty).anyTimes();
+        mockSmbFileInvalidPath = mock(SmbFile.class);
+        when(mockSmbFileInvalidPath.exists()).thenReturn(false);
+        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://10.123.123.123/invalidPath"), isA(CIFSContext.class)).thenReturn(mockSmbFileInvalidPath);
 
-        mockSmbFolderNotEmpty = createNiceMock(SmbFile.class);
-        expect(mockSmbFolderNotEmpty.exists()).andReturn(true).anyTimes();
-        expect(mockSmbFolderNotEmpty.list((SmbFilenameFilter) anyObject())).andReturn(new String[]{"ABCD", "ACBD", "DCBA", "DABC"}).anyTimes();
-        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://10.123.123.123/folderNotEmpty"), isA(CIFSContext.class)).andReturn(mockSmbFolderNotEmpty).anyTimes();
+        mockSmbFolderEmpty = mock(SmbFile.class);
+        when(mockSmbFolderEmpty.exists()).thenReturn(true);
+        when(mockSmbFolderEmpty.list(any(SmbFilenameFilter.class))).thenReturn(new String[]{});
+        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://10.123.123.123/folderEmpty"), isA(CIFSContext.class)).thenReturn(mockSmbFolderEmpty);
 
-        mockSmbFileSmbException = createNiceMock(SmbFile.class);
-        expect(mockSmbFileSmbException.exists()).andThrow(new SmbException(SmbException.ERROR_ACCESS_DENIED, true));
-        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://10.123.123.123/smbException"), isA(CIFSContext.class)).andReturn(mockSmbFileSmbException).anyTimes();
+        mockSmbFolderNotEmpty = mock(SmbFile.class);
+        when(mockSmbFolderNotEmpty.exists()).thenReturn(true);
+        when(mockSmbFolderNotEmpty.list(any(SmbFilenameFilter.class))).thenReturn(new String[]{"ABCD", "ACBD", "DCBA", "DABC"});
+        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://10.123.123.123/folderNotEmpty"), isA(CIFSContext.class)).thenReturn(mockSmbFolderNotEmpty);
 
-        mockSmbFileMalformedUrlException = createNiceMock(SmbFile.class);
-        expect(mockSmbFileMalformedUrlException.exists()).andThrow(new SmbException(SmbException.ERROR_ACCESS_DENIED, true));
-        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://10.123.123.123/malformedUrlException"), isA(CIFSContext.class)).andReturn(mockSmbFileMalformedUrlException).anyTimes();
+        mockSmbFileSmbException = mock(SmbFile.class);
+        when(mockSmbFileSmbException.exists()).thenThrow(new SmbException(SmbException.ERROR_ACCESS_DENIED, true));
+        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://10.123.123.123/smbException"), isA(CIFSContext.class)).thenReturn(mockSmbFileSmbException);
 
-        mockSmbFileSmbHost = createNiceMock(SmbFile.class);
-        expect(mockSmbFileSmbHost.exists()).andThrow(new SmbException(SmbException.ERROR_ACCESS_DENIED, true));
-        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://192.168.0.123/smbException"), isA(CIFSContext.class)).andReturn(mockSmbFileSmbHost).anyTimes();
+        mockSmbFileMalformedUrlException = mock(SmbFile.class);
+        when(mockSmbFileMalformedUrlException.exists()).thenThrow(new SmbException(SmbException.ERROR_ACCESS_DENIED, true));
+        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://10.123.123.123/malformedUrlException"), isA(CIFSContext.class)).thenThrow(new MalformedURLException("nah, you blew it buddy"));
+
+        mockSmbFileSmbHost = mock(SmbFile.class);
+        when(mockSmbFileSmbHost.exists()).thenThrow(new SmbException(SmbException.ERROR_ACCESS_DENIED, true));
+        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://192.168.0.123/smbException"), isA(CIFSContext.class)).thenReturn(mockSmbFileSmbHost);
     }
 
     @Test
@@ -118,7 +120,7 @@ public class JCifsMonitorTest {
 
         Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
 
-        replay(mockSmbFolderEmpty, mockSmbFolderNotEmpty, mockSmbFileValidPath, mockSmbFileInvalidPath, SmbFile.class);
+        // replay(mockSmbFolderEmpty, mockSmbFolderNotEmpty, mockSmbFileValidPath, mockSmbFileInvalidPath, SmbFile.class);
 
         JCifsMonitor jCifsMonitor = new JCifsMonitor();
 
@@ -146,7 +148,7 @@ public class JCifsMonitorTest {
         m.put("path", "/invalidPath");
 
         pollStatus = jCifsMonitor.poll(svc, m);
-        assertEquals(PollStatus.down(), pollStatus);
+        assertEquals(PollStatus.down(""), pollStatus);
 
         /*
          * checking path does exist and mode is PATH_NOT_EXIST => down
@@ -158,7 +160,7 @@ public class JCifsMonitorTest {
         m.put("path", "/validPath");
 
         pollStatus = jCifsMonitor.poll(svc, m);
-        assertEquals(PollStatus.down(), pollStatus);
+        assertEquals(PollStatus.down(""), pollStatus);
 
         /*
          * checking path does not exist and mode is PATH_NOT_EXIST => up
@@ -182,7 +184,7 @@ public class JCifsMonitorTest {
         m.put("path", "/folderNotEmpty");
 
         pollStatus = jCifsMonitor.poll(svc, m);
-        assertEquals(PollStatus.down(), pollStatus);
+        assertEquals(PollStatus.down(""), pollStatus);
 
         /*
          * checking folder empty and mode is FOLDER_EMPTY => up
@@ -218,7 +220,7 @@ public class JCifsMonitorTest {
         m.put("path", "/folderEmpty");
 
         pollStatus = jCifsMonitor.poll(svc, m);
-        assertEquals(PollStatus.down(), pollStatus);
+        assertEquals(PollStatus.down(""), pollStatus);
 
         /*
          * checking for invalid mode => down
@@ -230,7 +232,7 @@ public class JCifsMonitorTest {
         m.put("path", "/folderEmpty");
 
         pollStatus = jCifsMonitor.poll(svc, m);
-        assertEquals(PollStatus.unknown(), pollStatus);
+        assertEquals(PollStatus.unknown(""), pollStatus);
 
         /*
          * checking for SmbException => down
@@ -242,7 +244,7 @@ public class JCifsMonitorTest {
         m.put("path", "/smbException");
 
         pollStatus = jCifsMonitor.poll(svc, m);
-        assertEquals(PollStatus.down(), pollStatus);
+        assertEquals(PollStatus.down(""), pollStatus);
 
         /*
          * checking for MalformedUrlException => down
@@ -254,7 +256,8 @@ public class JCifsMonitorTest {
         m.put("path", "/malformedUrlException");
 
         pollStatus = jCifsMonitor.poll(svc, m);
-        assertEquals(PollStatus.down(), pollStatus);
+        assertEquals(PollStatus.down(""), pollStatus);
+        assertTrue("'" + pollStatus.getReason() + "' should contain 'you blew it buddy'", pollStatus.getReason().matches(".*you blew it buddy.*"));
 
         /*
          * checking for overriding Ip address via empty string => up
@@ -281,7 +284,8 @@ public class JCifsMonitorTest {
 
         pollStatus = jCifsMonitor.poll(svc, m);
         assertEquals(PollStatus.down(), pollStatus);
-        assertTrue(pollStatus.getReason().matches(".*192\\.168\\.0\\.123.*"));
+        System.err.println("reason=" + pollStatus.getReason());
+        assertTrue("'" + pollStatus.getReason() + "' should match '192.168.0.123'", pollStatus.getReason().matches(".*192\\.168\\.0\\.123.*"));
     }
 
     @Test
