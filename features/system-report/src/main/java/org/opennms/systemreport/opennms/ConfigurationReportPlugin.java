@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,15 +28,19 @@
 
 package org.opennms.systemreport.opennms;
 
+import org.opennms.systemreport.AbstractSystemReportPlugin;
+import org.opennms.systemreport.sanitizer.ConfigurationSanitizer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+
 import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.systemreport.AbstractSystemReportPlugin;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-
 public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
+
+    @Autowired
+    private ConfigurationSanitizer configurationSanitizer;
 
     @Override
     public String getName() {
@@ -55,13 +59,13 @@ public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
 
     @Override
     public Map<String, Resource> getEntries() {
-        final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
+        final TreeMap<String, Resource> map = new TreeMap<String, Resource>();
         File f = new File(System.getProperty("opennms.home") + File.separator + "etc");
         processFile(f, map);
         return map;
     }
 
-    public void processFile(final File file, final Map<String,Resource> map) {
+    public void processFile(final File file, final Map<String, Resource> map) {
         if (file.isDirectory()) {
             for (final File f : file.listFiles()) {
                 processFile(f, map);
@@ -71,11 +75,17 @@ public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
             filename = filename.replaceFirst("^" + System.getProperty("opennms.home") + File.separator + "etc" + File.separator + "?", "");
 
             // skip examples, .git directories, and empty files
-            if (filename.contains(File.separator + "examples" + File.separator)) { return; }
-            if (filename.contains(File.separator + ".git" + File.separator)) { return; }
-            if (file.length() < 1) { return; }
+            if (filename.contains(File.separator + "examples" + File.separator)) {
+                return;
+            }
+            if (filename.contains(File.separator + ".git" + File.separator)) {
+                return;
+            }
+            if (file.length() < 1) {
+                return;
+            }
 
-            map.put(filename, new FileSystemResource(file));
+            map.put(filename, configurationSanitizer.getSanitizedResource(file));
         }
     }
 }

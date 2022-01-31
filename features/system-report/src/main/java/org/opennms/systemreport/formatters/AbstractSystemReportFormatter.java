@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.opennms.systemreport.sanitizer.SanitizedResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.SystemReportFormatter;
@@ -114,11 +115,11 @@ public abstract class AbstractSystemReportFormatter implements SystemReportForma
     }
 
     protected boolean isDisplayable(final Resource r) {
-        return (r instanceof ByteArrayResource);
+        return (r instanceof ByteArrayResource) && !(r instanceof SanitizedResource);
     }
 
     protected boolean isFile(final Resource r) {
-        return (r instanceof FileSystemResource);
+        return (r instanceof FileSystemResource) || (r instanceof SanitizedResource);
     }
 
     protected String getResourceText(final Resource r) {
