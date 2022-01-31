@@ -3,11 +3,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
-    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="platformTransactionManager">
+    <bean class="org.mockito.Mockito" factory-method="mock" primary="true" id="platformTransactionManager">
         <constructor-arg value="org.springframework.transaction.PlatformTransactionManager"/>
     </bean>
 
-    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="topologyEntityCache">
+    <bean class="org.mockito.Mockito" factory-method="mock" primary="true" id="topologyEntityCache">
         <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache"/>
     </bean>
         
