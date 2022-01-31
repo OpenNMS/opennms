@@ -32,6 +32,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
@@ -39,7 +40,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
+import com.google.common.base.Strings;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
@@ -378,23 +381,23 @@ public class QueryManagerDaoImpl implements QueryManager {
     @Override
     public void persistDeviceConfig(PollableService service, Map<String, Object> attributes, byte[] deviceConfigBytes) {
 
-        // Assume default encoding as ASCII.
-        String encoding = getObjectAsString(attributes.get("encoding"));
-        String  deviceType = getObjectAsString(attributes.get("device-type"));
+        String encodingAttribute = getObjectAsString(attributes.get("encoding"));
+        String deviceType = getObjectAsString(attributes.get("device-type"));
+        String encoding = !Strings.isNullOrEmpty(encodingAttribute) ? encodingAttribute : Charset.defaultCharset().name();
         // Retrieve interface
         final OnmsIpInterface ipInterface = m_ipInterfaceDao.findByNodeIdAndIpAddress(service.getNodeId(), service.getIpAddr());
         // Fetch last known config for the interface
-        List<DeviceConfig> deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface);
+        Optional<DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface);
+        DeviceConfig latestDeviceConfig = deviceConfigOptional.isEmpty() ? null : deviceConfigOptional.get();
         // Update config if it's updated
-        DeviceConfig deviceConfig = deviceConfigList.isEmpty() ? null : deviceConfigList.get(0);
-        if (deviceConfig == null || !Arrays.equals(deviceConfig.getConfig(), deviceConfigBytes)) {
-            deviceConfig = new DeviceConfig();
+        if (latestDeviceConfig == null || !Arrays.equals(latestDeviceConfig.getConfig(), deviceConfigBytes)) {
+            DeviceConfig deviceConfig = new DeviceConfig();
             deviceConfig.setConfig(deviceConfigBytes);
             deviceConfig.setCreatedTime(new Date());
             deviceConfig.setIpInterface(ipInterface);
             deviceConfig.setEncoding(encoding);
             deviceConfig.setDeviceType(deviceType);
-            int version = deviceConfig.getVersion() != null ? deviceConfig.getVersion() + 1 : 1;
+            int version = latestDeviceConfig != null ? latestDeviceConfig.getVersion() + 1 : 1;
             deviceConfig.setVersion(version);
             deviceConfigDao.saveOrUpdate(deviceConfig);
         }

@@ -51,6 +51,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -134,6 +135,10 @@ public class DeviceConfigDaoIT {
         deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface);
         DeviceConfig retrievedMiddleElement = deviceConfigList.get(0);
         Assert.assertEquals(middleElement.getVersion(), retrievedMiddleElement.getVersion());
+        Optional<DeviceConfig> latestElementOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface);
+        Assert.assertTrue(latestElementOptional.isPresent());
+        DeviceConfig latestConfig = latestElementOptional.get();
+        Assert.assertEquals(middleElement.getVersion(), latestConfig.getVersion());
     }
 
     private void populateDeviceConfigs(int count) {
