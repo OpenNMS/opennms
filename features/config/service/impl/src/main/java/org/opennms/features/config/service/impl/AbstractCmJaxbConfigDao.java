@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -107,7 +108,7 @@ public abstract class AbstractCmJaxbConfigDao<E> {
      * Add default callback
      */
     @PostConstruct
-    public void postConstruct() {
+    public void postConstruct() throws IOException {
         Set<String> configIds = configurationManagerService.getConfigIds(this.getConfigName());
         configIds.forEach(configId -> this.addOnReloadedCallback(configId, getUpdateCallback()));
     }
