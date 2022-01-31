@@ -2,13 +2,17 @@
 = Data collection of flow applications
 
 Flows are categorized in applications using the <<flows/classification-engine.adoc#ga-flow-support-classification-engine, Classification Engine>>.
-{page-component-title} allows you to collect the incoming and outgoing transferred bytes as timeseries from flow records based on an applications.
-This lets a user profile network traffic and also graph this data.
+OpenNMS supports summing up the bytesIn/bytesOut data of flow records based on these flow applications and the collection of this data.
+It gives you the possibility of profiling the network throughput by an application.
+
+NOTE: The flow classification engine include a so-called `pre-defined group`, which defines over 6200 applications for basic communication protocols. If you don't want to collect this kind of data you can disable this predefined set of rules in the `Settings` tab on the `Flow Classification` configuration page.
 
 == Configure data collection
 
 To enable data collection for flows you need to enable the `applicationDataCollection` flag in the adapter's definition.
 Furthermore, you have to ensure that a valid package definition exists inside the adapter's definition.
+This may not be necessary when using Newts- or Cortex-based storage.
+Please note, that data collection on flow applications also works without enabling thresholding on flow applications.
 
 .Example of enabling data collection for the NetFlow v9 adapter in telemetryd-configuration.xml
 [source, xml]

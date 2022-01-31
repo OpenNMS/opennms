@@ -8,6 +8,7 @@ Users can define thresholds on this data to generate alarms when the amount of t
 == Configure thresholding for flow applications
 
 To enable thresholding for flows you need to enable the `applicationThresholding` flag in the adapter's definition.
+Please note, that thresholding on flow applications also works without enabling data collection on flow applications.
 
 .Example of enabling thresholding for the NetFlow v9 adapter in telemetryd-configuration.xml
 [source, xml]
