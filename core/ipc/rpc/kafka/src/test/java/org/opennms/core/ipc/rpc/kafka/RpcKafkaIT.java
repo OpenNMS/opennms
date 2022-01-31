@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -149,7 +149,6 @@ public class RpcKafkaIT {
         kafkaRpcServer.bind(getEchoRpcModule());
     }
 
-
     @Test(timeout = 30000)
     public void testKafkaRpcAtDefaultLocation() throws InterruptedException, ExecutionException {
         EchoRequest request = new EchoRequest("Kafka-RPC");
@@ -267,14 +266,14 @@ public class RpcKafkaIT {
         for (int i = 0; i < maxRequests; i++) {
             sendRequestAndVerifyResponse(request, 0);
         }
-        await().atMost(5, TimeUnit.SECONDS).until(() -> getKafkaRpcServer().getBulkhead().getMetrics().getAvailableConcurrentCalls(), is(0));
+        await().atMost(30, TimeUnit.SECONDS).until(() -> getKafkaRpcServer().getBulkhead().getMetrics().getAvailableConcurrentCalls(), is(0));
         Optional<Map.Entry<String, Gauge>> activeRpcThreads = getKafkaRpcServer().getMetrics().getGauges().entrySet().stream().filter(entry -> entry.getKey().contains(ACTIVE_RPC_REQUESTS)).findFirst();
         assertTrue(activeRpcThreads.isPresent());
         assertThat((Integer)activeRpcThreads.get().getValue().getValue(), greaterThanOrEqualTo(500));
         Optional<Map.Entry<String, Gauge>> availableConcurrentCalls = getKafkaRpcServer().getMetrics().getGauges().entrySet().stream().filter(entry -> entry.getKey().contains(AVAILABLE_CONCURRENT_CALLS)).findFirst();
         assertTrue(availableConcurrentCalls.isPresent());
         assertThat(availableConcurrentCalls.get().getValue().getValue(), equalTo(0));
-        await().atMost(45, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
+        await().atMost(2, TimeUnit.MINUTES).untilAtomic(count, equalTo(maxRequests));
         assertThat(getKafkaRpcServer().getBulkhead().getMetrics().getAvailableConcurrentCalls(), equalTo(500));
         activeRpcThreads = getKafkaRpcServer().getMetrics().getGauges().entrySet().stream().filter(entry -> entry.getKey().contains(ACTIVE_RPC_REQUESTS)).findFirst();
         assertTrue(activeRpcThreads.isPresent());
@@ -322,9 +321,9 @@ public class RpcKafkaIT {
             }
             
         });
-        await().atMost(45, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
-        await().atMost(45, TimeUnit.SECONDS).untilAtomic(messageCount, equalTo(maxRequests));
-        await().atMost(45, TimeUnit.SECONDS).until(() -> getKafkaRpcServer().getRpcIdQueue().size(), is(0));
+        await().atMost(2, TimeUnit.MINUTES).untilAtomic(count, equalTo(maxRequests));
+        await().atMost(2, TimeUnit.MINUTES).untilAtomic(messageCount, equalTo(maxRequests));
+        await().atMost(2, TimeUnit.MINUTES).until(() -> getKafkaRpcServer().getRpcIdQueue().size(), is(0));
         closed.set(true);
     }
 
@@ -373,6 +372,7 @@ public class RpcKafkaIT {
         kafkaRpcServer.unbind(getEchoRpcModule());
         kafkaRpcServer.destroy();
         rpcClient.stop();
+        kafkaConfig.clear();
     }
 
     public EchoRpcModule getEchoRpcModule() {
