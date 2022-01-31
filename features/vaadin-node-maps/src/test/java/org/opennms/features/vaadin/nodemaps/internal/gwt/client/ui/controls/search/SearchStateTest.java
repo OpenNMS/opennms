@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,23 +28,24 @@
 
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
 import java.util.logging.Logger;
 
-import org.easymock.IAnswer;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ComponentTracker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchStateManager.State;
-import org.powermock.api.easymock.PowerMock;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -348,18 +349,17 @@ public class SearchStateTest {
     }
 
     protected NativeEvent createEvent(final String type, final int keyCode) throws Exception {
-        final NativeEvent event = PowerMock.createMock(NativeEvent.class);
-        expect(event.getType()).andReturn(type).anyTimes();
-        expect(event.getKeyCode()).andReturn(keyCode).anyTimes();
-        event.stopPropagation();
-        expectLastCall().andAnswer(new IAnswer<Void>() {
+        final NativeEvent event = PowerMockito.mock(NativeEvent.class);
+        when(event.getType()).thenReturn(type);
+        when(event.getKeyCode()).thenReturn(keyCode);
+        doAnswer(new Answer<Object>() {
             @Override
-            public Void answer() throws Throwable {
+            public Object answer(InvocationOnMock invocation) throws Throwable {
                 LOG.info("stopPropagation() called on event(" + type + ", " + keyCode + ")");
                 return null;
             }
-        }).anyTimes();
-        PowerMock.replay(event);
+            
+        }).when(event).stopPropagation();
         return event;
     }
 
