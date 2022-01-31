@@ -5,7 +5,9 @@ Flows are categorized in applications using the <<flows/classification-engine.ad
 OpenNMS supports summing up the bytesIn/bytesOut data of flow records based on these flow applications and the collection of this data.
 It gives you the possibility of profiling the network throughput by an application.
 
-NOTE: The flow classification engine include a so-called `pre-defined group`, which defines over 6200 applications for basic communication protocols. If you don't want to collect this kind of data you can disable this predefined set of rules in the `Settings` tab on the `Flow Classification` configuration page.
+NOTE: The flow classification engine includes a predefined set of rules, which defines over 6200 applications for basic communication protocols. 
+If you don't want to collect this kind of data, in the UI, click the gears icon in the top right and under *Flow Management* click *Manage Flow Classification*.
+In the *Settings* tab, disable predefined rules.
 
 == Configure data collection
 
