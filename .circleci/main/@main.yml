@@ -35,6 +35,8 @@ aliases:
       echo "$DCT_DELEGATE_KEY" | base64 -d > $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
       # the key that is used by Notary to sign the multi-arch minion image
       echo "$DCT_REPO_MINION_KEY" | base64 -d > $KEY_FOLDER/$DCT_REPO_MINION_KEY_NAME.key
+      # Azure
+      echo "$AZURE_DCT_CI_KEY" | base64 -d > $KEY_FOLDER/$AZURE_DCT_CI_KEY_NAME.key
       chmod 600 $KEY_FOLDER/*
       # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
       # that is required for loading the
@@ -1021,7 +1023,8 @@ jobs:
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
             echo "docker push ${MINION_IMAGE}:${TAG}"
             docker tag ${MINION_IMAGE}:${TAG} ${MINION_AZ_IMAGE}:${TAG}
-            export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="NbbWsX3phw2kN4ywtH5nn6uTk6sMdmSt"
+            export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${AZURE_DCT_CI_PASSPHRASE}
+            docker trust load $KEY_FOLDER/$AZURE_DCT_CI_KEY_NAME.key
             docker push ${MINION_AZ_IMAGE}:${TAG}
             echo "pushed"
 
