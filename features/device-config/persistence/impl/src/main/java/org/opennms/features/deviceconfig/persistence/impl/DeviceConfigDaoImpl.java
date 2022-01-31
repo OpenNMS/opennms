@@ -43,17 +43,31 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     }
 
     @Override
-    public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface) {
+    public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, String configType) {
 
-        return find("from DeviceConfig dc where dc.ipInterface.id = ? ORDER BY createdTime DESC", ipInterface.getId());
+        return find("from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? ORDER BY createdTime DESC",
+                ipInterface.getId(), configType);
     }
 
     @Override
-    public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface) {
+    public Optional<DeviceConfig> getLatestSucceededConfigForInterface(OnmsIpInterface ipInterface, String configType) {
 
         List<DeviceConfig> deviceConfigs =
                 findObjects(DeviceConfig.class,
-                        "from DeviceConfig dc where dc.ipInterface.id = ? ORDER BY createdTime DESC LIMIT 1", ipInterface.getId());
+                        "from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? AND config IS NOT NULL " +
+                                "ORDER BY createdTime DESC LIMIT 1", ipInterface.getId(), configType);
+        if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
+            return Optional.of(deviceConfigs.get(0));
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String configType) {
+        List<DeviceConfig> deviceConfigs =
+                findObjects(DeviceConfig.class,
+                        "from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? " +
+                                "ORDER BY createdTime DESC LIMIT 1", ipInterface.getId(), configType);
         if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
             return Optional.of(deviceConfigs.get(0));
         }

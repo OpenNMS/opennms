@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.After;
@@ -102,7 +103,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
         // Override the default QueryManager with the DAO version
         "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml",
-		"classpath:/META-INF/opennms/applicationContext-deviceConfigDao.xml"
+		"classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"
@@ -227,6 +228,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_poller.setPollerConfig(m_pollerConfig);
 		m_poller.setPollOutagesDao(m_pollerConfig);
 		m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
+		m_poller.setServiceMonitorAdaptor((svc, parameters, status) -> status);
 		m_poller.setPersisterFactory(new MockPersisterFactory());
 	}
 

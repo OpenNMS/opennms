@@ -67,6 +67,7 @@ import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -122,6 +123,10 @@ public class Poller extends AbstractServiceDaemon {
     @Autowired
     private ReadablePollOutagesDao m_pollOutagesDao;
 
+    @Autowired()
+    @Qualifier("deviceConfigMonitorAdaptor")
+    private ServiceMonitorAdaptor serviceMonitorAdaptor;
+
     public void setPersisterFactory(PersisterFactory persisterFactory) {
         m_persisterFactory = persisterFactory;
     }
@@ -141,7 +146,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventIpcManager(EventIpcManager eventIpcManager) {
         m_eventMgr = eventIpcManager;
@@ -150,7 +155,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>getEventIpcManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api} object.
      */
     public EventIpcManager getEventIpcManager() {
         return m_eventMgr;
@@ -278,6 +283,10 @@ public class Poller extends AbstractServiceDaemon {
 
     public void setLocationAwarePollerClient(LocationAwarePollerClient locationAwarePollerClient) {
         m_locationAwarePollerClient = locationAwarePollerClient;
+    }
+
+    public void setServiceMonitorAdaptor(ServiceMonitorAdaptor serviceMonitorAdaptor) {
+        this.serviceMonitorAdaptor = serviceMonitorAdaptor;
     }
 
     /**
@@ -516,7 +525,7 @@ public class Poller extends AbstractServiceDaemon {
         PollableService svc = getNetwork().createService(service.getNodeId(), iface.getNode().getLabel(), iface.getNode().getLocation().getLocationName(), addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, pkg,
                                                                      getScheduler(), m_persisterFactory, m_thresholdingService,
-                                                                     m_locationAwarePollerClient, m_pollOutagesDao);
+                                                                     m_locationAwarePollerClient, m_pollOutagesDao, serviceMonitorAdaptor);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {

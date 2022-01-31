@@ -14,8 +14,6 @@
     <context:annotation-config />
     <tx:annotation-driven />
 
-    <bean id="deviceConfigDao" class="org.opennms.features.deviceconfig.persistence.impl.DeviceConfigDaoImpl">
-        <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
-    <onmsgi:service interface="org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao" ref="deviceConfigDao" />
+    <bean id="deviceConfigMonitorAdaptor" class="org.opennms.features.deviceconfig.monitor.adaptor.DeviceConfigMonitorAdaptor"/>
+    <onmsgi:service interface="org.opennms.netmgt.poller.ServiceMonitorAdaptor" ref="deviceConfigMonitorAdaptor" />
 </beans>

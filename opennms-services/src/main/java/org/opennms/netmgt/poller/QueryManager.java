@@ -96,6 +96,4 @@ public interface QueryManager {
 
     void updateLastGoodOrFail(PollableService service, PollStatus status);
 
-    void persistDeviceConfig(PollableService pollableService, Map<String, Object> parameters, byte[] deviceConfig);
-
 }

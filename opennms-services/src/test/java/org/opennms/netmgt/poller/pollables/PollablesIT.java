@@ -35,6 +35,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.InetAddress;
@@ -45,6 +47,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,6 +58,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
@@ -78,7 +82,9 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
@@ -156,6 +162,7 @@ public class PollablesIT {
 
     private PersisterFactory m_persisterFactory = new MockPersisterFactory();
     private ThresholdingService m_thresholdingService = null;
+    private ServiceMonitorAdaptor m_serviceMonitorAdaptor = (svc, parameters, status) -> status;
 
     @Autowired
     private LocationAwarePollerClient m_locationAwarePollerClient;
@@ -245,7 +252,6 @@ public class PollablesIT {
         mDot4Http = mDot4.getService("HTTP");
 
         assignPollableMembers(m_network);
-
     }
 
     private void assignPollableMembers(PollableNetwork pNetwork) throws UnknownHostException {
@@ -1516,7 +1522,7 @@ public class PollablesIT {
 
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, pkg,
-                     m_timer, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient, m_pollerConfig);
+                     m_timer, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient, m_pollerConfig, m_serviceMonitorAdaptor);
 
         m_timer.setCurrentTime(1000L);
         pDot1Smtp.updateStatus(PollStatus.down());
@@ -1550,7 +1556,7 @@ public class PollablesIT {
         final Package pkg = m_pollerConfig.getPackage("TestPkg2");
         final PollableServiceConfig pollConfig = new PollableServiceConfig(pDot3Http, m_pollerConfig,
                      pkg, m_timer, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient,
-                m_pollerConfig);
+                m_pollerConfig, m_serviceMonitorAdaptor);
 
         m_timer.setCurrentTime(1000L);
         pDot3Http.updateStatus(PollStatus.down());
@@ -1730,7 +1736,7 @@ public class PollablesIT {
         m_pollerConfig.addScheduledOutage(pkg, "first", 3000, 5000, "192.168.1.1");
         PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig,
                     pkg, m_timer, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient,
-                m_pollerConfig);
+                m_pollerConfig, m_serviceMonitorAdaptor);
 
         m_timer.setCurrentTime(2000L);
 
@@ -2596,9 +2602,6 @@ public class PollablesIT {
 
     }
 
-    /**
-     * @param i
-     */
     private void assertTime(long time) {
         assertEquals("Unexpected time", time, m_scheduler.getCurrentTime());
     }
@@ -2629,18 +2632,13 @@ public class PollablesIT {
         m_outageAnticipator.reset();
     }
 
-    /**
-     * @param svc
-     */
+
     private void anticipateUp(MockElement element) {
         Event event = element.createUpEvent();
         m_eventMgr.getEventAnticipator().anticipateEvent(event);
         m_outageAnticipator.anticipateOutageClosed(element, event);
     }
 
-    /**
-     * @param svc
-     */
     private void anticipateDown(MockElement element) {
         Event event = element.createDownEvent();
         m_eventMgr.getEventAnticipator().anticipateEvent(event);
@@ -2674,9 +2672,6 @@ public class PollablesIT {
     }
 
 
-    /**
-     * @param network
-     */
     private void assertNoPoll(MockElement elem) {
         MockVisitor zeroAsserter = new MockVisitorAdapter() {
             @Override
@@ -2763,7 +2758,7 @@ public class PollablesIT {
 
         PollableService svc = pNetwork.createService(nodeId, nodeLabel, nodeLocation, addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pkg,
-                scheduler, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient, pollOutagesDao);
+                scheduler, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient, pollOutagesDao, m_serviceMonitorAdaptor);
 
         svc.setPollConfig(pollConfig);
         synchronized (svc) {

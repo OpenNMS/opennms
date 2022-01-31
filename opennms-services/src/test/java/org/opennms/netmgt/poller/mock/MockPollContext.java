@@ -178,10 +178,6 @@ public class MockPollContext implements PollContext, EventListener {
         // pass, nothing to track
     }
 
-    @Override
-    public void persistDeviceConfig(PollableService pollableService, Map<String, Object> parameters, byte[] deviceConfig) {
-
-    }
 
     public void setServiceUnresponsiveEnabled(boolean serviceUnresponsiveEnabled) {
         m_serviceUnresponsiveEnabled = serviceUnresponsiveEnabled;

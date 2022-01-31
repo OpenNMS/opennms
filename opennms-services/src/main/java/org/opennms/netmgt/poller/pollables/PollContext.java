@@ -108,6 +108,4 @@ public interface PollContext {
     public boolean isServiceUnresponsiveEnabled();
 
     void trackPoll(PollableService service, PollStatus result);
-
-    void persistDeviceConfig(PollableService pollableService, Map<String, Object> parameters, byte[] deviceConfig);
 }

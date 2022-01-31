@@ -48,6 +48,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -119,7 +120,7 @@ import com.google.common.collect.Sets;
 
         // Override the default QueryManager with the DAO version
         "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml",
-        "classpath:/META-INF/opennms/applicationContext-deviceConfigDao.xml"
+        "classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         // We don't need a real pinger here
@@ -249,6 +250,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_poller.setPollerConfig(m_pollerConfig);
         m_poller.setPollOutagesDao(m_pollerConfig);
         m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
+        m_poller.setServiceMonitorAdaptor((svc, parameters, status) -> status);
         m_poller.setPersisterFactory(new MockPersisterFactory());
     }
 

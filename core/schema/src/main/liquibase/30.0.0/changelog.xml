@@ -27,19 +27,17 @@
             <column name="interface_id" type="integer">
                 <constraints nullable="false"/>
             </column>
-            <column name="version" type="integer">
-                <constraints nullable="false"/>
-            </column>
-            <column name="config" type="bytea">
-                <constraints nullable="false"/>
-            </column>
+            <column name="config" type="bytea"/>
             <column name="encoding" type="varchar(16)">
                 <constraints nullable="false"/>
             </column>
             <column name="created_time" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="device_type" type="varchar(64)"/>
+            <column name="config_type" type="varchar(64)"/>
+            <column name="failure_reason" type="varchar(1024)"/>
+            <column name="last_updated" type="timestamp"/>
+            <column name="last_failed" type="timestamp"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

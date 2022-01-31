@@ -450,11 +450,6 @@ public class DefaultPollContext implements PollContext, EventListener {
         }
     }
 
-    @Override
-    public void persistDeviceConfig(PollableService pollableService, Map<String, Object> parameters, byte[] deviceConfig) {
-        getQueryManager().persistDeviceConfig(pollableService, parameters, deviceConfig);
-    }
-
     private static void processPending(final PendingPollEvent pollEvent) {
         LOG.trace("onEvent: pollEvent is no longer pending, processing pollEvent: {}", pollEvent);
         // Thread-safe and idempotent

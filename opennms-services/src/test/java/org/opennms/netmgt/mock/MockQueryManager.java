@@ -185,9 +185,4 @@ public class MockQueryManager implements QueryManager {
         // pass
     }
 
-    @Override
-    public void persistDeviceConfig(PollableService pollableService, Map<String, Object> parameters, byte[] deviceConfig) {
-        // pass
-    }
-
 }

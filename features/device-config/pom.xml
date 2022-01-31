@@ -16,6 +16,7 @@
 
     <modules>
         <module>monitor</module>
+        <module>monitor-adaptor</module>
         <module>persistence</module>
         <module>tftp</module>
         <module>shell</module>

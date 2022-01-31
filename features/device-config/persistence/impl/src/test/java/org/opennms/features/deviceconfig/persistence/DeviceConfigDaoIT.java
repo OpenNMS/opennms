@@ -47,6 +47,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
@@ -92,9 +93,9 @@ public class DeviceConfigDaoIT {
         deviceConfig.setIpInterface(ipInterface);
         deviceConfig.setConfig(UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8));
         deviceConfig.setEncoding("ASCII");
-        deviceConfig.setCreatedTime(Date.from(Instant.now()));
-        deviceConfig.setDeviceType("Cisco-IOS");
-        deviceConfig.setVersion(1);
+        deviceConfig.setCreatedTime(new Date());
+        deviceConfig.setConfigType("default");
+        deviceConfig.setLastUpdated(new Date());
         deviceConfigDao.saveOrUpdate(deviceConfig);
         List<DeviceConfig> configs = deviceConfigDao.findAll();
         Assert.assertThat(configs, Matchers.not(Matchers.empty()));
@@ -122,23 +123,35 @@ public class DeviceConfigDaoIT {
         populateDeviceConfigs(count);
         List<DeviceConfig> deviceConfigList = deviceConfigDao.findAll();
         Assert.assertEquals(count, deviceConfigList.size());
-        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface);
+        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, "default");
         Assert.assertEquals(count, deviceConfigList.size());
         DeviceConfig deviceConfig = deviceConfigList.get(0);
         Assert.assertNotNull(deviceConfig);
-        Assert.assertEquals(count, (long) deviceConfig.getVersion());
         // Take middle element and update it's created time.
         // This is not the way we should update versions of the latest. This is just for the test.
-        DeviceConfig middleElement = deviceConfigList.stream().filter(config -> config.getVersion() == count/2).findFirst().get();
-        middleElement.setCreatedTime(Date.from(Instant.now().plus(12, HOURS)));
+        DeviceConfig middleElement = deviceConfigList.get((count/2) - 1);
+        middleElement.setCreatedTime(Date.from(Instant.now().plus(1, HOURS)));
         deviceConfigDao.saveOrUpdate(middleElement);
-        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface);
+        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, "default");
         DeviceConfig retrievedMiddleElement = deviceConfigList.get(0);
-        Assert.assertEquals(middleElement.getVersion(), retrievedMiddleElement.getVersion());
-        Optional<DeviceConfig> latestElementOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface);
+        Optional<DeviceConfig> latestElementOptional = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, "default");
         Assert.assertTrue(latestElementOptional.isPresent());
         DeviceConfig latestConfig = latestElementOptional.get();
-        Assert.assertEquals(middleElement.getVersion(), latestConfig.getVersion());
+        Assert.assertArrayEquals(retrievedMiddleElement.getConfig(), latestConfig.getConfig());
+        // Populate failed retrieval for devices.
+        populateFailedRetrievalDeviceConfig();
+        deviceConfigList = deviceConfigDao.findAll();
+        // Verify that it got persisted
+        Assert.assertThat(deviceConfigList.size(), Matchers.is(count + 1));
+        // Verify that query doesn't consider failed elements.
+        Optional<DeviceConfig> elementsWithNullConfig = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, "default");
+        Assert.assertTrue(elementsWithNullConfig.isPresent());
+        DeviceConfig retrievedConfig = elementsWithNullConfig.get();
+        Assert.assertArrayEquals(retrievedConfig.getConfig(), latestConfig.getConfig());
+        // Verify that this will give all elements including last failed one.
+        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, "default");
+        DeviceConfig failedElement = deviceConfigList.get(0);
+        Assert.assertNull(failedElement.getConfig());
     }
 
     private void populateDeviceConfigs(int count) {
@@ -149,10 +162,23 @@ public class DeviceConfigDaoIT {
             deviceConfig.setConfig(UUID.randomUUID().toString().getBytes(StandardCharsets.US_ASCII));
             deviceConfig.setEncoding("ASCII");
             deviceConfig.setCreatedTime(Date.from(Instant.now().plusSeconds(i * 60)));
-            deviceConfig.setDeviceType("Cisco-IOS");
-            deviceConfig.setVersion(i+1);
+            deviceConfig.setConfigType("default");
+            deviceConfig.setLastUpdated(Date.from(Instant.now().plusSeconds(i * 60)));
             deviceConfigDao.saveOrUpdate(deviceConfig);
         }
+    }
+
+    private void populateFailedRetrievalDeviceConfig() {
+
+        DeviceConfig deviceConfig = new DeviceConfig();
+        deviceConfig.setIpInterface(ipInterface);
+        deviceConfig.setEncoding(Charset.defaultCharset().name());
+        deviceConfig.setCreatedTime(Date.from(Instant.now().plus(2, HOURS)));
+        deviceConfig.setConfigType("default");
+        deviceConfig.setLastUpdated(Date.from(Instant.now().plus(2, HOURS)));
+        deviceConfig.setLastFailed(Date.from(Instant.now().plus(2, HOURS)));
+        deviceConfig.setFailureReason("Not able to connect to SSHServer");
+        deviceConfigDao.saveOrUpdate(deviceConfig);
     }
 
 }

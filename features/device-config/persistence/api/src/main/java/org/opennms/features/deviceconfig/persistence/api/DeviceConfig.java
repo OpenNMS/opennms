@@ -55,7 +55,7 @@ public class DeviceConfig implements Serializable {
     private static final long serialVersionUID = 1078656993339537763L;
 
     @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "deviceConfigSequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "deviceConfigSequence")
     @SequenceGenerator(name = "deviceConfigSequence", sequenceName = "deviceconfignxtid")
     @Column(name = "id", nullable = false)
     private Long id;
@@ -64,22 +64,30 @@ public class DeviceConfig implements Serializable {
     @JoinColumn(name = "interface_id")
     private OnmsIpInterface ipInterface;
 
-    @Column(name = "version", nullable = false)
-    private Integer version;
-
-    @Type(type="org.hibernate.type.BinaryType")
-    @Column(name = "config", nullable = false)
+    @Type(type = "org.hibernate.type.BinaryType")
+    @Column(name = "config")
     private byte[] config;
 
     @Column(name = "encoding", nullable = false)
     private String encoding;
 
-    @Column(name = "device_type")
-    private String deviceType;
+    @Column(name = "config_type")
+    private String configType;
+
+    @Column(name = "failure_reason")
+    private String failureReason;
 
     @Column(name = "created_time", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime;
+
+    @Column(name = "last_updated")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastUpdated;
+
+    @Column(name = "last_failed")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastFailed;
 
     public Long getId() {
         return id;
@@ -95,14 +103,6 @@ public class DeviceConfig implements Serializable {
 
     public void setIpInterface(OnmsIpInterface ipInterface) {
         this.ipInterface = ipInterface;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 
     public byte[] getConfig() {
@@ -121,14 +121,6 @@ public class DeviceConfig implements Serializable {
         this.encoding = encoding;
     }
 
-    public String getDeviceType() {
-        return deviceType;
-    }
-
-    public void setDeviceType(String deviceType) {
-        this.deviceType = deviceType;
-    }
-
     public Date getCreatedTime() {
         return createdTime;
     }
@@ -137,22 +129,58 @@ public class DeviceConfig implements Serializable {
         this.createdTime = createdTime;
     }
 
+    public String getConfigType() {
+        return configType;
+    }
+
+    public void setConfigType(String configType) {
+        this.configType = configType;
+    }
+
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    public void setFailureReason(String failureReason) {
+        this.failureReason = failureReason;
+    }
+
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public Date getLastFailed() {
+        return lastFailed;
+    }
+
+    public void setLastFailed(Date lastFailed) {
+        this.lastFailed = lastFailed;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof DeviceConfig)) return false;
         DeviceConfig that = (DeviceConfig) o;
-        return Objects.equals(ipInterface, that.ipInterface) &&
-                Objects.equals(version, that.version) &&
+        return ipInterface.equals(that.ipInterface) &&
                 Arrays.equals(config, that.config) &&
-                Objects.equals(encoding, that.encoding) &&
-                Objects.equals(deviceType, that.deviceType) &&
-                Objects.equals(createdTime, that.createdTime);
+                encoding.equals(that.encoding) &&
+                configType.equals(that.configType) &&
+                Objects.equals(failureReason, that.failureReason) &&
+                createdTime.equals(that.createdTime) &&
+                lastUpdated.equals(that.lastUpdated) &&
+                Objects.equals(lastFailed, that.lastFailed);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(ipInterface, version, encoding, deviceType, createdTime);
+        int result = Objects.hash(ipInterface,
+                encoding, configType, failureReason, createdTime, lastUpdated, lastFailed);
         result = 31 * result + Arrays.hashCode(config);
         return result;
     }
