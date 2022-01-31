@@ -28,7 +28,15 @@
 
 package org.opennms.netmgt.config;
 
-import junit.framework.AssertionFailedError;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.junit.Assert;
@@ -48,20 +56,14 @@ import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.wmi.agent.WmiConfig;
+import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import junit.framework.AssertionFailedError;
 
 /**
  * This is an integration test checking if all provided example XML files can be
@@ -118,6 +120,7 @@ public class CmWillItUnmarshalIT {
         // since notifd have default values, the checkFormat will never right.
         addFile(Source.CLASSPATH, "/defaults/notifd-configuration.xml", NotifdConfiguration.class,  "notifd-configuration.xsd", "notifd-configuration", false, null);
         addFile(Source.CLASSPATH, "/defaults/wmi-config.xml", WmiConfig.class,"wmi-config.xsd","wmi-config",true, null);
+        addFile(Source.CLASSPATH, "/defaults/wsman-config.xml", WsmanConfig.class,"wsman-config.xsd","wsman-config",true, null);
     }
 
     /**
