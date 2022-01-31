@@ -2,7 +2,7 @@
 = Data collection of flow applications
 
 Flows are categorized in applications using the <<flows/classification-engine.adoc#ga-flow-support-classification-engine, Classification Engine>>.
-OpenNMS supports summing up the bytesIn/bytesOut data of flow records based on these flow applications and the collection of this data.
+{page-component-title} allows you to collect the incoming and outgoing transferred bytes as timeseries from flow records based on an applications.
 This lets a user profile network traffic and also graph this data.
 
 == Configure data collection
