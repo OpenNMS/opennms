@@ -67,11 +67,6 @@
         <cm:importSchemaFromXsd id="notifd" xsdFileName="notifd-configuration.xsd" xsdFileHash="ffb7114b6ac496314340fa5eb95b5bfdd8e7754c3c2916e618673802c913a5e2" rootElement="notifd-configuration"/>
         <cm:importConfig schemaId="notifd" filePath="notifd-configuration.xml"/>
     </changeSet>
-    <changeSet author="psuthar" id="1.0-register-schema-snmp">
-        <cm:registerSchema id="snmp"/>
-        <cm:importSchemaFromXsd id="snmp" xsdFileName="snmp-config.xsd" xsdFileHash="0d1a0c83acd21b95089193e72f020e49ad3b91e812223704829337ee92cfd81d" rootElement="snmp-config"/>
-        <cm:importConfig schemaId="snmp" configId="default" filePath="snmp-config.xml"/>
-    </changeSet>
 
     <changeSet author="pschweizer" id="register-org.opennms.features.topology.app.icons.application">
         <cm:registerSchema id="org.opennms.features.topology.app.icons.application"/>
@@ -92,6 +87,12 @@
         <cm:registerSchema id="notifications"/>
         <cm:importSchemaFromXsd id="notifications" xsdFileName="notifications.xsd" xsdFileHash="ef29ac614357d53f27aa75ff810e8b9ba658d48f8c725478a5b1a46311bff883" rootElement="notifications"/>
         <cm:importConfig schemaId="notifications" filePath="notifications.xml"/>
+    </changeSet>
+
+    <changeSet author="psuthar" id="1.0-register-schema-snmp">
+        <cm:registerSchema id="snmp"/>
+        <cm:importSchemaFromXsd id="snmp" xsdFileName="snmp-config.xsd" xsdFileHash="0d1a0c83acd21b95089193e72f020e49ad3b91e812223704829337ee92cfd81d" rootElement="snmp-config"/>
+        <cm:importConfig schemaId="snmp" filePath="snmp-config.xml"/>
     </changeSet>
 
     <!--TODO check which schemas can have multiple configurations-->

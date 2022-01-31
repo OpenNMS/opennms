@@ -35,15 +35,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import com.atlassian.oai.validator.report.ValidationReport;
 import org.json.JSONObject;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.netmgt.config.snmp.*;
 
@@ -54,6 +56,9 @@ public class SnmpConfigTest extends CmConfigTest<SnmpConfig> {
     public SnmpConfigTest(final SnmpConfig sampleObject, final String sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, "snmp-config.xsd", "snmp-config");
     }
+
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
 
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
@@ -311,7 +316,7 @@ public class SnmpConfigTest extends CmConfigTest<SnmpConfig> {
      * Try to validate missing "required" fields and misspellings in "optional" fields
      **/
     @Test
-    public void validateSnmpConfiguration() {
+    public void validateSnmpConfiguration() throws IOException {
 
         String validConfig = "<snmp-config " + "  port=\"1\" " + "  retry=\"2\" >"
                 + "  <definition "
@@ -340,12 +345,12 @@ public class SnmpConfigTest extends CmConfigTest<SnmpConfig> {
                 + "    <ip-match>10.0.0.*</ip-match>"
                 + "  </definition>" + "</snmp-config>\n";
 
+
         try {
-            //JaxbUtils.unmarshal(SnmpConfig.class, missingFieldConfig);
-            //fail();
-            ValidationReport validationReport = this.validate(missingFieldConfig);
-            assertTrue(validationReport.hasErrors());
+            this.validate(missingFieldConfig);
+            fail();
         } catch (Exception e) {
+            assertTrue(e instanceof ValidationException);
         }
 
         String misspelledConfig = "<snmp-config " + "  port=\"1\" " + "  retry=\"2\" >"
@@ -359,25 +364,19 @@ public class SnmpConfigTest extends CmConfigTest<SnmpConfig> {
                 + "    <ip-match>10.0.0.*</ip-match>"
                 + "  </definition>" + "</snmp-config>\n";
 
-        try {
-            //JaxbUtils.unmarshal(SnmpConfig.class, misspelledConfig);
-            //fail();
-            //wrong-community attribute is wrong should not be present in converted json object
-            JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
-            String snmpConfigJson = converter.xmlToJson(misspelledConfig);
-            JSONObject jsonObject = new JSONObject(snmpConfigJson);
-            assertNull(jsonObject.getJSONObject("wrong-community"));
-        } catch (Exception e) {
-        }
-
+        //wrong-community attribute is wrong should not be present in converted json object
+        JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+        String snmpConfigJson = converter.xmlToJson(misspelledConfig);
+        JSONObject jsonObject = new JSONObject(snmpConfigJson);
+        assertFalse(jsonObject.has("wrong-community"));
     }
 
-    public ValidationReport validate(String configXml) throws IOException {
+    public void validate(String configXml) throws IOException {
         ConfigDefinition def = XsdHelper.buildConfigDefinition("snmp", "snmp-config.xsd",
                 "snmp-config", ConfigurationManagerService.BASE_PATH);
         ConfigConverter converter = XsdHelper.getConverter(def);
         String configJson = converter.xmlToJson(configXml);
-        return def.validate(configJson);
+        def.validate(configJson);
     }
 
 }

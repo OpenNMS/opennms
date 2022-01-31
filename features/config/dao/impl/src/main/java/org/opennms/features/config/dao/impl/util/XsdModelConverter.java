@@ -320,7 +320,10 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         configItem.setRequired("REQUIRED".equals(xmlSchemaAttrInfo.getAttribute().getUse().name()));
         configItem.setDefaultValue(xmlSchemaAttrInfo.getAttribute().getDefaultValue());
         configItem.setSchemaRef(xmlSchemaAttrInfo.getAttribute().getQName().toString());
-        setRestrictions(configItem, xmlSchemaAttrInfo.getType().getFacets());
+        // when type is null. It is anySimpleType. anySimpleType is an abstract base simple type. It is completely unrestricted.
+        if (xmlSchemaAttrInfo.getType() != null) {
+            setRestrictions(configItem, xmlSchemaAttrInfo.getType().getFacets());
+        }
 
         return configItem;
     }
@@ -335,15 +338,18 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         String strType;
         ConfigItem.Type type = null;
 
-        if (xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName() != null) {
+        if (xmlSchemaAttrInfo.getAttribute().getSchemaType() != null
+                && xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName() != null) {
             strType = xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName().getLocalPart().toLowerCase();
             type = getConfigType(strType);
         }
-        if (ConfigItem.Type.OBJECT == type || type == null) {
+
+        if ((ConfigItem.Type.OBJECT == type || type == null) && xmlSchemaAttrInfo.getType() != null) {
             strType = xmlSchemaAttrInfo.getType().getBaseType().name().toLowerCase();
             type = getConfigType(strType);
         }
-        return type;
+        // if no type defined. Default as string. (anySimpleType), e.g. snmp-config > location
+        return type != null ? type : ConfigItem.Type.STRING;
     }
 
     private ConfigItem.Type getConfigType(String type) {

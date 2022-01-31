@@ -33,7 +33,6 @@ import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.core.spring.FileReloadContainer;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
@@ -51,6 +50,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
@@ -101,28 +101,22 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
          */
         private SnmpConfig m_config;
 
-        private FileReloadContainer<SnmpConfig> m_container;
-
-        private FileReloadCallback<SnmpConfig> m_callback;
-
-        // for init use only
-        private SnmpPeerFactory() {
+        public SnmpPeerFactory() {
             super(SnmpConfig.class, "snmp Config");
         }
 
         public SnmpPeerFactory (SnmpConfig config) throws IOException {
             super(SnmpConfig.class, "snmp Config");
-            this.m_config = config;
+            this.m_config = Objects.requireNonNull(config);
             s_loaded.set(true);
         }
 
         @PostConstruct
-        public void postConstruct() throws IOException {
+        public void postConstruct() {
             if (!s_loaded.get()) {
                 reload();
             }
         }
-
 
         protected Lock getReadLock() {
             return m_readLock;
@@ -167,15 +161,8 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
          */
         public static synchronized void setInstance(final SnmpPeerFactory singleton) {
             LOG.debug("setting new singleton instance {}", singleton);
-            s_singleton = singleton;
+            s_singleton = Objects.requireNonNull(singleton);
             s_loaded.set(true);
-        }
-
-        public static synchronized File getFile() throws IOException {
-            if (s_configFile == null) {
-                setFile(ConfigFileConstants.getFile(ConfigFileConstants.SNMP_CONF_FILE_NAME));
-            }
-            return s_configFile;
         }
 
         /**
@@ -363,11 +350,10 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
         public SnmpConfig getSnmpConfig() {
             getReadLock().lock();
             try {
-                if (m_container == null) {
-                    return m_config;
-                } else {
-                    return m_container.getObject();
+                if(m_config == null){
+                    this.reload();
                 }
+                return m_config;
             } finally {
                 getReadLock().unlock();
             }
