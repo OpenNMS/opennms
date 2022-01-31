@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,24 +28,17 @@
 
 package org.opennms.systemreport.formatters;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.util.Map;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.opennms.systemreport.sanitizer.SanitizedResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.SystemReportFormatter;
 import org.opennms.systemreport.SystemReportPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
+import java.io.*;
+import java.nio.charset.Charset;
 
 public abstract class AbstractSystemReportFormatter implements SystemReportFormatter {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSystemReportFormatter.class);
@@ -114,14 +107,6 @@ public abstract class AbstractSystemReportFormatter implements SystemReportForma
             .toComparison();
     }
 
-    protected boolean isDisplayable(final Resource r) {
-        return (r instanceof ByteArrayResource) && !(r instanceof SanitizedResource);
-    }
-
-    protected boolean isFile(final Resource r) {
-        return (r instanceof FileSystemResource) || (r instanceof SanitizedResource);
-    }
-
     protected String getResourceText(final Resource r) {
         if (r instanceof ByteArrayResource) {
             return new String(((ByteArrayResource) r).getByteArray());
@@ -152,14 +137,5 @@ public abstract class AbstractSystemReportFormatter implements SystemReportForma
             }
         }
         return null;
-    }
-
-    protected boolean hasDisplayable(final SystemReportPlugin plugin) {
-        for (final Map.Entry<String,Resource> entry : plugin.getEntries().entrySet()) {
-            if (isDisplayable(entry.getValue())) {
-                return true;
-            }
-        }
-        return false;
     }
 }

@@ -2,7 +2,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,6 +55,16 @@ public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
     @Override
     public int getPriority() {
         return 20;
+    }
+
+    @Override
+    public boolean getFullOutputOnly() {
+        return true;
+    }
+
+    @Override
+    public boolean getOutputsFiles() {
+        return true;
     }
 
     @Override

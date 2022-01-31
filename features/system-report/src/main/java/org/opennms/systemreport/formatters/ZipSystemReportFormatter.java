@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,24 +28,19 @@
 
 package org.opennms.systemreport.formatters;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.apache.commons.io.IOUtils;
+import org.opennms.systemreport.SystemReportFormatter;
+import org.opennms.systemreport.SystemReportPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+
+import java.io.*;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.systemreport.SystemReportFormatter;
-import org.opennms.systemreport.SystemReportPlugin;
-import org.springframework.core.io.Resource;
 
 public class ZipSystemReportFormatter extends AbstractSystemReportFormatter implements SystemReportFormatter {
     private static final Logger LOG = LoggerFactory.getLogger(ZipSystemReportFormatter.class);
@@ -109,8 +104,8 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
             LOG.error("Unable to create entry '{}'", name, e);
             return;
         }
-        
-        if (hasDisplayable(plugin)) {
+
+        if (!plugin.getFullOutputOnly()) {
             try {
                 createEntry(name);
             } catch (final Exception e) {
@@ -123,12 +118,13 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
             formatter.write(plugin);
             formatter.end();
         }
-        
-        byte[] buf = new byte[1024];
 
-        for (final Map.Entry<String,Resource> entry : plugin.getEntries().entrySet()) {
-            final Resource resource = entry.getValue();
-            if (isFile(resource)) {
+        if (plugin.getOutputsFiles()) {
+            byte[] buf = new byte[1024];
+
+            for (final Map.Entry<String, Resource> entry : plugin.getEntries().entrySet()) {
+                final Resource resource = entry.getValue();
+
                 try {
                     createDirectory(plugin.getName());
                 } catch (final Exception e) {

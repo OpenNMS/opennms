@@ -28,6 +28,9 @@
 
 package org.opennms.systemreport.sanitizer;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -48,7 +51,7 @@ public class PropertiesFileSanitizer implements ConfigFileSanitizer {
         return "properties";
     }
 
-    public SanitizedResource getSanitizedResource(final File file) throws FileSanitizationException {
+    public Resource getSanitizedResource(final File file) throws FileSanitizationException {
         try {
             return sanitizeProperties(file);
         } catch (Exception e) {
@@ -56,7 +59,7 @@ public class PropertiesFileSanitizer implements ConfigFileSanitizer {
         }
     }
 
-    private SanitizedResource sanitizeProperties(final File file) throws IOException {
+    private Resource sanitizeProperties(final File file) throws IOException {
         Properties properties = new Properties();
         properties.load(new FileInputStream(file));
 
@@ -71,7 +74,7 @@ public class PropertiesFileSanitizer implements ConfigFileSanitizer {
                 .map((entry) -> entry.getKey() + "=" + entry.getValue())
                 .collect(Collectors.joining("\n"));
 
-        return new SanitizedResource(result.getBytes());
+        return new ByteArrayResource(result.getBytes());
     }
 
 

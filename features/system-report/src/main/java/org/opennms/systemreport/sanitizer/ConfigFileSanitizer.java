@@ -28,11 +28,13 @@
 
 package org.opennms.systemreport.sanitizer;
 
+import org.springframework.core.io.Resource;
+
 import java.io.File;
 
 public interface ConfigFileSanitizer {
 
     String getFileType();
 
-    SanitizedResource getSanitizedResource(final File file) throws FileSanitizationException;
+    Resource getSanitizedResource(final File file) throws FileSanitizationException;
 }

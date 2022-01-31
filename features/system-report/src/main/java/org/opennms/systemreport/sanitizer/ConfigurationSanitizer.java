@@ -28,6 +28,7 @@
 
 package org.opennms.systemreport.sanitizer;
 
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -56,7 +57,7 @@ public class ConfigurationSanitizer {
                 } catch (FileSanitizationException e) {
                     e.getCause().printStackTrace();
 
-                    return new SanitizedResource(e.getMessage().getBytes());
+                    return new ByteArrayResource(e.getMessage().getBytes());
                 }
             }
         }

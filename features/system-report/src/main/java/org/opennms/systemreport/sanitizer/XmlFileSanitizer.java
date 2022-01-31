@@ -28,6 +28,9 @@
 
 package org.opennms.systemreport.sanitizer;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -81,7 +84,7 @@ public class XmlFileSanitizer implements ConfigFileSanitizer {
         return "xml";
     }
 
-    public SanitizedResource getSanitizedResource(final File file) throws FileSanitizationException {
+    public Resource getSanitizedResource(final File file) throws FileSanitizationException {
         try {
             return sanitizeXml(file);
         } catch (SAXException e) {
@@ -91,23 +94,30 @@ public class XmlFileSanitizer implements ConfigFileSanitizer {
         }
     }
 
-    private SanitizedResource sanitizeXml(final File file) throws IOException, SAXException, TransformerException, XPathExpressionException {
+    private Resource sanitizeXml(final File file) throws IOException, SAXException, TransformerException, XPathExpressionException {
         final Document doc = builder.parse(file);
         final Node rootNode = doc.getDocumentElement();
 
+        int sanitizedNodeCount = 0;
+
         for (String attribute : ATTRIBUTES_TO_SANITIZE) {
-            replaceAttribute(rootNode, attribute);
+            sanitizedNodeCount += replaceAttribute(rootNode, attribute);
         }
         for (String paramKey : PARAM_KEYS_TO_SANITIZE) {
-            replaceParamValue(rootNode, paramKey);
+            sanitizedNodeCount += replaceParamValue(rootNode, paramKey);
         }
         for (String tag : TAGS_TO_SANITIZE) {
-            replaceTagValue(rootNode, tag);
+            sanitizedNodeCount += replaceTagValue(rootNode, tag);
         }
 
-        Writer output = new StringWriter();
-        transformer.transform(new DOMSource(doc), new StreamResult(output));
-        return new SanitizedResource(output.toString().getBytes());
+        // we only need to rewrite the document if it had nodes that were sanitized
+        if (sanitizedNodeCount > 0) {
+            Writer output = new StringWriter();
+            transformer.transform(new DOMSource(doc), new StreamResult(output));
+            return new ByteArrayResource(output.toString().getBytes());
+        } else {
+            return new FileSystemResource(file);
+        }
     }
 
     private int replaceAttribute(Node rootNode, String attributeName) throws XPathExpressionException {
