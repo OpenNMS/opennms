@@ -41,12 +41,12 @@ import java.util.Set;
  */
 public class MigratedServices {
 
-    final public static Set<String> PIDS_SINGLE_INSTANCE =  Set.of(
+    final public static Set<String> PIDS_SINGLE_INSTANCE = Set.of(
             "org.opennms.features.datachoices"
             // add you migrated service here...
     );
 
-    final public static Set<String> PIDS_MULTI_INSTANCE =  Set.of(
+    final public static Set<String> PIDS_MULTI_INSTANCE = Set.of(
             // "org.opennms.netmgt.graph.provider.graphml"
             // ... or here
     );
