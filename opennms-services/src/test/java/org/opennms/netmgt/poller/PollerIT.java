@@ -118,7 +118,8 @@ import com.google.common.collect.Sets;
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
 
         // Override the default QueryManager with the DAO version
-        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
+        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml",
+        "classpath:/META-INF/opennms/applicationContext-deviceConfigDao.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         // We don't need a real pinger here

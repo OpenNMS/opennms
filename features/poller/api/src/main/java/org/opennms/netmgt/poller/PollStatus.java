@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
+
 /**
  * Represents the status of a node, interface or services
  */
@@ -66,6 +67,8 @@ public class PollStatus implements Serializable {
     private String m_reason;
 
     private final Map<String, Number> m_properties = Collections.synchronizedMap(new LinkedHashMap<String, Number>());
+
+    private byte[] deviceConfig;
     
     /**
      * <P>
@@ -546,5 +549,15 @@ public class PollStatus implements Serializable {
     @Transient
     public String getStatusName() {
         return s_statusNames[m_statusCode];
+    }
+
+    @XmlAttribute(name="device-config")
+    @Transient
+    public byte[] getDeviceConfig() {
+        return deviceConfig;
+    }
+
+    public void setDeviceConfig(byte[] deviceConfig) {
+        this.deviceConfig = deviceConfig;
     }
 }

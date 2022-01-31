@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
@@ -175,6 +176,11 @@ public class MockPollContext implements PollContext, EventListener {
     @Override
     public void trackPoll(PollableService service, PollStatus result) {
         // pass, nothing to track
+    }
+
+    @Override
+    public void persistDeviceConfig(PollableService pollableService, Map<String, Object> parameters, byte[] deviceConfig) {
+
     }
 
     public void setServiceUnresponsiveEnabled(boolean serviceUnresponsiveEnabled) {

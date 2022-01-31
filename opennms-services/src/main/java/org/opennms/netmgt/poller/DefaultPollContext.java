@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -447,6 +448,11 @@ public class DefaultPollContext implements PollContext, EventListener {
         } catch (Exception e) {
             LOG.warn("Error occurred while tracking poll for service: {}", service, e);
         }
+    }
+
+    @Override
+    public void persistDeviceConfig(PollableService pollableService, Map<String, Object> parameters, byte[] deviceConfig) {
+        getQueryManager().persistDeviceConfig(pollableService, parameters, deviceConfig);
     }
 
     private static void processPending(final PendingPollEvent pollEvent) {
