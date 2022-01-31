@@ -81,8 +81,8 @@ public class XmlFileSanitizer implements ConfigFileSanitizer {
     }
 
     @Override
-    public String getFileType() {
-        return "xml";
+    public String getFileName() {
+        return "*.xml";
     }
 
     public Resource getSanitizedResource(final File file) throws FileSanitizationException {

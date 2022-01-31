@@ -34,7 +34,7 @@ import java.io.File;
 
 public interface ConfigFileSanitizer {
 
-    String getFileType();
+    String getFileName();
 
     Resource getSanitizedResource(final File file) throws FileSanitizationException;
 }

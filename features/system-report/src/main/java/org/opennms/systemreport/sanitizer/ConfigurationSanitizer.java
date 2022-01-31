@@ -40,25 +40,35 @@ public class ConfigurationSanitizer {
 
     private final Map<String, ConfigFileSanitizer> sanitizers = new HashMap<>();
 
-    public ConfigurationSanitizer(ConfigFileSanitizer xmlFileSanitizer, ConfigFileSanitizer propertiesFileSanitizer) {
+    public ConfigurationSanitizer(ConfigFileSanitizer xmlFileSanitizer,
+                                  ConfigFileSanitizer propertiesFileSanitizer,
+                                  ConfigFileSanitizer usersPropertiesFileSanitizer) {
         // TODO Refactor to depend on a list of ConfigFileSanitizer instead of individual beans
-        sanitizers.put(xmlFileSanitizer.getFileType(), xmlFileSanitizer);
-        sanitizers.put(propertiesFileSanitizer.getFileType(), propertiesFileSanitizer);
+        sanitizers.put(xmlFileSanitizer.getFileName(), xmlFileSanitizer);
+        sanitizers.put(propertiesFileSanitizer.getFileName(), propertiesFileSanitizer);
+        sanitizers.put(usersPropertiesFileSanitizer.getFileName(), usersPropertiesFileSanitizer);
     }
 
     public Resource getSanitizedResource(final File file) {
+        ConfigFileSanitizer fileSanitizer = null;
         String fileName = file.getName();
 
-        if (fileName.contains(".")) {
-            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
-            if (sanitizers.containsKey(fileExtension)) {
-                try {
-                    return sanitizers.get(fileExtension).getSanitizedResource(file);
-                } catch (FileSanitizationException e) {
-                    e.getCause().printStackTrace();
+        if (sanitizers.containsKey(fileName)) {
+            fileSanitizer = sanitizers.get(fileName);
+        } else if (fileName.contains(".")) {
+            String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+            if (sanitizers.containsKey("*" + fileExtension)) {
+                fileSanitizer = sanitizers.get("*" + fileExtension);
+            }
+        }
 
-                    return new ByteArrayResource(e.getMessage().getBytes());
-                }
+        if (fileSanitizer != null) {
+            try {
+                return fileSanitizer.getSanitizedResource(file);
+            } catch (FileSanitizationException e) {
+                e.getCause().printStackTrace();
+
+                return new ByteArrayResource(e.getMessage().getBytes());
             }
         }
 

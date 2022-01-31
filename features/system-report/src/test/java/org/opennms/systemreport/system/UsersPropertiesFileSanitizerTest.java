@@ -32,7 +32,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.systemreport.sanitizer.FileSanitizationException;
-import org.opennms.systemreport.sanitizer.PropertiesFileSanitizer;
+import org.opennms.systemreport.sanitizer.UsersPropertiesFileSanitizer;
+import org.opennms.systemreport.sanitizer.XmlFileSanitizer;
 import org.springframework.core.io.Resource;
 
 import java.io.File;
@@ -40,27 +41,35 @@ import java.io.IOException;
 import java.util.Properties;
 
 import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 
-public class PropertiesFileSanitizerTest {
-    private PropertiesFileSanitizer propertiesFileSanitizer;
+public class UsersPropertiesFileSanitizerTest {
+    private UsersPropertiesFileSanitizer usersPropertiesFileSanitizer;
 
-    public PropertiesFileSanitizerTest() {
+    public UsersPropertiesFileSanitizerTest() {
         final Properties props = new Properties();
         props.put("log4j.logger.org.opennms.systemreport.system", "DEBUG");
         MockLogAppender.setupLogging(true, "DEBUG", props);
     }
 
     @Before
-    public void setUp() {
-        propertiesFileSanitizer = new PropertiesFileSanitizer();
+    public void setUp() throws Exception {
+        usersPropertiesFileSanitizer = new UsersPropertiesFileSanitizer();
     }
 
     @Test
     public void testSanitizesPasswords() throws FileSanitizationException, IOException {
-        File file = new File("target/test-classes/mock/password-properties.properties");
-        Resource result = propertiesFileSanitizer.getSanitizedResource(file);
+        File file = new File("target/test-classes/mock/users.properties");
+        Resource result = usersPropertiesFileSanitizer.getSanitizedResource(file);
         String content = new String(result.getInputStream().readAllBytes());
         assertFalse(content.contains("secretValue"));
     }
 
+    @Test
+    public void testSanitizationPreservesRoles() throws FileSanitizationException, IOException {
+        File file = new File("target/test-classes/mock/users.properties");
+        Resource result = usersPropertiesFileSanitizer.getSanitizedResource(file);
+        String content = new String(result.getInputStream().readAllBytes());
+        assertTrue(content.contains("roleName"));
+    }
 }

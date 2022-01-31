@@ -40,15 +40,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class PropertiesFileSanitizer implements ConfigFileSanitizer {
-
-    private static final Set<String> PROPERTIES_TO_SANITIZE = new LinkedHashSet<>(Arrays.asList("password", "pass", "authenticatePassword", "truststorePassword"));
+public class UsersPropertiesFileSanitizer implements ConfigFileSanitizer {
 
     private final String SANITIZED_VALUE = "***";
 
     @Override
     public String getFileName() {
-        return "*.properties";
+        return "users.properties";
     }
 
     public Resource getSanitizedResource(final File file) throws FileSanitizationException {
@@ -64,9 +62,11 @@ public class PropertiesFileSanitizer implements ConfigFileSanitizer {
         properties.load(new FileInputStream(file));
 
         properties.stringPropertyNames().forEach(propertyName -> {
-            String lastPart = propertyName.substring(propertyName.lastIndexOf(".") + 1);
-            if (PROPERTIES_TO_SANITIZE.contains(lastPart)) {
-                properties.setProperty(propertyName, SANITIZED_VALUE);
+            if (!propertyName.startsWith("_g_:")) {
+                String propertyValue = properties.getProperty(propertyName);
+                String[] propertyParts = propertyValue.split(",");
+                propertyParts[0] = SANITIZED_VALUE;
+                properties.setProperty(propertyName, String.join(",", propertyParts));
             }
         });
 
