@@ -250,12 +250,12 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
 
     private Event getNodeGainedInterface(final int nodeId) {
         return new EventBuilder( EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond" )
-        .setNodeid(nodeId).setInterface(InetAddressUtils.addr("10.0.0.1")).getEvent();
+        .setNodeid(nodeId).setInterface(InetAddressUtils.addr("127.0.0.1")).getEvent();
     }
 
     private Event getNodeGainedService(final int nodeId) {
         return new EventBuilder( EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond" )
-        .setNodeid(nodeId).setInterface(InetAddressUtils.addr("10.0.0.1")).setService("ICMP").getEvent();
+        .setNodeid(nodeId).setInterface(InetAddressUtils.addr("127.0.0.1")).setService("ICMP").getEvent();
     }
 
     private Event getNodeScanStarted(final int nodeId) {

@@ -55,7 +55,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.network.InetAddressXmlAdapter;
+import org.opennms.core.network.IPValidationException;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.PrimaryTypeAdapter;
 
@@ -81,9 +81,8 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     @XmlAttribute(name="descr")
     protected String m_description;
 
-    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     @XmlAttribute(name="ip-addr", required=true)
-    protected InetAddress m_ipAddress;
+    protected String m_ipAddressStr;
     
     @XmlAttribute(name="managed")
     protected Boolean m_isManaged;
@@ -93,6 +92,9 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     
     @XmlAttribute(name="status")
     protected Integer m_status;
+
+    // to avoid DNS queries every time the IP is requested
+    private InetAddress m_ipAddress;
 
     /**
      * <p>getMonitoredServiceCount</p>
@@ -311,7 +313,19 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      * @return a {@link java.lang.String} object.
      */
     public InetAddress getIpAddr() {
+        if (m_ipAddress == null) {
+            m_ipAddress = InetAddressUtils.getInetAddress(m_ipAddressStr);
+        }
         return m_ipAddress;
+    }
+
+    /**
+     * <p>getIpAddrStr</p>
+     *
+     * Returns the raw string parsed from the requisition
+     */
+    public String getIpAddrStr() {
+        return m_ipAddressStr;
     }
 
     /**
@@ -322,6 +336,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     public void setIpAddr(String value) {
         try {
             m_ipAddress = InetAddressUtils.getInetAddress(value);
+            m_ipAddressStr = value;
         } catch (Throwable e) {
             throw new IllegalArgumentException("Invalid IP address specified", e);
         }
@@ -399,8 +414,14 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     }
 
     public void validate() throws ValidationException {
-        if (m_ipAddress == null) {
+        if (m_ipAddressStr == null) {
             throw new ValidationException("Requisition interface 'ip-addr' is a required attribute!");
+        }
+        try {
+            m_ipAddress = InetAddressUtils.getInetAddress(m_ipAddressStr);
+        }
+        catch (Exception e) {
+            throw new IPValidationException(String.format("Exception encountered when validating IP {} - {}", m_ipAddressStr, e.getMessage()));
         }
         if (m_monitoredServices != null) {
             Set<String> serviceNameSet = new HashSet<>();

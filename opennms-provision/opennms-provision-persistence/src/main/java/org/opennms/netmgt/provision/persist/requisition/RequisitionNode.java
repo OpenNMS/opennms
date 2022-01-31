@@ -45,7 +45,11 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.netmgt.model.PrimaryType;
-
+import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.network.IPValidationException;
 
 /**
  * <p>RequisitionNode class.</p>
@@ -144,7 +148,7 @@ public class RequisitionNode {
      */
     public RequisitionInterface getInterface(String ipAddress) {
         for (RequisitionInterface iface : m_interfaces) {
-            if (iface.getIpAddr().getHostAddress().equals(ipAddress)) {
+            if (InetAddressUtils.str(iface.getIpAddr()).equals(ipAddress)) {
                 return iface;
             }
         }
@@ -169,7 +173,7 @@ public class RequisitionNode {
         final Iterator<RequisitionInterface> i = m_interfaces.iterator();
         while (i.hasNext()) {
             final RequisitionInterface iface = i.next();
-            if (iface.getIpAddr().getHostAddress().equals(ipAddress)) {
+            if (InetAddressUtils.str(iface.getIpAddr()).equals(ipAddress)) {
                 i.remove();
                 return true;
             }
@@ -183,7 +187,7 @@ public class RequisitionNode {
      * @param iface a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
      */
     public void putInterface(RequisitionInterface iface) {
-        deleteInterface(iface.getIpAddr() == null ? null : iface.getIpAddr().getHostAddress());
+        deleteInterface(iface.getIpAddr() == null ? null : InetAddressUtils.str(iface.getIpAddr()));
         m_interfaces.add(0, iface);
     }
 
@@ -542,8 +546,19 @@ public class RequisitionNode {
             throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains invalid characters. ('/' is forbidden.)");
         }
         if (m_interfaces != null) {
-            for (final RequisitionInterface iface : m_interfaces) {
-                iface.validate();
+            // Special handling for interfaces. Don't abort parsing if an interface
+            // includes an invalid IP, just remove that interface from the node.
+            //     See <code>RequisitionInterface.validate()</code>
+            Iterator<RequisitionInterface> iter = m_interfaces.iterator();
+            while (iter.hasNext()) {
+                final RequisitionInterface iface = iter.next();
+                try {
+                    iface.validate();
+                } catch (IPValidationException ve) {
+                    iter.remove();
+                    final Event e = EventUtils.createInterfaceRejectedEvent("Provisiond", m_nodeLabel, iface.getIpAddrStr());
+                    // sendEvent(e);
+                }
             }
             // there can be only one primary interface per node
             if(m_interfaces.stream().filter(iface -> PrimaryType.PRIMARY == iface.m_snmpPrimary).count() > 1) {

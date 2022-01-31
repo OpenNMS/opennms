@@ -32,6 +32,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 import static org.opennms.netmgt.events.api.EventConstants.APPLICATION_DELETED_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.INTERFACE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.INTERFACE_REJECTED_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.NODE_ADDED_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.NODE_DELETED_EVENT_UEI;
@@ -53,6 +54,8 @@ import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_PREV_LOCATI
 import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSDESCRIPTION;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSNAME;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_RESCAN_EXISTING;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_AFFECTED_NODE_LABEL;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_INVALID_HOST;
 import static org.opennms.netmgt.events.api.EventConstants.SERVICE_DELETED_EVENT_UEI;
 
 import java.net.InetAddress;
@@ -230,7 +233,7 @@ public abstract class EventUtils {
      *            the source of the event
      * @param nodeId
      *            the nodeId of the node the interface resides in
-     * @param ipAddr
+     * @param addr
      *            the ipAdddr of the event
      * @return an Event represent an interfaceDeleted event for the given
      *         interface
@@ -246,6 +249,28 @@ public abstract class EventUtils {
     }
 
     /**
+     * Construct an interfaceRejected event for an interface.
+     *
+     * @param source
+     *            the source of the event
+     * @param nodeLabel
+     *            the nodeLabel of the affected event
+     * @param invalidHost
+     *            the IP address that cannot be resolved
+     * @return an Event represent an interfaceRejected event for the given
+     *         interface
+     */
+    public static Event createInterfaceRejectedEvent(String source, String nodeLabel, String invalidHost) {
+        debug("createInterfaceRejectedEvent for node: %s", nodeLabel);
+
+        EventBuilder bldr = new EventBuilder(INTERFACE_REJECTED_EVENT_UEI, source);
+        bldr.addParam(PARM_INVALID_HOST, invalidHost);
+        bldr.addParam(PARM_AFFECTED_NODE_LABEL, nodeLabel);
+
+        return bldr.getEvent();
+    }
+
+    /**
      * Constructs a serviceDeleted Event for the nodeId, ipAddr, serviceName
      * triple
      *
@@ -253,7 +278,7 @@ public abstract class EventUtils {
      *            the source of the event
      * @param nodeId
      *            the nodeId that the service resides on
-     * @param ipAddr
+     * @param addr
      *            the interface that the service resides on
      * @param service
      *            the name of the service that was deleted

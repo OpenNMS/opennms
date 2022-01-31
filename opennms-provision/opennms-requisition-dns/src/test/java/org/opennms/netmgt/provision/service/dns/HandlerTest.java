@@ -33,6 +33,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -73,7 +74,7 @@ public class HandlerTest {
         
         Assert.assertTrue("Number of nodes in Model Import > 1", 1 == r.getNodeCount());
         Assert.assertTrue("NodeLabel isn't localhost", "localhost".equals(r.getNodes().get(0).getNodeLabel()));
-        Assert.assertTrue("127.0.0.1".equals(r.getNodes().get(0).getInterfaces().get(0).getIpAddr().getHostAddress()));
+        Assert.assertTrue("127.0.0.1".equals(InetAddressUtils.str(r.getNodes().get(0).getInterfaces().get(0).getIpAddr())));
     }
 
     @Test
