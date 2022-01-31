@@ -713,9 +713,9 @@ workflows:
       - smoke-test-minimal:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
+            #- horizon-rpm-build
             - tarball-assembly
-            - sentinel-rpm-build
+            #- sentinel-rpm-build
           filters:
             branches:
               ignore:
