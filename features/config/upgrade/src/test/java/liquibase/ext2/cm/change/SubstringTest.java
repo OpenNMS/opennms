@@ -38,17 +38,17 @@ public class SubstringTest {
     @Test
     public void shouldDoBeforeLastIndex() {
         assertEquals("abc-def", new Substring("abc-def-ghi").getBeforeLast("-").toString());
-        assertEquals("-abc-def-", new Substring("-abc-def-ghi").getBeforeLast("-").toString());
-        assertEquals("-abc", new Substring("").getBeforeLast("-").toString());
+        assertEquals("-abc-def", new Substring("-abc-def-ghi").getBeforeLast("-").toString());
         assertEquals("abc", new Substring("abc").getBeforeLast("-").toString());
+        assertEquals("", new Substring("").getBeforeLast("-").toString());
     }
 
     @Test
     public void shouldDoAfterLastIndex() {
-        assertEquals("abc-def", new Substring("def").getAfterLast("-").toString());
+        assertEquals("def", new Substring("abc-def").getAfterLast("-").toString());
         assertEquals("", new Substring("-abc-def-ghi-").getAfterLast("-").toString());
-        assertEquals("-", new Substring("").getAfterLast("-").toString());
         assertEquals("", new Substring("abc").getAfterLast("-").toString());
+        assertEquals("", new Substring("").getAfterLast("-").toString());
     }
 
 }
