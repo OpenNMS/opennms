@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,15 +28,20 @@
 
 package org.opennms.netmgt.dao.support;
 
-import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -49,6 +54,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -78,7 +84,6 @@ import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceVisitor;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -118,7 +123,6 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase(dirtiesContext=false)
 public class ResourceDaoIntegrityIT implements InitializingBean {
 
-    private EasyMockUtils m_easyMockUtils;
     private FilterDao m_filterDao;
     private CollectdConfigFactory m_collectdConfig;
     private ResourceTypesDao m_resourceTypesDao;
@@ -146,18 +150,15 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
     public void setUp() throws Exception {
         setStoreByForeignSource(false);
 
-        m_easyMockUtils = new EasyMockUtils();
-        m_resourceTypesDao = m_easyMockUtils.createMock(ResourceTypesDao.class);
-        m_filterDao = m_easyMockUtils.createMock(FilterDao.class);
+        m_resourceTypesDao = mock(ResourceTypesDao.class);
+        m_filterDao = mock(FilterDao.class);
 
         FilterDaoFactory.setInstance(m_filterDao);
 
-        expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(new ArrayList<InetAddress>(0)).anyTimes();
+        when(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).thenReturn(new ArrayList<InetAddress>(0));
 
-        m_easyMockUtils.replayAll();
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/collectdconfiguration-testdata.xml");
         m_collectdConfig = new CollectdConfigFactory(stream);
-        m_easyMockUtils.verifyAll();
 
         m_resourceStorageDao.setRrdDirectory(m_tempFolder.getRoot());
         // Match up with the extensions in resource-tree-files.txt
@@ -171,6 +172,12 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         m_resourceDao.setIpInterfaceDao(m_ipInterfaceDao);
     }
 
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_resourceTypesDao);
+        verifyNoMoreInteractions(m_filterDao);
+    }
+
     @Test
     @Transactional
     public void walkResourceTree() throws IOException {
@@ -179,10 +186,9 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         createNodes();
         Map<String, ResourceType> types = createResourceTypes();
 
-        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).anyTimes();
-        expect(m_resourceTypesDao.getResourceTypes()).andReturn(types).anyTimes();
+        when(m_resourceTypesDao.getLastUpdate()).thenReturn(new Date(System.currentTimeMillis()));
+        when(m_resourceTypesDao.getResourceTypes()).thenReturn(types);
 
-        m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();
 
         // Walk the tree and collect the results
@@ -231,7 +237,8 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         // We should have as many unique resource ids as we have results
         assertEquals(expectedResults.length, visitor.resourcesById.size());
 
-        m_easyMockUtils.verifyAll();
+        verify(m_resourceTypesDao, atLeastOnce()).getResourceTypes();
+        verify(m_resourceTypesDao, atLeastOnce()).getLastUpdate();
     }
 
     private static class ResourceCollector implements ResourceVisitor {
@@ -248,12 +255,12 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
     }
 
     private String[] loadExpectedResults() throws IOException {
-        String fileAsString = IOUtils.toString(new ClassPathResource("resource-tree-results.txt").getInputStream());
+        String fileAsString = IOUtils.toString(new ClassPathResource("resource-tree-results.txt").getInputStream(), Charset.defaultCharset());
         return fileAsString.split("\\r?\\n");
     }
 
     private void createResourceTree() throws IOException {
-        String fileAsString = IOUtils.toString(new ClassPathResource("resource-tree-files.txt").getInputStream());
+        String fileAsString = IOUtils.toString(new ClassPathResource("resource-tree-files.txt").getInputStream(), Charset.defaultCharset());
         String[] resourceTreeFiles = fileAsString.split("\\r?\\n");
 
         // This should match the number of lines in the file
@@ -274,7 +281,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
     private void createNodes() throws IOException {
         final int NUM_NODES = 250;
         
-        String fileAsString = IOUtils.toString(new ClassPathResource("resource-tree-ips.txt").getInputStream());
+        String fileAsString = IOUtils.toString(new ClassPathResource("resource-tree-ips.txt").getInputStream(), Charset.defaultCharset());
         String[] resourceTreeIps = fileAsString.split("\\r?\\n");
 
         // Make sure every IP address is represented at least once

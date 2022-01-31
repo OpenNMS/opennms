@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,10 @@
 
 package org.opennms.netmgt.dao.support;
 
+import static org.mockito.Mockito.*;
+
 import org.junit.Assert;
 
-import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.netmgt.collection.api.StorageStrategyService;
 import org.opennms.netmgt.model.ResourcePath;
@@ -43,10 +44,9 @@ public class FrameRelayStorageStrategyTest {
     @Test
     public void testStrategy() {
         // Create Mocks
-        StorageStrategyService service = EasyMock.createMock(StorageStrategyService.class);
-        EasyMock.expect(service.getSnmpInterfaceLabel(1)).andReturn("Se0_0").anyTimes(); // Valid source interface
-        EasyMock.expect(service.getSnmpInterfaceLabel(2)).andReturn(null).anyTimes(); // Invalid source interface
-        EasyMock.replay(service);
+        StorageStrategyService service = mock(StorageStrategyService.class);
+        when(service.getSnmpInterfaceLabel(1)).thenReturn("Se0_0"); // Valid source interface
+        when(service.getSnmpInterfaceLabel(2)).thenReturn(null); // Invalid source interface
 
         // Create Strategy
         FrameRelayStorageStrategy strategy = new FrameRelayStorageStrategy();
@@ -72,6 +72,7 @@ public class FrameRelayStorageStrategyTest {
         // Test RelativePath
         Assert.assertEquals(ResourcePath.get("1", "frCircuitIfIndex", "Se0_0.100"), strategy.getRelativePathForAttribute(parentResource, resourceName));
         
-        EasyMock.verify(service);
+        verify(service, times(2)).getSnmpInterfaceLabel(1);
+        verify(service, times(2)).getSnmpInterfaceLabel(2);
     }
 }
