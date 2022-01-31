@@ -34,6 +34,8 @@ import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 
+import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.data.util.converter.StringToEnumConverter;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
@@ -130,6 +132,7 @@ public class EventForm extends CustomComponent {
         logMsgDest.addItem("suppress");
         logMsgDest.addItem("donotpersist");
         logMsgDest.addItem("discardtraps");
+        logMsgDest.setConverter((Converter) new StringToEnumConverter());
         logMsgDest.setNullSelectionAllowed(false);
         logMsgDest.setRequired(true);
         eventLayout.addComponent(logMsgDest);
