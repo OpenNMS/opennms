@@ -14,7 +14,7 @@ In the *Settings* tab, disable predefined rules.
 To enable data collection for flows you need to enable the `applicationDataCollection` flag in the adapter's definition.
 Furthermore, you have to ensure that a valid package definition exists inside the adapter's definition.
 This may not be necessary when using Newts- or Cortex-based storage.
-Please note, that data collection on flow applications also works without enabling thresholding on flow applications.
+Note that data collection on flow applications also works without enabling thresholding on flow applications.
 
 .Example of enabling data collection for the NetFlow v9 adapter in telemetryd-configuration.xml
 [source, xml]
