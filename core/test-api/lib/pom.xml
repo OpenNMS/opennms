@@ -52,14 +52,8 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>${mockitoVersion}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
