@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,19 @@
 
 package org.opennms.netmgt.statsd;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,7 +48,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.easymock.EasyMock;
+import org.junit.After;
+import org.junit.Test;
 import org.opennms.netmgt.config.statsd.model.PackageReport;
 import org.opennms.netmgt.config.statsd.model.StatsdPackage;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -54,33 +68,28 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.test.ThrowableAnticipator;
-import org.opennms.test.mock.EasyMockUtils;
-
-import junit.framework.TestCase;
 
 /**
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class ReportDefinitionTest extends TestCase {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    private NodeDao m_nodeDao = m_mocks.createMock(NodeDao.class);
-    private ResourceDao m_resourceDao = m_mocks.createMock(ResourceDao.class);
-    private MeasurementFetchStrategy m_fetchStrategy = m_mocks.createMock(MeasurementFetchStrategy.class);
-    private FilterDao m_filterDao = m_mocks.createMock(FilterDao.class);
-    
-    @Override
-    protected void runTest() throws Throwable {
-        super.runTest();
-        
-        m_mocks.verifyAll();
+public class ReportDefinitionTest {
+    private NodeDao m_nodeDao = mock(NodeDao.class);
+    private ResourceDao m_resourceDao = mock(ResourceDao.class);
+    private MeasurementFetchStrategy m_fetchStrategy = mock(MeasurementFetchStrategy.class);
+    private FilterDao m_filterDao = mock(FilterDao.class);
+
+    @After
+    public void tearDown() {
+        verifyNoMoreInteractions(m_nodeDao);
+        verifyNoMoreInteractions(m_resourceDao);
+        verifyNoMoreInteractions(m_fetchStrategy);
+        verifyNoMoreInteractions(m_filterDao);
     }
 
+    @Test
     @SuppressWarnings("unchecked")
     public void testBogusReportClass() throws Exception {
-        // Not replaying anything, but need to do it before verifyAll() happens
-        m_mocks.replayAll();
-        
         ReportDefinition def = new ReportDefinition();
         
         Class<? extends AttributeStatisticVisitorWithResults> clazz = (Class<? extends AttributeStatisticVisitorWithResults>) Class.forName("java.lang.String");
@@ -95,49 +104,50 @@ public class ReportDefinitionTest extends TestCase {
         
         ta.verifyAnticipated();
     }
-    
+
+    @Test
     public void testAfterPropertiesSet() {
-        // Not replaying anything, but need to do it before verifyAll() happens
-        m_mocks.replayAll();
-        
         createReportDefinition();
     }
-    
+
+    @Test
     public void testReportWalking() throws Exception {
-        EasyMock.expect(m_resourceDao.findTopLevelResources()).andReturn(new ArrayList<OnmsResource>(0));
+        when(m_resourceDao.findTopLevelResources()).thenReturn(new ArrayList<OnmsResource>(0));
         
         ReportDefinition def = createReportDefinition();
         def.setResourceAttributeKey("ifSpeed");
         def.setResourceAttributeValueMatch("100000000");
         ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_fetchStrategy, m_filterDao);
 
-        m_mocks.replayAll();
-        
         report.walk();
 
         assertEquals("results size", 0, report.getResults().size());
+
+        verify(m_resourceDao, times(1)).findTopLevelResources();
     }
 
+    @Test
     public void testUnfilteredResourceAttributeFilteringWithNoMatch() throws Exception {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
         OnmsAttribute attribute = new RrdGraphAttribute("IfInOctets", "something", "something else");
         OnmsResource resource = new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo"));
 
-        EasyMock.expect(m_resourceDao.findTopLevelResources()).andReturn(Collections.singletonList(resource));
+        when(m_resourceDao.findTopLevelResources()).thenReturn(Collections.singletonList(resource));
         
         ReportDefinition def = createReportDefinition();
         def.setResourceAttributeKey("ifSpeed");
         def.setResourceAttributeValueMatch("100000000");
         ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_fetchStrategy, m_filterDao);
 
-        m_mocks.replayAll();
-        
         report.walk();
         
         assertEquals("results size", 0, report.getResults().size());
+
+        verify(m_resourceDao, times(1)).findTopLevelResources();
     }
 
+    @Test
     public void testUnfilteredResourceAttributeFilteringWithMatch() throws Exception {
         OnmsAttribute rrdAttribute = new RrdGraphAttribute("IfInOctets", "something", "something else");
         ExternalValueAttribute externalValueAttribute = new ExternalValueAttribute("ifSpeed", "100000000");
@@ -150,7 +160,7 @@ public class ReportDefinitionTest extends TestCase {
         resourceType.setName("interfaceSnmp");
         OnmsResource resource = new OnmsResource("1", "Node One", resourceType, attributes, ResourcePath.get("foo"));
 
-        EasyMock.expect(m_resourceDao.findTopLevelResources()).andReturn(Collections.singletonList(resource));
+        when(m_resourceDao.findTopLevelResources()).thenReturn(Collections.singletonList(resource));
         
         ReportDefinition def = createReportDefinition();
         def.setResourceAttributeKey(externalValueAttribute.getName());
@@ -168,7 +178,7 @@ public class ReportDefinitionTest extends TestCase {
                                                 report.getEndTime() - report.getStartTime(),
                                                 Collections.emptyMap(),
                                                 null);
-        EasyMock.expect(m_fetchStrategy.fetch(report.getStartTime(),
+        when(m_fetchStrategy.fetch(report.getStartTime(),
                                               report.getEndTime(),
                                               1,
                                               0,
@@ -176,24 +186,22 @@ public class ReportDefinitionTest extends TestCase {
                                               null,
                                               Collections.singletonList(source),
                                               false))
-                .andReturn(results);
+                .thenReturn(results);
 
-        m_mocks.replayAll();
-        
         report.walk();
-        
-        m_mocks.verifyAll();
 
         assertEquals("results size", 1, report.getResults().size());
-        
-        m_mocks.replayAll();
+
+        verify(m_resourceDao, times(1)).findTopLevelResources();
+        verify(m_fetchStrategy, times(1)).fetch(anyLong(), anyLong(), anyLong(), anyInt(), isNull(), isNull(), anyList(), eq(false));
     }
 
+    @Test
     public void testFilteredResourceAttributeFilteringWithNoMatch() throws Exception {
         final OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setLabel("Node One");
-        EasyMock.expect(m_nodeDao.load(1)).andReturn(node);
+        when(m_nodeDao.load(1)).thenReturn(node);
         
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
@@ -208,18 +216,20 @@ public class ReportDefinitionTest extends TestCase {
 
         SortedMap<Integer,String> sortedNodeMap = new TreeMap<Integer, String>();
         sortedNodeMap.put(node.getId(), node.getLabel());
-        EasyMock.expect(m_filterDao.getNodeMap("")).andReturn(sortedNodeMap);
+        when(m_filterDao.getNodeMap("")).thenReturn(sortedNodeMap);
 
-        EasyMock.expect(m_resourceDao.getResourceForNode(node)).andReturn(resource);
+        when(m_resourceDao.getResourceForNode(node)).thenReturn(resource);
 
-        m_mocks.replayAll();
-        
         report.walk();
         
         assertEquals("results size", 0, report.getResults().size());
+
+        verify(m_nodeDao, times(1)).load(1);
+        verify(m_resourceDao, times(1)).getResourceForNode(any(OnmsNode.class));
+        verify(m_filterDao, times(1)).getNodeMap("");
     }
 
-
+    @Test
     public void testFilteredResourceAttributeFilteringWithMatch() throws Exception {
         OnmsAttribute rrdAttribute = new RrdGraphAttribute("IfInOctets", "something", "something else");
         ExternalValueAttribute externalValueAttribute = new ExternalValueAttribute("ifSpeed", "100000000");
@@ -231,7 +241,7 @@ public class ReportDefinitionTest extends TestCase {
         final OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setLabel("Node One");
-        EasyMock.expect(m_nodeDao.load(1)).andReturn(node);
+        when(m_nodeDao.load(1)).thenReturn(node);
         
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
@@ -245,9 +255,9 @@ public class ReportDefinitionTest extends TestCase {
 
         SortedMap<Integer,String> sortedNodeMap = new TreeMap<Integer, String>();
         sortedNodeMap.put(node.getId(), node.getLabel());
-        EasyMock.expect(m_filterDao.getNodeMap("")).andReturn(sortedNodeMap);
+        when(m_filterDao.getNodeMap("")).thenReturn(sortedNodeMap);
 
-        EasyMock.expect(m_resourceDao.getResourceForNode(node)).andReturn(resource);
+        when(m_resourceDao.getResourceForNode(node)).thenReturn(resource);
 
         Source source = new Source();
         source.setLabel("result");
@@ -259,7 +269,7 @@ public class ReportDefinitionTest extends TestCase {
                                                 report.getEndTime() - report.getStartTime(),
                                                 Collections.emptyMap(),
                                                 null);
-        EasyMock.expect(m_fetchStrategy.fetch(report.getStartTime(),
+        when(m_fetchStrategy.fetch(report.getStartTime(),
                                               report.getEndTime(),
                                               1,
                                               0,
@@ -267,14 +277,16 @@ public class ReportDefinitionTest extends TestCase {
                                               null,
                                               Collections.singletonList(source),
                                               false))
-                .andReturn(results);
+                .thenReturn(results);
 
-
-        m_mocks.replayAll();
-        
         report.walk();
         
         assertEquals("results size", 1, report.getResults().size());
+
+        verify(m_nodeDao, times(1)).load(1);
+        verify(m_resourceDao, times(1)).getResourceForNode(any(OnmsNode.class));
+        verify(m_fetchStrategy, times(1)).fetch(anyLong(), anyLong(), anyLong(), anyInt(), isNull(), isNull(), anyList(), eq(false));
+        verify(m_filterDao, times(1)).getNodeMap("");
     }
 
     private static ReportDefinition createReportDefinition() {

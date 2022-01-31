@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,8 +28,16 @@
 
 package org.opennms.netmgt.collectd;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
+import static com.jayway.awaitility.Awaitility.await;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -38,11 +46,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.easymock.EasyMock;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.opennms.core.test.Level;
 import org.opennms.core.test.LoggingEvent;
 import org.opennms.core.test.MockLogAppender;
@@ -77,13 +86,14 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.test.mock.EasyMockUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.jayway.awaitility.Duration;
 
 /**
  * Test class for <a href="http://issues.opennms.org/browse/NMS-6226">NMS-6226</a>
@@ -104,9 +114,6 @@ public class DuplicatePrimaryAddressIT {
 
     /** The Collectd instance. */
     private Collectd m_collectd;
-
-    /** The Mock Utils instance. */
-    private EasyMockUtils m_mockUtils;
 
     /** The Collectd configuration factory instance. */
     private CollectdConfigFactory m_collectdConfigFactory;
@@ -133,6 +140,15 @@ public class DuplicatePrimaryAddressIT {
         MockServiceCollector.setDelegate(null);
     }
 
+    @After
+    public void tearDown() {
+        verifyNoMoreInteractions(m_filterDao);
+        verifyNoMoreInteractions(m_collectdConfiguration);
+        verifyNoMoreInteractions(m_collectdConfigFactory);
+        verifyNoMoreInteractions(m_nodeDao);
+        verifyNoMoreInteractions(m_ifaceDao);
+    }
+
     /**
      * Test existing.
      * <p>This test assumes that there are two nodes on the database sharing the same primary address.</p>
@@ -143,6 +159,15 @@ public class DuplicatePrimaryAddressIT {
     public void testExisting() throws Exception {
         initialize(true);
         verify();
+
+        Mockito.verify(m_filterDao, atLeastOnce()).flushActiveIpAddressListCache();
+        Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getCollectdConfig();
+        Mockito.verify(m_collectdConfigFactory, atLeastOnce()).interfaceInPackage(any(OnmsIpInterface.class), any(Package.class));
+        Mockito.verify(m_collectdConfiguration, atLeastOnce()).getCollectors();
+        Mockito.verify(m_collectdConfiguration, atLeastOnce()).getPackages();
+        Mockito.verify(m_collectdConfiguration, atLeastOnce()).getThreads();
+        Mockito.verify(m_ifaceDao, atLeastOnce()).findByServiceType(anyString());
+        Mockito.verify(m_ifaceDao, atLeastOnce()).load(anyInt());
     }
 
     /**
@@ -175,6 +200,16 @@ public class DuplicatePrimaryAddressIT {
         m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinitialize.getEvent()));
 
         verify();
+
+        Mockito.verify(m_filterDao, times(3)).flushActiveIpAddressListCache();
+        Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getCollectdConfig();
+        Mockito.verify(m_collectdConfigFactory, atLeastOnce()).interfaceInPackage(any(OnmsIpInterface.class), any(Package.class));
+        Mockito.verify(m_collectdConfiguration, atLeastOnce()).getCollectors();
+        Mockito.verify(m_collectdConfiguration, atLeastOnce()).getPackages();
+        Mockito.verify(m_collectdConfiguration, atLeastOnce()).getThreads();
+        Mockito.verify(m_ifaceDao, atLeastOnce()).findByServiceType(anyString());
+        Mockito.verify(m_ifaceDao, atLeastOnce()).load(anyInt());
+        Mockito.verify(m_nodeDao, atLeastOnce()).load(anyInt());
     }
 
     /**
@@ -189,12 +224,10 @@ public class DuplicatePrimaryAddressIT {
         m_eventIpcManager = new MockEventIpcManager();
         EventIpcManagerFactory.setIpcManager(m_eventIpcManager);
 
-        m_mockUtils = new EasyMockUtils();
-
         List<InetAddress> m_addrs = new ArrayList<>();
         m_addrs.add(InetAddressUtils.getInetAddress("192.168.1.1"));
-        m_filterDao = m_mockUtils.createMock(FilterDao.class);
-        EasyMock.expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(m_addrs).anyTimes();
+        m_filterDao = mock(FilterDao.class);
+        when(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).thenReturn(m_addrs);
         FilterDaoFactory.setInstance(m_filterDao);
 
         Resource resource = new ClassPathResource("etc/poll-outages.xml");
@@ -207,14 +240,14 @@ public class DuplicatePrimaryAddressIT {
         collector.setService("SNMP");
         collector.setClassName(MockServiceCollector.class.getName());
 
-        m_collectdConfigFactory = m_mockUtils.createMock(CollectdConfigFactory.class);
-        m_collectdConfiguration = m_mockUtils.createMock(CollectdConfiguration.class);
-        EasyMock.expect(m_collectdConfigFactory.getCollectdConfig()).andReturn(m_collectdConfiguration).anyTimes();
-        EasyMock.expect(m_collectdConfiguration.getCollectors()).andReturn(Collections.singletonList(collector)).anyTimes();
-        EasyMock.expect(m_collectdConfiguration.getThreads()).andReturn(2).anyTimes();
+        m_collectdConfigFactory = mock(CollectdConfigFactory.class);
+        m_collectdConfiguration = mock(CollectdConfiguration.class);
+        when(m_collectdConfigFactory.getCollectdConfig()).thenReturn(m_collectdConfiguration);
+        when(m_collectdConfiguration.getCollectors()).thenReturn(Collections.singletonList(collector));
+        when(m_collectdConfiguration.getThreads()).thenReturn(2);
 
-        m_ifaceDao = m_mockUtils.createMock(IpInterfaceDao.class);
-        m_nodeDao = m_mockUtils.createMock(NodeDao.class);
+        m_ifaceDao = mock(IpInterfaceDao.class);
+        m_nodeDao = mock(NodeDao.class);
         m_thresholdingService = new MockThresholdingService();
 
         m_collectd = new Collectd() {
@@ -242,21 +275,19 @@ public class DuplicatePrimaryAddressIT {
             initialIfs.add(ip1);
             initialIfs.add(ip2);
         }
-        EasyMock.expect(m_ifaceDao.findByServiceType(snmp.getName())).andReturn(initialIfs).anyTimes();
+        when(m_ifaceDao.findByServiceType(snmp.getName())).thenReturn(initialIfs);
 
         m_filterDao.flushActiveIpAddressListCache();
-        EasyMock.expectLastCall().anyTimes();
 
-        EasyMock.expect(m_nodeDao.load(1)).andReturn(n1).anyTimes();
-        EasyMock.expect(m_nodeDao.load(3)).andReturn(n2).anyTimes();
+        when(m_nodeDao.load(1)).thenReturn(n1);
+        when(m_nodeDao.load(3)).thenReturn(n2);
 
         createGetPackagesExpectation();
 
-        EasyMock.expect(m_ifaceDao.load(2)).andReturn(ip1).anyTimes();
-        EasyMock.expect(m_ifaceDao.load(4)).andReturn(ip2).anyTimes();
+        when(m_ifaceDao.load(2)).thenReturn(ip1);
+        when(m_ifaceDao.load(4)).thenReturn(ip2);
 
-        EasyMock.expect(m_filterDao.getActiveIPAddressList(anyObject())).andReturn(Arrays.asList(InetAddressUtils.addr("192.168.1.1"))).anyTimes();
-        m_mockUtils.replayAll();
+        when(m_filterDao.getActiveIPAddressList(anyString())).thenReturn(Arrays.asList(InetAddressUtils.addr("192.168.1.1")));
 
         final MockTransactionTemplate transTemplate = new MockTransactionTemplate();
         transTemplate.afterPropertiesSet();
@@ -284,16 +315,21 @@ public class DuplicatePrimaryAddressIT {
      * @throws Exception the exception
      */
     private void verify() throws Exception {
-        Thread.sleep(10000);
         int successfulCollections = 5; // At least 5 collections must be performed for the above wait time.
+
+        await().atMost(Duration.ONE_MINUTE).pollInterval(Duration.ONE_HUNDRED_MILLISECONDS).until(new Runnable() {
+            @Override
+            public void run() {
+                Assert.assertTrue(successfulCollections <= countMessages("collector.collect: begin:testPackage/1/192.168.1.1/SNMP"));
+                Assert.assertTrue(successfulCollections <= countMessages("collector.collect: end:testPackage/1/192.168.1.1/SNMP"));
+                Assert.assertTrue(successfulCollections <= countMessages("collector.collect: begin:testPackage/3/192.168.1.1/SNMP"));
+                Assert.assertTrue(successfulCollections <= countMessages("collector.collect: end:testPackage/3/192.168.1.1/SNMP"));                
+            }
+        });
+
         m_collectd.stop();
-        m_mockUtils.verifyAll();
         MockLogAppender.assertNoWarningsOrGreater();
 
-        Assert.assertTrue(successfulCollections <= countMessages("collector.collect: begin:testPackage/1/192.168.1.1/SNMP"));
-        Assert.assertTrue(successfulCollections <= countMessages("collector.collect: end:testPackage/1/192.168.1.1/SNMP"));
-        Assert.assertTrue(successfulCollections <= countMessages("collector.collect: begin:testPackage/3/192.168.1.1/SNMP"));
-        Assert.assertTrue(successfulCollections <= countMessages("collector.collect: end:testPackage/3/192.168.1.1/SNMP"));
     }
 
     private int countMessages(String message) {
@@ -324,8 +360,8 @@ public class DuplicatePrimaryAddressIT {
         collector.addParameter("thresholding-enabled", "false");
         pkg.addService(collector);
 
-        EasyMock.expect(m_collectdConfiguration.getPackages()).andReturn(Collections.singletonList(pkg)).anyTimes();
-        EasyMock.expect(m_collectdConfigFactory.interfaceInPackage(anyObject(OnmsIpInterface.class), eq(pkg))).andReturn(true).anyTimes();
+        when(m_collectdConfiguration.getPackages()).thenReturn(Collections.singletonList(pkg));
+        when(m_collectdConfigFactory.interfaceInPackage(any(OnmsIpInterface.class), eq(pkg))).thenReturn(true);
     }
 
 }
