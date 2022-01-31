@@ -30,12 +30,15 @@ package org.opennms.features.deviceconfig.retrieval.impl;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
@@ -95,6 +98,138 @@ public class RetrieverImplTest {
         var success = either.get();
 
         assertThat(success.config, is(bytes));
+
+        verify(tftpServer, times(1)).unregister(receiver);
+    }
+
+    @Test
+    public void shouldHandleScriptingExceptions() throws Exception {
+        var sshScriptingService = mock(SshScriptingService.class);
+        var tftpServer = mock(TftpServer.class);
+        var receiverCaptor = ArgumentCaptor.forClass(TftpFileReceiver.class);
+        var scriptingException = new RuntimeException("scripting exception");
+
+        when(sshScriptingService.execute(any(), any(), any(), any(), anyInt(), any(), any())).thenThrow(scriptingException);
+        doNothing().when(tftpServer).register(receiverCaptor.capture());
+
+        var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
+
+        var future = retriever.retrieveConfig(
+                Retriever.Protocol.TFTP, "", "", "", "host", 80,
+                Collections.emptyMap(),
+                Duration.ofMillis(1000)
+        ).toCompletableFuture();
+
+        await().until(future::isDone);
+
+        var receiver = waitFor(receiverCaptor);
+
+        var either = future.get();
+        assertTrue(either.isLeft());
+
+        var failure = either.getLeft();
+
+        assertThat(failure.message, containsString(RetrieverImpl.scriptingFailureMsg("host", 80, scriptingException.getMessage())));
+
+        verify(tftpServer, times(1)).unregister(receiver);
+    }
+
+    @Test
+    public void shouldHandleScriptingFailures() throws Exception {
+        var sshScriptingService = mock(SshScriptingService.class);
+        var tftpServer = mock(TftpServer.class);
+        var receiverCaptor = ArgumentCaptor.forClass(TftpFileReceiver.class);
+        var scriptingFailureMessage = "scripting exception";
+        when(sshScriptingService.execute(any(), any(), any(), any(), anyInt(), any(), any())).thenReturn(Optional.of(new SshScriptingService.Failure(scriptingFailureMessage, Optional.empty(), Optional.empty())));
+        doNothing().when(tftpServer).register(receiverCaptor.capture());
+
+        var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
+
+        var future = retriever.retrieveConfig(
+                Retriever.Protocol.TFTP, "", "", "", "host", 80,
+                Collections.emptyMap(),
+                Duration.ofMillis(1000)
+        ).toCompletableFuture();
+
+        await().until(future::isDone);
+
+        var receiver = waitFor(receiverCaptor);
+
+        var either = future.get();
+        assertTrue(either.isLeft());
+
+        var failure = either.getLeft();
+
+        assertThat(failure.message, containsString(RetrieverImpl.scriptingFailureMsg("host", 80, scriptingFailureMessage)));
+
+        verify(tftpServer, times(1)).unregister(receiver);
+    }
+
+    @Test
+    public void shouldHandleTimeouts() throws Exception {
+        var sshScriptingService = mock(SshScriptingService.class);
+        var tftpServer = mock(TftpServer.class);
+        var receiverCaptor = ArgumentCaptor.forClass(TftpFileReceiver.class);
+        when(sshScriptingService.execute(any(), any(), any(), any(), anyInt(), any(), any())).thenReturn(Optional.empty());
+        doNothing().when(tftpServer).register(receiverCaptor.capture());
+
+        var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
+
+        var future = retriever.retrieveConfig(
+                Retriever.Protocol.TFTP, "", "", "", "host", 80,
+                Collections.emptyMap(),
+                Duration.ofMillis(1000)
+        ).toCompletableFuture();
+
+        await().until(future::isDone);
+
+        var receiver = waitFor(receiverCaptor);
+
+        var either = future.get();
+        assertTrue(either.isLeft());
+
+        var failure = either.getLeft();
+
+        assertThat(failure.message, containsString(RetrieverImpl.timeoutFailureMsg("host", 80)));
+
+        verify(tftpServer, times(1)).unregister(receiver);
+    }
+
+    @Test
+    public void shouldIgnoreOtherFiles() throws Exception {
+        var sshScriptingService = mock(SshScriptingService.class);
+        var tftpServer = mock(TftpServer.class);
+        var varsCaptor = ArgumentCaptor.forClass(Map.class);
+        var receiverCaptor = ArgumentCaptor.forClass(TftpFileReceiver.class);
+        when(sshScriptingService.execute(any(), any(), any(), any(), anyInt(), varsCaptor.capture(), any())).thenReturn(Optional.empty());
+        doNothing().when(tftpServer).register(receiverCaptor.capture());
+
+        var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
+
+        var future = retriever.retrieveConfig(
+                Retriever.Protocol.TFTP, "", "", "", "host", 80,
+                Collections.emptyMap(),
+                Duration.ofMillis(1000)
+        ).toCompletableFuture();
+
+        var vars = waitFor(varsCaptor);
+        var receiver = waitFor(receiverCaptor);
+
+        var filename = (String)vars.get("filename");
+
+        // signal the receiver of some incoming file that has a different name
+        receiver.onFileReceived(InetAddress.getLocalHost(), filename + ".other", new byte[] { 1, 2, 3 });
+
+        await().until(future::isDone);
+
+        var either = future.get();
+        assertTrue(either.isLeft());
+
+        var failure = either.getLeft();
+
+        assertThat(failure.message, containsString(RetrieverImpl.timeoutFailureMsg("host", 80)));
+
+        verify(tftpServer, times(1)).unregister(receiver);
     }
 
     private <T> T waitFor(ArgumentCaptor<T> captor) {

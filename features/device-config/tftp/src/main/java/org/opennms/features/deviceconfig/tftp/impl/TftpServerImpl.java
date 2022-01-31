@@ -598,7 +598,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
     }
 
     @Override
-    public void deregister(TftpFileReceiver receiver) {
+    public void unregister(TftpFileReceiver receiver) {
         synchronized (receivers) {
             receivers.remove(receiver);
             if(receivers.isEmpty()) {

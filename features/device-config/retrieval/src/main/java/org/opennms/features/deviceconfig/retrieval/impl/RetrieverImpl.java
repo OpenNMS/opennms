@@ -93,10 +93,10 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         vs.put(FILENAME, filename);
 
         if (protocol == Protocol.TFTP) {
-            // the file retriever is registered with the tftp server
+            // the file receiver is registered with the tftp server
             // -> it triggers the file upload as soon as the future that is returned is created
             // -> it waits for the file or for a timeout
-            // -> it must deregister itself from the tftp server when the future is completed
+            // -> it is unregistered from the tftp server when the future is completed
             var tftpFileReceiver = new TftpFileReceiverImpl(
                     host,
                     port,
@@ -110,12 +110,12 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                 return FutureUtils.completionStage(
                         tftpFileReceiver::completeNowOrLater,
                         timeout,
-                        tftpFileReceiver::timeout,
+                        tftpFileReceiver::onTimeout,
                         executor
-                ).whenComplete((e, t) -> tftpServer.deregister(tftpFileReceiver));
+                ).whenComplete((e, t) -> tftpServer.unregister(tftpFileReceiver));
             } catch (RuntimeException e) {
-                // just make sure the file receiver is deregister - even if no future is returned
-                tftpServer.deregister(tftpFileReceiver);
+                // make sure the file receiver is unregistered in case no future is returned
+                tftpServer.unregister(tftpFileReceiver);
                 throw e;
             }
 
@@ -164,17 +164,21 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             this.future = future;
             // trigger the upload
             // -> if triggering the upload failed then complete the future with that failure
-            uploadTrigger
-                    .get()
-                    .stream()
-                    .forEach(failure ->
-                            fail("could not trigger device config upload - host: " + host + "; port: " + port + "; msg: " + failure.message, failure.stdout, failure.stderr)
-                    );
+            try {
+                uploadTrigger
+                        .get()
+                        .stream()
+                        .forEach(failure -> fail(scriptingFailureMsg(host, port, failure.message), failure.stdout, failure.stderr));
+            } catch (Throwable e) {
+                var msg = scriptingFailureMsg(host, port, e.getMessage());
+                LOG.error(msg, e);
+                fail(msg, Optional.empty(), Optional.empty());
+            }
         }
 
-        public void timeout(CompletableFuture<Either<Failure, Success>> future) {
+        public void onTimeout(CompletableFuture<Either<Failure, Success>> future) {
             this.future = future;
-            fail("device config was not received in time . host: " + host + "; port: " + port, Optional.empty(), Optional.empty());
+            fail(timeoutFailureMsg(host, port), Optional.empty(), Optional.empty());
         }
 
         @Override
@@ -189,5 +193,12 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                 }
             }
         }
+    }
+
+    static String scriptingFailureMsg(String host, int port, String msg) {
+        return "could not trigger device config upload - host: " + host + "; port: " + port + "; msg: " + msg;
+    }
+    static String timeoutFailureMsg(String host, int port) {
+        return "device config was not received in time. host: " + host + "; port: " + port;
     }
 }
