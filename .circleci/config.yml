@@ -103,8 +103,8 @@ jobs:
           command: |
             wget https://github.com/docker/hub-tool/releases/download/v0.4.4/hub-tool-linux-amd64.tar.gz
             tar -xzf hub-tool-linux-amd64.tar.gz
-            apt-get update
-            apt-get install expect
+            apk update
+            apk add expect
             /usr/bin/expect --help
             hub-tool/hub-tool tag ls opennms/horizon |grep feature | grep inactive
 
