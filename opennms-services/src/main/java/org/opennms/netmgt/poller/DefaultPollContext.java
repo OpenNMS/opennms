@@ -450,6 +450,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         }
     }
 
+
     private static void processPending(final PendingPollEvent pollEvent) {
         LOG.trace("onEvent: pollEvent is no longer pending, processing pollEvent: {}", pollEvent);
         // Thread-safe and idempotent
