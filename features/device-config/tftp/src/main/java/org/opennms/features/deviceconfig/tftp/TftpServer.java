@@ -28,9 +28,11 @@
 
 package org.opennms.features.deviceconfig.tftp;
 
+import java.io.IOException;
+
 public interface TftpServer {
 
-    void register(TftpFileReceiver receiver);
+    void register(TftpFileReceiver receiver) throws IOException;
     void deregister(TftpFileReceiver receiver);
 
     TftpStatistics getStatistics();
