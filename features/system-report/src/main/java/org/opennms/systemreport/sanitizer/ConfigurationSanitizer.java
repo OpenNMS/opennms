@@ -50,17 +50,7 @@ public class ConfigurationSanitizer {
     }
 
     public Resource getSanitizedResource(final File file) {
-        ConfigFileSanitizer fileSanitizer = null;
-        String fileName = file.getName();
-
-        if (sanitizers.containsKey(fileName)) {
-            fileSanitizer = sanitizers.get(fileName);
-        } else if (fileName.contains(".")) {
-            String fileExtension = fileName.substring(fileName.lastIndexOf("."));
-            if (sanitizers.containsKey("*" + fileExtension)) {
-                fileSanitizer = sanitizers.get("*" + fileExtension);
-            }
-        }
+        ConfigFileSanitizer fileSanitizer = getSanitizer(file.getName());
 
         if (fileSanitizer != null) {
             try {
@@ -73,5 +63,20 @@ public class ConfigurationSanitizer {
         }
 
         return new FileSystemResource(file);
+    }
+
+    private ConfigFileSanitizer getSanitizer(String fileName) {
+        ConfigFileSanitizer fileSanitizer = null;
+
+        if (sanitizers.containsKey(fileName)) {
+            fileSanitizer = sanitizers.get(fileName);
+        } else if (fileName.contains(".")) {
+            String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+            if (sanitizers.containsKey("*" + fileExtension)) {
+                fileSanitizer = sanitizers.get("*" + fileExtension);
+            }
+        }
+
+        return fileSanitizer;
     }
 }

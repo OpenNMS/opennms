@@ -33,7 +33,6 @@ import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Properties;
@@ -44,38 +43,40 @@ public class PropertiesFileSanitizer implements ConfigFileSanitizer {
 
     private static final Set<String> PROPERTIES_TO_SANITIZE = new LinkedHashSet<>(Arrays.asList("password", "pass", "authenticatePassword", "truststorePassword"));
 
-    private final String SANITIZED_VALUE = "***";
+    protected final String SANITIZED_VALUE = "***";
 
     @Override
     public String getFileName() {
         return "*.properties";
     }
 
+    @Override
     public Resource getSanitizedResource(final File file) throws FileSanitizationException {
         try {
-            return sanitizeProperties(file);
+            Properties properties = new Properties();
+            properties.load(new FileInputStream(file));
+
+            sanitizeProperties(properties);
+
+            return new ByteArrayResource(getOutput(properties).getBytes());
         } catch (Exception e) {
             throw new FileSanitizationException("Could not sanitize file", e);
         }
     }
 
-    private Resource sanitizeProperties(final File file) throws IOException {
-        Properties properties = new Properties();
-        properties.load(new FileInputStream(file));
-
+    protected void sanitizeProperties(Properties properties) {
         properties.stringPropertyNames().forEach(propertyName -> {
             String lastPart = propertyName.substring(propertyName.lastIndexOf(".") + 1);
             if (PROPERTIES_TO_SANITIZE.contains(lastPart)) {
                 properties.setProperty(propertyName, SANITIZED_VALUE);
             }
         });
-
-        String result = properties.entrySet().stream()
-                .map((entry) -> entry.getKey() + "=" + entry.getValue())
-                .collect(Collectors.joining("\n"));
-
-        return new ByteArrayResource(result.getBytes());
     }
 
+    protected String getOutput(Properties properties) {
+        return properties.entrySet().stream()
+                .map((entry) -> entry.getKey() + "=" + entry.getValue())
+                .collect(Collectors.joining("\n"));
+    }
 
 }

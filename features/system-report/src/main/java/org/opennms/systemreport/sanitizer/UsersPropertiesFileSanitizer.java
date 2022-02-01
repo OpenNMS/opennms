@@ -28,39 +28,17 @@
 
 package org.opennms.systemreport.sanitizer;
 
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.Properties;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-public class UsersPropertiesFileSanitizer implements ConfigFileSanitizer {
-
-    private final String SANITIZED_VALUE = "***";
+public class UsersPropertiesFileSanitizer extends PropertiesFileSanitizer {
 
     @Override
     public String getFileName() {
         return "users.properties";
     }
 
-    public Resource getSanitizedResource(final File file) throws FileSanitizationException {
-        try {
-            return sanitizeProperties(file);
-        } catch (Exception e) {
-            throw new FileSanitizationException("Could not sanitize file", e);
-        }
-    }
-
-    private Resource sanitizeProperties(final File file) throws IOException {
-        Properties properties = new Properties();
-        properties.load(new FileInputStream(file));
-
+    @Override
+    protected void sanitizeProperties(Properties properties) {
         properties.stringPropertyNames().forEach(propertyName -> {
             if (!propertyName.startsWith("_g_:")) {
                 String propertyValue = properties.getProperty(propertyName);
@@ -69,13 +47,6 @@ public class UsersPropertiesFileSanitizer implements ConfigFileSanitizer {
                 properties.setProperty(propertyName, String.join(",", propertyParts));
             }
         });
-
-        String result = properties.entrySet().stream()
-                .map((entry) -> entry.getKey() + "=" + entry.getValue())
-                .collect(Collectors.joining("\n"));
-
-        return new ByteArrayResource(result.getBytes());
     }
-
 
 }
