@@ -25,75 +25,20 @@
           schedule for it.
         </p>
         <div class="slide-inner-body">
-          <FeatherInput
-            ref="firstInput"
-            class="side-input"
-            label="Name"
-            hint="Hint Text"
-            :error="props.item.errors.name"
-            v-model="stateIn.name"
-          />
-          <FeatherSelect
-            class="side-input"
-            textProp="name"
-            hint="Hint Text"
-            label="Type"
-            :options="requisitionTypes"
-            v-model="stateIn.type"
-          />
-          <div v-if="stateIn?.type?.name === 'Requisition'">
-            <FeatherSelect
-              class="side-input"
-              textProp="name"
-              hint="Hint Text"
-              label="Requisition Type"
-              :options="requisitionSubTypes"
-              v-model="stateIn.subType"
-            />
-          </div>
-          <div v-if="stateIn?.type?.name !== 'Requisition'">
-            <FeatherInput
-              label="Host"
-              class="side-input"
-              :error="props.item.errors.host"
-              v-model="stateIn.host"
-              @update:modelValue="(newVal: string) => { if (stateIn?.host) { stateIn.host = newVal; } }"
-              hint="Hint Text"
-            />
-          </div>
-          <div class="flex-center side-input">
-            <FeatherSelect
-              textProp="name"
-              label="Monthly"
-              :options="scheduleTypes"
-              v-model="stateIn.occurance"
-              class="occurance"
-            />
-            <FeatherInput type="time" class="time" label="Schedule Time" v-model="stateIn.time" />
-          </div>
-          <div class>
-            <FeatherRadioGroup
-              class="side-label"
-              label="Rescan Behavior"
-              v-model="stateIn.rescanBehavior"
-            >
-              <FeatherRadio
-                v-for="item in rescanItems"
-                :value="item.value"
-                :key="item.name"
-              >{{ item.name }}</FeatherRadio>
-            </FeatherRadioGroup>
-          </div>
+          <ProvisionDForm :item="item" :stateIn="stateIn" :clearAdvancedOptions="clearAdvancedOptions" />
         </div>
         <ConfigurationAdvancedPanel
+          v-if="props.item.config.type.name !== 'File'"
           :active="props.advancedActive"
           :activeUpdate="props.activeUpdate"
           :helpState="props.helpState"
           :items="stateIn.advancedOptions"
+          :type="stateIn.type.name"
+          :subType="stateIn.subType.name"
           :addAdvancedOption="props.addAdvancedOption"
           :deleteAdvancedOption="props.deleteAdvancedOption"
         />
-        <ConfigurationGeneratedUrl :config="urlState" />
+        <ConfigurationGeneratedUrl :item="props.item.config" />
         <FeatherButton @click="props.saveCurrentState" primary>Save &amp; Close</FeatherButton>
       </div>
     </div>
@@ -103,23 +48,15 @@
 <script setup lang="ts">
 import { reactive, computed, watch, ref, PropType } from 'vue'
 
-import { FeatherSelect } from '@featherds/select'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
-import { FeatherInput } from '@featherds/input'
-import { FeatherRadioGroup, FeatherRadio } from '@featherds/radio'
 
 import Cancel from '@featherds/icon/navigation/Cancel'
 
 import ConfigurationAdvancedPanel from './ConfigurationAdvancedPanel.vue'
 import ConfigurationGeneratedUrl from './ConfigurationGeneratedUrl.vue'
 import ConfigurationHelpPanel from './ConfigurationHelpPanel.vue'
-
-import { requisitionTypes, requisitionSubTypes } from './copy/requisitionTypes'
-import { scheduleTypes } from './copy/scheduleTypes'
-import { rescanItems } from './copy/rescanItems'
-import { LocalConfigurationWrapper } from './hooks'
-
+import ProvisionDForm from './ProvisionDForm.vue'
 
 /**
  * Props
@@ -150,7 +87,6 @@ const cancelIcon = computed(() => Cancel)
 const helpState = computed(() => props.helpState)
 const editing = computed(() => props.edit)
 const errors = computed(() => props?.item?.errors)
-const urlState = reactive({ item: {} })
 
 const stateIn = computed(() => {
   const currentItem = props?.item?.config
@@ -194,11 +130,6 @@ watch(configurationDrawerActive, () => {
   }
 })
 
-watch(stateIn, () => {
-  urlState.item = stateIn.value
-})
-
-
 /**
  * Determines which classes to apply to the drawer.
  */
@@ -218,6 +149,10 @@ const wrapperClass = () => {
  */
 const disableHelp = () => {
   localStorage.setItem('disable-help', 'true')
+}
+
+const clearAdvancedOptions = () => {
+
 }
 </script>
 
@@ -258,21 +193,7 @@ const disableHelp = () => {
   height: calc(100vh - 110px);
   overflow-y: auto;
 }
-.occurance {
-  width: 100%;
-}
-.time {
-  margin-left: 16px;
-  width: 100%;
-}
-.flex-center {
-  display: flex;
-  align-items: center;
-}
-.title-padding {
-  padding: 28px;
-  padding-bottom: 0;
-}
+
 .active {
   opacity: 1;
   pointer-events: all;

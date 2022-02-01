@@ -1,18 +1,13 @@
 [
     {
-        "name": "VMWare",
-        "id": "111",
-        "value": "vmware"
+        "name": "DNS",
+        "id": "113",
+        "value": "dns"
     },
     {
         "name": "File",
         "id": "112",
         "value": "file"
-    },
-    {
-        "name": "DNS",
-        "id": "113",
-        "value": "dns"
     },
     {
         "name": "HTTP",
@@ -28,5 +23,10 @@
         "name": "Requisition",
         "id": "116",
         "value": "requisition"
+    },
+    {
+        "name": "VMWare",
+        "id": "111",
+        "value": "vmware"
     }
 ]

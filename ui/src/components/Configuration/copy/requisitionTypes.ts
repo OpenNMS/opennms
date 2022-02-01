@@ -1,15 +1,11 @@
 export const requisitionTypes = [
   {
-    id: 1,
-    name: 'VMWare'
+    id: 3,
+    name: 'DNS'
   },
   {
     id: 2,
     name: 'File'
-  },
-  {
-    id: 3,
-    name: 'DNS'
   },
   {
     id: 4,
@@ -22,6 +18,10 @@ export const requisitionTypes = [
   {
     id: 6,
     name: 'Requisition'
+  },
+  {
+    id: 1,
+    name: 'VMWare'
   }
 ]
 export const requisitionSubTypes = [

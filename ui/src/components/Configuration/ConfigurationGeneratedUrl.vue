@@ -1,28 +1,29 @@
 <template>
-  <div class="white-bg" v-if="convertedItem?.url !== ':///'">
+  <div class="white-bg" v-if="convertedItem?.url !== ':///' && convertedItem?.url !== ''">
     <div class="title">URL:</div>
     <div class="url">{{ convertedItem?.url }}</div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, PropType } from 'vue'
 import { ConfigurationService } from './ConfigurationService'
 
 /**
  * Props
  */
 const props = defineProps({
-  config: Object
+  item: {type:Object as PropType<LocalConfiguration>, required:true}
 })
 
 /**
  * Local State
  */
 const convertedItem = computed(() => {
-  const converted = props.config?.item?.type ?
-    ConfigurationService.convertLocalToServer(props.config?.item) :
+  const converted = props.item?.type ?
+    ConfigurationService.convertLocalToServer(props.item) :
     { 'import-url-resource': '' }
+    console.log('URL:',converted['import-url-resource'])
   return {
     item: converted,
     url: converted['import-url-resource']
@@ -40,6 +41,7 @@ const convertedItem = computed(() => {
   align-items: flex-start;
   padding: 16px 24px;
   @include elevation(2);
+  margin-top:16px;
 }
 .title {
   @include headline4();

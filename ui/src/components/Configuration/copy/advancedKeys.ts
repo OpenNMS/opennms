@@ -111,3 +111,65 @@ export const advancedKeys = [
     _text: 'virtualMachineServices'
   }
 ]
+
+export const dnsKeys = [
+  {
+    id: 1,
+    name: 'expression',
+    _text: 'expression'
+  },
+  { id: 2, name: 'location', _text: 'location' }
+]
+
+export const openDaylightKeys = [
+  {
+    id: 1,
+    name: 'host',
+    _text: 'host'
+  },
+  { id: 2, name: 'port', _text: 'port' }
+]
+
+export const prisKeys = [
+  {
+    id: 1,
+    name: 'source',
+    _text: 'source'
+  },
+  { id: 2, name: 'mapper', _text: 'mapper' }
+]
+
+export const aciKeys = [
+  {
+    id: 1,
+    name: 'cluster-name',
+    _text: 'cluster-name'
+  },
+  {
+    id: 1,
+    name: 'hostname',
+    _text: 'hostname'
+  },
+  {
+    id: 1,
+    name: 'username',
+    _text: 'username'
+  },
+  {
+    id: 1,
+    name: 'password',
+    _text: 'password'
+  },
+  {
+    id: 1,
+    name: 'apic-url',
+    _text: 'apic-url'
+  },
+  {
+    id: 1,
+    name: 'location',
+    _text: 'location'
+  }
+]
+
+export const zabbixKeys = []

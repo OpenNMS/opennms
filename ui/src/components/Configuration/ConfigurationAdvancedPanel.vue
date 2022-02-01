@@ -17,7 +17,7 @@
           type="single"
           label="Key"
           textProp="name"
-          @search="(query: string) => search(query, index)"
+          @search="(query: string) => search(query, props.type,props.subType, index)"
           v-model="item.key"
           :results="results.list[index]"
         ></FeatherAutocomplete>
@@ -48,13 +48,15 @@ import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
 import Help from '@featherds/icon/action/Help'
 
-import { advancedKeys } from './copy/advancedKeys'
+import { advancedKeys,dnsKeys, openDaylightKeys,aciKeys,zabbixKeys,prisKeys } from './copy/advancedKeys'
 
 /**
  * Props
  */
 const props = defineProps({
   items: { type: Array as PropType<Array<AdvancedOption>>, required: true },
+  type: {type: String, required:true},
+  subType: {type: String, required:true},
   addAdvancedOption: { type: Function, required: true },
   deleteAdvancedOption: { type: Function, required: true },
   active: { type: Boolean, required: true },
@@ -69,16 +71,48 @@ const results = reactive({
   list: [[{}]]
 })
 
+const getKeysBasedOnType = (type:string,subType:string) => {
+  
+  let keys = new Array<AdvancedKey>();
+
+  if (type === 'DNS'){
+    keys = dnsKeys;
+  }else if (type === 'VMWare'){
+    keys = advancedKeys;
+  }else if (type === 'Requisition'){
+    if (subType === 'OpenDaylight'){
+      keys = openDaylightKeys;
+    }else if (subType === 'ACI'){
+      keys = aciKeys;
+    }else if (subType === 'Zabbix'){
+      keys = zabbixKeys;
+    }else if (subType === 'PRIS'){
+      keys = prisKeys;
+    }
+  }
+  return keys;
+}
+
 /**
  * 
  * @param searchVal The Key Name to search for
  * @param index Since there are multiple search boxes, we need to know which one for which to generate results.
  */
-const search = (searchVal: string, index: number) => {
-  const newResu = advancedKeys.filter((key) => key.name.includes(searchVal) || key.name === searchVal)
+const search = (searchVal: string, type:string,subType:string, index: number) => {
+  const advancedKeys = getKeysBasedOnType(type,subType)
+  let newResu = advancedKeys.filter((key) => key.name.includes(searchVal) || key.name === searchVal)
   if (newResu.length === 0) {
     newResu.push({ name: searchVal, _text: searchVal, id: props.items?.length || 1 })
   }
+  newResu = newResu.filter((res) => {
+    let includeInResults = true;
+    props.items.forEach((item) => {
+      if (item.key.name === res.name){
+        includeInResults = false;
+      }
+    })
+    return includeInResults;
+  })
   results.list[index] = [...newResu]
 }
 

@@ -1,10 +1,20 @@
 import { requisitionTypes, requisitionSubTypes } from './copy/requisitionTypes'
 
 export const ConfigurationService = {
-  validateLocalItem: (localItem: LocalConfiguration) => {
-    const errors = { host: '', hasErrors: false, name: '' }
+  validateLocalItem: (localItem: LocalConfiguration, quickUpdate = false): LocalErrors => {
+    const errors: LocalErrors = {
+      host: '',
+      hasErrors: false,
+      name: '',
+      type: '',
+      path: '',
+      username: '',
+      password: '',
+      foreignSource: '',
+      zone: ''
+    }
     const ipv4 = new RegExp(
-      /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])\.)+([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$/
+      /^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])(:[0-9]+)?$/gim
     )
     const isHostValid = !localItem?.subType?.value ? ipv4.test(localItem.host) : true
     if (!isHostValid) {
@@ -19,6 +29,20 @@ export const ConfigurationService = {
     }
     if (localItem.name.length > 255) {
       errors.name = 'Name must be shorter than 255'
+    }
+    if (!localItem.type.name) {
+      errors.type = 'Must select a type'
+    }
+    if (quickUpdate) {
+      if (localItem.host === '') {
+        errors.host = ''
+      }
+      if (localItem.type.name === '') {
+        errors.type = ''
+      }
+      if (localItem.name === '') {
+        errors.name = ''
+      }
     }
 
     if (errors.host || errors.name) {
@@ -76,13 +100,28 @@ export const ConfigurationService = {
       weekly
     }
   },
-  convertLocalToServer: (localItem: LocalConfiguration) => {
+  convertItemToURL: (localItem: LocalConfiguration) => {
     const protocol = localItem.type.name.toLowerCase()
-    const host = localItem?.subType?.value ? localItem?.subType?.value : `${localItem?.host}/`
-    let queryString = localItem?.advancedOptions?.length > 0 ? '?' : ''
+    const type = localItem.type.name
+    let host = localItem.host
+    if (type === 'Requisition') {
+      host = localItem.subType.value
+    } else if (type === 'DNS') {
+      host = `${localItem.host}/${localItem.zone || ''}`
+      if (localItem.foreignSource) {
+        host += `/${localItem.foreignSource}`
+      }
+    } else if (type === 'VMWare') {
+      host = `${localItem.host}?username=${localItem.username}&password=${localItem.password}`
+    }
+    let fullURL = `${protocol}://${host}`
+    let queryString = !fullURL.includes('?') && localItem.advancedOptions.length > 0 ? '?' : ''
     localItem.advancedOptions.forEach((option, index) => {
       queryString += `${index > 0 ? '&' : ''}${option.key.name}=${option.value}`
     })
+    return fullURL + queryString
+  },
+  convertLocalToServer: (localItem: LocalConfiguration, stripIndex = false) => {
     const occurance = localItem.occurance
     const time = localItem.time
     const schedule = ConfigurationService.convertLocalToCronTab(occurance, time)
@@ -92,8 +131,8 @@ export const ConfigurationService = {
     } else if (localItem.rescanBehavior === 2) {
       rescanVal = 'dbonly'
     }
-    const finalURL = `${protocol}://${host}${queryString}`
-    return {
+    const finalURL = ConfigurationService.convertItemToURL(localItem)
+    let fullRet: ProvisionDServerConfiguration = {
       'import-name': localItem.name,
       'import-url-resource': finalURL,
       'cron-schedule': schedule,
@@ -101,6 +140,68 @@ export const ConfigurationService = {
       currentSort: { property: '', value: '' },
       originalIndex: 0
     }
+
+    if (stripIndex) {
+      delete fullRet.originalIndex
+    }
+
+    return fullRet
+  },
+  createBlankLocal: () => {
+    return {
+      config: {
+        name: '',
+        type: { name: '', id: 0 },
+        subType: { value: '', id: 0, name: '' },
+        host: '',
+        occurance: { name: '', id: 0 },
+        time: '00:00',
+        rescanBehavior: 1,
+        path: '',
+        username: '',
+        password: '',
+        advancedOptions: [{ key: { name: '', _text: '' }, value: '' }],
+        zone: '',
+        foreignSource: ''
+      },
+      errors: {
+        hasErrors: false,
+        host: '',
+        name: '',
+        username: '',
+        password: '',
+        path: '',
+        type: '',
+        zone: '',
+        foreignSource: ''
+      }
+    }
+  },
+  convertURLToLocal: (urlIn: string) => {
+    let host = ''
+    let path = ''
+    let username = ''
+    let password = ''
+    let zone = ''
+    let foreignSource = ''
+    let subType = { id: 0, name: '', value: '' }
+
+    const url = urlIn.split('/')
+    let typeRaw = url[0].split(':')[0]
+    let type = requisitionTypes.find((item) => item.name.toLowerCase() === typeRaw)
+    if (!type) {
+      type = { id: 0, name: '' }
+    }
+    if (url.length === 3) {
+      typeRaw = url[2].split('?')[0]
+      const foundSubType = requisitionSubTypes.find((item) => item.value.toLowerCase() === typeRaw)
+      if (foundSubType) {
+        subType = foundSubType
+      }
+    } else if (url.length === 4) {
+      host = url[2]
+    }
+    return { path, type, host, username, password, subType, zone, foreignSource }
   },
   convertServerConfigurationToLocal: (clickedItem: ProvisionDServerConfiguration) => {
     const advancedOptions = clickedItem['import-url-resource'].includes('?')
@@ -120,33 +221,15 @@ export const ConfigurationService = {
     }
     const { occurance, twentyFourHour: time } = ConfigurationService.convertCronTabToLocal(clickedItem['cron-schedule'])
 
-    const url = clickedItem['import-url-resource'].split('/')
-    let typeRaw = url[0].split(':')[0]
-    let type = requisitionTypes.find((item) => item.name.toLowerCase() === typeRaw)
-    if (!type) {
-      type = { id: 0, name: '' }
-    }
-    let host = ''
-    let subType = { id: 0, name: '', value: '' }
-    if (url.length === 3) {
-      typeRaw = url[2].split('?')[0]
-      const foundSubType = requisitionSubTypes.find((item) => item.value.toLowerCase() === typeRaw)
-      if (foundSubType) {
-        subType = foundSubType
-      }
-    } else if (url.length === 4) {
-      host = url[2]
-    }
+    const urlVars = ConfigurationService.convertURLToLocal(clickedItem['import-url-resource'])
 
     return {
       name: clickedItem['import-name'],
-      type,
-      host,
-      subType,
       occurance: { name: occurance, id: 0 },
       time,
       advancedOptions,
-      rescanBehavior
+      rescanBehavior,
+      ...urlVars
     }
   }
 }

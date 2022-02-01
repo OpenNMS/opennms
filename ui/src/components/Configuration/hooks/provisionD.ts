@@ -1,15 +1,7 @@
 import { computed, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 import { ConfigurationService } from '../ConfigurationService'
-export type LocalErrors = {
-  hasErrors: boolean
-  host: string
-  name: string
-}
-export type LocalConfigurationWrapper = {
-  config: LocalConfiguration
-  errors: LocalErrors
-}
+
 export const useProvisionD = () => {
   const store = useStore()
   const activeIndex = reactive({ index: -1 })
@@ -20,7 +12,7 @@ export const useProvisionD = () => {
     editing.value = editingValue
   }
 
-  const provisionDList = computed(() => {
+  let provisionDList = computed(() => {
     let defaultList: Array<ProvisionDServerConfiguration> =
       store?.state?.configuration?.provisionDService?.['requisition-def']
     return (
@@ -30,19 +22,7 @@ export const useProvisionD = () => {
       }) || []
     )
   })
-  const selectedProvisionD = reactive<LocalConfigurationWrapper>({
-    config: {
-      name: '',
-      type: { name: '', id: 0 },
-      subType: { value: '', id: 0, name: '' },
-      host: '',
-      occurance: { name: '', id: 0 },
-      time: '00:00',
-      rescanBehavior: 1,
-      advancedOptions: [{ key: { name: '', _text: '' }, value: '' }]
-    },
-    errors: { hasErrors: false, host: '', name: '' }
-  })
+  const selectedProvisionD = reactive<LocalConfigurationWrapper>(ConfigurationService.createBlankLocal())
 
   const setItemToEdit = (index: number) => {
     selectedProvisionD.config = ConfigurationService.convertServerConfigurationToLocal(provisionDList.value[index])

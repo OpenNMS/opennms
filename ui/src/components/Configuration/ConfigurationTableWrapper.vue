@@ -45,7 +45,7 @@ import { FeatherButton } from '@featherds/button'
 
 import Add from '@featherds/icon/action/Add'
 
-import { putProvisionDService } from '@/services/configurationService'
+import { getProvisionDService, populateProvisionD, putProvisionDService } from '@/services/configurationService'
 
 import { useConfigurationToast, useProvisionD } from './hooks'
 import { ConfigurationService } from './ConfigurationService'
@@ -116,15 +116,23 @@ const closeConfigurationDrawer = () => {
   sidePanelState.isActive = false
   advancedActive.active = false
   helpState.open = false
-  selectedProvisionDItem.errors = { hasErrors: false, host: '', name: '' }
+  selectedProvisionDItem.errors = createBlankErrors();
 }
-
+const createBlankErrors = () => {
+  return { name: '', hasErrors: false, host: '', path: '', username: '', password: '', type: '', zone: '', foreignSource: '' }
+}
+const stripOriginalIndexes = (dataToUpdate: Array<ProvisionDServerConfiguration>) => {
+  return dataToUpdate.map((item) => {
+    let { originalIndex, ...others } = item;
+    return others;
+  })
+}
 /**
  * User has decided to save and upload the current state.
  */
-const saveCurrentState = () => {
+const saveCurrentState = async () => {
   // Clear our errors.
-  selectedProvisionDItem.errors = { name: '', hasErrors: false, host: '' }
+  selectedProvisionDItem.errors = createBlankErrors();
 
   // Validate the local state.
   const validatedItem = ConfigurationService.validateLocalItem(selectedProvisionDItem?.config)
@@ -132,19 +140,17 @@ const saveCurrentState = () => {
   // If we're valid.
   if (!validatedItem.hasErrors) {
     //Convert Local Values to Server Ready Values
-    const readyForServ = ConfigurationService.convertLocalToServer(selectedProvisionDItem?.config)
-
+    const readyForServ = ConfigurationService.convertLocalToServer(selectedProvisionDItem?.config, true)
     //Update Local State
     provisionDList.value[activeIndex.index] = readyForServ
-
     //Get Existing State
     const updatedProvisionDData = store?.state?.configuration?.provisionDService
 
     //Set New State
-    updatedProvisionDData['requisition-def'] = provisionDList.value
-
+    updatedProvisionDData['requisition-def'] = stripOriginalIndexes(provisionDList.value)
+    console.log('UPDATED SDATA', updatedProvisionDData);
     //Actually Update the Server
-    putProvisionDService(updatedProvisionDData)
+    await putProvisionDService(updatedProvisionDData)
 
     //Close The Drawer
     closeConfigurationDrawer()
@@ -171,16 +177,7 @@ const saveCurrentState = () => {
  * Create a Blank Requisition Definition
  */
 const addNew = () => {
-  selectedProvisionDItem.config = {
-    name: '',
-    type: { name: '', id: 0 },
-    subType: { name: '', id: 0, value: '' },
-    host: '',
-    occurance: { name: 'Weekly', id: 0 },
-    time: '00:00',
-    rescanBehavior: 1,
-    advancedOptions: []
-  }
+  selectedProvisionDItem.config = ConfigurationService.createBlankLocal().config
   sidePanelState.isActive = true
   activeIndex.index = provisionDList.value.length
   setEditingStateTo(false)
@@ -190,27 +187,35 @@ const addNew = () => {
  * The user has made their deletion chicken switch selection.
  * @param selection Did the user choose to delete or not?
  */
-const doubleCheckSelected = (selection: boolean) => {
+const doubleCheckSelected = async (selection: boolean) => {
   // The user opted to delete the entry
   if (selection) {
     // Update the local state to remove the value.
-    provisionDList.value.splice(doubleCheck.index, 1)
+    const copiedList = [...provisionDList.value]
+    copiedList.splice(doubleCheck.index, 1)
 
     // Get a copy of the existing state.
     const updatedProvisionDData = store?.state?.configuration?.provisionDService
 
     // Remove the entry from the existing state.
-    updatedProvisionDData['requisition-def'] = provisionDList.value
+    updatedProvisionDData['requisition-def'] = copiedList
 
-    // Actually Delete the Item from the server
-    putProvisionDService(updatedProvisionDData)
+    try {
+      await putProvisionDService(updatedProvisionDData)
+      updateToast({
+        basic: 'Success!',
+        detail: 'Deletion of requisition definition was successful.',
+        hasErrors: false
+      })
+    } catch (e) {
+      updateToast({
+        basic: 'Failure!',
+        detail: 'Deletion of requisition definition was NOT successful.',
+        hasErrors: true
+      })
+    }
+      populateProvisionD(store);
 
-    // Send the Toast Message
-    updateToast({
-      basic: 'Success!',
-      detail: 'Deletion of requisition definition was successful.',
-      hasErrors: false
-    })
   }
   doubleCheck.active = false
   doubleCheck.index = -1
