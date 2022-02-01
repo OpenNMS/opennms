@@ -113,7 +113,6 @@ public class TopReportPluginIT {
         Mockito.when(m_resourceLocator.slurpOutput("/usr/bin/top -l 1", false)).thenReturn(topOutput);
         assertEquals(1, m_reportPlugin.getEntries().size());
         assertEquals("Output", m_reportPlugin.getEntries().keySet().iterator().next());
-        assertEquals(FileSystemResource.class, m_reportPlugin.getEntries().entrySet().iterator().next().getValue().getClass());
     }
 
     @Test
@@ -141,7 +140,6 @@ public class TopReportPluginIT {
         Mockito.when(m_resourceLocator.slurpOutput("/usr/bin/top -n 1 -b", false)).thenReturn(topOutput);
         assertEquals(1, m_reportPlugin.getEntries().size());
         assertEquals("Output", m_reportPlugin.getEntries().keySet().iterator().next());
-        assertEquals(FileSystemResource.class, m_reportPlugin.getEntries().entrySet().iterator().next().getValue().getClass());
     }
 
     @Test
@@ -165,7 +163,6 @@ public class TopReportPluginIT {
         Mockito.when(m_resourceLocator.slurpOutput("/usr/bin/top -n 1 -b", false)).thenReturn(topOutput);
         assertEquals(1, m_reportPlugin.getEntries().size());
         assertEquals("Output", m_reportPlugin.getEntries().keySet().iterator().next());
-        assertEquals(FileSystemResource.class, m_reportPlugin.getEntries().entrySet().iterator().next().getValue().getClass());
     }
 
     @Test
@@ -207,6 +204,5 @@ public class TopReportPluginIT {
         Mockito.when(m_resourceLocator.slurpOutput("/usr/bin/top -b -d 1", false)).thenReturn(topOutput);
         assertEquals(1, m_reportPlugin.getEntries().size());
         assertEquals("Output", m_reportPlugin.getEntries().keySet().iterator().next());
-        assertEquals(FileSystemResource.class, m_reportPlugin.getEntries().entrySet().iterator().next().getValue().getClass());
     }
 }
