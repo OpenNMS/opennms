@@ -35,24 +35,24 @@ import javax.xml.bind.annotation.XmlAttribute;
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
 public class Parameter {
-    private String m_key;
-    private String m_value;
+    private String key;
+    private String value;
 
     @XmlAttribute(name = "key", required = true)
     public String getKey() {
-        return m_key;
+        return key;
     }
 
     @XmlAttribute(name = "value", required = true)
     public String getValue() {
-        return m_value;
+        return value;
     }
 
     public void setKey(String key) {
-        this.m_key = key;
+        this.key = key;
     }
 
     public void setValue(String value) {
-        this.m_value = value;
+        this.value = value;
     }
 }

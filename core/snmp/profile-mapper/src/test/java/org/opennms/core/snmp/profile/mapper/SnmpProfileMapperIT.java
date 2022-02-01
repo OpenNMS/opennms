@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import com.google.common.io.Resources;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -77,6 +79,8 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-snmp.xml"
 })
@@ -90,10 +94,11 @@ public class SnmpProfileMapperIT {
     @Autowired
     private LocationAwareSnmpClient locationAwareSnmpClient;
 
+
     private SnmpProfileMapper profileMapper;
 
+    @Autowired
     private ProxySnmpAgentConfigFactory snmpPeerFactory;
-
 
     @Test(timeout = 30000)
     public void testSnmpProfileMapper() {
@@ -174,11 +179,12 @@ public class SnmpProfileMapperIT {
     }
 
     private void setUpProfileMapper(InputStream configStream, URL resourceURL) throws IOException {
-        String configXml = Resources.toString(resourceURL, StandardCharsets.UTF_8);
+        String configXml = IOUtils.toString(configStream, StandardCharsets.UTF_8);
         JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
         String snmpConfigJson = converter.xmlToJson(configXml);
         SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(snmpConfigJson, SnmpConfig.class);
-        snmpPeerFactory = new ProxySnmpAgentConfigFactory(snmpConfig);
+        snmpPeerFactory.updateConfig(snmpConfig);
+        snmpPeerFactory.reload();
         // This is to not override snmp-config from etc
         SnmpPeerFactory.setFile(new File(resourceURL.getFile()));
         FilterDao filterDao = Mockito.mock(FilterDao.class);

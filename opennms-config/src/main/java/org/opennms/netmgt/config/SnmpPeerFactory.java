@@ -161,7 +161,7 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
          */
         public static synchronized void setInstance(final SnmpPeerFactory singleton) {
             LOG.debug("setting new singleton instance {}", singleton);
-            s_singleton = Objects.requireNonNull(singleton);
+            s_singleton = singleton;
             s_loaded.set(true);
         }
 
@@ -350,9 +350,6 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
         public SnmpConfig getSnmpConfig() {
             getReadLock().lock();
             try {
-                if(m_config == null){
-                    this.reload();
-                }
                 return m_config;
             } finally {
                 getReadLock().unlock();
