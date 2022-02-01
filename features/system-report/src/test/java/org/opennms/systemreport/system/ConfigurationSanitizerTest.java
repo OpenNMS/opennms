@@ -38,6 +38,8 @@ import org.opennms.systemreport.sanitizer.FileSanitizationException;
 import org.springframework.core.io.ByteArrayResource;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -45,7 +47,6 @@ import static org.mockito.ArgumentMatchers.any;
 public class ConfigurationSanitizerTest {
     private ConfigurationSanitizer configurationSanitizer;
     private ConfigFileSanitizer xmlFileSanitizer;
-    private ConfigFileSanitizer propertiesFileSanitizer;
     private ConfigFileSanitizer usersPropertiesFileSanitizer;
 
     public ConfigurationSanitizerTest() {
@@ -60,33 +61,26 @@ public class ConfigurationSanitizerTest {
         Mockito.when(xmlFileSanitizer.getFileName()).thenReturn("*.xml");
         Mockito.when(xmlFileSanitizer.getSanitizedResource(any())).thenReturn(new ByteArrayResource(new byte[0]));
 
-        propertiesFileSanitizer = Mockito.mock(ConfigFileSanitizer.class);
-        Mockito.when(propertiesFileSanitizer.getFileName()).thenReturn("*.properties");
-        Mockito.when(propertiesFileSanitizer.getSanitizedResource(any())).thenReturn(new ByteArrayResource(new byte[0]));
-
         usersPropertiesFileSanitizer = Mockito.mock(ConfigFileSanitizer.class);
         Mockito.when(usersPropertiesFileSanitizer.getFileName()).thenReturn("users.properties");
         Mockito.when(usersPropertiesFileSanitizer.getSanitizedResource(any())).thenReturn(new ByteArrayResource(new byte[0]));
 
-        configurationSanitizer = new ConfigurationSanitizer(xmlFileSanitizer, propertiesFileSanitizer, usersPropertiesFileSanitizer);
+        List<ConfigFileSanitizer> sanitizerList = new ArrayList<>();
+        sanitizerList.add(xmlFileSanitizer);
+        sanitizerList.add(usersPropertiesFileSanitizer);
+
+        configurationSanitizer = new ConfigurationSanitizer(sanitizerList);
     }
 
     @Test
-    public void testSanitizesXml() throws FileSanitizationException {
+    public void testSanitizesExtension() throws FileSanitizationException {
         File file = new File("target/test-classes/mock/password-attributes.xml");
         configurationSanitizer.getSanitizedResource(file);
         Mockito.verify(xmlFileSanitizer).getSanitizedResource(file);
     }
 
     @Test
-    public void testSanitizesProperties() throws FileSanitizationException {
-        File file = new File("target/test-classes/mock/password-properties.properties");
-        configurationSanitizer.getSanitizedResource(file);
-        Mockito.verify(propertiesFileSanitizer).getSanitizedResource(file);
-    }
-
-    @Test
-    public void testSanitizesUsersProperties() throws FileSanitizationException {
+    public void testSanitizesSpecificFile() throws FileSanitizationException {
         File file = new File("target/test-classes/mock/users.properties");
         configurationSanitizer.getSanitizedResource(file);
         Mockito.verify(usersPropertiesFileSanitizer).getSanitizedResource(file);

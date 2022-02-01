@@ -77,11 +77,7 @@
 	<onmsgi:list id="systemReportFormatterList" interface="org.opennms.systemreport.SystemReportFormatter" />
 
 	<!-- CONFIGURATION SANITIZATION -->
-	<bean name="configurationSanitizer" class="org.opennms.systemreport.sanitizer.ConfigurationSanitizer">
-		<constructor-arg ref="xmlFileSanitizer"/>
-		<constructor-arg ref="propertiesFileSanitizer"/>
-		<constructor-arg ref="usersPropertiesFileSanitizer"/>
-	</bean>
+	<bean name="configurationSanitizer" class="org.opennms.systemreport.sanitizer.ConfigurationSanitizer" />
 
 	<bean name="xmlFileSanitizer" class="org.opennms.systemreport.sanitizer.XmlFileSanitizer" />
 	<onmsgi:service id="xmlFileSanitizerService" ref="xmlFileSanitizer" interface="org.opennms.systemreport.sanitizer.ConfigFileSanitizer" />

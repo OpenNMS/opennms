@@ -28,25 +28,26 @@
 
 package org.opennms.systemreport.sanitizer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ConfigurationSanitizer {
 
     private final Map<String, ConfigFileSanitizer> sanitizers = new HashMap<>();
 
-    public ConfigurationSanitizer(ConfigFileSanitizer xmlFileSanitizer,
-                                  ConfigFileSanitizer propertiesFileSanitizer,
-                                  ConfigFileSanitizer usersPropertiesFileSanitizer) {
-        // TODO Refactor to depend on a list of ConfigFileSanitizer instead of individual beans
-        sanitizers.put(xmlFileSanitizer.getFileName(), xmlFileSanitizer);
-        sanitizers.put(propertiesFileSanitizer.getFileName(), propertiesFileSanitizer);
-        sanitizers.put(usersPropertiesFileSanitizer.getFileName(), usersPropertiesFileSanitizer);
+    @Autowired
+    public ConfigurationSanitizer(Collection<ConfigFileSanitizer> configFileSanitizerList) {
+        for (ConfigFileSanitizer sanitizer : configFileSanitizerList) {
+            sanitizers.put(sanitizer.getFileName(), sanitizer);
+        }
     }
 
     public Resource getSanitizedResource(final File file) {
