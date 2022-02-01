@@ -8,11 +8,15 @@ parameters:
   trigger-prebuild:
     description: whether to trigger a pre-build evaluation
     type: boolean
-    default: true
+    default: false
   trigger-coverage-api:
     description: whether to trigger a code coverage build
     type: boolean
     default: false
+  trigger-automation:
+    description: whether to trigger garbage collection for older feature images
+    type: boolean
+    default: True
 
 setup: true
 
@@ -55,6 +59,7 @@ workflows:
       and:
         - equal: [ true, << pipeline.parameters.trigger-coverage-api >> ]
         - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
+        - equal: [ false, << pipeline.parameters.trigger-automation >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
@@ -66,6 +71,7 @@ workflows:
       and:
         - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
         - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
+        - equal: [ false, << pipeline.parameters.trigger-automation >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
@@ -78,7 +84,22 @@ workflows:
             .circleci/.*      trigger-docs     true
             .circleci/.*      trigger-ui       true
 
+  automation:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
+        - equal: [ true, << pipeline.parameters.trigger-automation >> ]
+    jobs:
+      - docker_gc
+
 jobs:
+  docker_gc:
+    docker:
+      - image: docker
+    steps:
+      - run: echo "Hello World"
+
   trigger-coverage:
     docker:
       - image: cimg/python:3.10.1
