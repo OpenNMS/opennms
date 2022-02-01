@@ -68,10 +68,6 @@ public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
         return true;
     }
 
-    protected void setConfigurationSanitizer(ConfigurationSanitizer configurationSanitizer) {
-        this.configurationSanitizer = configurationSanitizer;
-    }
-
     @Override
     public Map<String, Resource> getEntries() {
         final TreeMap<String, Resource> map = new TreeMap<String, Resource>();
