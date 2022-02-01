@@ -29,6 +29,7 @@
 package org.opennms.features.deviceconfig.monitor.adaptor;
 
 import com.google.common.base.Strings;
+import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -41,7 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -66,13 +66,13 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         String encodingAttribute = getObjectAsString(parameters.get("encoding"));
         String configTypeAttribute = getObjectAsString(parameters.get("config-type"));
         String encoding = !Strings.isNullOrEmpty(encodingAttribute) ? encodingAttribute : Charset.defaultCharset().name();
-        String configType = !Strings.isNullOrEmpty(configTypeAttribute) ? configTypeAttribute : "default";
+        ConfigType configType = !Strings.isNullOrEmpty(configTypeAttribute) ? ConfigType.valueOf(configTypeAttribute) : ConfigType.Default;
 
         byte[] deviceConfigBytes = status.getDeviceConfig();
         // Handle config retrieval failure.
         if (deviceConfigBytes == null) {
             Date currentTime = new Date();
-            Optional<DeviceConfig> configOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, "default");
+            Optional<DeviceConfig> configOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
             DeviceConfig deviceConfig;
             if (configOptional.isPresent() && configOptional.get().getLastFailed() != null) {
                 deviceConfig = configOptional.get();
@@ -90,7 +90,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         }
 
         // Fetch last known config for the interface
-        Optional<DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, "default");
+        Optional<DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, configType);
         DeviceConfig latestDeviceConfig = deviceConfigOptional.isEmpty() ? null : deviceConfigOptional.get();
 
         // Retrieval succeeded

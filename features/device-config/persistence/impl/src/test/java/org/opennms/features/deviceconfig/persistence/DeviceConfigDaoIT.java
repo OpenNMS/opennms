@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -94,7 +95,7 @@ public class DeviceConfigDaoIT {
         deviceConfig.setConfig(UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8));
         deviceConfig.setEncoding("ASCII");
         deviceConfig.setCreatedTime(new Date());
-        deviceConfig.setConfigType("default");
+        deviceConfig.setConfigType(ConfigType.Default);
         deviceConfig.setLastUpdated(new Date());
         deviceConfigDao.saveOrUpdate(deviceConfig);
         List<DeviceConfig> configs = deviceConfigDao.findAll();
@@ -123,18 +124,18 @@ public class DeviceConfigDaoIT {
         populateDeviceConfigs(count);
         List<DeviceConfig> deviceConfigList = deviceConfigDao.findAll();
         Assert.assertEquals(count, deviceConfigList.size());
-        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, "default");
+        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, ConfigType.Default);
         Assert.assertEquals(count, deviceConfigList.size());
         DeviceConfig deviceConfig = deviceConfigList.get(0);
         Assert.assertNotNull(deviceConfig);
         // Take middle element and update it's created time.
         // This is not the way we should update versions of the latest. This is just for the test.
-        DeviceConfig middleElement = deviceConfigList.get((count/2) - 1);
+        DeviceConfig middleElement = deviceConfigList.get((count / 2) - 1);
         middleElement.setCreatedTime(Date.from(Instant.now().plus(1, HOURS)));
         deviceConfigDao.saveOrUpdate(middleElement);
-        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, "default");
+        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, ConfigType.Default);
         DeviceConfig retrievedMiddleElement = deviceConfigList.get(0);
-        Optional<DeviceConfig> latestElementOptional = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, "default");
+        Optional<DeviceConfig> latestElementOptional = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, ConfigType.Default);
         Assert.assertTrue(latestElementOptional.isPresent());
         DeviceConfig latestConfig = latestElementOptional.get();
         Assert.assertArrayEquals(retrievedMiddleElement.getConfig(), latestConfig.getConfig());
@@ -144,12 +145,12 @@ public class DeviceConfigDaoIT {
         // Verify that it got persisted
         Assert.assertThat(deviceConfigList.size(), Matchers.is(count + 1));
         // Verify that query doesn't consider failed elements.
-        Optional<DeviceConfig> elementsWithNullConfig = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, "default");
+        Optional<DeviceConfig> elementsWithNullConfig = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, ConfigType.Default);
         Assert.assertTrue(elementsWithNullConfig.isPresent());
         DeviceConfig retrievedConfig = elementsWithNullConfig.get();
         Assert.assertArrayEquals(retrievedConfig.getConfig(), latestConfig.getConfig());
         // Verify that this will give all elements including last failed one.
-        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, "default");
+        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, ConfigType.Default);
         DeviceConfig failedElement = deviceConfigList.get(0);
         Assert.assertNull(failedElement.getConfig());
     }
@@ -162,7 +163,7 @@ public class DeviceConfigDaoIT {
             deviceConfig.setConfig(UUID.randomUUID().toString().getBytes(StandardCharsets.US_ASCII));
             deviceConfig.setEncoding("ASCII");
             deviceConfig.setCreatedTime(Date.from(Instant.now().plusSeconds(i * 60)));
-            deviceConfig.setConfigType("default");
+            deviceConfig.setConfigType(ConfigType.Default);
             deviceConfig.setLastUpdated(Date.from(Instant.now().plusSeconds(i * 60)));
             deviceConfigDao.saveOrUpdate(deviceConfig);
         }
@@ -174,7 +175,7 @@ public class DeviceConfigDaoIT {
         deviceConfig.setIpInterface(ipInterface);
         deviceConfig.setEncoding(Charset.defaultCharset().name());
         deviceConfig.setCreatedTime(Date.from(Instant.now().plus(2, HOURS)));
-        deviceConfig.setConfigType("default");
+        deviceConfig.setConfigType(ConfigType.Default);
         deviceConfig.setLastUpdated(Date.from(Instant.now().plus(2, HOURS)));
         deviceConfig.setLastFailed(Date.from(Instant.now().plus(2, HOURS)));
         deviceConfig.setFailureReason("Not able to connect to SSHServer");

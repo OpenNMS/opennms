@@ -33,6 +33,8 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -72,7 +74,8 @@ public class DeviceConfig implements Serializable {
     private String encoding;
 
     @Column(name = "config_type")
-    private String configType;
+    @Enumerated(EnumType.STRING)
+    private ConfigType configType;
 
     @Column(name = "failure_reason")
     private String failureReason;
@@ -129,11 +132,11 @@ public class DeviceConfig implements Serializable {
         this.createdTime = createdTime;
     }
 
-    public String getConfigType() {
+    public ConfigType getConfigType() {
         return configType;
     }
 
-    public void setConfigType(String configType) {
+    public void setConfigType(ConfigType configType) {
         this.configType = configType;
     }
 

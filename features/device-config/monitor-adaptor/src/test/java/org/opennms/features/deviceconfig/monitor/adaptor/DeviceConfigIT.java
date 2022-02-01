@@ -37,6 +37,7 @@ import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -58,7 +59,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -114,7 +114,7 @@ public class DeviceConfigIT {
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(null);
         Mockito.when(pollStatus.getReason()).thenReturn("Failed to connect to SSHServer");
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        Optional<DeviceConfig> optionalDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, "default");
+        Optional<DeviceConfig> optionalDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
         Assert.assertTrue(optionalDeviceConfig.isPresent());
         Assert.assertNull(optionalDeviceConfig.get().getConfig());
 
@@ -125,7 +125,7 @@ public class DeviceConfigIT {
         // Send pollStatus with config to adaptor.
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
 
-        Optional<DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, "default");
+        Optional<DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, ConfigType.Default);
         Assert.assertTrue(deviceConfigOptional.isPresent());
         byte[] retrievedConfigInBytes = deviceConfigOptional.get().getConfig();
         // Compare binary values
@@ -135,7 +135,7 @@ public class DeviceConfigIT {
         Assert.assertEquals(config, retrievedConfig);
         // Try to persist same config again.
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        Optional<DeviceConfig> deviceConfigOptional1 = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, "default");
+        Optional<DeviceConfig> deviceConfigOptional1 = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, ConfigType.Default);
         Assert.assertTrue(deviceConfigOptional1.isPresent());
         // Verify that config doesn't change
         Assert.assertArrayEquals(deviceConfigOptional1.get().getConfig(), deviceConfigOptional.get().getConfig());
@@ -144,7 +144,7 @@ public class DeviceConfigIT {
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(null);
         Mockito.when(pollStatus.getReason()).thenReturn("Failed to connect to SSHServer");
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        optionalDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, "default");
+        optionalDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
         Assert.assertTrue(optionalDeviceConfig.isPresent());
         Assert.assertNull(optionalDeviceConfig.get().getConfig());
     }
