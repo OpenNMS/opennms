@@ -1847,4 +1847,9 @@
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.tftp/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-deviceconfig-rest" description="OpenNMS :: Features :: Device Config :: Rest">
+        <feature>opennms-osgi-core-rest</feature>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.rest/${project.version}</bundle>
+    </feature>
+
 </features>
