@@ -103,15 +103,7 @@ jobs:
           command: |
             wget https://github.com/docker/hub-tool/releases/download/v0.4.4/hub-tool-linux-amd64.tar.gz
             tar -xzf hub-tool-linux-amd64.tar.gz
-            # login from std in or env is not implemented https://github.com/docker/hub-tool/issues/176
-            # https://github.com/docker/hub-tool/pull/198
-            /usr/bin/expect <(cat << EOF
-            spawn hub-tool/hub-tool login ${DOCKERHUB_LOGIN}
-            expect "\033\[0;34mPassword: \033\[0m"
-            send "${DOCKERHUB_PASS}\n"
-            interact
-            EOF
-            )
+            /usr/bin/expect --help
             hub-tool/hub-tool tag ls opennms/horizon |grep feature | grep inactive
 
   trigger-coverage:
