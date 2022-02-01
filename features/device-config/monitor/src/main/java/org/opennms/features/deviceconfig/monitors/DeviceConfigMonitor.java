@@ -73,12 +73,10 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                 String script = getObjectAsStringFromParams(parameters, "script");
                 String user = getObjectAsStringFromParams(parameters, "username");
                 String password = getObjectAsStringFromParams(parameters, "password");
-                Integer portValue = getObjectAsIntFromParams(parameters, "port");
-                int port = portValue != null ? portValue : DEFAULT_SSH_PORT;
-                Long timeout = getObjectAsLongFromParams(parameters, "timeout");
-                Duration duration = timeout != null ? Duration.ofMillis(timeout) : DEFAULT_DURATION;
-                Long ttlValue = getObjectAsLongFromParams(parameters, "ttl");
-                long ttl = ttlValue != null ? ttlValue : DEFAULT_TTL;
+                Integer port = getKeyedInteger(parameters, "port", DEFAULT_SSH_PORT);
+                Long timeout = getKeyedLong(parameters, "timeout", DEFAULT_DURATION.toMillis());
+                Duration duration = Duration.ofMillis(timeout);
+                Long ttl = getKeyedLong(parameters, "ttl", DEFAULT_TTL);
                 Optional<SshScriptingService.Failure> sshResult =
                         sshScriptingService.execute(script, user, password, svc.getIpAddr(), port, new HashMap<>(), duration);
                 return sshResult.map(failure -> {
@@ -145,19 +143,4 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         throw new IllegalArgumentException(key + " is not an instance of String");
     }
 
-    private Integer getObjectAsIntFromParams(Map<String, Object> params, String key) {
-        Object obj = params.get(key);
-        if (obj instanceof Integer) {
-            return (Integer) obj;
-        }
-        return null;
-    }
-
-    private Long getObjectAsLongFromParams(Map<String, Object> params, String key) {
-        Object obj = params.get(key);
-        if (obj instanceof Long) {
-            return (Long) obj;
-        }
-        return null;
-    }
 }
