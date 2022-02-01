@@ -2,7 +2,7 @@
 # Use Java base image and setup required RPMS as cacheable image.
 ##
 ARG BASE_IMAGE="opennms/openjdk"
-ARG BASE_IMAGE_VERSION="11.0.9.11-b5706"
+ARG BASE_IMAGE_VERSION="11.0.14_9-b8084"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as sentinel-base
 
