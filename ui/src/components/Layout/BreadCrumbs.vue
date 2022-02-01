@@ -32,7 +32,7 @@ defineProps({
   margin-top: 15px;
   margin-bottom: 15px;
   .link {
-    color: var(--feather-secondary-variant) !important;
+    color: var($secondary-variant) !important;
     line-height: 3.5;
   }
   .link:first-child {
