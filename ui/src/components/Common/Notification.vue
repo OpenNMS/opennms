@@ -38,7 +38,7 @@ const closeMessage = () => store.dispatch('notificationModule/setNotification', 
   z-index: 1030;
 }
 .notification {
-  @include subtitle1();
+  @include subtitle1;
   position: relative;
   left: -50%;
   min-width: 460px;
@@ -48,16 +48,16 @@ const closeMessage = () => store.dispatch('notificationModule/setNotification', 
   text-align: center;
 }
 .error {
-  background: var(--feather-error);
-  color: var(--feather-primary-text-on-color) !important;
+  background: var($error);
+  color: var($primary-text-on-color) !important;
 }
 .warning {
-  background: var(--feather-warning);
-  color: var(--feather-primary-text-on-warning) !important;
+  background: var($warning);
+  color: var($primary-text-on-warning) !important;
 }
 .success {
-  background: var(--feather-success);
-  color: var(--feather-primary-text-on-color) !important;
+  background: var($success);
+  color: var($primary-text-on-color) !important;
 }
 .close-btn {
   margin: 0;
