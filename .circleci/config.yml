@@ -12,7 +12,7 @@ executors:
       - image: docker:20.10.1-git
   docs-executor:
     docker:
-      - image: opennms/antora:2.3.4-b6293
+      - image: opennms/antora:2.3.4-b7274
   integration-test-executor:
     machine:
       image: ubuntu-2004:202010-01
