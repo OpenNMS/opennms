@@ -95,6 +95,14 @@
         <cm:importConfig schemaId="snmp" filePath="snmp-config.xml"/>
     </changeSet>
 
+    <changeSet author="pschweizer" id="import-graphml">
+        <cm:registerSchema id="org.opennms.netmgt.graph.provider.graphml"/>
+        <cm:changeSchema schemaId="org.opennms.netmgt.graph.provider.graphml">
+            <cm:put name="graphLocation" type="string"/>
+        </cm:changeSchema>
+        <cm:importConfigs schemaId="org.opennms.netmgt.graph.provider.graphml" filePath="org.opennms.netmgt.graph.provider.graphml-*.cfg"/>
+    </changeSet>
+
     <!--TODO check which schemas can have multiple configurations-->
     <!-- to create schema with multiple configurations use allowMultiple="true" in  <cm:registerSchema ...>
     <changeSet author="..." id="...">

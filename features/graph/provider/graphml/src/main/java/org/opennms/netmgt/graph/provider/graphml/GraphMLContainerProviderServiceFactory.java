@@ -81,7 +81,7 @@ public class GraphMLContainerProviderServiceFactory implements ManagedServiceFac
                 LOG.error("An error occurred while loading GraphMLContainerProvider from file {}. Ignoring...", location, e);
             }
         } else {
-            LOG.warn("Service with pid '{}' updated. Updating is not supported. Ignoring...");
+            LOG.warn("Service with pid '{}' updated. Updating is not supported. Ignoring...", pid);
         }
     }
 
