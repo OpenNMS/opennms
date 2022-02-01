@@ -60,6 +60,12 @@ The value gives the size of the history buffer allowing flows to be processed ou
 | Fallback value for sampling interval, if value is not included in exported flows.
 | none
 |===
+NOTE: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters.
+It specifies the maximum delta in seconds between exporter and Minion timestamps.
+If exceeded, an alarm will be generated for the exporting device.
+The default value is 0, so clock skew detection is disabled.
+Furthermore, you can use the `clockSkewEventRate` parameter to rate limit clock skew events.
+The default is `3600` seconds, so every hour an event will be sent.
 
 [[telemetryd-ipfix-parser-tcp]]
 == IPFIX TCP Parser
@@ -75,7 +81,48 @@ The IPFIX TCP parser accepts packets received by a <<telemetryd/listeners/tcp.ad
 
 === Configuration and use
 
-This parser does not currently have any configurable parameters.
+.Optional parameters for the IPFIX TCP Parser
+[options="header" cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| maxClockSkew
+| The maximum delta in seconds between exporter and Minion timestamps.
+| 0
+
+| clockSkewEventRate
+| Rate limits clock skew events, in seconds.
+| 3600
+
+| dnsLookupsEnabled
+| Enables or disables DNS resolution for flows.
+| true
+
+| sequenceNumberPatience
+| A value > 1 enables checking for sequence number completeness.
+The value gives the size of the history buffer allowing flows to be processed out of order.
+| 32
+
+| flowActiveTimeoutFallback
+| Fallback value for active flow timeout, if value is not included in exported flows.
+| none
+
+| flowInactiveTimeoutFallback
+| Fallback value for inactive flow timeout, if value is not included in exported flows.
+| none
+
+| flowSamplingIntervalFallback
+| Fallback value for sampling interval, if value is not included in exported flows.
+| none
+|===
+NOTE: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters.
+It specifies the maximum delta in seconds between exporter and Minion timestamps.
+If exceeded, an alarm will be generated for the exporting device.
+The default value is 0, so clock skew detection is disabled.
+Furthermore, you can use the `clockSkewEventRate`  parameter to rate limit clock skew events.
+The default is `3600` seconds, so every hour an event will be sent.
 
 == Configure IPFIX listener on a Minion
 
@@ -112,33 +159,19 @@ Received flows are decoded from the messages into the canonical flow format and 
 
 === Configuration and use
 
-.Optional parameters for the IPFIX TCP parser
-[options="header" cols="1,3,1"]
+.Required adapter-specific parameters
+[options="header", cols="1,3,1"]
 |===
 | Parameter
 | Description
 | Default
 
-| templateTimeout
-| Templates must be redeclared in the given duration or they will be dropped.
-| 30 minutes
+| applicationDataCollection
+| Enables data collection of bytesIn/bytesOut based on flow applications.
+| false
 
-| maxClockSkew
-| The maximum delta in seconds between exporter and Minion timestamps.
-| 0
-
-| clockSkewEventRate
-| Rate-limit clock skew events in seconds.
-| 3600
-
-| dnsLookupsEnabled
-| Enable or disable DNS resolution for flows.
-| true
+| applicationThresholding
+| Enables thresholding based on flow applications.
+| false
 |===
-
-NOTE: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters.
-It specifies the maximum delta in seconds between exporter and Minion timestamps.
-If exceeded, an alarm will be generated for the exporting device.
-The default value is 0, so clock skew detection is disabled.
-Furthermore, you can use a parameter `clockSkewEventRate` to rate limit clock skew events.
-The default is `3600` seconds, so every hour an event will be sent.
+NOTE: For data collection to work properly you must also define a valid package definition inside your adapter configuration.

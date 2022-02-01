@@ -132,6 +132,8 @@
 ** xref:flows/setup.adoc[]
 ** xref:flows/classification-engine.adoc[]
 ** xref:flows/aggregation.adoc[]
+** xref:flows/data-collection.adoc[]
+** xref:flows/thresholding.adoc[]
 
 * xref:kafka-producer/kafka-producer.adoc[]
 ** xref:kafka-producer/enable-kafka.adoc[]
