@@ -12,7 +12,7 @@
     <groupId>org.opennms.features.device-config</groupId>
     <artifactId>org.opennms.features.device-config.rest</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS :: Features :: Device Config :: ReST :: Impl</name>
+    <name>OpenNMS :: Features :: Device Config :: ReST</name>
     <build>
         <plugins>
             <plugin>

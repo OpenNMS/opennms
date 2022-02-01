@@ -37,7 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
-import org.opennms.features.deviceconfig.rest.api.DeviceConfigDto;
+import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.web.utils.ResponseUtils;
 
@@ -108,7 +108,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     }
 
     @Override
-    public DeviceConfigDto getDeviceConfig(long id) {
+    public DeviceConfigDTO getDeviceConfig(long id) {
         var dc = deviceConfigDao.get(id);
         return deviceConfigDto(dc);
     }
@@ -118,8 +118,8 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         deviceConfigDao.delete(id);
     }
 
-    private static DeviceConfigDto deviceConfigDto(DeviceConfig deviceConfig) {
-        return new DeviceConfigDto(
+    private static DeviceConfigDTO deviceConfigDto(DeviceConfig deviceConfig) {
+        return new DeviceConfigDTO(
                 deviceConfig.getId(),
                 deviceConfig.getIpInterface().getId(),
                 deviceConfig.getVersion(),

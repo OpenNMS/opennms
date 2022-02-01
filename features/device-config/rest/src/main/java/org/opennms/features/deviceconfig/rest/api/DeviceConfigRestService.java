@@ -69,7 +69,7 @@ public interface DeviceConfigRestService {
 
     @GET
     @Path("{id}")
-    DeviceConfigDto getDeviceConfig(@PathParam("id") long id);
+    DeviceConfigDTO getDeviceConfig(@PathParam("id") long id);
 
     @DELETE
     @Path("{id}")

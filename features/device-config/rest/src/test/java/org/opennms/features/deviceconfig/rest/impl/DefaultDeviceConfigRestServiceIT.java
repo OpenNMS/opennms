@@ -52,7 +52,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
-import org.opennms.features.deviceconfig.rest.api.DeviceConfigDto;
+import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
@@ -119,7 +119,7 @@ public class DefaultDeviceConfigRestServiceIT {
         });
     }
 
-    private List<DeviceConfigDto> getDeviceConfigs(
+    private List<DeviceConfigDTO> getDeviceConfigs(
             Integer limit,
             Integer offset,
             String orderBy,
@@ -131,7 +131,7 @@ public class DefaultDeviceConfigRestServiceIT {
     ) {
         var response = deviceConfigRestService.getDeviceConfigs(limit, offset, orderBy, order, ipInterfaceId, deviceType, createdAfter, createdBefore);
         if (response.hasEntity()) {
-            return (List<DeviceConfigDto>) response.getEntity();
+            return (List<DeviceConfigDTO>) response.getEntity();
         } else {
             return Collections.emptyList();
         }
@@ -195,7 +195,7 @@ public class DefaultDeviceConfigRestServiceIT {
         for (var itf : interfaces) {
             var res = getDeviceConfigs(null, null, "version", "desc", itf.getId(), null, null, null);
             assertThat(res, hasSize(VERSIONS));
-            assertThat(res.stream().map(DeviceConfigDto::getVersion).collect(Collectors.toList()), contains(IntStream.range(0, VERSIONS).map(v -> VERSIONS - 1 - v).boxed().toArray()));
+            assertThat(res.stream().map(DeviceConfigDTO::getVersion).collect(Collectors.toList()), contains(IntStream.range(0, VERSIONS).map(v -> VERSIONS - 1 - v).boxed().toArray()));
         }
     }
 
@@ -204,7 +204,7 @@ public class DefaultDeviceConfigRestServiceIT {
         for (var itf : interfaces) {
             var res = getDeviceConfigs(null, null, "version", "asc", itf.getId(), null, null, null);
             assertThat(res, hasSize(VERSIONS));
-            assertThat(res.stream().map(DeviceConfigDto::getVersion).collect(Collectors.toList()), contains(IntStream.range(0, VERSIONS).boxed().toArray()));
+            assertThat(res.stream().map(DeviceConfigDTO::getVersion).collect(Collectors.toList()), contains(IntStream.range(0, VERSIONS).boxed().toArray()));
         }
     }
 
@@ -215,14 +215,14 @@ public class DefaultDeviceConfigRestServiceIT {
                 var limit = 5;
                 var res = getDeviceConfigs(limit, 0, "version", "asc", itf.getId(), null, null, null);
                 assertThat(res, hasSize(limit));
-                assertThat(res.stream().map(DeviceConfigDto::getVersion).collect(Collectors.toList()), contains(IntStream.range(0, limit).boxed().toArray()));
+                assertThat(res.stream().map(DeviceConfigDTO::getVersion).collect(Collectors.toList()), contains(IntStream.range(0, limit).boxed().toArray()));
             }
             {
                 var limit = 5;
                 var offset = 10;
                 var res = getDeviceConfigs(limit, offset, "version", "asc", itf.getId(), null, null, null);
                 assertThat(res, hasSize(limit));
-                assertThat(res.stream().map(DeviceConfigDto::getVersion).collect(Collectors.toList()), contains(IntStream.range(offset, offset + limit).boxed().toArray()));
+                assertThat(res.stream().map(DeviceConfigDTO::getVersion).collect(Collectors.toList()), contains(IntStream.range(offset, offset + limit).boxed().toArray()));
             }
         }
     }

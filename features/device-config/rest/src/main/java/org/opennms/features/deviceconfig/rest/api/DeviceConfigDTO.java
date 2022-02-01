@@ -30,9 +30,7 @@ package org.opennms.features.deviceconfig.rest.api;
 
 import java.util.Date;
 
-import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
-
-public class DeviceConfigDto {
+public class DeviceConfigDTO {
 
     private final long id;
     private final int ipInterfaceId;
@@ -42,7 +40,7 @@ public class DeviceConfigDto {
     private final String deviceType;
     private final Date createdTime;
 
-    public DeviceConfigDto(long id, int ipInterfaceId, int version, byte[] config, String encoding, String deviceType, Date createdTime) {
+    public DeviceConfigDTO(long id, int ipInterfaceId, int version, byte[] config, String encoding, String deviceType, Date createdTime) {
         this.id = id;
         this.ipInterfaceId = ipInterfaceId;
         this.version = version;
