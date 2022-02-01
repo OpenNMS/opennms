@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.systemreport.sanitizer.FileSanitizationException;
 import org.opennms.systemreport.sanitizer.UsersPropertiesFileSanitizer;
-import org.opennms.systemreport.sanitizer.XmlFileSanitizer;
 import org.springframework.core.io.Resource;
 
 import java.io.File;
