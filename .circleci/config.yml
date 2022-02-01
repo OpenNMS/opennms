@@ -98,7 +98,12 @@ jobs:
     docker:
       - image: docker
     steps:
-      - run: echo "Hello World"
+      - run:
+          name:  Docker GC
+          command: |
+            wget https://github.com/docker/hub-tool/releases/download/v0.4.4/hub-tool-linux-amd64.tar.gz
+            tar -xzf hub-tool-linux-amd64.tar.gz
+            hub-tool/hub-tool tag ls opennms/horizon |grep feature | grep inactive
 
   trigger-coverage:
     docker:
