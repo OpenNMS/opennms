@@ -252,6 +252,11 @@ public abstract class EventConstants {
     public static final String INTERFACE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/interfaceDeleted";
 
     /**
+     * The requisitioned interface rejected event UEI
+     */
+    public static final String INTERFACE_REJECTED_EVENT_UEI = "uei.opennms.org/requisitions/requisitionInterfaceRejected";
+
+    /**
      * The node deleted event UEI.
      */
     public static final String NODE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/nodeDeleted";
@@ -1011,6 +1016,7 @@ public abstract class EventConstants {
     public static final String PARM_PREV_SEVERITY_LABEL = "prevSeverityLabel";
     public static final String PARM_APPLICATION_ID = "applicationId";
     public static final String PARM_APPLICATION_NAME = "applicationName";
+    public static final String PARM_AFFECTED_NODE_LABEL = "affectedNodeLabel";
 
     //
     // For Trapd

@@ -47,6 +47,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.ValidationException;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryFactory;
 import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
 import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
@@ -501,7 +502,7 @@ public class RequisitionRestService extends OnmsRestService {
         }
         debug("addOrReplaceInterface: Adding interface {} to node {}/{}", iface, foreignSource, foreignId);
         m_accessService.addOrReplaceInterface(foreignSource, foreignId, iface);
-        return Response.accepted().header("Location", getRedirectUri(uriInfo, iface.getIpAddr().getHostAddress())).build();
+        return Response.accepted().header("Location", getRedirectUri(uriInfo, InetAddressUtils.str(iface.getIpAddr()))).build();
     }
 
     /**

@@ -333,9 +333,10 @@ public class VmwareImporter {
 
                 if (primaryInterfaceCandidate != null) {
                     if (reachableInterfaceFound) {
-                        logger.warn("Found reachable primary interface '{}'", primaryInterfaceCandidate.getIpAddr().getHostAddress());
+                        logger.warn("Found reachable primary interface '{}'", org.opennms.core.utils.InetAddressUtils.str(primaryInterfaceCandidate.getIpAddr()));
                     } else {
-                        logger.warn("Only non-reachable interfaces found, using first one for primary interface '{}'", primaryInterfaceCandidate.getIpAddr().getHostAddress());
+                        logger.warn("Only non-reachable interfaces found, using first one for primary interface '{}'", 
+                                org.opennms.core.utils.InetAddressUtils.str(primaryInterfaceCandidate.getIpAddr()));
                     }
                     primaryInterfaceCandidate.setSnmpPrimary(PrimaryType.PRIMARY);
 
