@@ -58,3 +58,11 @@ so it gets blown away anyway.  We should change this to store the `~/.npm`
 directory instead, as well as periodically clean it like we do for
 `~/.m2/repository`.
 
+### Weekly / cron triggered jobs
+
+Due to current setup trigger by cron is unavailable and has been replace by
+advanced setup in circleci GUI. Currently we have 2 independent weekly jobs:
+   - coverage-api for code quality coverage
+   - automation for devops operations like docker stale image pruning
+These jobs are enabled by setting  trigger-coverage-api / trigger-automation
+parameters as true
