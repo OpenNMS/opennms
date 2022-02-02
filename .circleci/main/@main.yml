@@ -1027,7 +1027,7 @@ jobs:
             echo "docker push ${MINION_IMAGE}:${TAG}"
             docker tag ${MINION_IMAGE}:${TAG} ${MINION_AZ_IMAGE}:${TAG}
             export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${AZURE_DCT_CI_PASSPHRASE}
-            docker trust load $KEY_FOLDER/$AZURE_DCT_CI_KEY_NAME.key
+            docker trust key load $KEY_FOLDER/$AZURE_DCT_CI_KEY_NAME.key
             docker push ${MINION_AZ_IMAGE}:${TAG}
             echo "pushed"
 
