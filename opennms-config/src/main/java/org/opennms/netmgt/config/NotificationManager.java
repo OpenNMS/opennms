@@ -28,36 +28,10 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.sql.DataSource;
-
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.SingleResultQuerier;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.notifications.Header;
 import org.opennms.netmgt.config.notifications.Notification;
@@ -72,6 +46,12 @@ import org.opennms.netmgt.xml.event.Tticket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
+
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.sql.*;
+import java.util.Date;
+import java.util.*;
 
 /**
  * <p>Abstract NotificationManager class.</p>
@@ -173,13 +153,7 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
     }
 
     /**
-     * <p>Constructor for AbstractJaxbConfigDao.</p>
-     * It will use {@link DefaultAbstractCmJaxbConfigDaoUpdateCallback},
-     * override getUpdateCallback if you need to change.
-     *
-     * @param entityClass a {@link Class} object.
-     * @param description a {@link String} object.
-     * @see #getUpdateCallback()
+     * <p>Constructor for NotificationManager.</p>
      */
     public NotificationManager() {
         super(Notifications.class, "Notifications");
@@ -1126,6 +1100,8 @@ public abstract class NotificationManager extends AbstractCmJaxbConfigDao<Notifi
      * @throws java.lang.ClassNotFoundException if any.
      */
     public synchronized void saveCurrent() throws IOException {
+        m_notifications.setHeader(rebuildHeader());
+
         this.updateConfig(m_notifications);
         update();
     }

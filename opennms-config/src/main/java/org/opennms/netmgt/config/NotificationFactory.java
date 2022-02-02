@@ -28,23 +28,17 @@
 
 package org.opennms.netmgt.config;
 
-import java.beans.PropertyVetoException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.SQLException;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * <p>NotificationFactory class.</p>
@@ -57,7 +51,6 @@ public class NotificationFactory extends NotificationManager {
 
     public static final String CONFIG_NAME = "notifications";
 
-    public static final String DEFAULT_CONFIG_ID = "default";
     /**
      * Singleton instance
      */
@@ -69,9 +62,9 @@ public class NotificationFactory extends NotificationManager {
     private static boolean initialized = false;
 
     /**
-     * Since there is no lastModified for files, replace with loaded thread
+     * Since there is no lastModified for files, replace with isLoaded thread
      */
-    private boolean loaded = false;
+    private AtomicBoolean isLoaded = new AtomicBoolean(false);
 
     /**
      *
@@ -81,7 +74,7 @@ public class NotificationFactory extends NotificationManager {
     }
 
     @PostConstruct
-    public void postConstruct() throws IOException {
+    public void postConstruct() {
         reload();
     }
 
@@ -100,13 +93,13 @@ public class NotificationFactory extends NotificationManager {
     /**
      * <p>init</p>
      *
-     * @throws java.io.IOException if any.
-     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException              if any.
+     * @throws java.io.FileNotFoundException    if any.
      * @throws java.lang.ClassNotFoundException if any.
-     * @throws java.sql.SQLException if any.
+     * @throws java.sql.SQLException            if any.
      * @throws java.beans.PropertyVetoException if any.
      */
-    public static synchronized void init() throws IOException, FileNotFoundException, ClassNotFoundException, SQLException, PropertyVetoException  {
+    public static synchronized void init() throws IOException, FileNotFoundException, ClassNotFoundException, SQLException, PropertyVetoException {
         if (!initialized) {
             instance = new NotificationFactory();
             initialized = true;
@@ -129,27 +122,22 @@ public class NotificationFactory extends NotificationManager {
      * @throws java.io.IOException if any.
      */
     @Override
-    public void update() throws IOException {
-        if (loaded) {
+    public void update() {
+        if (isLoaded.get()) {
             return;
         }
         reload();
-        loaded = true;
+        isLoaded.set(true);
     }
 
     @Override
-    public void updateConfig(Notifications notifications) throws IOException {
-        loaded = false;
+    public void updateConfig(Notifications notifications) {
+        isLoaded.set(false);
         super.updateConfig(notifications);
     }
 
     @Override
     public String getConfigName() {
         return CONFIG_NAME;
-    }
-
-    @Override
-    protected String getDefaultConfigId() {
-        return DEFAULT_CONFIG_ID;
     }
 }

@@ -31,7 +31,7 @@
         </cm:changeSchema>
         <cm:registerSchema id="org.opennms.features.datachoices"/>
         <cm:changeSchema schemaId="org.opennms.features.datachoices">
-            <cm:put name="enabled" type="boolean"/>
+            <cm:put name="enabled" type="boolean" default="false"/>
             <cm:put name="acknowledged-by" type="string"/>
             <cm:put name="acknowledged-at" type="string"/>
             <cm:put name="url" type="string" default="http://stats.opennms.org/datachoices/"/>

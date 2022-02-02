@@ -37,7 +37,7 @@ import java.io.IOException;
 
 public class YesNoDeserializer extends JsonDeserializer<Boolean> {
     @Override
-    public Boolean deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public Boolean deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         String valStr = jsonParser.getValueAsString();
         if ("yes".equalsIgnoreCase(valStr)) return true;
         if ("no".equalsIgnoreCase(valStr)) return false;

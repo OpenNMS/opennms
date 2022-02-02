@@ -92,7 +92,7 @@ public class OpenAPIConfigHelper {
             {
                 JSONObject children = new JSONObject();
                 fillWithDefaultValue(openapi, schemaName, children);
-                // only fill if children is not empty
+                // only add if children is not empty
                 if (children.length() > 0) {
                     configJsonObj.put(key, children);
                 }

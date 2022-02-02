@@ -589,10 +589,5 @@ public class NotificationManagerIT implements InitializingBean {
         protected String getConfigName() {
             return NotifdConfigFactory.CONFIG_NAME;
         }
-
-        @Override
-        protected String getDefaultConfigId() {
-            return NotifdConfigFactory.DEFAULT_CONFIG_ID;
-        }
     }
 }

@@ -69,20 +69,12 @@ public class MockNotificationManager extends NotificationManager {
 
     @Override
     public void updateConfig(String configJsonStr) {
-        ValidationReport report = def.validate(configJsonStr);
-        if (report.hasErrors()) {
-            throw new ConfigConversionException(null, report.getMessages());
-        }
+        def.validate(configJsonStr);
         m_notifications = ConfigConvertUtil.jsonToObject(configJsonStr, Notifications.class);
     }
 
     @Override
     protected String getConfigName() {
         return NotificationFactory.CONFIG_NAME;
-    }
-
-    @Override
-    protected String getDefaultConfigId() {
-        return NotificationFactory.DEFAULT_CONFIG_ID;
     }
 }
