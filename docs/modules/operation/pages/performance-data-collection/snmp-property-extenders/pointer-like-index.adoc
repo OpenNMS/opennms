@@ -94,20 +94,20 @@ The target resource gains a pair of string properties, which we will call `cpmCP
 <groups>
   <group name="entity-physical-table" ifType="all">
     <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.2" instance="entPhysicalEntry" alias="entPhysicalDescr" type="string"/> <1>
-    <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="entPhysicalEntry" alias="entPhysicalName" type="string"/> <2>
+    <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="entPhysicalEntry" alias="entPhysicalName" type="string"/>
   </group>
 
   <group name="cpm-cpu-total" ifType="all">
-    <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.2"  instance="cpmCPUTotalEntry" alias="cpmCPUTotalPhysicalIndex"  type="string" /> <3>
-    <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.8"  instance="cpmCPUTotalEntry" alias="cpmCPUTotal5minRev"        type="gauge" />
-    <property instance="cpmCPUTotalEntry" alias="cpmCPUTotalName" class-name="org.opennms.netmgt.collectd.PointerLikeIndexPropertyExtender"> <4>
+    <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.2"  instance="cpmCPUTotalEntry" alias="cpmCPUTotalPhysicalIndex" type="string" /> <2>
+    <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.8"  instance="cpmCPUTotalEntry" alias="cpmCPUTotal5minRev" type="gauge" />
+    <property instance="cpmCPUTotalEntry" alias="cpmCPUTotalName" class-name="org.opennms.netmgt.collectd.PointerLikeIndexPropertyExtender"> <3>
       <parameter key="source-type" value="entPhysicalEntry"/>
-      <parameter key="source-attribute" value="entPhysicalName"/> <5>
+      <parameter key="source-attribute" value="entPhysicalName"/>
       <parameter key="target-index-pointer-column" value="cpmCPUTotalPhysicalIndex"/>
     </property>
-    <property instance="cpmCPUTotalEntry" alias="cpmCPUTotalDescr" class-name="org.opennms.netmgt.collectd.PointerLikeIndexPropertyExtender"> <6>
+    <property instance="cpmCPUTotalEntry" alias="cpmCPUTotalDescr" class-name="org.opennms.netmgt.collectd.PointerLikeIndexPropertyExtender"> <4>
       <parameter key="source-type" value="entPhysicalEntry"/>
-      <parameter key="source-attribute" value="entPhysicalDescr"/> <7>
+      <parameter key="source-attribute" value="entPhysicalDescr"/>
       <parameter key="target-index-pointer-column" value="cpmCPUTotalPhysicalIndex"/>
     </property>
   </group>
