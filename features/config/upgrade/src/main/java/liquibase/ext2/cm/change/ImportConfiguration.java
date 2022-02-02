@@ -62,7 +62,6 @@ public class ImportConfiguration extends AbstractCmChange {
 
     private static final Logger LOG = LoggerFactory.getLogger(ImportConfiguration.class);
     private final static Set<String> ALLOWED_EXTENSIONS = Set.of("xml", "cfg");
-    private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
 
     private String schemaId;
     private String configId;

@@ -40,6 +40,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
 import static org.opennms.core.test.OnmsAssert.assertThrowsException;
+import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
 
 import java.io.File;
 import java.io.IOException;
