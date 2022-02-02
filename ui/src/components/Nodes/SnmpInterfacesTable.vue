@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import Pagination from './Pagination.vue'
+import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import useQueryParameters from '@/hooks/useQueryParams'
@@ -56,6 +56,6 @@ const snmpInterfaces = computed(() => store.state.nodesModule.snmpInterfaces)
 @import "@featherds/table/scss/table";
 table {
   width: 100%;
-  @include table();
+  @include table;
 }
 </style>

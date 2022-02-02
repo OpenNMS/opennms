@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import Pagination from './Pagination.vue'
+import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import useQueryParameters from '@/hooks/useQueryParams'
@@ -60,6 +60,6 @@ const outages = computed(() => store.state.nodesModule.outages)
 }
 table {
   width: 100%;
-  @include table();
+  @include table;
 }
 </style>

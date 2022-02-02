@@ -7,9 +7,19 @@ export default defineConfig({
     alias: {
       '@/': new URL('./src/', import.meta.url).pathname,
       '~@featherds': '@featherds'
-    }
+    },
+    dedupe: ['vue']
   },
-  plugins: [vue(), svgLoader()],
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag.includes('rapi-doc')
+        }
+      }
+    }),
+    svgLoader()
+  ],
   define: {
     'process.env': process.env
   }

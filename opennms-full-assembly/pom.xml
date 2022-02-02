@@ -585,6 +585,7 @@
                 <feature>ifttt-integration</feature>
                 <feature>opennms-flows</feature>
                 <feature>opennms-api-layer</feature>
+                <feature>opennms-plugin-sample</feature>
                 <feature>karaf-extender</feature>
                 <feature>opennms-alarm-history-elastic</feature>
                 <feature>org.opennms.features.topologies.service.api</feature>
@@ -608,6 +609,9 @@
                 <feature>scv-jceks-impl</feature>
                 <feature>scv-shell</feature>
                 <feature>opennms-timeseries-shell</feature>
+                <feature>opennms-config-management</feature>
+                <feature>opennms-config-management-osgi-del</feature>
+                <feature>opennms-config-management-osgi-cm</feature>
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
@@ -1142,6 +1146,15 @@
     <repository>
        <id>vaadin-addons</id>
        <url>https://maven.opennms.org/content/repositories/vaadin-addons/</url>
+       <snapshots><enabled>false</enabled></snapshots>
+       <releases><enabled>true</enabled></releases>
+    </repository>
+    <repository>
+        <id>sonatype.org-snapshot</id>
+        <name>Sonatype OSS Snapshots Repository</name>
+        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        <releases><enabled>false</enabled></releases>
+        <snapshots><enabled>true</enabled></snapshots>
     </repository>
     <repository>
       <id>sonatype-public-repo</id>

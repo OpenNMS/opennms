@@ -1,0 +1,92 @@
+
+= Health Rest Service
+
+Service that allows health rest calls on all available health check components.
+
+Currently implemented on Minion by default.
+
+Examples:
+
+* /rest/health
+* /rest/health/probe
+* /rest/health?tag=local
+* /rest/health/probe?tag=local
+* /rest/health/probe?tag=local&tag=dao
+
+== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource            
+| Description
+| `/health`
+| Health check results for components. Include health check result details for each element.
+| `/health/probe`       
+| Health check probe for components. Only indicate if the health is good or not. 
+|===
+
+The following table shows all supported query string parameters and their default values.
+
+[options="header", cols="1,3,1"]
+|===
+| Name
+| Description
+| Default 
+| t
+| Timeout in milliseconds
+| 5000 
+| maxAgeMs
+| Max age to live milliseconds
+| 90000 
+| tag                     
+| Use tag to filter health check components. A tag could be: +
+ * local + 
+ * rest +
+ * broker +
+ * telemetry +
+ * dao +
+ * minion +
+ * elastic +
+ * bundle 
+| '' 
+|===
+
+Requests without parameters will return all available health check components. 
+
+.Response
+[source,javascript]
+----
+{
+    "healthy": true,
+    "responses": [
+        {
+            "description": "Verifying installed bundles",
+            "status": "Success"
+        },
+        {
+            "description": "Verifying Listener NXOS-Listener (org.opennms.netmgt.telemetry.listeners.UdpListener)",
+            "status": "Success"
+        },
+        {
+            "description": "Verifying Listener JTI-Listener (org.opennms.netmgt.telemetry.listeners.UdpListener)",
+            "status": "Success"
+        },
+        ...
+    ]
+}
+
+----
+
+== HTTP Error Codes
+
+[options="header", cols="5,10"]
+|===
+| Error
+| Description
+| 404
+| Rest health feature is not installed, or is installed and stopped.
+| 200
+| Rest health feature is installed and running. This reponse is independent of the health status. + 
+*healthy : true* status means all components found are healthy. +
+*healthy : false* status means at least one component didn't return a healthy status.                                              
+|===

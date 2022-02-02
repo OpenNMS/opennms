@@ -53,7 +53,7 @@ public class IncludeRange implements Serializable {
      *  will be executed.
      */
     @XmlAttribute(name = "location")
-    private String m_location;
+    private String location;
 
     /**
      * The number of times a ping is retried for this
@@ -62,23 +62,23 @@ public class IncludeRange implements Serializable {
      *  retry count overrides the default.
      */
     @XmlAttribute(name = "retries")
-    private Integer m_retries;
+    private Integer retries;
 
     /**
      * The timeout on each poll for this address range. This
      *  timeout overrides the default.
      */
     @XmlAttribute(name = "timeout")
-    private Long m_timeout;
+    private Long timeout;
 
     @XmlAttribute(name = "foreign-source")
-    private String m_foreignSource;
+    private String foreignSource;
 
     /**
      * Starting address of the range.
      */
     @XmlElement(name = "begin", required = true)
-    private String m_begin;
+    private String begin;
 
     /**
      * Ending address of the range. If the starting
@@ -86,7 +86,7 @@ public class IncludeRange implements Serializable {
      *  swapped.
      */
     @XmlElement(name = "end", required = true)
-    private String m_end;
+    private String end;
 
     public IncludeRange() {
     }
@@ -97,65 +97,65 @@ public class IncludeRange implements Serializable {
     }
 
     public Optional<String> getLocation() {
-        return Optional.ofNullable(m_location);
+        return Optional.ofNullable(location);
     }
 
     public void setLocation(final String location) {
-        m_location = ConfigUtils.normalizeString(location);
+        this.location = ConfigUtils.normalizeString(location);
     }
 
     public Optional<Integer> getRetries() {
-        return Optional.ofNullable( m_retries);
+        return Optional.ofNullable( retries);
     }
 
     public void setRetries(final Integer retries) {
-        m_retries = retries;
+        this.retries = retries;
     }
 
     public Optional<Long> getTimeout() {
-        return Optional.ofNullable(m_timeout);
+        return Optional.ofNullable(timeout);
     }
 
     public void setTimeout(final Long timeout) {
         if (timeout != null && timeout == 0) {
             throw new IllegalArgumentException("Can't have a 0 timeout!");
         }
-        m_timeout = timeout;
+        this.timeout = timeout;
     }
 
     public Optional<String> getForeignSource() {
-        return Optional.ofNullable(m_foreignSource);
+        return Optional.ofNullable(foreignSource);
     }
 
     public void setForeignSource(final String foreignSource) {
-        m_foreignSource = ConfigUtils.normalizeString(foreignSource);
+        this.foreignSource = ConfigUtils.normalizeString(foreignSource);
     }
 
     public String getBegin() {
-        return m_begin;
+        return begin;
     }
 
     public void setBegin(final String begin) {
-        m_begin = ConfigUtils.assertNotEmpty(begin, "begin");
+        this.begin = ConfigUtils.assertNotEmpty(begin, "begin");
     }
 
     public String getEnd() {
-        return m_end;
+        return end;
     }
 
     public void setEnd(final String end) {
-        m_end = ConfigUtils.assertNotEmpty(end, "end");
+        this.end = ConfigUtils.assertNotEmpty(end, "end");
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                            m_location, 
-                            m_retries, 
-                            m_timeout, 
-                            m_foreignSource, 
-                            m_begin, 
-                            m_end);
+                            location, 
+                            retries, 
+                            timeout, 
+                            foreignSource, 
+                            begin, 
+                            end);
     }
 
     @Override
@@ -166,22 +166,22 @@ public class IncludeRange implements Serializable {
 
         if (obj instanceof IncludeRange) {
             final IncludeRange temp = (IncludeRange)obj;
-            return Objects.equals(temp.m_location, m_location)
-                    && Objects.equals(temp.m_retries, m_retries)
-                    && Objects.equals(temp.m_timeout, m_timeout)
-                    && Objects.equals(temp.m_foreignSource, m_foreignSource)
-                    && Objects.equals(temp.m_begin, m_begin)
-                    && Objects.equals(temp.m_end, m_end);
+            return Objects.equals(temp.location, location)
+                    && Objects.equals(temp.retries, retries)
+                    && Objects.equals(temp.timeout, timeout)
+                    && Objects.equals(temp.foreignSource, foreignSource)
+                    && Objects.equals(temp.begin, begin)
+                    && Objects.equals(temp.end, end);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "IncludeRange [location=" + m_location + ", retries="
-                + m_retries + ", timeout=" + m_timeout
-                + ", foreignSource=" + m_foreignSource + ", begin="
-                + m_begin + ", end=" + m_end + "]";
+        return "IncludeRange [location=" + location + ", retries="
+                + retries + ", timeout=" + timeout
+                + ", foreignSource=" + foreignSource + ", begin="
+                + begin + ", end=" + end + "]";
     }
 
 }

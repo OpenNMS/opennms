@@ -11,8 +11,8 @@
 <script setup lang=ts>
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-import { FeatherDialog } from "@featherds/dialog"
-import { FeatherButton } from "@featherds/button"
+import { FeatherDialog } from '@featherds/dialog'
+import { FeatherButton } from '@featherds/button'
 
 const store = useStore()
 
@@ -24,6 +24,7 @@ const labels = {
 const open = ref(false)
 const file = computed(() => {
   const fileToDelete = store.state.fileEditorModule.fileToDelete
+  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
   open.value = Boolean(fileToDelete)
   return fileToDelete
 })
@@ -33,10 +34,11 @@ const cancel = () => store.dispatch('fileEditorModule/setFileToDelete', null)
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 .dialog {
   width: 300px;
 }
 .btn-delete {
-  color: var(--feather-error);
+  color: var($error);
 }
 </style>

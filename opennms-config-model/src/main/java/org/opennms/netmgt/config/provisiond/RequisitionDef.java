@@ -57,9 +57,6 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
  *  Day-of-Week 1-7 or SUN-SAT , - ? / L C #
  *  Year (Opt) empty, 1970-2099 , - /
  */
-@XmlRootElement(name = "requisition-def")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("provisiond-configuration.xsd")
 public class RequisitionDef implements Serializable {
     private static final List<String> RESCAN_EXISTING_OPTIONS = Arrays.asList("true", "false", "dbonly");
 
@@ -67,56 +64,52 @@ public class RequisitionDef implements Serializable {
 
     private static final String DEFAULT_RESCAN_EXISTING = System.getProperty("org.opennms.provisiond.scheduleRescanForUpdatedNodes", "true");
 
-    @XmlAttribute(name = "import-url-resource", required = true)
-    private String m_importUrlResource;
+    private String importUrlResource;
 
-    @XmlAttribute(name = "import-name", required = true)
-    private String m_importName;
+    private String importName;
 
-    @XmlAttribute(name = "rescan-existing")
-    private String m_rescanExisting;
+    private String rescanExisting;
 
-    @XmlElement(name = "cron-schedule", required = true)
-    private String m_cronSchedule;
+    private String cronSchedule;
 
     public Optional<String> getImportUrlResource() {
-        return Optional.ofNullable(m_importUrlResource);
+        return Optional.ofNullable(this.importUrlResource);
     }
 
     public void setImportUrlResource(final String importUrlResource) {
-        m_importUrlResource = ConfigUtils.assertNotEmpty(importUrlResource, "import-url-resource");
+        this.importUrlResource = ConfigUtils.assertNotEmpty(importUrlResource, "import-url-resource");
     }
 
     public Optional<String> getImportName() {
-        return Optional.ofNullable(m_importName);
+        return Optional.ofNullable(this.importName);
     }
 
     public void setImportName(final String importName) {
-        m_importName = ConfigUtils.assertNotEmpty(importName, "import-name");
+        this.importName = ConfigUtils.assertNotEmpty(importName, "import-name");
     }
 
     public String getRescanExisting() {
-        return m_rescanExisting != null ? m_rescanExisting : DEFAULT_RESCAN_EXISTING;
+        return this.rescanExisting != null ? this.rescanExisting : DEFAULT_RESCAN_EXISTING;
     }
 
     public void setRescanExisting(final String rescanExisting) {
-        m_rescanExisting = ConfigUtils.assertOnlyContains(ConfigUtils.normalizeString(rescanExisting), RESCAN_EXISTING_OPTIONS, "rescan-existing");
+        this.rescanExisting = ConfigUtils.assertOnlyContains(ConfigUtils.normalizeString(rescanExisting), RESCAN_EXISTING_OPTIONS, "rescan-existing");
     }
 
     public Optional<String> getCronSchedule() {
-        return Optional.ofNullable(m_cronSchedule);
+        return Optional.ofNullable(this.cronSchedule);
     }
 
     public void setCronSchedule(final String cronSchedule) {
-        m_cronSchedule = ConfigUtils.assertNotEmpty(cronSchedule, "cron-schedule");
+        this.cronSchedule = ConfigUtils.assertNotEmpty(cronSchedule, "cron-schedule");
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_importUrlResource, 
-            m_importName, 
-            m_rescanExisting, 
-            m_cronSchedule);
+        return Objects.hash(this.importUrlResource, 
+            this.importName, 
+            this.rescanExisting, 
+            this.cronSchedule);
     }
 
     @Override
@@ -127,12 +120,11 @@ public class RequisitionDef implements Serializable {
         
         if (obj instanceof RequisitionDef) {
             final RequisitionDef that = (RequisitionDef)obj;
-            return Objects.equals(this.m_importUrlResource, that.m_importUrlResource)
-                && Objects.equals(this.m_importName, that.m_importName)
-                && Objects.equals(this.m_rescanExisting, that.m_rescanExisting)
-                && Objects.equals(this.m_cronSchedule, that.m_cronSchedule);
+            return Objects.equals(this.importUrlResource, that.importUrlResource)
+                && Objects.equals(this.importName, that.importName)
+                && Objects.equals(this.rescanExisting, that.rescanExisting)
+                && Objects.equals(this.cronSchedule, that.cronSchedule);
         }
         return false;
     }
-
 }

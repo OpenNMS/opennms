@@ -29,6 +29,8 @@
       <!-- same as persistent-id -->
       <argument value="org.opennms.core.ipc.rpc.kafka"/>
       <argument ref="configAdmin"/>
+        <!-- common pid for kafka config on IPC-->
+      <argument value="org.opennms.core.ipc.kafka"/>
     </bean>
 
     <bean id="kafkaRpcServerManager" class="org.opennms.core.ipc.rpc.kafka.KafkaRpcServerManager"

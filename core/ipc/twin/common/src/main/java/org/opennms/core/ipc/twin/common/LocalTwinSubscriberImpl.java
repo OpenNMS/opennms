@@ -29,13 +29,14 @@
 package org.opennms.core.ipc.twin.common;
 
 
+import com.codahale.metrics.MetricRegistry;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
 
 public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements LocalTwinSubscriber {
 
-    public LocalTwinSubscriberImpl(final Identity identity, TracerRegistry tracerRegistry) {
-        super(identity, tracerRegistry);
+    public LocalTwinSubscriberImpl(final Identity identity, TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
+        super(identity, tracerRegistry, metricRegistry);
     }
 
     @Override
@@ -51,6 +52,11 @@ public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements L
     @Override
     public TracerRegistry getTracerRegistry() {
         return super.getTracerRegistry();
+    }
+
+    @Override
+    public MetricRegistry getMetricRegistry() {
+        return super.getMetrics();
     }
 }
 

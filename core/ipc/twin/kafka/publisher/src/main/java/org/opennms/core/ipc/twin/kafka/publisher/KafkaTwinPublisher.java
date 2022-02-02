@@ -33,6 +33,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Properties;
 
+import com.codahale.metrics.MetricRegistry;
 import io.opentracing.References;
 import io.opentracing.Scope;
 import io.opentracing.Tracer;
@@ -47,7 +48,6 @@ import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
-import org.opennms.core.ipc.common.kafka.KafkaTwinConstants;
 import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.twin.api.TwinStrategy;
@@ -67,6 +67,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
+import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX;
+import static org.opennms.core.ipc.common.kafka.KafkaTwinConstants.KAFKA_CONFIG_SYS_PROP_PREFIX;
+
 public class KafkaTwinPublisher extends AbstractTwinPublisher {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaTwinPublisher.class);
 
@@ -80,18 +83,18 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     private KafkaProducer<String, byte[]> producer;
     private KafkaConsumerRunner consumerRunner;
 
-    public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber, TracerRegistry tracerRegistry) {
-        this(localTwinSubscriber, new OnmsKafkaConfigProvider(KafkaTwinConstants.KAFKA_CONFIG_SYS_PROP_PREFIX), tracerRegistry);
+    public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber, TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
+        this(localTwinSubscriber, new OnmsKafkaConfigProvider(KAFKA_CONFIG_SYS_PROP_PREFIX, KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX), tracerRegistry, metricRegistry);
     }
 
     public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber,
                               final KafkaConfigProvider kafkaConfigProvider,
-                              final TracerRegistry tracerRegistry) {
-        super(localTwinSubscriber, tracerRegistry);
+                              final TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
+        super(localTwinSubscriber, tracerRegistry, metricRegistry);
         this.kafkaConfigProvider = Objects.requireNonNull(kafkaConfigProvider);
     }
 
-    public void init() throws IOException {
+    public void init() throws Exception {
         final var kafkaConfig = new Properties();
         kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         kafkaConfig.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");

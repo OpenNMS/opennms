@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.config.snmpmetadata;
 
-import com.google.common.collect.Lists;
-import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
-
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
+
+import org.junit.runners.Parameterized;
+import org.opennms.core.test.xml.XmlTestNoCastor;
+
+import com.google.common.collect.Lists;
 
 public class SnmpMetadataConfigTest  extends XmlTestNoCastor<SnmpMetadataConfig> {
 
@@ -50,14 +51,14 @@ public class SnmpMetadataConfigTest  extends XmlTestNoCastor<SnmpMetadataConfig>
                         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                                 "<snmp-metadata-config>\n" +
                                 "    <config name=\"rootLevel\" sysObjectId=\".4.3.2.1\" tree=\".1.2.3.4\">\n" +
-                                "        <entry tree=\".1\" name=\"entry1\" index=\"false\"/>\n" +
-                                "        <entry tree=\".2\" name=\"entry2\" index=\"false\">\n" +
-                                "            <entry tree=\".1\" name=\"entry2_1\" index=\"true\"/>\n" +
-                                "            <entry tree=\".2\" name=\"entry2_2\" index=\"false\"/>\n" +
+                                "        <entry tree=\".1\" name=\"entry1\" index=\"false\" exact=\"false\"/>\n" +
+                                "        <entry tree=\".2\" name=\"entry2\" index=\"false\" exact=\"false\">\n" +
+                                "            <entry tree=\".1\" name=\"entry2_1\" index=\"true\" exact=\"false\"/>\n" +
+                                "            <entry tree=\".2\" name=\"entry2_2\" index=\"false\" exact=\"true\"/>\n" +
                                 "        </entry>\n" +
                                 "    </config>\n" +
                                 "    <config name=\"another\" sysObjectId=\".5.4.3.2.1\" tree=\".1.2.3.4.5\">\n" +
-                                "        <entry tree=\".1\" name=\"another1\" index=\"false\"/>\n" +
+                                "        <entry tree=\".1\" name=\"another1\" index=\"false\" exact=\"false\"/>\n" +
                                 "    </config>\n" +
                                 "</snmp-metadata-config>"
                 }
@@ -90,6 +91,7 @@ public class SnmpMetadataConfigTest  extends XmlTestNoCastor<SnmpMetadataConfig>
         final Entry entry4 = new Entry();
         entry4.setName("entry2_2");
         entry4.setTree(".2");
+        entry4.setExact(true);
         entry4.setIndex(false);
 
         entry2.setEntries(Lists.newArrayList(entry3, entry4));

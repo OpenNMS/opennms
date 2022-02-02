@@ -13,6 +13,8 @@
   <modules>
     <module>common</module>
     <module>core</module>
+    <module>dao-common</module>
     <module>minion</module>
+    <module>sentinel</module>
   </modules>
 </project>

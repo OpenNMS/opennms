@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
 
@@ -53,12 +54,8 @@ public class MockInterfaceToNodeCache extends AbstractInterfaceToNodeCache {
     }
 
     @Override
-    public Iterable<Entry> get(String location, InetAddress ipAddr) {
-        final var entry = keyToEntry.get(new Key(location, ipAddr));
-        if (entry != null) {
-            return Arrays.asList(entry);
-        }
-        return Collections.emptySet();
+    public Optional<Entry> getFirst(String location, InetAddress ipAddr) {
+        return Optional.ofNullable(keyToEntry.get(new Key(location, ipAddr)));
     }
 
     @Override

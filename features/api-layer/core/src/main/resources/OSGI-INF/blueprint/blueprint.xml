@@ -13,6 +13,10 @@
       <cm:property name="alarmFeedback.sleepTimeInMs" value="1000"/>
       <cm:property name="alarmFeedback.waitTimeMs" value="500"/>
       <cm:property name="nodeIdToCriteriaMaxCacheSize" value="10000"/>
+      <!-- RRD repository settings applicable to all Integration API based collectors -->
+      <cm:property name="rrdStep" value="300"/>
+      <cm:property name="rrdHeartbeat" value="600"/>
+      <cm:property name="rrdRraStr" value="RRA:AVERAGE:0.5:1:2016,RRA:AVERAGE:0.5:12:1488,RRA:AVERAGE:0.5:288:366,RRA:MAX:0.5:288:366,RRA:MIN:0.5:288:366"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -248,6 +252,9 @@
   <!-- Service Collectors -->
   <bean id="serviceCollectorManager" class="org.opennms.features.apilayer.common.collectors.ServiceCollectorManager">
     <argument ref="blueprintBundleContext"/>
+    <argument value="${rrdStep}"/>
+    <argument value="${rrdHeartbeat}" />
+    <argument value="${rrdRraStr}" />
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.collectors.ServiceCollectorFactory" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="serviceCollectorManager" />

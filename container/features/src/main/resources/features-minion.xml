@@ -132,6 +132,7 @@
       <feature version="${netty4Version}">netty4</feature>
       <feature>opennms-dnsresolver-api</feature>
       <feature>dropwizard-metrics</feature>
+      <feature>opennms-util</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
       <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
@@ -183,13 +184,6 @@
         <feature>dominion-grpc-client</feature>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.dominion-grpc-impl/${project.version}</bundle>
     </feature>
-
-  <feature name="minion-rest-service" version="${project.version}" description="Minion :: Rest :: Service">
-    <feature>opennms-health-rest</feature>
-    <feature version="${cxfVersion}">cxf-core</feature>
-    <feature version="${cxfVersion}">cxf-jaxrs</feature>
-    <bundle>mvn:org.opennms.features.minion/minion-rest-service/${project.version}</bundle>
-  </feature>
 
     <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
         <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>

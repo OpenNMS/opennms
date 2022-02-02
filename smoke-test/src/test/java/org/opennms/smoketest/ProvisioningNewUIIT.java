@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -183,7 +183,17 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
         // Save the IP interface
         clickId("save-interface", false);
         waitUntil(visibilityOfElementLocated(By.xpath("//td[contains(@class,'ng-binding') and text()='" + NODE_IPADDR + "']")));
-        waitUntil(invisibilityOfElementLocated(By.cssSelector(".modal-backdrop")));
+
+        await().until(() -> {
+            final By modalBackdrop = By.cssSelector("div.modal-backdrop");
+            try {
+                getElementImmediately(modalBackdrop);
+            } catch (final NoSuchElementException e) {
+                return true;
+            }
+            final WebElement el = waitUntil(elementToBeClickable(By.id("tab-assets")));
+            return el != null;
+        });
 
         // Add an asset to the node
         clickId("tab-assets", false);

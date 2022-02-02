@@ -1,5 +1,5 @@
 import { rest, restFile } from './axiosInstances'
-import marked from 'marked'
+import { marked } from 'marked'
 import { FileEditorResponseLog } from '@/types'
 
 const endpoint = '/filesystem'
@@ -27,7 +27,7 @@ const deleteFile = async (fileName: string): Promise<FileEditorResponseLog> => {
     const resp = await rest.delete(`${endpoint}/contents?f=${fileName}`)
     return { success: true, msg: resp.data }
   } catch (err: any) {
-    return { success: false, msg: err.response.data as string}
+    return { success: false, msg: err.response.data as string }
   }
 }
 
@@ -54,15 +54,8 @@ const postFile = async (fileName: string, formData: FormData): Promise<FileEdito
     const resp = await restFile.post(`${endpoint}/contents?f=${fileName}`, formData)
     return { success: true, msg: resp.data }
   } catch (err: any) {
-    return { success: false, msg: err.response.data as string}
+    return { success: false, msg: err.response.data as string }
   }
 }
 
-export {
-  getFile,
-  postFile,
-  deleteFile,
-  getSnippets,
-  getFileNames,
-  getFileExtensions
-}
+export { getFile, postFile, deleteFile, getSnippets, getFileNames, getFileExtensions }

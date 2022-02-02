@@ -39,12 +39,6 @@ public interface InterfaceToNodeCache {
 
 	void dataSourceSync();
 
-	Iterable<Entry> get(String location, InetAddress ipAddr);
-
-	default Iterable<Integer> getNodeId(String location, InetAddress ipAddr) {
-		return Iterables.transform(this.get(location, ipAddr), e -> e.nodeId);
-	}
-
 	boolean setNodeId(String location, InetAddress ipAddr, int nodeId);
 
 	boolean removeNodeId(String location, InetAddress ipAddr, int nodeId);
@@ -56,14 +50,7 @@ public interface InterfaceToNodeCache {
 	 */
 	void clear();
 
-	default Optional<Entry> getFirst(String location, InetAddress ipAddr) {
-		final Iterator<Entry> it = this.get(location, ipAddr).iterator();
-		if (it.hasNext()) {
-			return Optional.of(it.next());
-		} else {
-			return Optional.empty();
-		}
-	}
+	Optional<Entry> getFirst(String location, InetAddress ipAddr);
 
 	default Optional<Integer> getFirstNodeId(String location, InetAddress ipAddr) {
 		return this.getFirst(location, ipAddr).map(e -> e.nodeId);

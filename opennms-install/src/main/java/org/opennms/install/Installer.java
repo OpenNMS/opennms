@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -223,7 +223,17 @@ public class Installer {
          * create it if it doesn't already exist).
          */
 
-        verifyFilesAndDirectories();
+        try {
+            verifyFilesAndDirectories();
+        } catch (final FilesystemPermissionException e) {
+            LOG.error("OpenNMS is configured to run as '{}' but '{}' is not writable by that account.", getRunas(), e.path);
+            LOG.error("To fix permissions, run '{}/bin/fix-permissions' as root", m_opennms_home);
+            System.out.println();
+
+            if (m_validate_ownership) {
+                throw e;
+            }
+        }
 
         if (m_install_webapp) {
             checkWebappOldOpennmsDir();
@@ -572,7 +582,7 @@ public class Installer {
      *
      * @throws java.io.FileNotFoundException if any.
      */
-    public void verifyFilesAndDirectories() throws IOException, FileNotFoundException, FilesystemPermissionException {
+    public void verifyFilesAndDirectories() throws IOException, FilesystemPermissionException {
         if (m_tomcat_conf != null) {
             verifyFileExists(false, m_tomcat_conf, "Tomcat startup configuration file tomcat4.conf", "-T option");
         }
@@ -588,17 +598,7 @@ public class Installer {
         final var user = getRunas();
 
         final Path opennmsHome = Paths.get(m_opennms_home);
-        try {
-            validator.validate(user, opennmsHome);
-        } catch (final FilesystemPermissionException e) {
-            LOG.error("OpenNMS is configured to run as '{}' but '{}' is not writable by that account.", user, e.path);
-            LOG.error("To fix permissions, run '{}/bin/fix-permissions' as root", m_opennms_home);
-            System.out.println();
-
-            if (m_validate_ownership) {
-                System.exit(1);
-            }
-        }
+        validator.validate(user, opennmsHome);
     }
 
     protected String getRunas() throws IOException {

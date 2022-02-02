@@ -1,10 +1,47 @@
+# CircleCI Configuration
+
+This build is using a number of advanced features of CircleCI to make the CI
+pipeline a bit more manageable:
+
+1. [Dynamic Configuration](https://circleci.com/docs/2.0/dynamic-config/)
+2. The `circleci config pack` feature of
+   [the CircleCI CLI](https://circleci.com/docs/2.0/local-cli/)
+
+## Dynamic Configuration
+
+Dynamic configuration allows us to do some logic at the beginning of a build
+to determine what parts of the pipeline to trigger.
+
+There is a small `circleci.yml` file that uses CircleCI's "continuation"
+support along with a python script to check which parts of the codebase
+have been modified, and then sets parameters to be used in a sub-workflow.
+(See the `trigger-path-filtering` portions of `config.yml` for an idea of
+what it's doing.)
+
+Each of the workflows in the "main" config then uses a `when:` field
+referencing various `trigger-*` parameters to enable or disable them.
+
+## Config Packing
+
+This feature was originally designed for writing CircleCI orbs, self-contained
+sets of macros and commands for reuse in CircleCI configs.  It allows you to
+make a directory full of YAML files and it packs them up into a single
+monolithic YAML file.
+
+For details on the mechanics of config packing, see
+[the CircleCI docs](https://circleci.com/docs/2.0/local-cli/#packing-a-config).
+
+The initial implementation just chops the `parameters` and `executors`
+sections out of the main config to make it easier to manage merge
+conflicts. In the future, ideally, we'd refactor much more of the config
+to be easier to edit in pieces.
+
 # Smoke Tests
 
 ## Running locally
 
-Download .oci artifacts
-
-Load:
+1. download .oci artifacts
+2. load them:
 ```
 docker image load -i minion.oci
 docker image load -i sentinel.oci
@@ -14,13 +51,10 @@ docker image load -i sentinel.oci
 
 ## Speedups
 
-### Cache artifacts from core/web-assets
+### Cache node artifacts
 
-These take a lot of resources to build, but they rarely change, let's cache them.
-
-### Build Docker images from .tgzs
-
-Building the packages is *slow*.
-Instead of having the Docker images depend on these, can we quickly build from the .tgzs instead?
-This would help us get the smoke tests started quicker.
+We're currently caching `node_modules` in `core/web-assets`, but we use `npm ci`
+so it gets blown away anyway.  We should change this to store the `~/.npm`
+directory instead, as well as periodically clean it like we do for
+`~/.m2/repository`.
 

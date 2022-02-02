@@ -1,0 +1,144 @@
+
+[[flows-basic]]
+= Basic Flows Setup
+
+This section describes how to get started with flows to collect, enrich (classify), persist, and visualize flows.
+
+== Requirements
+
+Make sure you have the following before you set up flows:
+
+* OpenNMS up and running.
+* Device(s) that sends flows visible to OpenNMS and monitored with SNMP.
+* Elasticsearch cluster set up with the link:https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin] installed on every Elasticsearch node.
+** The Drift plugin persists and queries flows that {page-component-title} collects.
+The Drift version must match the targeted Elasticsearch version.
+** (optional) Configure Elasticsearch variables like `search.max_buckets` or maximum heap size `ES-JAVA_OPTS`if the default values are not sufficient for your volume of flows or number of nodes.
+** (optional) Create a job to clean the indices so that the disk does not fill up; for example, keep X days of flows.
+Filled disks are a challenging problem to address for non-Elasticsearch experts.
+We recommend the Elasticsearch link:https://www.elastic.co/guide/en/elasticsearch/client/curator/current/index.html[Curator tool] to do this.
+** Monitor the Elasticsearch stack in OpenNMS to get an alarm if it goes down.
+* Set up OpenNMS Helm with Grafana to visualize flows.
+** Configure the flow and performance data sources.
+
+== Configure OpenNMS to communicate with Elasticsearch
+
+OpenNMS needs to talk to Elasticsearch and know where to store the flows data it collects (persistence).
+
+From a Karaf shell on your {page-component-title} instance, update `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg` to configure the flow persistence to use your Elasticsearch cluster:
+
+.Connect to Karaf shell
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+.Configure Elasticsearch settings within Karaf
+[source, karaf]
+----
+config:edit org.opennms.features.flows.persistence.elastic
+config:property-set elasticUrl http://elastic:9200
+config:update
+----
+
+We also recommend setting the following:
+
+.Edit (or create) `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`
+[source, xml]
+----
+# ElasticSearch persistence configuration
+elasticUrl = http://10.10.3.218:9200 <1>
+connTimeout = 30000
+readTimeout = 300000
+settings.index.number_of_replicas = 0
+settings.index.number_of_shards=1
+settings.index.refresh_interval=10s
+elasticIndexStrategy=daily
+----
+<1> Replace with comma-separated list of Elasticsearch nodes.
+
+See <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch Configuration>> for a complete set of options.
+
+== Enable protocols
+
+Update `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` to enable one or more of the protocols you want to handle.
+
+This example enables the NetFlow v5 protocol.
+Use the same process for any of the other flow-related protocols.
+
+[source, xml]
+----
+<listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
+    <parameter key="port" value="8877"/>
+
+    <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5" />
+</listener>
+
+<queue name="Netflow-5">
+    <adapter name="Netflow-5-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter" enabled="true">
+    </adapter>
+</queue>
+----
+
+Send a `reloadDaemonConfig` event via the CLI to apply the changes without restarting:
+
+[source, console]
+----
+${OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+----
+
+This opens a UDP socket bound to `0.0.0.0:8877` to which NetFlow v5 messages are forwarded.
+(See also xref:operation:admin/daemon-config-files.adoc#daemon-reload[Reload daemons by CLI].)
+
+=== Multi-port listener
+
+If you are monitoring multiple flow protocols, you normally need to set up a flow listener for each one, on its own UDP port.
+
+By default, {page-component-title} enables a multi-port listener option, which monitors multiple protocols on a single UDP port (9999).
+If desired, edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` to change the port number or add/remove protocols.
+
+IMPORTANT: Make sure any ports you configure for receiving flow data are added to your firewall allow list.
+
+== Enable flows on your device(s)
+
+Configure your devices to send flows.
+Refer to the manufacturer's documentation.
+You may need to set up the flow receiver, which is OpenNMS {page-component-title}, and enable sending flows per interface on the firewall.
+
+== Link the web UI to Helm
+
+To access flow-related graphs from the {page-component-title} web interface, you must configure a link to your instance of OpenNMS Helm.
+
+.Connect to Karaf shell
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+.Configure Helm settings within Karaf
+[source, karaf]
+----
+config:edit org.opennms.netmgt.flows.rest
+config:property-set flowGraphUrl 'http://grafana:3000/dashboard/flows?node=$nodeId&interface=$ifIndex'
+config:update
+----
+
+NOTE: This URL can optionally point to other tools as well.
+It supports placeholders for `$nodeId`, `$ifIndex`, `$start`, and `$end`.
+
+Once configured, an icon appears on the top-right corner of a resource graph for an SNMP interface if there is flow data for that interface.
+
+You have completed a basic flows set up.
+If you have issues, refer to the troubleshooting flows section.
+
+== Beyond basic flows setup
+
+You may want to do the following:
+
+* Classify data flows
+** OpenNMS resolves flows to application names.
+Create rules to override the default classifications, to customize for your preference.
+See xref:flows/classification-engine.adoc#ga-flow-support-classification-engine[Application Classification].
+
+* xref:operation:flows/distributed.adoc#flows-remote[Enable remote flows data collection]
+* xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[Scale to manage large volumes of flows data]
