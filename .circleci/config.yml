@@ -100,6 +100,7 @@ jobs:
     steps:
       - run:
           name:  Docker GC - remove inactive images on feature branches
+          # TODO replace expect when https://github.com/docker/hub-tool/pull/198 is merged
           command: |
             wget https://github.com/docker/hub-tool/releases/download/v0.4.4/hub-tool-linux-amd64.tar.gz
             tar -xzf hub-tool-linux-amd64.tar.gz
