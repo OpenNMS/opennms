@@ -1,0 +1,75 @@
+.Create a file in etc/featuresBoot.d/flows.boot
+[source, console]
+----
+sudo vi etc/featuresBoot.d/flows.boot
+----
+
+.Add the following features to Sentinel on startup
+[source, flows.boot]
+----
+sentinel-jsonstore-postgres
+sentinel-blobstore-noop
+sentinel-jms
+sentinel-flows
+----
+
+.Connect to the Karaf shell via SSH
+[source, console]
+----
+ssh -p 8301 admin@localhost
+----
+
+.Configure Sentinel tracing, REST and ActiveMQ endpoints
+[source, karaf]
+----
+config:edit org.opennms.sentinel.controller
+config:property-set location SENTINEL<1>
+config:property-set id 00000000-0000-0000-0000-000000ddba11<2>
+config:property-set http-url http://core-instance-ip:8980/opennms<3>
+config:property-set broker-url failover:tcp://my-activemq-ip:61616<4>
+config:update
+----
+
+<1> A location string is used to assign the Sentinel to a monitoring location with Minions.
+<2> Unique identifier used as a node label for monitoring the Sentinel instance within {page-component-title).
+<3> Base URL for the web UI, which provides the REST endpoints.
+<4> URL that points to ActiveMQ broker.
+
+.Configure the credentials and exit Karaf shell
+[source, karaf]
+----
+opennms:scv-set opennms.http my-sentinel-user my-sentinel-password<1>
+opennms:scv-set opennms.broker my-sentinel-user my-sentinel-password<2>
+----
+<1> Set the credentials for the REST endpoint created in your {page-component-title} Core instance
+<2> Set the credentials for the ActiveMQ message broker
+
+NOTE: The credentials are encrypted on disk in `$\{SENTINEL_HOME}/etc/scv.jce`.
+
+Exit the Karaf Shell with kbd:[Ctrl+d]
+
+.Restart the Sentinel to apply the configuration
+[source, console]
+----
+sudo systemctl restart sentinel
+----
+
+.Run health-check to verify configuration
+[source, karaf]
+----
+opennms:health-check
+----
+
+.Ensure features are installed and work properly
+[source, output]
+----
+Verifying the health of the container
+
+Verifying installed bundles                    [ Success  ]
+Retrieving NodeDao                             [ Success  ]
+Connecting to JMS Broker                       [ Success  ]
+Connecting to ElasticSearch ReST API (Flows)   [ Success  ]
+Connecting to OpenNMS ReST API                 [ Success  ]
+
+=> Everything is awesome
+----

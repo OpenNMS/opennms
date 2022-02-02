@@ -53,6 +53,6 @@ const ipInterfaces = computed(() => store.state.nodesModule.ipInterfaces)
 @import "@featherds/table/scss/table";
 table {
   width: 100%;
-  @include table();
+  @include table;
 }
 </style>

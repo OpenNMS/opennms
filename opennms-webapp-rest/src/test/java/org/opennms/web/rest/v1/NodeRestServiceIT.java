@@ -95,6 +95,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
@@ -179,6 +180,20 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<sysContact>OpenNMS</sysContact>"));
         assertTrue(xml.contains("<operatingSystem>MacOSX Leopard</operatingSystem>"));
+
+        // Testing individual node rescan
+        String rescanUrl = url + "/rescan";
+        m_mockEventIpcManager.getEventAnticipator().reset();
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Test")
+                .setNodeid(1)
+                .getEvent());
+
+        xml = sendRequest(PUT, rescanUrl, 204); // All PUT requests return 204 on success
+
+        m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
+        m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
+
+        assertNotNull(xml); 
 
         // Testing DELETE
         m_mockEventIpcManager.getEventAnticipator().reset();

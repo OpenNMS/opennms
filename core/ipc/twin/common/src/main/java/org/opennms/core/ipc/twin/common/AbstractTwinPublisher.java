@@ -28,15 +28,10 @@
 
 package org.opennms.core.ipc.twin.common;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.BiConsumer;
-
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.diff.JsonDiff;
 import com.google.common.base.Strings;
 import com.google.protobuf.ByteString;
@@ -47,14 +42,20 @@ import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinStrategy;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.core.utils.SystemInfoUtils;
-import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.BiConsumer;
 
 import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
 
@@ -66,22 +67,26 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
     protected static final String TAG_VERSION = "version";
     protected static final String TAG_SESSION_ID = "sessionId";
     protected static final String TAG_PATCH = "isPatch";
+    private static final String SINK_UPDATE_SENT = "sinkUpdateSent";
+    private static final String TWIN_RESPONSE_SENT = "twinResponseSent";
+    private static final String TWIN_EMPTY_RESPONSE_SENT = "twinEmptyResponseSent";
     private final Map<SessionKey, TwinTracker> twinTrackerMap = new HashMap<>();
     protected final ObjectMapper objectMapper = new ObjectMapper();
 
     private final LocalTwinSubscriber localTwinSubscriber;
-    private final TracerRegistry tracerRegistry;
     private final Tracer tracer;
+    private final MetricRegistry metrics;
 
-    public AbstractTwinPublisher(LocalTwinSubscriber localTwinSubscriber, TracerRegistry tracerRegistry) {
+    public AbstractTwinPublisher(LocalTwinSubscriber localTwinSubscriber, TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
         this.localTwinSubscriber = Objects.requireNonNull(localTwinSubscriber);
-        this.tracerRegistry = Objects.requireNonNull(tracerRegistry);
-        this.tracerRegistry.init(SystemInfoUtils.getInstanceId());
-        this.tracer = this.tracerRegistry.getTracer();
+        Objects.requireNonNull(tracerRegistry);
+        tracerRegistry.init(SystemInfoUtils.getInstanceId());
+        this.tracer = tracerRegistry.getTracer();
+        this.metrics = metricRegistry;
     }
 
     public AbstractTwinPublisher(LocalTwinSubscriber localTwinSubscriber) {
-        this(localTwinSubscriber, localTwinSubscriber.getTracerRegistry());
+        this(localTwinSubscriber, localTwinSubscriber.getTracerRegistry(), localTwinSubscriber.getMetricRegistry());
     }
 
     /**
@@ -104,12 +109,16 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         if (twinTracker == null) {
             // No twin object exists for this key yet, return with null object.
             twinUpdate = new TwinUpdate(twinRequest.getKey(), twinRequest.getLocation(), null);
+            // JMX Metrics
+            updateCounter(MetricRegistry.name(twinRequest.location, twinRequest.getKey(), TWIN_EMPTY_RESPONSE_SENT));
         } else {
             // Fill TwinUpdate fields from TwinTracker.
             twinUpdate = new TwinUpdate(twinRequest.getKey(), twinRequest.getLocation(), twinTracker.getObj());
             twinUpdate.setPatch(false);
             twinUpdate.setVersion(twinTracker.getVersion());
             twinUpdate.setSessionId(twinTracker.getSessionId());
+            // JMX Metrics
+            updateCounter(MetricRegistry.name(twinRequest.location, twinRequest.getKey(), TWIN_RESPONSE_SENT));
         }
         return twinUpdate;
     }
@@ -165,11 +174,16 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         span.setTag(TAG_PATCH, twinUpdate.isPatch());
     }
 
+    private void updateCounter(String counterName) {
+        final Counter counter = metrics.counter(counterName);
+        counter.inc();
+    }
+
     public static String generateTracingOperationKey(String location, String key) {
         return location != null ? key + "@" + location : key;
     }
 
-    private synchronized TwinUpdate getResponseFromUpdatedObj(byte[] updatedObj, SessionKey sessionKey) {
+    private synchronized TwinUpdate getTwinUpdateFromUpdatedObj(byte[] updatedObj, SessionKey sessionKey) {
         TwinTracker twinTracker = getTwinTracker(sessionKey.key, sessionKey.location);
         if (twinTracker == null || !Arrays.equals(twinTracker.getObj(), updatedObj)) {
             TwinUpdate twinUpdate = new TwinUpdate(sessionKey.key, sessionKey.location, updatedObj);
@@ -232,7 +246,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
                 String tracingOperationKey = generateTracingOperationKey(sessionKey.location, sessionKey.key);
                 Span span = tracer.buildSpan(tracingOperationKey).start();
                 byte[] objInBytes = objectMapper.writeValueAsBytes(obj);
-                TwinUpdate twinUpdate = getResponseFromUpdatedObj(objInBytes, sessionKey);
+                TwinUpdate twinUpdate = getTwinUpdateFromUpdatedObj(objInBytes, sessionKey);
                 if (twinUpdate != null) {
                     TracingInfoCarrier.updateTracingMetadata(AbstractTwinPublisher.this.tracer, span, twinUpdate::addTracingInfo);
                     // Send update to local subscriber and on sink path.
@@ -243,7 +257,12 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
                     span.setTag(TAG_VERSION, twinUpdate.getVersion());
                     span.setTag(TAG_SESSION_ID, twinUpdate.getSessionId());
                     handleSinkUpdate(twinUpdate);
+                    String sinkUpdateMetricName = sessionKey.location != null ?
+                            MetricRegistry.name(sessionKey.location, sessionKey.key, SINK_UPDATE_SENT) :
+                            MetricRegistry.name(sessionKey.key, SINK_UPDATE_SENT);
                     localTwinSubscriber.accept(twinUpdate);
+                    // JMX Metrics
+                    updateCounter(sinkUpdateMetricName);
                 }
                 span.finish();
             }

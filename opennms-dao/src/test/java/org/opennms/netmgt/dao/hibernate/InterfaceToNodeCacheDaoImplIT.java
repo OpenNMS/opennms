@@ -60,12 +60,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.google.common.collect.Iterables;
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
@@ -180,10 +179,6 @@ public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
 
         // Different node ID must return true again
         Assert.assertEquals(true, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, iface.getIpAddress(), node.getId()));
-
-        // Cache must return both results
-        Assert.assertTrue(Iterables.contains(m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, iface.getIpAddress()), node.getId()));
-        Assert.assertTrue(Iterables.contains(m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, iface.getIpAddress()), m_databasePopulator.getNode1().getId()));
 
         // Primary must be first
         Assert.assertEquals(m_databasePopulator.getNode1().getId(), m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, iface.getIpAddress()).get());

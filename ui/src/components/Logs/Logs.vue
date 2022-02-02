@@ -20,7 +20,7 @@
         :key="log"
         @click="getLog(log)"
       >
-        <span class="subtitle1">{{ Number(index) + 1 }}:&nbsp</span>
+        <span class="subtitle1">{{ Number(index) + 1 }}:&nbsp;</span>
         <span class="subtitle2">{{ log }}</span>
       </p>
     </div>
@@ -32,7 +32,7 @@ import { computed } from 'vue'
 import { useStore } from 'vuex'
 import Search from './Search.vue'
 import { FeatherIcon } from '@featherds/icon'
-import { FeatherButton } from "@featherds/button"
+import { FeatherButton } from '@featherds/button'
 import SupportCenter from '@featherds/icon/action/SupportCenter'
 
 const store = useStore()
@@ -41,7 +41,7 @@ const logs = computed(() => store.getters['logsModule/getFilteredLogs'])
 const getLog = (log: string) => store.dispatch('logsModule/getLog', log)
 
 const scrollToSelectedLog = () => {
-  const selected = document.getElementById("selected")
+  const selected = document.getElementById('selected')
   if (selected) {
     selected.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
@@ -49,6 +49,7 @@ const scrollToSelectedLog = () => {
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 .sidebar-relative-container {
   position: relative;
 
@@ -56,7 +57,7 @@ const scrollToSelectedLog = () => {
     position: sticky;
     width: 100%;
     height: 30px;
-    background: var(--feather-shade-4);
+    background: var($shade-4);
 
     .btn {
       margin: 0px;
@@ -75,7 +76,7 @@ const scrollToSelectedLog = () => {
     overflow-x: hidden;
     height: calc(100vh - 212px);
     word-break: break-all;
-    border: 1px solid var(--feather-border-on-surface);
+    border: 1px solid var($border-on-surface);
 
     p {
       margin: 0px;
@@ -84,9 +85,9 @@ const scrollToSelectedLog = () => {
     }
 
     .selected {
-      background: var(--feather-shade-3);
+      background: var($shade-3);
       span {
-        color: var(--feather-primary);
+        color: var($primary);
       }
     }
   }

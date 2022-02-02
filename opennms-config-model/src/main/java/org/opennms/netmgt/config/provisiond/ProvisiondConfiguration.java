@@ -33,44 +33,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.opennms.core.xml.ValidateUsing;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Behavior configuration for the Provisioner Daemon
  */
-@XmlRootElement(name = "provisiond-configuration")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("provisiond-configuration.xsd")
 public class ProvisiondConfiguration implements Serializable {
     private static final long serialVersionUID = 2L;
 
     private static final String DEFAULT_REQUISITION_DIR = "${install.dir}/etc/imports";
     private static final String DEFAULT_FOREIGN_SOURCE_DIR = "${install.dir}/etc/foreign-sources";
 
-    @XmlAttribute(name = "importThreads")
-    private Long m_importThreads;
+    @JsonProperty("importThreads")
+    private Long importThreads;
 
-    @XmlAttribute(name = "scanThreads")
-    private Long m_scanThreads;
+    @JsonProperty("scanThreads")
+    private Long scanThreads;
 
-    @XmlAttribute(name = "rescanThreads")
-    private Long m_rescanThreads;
+    @JsonProperty("rescanThreads")
+    private Long rescanThreads;
 
-    @XmlAttribute(name = "writeThreads")
-    private Long m_writeThreads;
+    @JsonProperty("writeThreads")
+    private Long writeThreads;
 
-    @XmlAttribute(name = "requistion-dir")
-    private String m_requistionDir;
+    private String requistionDir;
 
-    @XmlAttribute(name = "foreign-source-dir")
-    private String m_foreignSourceDir;
+    private String foreignSourceDir;
 
     /**
      * Defines an import job with a cron expression
@@ -86,73 +75,73 @@ public class ProvisiondConfiguration implements Serializable {
      *  Year (Opt) empty, 1970-2099 , - /
      *  
      */
-    @XmlElement(name = "requisition-def")
-    private List<RequisitionDef> m_requisitionDefs = new ArrayList<>();
+    @JsonProperty("requisition-def")
+    private List<RequisitionDef> requisitionDefs = new ArrayList<>();
 
     public Long getImportThreads() {
-        return m_importThreads != null ? m_importThreads : 8L;
+        return this.importThreads != null ? this.importThreads : 8L;
     }
 
     public void setImportThreads(final Long importThreads) {
-        m_importThreads = importThreads;
+        this.importThreads = importThreads;
     }
 
     public Long getScanThreads() {
-        return m_scanThreads != null ? m_scanThreads : 10L;
+        return this.scanThreads != null ? this.scanThreads : 10L;
     }
 
     public void setScanThreads(final Long scanThreads) {
-        m_scanThreads = scanThreads;
+        this.scanThreads = scanThreads;
     }
 
     public Long getRescanThreads() {
-        return m_rescanThreads != null ? m_rescanThreads : 10L;
+        return this.rescanThreads != null ? this.rescanThreads : 10L;
     }
 
     public void setRescanThreads(final Long rescanThreads) {
-        m_rescanThreads = rescanThreads;
+        this.rescanThreads = rescanThreads;
     }
 
     public Long getWriteThreads() {
-        return m_writeThreads != null ? m_writeThreads : 8L;
+        return this.writeThreads != null ? this.writeThreads : 8L;
     }
 
     public void setWriteThreads(final Long writeThreads) {
-        m_writeThreads = writeThreads;
+        this.writeThreads = writeThreads;
     }
 
     public String getRequistionDir() {
-        return m_requistionDir != null ? m_requistionDir : DEFAULT_REQUISITION_DIR;
+        return this.requistionDir != null ? this.requistionDir : DEFAULT_REQUISITION_DIR;
     }
 
     public void setRequistionDir(final String requistionDir) {
-        m_requistionDir = ConfigUtils.assertNotEmpty(requistionDir, "requisition-dir");
+        this.requistionDir = ConfigUtils.assertNotEmpty(requistionDir, "requisition-dir");
     }
 
     public String getForeignSourceDir() {
-        return m_foreignSourceDir != null ? m_foreignSourceDir : DEFAULT_FOREIGN_SOURCE_DIR;
+        return this.foreignSourceDir != null ? this.foreignSourceDir : DEFAULT_FOREIGN_SOURCE_DIR;
     }
 
     public void setForeignSourceDir(final String foreignSourceDir) {
-        m_foreignSourceDir = ConfigUtils.assertNotEmpty(foreignSourceDir, "foreign-source-dir");
+        this.foreignSourceDir = ConfigUtils.assertNotEmpty(foreignSourceDir, "foreign-source-dir");
     }
 
     public List<RequisitionDef> getRequisitionDefs() {
-        return m_requisitionDefs;
+        return this.requisitionDefs;
     }
 
     public void setRequisitionDefs(final List<RequisitionDef> requisitionDefs) {
-        if (requisitionDefs == m_requisitionDefs) return;
-        m_requisitionDefs.clear();
-        if (requisitionDefs != null) m_requisitionDefs.addAll(requisitionDefs);
+        if (requisitionDefs == this.requisitionDefs) return;
+        this.requisitionDefs.clear();
+        if (requisitionDefs != null) this.requisitionDefs.addAll(requisitionDefs);
     }
 
     public void addRequisitionDef(final RequisitionDef def) {
-        m_requisitionDefs.add(def);
+        this.requisitionDefs.add(def);
     }
 
     public boolean removeRequisitionDef(final RequisitionDef def) {
-        return m_requisitionDefs.remove(def);
+        return this.requisitionDefs.remove(def);
     }
 
     /**
@@ -162,13 +151,13 @@ public class ProvisiondConfiguration implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(m_importThreads, 
-                            m_scanThreads, 
-                            m_rescanThreads, 
-                            m_writeThreads, 
-                            m_requistionDir, 
-                            m_foreignSourceDir, 
-                            m_requisitionDefs);
+        return Objects.hash(this.importThreads, 
+                            this.scanThreads, 
+                            this.rescanThreads, 
+                            this.writeThreads, 
+                            this.requistionDir, 
+                            this.foreignSourceDir, 
+                            this.requisitionDefs);
     }
 
     @Override
@@ -179,15 +168,14 @@ public class ProvisiondConfiguration implements Serializable {
 
         if (obj instanceof ProvisiondConfiguration) {
             final ProvisiondConfiguration that = (ProvisiondConfiguration)obj;
-            return Objects.equals(this.m_importThreads, that.m_importThreads)
-                    && Objects.equals(this.m_scanThreads, that.m_scanThreads)
-                    && Objects.equals(this.m_rescanThreads, that.m_rescanThreads)
-                    && Objects.equals(this.m_writeThreads, that.m_writeThreads)
-                    && Objects.equals(this.m_requistionDir, that.m_requistionDir)
-                    && Objects.equals(this.m_foreignSourceDir, that.m_foreignSourceDir)
-                    && Objects.equals(this.m_requisitionDefs, that.m_requisitionDefs);
+            return Objects.equals(that.importThreads,that.importThreads)
+                    && Objects.equals(that.scanThreads,that.scanThreads)
+                    && Objects.equals(that.rescanThreads,that.rescanThreads)
+                    && Objects.equals(that.writeThreads,that.writeThreads)
+                    && Objects.equals(that.requistionDir,that.requistionDir)
+                    && Objects.equals(that.foreignSourceDir,that.foreignSourceDir)
+                    && Objects.equals(that.requisitionDefs,that.requisitionDefs);
         }
         return false;
     }
-
 }

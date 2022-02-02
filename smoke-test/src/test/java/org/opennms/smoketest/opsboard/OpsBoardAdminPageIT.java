@@ -113,7 +113,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         testBoard.preview();
 
         try {
-            setImplicitWait(1, TimeUnit.SECONDS);
+            setImplicitWait(5, TimeUnit.SECONDS);
             new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
             new WebDriverWait(driver, 5).until(pageContainsText("Map"));
 

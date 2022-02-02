@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -132,12 +132,10 @@ public class FilesystemPermissionValidator {
             }
         }
 
-        final Path git = Path.of(".git");
-
         final List<Path> failures;
         try (final Stream<Path> stream = Files.walk(dirPath, FileVisitOption.FOLLOW_LINKS)) {
             failures = stream
-                    .filter(file -> ! file.getFileName().equals(git))
+                    .filter(file -> ! file.toUri().toString().contains("/.git/"))
                     .filter(file -> {
                         try {
                             validateFile(user, file);

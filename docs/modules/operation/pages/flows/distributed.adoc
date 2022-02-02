@@ -1,0 +1,78 @@
+
+[[flows-remote]]
+= Using Minions as a flow collector
+
+Beyond a basic flows setup, you may want to add a Minion to collect flows data from hard-to-reach or remote locations.
+
+To do so, you configure a listener on a Minion for specific protocols.
+
+.Flow integration with Minion
+image::flows/flow_integration_minion.png[width=70%]
+
+== Before you begin
+
+Make sure you do the following:
+
+* Set up a xref:operation:flows/basic.adoc#flows-basic[basic] flows environment
+* xref:deployment:minion/install.adoc#install-minion[Install one or more Minions] on your system
+
+== Configure a listener on a Minion
+
+This example enables a generic listener for the NetFlow v5 protocol on Minion.
+
+IMPORTANT: NetFlow v5 uses the generic UDP listener, but other protocols require a specific listener.
+See the examples in `$OPENNMS_HOME/etc/telemetryd-configuration.xml`, or <<reference:telemetryd/listeners/introduction.adoc#ref-listener, Telemetryd Listener Reference>> for details.
+
+To enable and configure a listener for NetFlow v5 on Minion, connect to the Karaf Console and set the following properties:
+
+[source, karaf]
+----
+config:edit --alias udp-8877 --factory org.opennms.features.telemetry.listeners
+config:property-set name Netflow-5
+config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
+config:property-set parameters.port 8877
+config:property-set parsers.0.name Netflow-5-Parser
+config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser
+config:update
+----
+
+TIP: If using a configuration management, you can create and use the properties file as startup configuration in `$MINION_HOME/etc/org.opennms.features.telemetry.listeners-udp-8877.cfg`.
+
+[source, properties]
+----
+name = Netflow-5
+class-name = org.opennms.netmgt.telemetry.listeners.UdpListener
+parameters.port = 8877
+parsers.0.name Netflow-5-Parser
+parsers.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser
+----
+
+NOTE: You must also enable the associated protocol, in this case `Netflow-5`, on {page-component-title} to process the messages.
+
+In some scenarios, the exporter's address is altered due to network address translation.
+In this case, use node metadata to identify the exporter.
+Use the `metaDataNodeLookup` parameter to specify a context-key pair in the form of `context:key` for the lookup.
+
+The value the lookup uses corresponds to the following fields from each protocol:
+
+[options="header, autowidth"]
+[cols="1,1"]
+|===
+| Property
+| Description
+
+| NetFlow v5
+| engineId
+
+| NetFlow v9
+| sourceId
+
+| IPFix
+| observationDomainId
+
+| SFlow
+| agent_address:sub_agent_id
+
+| BMP
+| bgpId
+|===

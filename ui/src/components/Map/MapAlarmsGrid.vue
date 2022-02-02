@@ -90,22 +90,22 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue"
-import { useStore } from "vuex"
+import { ref, reactive, onMounted } from 'vue'
+import { useStore } from 'vuex'
 import { computed } from 'vue'
-import { Alarm, AlarmQueryParameters, FeatherSortObject } from "@/types"
+import { Alarm, AlarmQueryParameters, FeatherSortObject } from '@/types'
 import { FeatherSelect } from '@featherds/select'
 import { FeatherCheckbox } from '@featherds/checkbox'
-import { FeatherSortHeader, SORT } from "@featherds/table"
+import { FeatherSortHeader, SORT } from '@featherds/table'
 
 const store = useStore()
 const alarms = computed<Alarm[]>(() => store.getters['mapModule/getAlarms'])
 const alarmOptions = [
-  { id: 1, option: "Not Selected" },
-  { id: 2, option: "Acknowledge" },
-  { id: 3, option: "Unacknowledge" },
-  { id: 4, option: "Escalate" },
-  { id: 5, option: "Clear" }
+  { id: 1, option: 'Not Selected' },
+  { id: 2, option: 'Acknowledge' },
+  { id: 3, option: 'Unacknowledge' },
+  { id: 4, option: 'Escalate' },
+  { id: 5, option: 'Clear' }
 ]
 const alarmOption = ref(alarmOptions[0])
 const all = ref(false)
@@ -152,10 +152,10 @@ const selectAlarmAck = async () => {
 
   const selectedAlarms = alarms.value.filter((alarm) => all.value || alarmCheckboxes.value[alarm.id])
 
-  let numFail: number = 0
+  let numFail = 0
   const respCollection: any = []
   selectedAlarms.forEach((alarm: Alarm) => {
-    const resp = store.dispatch("mapModule/modifyAlarm", {
+    const resp = store.dispatch('mapModule/modifyAlarm', {
       pathVariable: alarm.id, queryParameters: alarmQueryParameters
     })
     respCollection.push(resp)
@@ -167,7 +167,7 @@ const selectAlarmAck = async () => {
     }
   })
   // update and reset selections
-  store.dispatch("mapModule/getAlarms")
+  store.dispatch('mapModule/getAlarms')
   all.value = false
   alarmCheckboxes.value = {}
 }
@@ -191,12 +191,12 @@ const sortChanged = (sortObj: FeatherSortObject) => {
 }
 
 onMounted(() => {
-  const wrap = document.getElementById("wrap")
-  const thead = document.querySelector("thead")
+  const wrap = document.getElementById('wrap')
+  const thead = document.querySelector('thead')
 
   if (wrap && thead) {
-    wrap.addEventListener("scroll", function () {
-      let translate = "translate(0," + this.scrollTop + "px)"
+    wrap.addEventListener('scroll', function () {
+      let translate = 'translate(0,' + this.scrollTop + 'px)'
       thead.style.transform = translate
     })
   }
@@ -208,20 +208,20 @@ onMounted(() => {
 #wrap {
   height: calc(100% - 29px);
   overflow: auto;
-  background: var(--feather-surface);
+  background: var($surface);
 }
 table {
-  @include table();
-  @include table-condensed();
-  background: var(--feather-surface);
-  color: var(--feather-primary-text-on-surface);
+  @include table;
+  @include table-condensed;
+  background: var($surface);
+  color: var($primary-text-on-surface);
   padding-top: 4px;
   margin-top: 15px;
 }
 thead {
   z-index: 2;
   position: relative;
-  background: var(--feather-surface);
+  background: var($surface);
 }
 .select-ack {
   z-index: 3;
@@ -234,15 +234,15 @@ thead {
   padding-left: 20px;
 }
 .first-td {
-  border-left: 4px solid var(--feather-success);
+  border-left: 4px solid var($success);
 }
 .WARNING,
 .MINOR,
 .MAJOR {
-  border-left: 4px solid var(--feather-warning);
+  border-left: 4px solid var($warning);
 }
 
 .CRITICAL {
-  border-left: 4px solid var(--feather-error);
+  border-left: 4px solid var($error);
 }
 </style>

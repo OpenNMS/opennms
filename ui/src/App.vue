@@ -51,62 +51,25 @@ html {
   transition: transform 0.28s ease-in-out v-bind(ease);
   max-width: calc(100% - v-bind(maxWidth));
 }
-.logo {
-  color: var(--feather-primary-text-on-color) !important;
-}
 a {
   text-decoration: none;
-  color: var(--feather-primary);
-}
-.flex-container {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  display: flex;
-}
-.space-between {
-  display: flex;
-  justify-content: space-between;
+  color: var($primary);
 }
 .pointer {
   cursor: pointer !important;
 }
-.feather-secondary {
-  background: var(--feather-secondary);
-}
-.feather-secondary-variant {
-  background: var(--feather-secondary-variant);
-}
-.feather-shade3 {
-  background: var(--feather-shade-3);
-}
-.body-small {
-  @include body-small();
-}
-.subtitle1 {
-  @include subtitle1();
-}
-.subtitle2 {
-  @include subtitle2();
-}
 
 // global feather typography classes
-.headline1 {
-  @include headline1();
-}
-.headline2 {
-  @include headline2();
-}
 .headline3 {
-  @include headline3();
+  @include headline3;
 }
 .headline4 {
-  @include headline4();
+  @include headline4;
 }
 .subtitle1 {
-  @include subtitle1();
+  @include subtitle1;
 }
 .subtitle2 {
-  @include subtitle2();
+  @include subtitle2;
 }
 </style>

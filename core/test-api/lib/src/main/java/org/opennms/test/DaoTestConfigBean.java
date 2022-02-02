@@ -71,6 +71,9 @@ public class DaoTestConfigBean implements InitializingBean {
         if (System.getProperty("activemq.data") == null) {
             System.setProperty("activemq.data", "target/test/activemq");
         }
+        if (System.getProperty("skipConfigUpgrades") == null) {
+            System.setProperty("skipConfigUpgrades", "true");
+        }
 
         // Load opennms.properties into the system properties
         Properties opennmsProperties = new Properties();
