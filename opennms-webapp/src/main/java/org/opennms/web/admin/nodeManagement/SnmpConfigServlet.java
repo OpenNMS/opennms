@@ -136,6 +136,8 @@ public class SnmpConfigServlet extends HttpServlet {
 			case Default:
 				break;
 		}
+		// make sure config is up-to-date
+		SnmpPeerFactory.getInstance().reload();
 		request.setAttribute("snmpConfig", JaxbUtils.marshal(SnmpPeerFactory.getInstance().getSnmpConfig()));
 
 		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/snmpConfig.jsp");
