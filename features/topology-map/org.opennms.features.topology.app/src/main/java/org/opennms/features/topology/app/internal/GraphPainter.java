@@ -230,11 +230,19 @@ public class GraphPainter implements GraphVisitor {
     }
 
     private String getSourceKey(Edge edge) {
-        return m_graphContainer.getTopologyServiceClient().getVertex(edge.getSource().getVertex(), m_graphContainer.getCriteria()).getKey();
+        if (edge == null) return null;
+        final VertexRef edgeVertex = edge.getSource().getVertex();
+        final Vertex vertex = m_graphContainer.getTopologyServiceClient().getVertex(edgeVertex, m_graphContainer.getCriteria());
+        if (vertex == null) return null;
+        return vertex.getKey();
     }
 
     private String getTargetKey(Edge edge) {
-        return m_graphContainer.getTopologyServiceClient().getVertex(edge.getTarget().getVertex(), m_graphContainer.getCriteria()).getKey();
+        if (edge == null) return null;
+        final VertexRef edgeVertex = edge.getTarget().getVertex();
+        final Vertex vertex = m_graphContainer.getTopologyServiceClient().getVertex(edgeVertex, m_graphContainer.getCriteria());
+        if (vertex == null) return null;
+        return vertex.getKey();
     }
 
     /**
