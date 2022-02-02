@@ -98,7 +98,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                     }
                 });
             } finally {
-                tftpServer.deregister(tftpReceiver);
+                tftpServer.unregister(tftpReceiver);
             }
         } catch (IOException e) {
             LOG.error("Exception while connecting to TFTP Server ", e);
