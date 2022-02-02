@@ -27,6 +27,12 @@
         :icon="MarkComplete"
         title="Logs"
       />
+      <FeatherRailItem
+        :class="{ selected: isSelected('/open-api') }"
+        href="#/open-api"
+        :icon="Cloud"
+        title="Endpoints"
+      />
     </template>
   </FeatherNavigationRail>
 </template>
@@ -34,14 +40,15 @@
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import Instances from "@featherds/icon/hardware/Instances"
-import AddNote from "@featherds/icon/action/AddNote"
-import Location from "@featherds/icon/action/Location"
-import MarkComplete from "@featherds/icon/action/MarkComplete"
+import Instances from '@featherds/icon/hardware/Instances'
+import AddNote from '@featherds/icon/action/AddNote'
+import Location from '@featherds/icon/action/Location'
+import MarkComplete from '@featherds/icon/action/MarkComplete'
+import Cloud from '@featherds/icon/action/Cloud'
 import {
   FeatherNavigationRail,
   FeatherRailItem,
-} from "@featherds/navigation-rail"
+} from '@featherds/navigation-rail'
 
 const store = useStore()
 const route = useRoute()

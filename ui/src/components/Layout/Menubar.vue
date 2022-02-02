@@ -2,7 +2,7 @@
 <template>
   <FeatherAppBar :labels="{ skip: 'main' }" content="app">
     <template v-slot:left>
-      <FeatherAppBarLink class="logo" :icon="logo" title="Home" type="home" url="/" />
+      <FeatherAppBarLink :icon="logo" title="Home" type="home" url="/" />
     </template>
 
     <template v-slot:right>
@@ -11,7 +11,7 @@
       <FeatherIcon
         :icon="LightDarkMode"
         class="pointer light-dark"
-        @click.native="toggleDarkLightMode(null)"
+        @click="toggleDarkLightMode(null)"
       />
     </template>
   </FeatherAppBar>
@@ -22,7 +22,7 @@ import { ref, onMounted } from 'vue'
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
-import LightDarkMode from "@featherds/icon/action/LightDarkMode"
+import LightDarkMode from '@featherds/icon/action/LightDarkMode'
 import Logo from '@/assets/Logo.vue'
 import Search from './Search.vue'
 import { useStore } from 'vuex'
@@ -66,9 +66,10 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 .return-btn {
-  background: var(--feather-secondary-variant);
-  color: var(--feather-primary-text-on-color);
+  background: var($secondary-variant);
+  color: var($primary-text-on-color);
   margin-right: 20px;
 }
 </style>
@@ -76,13 +77,13 @@ onMounted(async () => {
 <style lang="scss">
 @import "@featherds/styles/themes/open-mixins";
 body {
-  background: var(--feather-background);
+  background: var($background);
 }
 .open-light {
-  @include open-light();
+  @include open-light;
 }
 .open-dark {
-  @include open-dark();
+  @include open-dark;
 }
 .light-dark {
   font-size: 24px;

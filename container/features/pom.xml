@@ -107,15 +107,21 @@
                           <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-minion.xml</descriptor>
+                          <descriptor>file:${project.build.directory}/classes/features-sentinel.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/spring.xml</descriptor>
                       </descriptors>
                       <distribution>org.apache.karaf.features:framework</distribution>
                       <framework>
                           <feature>framework</feature>
                           <feature>aries-blueprint</feature>
+                          <feature>shell</feature>
+                          <feature>bundle</feature>
+                          <feature>eventadmin</feature>
                       </framework>
                       <features>
                           <feature>minion-api-layer</feature>
+                          <feature>sentinel-api-layer</feature>
+                          <feature>sentinel-timeseries-api</feature>
                       </features>
                   </configuration>
               </execution>
@@ -156,6 +162,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>spring-extender</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.activemq</groupId>
       <artifactId>org.opennms.features.activemq.component</artifactId>
       <version>${project.version}</version>
@@ -164,6 +176,18 @@
     <dependency>
       <groupId>org.opennms.features.activemq</groupId>
       <artifactId>org.opennms.features.activemq.shell</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config.osgi</groupId>
+      <artifactId>org.opennms.features.config.osgi.del</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config.osgi</groupId>
+      <artifactId>org.opennms.features.config.osgi.cm</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -367,7 +391,35 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-provision-persistence</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-detector-registry</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>org.opennms.icmp.proxy.rpc-impl</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.health</groupId>
+      <artifactId>org.opennms.core.health.impl</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.health</groupId>
+      <artifactId>org.opennms.core.health.shell</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
@@ -551,6 +603,18 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.api-layer</groupId>
+      <artifactId>org.opennms.features.api-layer.minion</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.api-layer</groupId>
+      <artifactId>org.opennms.features.api-layer.sentinel</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.integration.api.sample</groupId>
       <artifactId>sample-project</artifactId>
       <version>${opennmsApiVersion}</version>
@@ -566,6 +630,42 @@
     <dependency>
       <groupId>org.opennms.features.distributed</groupId>
       <artifactId>org.opennms.features.distributed.opennms-identity</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.dao-api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.dao-impl</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.dao-healthcheck</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.dao-shell</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.datasource</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.serviceregistry</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -594,6 +694,29 @@
       <artifactId>org.opennms.features.device-config.rest</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.sentinel</groupId>
+      <artifactId>core</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.timeseries</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.xml</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.commands</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

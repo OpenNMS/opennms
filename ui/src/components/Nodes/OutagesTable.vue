@@ -60,6 +60,6 @@ const outages = computed(() => store.state.nodesModule.outages)
 }
 table {
   width: 100%;
-  @include table();
+  @include table;
 }
 </style>

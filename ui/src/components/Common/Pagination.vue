@@ -12,7 +12,7 @@
   
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { FeatherPagination } from "@featherds/pagination"
+import { FeatherPagination } from '@featherds/pagination'
 import { useStore } from 'vuex'
 
 const props = defineProps({
@@ -66,11 +66,11 @@ const updatePageSize = (v: number) => {
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
 .pagination {
-  @include body-small();
-  background: var(--feather-surface);
-  color: var(--feather-primary-text-on-surface);
+  @include body-small;
+  background: var($surface);
+  color: var($primary-text-on-surface);
 }
 </style>

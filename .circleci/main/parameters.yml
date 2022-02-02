@@ -1,0 +1,59 @@
+# NOTE: the "_label" versions of these are for the case when your source or target
+# branches have slashes in them, that way the merge branch gets created properly
+parameters:
+  minimal:
+    description: whether to do a minimal (build-and-merge only) build
+    type: boolean
+    default: false
+  previous_branch:
+    description: the previous branch, if any
+    type: string
+    default: release-29.x
+  previous_branch_label:
+    description: the previous branch, if any (escaped, no slashes)
+    type: string
+    default: release-29.x
+  main_branch:
+    description: the auto-merge main branch
+    type: string
+    default: develop
+  main_branch_label:
+    description: the auto-merge main branch (escaped, no slashes)
+    type: string
+    default: develop
+  next_branch:
+    description: the auto-merge target branch
+    type: string
+    default: ""
+  next_branch_label:
+    description: the auto-merge target branch (escaped, no slashes)
+    type: string
+    default: ""
+
+  ### sub-tree "module" build setup ###
+  trigger-docs:
+    description: whether to trigger the documentation build
+    type: boolean
+    default: false
+  trigger-build:
+    description: whether to trigger the main build
+    type: boolean
+    default: false
+  trigger-ui:
+    description: whether to trigger the featherds UI build
+    type: boolean
+    default: false
+  trigger-coverage:
+    description: whether to trigger a code coverage build
+    type: boolean
+    default: false
+
+  ### config.yml parameters for when triggers are used (not used in main.yml, but needed defined here for trigger executions) ###
+  trigger-prebuild:
+    description: whether to trigger a pre-build evaluation
+    type: boolean
+    default: false
+  trigger-coverage-api:
+    description: whether to trigger a code coverage build
+    type: boolean
+    default: false

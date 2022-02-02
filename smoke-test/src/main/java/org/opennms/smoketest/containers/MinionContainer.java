@@ -29,6 +29,10 @@
 package org.opennms.smoketest.containers;
 
 import static java.nio.file.Files.createTempDirectory;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.jsonMapper;
 
@@ -46,6 +50,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
+import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.NetworkProtocol;
@@ -54,6 +59,7 @@ import org.opennms.smoketest.utils.DevDebugUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TestContainerUtils;
+import org.opennms.smoketest.utils.RestHealthClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
@@ -241,8 +247,17 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         @Override
         protected void waitUntilReady() {
             LOG.info("Waiting for Minion health check...");
-            final InetSocketAddress sshAddr = container.getSshAddress();
-            awaitHealthCheckSucceeded(sshAddr, 5, "Minion");
+            try {
+                RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
+                await().atMost(5, MINUTES)
+                        .pollInterval(10, SECONDS)
+                        .ignoreExceptions()
+                        .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
+            } catch(ConditionTimeoutException e) {
+                LOG.error("{} rest health check did not finish after {} minutes.", ALIAS, 5);
+                throw new RuntimeException(e);
+            }
+            LOG.info("Health check passed.");
         }
     }
 

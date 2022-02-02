@@ -28,11 +28,9 @@
 
 package org.opennms.core.ipc.twin.kafka.subscriber;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.util.Objects;
-import java.util.Properties;
-
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.ImmutableList;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -56,8 +54,10 @@ import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableList;
-import com.swrve.ratelimitedlogger.RateLimitedLog;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.Objects;
+import java.util.Properties;
 
 public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaTwinSubscriber.class);
@@ -74,12 +74,13 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
 
     public KafkaTwinSubscriber(final MinionIdentity identity,
                                final KafkaConfigProvider kafkaConfigProvider,
-                               final TracerRegistry tracerRegistry) {
-        super(identity, tracerRegistry);
+                               final TracerRegistry tracerRegistry,
+                               final MetricRegistry metricRegistry) {
+        super(identity, tracerRegistry, metricRegistry);
         this.kafkaConfigProvider = Objects.requireNonNull(kafkaConfigProvider);
     }
 
-    public void init() {
+    public void init() throws Exception {
         final var kafkaConfig = new Properties();
         kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, this.getIdentity().getId());
         kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);

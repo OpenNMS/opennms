@@ -56,8 +56,8 @@
   </div>
 </template>
 <script setup lang ="ts">
-import { computed, ref, nextTick } from "vue"
-import "leaflet/dist/leaflet.css"
+import { computed, ref, nextTick } from 'vue'
+import 'leaflet/dist/leaflet.css'
 import {
   LMap,
   LTileLayer,
@@ -65,12 +65,12 @@ import {
   LIcon,
   LPopup,
   LControlLayers,
-  LPolyline,
-} from "@vue-leaflet/vue-leaflet"
-import MarkerCluster from "./MarkerCluster.vue"
-import { useStore } from "vuex"
+  // LPolyline,
+} from '@vue-leaflet/vue-leaflet'
+import MarkerCluster from './MarkerCluster.vue'
+import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import { Node } from "@/types"
+import { Node } from '@/types'
 import NormalIcon from '@/assets/Normal-icon.png'
 import WarninglIcon from '@/assets/Warning-icon.png'
 import MinorIcon from '@/assets/Minor-icon.png'
@@ -97,7 +97,7 @@ const bounds = computed(() => {
   const coordinatedMap = getNodeCoordinateMap.value
   return nodes.value.map((node) => coordinatedMap.get(node.id))
 })
-const nodeLabelAlarmServerityMap = computed(() => store.getters["mapModule/getNodeAlarmSeverityMap"])
+const nodeLabelAlarmServerityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
 
 const getHighestSeverity = (severitites: string[]) => {
   let highestSeverity = 'NORMAL'
@@ -129,15 +129,15 @@ const setIcon = (node: Node) => setMarkerColor(nodeLabelAlarmServerityMap.value[
 const setMarkerColor = (severity: string | undefined) => {
   if (severity) {
     switch (severity.toUpperCase()) {
-      case "NORMAL":
+      case 'NORMAL':
         return NormalIcon
-      case "WARNING":
+      case 'WARNING':
         return WarninglIcon
-      case "MINOR":
+      case 'MINOR':
         return MinorIcon
-      case "MAJOR":
+      case 'MAJOR':
         return MajorIcon
-      case "CRITICAL":
+      case 'CRITICAL':
         return CriticalIcon
       default:
         return NormalIcon
@@ -146,17 +146,17 @@ const setMarkerColor = (severity: string | undefined) => {
   return NormalIcon
 }
 
-const edges = computed(() => {
-  const ids: string[] = nodes.value.map((node: Node) => node.id)
-  const interestedNodesCoordinateMap = getNodeCoordinateMap.value
-  return store.state.mapModule.edges.filter((edge: [number, number]) => ids.includes(edge[0].toString()) && ids.includes(edge[1].toString()))
-    .map((edge: [number, number]) => {
-      let edgeCoordinatesPair = []
-      edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[0]))
-      edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[1]))
-      return edgeCoordinatesPair
-    })
-})
+// const edges = computed(() => {
+//   const ids: string[] = nodes.value.map((node: Node) => node.id)
+//   const interestedNodesCoordinateMap = getNodeCoordinateMap.value
+//   return store.state.mapModule.edges.filter((edge: [number, number]) => ids.includes(edge[0].toString()) && ids.includes(edge[1].toString()))
+//     .map((edge: [number, number]) => {
+//       let edgeCoordinatesPair = []
+//       edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[0]))
+//       edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[1]))
+//       return edgeCoordinatesPair
+//     })
+// })
 
 const getNodeCoordinateMap = computed(() => {
   const map = new Map()
@@ -220,16 +220,16 @@ const invalidateSizeFn = () => leafletObject.value.invalidateSize()
 /*****Tile Layer*****/
 const tileProviders = [
   {
-    name: "OpenStreetMap",
+    name: 'OpenStreetMap',
     visible: true,
     attribution:
       '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
   },
   {
-    name: "OpenTopoMap",
+    name: 'OpenTopoMap',
     visible: false,
-    url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
     attribution:
       'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
   },
@@ -251,6 +251,7 @@ defineExpose({ invalidateSizeFn })
 </style>
 
 <style lang="scss">
+@import "@featherds/styles/themes/variables";
 .leaflet-marker-pane {
   div {
     width: 30px !important;
@@ -267,15 +268,15 @@ defineExpose({ invalidateSizeFn })
       width: 100%;
       display: block;
       &.NORMAL {
-        background: var(--feather-success);
+        background: var($success);
       }
       &.WARNING,
       &.MINOR,
       &.MAJOR {
-        background: var(--feather-warning);
+        background: var($warning);
       }
       &.CRITICAL {
-        background: var(--feather-error);
+        background: var($error);
       }
       opacity: 0.7;
     }

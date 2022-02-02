@@ -1,15 +1,15 @@
 const numericSeverityLevel = (severity: string | undefined) => {
   if (severity) {
     switch (severity.toUpperCase()) {
-      case "NORMAL":
+      case 'NORMAL':
         return 11
-      case "WARNING":
+      case 'WARNING':
         return 22
-      case "MINOR":
+      case 'MINOR':
         return 33
-      case "MAJOR":
+      case 'MAJOR':
         return 44
-      case "CRITICAL":
+      case 'CRITICAL':
         return 55
       default:
         return 0
@@ -18,6 +18,4 @@ const numericSeverityLevel = (severity: string | undefined) => {
   return 0
 }
 
-export {
-  numericSeverityLevel
-}
+export { numericSeverityLevel }

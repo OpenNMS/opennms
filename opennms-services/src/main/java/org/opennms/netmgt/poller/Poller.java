@@ -155,7 +155,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>getEventIpcManager</p>
      *
-     * @return a {@link org.opennms.netmgt.events.api} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventIpcManager() {
         return m_eventMgr;

@@ -43,6 +43,7 @@
                             com.google.common.base,
                             com.google.common.cache,
                             com.google.common.collect,
+                            com.google.common.util.concurrent,
 
                             org.aopalliance.aop,
 

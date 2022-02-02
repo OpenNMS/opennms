@@ -7,7 +7,7 @@ export interface State {
   snmpInterfaces: SnmpInterface[]
   snmpInterfacesTotalCount: number
   ipInterfaces: IpInterface[]
-  ipInterfacesTotalCount: number,
+  ipInterfacesTotalCount: number
   availability: NodeAvailability
   outages: Outage[]
   outagesTotalCount: number

@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 import org.opennms.netmgt.config.api.PathOutageConfig;
+import org.opennms.netmgt.config.poller.Monitor;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
@@ -292,6 +293,8 @@ public interface PollerConfig extends PathOutageConfig {
     public Enumeration<Package> enumeratePackage();
 
     public List<Package> getPackages();
+
+    List<Monitor> getConfiguredMonitors();
     
     /**
      * <p>getPackage</p>

@@ -64,12 +64,13 @@
                                 <feature>opennms-dnsresolver-netty</feature>
                                 <feature>opennms-core-ipc-grpc-client</feature>
                                 <feature>opennms-distributed-core-impl</feature>
+                                <feature>opennms-util</feature>
                                 <feature>scv-api</feature>
                                 <feature>scv-shell</feature>
                                 <feature>scv-jceks-impl</feature>
                                 <feature>dominion-grpc-client</feature>
                                 <feature>dominion-secure-credentials-vault</feature>
-                                <featue>minion-rest-service</featue>
+                                <feature>opennms-health-rest-service</feature>
                                 <feature>minion-health-check</feature>
                                 <feature>minion-api-layer</feature>
                                 <feature>minion-plugin-sample</feature>
@@ -442,8 +443,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.minion</groupId>
-            <artifactId>minion-rest-service</artifactId>
+            <groupId>org.opennms.core.health</groupId>
+            <artifactId>org.opennms.core.health.rest-cxf</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -464,6 +465,11 @@
         <dependency>
             <groupId>org.opennms.features.device-config</groupId>
             <artifactId>org.opennms.features.device-config.tftp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-util</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
