@@ -87,6 +87,13 @@ public class FilesystemForeignSourceRepositoryTest extends ForeignSourceReposito
         assertEquals("node name matches", "apknd", v.getNodeReqs().get(0).getNodeLabel());
         
         m_foreignSourceRepository.delete(r);
+
+        // This is a queueing repo, so the delete task is submitted to an Executor. Wait it out.
+        try {
+            Thread.currentThread().sleep(500);
+        }
+        catch (InterruptedException ie) {}
+
         r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
         assertNull(r);
     }
