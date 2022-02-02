@@ -99,7 +99,7 @@ jobs:
       - image: docker
     steps:
       - run:
-          name:  Docker GC
+          name:  Docker GC - remove inactive images on feature branches
           command: |
             wget https://github.com/docker/hub-tool/releases/download/v0.4.4/hub-tool-linux-amd64.tar.gz
             tar -xzf hub-tool-linux-amd64.tar.gz
@@ -113,7 +113,6 @@ jobs:
             expect -c "${expect_commands//
             /;}"
             GC_LIST=$( hub-tool/hub-tool tag ls opennms/horizon | grep feature | grep inactive | cut -d" " -f1 )
-            which yes
             for image in $GC_LIST; do
               echo "Delete image $image"
               echo "yes | hub-tool/hub-tool tag rm $image"
