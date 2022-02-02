@@ -36,10 +36,11 @@ onActivated(() => {
 </script>
 
 <style scoped lang="scss">
+@import "@featherds/styles/themes/variables";
 .tabs {
   z-index: 2;
   padding-bottom: 10px;
   margin-bottom: -29px;
-  background: var(--feather-surface);
+  background: var($surface);
 }
 </style>

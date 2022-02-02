@@ -251,6 +251,7 @@ defineExpose({ invalidateSizeFn })
 </style>
 
 <style lang="scss">
+@import "@featherds/styles/themes/variables";
 .leaflet-marker-pane {
   div {
     width: 30px !important;
@@ -267,15 +268,15 @@ defineExpose({ invalidateSizeFn })
       width: 100%;
       display: block;
       &.NORMAL {
-        background: var(--feather-success);
+        background: var($success);
       }
       &.WARNING,
       &.MINOR,
       &.MAJOR {
-        background: var(--feather-warning);
+        background: var($warning);
       }
       &.CRITICAL {
-        background: var(--feather-error);
+        background: var($error);
       }
       opacity: 0.7;
     }

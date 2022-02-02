@@ -56,6 +56,6 @@ const snmpInterfaces = computed(() => store.state.nodesModule.snmpInterfaces)
 @import "@featherds/table/scss/table";
 table {
   width: 100%;
-  @include table();
+  @include table;
 }
 </style>

@@ -105,11 +105,11 @@ const nodes = computed(() => store.state.nodesModule.nodes)
 @import "@featherds/styles/mixins/typography";
 .card {
   @include elevation(2);
-  background: var(--feather-surface);
+  background: var($surface);
   padding: 15px;
 }
 table {
   width: 100%;
-  @include table();
+  @include table;
 }
 </style>
