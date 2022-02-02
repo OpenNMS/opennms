@@ -33,6 +33,7 @@ import org.opennms.features.config.exception.ConfigNotFoundException;
 import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.EventType;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.features.config.service.util.BeanFieldCopyUtil;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
@@ -222,6 +223,6 @@ public abstract class AbstractCmJaxbConfigDao<E> {
      */
     public void addOnReloadedCallback(String configId, Consumer<ConfigUpdateInfo> callback) {
         Objects.requireNonNull(callback);
-        configurationManagerService.registerReloadConsumer(new ConfigUpdateInfo(this.getConfigName(), configId), callback);
+        configurationManagerService.registerEventHandler(EventType.UPDATE, new ConfigUpdateInfo(this.getConfigName(), configId), callback);
     }
 }
