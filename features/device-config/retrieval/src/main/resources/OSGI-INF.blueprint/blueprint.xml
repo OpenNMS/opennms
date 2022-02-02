@@ -5,13 +5,13 @@
                 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 ">
 
-    <reference id="tftpServere" interface="org.opennms.features.deviceconfig.tftp.TftpServer" availability="mandatory" />
+    <reference id="tftpServer" interface="org.opennms.features.deviceconfig.tftp.TftpServer" availability="mandatory" />
     <reference id="sshScriptingService" interface="org.opennms.features.deviceconfig.sshscripting.SshScriptingService" availability="mandatory" />
 
-    <bean id="retriever" class="org.opennms.features.deviceconfig.retrieval.impl.RetrieverImpl" destroy-method="close">
+    <bean id="deviceConfigRetriever" class="org.opennms.features.deviceconfig.retrieval.impl.RetrieverImpl" destroy-method="close">
         <argument ref="sshScriptingService"/>
         <argument ref="tftpServer"/>
     </bean>
-    <service interface="org.opennms.features.deviceconfig.retrieval.api.Retriever" ref="retriever" />
+    <service interface="org.opennms.features.deviceconfig.retrieval.api.Retriever" ref="deviceConfigRetriever" />
 
 </blueprint>

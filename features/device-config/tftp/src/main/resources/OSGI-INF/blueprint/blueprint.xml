@@ -12,7 +12,7 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <bean id="tftpServer" class="org.opennms.features.deviceconfig.tftp.impl.TftpServerImpl" init-method="launch" destroy-method="close">
+    <bean id="tftpServer" class="org.opennms.features.deviceconfig.tftp.impl.TftpServerImpl" destroy-method="close">
         <property name="port" value="${port}"/>
         <property name="address" value="${address}"/>
         <property name="maximumReceiveSize" value="${maximumReceiveSize}"/>

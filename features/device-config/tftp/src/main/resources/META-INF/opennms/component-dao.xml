@@ -11,6 +11,6 @@
 		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 	">
 
-    <bean id="tftpServer" class="org.opennms.features.deviceconfig.tftp.impl.TftpServerImpl" init-method="launch" destroy-method="close">
+    <bean id="tftpServer" class="org.opennms.features.deviceconfig.tftp.impl.TftpServerImpl" destroy-method="close">
     </bean>
 </beans>
