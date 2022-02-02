@@ -104,19 +104,25 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                     () -> sshScriptingService.execute(script, user, password, host, port, vs, timeout)
             );
 
-            tftpServer.register(tftpFileReceiver);
-
             try {
-                return FutureUtils.completionStage(
-                        tftpFileReceiver::completeNowOrLater,
-                        timeout,
-                        tftpFileReceiver::onTimeout,
-                        executor
-                ).whenComplete((e, t) -> tftpServer.unregister(tftpFileReceiver));
-            } catch (RuntimeException e) {
-                // make sure the file receiver is unregistered in case no future is returned
-                tftpServer.unregister(tftpFileReceiver);
-                throw e;
+                tftpServer.register(tftpFileReceiver);
+
+                try {
+                    return FutureUtils.completionStage(
+                            tftpFileReceiver::completeNowOrLater,
+                            timeout,
+                            tftpFileReceiver::onTimeout,
+                            executor
+                    ).whenComplete((e, t) -> tftpServer.unregister(tftpFileReceiver));
+                } catch (RuntimeException e) {
+                    // make sure the file receiver is unregistered in case no future is returned
+                    tftpServer.unregister(tftpFileReceiver);
+                    throw e;
+                }
+            } catch (Exception e) {
+                var message = "could not trigger device config retrievel - host: " + host + "; port: " + port;
+                LOG.error(message, e);
+                return CompletableFuture.completedFuture(Either.left(new Failure(message)));
             }
 
         } else {
