@@ -108,10 +108,9 @@ jobs:
       - run:
           name: use expect to login
           shell: /usr/bin/expect
-          command: |+
-            #!/usr/bin/expect
+          command: |
             set timeout 10
-            spawn hub-tool/hub-tool login DOCKERHUB_LOGIN
+            spawn hub-tool/hub-tool login ${DOCKERHUB_LOGIN}
             expect "Password:"
             send "${DOCKERHUB_PASS}\n"
       - run: hub-tool/hub-tool tag ls opennms/horizon |grep feature | grep inactive
