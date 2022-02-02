@@ -38,12 +38,12 @@
       </div>
       <div class="form-group" ng-class="{ 'has-error' : metaDataForm.value.$invalid }">
         <label class="control-label" for="metadata-key">Key</label>
-        <input class="form-control" type="text" id="metadata-key" name="key" placeholder="Key" ng-model="entry.key" required valid-meta-data-key="entry"/>
+        <input class="form-control" type="text" id="metadata-key" name="key" placeholder="Key" ng-model="entry.key" required valid-meta-data-key="entry">
         <p ng-show="metaDataForm.key.$invalid" class="help-block">A unique key is required.</p>
       </div>
       <div class="form-group" ng-class="{ 'has-error' : metaDataForm.value.$invalid }">
         <label class="control-label" for="metadata-value">Value</label>
-        <input class="form-control" type="text" id="metadata-value" name="value" placeholder="Value" ng-model="entry.value" required/>
+        <input class="form-control" type="text" id="metadata-value" name="value" placeholder="Value" ng-model="entry.value" required>
         <p ng-show="metaDataForm.value.$invalid" class="help-block">A non empty value is required.</p>
       </div>
     </div>

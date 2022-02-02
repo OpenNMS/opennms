@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -187,6 +187,11 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         closed.set(true);
         if (scheduler != null) {
             scheduler.shutdown();
+            try {
+                scheduler.awaitTermination(2, TimeUnit.MINUTES);
+            } catch (final InterruptedException e) {
+                LOG.warn("Failed to shut down the alarm data sync scheduler.", e);
+            }
         }
         if (streams != null) {
             streams.close(2, TimeUnit.MINUTES);
