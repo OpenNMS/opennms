@@ -57,10 +57,10 @@ public class EventConfigShowCommand implements Action {
     @Reference
     public EventConfDao eventConfDao;
 
-    @Option(name="-l", aliases="--limit", description="Limit the number of event definitions that are shown.")
+    @Option(name = "-l", aliases = "--limit", description = "Limit the number of event definitions that are shown.")
     int limit = 10;
 
-    @Option(name="-u", aliases="--uei", description="Event UEI substring to match.", required = true)
+    @Option(name = "-u", aliases = "--uei", description = "Event UEI substring to match.", required = true)
     @Completion(EventUeiCompleter.class)
     String eventUeiMatch;
 
@@ -76,7 +76,7 @@ public class EventConfigShowCommand implements Action {
         // Retrieve the event definitions for the given UEIs
         final List<Event> matchedEvents = matchedEventUeis.stream()
                 .flatMap(uei -> eventConfDao.getEvents(uei).stream())
-                // The event *may* have dissapeared since we matched it above, ignore these.
+                // The event *may* have disappeared since we matched it above, ignore these.
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
