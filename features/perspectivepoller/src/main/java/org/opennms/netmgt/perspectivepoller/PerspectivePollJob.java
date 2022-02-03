@@ -70,7 +70,9 @@ public class PerspectivePollJob implements Job {
         // Issue the call and process the results asynchronously
         backend.getLocationAwarePollerClient().poll()
                 .withService(svc.getMonitoredService())
-                .withTimeToLive(svc.getServiceConfig().getInterval())
+               // TODO fooker: Do something usefull
+//                .withTimeToLive(svc.getServiceConfig().getInterval())
+               .withTimeToLive(5000L)
                 .withMonitor(svc.getServiceMonitor())
                 .withAttributes(createParameterMap(svc.getServiceConfig()))
                 .withPatternVariables(svc.getPatternVariables())

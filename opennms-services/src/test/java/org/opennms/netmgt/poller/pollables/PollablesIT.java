@@ -82,6 +82,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 import org.opennms.netmgt.scheduler.mock.MockScheduler;
 import org.opennms.netmgt.scheduler.mock.MockTimer;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
@@ -214,12 +215,12 @@ public class PollablesIT {
         m_pollerConfig.addDowntime(100L, 0L, 500L, false);
         m_pollerConfig.addDowntime(200L, 500L, 1500L, false);
         m_pollerConfig.addDowntime(500L, 1500L, -1L, true);
-        m_pollerConfig.setDefaultPollInterval(1000L);
+        m_pollerConfig.setDefaultPollInterval("1000");
         m_pollerConfig.populatePackage(m_mockNetwork);
         m_pollerConfig.addPackage("TestPkg2");
         m_pollerConfig.addDowntime(500L, 0L, 1000L, false);
         m_pollerConfig.addDowntime(500L, 1000L, -1L, true);
-        m_pollerConfig.setDefaultPollInterval(2000L);
+        m_pollerConfig.setDefaultPollInterval("2000");
         m_pollerConfig.addService(m_mockNetwork.getService(2, "192.168.1.3", "HTTP"));
 
         m_timer = new MockTimer();
@@ -1523,19 +1524,19 @@ public class PollablesIT {
         assertEquals(1000, pDot1Smtp.getStatusChangeTime());
         assertDown(pDot1Smtp);
         pDot1.resetStatusChanged();
-        assertEquals(100L, pollConfig.getInterval());
+        assertEquals(Trigger.interval(m_timer, 100L).key(), pollConfig.getInterval().key());
 
         m_timer.setCurrentTime(1234L);
-        assertEquals(100L, pollConfig.getInterval());
+        assertEquals(Trigger.interval(m_timer, 100L).key(), pollConfig.getInterval().key());
 
         m_timer.setCurrentTime(1500L);
-        assertEquals(200L, pollConfig.getInterval());
+        assertEquals(Trigger.interval(m_timer, 200L).key(), pollConfig.getInterval().key());
 
         m_timer.setCurrentTime(1700L);
-        assertEquals(200L, pollConfig.getInterval());
+        assertEquals(Trigger.interval(m_timer, 200L).key(), pollConfig.getInterval().key());
 
         m_timer.setCurrentTime(2500L);
-        assertEquals(-1L, pollConfig.getInterval());
+        assertEquals(Trigger.NEVER.key(), pollConfig.getInterval().key());
     }
 
     @Test
@@ -1557,19 +1558,19 @@ public class PollablesIT {
         assertEquals(1000, pDot3Http.getStatusChangeTime());
         assertChanged(pDot3Http);
         assertDown(pDot3Http);
-        assertEquals(500L, pollConfig.getInterval());
+        assertEquals(Trigger.interval(m_timer, 500L).key(), pollConfig.getInterval().key());
 
         m_timer.setCurrentTime(1234L);
-        assertEquals(500L, pollConfig.getInterval());
+        assertEquals(Trigger.interval(m_timer, 500L).key(), pollConfig.getInterval().key());
 
         m_timer.setCurrentTime(1500L);
-        assertEquals(500L, pollConfig.getInterval());
+        assertEquals(Trigger.interval(m_timer, 500L).key(), pollConfig.getInterval().key());
 
         m_timer.setCurrentTime(1700L);
-        assertEquals(500L, pollConfig.getInterval());
+        assertEquals(Trigger.interval(m_timer, 500L).key(), pollConfig.getInterval().key());
 
         m_timer.setCurrentTime(2000L);
-        assertEquals(-1L, pollConfig.getInterval());
+        assertEquals(Trigger.NEVER.key(), pollConfig.getInterval().key());
 
         LOG.debug(".3 HTTP: {}: status={}, changetime={}", pDot3Http, pDot3Http.getStatus(), pDot3Http.getStatusChangeTime());
     }
@@ -1625,7 +1626,7 @@ public class PollablesIT {
     @Test
     public void testScheduleAdjust() {
         // change SMTP so it is only polled every 10 secs rather than 1 sec
-        m_pollerConfig.setPollInterval(m_pollerConfig.getPackage("TestPackage"), "SMTP", 10000L);
+        m_pollerConfig.setPollInterval(m_pollerConfig.getPackage("TestPackage"), "SMTP", "10000");
 
         pDot1Icmp.getSchedule().schedule();
         pDot1Smtp.getSchedule().schedule();

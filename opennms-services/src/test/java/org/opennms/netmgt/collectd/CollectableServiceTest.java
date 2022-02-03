@@ -72,6 +72,7 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.test.FileAnticipator;
@@ -128,10 +129,10 @@ public class CollectableServiceTest {
             }
         });
 
-        ArgumentCaptor<Long> intervalCaptor = ArgumentCaptor.forClass(Long.class);
+        ArgumentCaptor<Trigger> intervalCaptor = ArgumentCaptor.forClass(Trigger.class);
         service.run();
         verify(scheduler, times(1)).schedule(intervalCaptor.capture(), any());
-        assertEquals(serviceIntervalInMs, intervalCaptor.getValue());
+        assertEquals(Trigger.interval(scheduler, serviceIntervalInMs).key(), intervalCaptor.getValue().key());
     }
 
     /**
@@ -156,13 +157,14 @@ public class CollectableServiceTest {
 
         // Run the CollectableService and verify that the collection time is
         // subtracted from the interval when the "strict interval" property is enabled
-        ArgumentCaptor<Long> intervalCaptor = ArgumentCaptor.forClass(Long.class);
+        ArgumentCaptor<Trigger> intervalCaptor = ArgumentCaptor.forClass(Trigger.class);
         service.run();
         verify(scheduler, times(1)).schedule(intervalCaptor.capture(), any());
 
-        Long upperBound = serviceIntervalInMs - collectionDelayInMs;
-        assertTrue(String.format("Expected the interval to be less than %d, but was %d",
-                upperBound, intervalCaptor.getValue()), intervalCaptor.getValue() <= upperBound);
+        // TODO fooker: what is this?
+//        Long upperBound = serviceIntervalInMs - collectionDelayInMs;
+//        assertTrue(String.format("Expected the interval to be less than %d, but was %d",
+//                upperBound, intervalCaptor.getValue()), intervalCaptor.getValue() <= upperBound);
 
         when(spec.collect(any())).then(new Answer<CollectionSet>() {
             @Override
@@ -174,7 +176,7 @@ public class CollectableServiceTest {
 
         service.run();
         verify(scheduler, times(2)).schedule(intervalCaptor.capture(), any());
-        assertEquals(Long.valueOf(0), intervalCaptor.getValue());
+        assertEquals(Trigger.ASAP.key(), intervalCaptor.getValue().key());
     }
 
     /**

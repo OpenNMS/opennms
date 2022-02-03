@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.scheduler;
+package org.opennms.netmgt.scheduler.interval;
 
-import org.opennms.netmgt.scheduler.interval.Trigger;
+import java.time.Instant;
 
-/**
- * Represents a ScheduleInterval
- *
- * @author brozow
- * @version $Id: $
- */
-public interface ScheduleInterval {
+public class CalendarTrigger implements Trigger {
 
-    /**
-     * <p>getInterval</p>
-     *
-     * @return a long.
-     */
-    Trigger getInterval();
+    @Override
+    public Instant next() {
+        // TODO fooker: Implement me
+        throw null;
+    }
 
-    /**
-     * <p>scheduledSuspension</p>
-     *
-     * @return a boolean.
-     */
-    boolean scheduledSuspension();
+    @Override
+    public void fired(final Instant time) {
+        // TODO fooker: Implement me
+        throw null;
+    }
 
+    @Override
+    public Object key() {
+        // TODO fooker: Implement me
+        throw null;
+    }
 }

@@ -33,28 +33,26 @@ import java.util.List;
 
 import org.opennms.netmgt.scheduler.ScheduleInterval;
 import org.opennms.netmgt.scheduler.Timer;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 
 
 public class MockInterval implements ScheduleInterval {
     
     private Timer m_timer;
-    private long m_interval;
+    private Trigger m_interval;
     private List<Suspension> m_suspensions = new LinkedList<>();
     
-    /**
-     * @param l
-     */
-    public MockInterval(Timer timer, long interval) {
+    public MockInterval(Timer timer, Trigger interval) {
         m_timer = timer;
         m_interval = interval;
     }
     
     @Override
-    public long getInterval() {
+    public Trigger getInterval() {
         return m_interval;
     }
 
-    public void setInterval(long interval) {
+    public void setInterval(Trigger interval) {
         m_interval = interval;
     }
     

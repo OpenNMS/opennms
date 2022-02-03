@@ -149,7 +149,7 @@ public class PollerConfigFactoryIT {
         
         Service svc = new Service();
         svc.setName("TestService");
-        svc.setInterval(300000l);
+        svc.setInterval("300000");
         pkg.addService(svc);
         
         Downtime dt = new Downtime();
@@ -201,7 +201,7 @@ public class PollerConfigFactoryIT {
         
         Service svc = new Service();
         svc.setName("TestService");
-        svc.setInterval(300000l);
+        svc.setInterval("300000");
         pkg.addService(svc);
         
         Downtime dt = new Downtime();
@@ -243,7 +243,7 @@ public class PollerConfigFactoryIT {
         
         Service svc = new Service();
         svc.setName("TestService");
-        svc.setInterval(300000l);
+        svc.setInterval("300000");
         pkg.addService(svc);
         
         Downtime dt = new Downtime();

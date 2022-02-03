@@ -45,7 +45,7 @@ public interface SnmpInterfacePollerConfig {
 	 * @return the Default interval
 	 * 
 	 */
-	long getInterval();
+	String getInterval();
     /**
      * <p>getThreads</p>
      *
@@ -113,11 +113,11 @@ public interface SnmpInterfacePollerConfig {
     /**
      * <p>getInterval</p>
      *
-     * @param pkgName a {@link java.lang.String} object.
-     * @param pkgInterfaceName a {@link java.lang.String} object.
+     * @param pkgName a {@link String} object.
+     * @param pkgInterfaceName a {@link String} object.
      * @return a long.
      */
-    long getInterval(String pkgName,String pkgInterfaceName);
+    String getInterval(String pkgName,String pkgInterfaceName);
     /**
      * <p>getCriteria</p>
      *

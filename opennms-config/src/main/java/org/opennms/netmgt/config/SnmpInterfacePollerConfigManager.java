@@ -468,9 +468,10 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getStatus().equals("on");
     }
     
-    /** {@inheritDoc} */
+    /** {@inheritDoc}
+     * @return*/
     @Override
-    public synchronized long getInterval(String pkgName,String pkgInterfaceName) {
+    public synchronized String getInterval(String pkgName, String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getInterval();
         
     }
@@ -578,7 +579,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * @return a long.
      */
     @Override
-    public long getInterval() {
+    public String getInterval() {
         return getConfiguration().getInterval();
     }
 

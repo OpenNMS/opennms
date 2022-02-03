@@ -58,7 +58,7 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
      *  polled
      */
     @XmlAttribute(name = "interval")
-    private Long m_interval;
+    private String m_interval;
 
     /**
      * The maximum number of threads used for
@@ -118,11 +118,11 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
     @XmlElement(name = "package", required = true)
     private List<Package> m_packages = new ArrayList<>();
 
-    public Long getInterval() {
-        return m_interval != null ? m_interval : Long.valueOf("300000");
+    public String getInterval() {
+        return m_interval != null ? m_interval : "300000";
     }
 
-    public void setInterval(final Long interval) {
+    public void setInterval(final String interval) {
         m_interval = ConfigUtils.assertNotNull(interval, "interval");
     }
 

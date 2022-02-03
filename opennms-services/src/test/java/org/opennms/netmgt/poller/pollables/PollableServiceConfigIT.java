@@ -75,6 +75,7 @@ import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Timer;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 import org.opennms.netmgt.scheduler.mock.MockTimer;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.xml.event.Event;
@@ -265,19 +266,19 @@ public class PollableServiceConfigIT {
         assertTrue(svc.getStatus().isDown());
 
         timer.setCurrentTime(5L);
-        assertEquals(20, psc.getInterval());
+        assertEquals(Trigger.interval(timer, 20).key(), psc.getInterval().key());
 
         timer.setCurrentTime(10L);
-        assertEquals(20, psc.getInterval());
+        assertEquals(Trigger.interval(timer, 20).key(), psc.getInterval().key());
 
         timer.setCurrentTime(18L);
-        assertEquals(20, psc.getInterval());
+        assertEquals(Trigger.interval(timer, 20).key(), psc.getInterval().key());
 
         timer.setCurrentTime(25L);
-        assertEquals(20, psc.getInterval());
+        assertEquals(Trigger.interval(timer, 20).key(), psc.getInterval().key());
 
         timer.setCurrentTime(205L);
-        assertEquals(0, psc.getInterval());
+        assertEquals(Trigger.ASAP.key(), psc.getInterval().key());
 
         eventMgr.getEventAnticipator().verifyAnticipated();
     }
@@ -321,23 +322,23 @@ public class PollableServiceConfigIT {
         assertTrue(svc.getStatus().isDown());
 
         timer.setCurrentTime(5L);
-        assertEquals(20, psc.getInterval());
+        assertEquals(Trigger.interval(timer, 20).key(), psc.getInterval().key());
 
         timer.setCurrentTime(10L);
-        assertEquals(20, psc.getInterval());
+        assertEquals(Trigger.interval(timer, 20).key(), psc.getInterval().key());
 
         timer.setCurrentTime(18L);
-        assertEquals(20, psc.getInterval());
+        assertEquals(Trigger.interval(timer, 20).key(), psc.getInterval().key());
 
         timer.setCurrentTime(25L);
-        assertEquals(20, psc.getInterval());
+        assertEquals(Trigger.interval(timer, 20).key(), psc.getInterval().key());
 
         final EventAnticipator anticipator = eventMgr.getEventAnticipator();
         final Event expectedEvent = new EventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, "Test").setNodeid(1).setInterface(InetAddressUtils.UNPINGABLE_ADDRESS).setService("ICMP").getEvent();
         anticipator.anticipateEvent(expectedEvent);
 
         timer.setCurrentTime(205L);
-        assertEquals(-1, psc.getInterval());
+        assertEquals(Trigger.NEVER.key(), psc.getInterval().key());
 
         final Event sent = anticipator.getAnticipatedEventsReceived().get(0);
         assertNull(sent.getParm(EventConstants.PARM_IGNORE_UNMANAGED));
@@ -384,23 +385,23 @@ public class PollableServiceConfigIT {
         assertTrue(svc.getStatus().isDown());
 
         timer.setCurrentTime(5L);
-        assertEquals(20, psc.getInterval());
+        assertEquals(Trigger.interval(timer, 20).key(), psc.getInterval().key());
 
         timer.setCurrentTime(10L);
-        assertEquals(20, psc.getInterval());
+        assertEquals(Trigger.interval(timer, 20).key(), psc.getInterval().key());
 
         timer.setCurrentTime(18L);
-        assertEquals(20, psc.getInterval());
+        assertEquals(Trigger.interval(timer, 20).key(), psc.getInterval().key());
 
         timer.setCurrentTime(25L);
-        assertEquals(20, psc.getInterval());
+        assertEquals(Trigger.interval(timer, 20).key(), psc.getInterval().key());
 
         final EventAnticipator anticipator = eventMgr.getEventAnticipator();
         final Event expectedEvent = new EventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, "Test").setNodeid(1).setInterface(InetAddressUtils.UNPINGABLE_ADDRESS).setService("ICMP").getEvent();
         anticipator.anticipateEvent(expectedEvent);
 
         timer.setCurrentTime(205L);
-        assertEquals(-1, psc.getInterval());
+        assertEquals(Trigger.NEVER.key(), psc.getInterval().key());
 
         final Event sent = anticipator.getAnticipatedEventsReceived().get(0);
         assertNotNull(sent.getParm(EventConstants.PARM_IGNORE_UNMANAGED));

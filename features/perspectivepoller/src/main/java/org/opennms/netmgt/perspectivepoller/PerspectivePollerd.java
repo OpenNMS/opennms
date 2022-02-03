@@ -274,11 +274,12 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
         final Trigger trigger = TriggerBuilder
                 .newTrigger()
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                                                   .withIntervalInMilliseconds(perspectivePolledService.getServiceConfig().getInterval())
+                                                   // TODO fooker: handle the other trigger formats
+                                                   .withIntervalInMilliseconds(Long.parseUnsignedLong(perspectivePolledService.getServiceConfig().getInterval()))
                                                    .repeatForever())
                 .build();
 
-        LOG.debug("Scheduling service named {} at location {} with interval {}ms", perspectivePolledService.getServiceName(),
+        LOG.debug("Scheduling service named {} at location {} with interval {}", perspectivePolledService.getServiceName(),
                   perspectivePolledService.getPerspectiveLocation(), perspectivePolledService.getServiceConfig().getInterval());
 
         try {

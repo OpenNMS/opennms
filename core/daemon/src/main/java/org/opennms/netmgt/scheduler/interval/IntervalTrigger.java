@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.scheduler;
+package org.opennms.netmgt.scheduler.interval;
 
-import org.opennms.netmgt.scheduler.interval.Trigger;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Objects;
+import java.util.Optional;
 
-/**
- * Represents a ScheduleInterval
- *
- * @author brozow
- * @version $Id: $
- */
-public interface ScheduleInterval {
+public class IntervalTrigger implements Trigger {
+    private final Duration interval;
 
-    /**
-     * <p>getInterval</p>
-     *
-     * @return a long.
-     */
-    Trigger getInterval();
+    private Instant next;
 
-    /**
-     * <p>scheduledSuspension</p>
-     *
-     * @return a boolean.
-     */
-    boolean scheduledSuspension();
+    public IntervalTrigger(final Duration interval, final Instant next) {
+        this.interval = Objects.requireNonNull(interval);
+        this.next = Objects.requireNonNull(next);
+    }
 
+    @Override
+    public void fired(final Instant now) {
+        // TODO fooker: Log missed intervals?
+        while (!now.isBefore(this.next)) {
+            this.next = this.next.plus(this.interval);
+        }
+    }
+
+    @Override
+    public Instant next() {
+        return this.next;
+    }
+
+    @Override
+    public Object key() {
+        return this.interval;
+    }
 }

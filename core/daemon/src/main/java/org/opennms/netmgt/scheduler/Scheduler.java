@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.scheduler;
 
+import org.opennms.netmgt.scheduler.interval.Trigger;
+
 /**
  * <p>Scheduler interface.</p>
  *
@@ -44,7 +46,7 @@ public interface Scheduler extends ScheduleTimer {
 	 * runnable.
 	 */
         @Override
-	public abstract void schedule(long interval, final ReadyRunnable runnable);
+	public abstract void schedule(Trigger interval, final ReadyRunnable runnable);
 
 	/**
 	 * This returns the current time for the scheduler

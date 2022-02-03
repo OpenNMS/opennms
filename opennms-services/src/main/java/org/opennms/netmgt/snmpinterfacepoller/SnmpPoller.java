@@ -44,6 +44,7 @@ import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableInterface;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface;
@@ -285,7 +286,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
                     excludingCriteria = excludingCriteria + " and not " + criteria;
                 }
                 
-                long interval = getPollerConfig().getInterval(pkgName, pkgInterfaceName);
+                Trigger interval = Trigger.parse(m_scheduler, getPollerConfig().getInterval(pkgName, pkgInterfaceName));
                 LOG.debug("package interface: interval: {}", interval);
 
                 int port = getPollerConfig().getPort(pkgName, pkgInterfaceName).orElse(-1);
@@ -325,7 +326,8 @@ public class SnmpPoller extends AbstractServiceDaemon {
 
             node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), excludingCriteria));
 
-            getNetwork().schedule(node,getPollerConfig().getInterval(),getScheduler());
+            final var interval = Trigger.parse(m_scheduler, getPollerConfig().getInterval());
+            getNetwork().schedule(node, interval, getScheduler());
         }
     }
 

@@ -34,6 +34,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -72,7 +73,7 @@ public class SnmpPollInterfaceMonitor {
 
     private String m_location;
 
-    private long m_interval;
+    private Trigger m_interval;
 
     public SnmpPollInterfaceMonitor(LocationAwareSnmpClient locationAwareSnmpClient) {
         this.m_client = locationAwareSnmpClient;
@@ -115,10 +116,16 @@ public class SnmpPollInterfaceMonitor {
         String ipAddress = agentConfig.getAddress().getCanonicalHostName();
         CompletableFuture<List<SnmpValue>> adminValuesFuture = m_client.get(agentConfig, adminoids)
                 .withLocation(m_location).withDescription("SnmpInterfacePoller Admin Status for " + ipAddress)
-                .withTimeToLive(m_interval).execute();
+                                                                       // TODO fooker: do something usefull
+//                .withTimeToLive(m_interval)
+                .withTimeToLive(5000L)
+                .execute();
         CompletableFuture<List<SnmpValue>> operationalValesFuture = m_client.get(agentConfig, operooids)
                 .withLocation(m_location).withDescription("SnmpInterfacePoller Operational Status for " + ipAddress)
-                .withTimeToLive(m_interval).execute();
+                                                                            // TODO fooker: do something usefull
+//                .withTimeToLive(m_interval)
+                .withTimeToLive(5000L)
+                .execute();
         List<SnmpValue> adminSnmpValues = new ArrayList<>();
         List<SnmpValue> operationalSnmpValues = new ArrayList<>();
         try {
@@ -170,11 +177,11 @@ public class SnmpPollInterfaceMonitor {
         this.m_location = location;
     }
 
-    public long getInterval() {
+    public Trigger getInterval() {
         return m_interval;
     }
 
-    public void setInterval(long interval) {
+    public void setInterval(Trigger interval) {
         this.m_interval = interval;
     }
 

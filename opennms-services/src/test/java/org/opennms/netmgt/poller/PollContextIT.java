@@ -160,11 +160,11 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         m_pollerConfig.setCriticalService("ICMP");
         m_pollerConfig.addPackage("TestPackage");
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
-        m_pollerConfig.setDefaultPollInterval(1000L);
+        m_pollerConfig.setDefaultPollInterval("1000");
         m_pollerConfig.populatePackage(m_mNetwork);
         m_pollerConfig.addPackage("TestPkg2");
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
-        m_pollerConfig.setDefaultPollInterval(2000L);
+        m_pollerConfig.setDefaultPollInterval("2000");
         m_pollerConfig.addService(m_mNetwork.getService(2, "192.168.1.3", "HTTP"));
         m_pollerConfig.setNextOutageIdSql(m_db.getNextOutageIdStatement());
         

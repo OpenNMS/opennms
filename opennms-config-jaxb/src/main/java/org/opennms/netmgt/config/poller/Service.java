@@ -62,7 +62,7 @@ public class Service implements Serializable {
      * Interval at which the service is to be polled
      */
     @XmlAttribute(name="interval")
-    private Long m_interval;
+    private String m_interval;
 
     /**
      * Specifies if the service is user defined. Used specifically for UI
@@ -96,7 +96,7 @@ public class Service implements Serializable {
         setStatus("on");
     }
 
-    public Service(final String name, final long interval, final String userDefined, final String status, final String... parameters) {
+    public Service(final String name, final String interval, final String userDefined, final String status, final String... parameters) {
         this();
         setName(name);
         setInterval(interval);
@@ -131,17 +131,12 @@ public class Service implements Serializable {
     /**
      * Interval at which the service is to be polled
      */
-    public Long getInterval() {
-        return m_interval == null? 0 : m_interval;
+    public String getInterval() {
+        return m_interval;
     }
 
-    public void setInterval(final Long interval) {
+    public void setInterval(final String interval) {
         m_interval = interval;
-    }
-
-    @XmlTransient
-    public void setInterval(final Integer interval) {
-        m_interval = interval == null? null : interval.longValue();
     }
 
     /**

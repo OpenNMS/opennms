@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.scheduler.Schedule;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 
 /**
  * Represents an SNMP PollableNetwork
@@ -75,19 +76,8 @@ public class PollableNetwork {
         return nodeGroup;
     }
     
-    /**
-     * <p>schedule</p>
-     *
-     * @param node a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface} object.
-     * @param criteria a {@link java.lang.String} object.
-     * @param interval a long.
-     * @param scheduler a {@link org.opennms.netmgt.scheduler.Scheduler} object.
-     */
-    public void schedule(PollableSnmpInterface node, long interval, org.opennms.netmgt.scheduler.Scheduler scheduler) {
-
-        
-
-        PollableSnmpInterfaceConfig nodeconfig = new PollableSnmpInterfaceConfig(scheduler,interval);
+    public void schedule(PollableSnmpInterface node, Trigger interval, org.opennms.netmgt.scheduler.Scheduler scheduler) {
+        PollableSnmpInterfaceConfig nodeconfig = new PollableSnmpInterfaceConfig(scheduler, interval);
 
         node.setSnmppollableconfig(nodeconfig);
 

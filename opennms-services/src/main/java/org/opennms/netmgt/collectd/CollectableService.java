@@ -67,6 +67,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
@@ -379,7 +380,8 @@ class CollectableService implements ReadyRunnable {
             diff = Math.min(diff, m_spec.getInterval());
         }
     	// Reschedule the service
-        m_scheduler.schedule(m_spec.getInterval() - diff, getReadyRunnable());
+        // TODO fooker: Should we support fancy triggers for collectd, too?
+        m_scheduler.schedule(Trigger.interval(m_scheduler, m_spec.getInterval() - diff), getReadyRunnable());
     }
 
     private void updateStatus(CollectionStatus status, CollectionException e) {

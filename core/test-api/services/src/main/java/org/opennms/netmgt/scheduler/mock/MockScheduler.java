@@ -28,14 +28,18 @@
 
 package org.opennms.netmgt.scheduler.mock;
 
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.scheduler.interval.Trigger;
+import org.opennms.test.mock.MockUtil;
 
 
 public class MockScheduler implements Scheduler {
@@ -63,16 +67,29 @@ public class MockScheduler implements Scheduler {
 
     
     @Override
-    public void schedule(long interval, ReadyRunnable schedule) {
-        Long nextTime = Long.valueOf(getCurrentTime()+interval);
-        //MockUtil.println("Scheduled "+schedule+" for "+nextTime);
+    public void schedule(Trigger interval, ReadyRunnable schedule) {
+        final long nextTime = Optional.ofNullable(interval.next())
+                .map(Instant::toEpochMilli)
+                .orElse(getCurrentTime());
+        MockUtil.println("Scheduled " + schedule + " for " + nextTime);
         List<ReadyRunnable> entries = m_scheduleEntries.get(nextTime);
         if (entries == null) {
             entries = new LinkedList<ReadyRunnable>();
             m_scheduleEntries.put(nextTime, entries);
         }
             
-        entries.add(schedule);
+        entries.add(new ReadyRunnable() {
+            @Override
+            public boolean isReady() {
+                return interval.isReady(Instant.ofEpochMilli(getCurrentTime())) && schedule.isReady();
+            }
+
+            @Override
+            public void run() {
+                interval.fired(Instant.ofEpochMilli(getCurrentTime()));
+                schedule.run();
+            }
+        });
     }
     
     public int getEntryCount() {

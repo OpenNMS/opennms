@@ -327,7 +327,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     private void scheduleAutomation(Automation auto) {
         if (auto.getActive()) {
             AutomationProcessor ap = new AutomationProcessor(auto);
-            Schedule s = new Schedule(ap, new AutomationInterval(auto.getInterval()), m_scheduler);
+            Schedule s = new Schedule(ap, new AutomationInterval(org.opennms.netmgt.scheduler.interval.Trigger.parse(m_scheduler, auto.getInterval())), m_scheduler);
             ap.setSchedule(s);
             s.schedule();
         }

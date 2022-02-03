@@ -29,6 +29,8 @@
 package org.opennms.netmgt.vacuumd;
 
 import org.opennms.netmgt.scheduler.ScheduleInterval;
+import org.opennms.netmgt.scheduler.interval.Trigger;
+
 /**
  * <p>AutomationInterval class.</p>
  *
@@ -41,33 +43,23 @@ public class AutomationInterval implements ScheduleInterval {
      * @see org.opennms.netmgt.scheduler.ScheduleInterval#getInterval()
      */
     
-    private long m_interval;
+    private Trigger m_interval;
     
     /**
      * <p>Constructor for AutomationInterval.</p>
      *
      * @param interval a long.
      */
-    public AutomationInterval(long interval) {
+    public AutomationInterval(Trigger interval) {
         setInterval(interval);
     }
     
-    /**
-     * <p>getInterval</p>
-     *
-     * @return a long.
-     */
     @Override
-    public long getInterval() {
+    public Trigger getInterval() {
         return m_interval;
     }
     
-    /**
-     * <p>setInterval</p>
-     *
-     * @param interval a long.
-     */
-    public void setInterval(long interval) {
+    public void setInterval(Trigger interval) {
         m_interval = interval;
     }
 

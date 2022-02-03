@@ -30,6 +30,7 @@ package org.opennms.netmgt.scheduler;
 
 import java.util.Random;
 
+import org.opennms.netmgt.scheduler.interval.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +87,7 @@ public class Schedule {
                     Schedule.this.run();
                 } catch (PostponeNecessary e) {
                     // Chose a random number of seconds between 5 and 14 to wait before trying again
-                    m_timer.schedule(random.nextInt(10) * 1000L + 5000L, this);
+                    m_timer.schedule(Trigger.interval(m_timer, random.nextInt(10) * 1000L + 5000L), this);
                     return;
                 }
             }
@@ -98,8 +99,8 @@ public class Schedule {
                 return;
             }
             
-            long interval = m_interval.getInterval();
-            if (interval >= 0 && m_scheduled)
+            final var interval = m_interval.getInterval();
+            if (interval != Trigger.NEVER && m_scheduled)
                 m_timer.schedule(interval, this);
 
         }
@@ -127,11 +128,11 @@ public class Schedule {
      */
     public void schedule() {
         m_scheduled = true;
-        schedule(0);
+        schedule(Trigger.ASAP);
     }
 
-    private void schedule(long interval) {
-        if (interval >= 0 && m_scheduled)
+    private void schedule(Trigger interval) {
+        if (interval != Trigger.NEVER && m_scheduled)
             m_timer.schedule(interval, new ScheduleEntry(++m_currentExpirationCode));
     }
 

@@ -82,7 +82,7 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
 
     private int m_threads = 1;
 
-    private long m_defaultPollInterval = 7654L;
+    private String m_defaultPollInterval = "7654";
 
     private boolean m_pollAll = true;
 
@@ -237,7 +237,7 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
         addService(name, m_defaultPollInterval, monitor);
     }
 
-    public void addService(String name, long interval, ServiceMonitor monitor) {
+    public void addService(String name, String interval, ServiceMonitor monitor) {
         Service service = findService(m_currentPkg, name);
         if (service == null) {
             service = new Service();
@@ -444,11 +444,11 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
         m_outageProcessingEnabled = outageProcessingEnabled;
     }
 
-    public void setPollInterval(final String svcName, final long interval) {
+    public void setPollInterval(final String svcName, final String interval) {
         setPollInterval(m_currentPkg, svcName, interval);
     }
 
-    public void setPollInterval(final Package pkg, final String svcName, final long interval) {
+    public void setPollInterval(final Package pkg, final String svcName, final String interval) {
         final Service svc = findService(pkg, svcName);
         if (svc == null)
             throw new IllegalArgumentException("No service named: "+svcName+" in package "+pkg);
@@ -460,7 +460,7 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
         m_threads = threads;
     }
 
-    public void setDefaultPollInterval(final long defaultPollInterval) {
+    public void setDefaultPollInterval(final String defaultPollInterval) {
         m_defaultPollInterval = defaultPollInterval;
     }
 

@@ -59,7 +59,7 @@ public class VacuumdConfigurationTest extends
                                             false);
         statements.add(statement);
 
-        List<Automation> automations = Arrays.asList(new Automation("testAutomation", 3000,
+        List<Automation> automations = Arrays.asList(new Automation("testAutomation", "3000",
                                                "testTrigger", "testAction",
                                                "testAutoEvent",
                                                "testActionEvent", false));

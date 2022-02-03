@@ -74,7 +74,7 @@ public class Interface implements Serializable {
      *  polled
      */
     @XmlAttribute(name = "interval", required = true)
-    private Long m_interval;
+    private String m_interval;
 
     /**
      * Specifies if the service is user defined. Used
@@ -159,11 +159,11 @@ public class Interface implements Serializable {
         m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
-    public Long getInterval() {
+    public String getInterval() {
         return m_interval;
     }
 
-    public void setInterval(final Long interval) {
+    public void setInterval(final String interval) {
         m_interval = ConfigUtils.assertNotNull(interval, "interval");
     }
 

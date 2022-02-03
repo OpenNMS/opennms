@@ -29,6 +29,8 @@
 package org.opennms.netmgt.scheduler;
 
 
+import org.opennms.netmgt.scheduler.interval.Trigger;
+
 /**
  * Represents a ScheduleTimer
  *
@@ -37,12 +39,6 @@ package org.opennms.netmgt.scheduler;
  */
 public interface ScheduleTimer extends Timer {
     
-    /**
-     * <p>schedule</p>
-     *
-     * @param interval a long.
-     * @param schedule a {@link org.opennms.netmgt.scheduler.ReadyRunnable} object.
-     */
-    public void schedule(long interval, ReadyRunnable schedule);
+    public void schedule(Trigger interval, ReadyRunnable schedule);
 
 }

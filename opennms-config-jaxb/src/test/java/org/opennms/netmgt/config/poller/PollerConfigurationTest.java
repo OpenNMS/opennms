@@ -145,7 +145,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         final Package pack = new Package("test");
         pack.setFilter("abc");
         pack.setRrd(new Rrd(3, "RRA:AVERAGE:0.5:1:2016"));
-        pack.addService(new Service("ICMP", 3, "true", "on"));
+        pack.addService(new Service("ICMP", "3", "true", "on"));
         pack.addDowntime(new Downtime(0, Downtime.DELETE_MANAGED));
         config.addPackage(pack);
 
@@ -180,7 +180,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         example1rrd.addRra("RRA:MIN:0.5:288:366");
         example1.setRrd(example1rrd);
 
-        example1.addService(new Service("ICMP", 300000, "false", "on",
+        example1.addService(new Service("ICMP", "300000", "false", "on",
                                         "retry", "2",
                                         "timeout", "3000",
                                         "rrd-repository", "/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response",
@@ -229,7 +229,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         example1rrd.addRra("RRA:MIN:0.5:288:366");
         example1.setRrd(example1rrd);
 
-        example1.addService(new Service("ICMP", 300000, "false", "on",
+        example1.addService(new Service("ICMP", "300000", "false", "on",
                                         "retry", "2",
                                         "timeout", "3000",
                                         "rrd-repository", "/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response",
@@ -237,7 +237,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "icmp"
                 ));
 
-        example1.addService(new Service("DNS", 300000, "false", "on",
+        example1.addService(new Service("DNS", "300000", "false", "on",
                                         "retry", "2",
                                         "timeout", "5000",
                                         "port", "53",
@@ -248,7 +248,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "dns"
                 ));
 
-        example1.addService(new Service("SMTP", 300000, "false", "on",
+        example1.addService(new Service("SMTP", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "3000",
                                         "port", "25",
@@ -257,7 +257,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "smtp"
                 ));
 
-        example1.addService(new Service("FTP", 300000, "false", "on",
+        example1.addService(new Service("FTP", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "3000",
                                         "port", "21",
@@ -265,11 +265,11 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "password", ""
                 ));
 
-        example1.addService(new Service("SNMP", 300000, "false", "off",
+        example1.addService(new Service("SNMP", "300000", "false", "off",
                                         "oid", ".1.3.6.1.2.1.1.2.0"
                 ));
 
-        example1.addService(new Service("HTTP", 300000, "false", "on",
+        example1.addService(new Service("HTTP", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "3000",
                                         "port", "80",
@@ -279,7 +279,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "http"
                 ));
 
-        example1.addService(new Service("HTTP-8080", 300000, "false", "on",
+        example1.addService(new Service("HTTP-8080", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "3000",
                                         "port", "8080",
@@ -289,7 +289,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "http-8080"
                 ));
 
-        example1.addService(new Service("HTTP-8000", 300000, "false", "on",
+        example1.addService(new Service("HTTP-8000", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "3000",
                                         "port", "8000",
@@ -299,7 +299,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "http-8000"
                 ));
 
-        example1.addService(new Service("HTTP-HostExample", 300000, "false", "on",
+        example1.addService(new Service("HTTP-HostExample", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "3000",
                                         "port", "80",
@@ -310,7 +310,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "http-hostexample"
                 ));
 
-        example1.addService(new Service("HTTPS", 300000, "false", "on",
+        example1.addService(new Service("HTTPS", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "5000",
                                         "port", "443",
@@ -320,20 +320,20 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "responseTime"
                 ));
 
-        example1.addService(new Service("HTTP-MGMT", 300000, "false", "on",
+        example1.addService(new Service("HTTP-MGMT", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "3000",
                                         "port", "280",
                                         "url", "/"
                 ));
 
-        example1.addService(new Service("HypericAgent", 300000, "false", "on",
+        example1.addService(new Service("HypericAgent", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "2200",
                                         "port", "2144"
                 ));
 
-        final Service hyperichq = new Service("HypericHQ", 300000, "false", "on",
+        final Service hyperichq = new Service("HypericHQ", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "3000",
                                         "rrd-repository", "/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response",
@@ -390,49 +390,49 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         hyperichq.addParameter(hypericPageSequence);
         example1.addService(hyperichq);
 
-        example1.addService(new Service("MySQL", 300000, "false", "on",
+        example1.addService(new Service("MySQL", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "3000",
                                         "port", "3306",
                                         "banner", "*"
                 ));
 
-        example1.addService(new Service("SQLServer", 300000, "false", "on",
+        example1.addService(new Service("SQLServer", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "3000",
                                         "port", "1433",
                                         "banner", "*"
                 ));
 
-        example1.addService(new Service("Oracle", 300000, "false", "on",
+        example1.addService(new Service("Oracle", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "3000",
                                         "port", "1521",
                                         "banner", "*"
                 ));
 
-        example1.addService(new Service("Postgres", 300000, "false", "on",
+        example1.addService(new Service("Postgres", "300000", "false", "on",
                                         "retry", "1",
                                         "banner", "*",
                                         "port", "5432",
                                         "timeout", "3000"
                 ));
 
-        example1.addService(new Service("Sybase", 300000, "false", "on",
+        example1.addService(new Service("Sybase", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "3000",
                                         "port", "1498",
                                         "banner", "*"
                 ));
 
-        example1.addService(new Service("Informix", 300000, "false", "on",
+        example1.addService(new Service("Informix", "300000", "false", "on",
                                         "retry", "1",
                                         "timeout", "3000",
                                         "port", "1536",
                                         "banner", "*"
                 ));
 
-        example1.addService(new Service("SSH", 300000, "false", "on",
+        example1.addService(new Service("SSH", "300000", "false", "on",
                                         "retry", "1",
                                         "banner", "SSH",
                                         "port", "22",
@@ -442,13 +442,13 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "ssh"
                 ));
 
-        example1.addService(new Service("IMAP", 300000, "false", "on",
+        example1.addService(new Service("IMAP", "300000", "false", "on",
                                         "retry", "1",
                                         "port", "143",
                                         "timeout", "3000"
                 ));
 
-        example1.addService(new Service("POP3", 300000, "false", "on",
+        example1.addService(new Service("POP3", "300000", "false", "on",
                                         "retry", "1",
                                         "port", "110",
                                         "timeout", "3000",
@@ -457,19 +457,19 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "pop3"
                 ));
 
-        example1.addService(new Service("NSClient", 300000, "false", "on",
+        example1.addService(new Service("NSClient", "300000", "false", "on",
                                         "retry", "2",
                                         "port", "1248",
                                         "timeout", "3000"
                 ));
 
-        example1.addService(new Service("NSClientpp", 300000, "false", "on",
+        example1.addService(new Service("NSClientpp", "300000", "false", "on",
                                         "retry", "2",
                                         "port", "12489",
                                         "timeout", "3000"
                 ));
 
-        example1.addService(new Service("NRPE", 300000, "false", "on",
+        example1.addService(new Service("NRPE", "300000", "false", "on",
                                         "retry", "3",
                                         "timeout", "3000",
                                         "port", "5666",
@@ -479,7 +479,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "nrpe"
                 ));
 
-        example1.addService(new Service("NRPE-NoSSL", 300000, "false", "on",
+        example1.addService(new Service("NRPE-NoSSL", "300000", "false", "on",
                                         "retry", "3",
                                         "timeout", "3000",
                                         "port", "5666",
@@ -490,11 +490,11 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "nrpe"
                 ));
 
-        example1.addService(new Service("Windows-Task-Scheduler", 300000, "false", "on",
+        example1.addService(new Service("Windows-Task-Scheduler", "300000", "false", "on",
                                         "service-name", "Task Scheduler"
                 ));
 
-        example1.addService(new Service("OpenNMS-JVM", 300000, "false", "on",
+        example1.addService(new Service("OpenNMS-JVM", "300000", "false", "on",
                                         "port", "18980",
                                         "factory", "PASSWORD-CLEAR",
                                         "username", "admin",
@@ -506,19 +506,19 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "friendly-name", "opennms-jvm"
                 ));
 
-        example1.addService(new Service("DominoIIOP", 300000, "false", "on",
+        example1.addService(new Service("DominoIIOP", "300000", "false", "on",
                                         "retry", "2",
                                         "timeout", "3000",
                                         "ior-port", "80",
                                         "port", "63148"
                 ));
 
-        example1.addService(new Service("Citrix", 300000, "false", "on",
+        example1.addService(new Service("Citrix", "300000", "false", "on",
                                         "retry", "2",
                                         "timeout", "3000"
                 ));
 
-        example1.addService(new Service("LDAP", 300000, "false", "on",
+        example1.addService(new Service("LDAP", "300000", "false", "on",
                                         "port", "389",
                                         "version", "3",
                                         "searchbase", "DC=example,DC=org,OU=users",
@@ -529,7 +529,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "timeout", "3000"
                 ));
 
-        example1.addService(new Service("Memcached", 300000, "false", "on",
+        example1.addService(new Service("Memcached", "300000", "false", "on",
                                         "port", "11211",
                                         "retry", "2",
                                         "timeout", "3000",
@@ -538,7 +538,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "rrd-base-name", "memcached"
                 ));
 
-        example1.addService(new Service("NTP", 300000, "false", "off",
+        example1.addService(new Service("NTP", "300000", "false", "off",
                                         "retry", "2",
                                         "timeout", "5000",
                                         "port", "123",
@@ -546,7 +546,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "ntp"
                 ));
 
-        example1.addService(new Service("RadiusAuth", 300000, "false", "on",
+        example1.addService(new Service("RadiusAuth", "300000", "false", "on",
                                         "retry", "3",
                                         "timeout", "3000",
                                         "user", "TEST",
@@ -556,7 +556,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "radiusauth"
                 ));
 
-        example1.addService(new Service("JVM", 300000, "false", "on",
+        example1.addService(new Service("JVM", "300000", "false", "on",
                                         "port", "9003",
                                         "retry", "2",
                                         "timeout", "3000",
@@ -579,7 +579,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         strafer.addIncludeRange("10.1.1.1", "10.1.1.10");
         strafer.setRrd(new Rrd(300, "RRA:AVERAGE:0.5:1:2016", "RRA:AVERAGE:0.5:12:1488", "RRA:AVERAGE:0.5:288:366", "RRA:MAX:0.5:288:366", "RRA:MIN:0.5:288:366"));
 
-        strafer.addService(new Service("StrafePing", 300000, "false", "on",
+        strafer.addService(new Service("StrafePing", "300000", "false", "on",
                                        "retry", "0",
                                        "timeout", "3000",
                                        "ping-count", "20",

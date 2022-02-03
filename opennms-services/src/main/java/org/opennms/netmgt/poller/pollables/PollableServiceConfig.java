@@ -50,6 +50,7 @@ import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.scheduler.ScheduleInterval;
 import org.opennms.netmgt.scheduler.Timer;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,7 +123,9 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         try {
             final String packageName = getPackageName();
             // Use the service's configured interval as the TTL for this request
-            final Long ttlInMs = m_configService.getInterval();
+            // TODO fooker: find something more sane for this
+//            final Long ttlInMs = m_configService.getInterval();
+            final Long ttlInMs = 30000L;
             LOG.debug("Polling {} with TTL {} using pkg {}",
                     m_service, ttlInMs, packageName);
 
@@ -228,13 +231,13 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * @return a long.
      */
     @Override
-    public synchronized long getInterval() {
+    public synchronized Trigger getInterval() {
         if (m_service.isDeleted()) {
             LOG.debug("getInterval(): {} is deleted", m_service);
-            return -1;
+            return Trigger.NEVER;
         }
 
-        long when = m_configService.getInterval();
+        Trigger when = Trigger.parse(m_timer, m_configService.getInterval());
         boolean ignoreUnmanaged = false;
 
         if (m_service.getStatus().isDown()) {
@@ -247,20 +250,20 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                     LOG.debug("getInterval(): begin ({}) <= {}", dt.getBegin(), downFor);
                     final String delete = dt.getDelete();
                     if (Downtime.DELETE_ALWAYS.equals(delete)) {
-                        when = -1;
+                        when = Trigger.NEVER;
                         ignoreUnmanaged = true;
                         matched = true;
                     } else if (Downtime.DELETE_MANAGED.equals(delete)) {
-                        when = -1;
+                        when = Trigger.NEVER;
                         matched = true;
                     }
                     else if (dt.getEnd() != null && dt.getEnd() > downFor) {
                         // in this interval
-                        when = dt.getInterval();
+                        when = Trigger.interval(m_timer, dt.getInterval());
                         matched = true;
                     } else // no end
                     {
-                        when = dt.getInterval();
+                        when = Trigger.interval(m_timer, dt.getInterval());
                         matched = true;
                     }
                 }
@@ -268,11 +271,11 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             LOG.debug("getInterval(): when={}, matched={}, ignoreUnmanaged={}", when, matched, ignoreUnmanaged);
             if (!matched) {
                 LOG.error("Downtime model is invalid on package {}, cannot schedule service {}", m_pkg.getName(), m_service);
-                return -1;
+                return Trigger.NEVER;
             }
         }
 
-        if (when < 0) {
+        if (when == Trigger.NEVER) {
             m_service.sendDeleteEvent(ignoreUnmanaged);
         }
 

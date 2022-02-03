@@ -65,16 +65,16 @@ public class MockPollerConfigTest extends TestCase {
         m_pollerConfig = new MockPollerConfig(network);
         m_pollerConfig.addPackage("TestPackage");
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
-        m_pollerConfig.setDefaultPollInterval(1000L);
+        m_pollerConfig.setDefaultPollInterval("1000");
         m_pollerConfig.populatePackage(network);
-        m_pollerConfig.setPollInterval("ICMP", 500L);
+        m_pollerConfig.setPollInterval("ICMP", "500");
 
         
     }
     
     public void testPollerConfig() {
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
-        m_pollerConfig.setPollInterval("HTTP", 750L);
+        m_pollerConfig.setPollInterval("HTTP", "750");
         m_pollerConfig.setPollerThreads(5);
         m_pollerConfig.setCriticalService("YAHOO");
         
@@ -104,14 +104,14 @@ public class MockPollerConfigTest extends TestCase {
             svcCount++;
             if ("ICMP".equals(svc.getName())) {
                 icmpFound = true;
-                assertEquals(Long.valueOf(500L), svc.getInterval());
+                assertEquals("500", svc.getInterval());
             }
             else if ("HTTP".equals(svc.getName())) {
                 httpFound = true;
-                assertEquals(Long.valueOf(750L), svc.getInterval());
+                assertEquals("750", svc.getInterval());
             }
             else {
-                assertEquals(Long.valueOf(1000L), svc.getInterval());
+                assertEquals("1000", svc.getInterval());
             }
         }
         

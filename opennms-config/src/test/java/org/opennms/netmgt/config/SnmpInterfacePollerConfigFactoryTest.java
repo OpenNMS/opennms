@@ -68,7 +68,7 @@ public class SnmpInterfacePollerConfigFactoryTest {
 
     @Test
     public void testGlobalInterval() {
-        Assert.assertEquals(300000, m_factory.getInterval());
+        Assert.assertEquals("300000", m_factory.getInterval());
     }
 
     @Test
@@ -113,7 +113,7 @@ public class SnmpInterfacePollerConfigFactoryTest {
         Interface i1 = new Interface();
         i1.setName("Ethernet");
         i1.setCriteria("snmpiftype = 6");
-        i1.setInterval(300000L);
+        i1.setInterval("300000");
         i1.setUserDefined(false);
         i1.setStatus("on");
         i1.setTimeout(5);
@@ -126,7 +126,7 @@ public class SnmpInterfacePollerConfigFactoryTest {
         Interface i2 = new Interface();
         i2.setCriteria("snmpiftype = 7");
         i2.setName("Sevenet");
-        i2.setInterval(300001L);
+        i2.setInterval("300001");
         i2.setUserDefined(false);
         i2.setStatus("on");
         i2.setMaxVarsPerPdu(10);
@@ -143,7 +143,7 @@ public class SnmpInterfacePollerConfigFactoryTest {
         p.setFilter(f);
         Interface i = new Interface();
         i.setName("deuce");
-        i.setInterval(222222L);
+        i.setInterval("222222");
         p.addInterface(i);
         Assert.assertTrue(p.equals(m_factory.getPackage("example2")));
     }

@@ -32,6 +32,7 @@ package org.opennms.netmgt.scheduler;
 import junit.framework.TestCase;
 
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 import org.opennms.netmgt.scheduler.mock.MockInterval;
 import org.opennms.netmgt.scheduler.mock.MockScheduler;
 
@@ -90,7 +91,7 @@ public class ScheduleTest extends TestCase {
         MockLogAppender.setupLogging();
         m_schedulable = new MockSchedulable();
         m_scheduler = new MockScheduler();
-        m_interval = new MockInterval(m_scheduler, 1000L);
+        m_interval = new MockInterval(m_scheduler, Trigger.interval(m_scheduler, 1000L));
         m_sched = new Schedule(m_schedulable, m_interval, m_scheduler);        
     }
 
@@ -126,7 +127,7 @@ public class ScheduleTest extends TestCase {
         
         m_scheduler.next();
         
-        m_interval.setInterval(900);
+        m_interval.setInterval(Trigger.interval(m_scheduler, 900));
         m_sched.adjustSchedule();
         
         assertRunAndScheduled(0, 900, 1, 2);
@@ -149,7 +150,7 @@ public class ScheduleTest extends TestCase {
         
         assertRunAndScheduled(2700, 900, 4, 1);
         
-        m_interval.setInterval(1000);
+        m_interval.setInterval(Trigger.interval(m_scheduler, 1000));
         m_sched.adjustSchedule();
         
         // jump to the expired entry

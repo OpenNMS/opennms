@@ -30,6 +30,7 @@ package org.opennms.netmgt.snmpinterfacepoller.pollable;
 
 import org.opennms.netmgt.scheduler.ScheduleInterval;
 import org.opennms.netmgt.scheduler.Timer;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 
 /**
  * Represents a PollableSnmpInterfaceConfig
@@ -40,7 +41,7 @@ import org.opennms.netmgt.scheduler.Timer;
 public class PollableSnmpInterfaceConfig implements ScheduleInterval {
 
     private Timer m_timer;
-    private long interval;
+    private Trigger interval;
     
     /**
      * <p>Getter for the field <code>interval</code>.</p>
@@ -48,7 +49,7 @@ public class PollableSnmpInterfaceConfig implements ScheduleInterval {
      * @return a long.
      */
     @Override
-    public long getInterval() {
+    public Trigger getInterval() {
         return interval;
     }
 
@@ -71,13 +72,7 @@ public class PollableSnmpInterfaceConfig implements ScheduleInterval {
         return m_timer.getCurrentTime();
     }
 
-    /**
-     * <p>Constructor for PollableSnmpInterfaceConfig.</p>
-     *
-     * @param timer a {@link org.opennms.netmgt.scheduler.Timer} object.
-     * @param interval a long.
-     */
-    public PollableSnmpInterfaceConfig(Timer timer, long interval) {
+    public PollableSnmpInterfaceConfig(Timer timer, Trigger interval) {
         super();
         m_timer = timer;
         this.interval = interval;

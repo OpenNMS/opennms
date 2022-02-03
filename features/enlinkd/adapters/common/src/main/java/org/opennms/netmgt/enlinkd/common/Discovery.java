@@ -30,6 +30,7 @@ package org.opennms.netmgt.enlinkd.common;
 
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,7 +139,7 @@ public abstract class Discovery implements ReadyRunnable {
         if (m_scheduler == null)
             throw new IllegalStateException(
                                             "Cannot schedule a service whose scheduler is set to null");
-        m_scheduler.schedule(m_initial_sleep_time, this);
+        m_scheduler.schedule(Trigger.interval(m_scheduler, m_initial_sleep_time), this);
     }
 
     /**
@@ -148,7 +149,8 @@ public abstract class Discovery implements ReadyRunnable {
         if (m_scheduler == null)
             throw new IllegalStateException(
                                             "Cannot schedule a service whose scheduler is set to null");
-        m_scheduler.schedule(m_poll_interval, this);
+        // TODO fooker: Allow fancy triggers here?
+        m_scheduler.schedule(Trigger.interval(m_scheduler, m_poll_interval), this);
     }
 
     /**

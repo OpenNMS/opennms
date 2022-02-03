@@ -93,7 +93,7 @@ public class SnmpInterfacePollerConfigurationTest extends XmlTestNoCastor<SnmpIn
         Interface inf = new Interface();
         inf.setName("Ethernet");
         inf.setCriteria("snmpiftype = 6");
-        inf.setInterval(300000L);
+        inf.setInterval("300000");
         inf.setUserDefined(false);
         inf.setStatus("on");
         pkg.addInterface(inf);

@@ -85,6 +85,7 @@ import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.slf4j.Logger;
@@ -494,7 +495,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 m_collectableServices.add(cSvc);
 
                 // Schedule the collectable service for immediate collection
-                getScheduler().schedule(0, cSvc.getReadyRunnable());
+                getScheduler().schedule(Trigger.ASAP, cSvc.getReadyRunnable());
 
                 LOG.debug("scheduleInterface: {}/{} collection, scheduled", iface, svcName);
             } catch (CollectionInitializationException e) {
@@ -1487,7 +1488,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 if(currentSessionID != sessionID.get()) { //prevent schedule the same collector twice
                     return;
                 }
-                getScheduler().schedule(0, scheduleCollector(svcName));
+                getScheduler().schedule(Trigger.ASAP, scheduleCollector(svcName));
                 if(scheduledCounter.incrementAndGet() == collectors.size()) {
                     setSchedulingCompleted(true);
                 }

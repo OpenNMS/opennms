@@ -214,9 +214,9 @@ public class MockNetworkTest extends TestCase {
         m_pollerConfig = new MockPollerConfig(m_network);
         m_pollerConfig.addPackage("TestPackage");
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
-        m_pollerConfig.setDefaultPollInterval(1000L);
+        m_pollerConfig.setDefaultPollInterval("1000");
         m_pollerConfig.populatePackage(m_network);
-        m_pollerConfig.setPollInterval("ICMP", 500L);
+        m_pollerConfig.setPollInterval("ICMP", "500");
         
         m_upChecker = new StatusChecker(PollStatus.up());
         m_downChecker = new StatusChecker(PollStatus.down());
@@ -421,7 +421,7 @@ public class MockNetworkTest extends TestCase {
 
     public void testPollerConfig() {
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
-        m_pollerConfig.setPollInterval("HTTP", 750L);
+        m_pollerConfig.setPollInterval("HTTP", "750");
         m_pollerConfig.setPollerThreads(5);
         m_pollerConfig.setCriticalService("YAHOO");
         PollerConfig pollerConfig = m_pollerConfig;
@@ -446,11 +446,11 @@ public class MockNetworkTest extends TestCase {
 
         for (final Service svc : pkg.getServices()) {
             if ("ICMP".equals(svc.getName()))
-                assertEquals(Long.valueOf(500L), svc.getInterval());
+                assertEquals("500", svc.getInterval());
             else if ("HTTP".equals(svc.getName()))
-                assertEquals(Long.valueOf(750L), svc.getInterval());
+                assertEquals("750", svc.getInterval());
             else
-                assertEquals(Long.valueOf(1000L), svc.getInterval());
+                assertEquals("1000", svc.getInterval());
         }
 
         // ensure that setting the thread worked

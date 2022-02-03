@@ -29,6 +29,7 @@
 package org.opennms.netmgt.scheduler;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
@@ -41,6 +42,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -62,7 +64,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      * The map of queue that contain {@link ReadyRunnable ready runnable}
      * instances. The queues are mapped according to the interval of scheduling.
      */
-    private final Map<Long, BlockingQueue<ReadyRunnable>> m_queues;
+    private final Map<Object, BlockingQueue<ReadyRunnable>> m_queues;
 
     /**
      * The total number of elements currently scheduled. This should be the sum
@@ -105,7 +107,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     public LegacyScheduler(final String parent, final int maxSize) {
         m_status = START_PENDING;
         m_runner = Executors.newFixedThreadPool(maxSize, new LogPreservingThreadFactory(parent, maxSize));
-        m_queues = new ConcurrentSkipListMap<Long, BlockingQueue<ReadyRunnable>>();
+        m_queues = new ConcurrentSkipListMap<>();
         m_scheduled = 0;
         m_worker = null;
     }
@@ -143,16 +145,15 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      * @throws java.lang.RuntimeException
      *             Thrown if an error occurs adding the element to the queue.
      */
-    public synchronized void schedule(ReadyRunnable runnable, long interval) {
+    public synchronized void schedule(ReadyRunnable runnable, Trigger interval) {
         LOG.debug("schedule: Adding ready runnable {} at interval {}", runnable, interval);
 
-        Long key = Long.valueOf(interval);
-        if (!m_queues.containsKey(key)) {
+        if (!m_queues.containsKey(interval.key())) {
             LOG.debug("schedule: interval queue did not exist, a new one has been created");
-            m_queues.put(key, new LinkedBlockingQueue<ReadyRunnable>());
+            m_queues.put(interval.key(), new LinkedBlockingQueue<>());
         }
 
-        m_queues.get(key).add(runnable);
+        m_queues.get(interval.key()).add(runnable);
         if (m_scheduled++ == 0) {
             LOG.debug("schedule: queue element added, calling notify all since none were scheduled");
             notifyAll();
@@ -166,21 +167,23 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
 	 */
     /** {@inheritDoc} */
     @Override
-    public synchronized void schedule(long interval, final ReadyRunnable runnable) {
-        final long timeToRun = getCurrentTime()+interval;
+    public synchronized void schedule(Trigger interval, final ReadyRunnable runnable) {
         ReadyRunnable timeKeeper = new ReadyRunnable() {
             @Override
             public boolean isReady() {
-                return getCurrentTime() >= timeToRun && runnable.isReady();
+                // TODO fooker: Refactor these to use Instant directly
+                return interval.isReady(Instant.ofEpochMilli(getCurrentTime())) && runnable.isReady();
             }
             
             @Override
             public void run() {
+                // TODO fooker: Refactor these to use Instant directly
+                interval.fired(Instant.ofEpochMilli(getCurrentTime()));
                 runnable.run();
             }
             
             @Override
-            public String toString() { return runnable.toString()+" (ready in "+Math.max(0, timeToRun-getCurrentTime())+"ms)"; }
+            public String toString() { return runnable.toString()+" (ready at " + interval.next() + ")"; }
         };
         schedule(timeKeeper, interval);
     }
@@ -389,7 +392,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                  * Get an iterator so that we can cycle
                  * through the queue elements.
                  */
-                for (Entry<Long, BlockingQueue<ReadyRunnable>> entry : m_queues.entrySet()) {
+                for (final var entry : m_queues.entrySet()) {
                     /*
                      * Peak for Runnable objects until
                      * there are no more ready runnables.

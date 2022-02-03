@@ -91,6 +91,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.scheduler.interval.Trigger;
 import org.opennms.netmgt.scheduler.mock.MockScheduler;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
@@ -237,7 +238,7 @@ public class CollectdTest {
         m_collectd.setScheduler(m_scheduler);
 
         // Expect one task to be scheduled
-        m_scheduler.schedule(eq(0L), isA(ReadyRunnable.class));
+        m_scheduler.schedule(eq(Trigger.ASAP), isA(ReadyRunnable.class));
 
         // Expect the scheduler to be started and stopped during Collectd
         // start() and stop()

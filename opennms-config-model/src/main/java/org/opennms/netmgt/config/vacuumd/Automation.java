@@ -58,7 +58,7 @@ public class Automation implements Serializable {
      * How often should this automation run
      */
     @XmlAttribute(name = "interval", required = true)
-    private Integer m_interval;
+    private String m_interval;
 
     /**
      * reference a trigger from the collection of triggers
@@ -93,7 +93,7 @@ public class Automation implements Serializable {
     public Automation() {
     }
 
-    public Automation(final String name, final Integer interval,
+    public Automation(final String name, final String interval,
         final String triggerName, final String actionName,
         final String autoEventName, final String actionEvent,
         final Boolean active) {
@@ -114,11 +114,11 @@ public class Automation implements Serializable {
         m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
-    public Integer getInterval() {
+    public String getInterval() {
         return m_interval;
     }
 
-    public void setInterval(final Integer interval) {
+    public void setInterval(final String interval) {
         m_interval = interval;
     }
 
