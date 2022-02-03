@@ -37,3 +37,5 @@ Note that data collection on flow applications also works without enabling thres
     </queue>
 ...
 ----
+
+For step-size and idle timeout refer to the <<flows/thresholding.adoc#ga-flow-support-thresholding-properties, Thresholding flow applications>> section.
