@@ -73,7 +73,9 @@ public class TelemetryServiceRegistryImpl<F extends TelemetryBeanFactory, BD ext
         this.delegate = new ServiceLookupBuilder(new ServiceLookup<String, Void>() {
             @Override
             public <T> T lookup(String criteria, Void filter) {
-                return (T) m_serviceFactoryByClassName.get(criteria);
+                synchronized(TelemetryServiceRegistryImpl.this) {
+                    return (T) m_serviceFactoryByClassName.get(criteria);
+                }
             }
         }).blocking(gracePeriodMs, lookupDelayMs, waitPeriodMs).build();
 
