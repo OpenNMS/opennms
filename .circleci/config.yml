@@ -116,7 +116,7 @@ jobs:
             GC_LIST=$( hub-tool/hub-tool tag ls opennms/horizon | grep feature | grep inactive | cut -d" " -f1 )
             for image in $GC_LIST; do
               echo "Delete image $image"
-             "yes | hub-tool/hub-tool tag rm $image"
+             "/usr/bin/yes | hub-tool/hub-tool tag rm $image"
             done
 
   trigger-coverage:
