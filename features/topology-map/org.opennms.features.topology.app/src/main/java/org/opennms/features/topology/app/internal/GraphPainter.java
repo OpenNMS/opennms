@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -64,10 +64,10 @@ public class GraphPainter implements GraphVisitor {
 
     public static final int DEFAULT_EDGE_PATH_OFFSET = SystemProperties.getInteger("org.opennms.features.topology.api.topo.defaultEdgePathOffset", 20);
 
-	private final GraphContainer m_graphContainer;
-	private final IconRepositoryManager m_iconRepoManager;
-	private final Layout m_layout;
-	private final TopologyComponentState m_componentState;
+    private final GraphContainer m_graphContainer;
+    private final IconRepositoryManager m_iconRepoManager;
+    private final Layout m_layout;
+    private final TopologyComponentState m_componentState;
     private final List<SharedVertex> m_vertices = new ArrayList<>();
     private final List<SharedEdge> m_edges = new ArrayList<>();
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
@@ -77,12 +77,12 @@ public class GraphPainter implements GraphVisitor {
 
 
     GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, TopologyComponentState componentState) {
-		m_graphContainer = graphContainer;
-		m_layout = layout;
-		m_iconRepoManager = iconRepoManager;
-		m_componentState = componentState;
-	}
-	
+        m_graphContainer = graphContainer;
+        m_layout = layout;
+        m_iconRepoManager = iconRepoManager;
+        m_componentState = componentState;
+    }
+
     @Override
     public void visitGraph(Graph graph) throws PaintException {
         m_focusVertices.clear();
@@ -94,34 +94,34 @@ public class GraphPainter implements GraphVisitor {
             }catch(ClassCastException e){}
         }
         m_statusMap.clear();
-		m_statusMap.putAll(graph.getVertexStatus());
-		m_edgeStatusMap.clear();
-		m_edgeStatusMap.putAll(graph.getEdgeStatus());
+        m_statusMap.putAll(graph.getVertexStatus());
+        m_edgeStatusMap.clear();
+        m_edgeStatusMap.putAll(graph.getEdgeStatus());
     }
 
     @Override
-	public void visitVertex(Vertex vertex) throws PaintException {
-		boolean selected = isSelected(m_graphContainer.getSelectionManager(), vertex);
-		Point initialLocation = m_layout.getInitialLocation(vertex);
-		Point location = m_layout.getLocation(vertex);
-		SharedVertex v = new SharedVertex();
-		v.setKey(vertex.getKey());
+    public void visitVertex(Vertex vertex) throws PaintException {
+        boolean selected = isSelected(m_graphContainer.getSelectionManager(), vertex);
+        Point initialLocation = m_layout.getInitialLocation(vertex);
+        Point location = m_layout.getLocation(vertex);
+        SharedVertex v = new SharedVertex();
+        v.setKey(vertex.getKey());
         //TODO cast to int for now
-		v.setInitialX((int)initialLocation.getX());
-		v.setInitialY((int)initialLocation.getY());
-		v.setX((int)location.getX());
-		v.setY((int) location.getY());
-		v.setSelected(selected);
+        v.setInitialX((int)initialLocation.getX());
+        v.setInitialY((int)initialLocation.getY());
+        v.setX((int)location.getX());
+        v.setY((int) location.getY());
+        v.setSelected(selected);
         v.setStatus(getStatus(vertex));
         v.setStatusCount(getStatusCount(vertex));
         v.setSVGIconId(getIconId(vertex));
-		v.setLabel(vertex.getLabel());
-		v.setTooltipText(getTooltipText(vertex));
-		v.setStyleName(getVertexStyle(vertex, selected));
-		v.setTargets(getTargets(vertex));
-		v.setEdgePathOffset(getEdgePathOffset(vertex));
-		m_vertices.add(v);
-	}
+        v.setLabel(vertex.getLabel());
+        v.setTooltipText(getTooltipText(vertex));
+        v.setStyleName(getVertexStyle(vertex, selected));
+        v.setTargets(getTargets(vertex));
+        v.setEdgePathOffset(getEdgePathOffset(vertex));
+        m_vertices.add(v);
+    }
 
     private static int getEdgePathOffset(Vertex vertex) {
         if (vertex.getEdgePathOffset() != null) {
@@ -131,9 +131,9 @@ public class GraphPainter implements GraphVisitor {
         }
     }
 
-	private String getIconId(Vertex vertex) {
-		return m_iconRepoManager.getSVGIconId(vertex);
-	}
+    private String getIconId(Vertex vertex) {
+        return m_iconRepoManager.getSVGIconId(vertex);
+    }
 
     private String getVertexStyle(Vertex vertex, boolean selected) {
         final StringBuilder style = new StringBuilder();
@@ -150,15 +150,15 @@ public class GraphPainter implements GraphVisitor {
 
     }
 
-	/**
-	 * Determines if the given vertex has "links" to vertices from other layers.
-	 *
-	 * @param vertex The vertex to check
-	 * @return True if links to other layers exists, false otherwise
+    /**
+     * Determines if the given vertex has "links" to vertices from other layers.
+     *
+     * @param vertex The vertex to check
+     * @return True if links to other layers exists, false otherwise
      */
-	private boolean getTargets(Vertex vertex) {
-		return !m_graphContainer.getTopologyServiceClient().getOppositeVertices(vertex).isEmpty();
-	}
+    private boolean getTargets(Vertex vertex) {
+        return !m_graphContainer.getTopologyServiceClient().getOppositeVertices(vertex).isEmpty();
+    }
 
     private String getStatusCount(Vertex vertex) {
         Status status = m_statusMap.get(vertex);
@@ -171,41 +171,41 @@ public class GraphPainter implements GraphVisitor {
     }
 
     private static String getTooltipText(Vertex vertex) {
-		String tooltipText = vertex.getTooltipText();
-		// If the tooltip text is null, use the label
-		tooltipText = (tooltipText == null ? vertex.getLabel() : tooltipText);
-		// If the label is null, use a blank string
-		return (tooltipText == null ? "" : tooltipText);
-	}
+        String tooltipText = vertex.getTooltipText();
+        // If the tooltip text is null, use the label
+        tooltipText = (tooltipText == null ? vertex.getLabel() : tooltipText);
+        // If the label is null, use a blank string
+        return (tooltipText == null ? "" : tooltipText);
+    }
 
-	@Override
-	public void visitEdge(Edge edge) throws PaintException {
-		String sourceKey = getSourceKey(edge);
-		String targetKey = getTargetKey(edge);
-		if (sourceKey == null) {
-			s_log.debug("Discarding edge with no source vertex in the base topology: {}", edge);
-		} else if (targetKey == null) {
-			s_log.debug("Discarding edge with no target vertex in the base topology: {}", edge);
-		} else {
-			SharedEdge e = new SharedEdge();
-			e.setKey(edge.getKey());
-			e.setSourceKey(sourceKey);
-			e.setTargetKey(targetKey);
-			e.setSelected(isSelected(m_graphContainer.getSelectionManager(), edge));
+    @Override
+    public void visitEdge(Edge edge) throws PaintException {
+        String sourceKey = getSourceKey(edge);
+        String targetKey = getTargetKey(edge);
+        if (sourceKey == null) {
+            s_log.debug("Discarding edge with no source vertex in the base topology: {}", edge);
+        } else if (targetKey == null) {
+            s_log.debug("Discarding edge with no target vertex in the base topology: {}", edge);
+        } else {
+            SharedEdge e = new SharedEdge();
+            e.setKey(edge.getKey());
+            e.setSourceKey(sourceKey);
+            e.setTargetKey(targetKey);
+            e.setSelected(isSelected(m_graphContainer.getSelectionManager(), edge));
             e.setStatus(getEdgeStatus(edge));
-			if (m_edgeStatusMap.get(edge) != null) {
-				e.setAdditionalStyling(m_edgeStatusMap.get(edge).getStyleProperties());
-			}
+            if (m_edgeStatusMap.get(edge) != null) {
+                e.setAdditionalStyling(m_edgeStatusMap.get(edge).getStyleProperties());
+            }
             if(m_componentState.isHighlightFocus()){
                 e.setCssClass(getStyleName(edge) + " opacity-50");
             }else{
                 e.setCssClass(getStyleName(edge));
             }
 
-			e.setTooltipText(getTooltipText(edge));
-			m_edges.add(e);
-		}
-	}
+            e.setTooltipText(getTooltipText(edge));
+            m_edges.add(e);
+        }
+    }
 
     private String getEdgeStatus(Edge edge) {
         Status status = m_edgeStatusMap.get(edge);
@@ -213,55 +213,63 @@ public class GraphPainter implements GraphVisitor {
     }
 
     /**
-	 * Cannot return null
-	 */
-	private static String getTooltipText(Edge edge) {
-		String tooltipText = edge.getTooltipText();
-		// If the tooltip text is null, use the label
-		tooltipText = (tooltipText == null ? edge.getLabel() : tooltipText);
-		// If the label is null, use a blank string
-		return (tooltipText == null ? "" : tooltipText);
-	}
+     * Cannot return null
+     */
+    private static String getTooltipText(Edge edge) {
+        String tooltipText = edge.getTooltipText();
+        // If the tooltip text is null, use the label
+        tooltipText = (tooltipText == null ? edge.getLabel() : tooltipText);
+        // If the label is null, use a blank string
+        return (tooltipText == null ? "" : tooltipText);
+    }
 
-	@Override
-	public void completeGraph(Graph graph) throws PaintException {
-		m_componentState.setVertices(m_vertices);
-		m_componentState.setEdges(m_edges);
-	}
+    @Override
+    public void completeGraph(Graph graph) throws PaintException {
+        m_componentState.setVertices(m_vertices);
+        m_componentState.setEdges(m_edges);
+    }
 
-	private String getSourceKey(Edge edge) {
-		return m_graphContainer.getTopologyServiceClient().getVertex(edge.getSource().getVertex(), m_graphContainer.getCriteria()).getKey();
-	}
+    private String getSourceKey(Edge edge) {
+        if (edge == null) return null;
+        final VertexRef edgeVertex = edge.getSource().getVertex();
+        final Vertex vertex = m_graphContainer.getTopologyServiceClient().getVertex(edgeVertex, m_graphContainer.getCriteria());
+        if (vertex == null) return null;
+        return vertex.getKey();
+    }
 
-	private String getTargetKey(Edge edge) {
-		return m_graphContainer.getTopologyServiceClient().getVertex(edge.getTarget().getVertex(), m_graphContainer.getCriteria()).getKey();
-	}
+    private String getTargetKey(Edge edge) {
+        if (edge == null) return null;
+        final VertexRef edgeVertex = edge.getTarget().getVertex();
+        final Vertex vertex = m_graphContainer.getTopologyServiceClient().getVertex(edgeVertex, m_graphContainer.getCriteria());
+        if (vertex == null) return null;
+        return vertex.getKey();
+    }
 
-	/**
-	 * Cannot return null
-	 */
-	private String getStyleName(Edge edge) {
-		final String styleName = edge.getStyleName();
-		final StringJoiner stringJoiner = new StringJoiner(" ");
-		if (!Strings.isNullOrEmpty(styleName)) {
-			stringJoiner.add(styleName);
-		}
-		if (isSelected(m_graphContainer.getSelectionManager(), edge)) {
-			stringJoiner.add("selected");
-		}
+    /**
+     * Cannot return null
+     */
+    private String getStyleName(Edge edge) {
+        final String styleName = edge.getStyleName();
+        final StringJoiner stringJoiner = new StringJoiner(" ");
+        if (!Strings.isNullOrEmpty(styleName)) {
+            stringJoiner.add(styleName);
+        }
+        if (isSelected(m_graphContainer.getSelectionManager(), edge)) {
+            stringJoiner.add("selected");
+        }
         String status = getEdgeStatus(edge);
-		if (!Strings.isNullOrEmpty(status)) {
-			stringJoiner.add(status);
-		}
-		return stringJoiner.toString();
-	}
+        if (!Strings.isNullOrEmpty(status)) {
+            stringJoiner.add(status);
+        }
+        return stringJoiner.toString();
+    }
 
-	private static boolean isSelected(SelectionManager selectionManager, Vertex vertex) {
-		return selectionManager.isVertexRefSelected(vertex);
-	}
+    private static boolean isSelected(SelectionManager selectionManager, Vertex vertex) {
+        return selectionManager.isVertexRefSelected(vertex);
+    }
 
-	private static boolean isSelected(SelectionManager selectionManager, Edge edge) {
-		return selectionManager.isEdgeRefSelected(edge);
-	}
+    private static boolean isSelected(SelectionManager selectionManager, Edge edge) {
+        return selectionManager.isEdgeRefSelected(edge);
+    }
 
 }
