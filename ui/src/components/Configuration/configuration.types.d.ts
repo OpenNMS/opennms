@@ -59,6 +59,7 @@ type LocalErrors = {
   type: string
   zone: string
   foreignSource: string
+  occurance: string
 }
 
 type LocalConfigurationWrapper = {

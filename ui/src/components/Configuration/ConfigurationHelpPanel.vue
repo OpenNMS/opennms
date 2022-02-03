@@ -6,15 +6,12 @@
       </FeatherButton>
     </div>
     <div class="config-help-header">
-      <div class="config-help-title">Advanced Options</div>
+      <div class="config-help-title">{{ helpText.title }}</div>
       <div class="config-help-body">
-        <p>
-          The OpenDaylight integration synchronizes inventory and topology from an OpenDaylight
-          software-defined network controller.
-        </p>
-        <p>Detailed information on the options it supports is available in the online documentation:</p>
+        <p>{{ helpText.subTitle }}</p>
+        <p>{{ helpText.help }}</p>
       </div>
-      <a href="/docs" target="_blank" class="config-help-link">READ FULL ARTICLE</a>
+      <a :href="helpText.link" target="_blank" class="config-help-link">{{ helpText.linkCopy }}</a>
     </div>
     <div class="config-help-hr"></div>
     <div class="config-help-footer">
@@ -30,7 +27,7 @@
 
 <script lang="ts" setup>
 
-import { computed, reactive } from 'vue'
+import { computed, PropType, reactive } from 'vue'
 
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
@@ -42,23 +39,118 @@ import ChevronRight from '@featherds/icon/navigation/ChevronRight'
  */
 const props = defineProps({
   active: Boolean,
-  onClose: Function
+  onClose: Function,
+  item: { type: Object as PropType<LocalConfiguration>, required: true }
 })
 
 /**
  * Local State
  */
 const chevronRight = computed(() => ChevronRight)
-const footerVals = reactive({ yes: true })
+const footerVals = reactive({ yes: false,no:false })
+
+const helpText = computed(() => {
+  const typeName = props.item.type.name
+  const subType = props.item.subType.name
+
+  let helpVals = {
+    title: 'Requisition Definition',
+    subTitle: 'A little default text...',
+    help: 'Detailed information on the options it supports is available in the online documentation:',
+    linkCopy: 'READ FULL ARTICLE',
+    link: 'https://docs.opennms.com/horizon/29/reference/provisioning'
+  }
+
+  if (typeName === 'File') {
+    helpVals = {
+      title: 'File',
+      subTitle: 'The file handler imports a properly-formatted requisition definition from an XML file stored locally on the server.',
+      help: 'Detailed information on the options it supports is available in the online documentation:',
+      linkCopy: 'READ FULL ARTICLE',
+      link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/file.html'
+    }
+  } else if (typeName === 'Requisition') {
+    if (subType === '') {
+      helpVals = {
+        title: 'Requisition',
+        subTitle: 'Some information about Requisition...',
+        help: 'Detailed information on the options it supports is available in the online documentation:',
+        linkCopy: 'READ FULL ARTICLE',
+        link: ''
+      }
+    } else if (subType === 'OpenDaylight') {
+      helpVals = {
+        title: 'Open Daylight',
+        subTitle: 'Open Daylight...',
+        help: 'Detailed information on the options it supports is available in the online documentation:',
+        linkCopy: 'READ FULL ARTICLE',
+        link: ''
+      }
+    } else if (subType === 'ACI') {
+      helpVals = {
+        title: 'ACI',
+        subTitle: 'ACI...',
+        help: 'Detailed information on the options it supports is available in the online documentation:',
+        linkCopy: 'READ FULL ARTICLE',
+        link: ''
+      }
+    } else if (subType === 'Zabbix') {
+      helpVals = {
+        title: 'Zabbix',
+        subTitle: 'Zabbix...',
+        help: 'Detailed information on the options it supports is available in the online documentation:',
+        linkCopy: 'READ FULL ARTICLE',
+        link: ''
+      }
+  } else if (subType === 'Azure IoT') {
+      helpVals = {
+        title: 'Azure IoT',
+        subTitle: 'Azure IoT...',
+        help: 'Detailed information on the options it supports is available in the online documentation:',
+        linkCopy: 'READ FULL ARTICLE',
+        link: ''
+      }
+    }
+  } else if (typeName === 'VMWare') {
+    helpVals = {
+      title: 'VMWare',
+      subTitle: 'The VMware adapter pulls hosts and/or virtual machines from a vCenter server into Horizon. With this adapter, nodes can automatically be added, updated, or removed from your Horizon based on the status of the VMware entity.',
+      help: 'Detailed information on the options it supports is available in the online documentation:',
+      linkCopy: 'READ FULL ARTICLE',
+      link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/vmware.html'
+    }
+  } else if (typeName === 'HTTP' || typeName === 'HTTPS') {
+    helpVals = {
+      title: 'HTTP(S)',
+      subTitle: 'The HTTP ...',
+      help: 'Detailed information on the options it supports is available in the online documentation:',
+      linkCopy: 'READ FULL ARTICLE',
+      link: ''
+    }
+  } else if (typeName === 'DNS') {
+    helpVals = {
+      title: 'DNS',
+      subTitle: 'The DNS handler requests a zone transfer (AXFR) from a DNS server. The A and AAAA records are retrieved and used to build an import requisition.',
+      help: 'Detailed information on the options it supports is available in the online documentation:',
+      linkCopy: 'READ FULL ARTICLE',
+      link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/dns.html'
+    }
+  }
+  return helpVals;
+})
+
 
 /**
  * Gets the current class structure for the
  * two zone click box.
  */
 const getFooterClickClass = () => {
-  let vals = 'footer-wrap-no'
+  let vals = ''
   if (footerVals.yes) {
     vals = 'footer-wrap-yes'
+  }
+  if (footerVals.no) {
+   vals = 'footer-wrap-no'
   }
   return vals
 }
@@ -69,7 +161,8 @@ const getFooterClickClass = () => {
  */
 const footerYes = () => {
   footerVals.yes = true
-  console.log('The User Has Selected Yes!')
+  footerVals.no = false;
+  console.log('The User Has Selected Yes!',props.item)
 }
 
 /**
@@ -77,8 +170,9 @@ const footerYes = () => {
  * Functionality for this to be determined.
  */
 const footerNo = () => {
-  console.log('The User Has Selected No!')
-  footerVals.yes = false
+  console.log('The User Has Selected No!',props.item)
+  footerVals.no = true;
+  footerVals.yes = false;
 }
 
 </script>
@@ -98,11 +192,11 @@ const footerNo = () => {
   padding-top: 12px;
   height: 50px;
   .button {
-    margin-top: 24px;
     font-size: 42px;
     color: var(--feather-secondary-variant);
     display: flex;
     align-items: center;
+    margin:0;
   }
 }
 .config-help-panel {

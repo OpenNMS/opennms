@@ -116,23 +116,22 @@ const closeConfigurationDrawer = () => {
   sidePanelState.isActive = false
   advancedActive.active = false
   helpState.open = false
-  selectedProvisionDItem.errors = createBlankErrors();
+  selectedProvisionDItem.errors = ConfigurationService.createBlankErrors();
 }
-const createBlankErrors = () => {
-  return { name: '', hasErrors: false, host: '', path: '', username: '', password: '', type: '', zone: '', foreignSource: '' }
-}
+
 const stripOriginalIndexes = (dataToUpdate: Array<ProvisionDServerConfiguration>) => {
   return dataToUpdate.map((item) => {
-    let { originalIndex, ...others } = item;
+    let { originalIndex, currentSort, ...others } = item;
     return others;
   })
 }
+
 /**
  * User has decided to save and upload the current state.
  */
 const saveCurrentState = async () => {
   // Clear our errors.
-  selectedProvisionDItem.errors = createBlankErrors();
+  selectedProvisionDItem.errors = ConfigurationService.createBlankErrors();
 
   // Validate the local state.
   const validatedItem = ConfigurationService.validateLocalItem(selectedProvisionDItem?.config)
@@ -144,11 +143,13 @@ const saveCurrentState = async () => {
     //Update Local State
     provisionDList.value[activeIndex.index] = readyForServ
     //Get Existing State
-    const updatedProvisionDData = store?.state?.configuration?.provisionDService
+    let updatedProvisionDData = store?.state?.configuration?.provisionDService
 
+    if (!updatedProvisionDData){
+      updatedProvisionDData = {}
+    }
     //Set New State
     updatedProvisionDData['requisition-def'] = stripOriginalIndexes(provisionDList.value)
-    console.log('UPDATED SDATA', updatedProvisionDData);
     //Actually Update the Server
     await putProvisionDService(updatedProvisionDData)
 
@@ -198,7 +199,7 @@ const doubleCheckSelected = async (selection: boolean) => {
     const updatedProvisionDData = store?.state?.configuration?.provisionDService
 
     // Remove the entry from the existing state.
-    updatedProvisionDData['requisition-def'] = copiedList
+    updatedProvisionDData['requisition-def'] = stripOriginalIndexes(copiedList)
 
     try {
       await putProvisionDService(updatedProvisionDData)

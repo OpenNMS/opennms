@@ -1,5 +1,5 @@
 <template>
-  <div class="white-bg" v-if="convertedItem?.url !== ':///' && convertedItem?.url !== ''">
+  <div class="white-bg" v-if="convertedItem?.url !== '://?=' && convertedItem?.url !== ''">
     <div class="title">URL:</div>
     <div class="url">{{ convertedItem?.url }}</div>
   </div>

@@ -9,8 +9,9 @@
             v-model="props.item.config.name"
             @update:modelValue="updateValidation"
         />
+        <div class="flex-center">
         <FeatherSelect
-            class="side-input"
+            class="side-input full-width"
             textProp="name"
             hint="Hint Text"
             label="Type"
@@ -19,6 +20,12 @@
             v-model="props.item.config.type"
             @update:modelValue="newRequisition"
         />
+           <div class="icon">
+      <FeatherButton icon="Help" @click="() => props.toggleHelp()">
+        <FeatherIcon class="help-icon" :icon="Help"></FeatherIcon>
+      </FeatherButton>
+    </div>
+        </div>
         <div v-if="['DNS','VMWare','HTTP','HTTPS'].includes(stateIn?.type?.name)">
             <FeatherInput
                 label="Host"
@@ -84,7 +91,7 @@
                 class="side-input"
                 :error="props.item.errors.path"
                 v-model="props.item.config.path"
-            @update:modelValue="updateValidation"
+                @update:modelValue="updateValidation"
                 hint="Hint Text"
             />
         
@@ -94,7 +101,8 @@
                 textProp="name"
                 label="Monthly"
                 :options="scheduleTypes"
-            @update:modelValue="updateValidation"
+                :error="props.item.errors.occurance"
+                @update:modelValue="updateValidation"
                 v-model="stateIn.occurance"
                 class="occurance"
             />
@@ -121,14 +129,19 @@ import { requisitionTypes, requisitionSubTypes } from './copy/requisitionTypes'
 import { scheduleTypes } from './copy/scheduleTypes'
 import { rescanItems } from './copy/rescanItems'
 import { FeatherInput } from '@featherds/input'
+import { FeatherIcon } from '@featherds/icon'
+import { FeatherButton } from '@featherds/button'
 import { FeatherRadioGroup, FeatherRadio } from '@featherds/radio'
 import { PropType } from 'vue'
 import { ConfigurationService } from './ConfigurationService'
+import Help from '@featherds/icon/action/Help'
 
 const props = defineProps({
     item: { type: Object as PropType<LocalConfigurationWrapper>, required: true },
     stateIn: { type: Object, required: true },
-    clearAdvancedOptions: { type: Function, required: true}
+    clearAdvancedOptions: { type: Function, required: true},
+    helpState: {type: Boolean, required:true},
+    toggleHelp: {type: Function, required:true},
 })
 
 const newRequisition = (tyu:{name:string}) => {
@@ -140,6 +153,7 @@ const newRequisition = (tyu:{name:string}) => {
 const updateValidation = () => {
     props.item.errors = ConfigurationService.validateLocalItem(props.item.config,true);
 }
+
 
 </script>
 <style lang="scss" scoped>
@@ -155,7 +169,6 @@ const updateValidation = () => {
 }
 .flex-center {
   display: flex;
-  align-items: center;
 }
 .full-width {
     width:100%;

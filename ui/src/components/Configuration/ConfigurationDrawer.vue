@@ -2,6 +2,7 @@
   <div :class="configurationDrawerActive ? 'active' : 'hidden'">
     <div class="click-close" @click="props.closePanel"></div>
     <ConfigurationHelpPanel
+      :item="stateIn"
       :active="helpState.open"
       :onClose="() => {
         disableHelp();
@@ -25,7 +26,11 @@
           schedule for it.
         </p>
         <div class="slide-inner-body">
-          <ProvisionDForm :item="item" :stateIn="stateIn" :clearAdvancedOptions="clearAdvancedOptions" />
+          <ProvisionDForm 
+          :item="item" :stateIn="stateIn" :clearAdvancedOptions="clearAdvancedOptions"
+           :helpState="helpState.open"
+           :toggleHelp="toggleHelp"
+            />
         </div>
         <ConfigurationAdvancedPanel
           v-if="props.item.config.type.name !== 'File'"
@@ -81,6 +86,7 @@ const props = defineProps({
 const firstInput = ref<HTMLInputElement | null>(null)
 const bounceOutTimeout = ref(-1);
 const bounceInTimeout = ref(-1);
+const initialWatchTimeout = ref(-1);
 
 const configurationDrawerActive = computed(() => props?.configurationDrawerActive)
 const cancelIcon = computed(() => Cancel)
@@ -96,9 +102,12 @@ const stateIn = computed(() => {
 /**
  * Scrolls the drawer to the first error on creation 
  * (should draw the user's eye to the problem)
+ *  This is unneccessary, but a nice to have.
  */
 watch(errors, () => {
   if (props.item?.errors?.hasErrors) {
+    clearTimeout(initialWatchTimeout.value)
+    initialWatchTimeout.value = window.setTimeout(() => {
     const elem = document.querySelector('.feather-input-error')
     const wrapper = document.querySelector('.slide-outer-body')
 
@@ -119,6 +128,7 @@ watch(errors, () => {
         inputWrapper?.classList.remove('bounce')
       }, 200)
     }, 300)
+    },50)
   }
 })
 
@@ -153,6 +163,9 @@ const disableHelp = () => {
 
 const clearAdvancedOptions = () => {
 
+}
+const toggleHelp = () => {
+  helpState.value.open = !helpState.value.open
 }
 </script>
 

@@ -1,53 +1,103 @@
 import { requisitionTypes, requisitionSubTypes } from './copy/requisitionTypes'
 
 export const ConfigurationService = {
-  validateLocalItem: (localItem: LocalConfiguration, quickUpdate = false): LocalErrors => {
-    const errors: LocalErrors = {
-      host: '',
-      hasErrors: false,
-      name: '',
-      type: '',
-      path: '',
-      username: '',
-      password: '',
-      foreignSource: '',
-      zone: ''
+  validateName: (name: string, nameType: string = 'Name') => {
+    let nameError = ''
+    if (!name) {
+      nameError = `Must have a ${nameType.toLocaleLowerCase()}`
     }
+    if (!nameError && name.length < 2) {
+      nameError = `${nameType} must have at least two chars`
+    }
+    if (!nameError && name.length > 255) {
+      nameError = `${nameType} must be shorter than 255`
+    }
+    return nameError
+  },
+  validateType: (typeName: string) => {
+    let typeError = ''
+    if (!typeName) {
+      typeError = 'Must select a type'
+    }
+    return typeError
+  },
+  validateOccurance: (typeName: string) => {
+    let typeError = ''
+    if (!typeName) {
+      typeError = 'Must select a schedule time'
+    }
+    return typeError
+  },
+  validateHost: (host: string) => {
+    let hostError = ''
     const ipv4 = new RegExp(
       /^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])(:[0-9]+)?$/gim
     )
-    const isHostValid = !localItem?.subType?.value ? ipv4.test(localItem.host) : true
+    const isHostValid = ipv4.test(host)
     if (!isHostValid) {
-      errors.host = 'Invalid hostname'
+      hostError = 'Invalid hostname'
+    }
+    return hostError
+  },
+
+  validatePath: (path: string) => {
+    let pathError = ''
+    if (!path) {
+      pathError = 'Must include a file path'
+    } else if (!path.startsWith('/')) {
+      pathError = 'Path must start with a /'
+    }
+    return pathError
+  },
+  createBlankErrors: () => {
+    return {
+      name: '',
+      hasErrors: false,
+      host: '',
+      path: '',
+      username: '',
+      password: '',
+      type: '',
+      zone: '',
+      foreignSource: '',
+      occurance: ''
+    }
+  },
+  validateLocalItem: (localItem: LocalConfiguration, quickUpdate = false): LocalErrors => {
+    const errors: LocalErrors = ConfigurationService.createBlankErrors()
+
+    if (!quickUpdate) {
+      errors.name = ConfigurationService.validateName(localItem.name)
+      errors.type = ConfigurationService.validateType(localItem.type.name)
+
+      if (['DNS', 'VMWare', 'HTTP', 'HTTPS'].includes(localItem.type.name)) {
+        errors.host = ConfigurationService.validateHost(localItem.host)
+      }
+      if (localItem.type.name === 'DNS') {
+        errors.zone = ConfigurationService.validateHost(localItem.zone)
+
+        // Only validate foreign source if it's set.
+        if (!!localItem.foreignSource) {
+          errors.foreignSource = ConfigurationService.validateHost(localItem.foreignSource)
+        }
+      }
+      if (localItem.type.name === 'File') {
+        errors.path = ConfigurationService.validatePath(localItem.path)
+      }
+      if (localItem.type.name === 'VMWare') {
+        errors.username = ConfigurationService.validateName(localItem.username, 'Username')
+        errors.password = ConfigurationService.validateName(localItem.password, 'Password')
+      }
+      errors.occurance = ConfigurationService.validateOccurance(localItem.occurance.name)
     }
 
-    if (!localItem.name) {
-      errors.name = 'Must have a name'
-    }
-    if (localItem.name.length < 2) {
-      errors.name = 'Name must have at least two chars'
-    }
-    if (localItem.name.length > 255) {
-      errors.name = 'Name must be shorter than 255'
-    }
-    if (!localItem.type.name) {
-      errors.type = 'Must select a type'
-    }
-    if (quickUpdate) {
-      if (localItem.host === '') {
-        errors.host = ''
-      }
-      if (localItem.type.name === '') {
-        errors.type = ''
-      }
-      if (localItem.name === '') {
-        errors.name = ''
+    //If any key is set, then we have errors.
+    for (const [_, val] of Object.entries(errors)) {
+      if (!!val) {
+        errors.hasErrors = true
       }
     }
 
-    if (errors.host || errors.name) {
-      errors.hasErrors = true
-    }
     return errors
   },
   convertLocalToCronTab: (occurance: { name: string }, time: string) => {
@@ -113,7 +163,10 @@ export const ConfigurationService = {
       }
     } else if (type === 'VMWare') {
       host = `${localItem.host}?username=${localItem.username}&password=${localItem.password}`
+    } else if (type === 'File') {
+      host = `${localItem.path}`
     }
+
     let fullURL = `${protocol}://${host}`
     let queryString = !fullURL.includes('?') && localItem.advancedOptions.length > 0 ? '?' : ''
     localItem.advancedOptions.forEach((option, index) => {
@@ -192,20 +245,61 @@ export const ConfigurationService = {
     if (!type) {
       type = { id: 0, name: '' }
     }
-    if (url.length === 3) {
+
+    if (type.name === 'File') {
+      let pathPart = urlIn.split('file://')[1]
+      if (pathPart.includes('?')) {
+        path = pathPart.split('?')[0]
+      } else {
+        path = pathPart
+      }
+    } else if (type.name === 'VMWare') {
+      if (url[2].includes('?')) {
+        const vals = url[2].split('?')
+        host = vals[0]
+      } else {
+        host = url[2]
+      }
+    } else if (type.name === 'Requisition') {
       typeRaw = url[2].split('?')[0]
       const foundSubType = requisitionSubTypes.find((item) => item.value.toLowerCase() === typeRaw)
       if (foundSubType) {
         subType = foundSubType
       }
-    } else if (url.length === 4) {
+    } else if (type.name === 'DNS') {
+      let urlPart = urlIn.split('dns://')[1].split('/')
+      host = urlPart[0]
+      zone = urlPart[1]
+      if (urlPart[2]) {
+        if (urlPart[2].includes('?')) {
+          foreignSource = urlPart[2].split('?')[0]
+        } else {
+          foreignSource = urlPart[2]
+        }
+      }
+    } else if (type.name === 'HTTP' || type.name === 'HTTPS') {
       host = url[2]
     }
-    return { path, type, host, username, password, subType, zone, foreignSource }
+
+    const advancedOptions = ConfigurationService.gatherAdvancedOptions(urlIn).filter((item) => {
+      if (type?.name === 'VMWare') {
+        if (item.key.name === 'username') {
+          username = item.value
+          return false
+        }
+        if (item.key.name === 'password') {
+          password = item.value
+          return false
+        }
+        return true
+      }
+    })
+
+    return { path, type, host, username, password, subType, zone, foreignSource, advancedOptions }
   },
-  convertServerConfigurationToLocal: (clickedItem: ProvisionDServerConfiguration) => {
-    const advancedOptions = clickedItem['import-url-resource'].includes('?')
-      ? clickedItem['import-url-resource']
+  gatherAdvancedOptions: (fullURL: string) => {
+    return fullURL.includes('?')
+      ? fullURL
           .split('?')[1]
           .split('&')
           .map((fullString) => {
@@ -213,6 +307,8 @@ export const ConfigurationService = {
             return { key: { _text: key, name: key }, value }
           })
       : []
+  },
+  convertServerConfigurationToLocal: (clickedItem: ProvisionDServerConfiguration) => {
     let rescanBehavior = 1
     if (clickedItem?.['rescan-existing'] === 'false') {
       rescanBehavior = 0
@@ -227,7 +323,6 @@ export const ConfigurationService = {
       name: clickedItem['import-name'],
       occurance: { name: occurance, id: 0 },
       time,
-      advancedOptions,
       rescanBehavior,
       ...urlVars
     }

@@ -6,11 +6,7 @@
     :modelValue="props.active"
     @update:modelValue="props.activeUpdate"
   >
-    <div class="icon" v-if="!props?.helpState?.open">
-      <FeatherButton icon="Help" @click="() => forceOpenHelp()">
-        <FeatherIcon class="help-icon" :icon="Help"></FeatherIcon>
-      </FeatherButton>
-    </div>
+ 
     <div>
       <div v-bind:key="index" v-for="(item, index) in props.items" class="item-wrapper">
         <FeatherAutocomplete
@@ -46,7 +42,6 @@ import { FeatherAutocomplete } from '@featherds/autocomplete'
 
 import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
-import Help from '@featherds/icon/action/Help'
 
 import { advancedKeys,dnsKeys, openDaylightKeys,aciKeys,zabbixKeys,prisKeys } from './copy/advancedKeys'
 
