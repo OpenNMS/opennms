@@ -28,13 +28,10 @@
 
 package org.opennms.features.config.osgi.cm;
 
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Optional;
 
 import org.apache.felix.cm.PersistenceManager;
-import org.opennms.features.config.osgi.del.MigratedServices;
-import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -60,27 +57,10 @@ public class Activator implements BundleActivator {
         final ConfigurationManagerService cm = findService(context, ConfigurationManagerService.class);
         CmPersistenceManager persistenceManager = new CmPersistenceManager(cm);
         registration = context.registerService(PersistenceManager.class, persistenceManager, config);
-        registerCallbacks(context, cm, persistenceManager);
+        final ConfigurationAdmin configurationAdmin = findService(context, ConfigurationAdmin.class);
+        new CallbackManager().registerCallbacks(configurationAdmin, cm, persistenceManager);
 
         LOG.info("{} started.", CmPersistenceManager.class.getSimpleName());
-    }
-
-    private void registerCallbacks(BundleContext context, ConfigurationManagerService cm, PersistenceManager persistenceManager) {
-        final ConfigurationAdmin configurationAdmin = findService(context, ConfigurationAdmin.class);
-        for (String pid : MigratedServices.PIDS) {
-            ConfigUpdateInfo key = new ConfigUpdateInfo(pid, "default");
-            cm.registerReloadConsumer(key, k -> updateConfig(configurationAdmin, persistenceManager, pid));
-        }
-    }
-
-    private void updateConfig(ConfigurationAdmin configurationAdmin, PersistenceManager persistenceManager, String pid) {
-        try {
-            configurationAdmin
-                    .getConfiguration(pid)
-                    .update();
-        } catch (IOException e) {
-            LOG.error("Cannot load configuration for pid=" + pid, e);
-        }
     }
 
     private <T> T findService(BundleContext context, Class<T> clazz) {

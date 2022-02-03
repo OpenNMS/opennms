@@ -104,11 +104,12 @@ const init = (editor: any) => {
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 .editor-with-console {
   height: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--feather-border-on-surface);
+  border: 1px solid var($border-on-surface);
 }
 .help-open {
   height: calc(100vh - 180px);

@@ -33,14 +33,15 @@ const clear = () => store.dispatch('fileEditorModule/clearLogs')
 </script>
 
 <style scoped lang="scss">
+@import "@featherds/styles/themes/variables";
 @import url("https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap");
 
 @mixin console {
   font-family: "Ubuntu Mono", monospace;
-  border: 1px solid var(--feather-border-on-surface);
+  border: 1px solid var($border-on-surface);
   border-radius: 1px;
-  background: var(--feather-shade-4);
-  color: var(--feather-primary-text-on-surface);
+  background: var($shade-4);
+  color: var($primary-text-on-surface);
   height: 250px;
   overflow-x: auto;
   transition: height 0.5s;
@@ -59,7 +60,7 @@ const clear = () => store.dispatch('fileEditorModule/clearLogs')
   display: flex;
   justify-content: space-between;
   height: 20px;
-  border-bottom: 1px solid var(--feather-secondary-variant);
+  border-bottom: 1px solid var($secondary-variant);
   padding: 7px;
   .btns {
     display: flex;
@@ -71,7 +72,7 @@ const clear = () => store.dispatch('fileEditorModule/clearLogs')
   }
   .icon-err {
     .feather-icon {
-      color: var(--feather-error);
+      color: var($error);
     }
   }
 }
@@ -80,7 +81,7 @@ const clear = () => store.dispatch('fileEditorModule/clearLogs')
   margin-top: 5px;
   margin-left: 10px;
   .log-err {
-    color: var(--feather-error);
+    color: var($error);
   }
 }
 </style>

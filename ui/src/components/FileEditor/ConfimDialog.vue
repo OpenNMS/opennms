@@ -34,10 +34,11 @@ const cancel = () => store.dispatch('fileEditorModule/setFileToDelete', null)
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 .dialog {
   width: 300px;
 }
 .btn-delete {
-  color: var(--feather-error);
+  color: var($error);
 }
 </style>
