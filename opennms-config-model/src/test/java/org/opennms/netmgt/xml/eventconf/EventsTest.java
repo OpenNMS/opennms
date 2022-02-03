@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,20 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
+import org.junit.Test;
+import org.junit.runners.Parameterized.Parameters;
+import org.mockito.Mockito;
+import org.opennms.core.test.xml.XmlTestNoCastor;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 public class EventsTest extends XmlTestNoCastor<Events> {
 
@@ -233,6 +241,24 @@ public class EventsTest extends XmlTestNoCastor<Events> {
 					"</events>",
 				"target/classes/xsds/eventconf.xsd" }, 
 		});
+	}
+
+	@Test
+	public void testDoesNotDuplicateEventsWithPriority() {
+		Events events = new Events();
+		Event mockEvent = Mockito.mock(Event.class);
+		Partition mockPartition = Mockito.mock(Partition.class);
+		EventOrdering mockEventOrdering = Mockito.mock(EventOrdering.class);
+
+		when(mockPartition.group(mockEvent)).thenReturn(List.of(".1.3.6.1.2.1.10.166.3"));
+
+		events.addEvent(mockEvent);
+		when(mockEvent.getPriority()).thenReturn(1);
+
+		events.initialize(mockPartition, mockEventOrdering);
+
+		assertEquals(events.getEvents().size(), 1);
+		assertTrue(events.getEvents().contains(mockEvent));
 	}
 
 }

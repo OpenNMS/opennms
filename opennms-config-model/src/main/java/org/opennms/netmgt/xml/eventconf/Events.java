@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,39 +28,6 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
@@ -70,10 +37,19 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.StringUtils;
 
-@XmlRootElement(name="events")
+import javax.xml.bind.annotation.*;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+@XmlRootElement(name = "events")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
-@XmlType(propOrder={})
+@XmlType(propOrder = {})
 public class Events implements Serializable {
     private static final DefaultResourceLoader RESOURCE_LOADER = new DefaultResourceLoader();
 
@@ -90,13 +66,13 @@ public class Events implements Serializable {
     /**
      * Global settings for this configuration
      */
-    @XmlElement(name="global", required=false)
+    @XmlElement(name = "global", required = false)
     private Global m_global;
 
-    @XmlElement(name="event", required=false)
+    @XmlElement(name = "event", required = false)
     private List<Event> m_events = new ArrayList<>();
 
-    @XmlElement(name="event-file", required=false)
+    @XmlElement(name = "event-file", required = false)
     private List<String> m_eventFiles = new ArrayList<>();
 
     @XmlTransient
@@ -190,9 +166,9 @@ public class Events implements Serializable {
     public void loadEventFilesIfModified(final Resource configResource, final Map<String, Long> lastModifiedEventFiles) throws IOException {
         // Remove any event files that we're previously loaded, and no
         // longer appear in the list of event files
-        for(Iterator<Map.Entry<String, Events>> it = m_loadedEventFiles.entrySet().iterator(); it.hasNext(); ) {
+        for (Iterator<Map.Entry<String, Events>> it = m_loadedEventFiles.entrySet().iterator(); it.hasNext(); ) {
             final String eventFile = it.next().getKey();
-            if(!m_eventFiles.contains(eventFile)) {
+            if (!m_eventFiles.contains(eventFile)) {
                 // The event file was previously loaded and has been removed
                 // from the list of event files
                 it.remove();
@@ -200,7 +176,7 @@ public class Events implements Serializable {
         }
 
         // Conditionally load or reload the event files
-        for(final String eventFile : m_eventFiles) {
+        for (final String eventFile : m_eventFiles) {
             final Resource eventResource = getRelative(configResource, eventFile);
             final long lastModified = eventResource.lastModified();
 
@@ -211,7 +187,7 @@ public class Events implements Serializable {
                 shouldLoadFile = false;
                 // If we opt out to load a particular file, it must
                 // be already loaded
-                assert(m_loadedEventFiles.containsKey(eventFile));
+                assert (m_loadedEventFiles.containsKey(eventFile));
             }
 
             // Skip any files that don't need to be loaded
@@ -223,7 +199,7 @@ public class Events implements Serializable {
 
             final Events events = JaxbUtils.unmarshal(Events.class, eventResource);
             if (events.getEvents().isEmpty()) {
-                throw new IllegalStateException("Uh oh! An event file "+eventResource.getFile()+" with no events has been laoded!");
+                throw new IllegalStateException("Uh oh! An event file " + eventResource.getFile() + " with no events has been laoded!");
             }
             if (events.getGlobal() != null) {
                 throw new ObjectRetrievalFailureException(Resource.class, eventResource, "The event resource " + eventResource + " included from the root event configuration file cannot have a 'global' element", null);
@@ -235,43 +211,43 @@ public class Events implements Serializable {
             m_loadedEventFiles.put(eventFile, events);
         }
 
-		// Re-order the loaded event files to match the order specified in the root configuration
-		final Map<String, Events> orderedAndLoadedEventFiles = new LinkedHashMap<>();
-		for (String eventFile : m_eventFiles) {
-			final Events loadedEvents = m_loadedEventFiles.get(eventFile);
-			if (loadedEvents != null) {
-				orderedAndLoadedEventFiles.put(eventFile, loadedEvents);
-			}
-		}
-		m_loadedEventFiles = orderedAndLoadedEventFiles;
-	}
+        // Re-order the loaded event files to match the order specified in the root configuration
+        final Map<String, Events> orderedAndLoadedEventFiles = new LinkedHashMap<>();
+        for (String eventFile : m_eventFiles) {
+            final Events loadedEvents = m_loadedEventFiles.get(eventFile);
+            if (loadedEvents != null) {
+                orderedAndLoadedEventFiles.put(eventFile, loadedEvents);
+            }
+        }
+        m_loadedEventFiles = orderedAndLoadedEventFiles;
+    }
 
     public boolean isSecureTag(final String tag) {
-        return m_global == null ? false : m_global.isSecureTag(tag);
+        return m_global != null && m_global.isSecureTag(tag);
     }
 
     private void partitionEvents(final Partition partition) {
         m_partition = partition;
 
-        m_partitionedEvents = new LinkedHashMap<String, List<Event>>();
-        m_nullPartitionedEvents = new ArrayList<Event>();
+        m_partitionedEvents = new LinkedHashMap<>();
+        m_nullPartitionedEvents = new ArrayList<>();
 
-        for(final Event event : m_events) {
+        for (final Event event : m_events) {
             final List<String> keys = partition.group(event);
             if (keys == null) {
                 m_nullPartitionedEvents.add(event);
             } else {
-                for(final String key : keys) {
+                for (final String key : keys) {
                     List<Event> events = m_partitionedEvents.computeIfAbsent(key, k -> new ArrayList<Event>());
                     events.add(event);
                 }
             }
         }
+
         // Place all the partitioned and nullPartitioned event definitions in priority order.
-        m_partitionedEvents.values().stream().forEach(l -> Collections.sort(l));
+        m_partitionedEvents.values().forEach(Collections::sort);
         Collections.sort(m_nullPartitionedEvents);
     }
-
 
 
     public Event findFirstMatchingEvent(final org.opennms.netmgt.xml.event.Event matchingEvent) {
@@ -312,13 +288,13 @@ public class Events implements Serializable {
     }
 
     public Event findFirstMatchingEvent(final EventCriteria criteria) {
-        for(final Event event : m_events) {
+        for (final Event event : m_events) {
             if (criteria.matches(event)) {
                 return event;
             }
         }
 
-        for(final Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+        for (final Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
             final Events events = loadedEvents.getValue();
             final Event result = events.findFirstMatchingEvent(criteria);
             if (result != null) {
@@ -333,15 +309,14 @@ public class Events implements Serializable {
 
     public <T> T forEachEvent(final T initial, final EventCallback<T> callback) {
         T result = initial;
-        for(final Event event : m_events) {
+        for (final Event event : m_events) {
             result = callback.process(result, event);
         }
 
-        for(final Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+        for (final Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
             final Events events = loadedEvents.getValue();
             result = events.forEachEvent(result, callback);
         }
-
 
         return result;
     }
@@ -362,9 +337,13 @@ public class Events implements Serializable {
         // roll up all prioritized events and sort all events by priority
         // must be done after event.initialize() has been called to set the event.index
         List<Event> prioritizedEvents = getPrioritizedEvents();
+
+        m_events.removeAll(prioritizedEvents); // prevent duplicates
         m_events.addAll(prioritizedEvents);
         m_events.sort(Comparator.naturalOrder());
+
         // Also add to unpartitioned events for first crack when not using a UEI match
+        m_nullPartitionedEvents.removeAll(prioritizedEvents); // prevent duplicates
         m_nullPartitionedEvents.addAll(prioritizedEvents);
         m_nullPartitionedEvents.sort(Comparator.naturalOrder());
 
@@ -373,11 +352,12 @@ public class Events implements Serializable {
 
     // Recurse through the configuration and return Event Definitions with priority > 0
     private List<Event> getPrioritizedEvents() {
-        List<Event> prioritizedEvents = new ArrayList<Event>();
-        prioritizedEvents.addAll(m_events.stream().filter(e -> e.getPriority() > 0).collect(Collectors.toList()));
+        List<Event> prioritizedEvents = m_events.stream().filter(e -> e.getPriority() > 0).collect(Collectors.toList());
+
         for (final Events eventsFile : m_loadedEventFiles.values()) {
             prioritizedEvents.addAll(eventsFile.getPrioritizedEvents());
         }
+
         return prioritizedEvents;
     }
 
@@ -435,7 +415,7 @@ public class Events implements Serializable {
         // 2) Remove event definition from the index if they are matched
         // by any of the known UEI matchers.
         if (matchers.size() >= 1) {
-            events: for(Iterator<Entry<String, Event>> it = m_eventsByUei.entrySet().iterator(); it.hasNext(); ) {
+            events: for (Iterator<Entry<String, Event>> it = m_eventsByUei.entrySet().iterator(); it.hasNext(); ) {
                 final Entry<String, Event> entry = it.next();
                 for (EventMatcher matcher : matchers) {
                     // Build an event instance
@@ -480,7 +460,7 @@ public class Events implements Serializable {
                 throw new DataAccessResourceFailureException("Event resource '" + resource + "' is not a file resource and cannot be saved.  Nested exception: " + e, e);
             }
             try (final OutputStream fos = new FileOutputStream(file);
-                    final Writer fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);) {
+                 final Writer fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);) {
                 fileWriter.write(stringWriter.toString());
             } catch (final Exception e) {
                 throw new DataAccessResourceFailureException("Event file '" + file + "' could not be opened.  Nested exception: " + e, e);
@@ -489,7 +469,7 @@ public class Events implements Serializable {
     }
 
     public void save(final Resource resource) {
-        for(final Entry<String, Events> entry : m_loadedEventFiles.entrySet()) {
+        for (final Entry<String, Events> entry : m_loadedEventFiles.entrySet()) {
             final String eventFile = entry.getKey();
             final Events events = entry.getValue();
 
