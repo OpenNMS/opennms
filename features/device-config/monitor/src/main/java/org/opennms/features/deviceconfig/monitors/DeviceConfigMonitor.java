@@ -66,7 +66,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         Integer port = getKeyedInteger(parameters, PORT, DEFAULT_SSH_PORT);
         Long timeout = getKeyedLong(parameters, TIMEOUT, DEFAULT_DURATION.toMillis());
         var host = svc.getIpAddr();
-        var stringParamaters = parameters.entrySet().stream().collect(toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue())));
+        var stringParameters = parameters.entrySet().stream().collect(toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue())));
         var future = retriever.retrieveConfig(
                 Retriever.Protocol.TFTP,
                 script,
@@ -74,7 +74,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                 password,
                 host,
                 port,
-                stringParamaters,
+                stringParameters,
                 Duration.ofMillis(timeout)
         ).thenApply(either ->
                 either.fold(
