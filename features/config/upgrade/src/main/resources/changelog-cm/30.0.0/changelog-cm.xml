@@ -86,7 +86,7 @@
     <changeSet author="uguggilam" id="1.0-register-schema-notifications">
         <cm:registerSchema id="notifications"/>
         <cm:importSchemaFromXsd id="notifications" xsdFileName="notifications.xsd" xsdFileHash="ef29ac614357d53f27aa75ff810e8b9ba658d48f8c725478a5b1a46311bff883" rootElement="notifications"/>
-        <cm:importConfig schemaId="notifications" configId="default" filePath="notifications.xml"/>
+        <cm:importConfig schemaId="notifications" filePath="notifications.xml"/>
     </changeSet>
 
     <!--TODO check which schemas can have multiple configurations-->

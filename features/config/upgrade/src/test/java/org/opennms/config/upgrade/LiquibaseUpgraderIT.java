@@ -198,7 +198,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
             // check for org.opennms.features.datachoices.cfg
             Optional<JSONObject> config = this.cm.getJSONConfiguration("org.opennms.features.datachoices", "default");
-            // only those field have default value will autofill
+            // only fields with a default value will auto fill
             assertEquals(4, config.get().keySet().size());
             // boolean in openable is impossible to be null
             assertEquals(false, config.get().get("enabled"));
