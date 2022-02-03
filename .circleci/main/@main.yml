@@ -1075,7 +1075,7 @@ jobs:
             #
             # -> use the targets key of the minion repository to sign the multi-arch image instead
             export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
-            notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
+            # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
             echo "Done!"
             # notary -s https://notary.docker.io list "${IMAGE}"
 
