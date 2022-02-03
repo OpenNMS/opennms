@@ -1,0 +1,48 @@
+= Index Split Property Extender
+
+The Index Split property extender enables extraction of part of a resource's local instance identifier.
+
+== When to Use the Index Split Property Extender
+
+Use the Index Split property extender when collecting data from tables with compound indices, because it enables extraction of a single index component.
+For example, the Cisco Airespace `bsnAPIfLoadParametersTable` is indexed using the tuple of `bsnAPDot3MacAdddress` and `bsnAPIfSlotId`.
+
+[source, snmp-mib]
+----
+bsnAPIfLoadParametersEntry OBJECT-TYPE
+    -- ...
+    DESCRIPTION
+        "An entry (conceptual row) in the Table.
+        Entries in this MIB are indexed by
+        bsnAPDot3MacAddress and bsnAPIfSlotId"
+    INDEX           {
+                        bsnAPDot3MacAddress,
+                        bsnAPIfSlotId
+                    } <1>
+
+    -- ...
+----
+<1> `bsnAPDot3MacAddress` is the first component of the compound index for the entry type for `bsnAPIfLoadParametersTable`
+
+This extender enables extraction of just the `bsnAPIfSlotId` component for use in a resource label.
+
+== Configure the Index Split Property Extender
+
+The Index Split property extender expects a single parameter, `index-pattern`, whose value is a regular expression.
+The expression must be general enough to match all possible index values for the table at hand, and should include one capturing group.
+The subpattern matched by the expression's first capturing group will be returned; any further groups are ignored.
+
+This example shows how to extract just the `bsnAPIfSlotId` index component as a string property.
+
+[source, xml]
+----
+<group name="bsnAPIfLoadParametersTable" ifType="all">
+  <mibObj oid=".1.3.6.1.4.1.14179.2.2.13.1.4" instance="bsnAPIfLoadParametersEntry" alias="bsnAPIfLoadNumOfCli" type="integer" />
+  <property instance="bsnAPIfLoadParametersEntry" alias="slotNumber" class-name="org.opennms.netmgt.collectd.IndexSplitPropertyExtender"> <1>
+    <parameter key="index-pattern" value="^.+\.(\d+)$" /> <2>
+  </property>
+</group>
+----
+<1> Derived string property `slotNumber`
+<2> Regular expression; the portion in parentheses is what gets extracted.
+`\d+` means "one or more decimal digit characters".
