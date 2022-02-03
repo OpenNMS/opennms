@@ -59,6 +59,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -74,7 +75,7 @@ import java.util.UUID;
         "classpath*:/META-INF/opennms/component-dao.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
-public class DeviceConfigIT {
+public class DeviceConfigMonitorAdaptorIT {
 
     @Autowired
     private IpInterfaceDao ipInterfaceDao;
@@ -114,39 +115,44 @@ public class DeviceConfigIT {
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(null);
         Mockito.when(pollStatus.getReason()).thenReturn("Failed to connect to SSHServer");
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        Optional<DeviceConfig> optionalDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
-        Assert.assertTrue(optionalDeviceConfig.isPresent());
-        Assert.assertNull(optionalDeviceConfig.get().getConfig());
-
+        Optional<DeviceConfig> failedDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Assert.assertTrue(failedDeviceConfig.isPresent());
+        Assert.assertNull(failedDeviceConfig.get().getConfig());
+        List<DeviceConfig> deviceConfigList = deviceConfigDao.findAll();
+        Assert.assertThat(deviceConfigList, Matchers.hasSize(1));
         // Send valid config
         byte[] configInBytes = config.getBytes(StandardCharsets.UTF_16);
-        populateDeviceConfigs(count);
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(configInBytes);
         // Send pollStatus with config to adaptor.
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
 
-        Optional<DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, ConfigType.Default);
-        Assert.assertTrue(deviceConfigOptional.isPresent());
-        byte[] retrievedConfigInBytes = deviceConfigOptional.get().getConfig();
+        Optional<DeviceConfig> succeededDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Assert.assertTrue(succeededDeviceConfig.isPresent());
+        byte[] retrievedConfigInBytes = succeededDeviceConfig.get().getConfig();
         // Compare binary values
         Assert.assertArrayEquals(configInBytes, retrievedConfigInBytes);
         // Make use of encoding
-        String retrievedConfig = new String(retrievedConfigInBytes, Charset.forName(deviceConfigOptional.get().getEncoding()));
+        String retrievedConfig = new String(retrievedConfigInBytes, Charset.forName(succeededDeviceConfig.get().getEncoding()));
         Assert.assertEquals(config, retrievedConfig);
+        // Check that same entry got overwritten
+        Assert.assertEquals(failedDeviceConfig.get().getId(), succeededDeviceConfig.get().getId());
+
         // Try to persist same config again.
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        Optional<DeviceConfig> deviceConfigOptional1 = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, ConfigType.Default);
+        Optional<DeviceConfig> deviceConfigOptional1 = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
         Assert.assertTrue(deviceConfigOptional1.isPresent());
         // Verify that config doesn't change
-        Assert.assertArrayEquals(deviceConfigOptional1.get().getConfig(), deviceConfigOptional.get().getConfig());
+        Assert.assertArrayEquals(deviceConfigOptional1.get().getConfig(), succeededDeviceConfig.get().getConfig());
 
         // Send failed update again
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(null);
         Mockito.when(pollStatus.getReason()).thenReturn("Failed to connect to SSHServer");
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        optionalDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
-        Assert.assertTrue(optionalDeviceConfig.isPresent());
-        Assert.assertNull(optionalDeviceConfig.get().getConfig());
+        failedDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Assert.assertTrue(failedDeviceConfig.isPresent());
+        Assert.assertNull(failedDeviceConfig.get().getConfig());
+        // Verify that failed config creates new entry.
+        Assert.assertNotEquals(failedDeviceConfig.get().getId(), succeededDeviceConfig.get().getId());
     }
 
     private void populateDeviceConfigs(int count) {

@@ -67,20 +67,22 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         String configTypeAttribute = getObjectAsString(parameters.get("config-type"));
         String encoding = !Strings.isNullOrEmpty(encodingAttribute) ? encodingAttribute : Charset.defaultCharset().name();
         ConfigType configType = !Strings.isNullOrEmpty(configTypeAttribute) ? ConfigType.valueOf(configTypeAttribute) : ConfigType.Default;
-
+        Date currentTime = new Date();
+        Optional<DeviceConfig> configOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
+        DeviceConfig latestDeviceConfig = configOptional.orElse(null);
         byte[] deviceConfigBytes = status.getDeviceConfig();
-        // Handle config retrieval failure.
+
+        // Config retrieval failed
         if (deviceConfigBytes == null) {
-            Date currentTime = new Date();
-            Optional<DeviceConfig> configOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
             DeviceConfig deviceConfig;
-            if (configOptional.isPresent() && configOptional.get().getLastFailed() != null) {
-                deviceConfig = configOptional.get();
+            // If last config also failed, update the same entry.
+            if (latestDeviceConfig != null && latestDeviceConfig.getConfig() == null) {
+                deviceConfig = latestDeviceConfig;
             } else {
                 deviceConfig = new DeviceConfig();
+                deviceConfig.setCreatedTime(currentTime);
                 deviceConfig.setIpInterface(ipInterface);
                 deviceConfig.setConfigType(configType);
-                deviceConfig.setCreatedTime(currentTime);
                 deviceConfig.setEncoding(encoding);
             }
             deviceConfig.setFailureReason(status.getReason());
@@ -89,15 +91,27 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
             return status;
         }
 
-        // Fetch last known config for the interface
-        Optional<DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, configType);
-        DeviceConfig latestDeviceConfig = deviceConfigOptional.isEmpty() ? null : deviceConfigOptional.get();
+        // Config retrieval succeeded
+        // If last config was failure, clear failed fields and update config.
+        if (latestDeviceConfig != null && latestDeviceConfig.getConfig() == null) {
+            latestDeviceConfig.setConfig(deviceConfigBytes);
+            latestDeviceConfig.setCreatedTime(currentTime);
+            latestDeviceConfig.setConfigType(configType);
+            latestDeviceConfig.setEncoding(encoding);
+            latestDeviceConfig.setFailureReason(null);
+            latestDeviceConfig.setLastFailed(null);
+            deviceConfigDao.saveOrUpdate(latestDeviceConfig);
+            return status;
+        }
 
-        // Retrieval succeeded
-        // Create new entry if config changes.
-        if (latestDeviceConfig == null || !Arrays.equals(latestDeviceConfig.getConfig(), deviceConfigBytes)) {
+        // Config didn't change, just update last updated field.
+        if (latestDeviceConfig != null &&
+                Arrays.equals(latestDeviceConfig.getConfig(), deviceConfigBytes)) {
+            latestDeviceConfig.setLastUpdated(currentTime);
+            deviceConfigDao.saveOrUpdate(latestDeviceConfig);
+        } else {
+            // Config changed, or there is no config for the device, create new entry.
             DeviceConfig deviceConfig = new DeviceConfig();
-            Date currentTime = new Date();
             deviceConfig.setConfig(deviceConfigBytes);
             deviceConfig.setCreatedTime(currentTime);
             deviceConfig.setIpInterface(ipInterface);
@@ -105,10 +119,6 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
             deviceConfig.setConfigType(configType);
             deviceConfig.setLastUpdated(currentTime);
             deviceConfigDao.saveOrUpdate(deviceConfig);
-        } else {
-            // Configs are equal, just update last updated entry.
-            latestDeviceConfig.setLastUpdated(new Date());
-            deviceConfigDao.saveOrUpdate(latestDeviceConfig);
         }
         return status;
     }
