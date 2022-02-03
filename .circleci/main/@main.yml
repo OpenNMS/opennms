@@ -26,10 +26,10 @@ aliases:
       echo "export MINION_IMAGE=docker.io/opennms/minion" >> $BASH_ENV
       echo "export MINION_IMAGE_VERSION=\"$MINION_IMAGE_VERSION\"" >> $BASH_ENV
       echo "export MINION_AZ_IMAGE=opennmspubacr.azurecr.io/opennms/minion" >> $BASH_ENV
+      echo "export KEY_FOLDER=~/.docker/trust/private" >> $BASH_ENV
   - &setup_dct_key
     name: Setup DCT key
     command: |
-      KEY_FOLDER=~/.docker/trust/private
       mkdir -p $KEY_FOLDER
       # the key that is used to sign single-arch images
       echo "$DCT_DELEGATE_KEY" | base64 -d > $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
