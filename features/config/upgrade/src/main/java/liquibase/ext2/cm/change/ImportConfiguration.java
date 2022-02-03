@@ -89,13 +89,13 @@ public class ImportConfiguration extends AbstractCmChange {
 
     @Override
     public String getConfirmationMessage() {
-        return String.format("Imported configuration from %s with id=%s for schema=%s", this.filePath, this.configId, this.schemaId);
+        return String.format("Imported configuration from %s with id=%s for schema=%s", this.filePath, getConfigId(), this.schemaId);
     }
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
         return new SqlStatement[] {
-                new GenericCmStatement((ConfigurationManagerService cm) -> importConfig(cm, this.configResource, new ConfigUpdateInfo(schemaId, this.configId), archivePath))
+                new GenericCmStatement((ConfigurationManagerService cm) -> importConfig(cm, this.configResource, new ConfigUpdateInfo(schemaId, getConfigId()), archivePath))
         };
     }
 
