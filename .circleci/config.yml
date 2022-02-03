@@ -8,7 +8,7 @@ parameters:
   trigger-prebuild:
     description: whether to trigger a pre-build evaluation
     type: boolean
-    default: false
+    default: true
   trigger-coverage-api:
     description: whether to trigger a code coverage build
     type: boolean
@@ -16,7 +16,7 @@ parameters:
   trigger-automation:
     description: whether to trigger garbage collection for older feature images
     type: boolean
-    default: True
+    default: false
 
 setup: true
 
