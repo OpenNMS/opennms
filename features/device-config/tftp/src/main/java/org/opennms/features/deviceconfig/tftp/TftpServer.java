@@ -33,7 +33,7 @@ import java.io.IOException;
 public interface TftpServer {
 
     void register(TftpFileReceiver receiver) throws IOException;
-    void deregister(TftpFileReceiver receiver);
+    void unregister(TftpFileReceiver receiver);
 
     TftpStatistics getStatistics();
     TftpStatistics getAndResetStatistics();

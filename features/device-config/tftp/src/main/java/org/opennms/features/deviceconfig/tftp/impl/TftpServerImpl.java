@@ -574,16 +574,20 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
             }
         }
 
-        try {
-            serverTftp_.close();
-        } catch (final RuntimeException e) {
-            // noop
+        if (serverTftp_ != null) {
+            try {
+                serverTftp_.close();
+            } catch (final RuntimeException e) {
+                // noop
+            }
         }
 
-        try {
-            serverThread.join();
-        } catch (final InterruptedException e) {
-            // we've done the best we could, return
+        if (serverThread != null) {
+            try {
+                serverThread.join();
+            } catch (final InterruptedException e) {
+                // we've done the best we could, return
+            }
         }
     }
 
@@ -598,7 +602,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
     }
 
     @Override
-    public void deregister(TftpFileReceiver receiver) {
+    public void unregister(TftpFileReceiver receiver) {
         synchronized (receivers) {
             receivers.remove(receiver);
             if(receivers.isEmpty()) {
