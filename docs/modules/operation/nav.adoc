@@ -47,7 +47,13 @@
 ** xref:performance-data-collection/resource-types.adoc[]
 *** xref:performance-data-collection/snmp-index.adoc[]
 ** xref:performance-data-collection/collectors.adoc[]
-** xref:performance-data-collection/property-extenders.adoc[]
+** xref:performance-data-collection/snmp-property-extenders/property-extenders.adoc[]
+*** xref:performance-data-collection/snmp-property-extenders/cisco-cbqos.adoc[]
+*** xref:performance-data-collection/snmp-property-extenders/enum-lookup.adoc[]
+*** xref:performance-data-collection/snmp-property-extenders/index-split.adoc[]
+*** xref:performance-data-collection/snmp-property-extenders/pointer-like-index.adoc[]
+*** xref:performance-data-collection/snmp-property-extenders/regex.adoc[]
+*** xref:performance-data-collection/snmp-property-extenders/snmp-interface.adoc[]
 ** xref:performance-data-collection/collectd/collect-admin.adoc[]
 *** xref:performance-data-collection/shell/introduction.adoc[]
 **** xref:performance-data-collection/shell/adhoc-collection.adoc[]
@@ -100,16 +106,7 @@
 
 * xref:topology/introduction.adoc[]
 ** xref:topology/topology.adoc[]
-** xref:topology/asset-topology-provider/introduction.adoc[]
-*** xref:topology/asset-topology-provider/asset-layers.adoc[]
-*** xref:topology/asset-topology-provider/node-filtering.adoc[]
-*** xref:topology/asset-topology-provider/configuration.adoc[]
-*** xref:topology/asset-topology-provider/create-asset-based-topologies-karaf.adoc[]
-*** xref:topology/asset-topology-provider/create-asset-based-topologies-events.adoc[]
-*** xref:topology/asset-topology-provider/view-additional-notes.adoc[]
-
-
-
+** xref:topology/graphml-asset-topology-provider.adoc[]
 ** xref:topology/enlinkd/introduction.adoc[]
 *** xref:topology/enlinkd/layer-2-discovery.adoc[]
 **** xref:topology/enlinkd/layer-2/lldp-discovery.adoc[]
@@ -119,9 +116,7 @@
 **** xref:topology/enlinkd/layer-3/ospf-discovery.adoc[]
 **** xref:topology/enlinkd/layer-3/is-is-discovery.adoc[]
 
-*  xref:database-reports/introduction.adoc[]
-** xref:database-reports/jasper-reports.adoc[]
-** xref:database-reports/pdf-reports-grafana.adoc[]
+* xref:database-reports/database.adoc[]
 
 * xref:ticketing/introduction.adoc[]
 

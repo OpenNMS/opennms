@@ -28,41 +28,29 @@
 
 package liquibase.ext2.cm.change;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static liquibase.ext2.cm.change.ConfigFileUtil.OPENNMS_HOME;
+import static liquibase.ext2.cm.change.ConfigFileUtil.checkFileType;
+import static liquibase.ext2.cm.change.ConfigFileUtil.findConfigFiles;
+import static liquibase.ext2.cm.change.ConfigFileUtil.validateAndGetArchiveDir;
+import static liquibase.ext2.cm.change.ImportConfigurationUtil.importConfig;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.Set;
 
-import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.dao.api.ConfigItem;
-import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
-import org.opennms.features.config.exception.ConfigConversionException;
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.util.FileCopyUtils;
 
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
-import liquibase.ext2.cm.change.converter.PropertiesToJson;
-import liquibase.ext2.cm.change.converter.XmlToJson;
 import liquibase.ext2.cm.database.CmDatabase;
 import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
-import liquibase.util.file.FilenameUtils;
-
-import javax.xml.bind.JAXBException;
 
 /**
  * Imports an existing configuration. It can either live in {opennms.home}/etc (user defined) or in the class path (default).
@@ -70,65 +58,31 @@ import javax.xml.bind.JAXBException;
 @DatabaseChange(name = "importConfig", description = "Imports a configuration from file.", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class ImportConfiguration extends AbstractCmChange {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
-    private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
+    private static final Logger LOG = LoggerFactory.getLogger(ImportConfiguration.class);
     private final static String CONFIG_ID = "default";
+    private final static Set<String> ALLOWED_EXTENSIONS = Set.of("xml", "cfg");
 
     private String schemaId;
     private String filePath;
     private Path archivePath;
-    private Path etcFile = null; // user defined file
     private Resource configResource;
 
     @Override
     public ValidationErrors validate(CmDatabase db, ValidationErrors validationErrors) {
         validationErrors.checkRequiredField("schemaId", this.schemaId);
         validationErrors.checkRequiredField("filePath", this.filePath);
+        Optional<Resource> configResource = findConfigFiles(this.filePath).stream().findAny();
 
-        String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
-        this.etcFile = Path.of(opennmsHome).resolve("etc").resolve(this.filePath);
-        configResource = new FileSystemResource(etcFile.toString()); // check etc dir first
-        if (!configResource.isReadable()) {
-            configResource = new ClassPathResource("/defaults/"+this.filePath); // fallback: default config
-            this.etcFile = null;
+        if (configResource.isEmpty() || !configResource.get().isReadable()) {
+            validationErrors.addError(String.format("Can not read configuration in file: %s/etc/%s or in classpath: /defaults/%s",
+                    OPENNMS_HOME, this.filePath, this.filePath));
+        } else {
+            this.configResource = configResource.get();
         }
-        if (!configResource.isReadable()) {
-            validationErrors.addError(String.format("Cannot read configuration in file: %s/etc/%s or in classpath: /defaults/%s",
-                    opennmsHome, this.filePath, this.filePath));
-        }
-        checkArchiveDir(validationErrors);
-        checkFileType(validationErrors);
+
+        archivePath = validateAndGetArchiveDir(validationErrors);
+        checkFileType(validationErrors, ALLOWED_EXTENSIONS, this.filePath);
         return validationErrors;
-    }
-
-    void checkArchiveDir(ValidationErrors validationErrors) {
-        try {
-            String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
-            this.archivePath = Paths.get(opennmsHome, "etc_archive");
-            if (!Files.exists(this.archivePath)) {
-                Files.createDirectory(this.archivePath);
-            }
-            if (!Files.isDirectory(this.archivePath)) {
-                validationErrors.addError(String.format("Archive directory %s is not a directory.", this.archivePath));
-            }
-            if(!Files.isWritable(this.archivePath)) {
-                validationErrors.addError(String.format("Archive directory %s is not writable.", this.archivePath));
-            }
-        } catch(Exception e) {
-            validationErrors.addError(String.format("Can not find or create archive directory %s: %s", this.archivePath, e.getMessage()));
-        }
-    }
-
-    void checkFileType(ValidationErrors validationErrors) {
-
-        if (this.filePath == null) {
-            return; // nothing to do
-        }
-
-        String fileType = FilenameUtils.getExtension(this.filePath);
-        if (!"xml".equalsIgnoreCase(fileType) && !"cfg".equalsIgnoreCase(fileType)) {
-            validationErrors.addError(String.format("Unknown file type: '%s'", fileType));
-        }
     }
 
     @Override
@@ -139,40 +93,8 @@ public class ImportConfiguration extends AbstractCmChange {
     @Override
     public SqlStatement[] generateStatements(Database database) {
         return new SqlStatement[] {
-                new GenericCmStatement((ConfigurationManagerService m) -> {
-                    LOG.info("Importing configuration from {} with id=default for schema={}", this.filePath, this.schemaId);
-                    try {
-                        Optional<ConfigDefinition> configDefinition = m.getRegisteredConfigDefinition(this.schemaId);
-
-                        String fileType = FilenameUtils.getExtension(this.filePath);
-                        JsonAsString configObject;
-                        if("xml".equalsIgnoreCase(fileType)) {
-                            configObject = new XmlToJson(asString(this.configResource), configDefinition.get()).getJson();
-                        } else if("cfg".equalsIgnoreCase(fileType)) {
-                            ConfigItem schema = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, "", configDefinition.get().getSchema()).getRootConfig();
-                            configObject = new PropertiesToJson(this.configResource.getInputStream(), schema).getJson();
-                        } else {
-                            throw new ConfigConversionException(String.format("Unknown file type: '%s'", fileType));
-                        }
-                        m.registerConfiguration(this.schemaId, CONFIG_ID, configObject);
-                        LOG.info("Configuration with configName={} and configId=default imported.", this.schemaId);
-                        if(etcFile != null) {
-                            // we imported a user defined config file => move to archive
-                            Path archiveFile = Path.of(this.archivePath + "/" + etcFile.getFileName());
-                            Files.move(etcFile, archiveFile); // move to archive
-                            LOG.info("Configuration file {} moved to {}", etcFile, this.archivePath);
-                        }
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                new GenericCmStatement((ConfigurationManagerService cm) -> importConfig(cm, this.configResource, new ConfigUpdateInfo(schemaId, CONFIG_ID), archivePath))
         };
-    }
-
-    private static String asString(Resource resource) throws IOException {
-        try (Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8)) {
-            return FileCopyUtils.copyToString(reader);
-        }
     }
 
     public String getSchemaId() {

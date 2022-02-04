@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,22 +29,26 @@
 package org.opennms.netmgt.model;
 
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.sql.ResultSet;
 
-import org.easymock.EasyMock;
 import org.junit.Test;
 
 public class InetAddressUserTypeTest {
 
     @Test
     public void testInetAddressType() throws Exception {
-        ResultSet rs = EasyMock.createMock(ResultSet.class);
-        EasyMock.expect(rs.getString("ipAddr")).andReturn(null);
-        EasyMock.replay(rs);
+        ResultSet rs = mock(ResultSet.class);
+        when(rs.getString("ipAddr")).thenReturn(null);
+
         final InetAddressUserType userType = new InetAddressUserType();
         final Object result = userType.nullSafeGet(rs, new String[]{"ipAddr"}, null);
-        EasyMock.verify(rs);
+
         assertNull(result);
+        verify(rs, atLeastOnce()).getString("ipAddr");
     }
 }

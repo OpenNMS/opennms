@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,8 +30,13 @@ package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-import org.easymock.EasyMock;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
@@ -59,22 +64,26 @@ public class CollectdEventHandlingTest {
 
         // Create two collectable services
         CollectorUpdates svc1_udpates = new CollectorUpdates();
-        svc1 = EasyMock.createMock(CollectableService.class);
-        EasyMock.expect(svc1.getNodeId()).andReturn(42).anyTimes();
-        EasyMock.expect(svc1.getAddress()).andReturn(InetAddressUtils.ONE_TWENTY_SEVEN).anyTimes();
-        EasyMock.expect(svc1.getServiceName()).andReturn("JMX").anyTimes();
-        EasyMock.expect(svc1.getCollectorUpdates()).andReturn(svc1_udpates).anyTimes();
-        EasyMock.replay(svc1);
+        svc1 = mock(CollectableService.class);
+        when(svc1.getNodeId()).thenReturn(42);
+        when(svc1.getAddress()).thenReturn(InetAddressUtils.ONE_TWENTY_SEVEN);
+        when(svc1.getServiceName()).thenReturn("JMX");
+        when(svc1.getCollectorUpdates()).thenReturn(svc1_udpates);
         collectd.getCollectableServices().add(svc1);
 
         CollectorUpdates svc2_udpates = new CollectorUpdates();
-        svc2 = EasyMock.createMock(CollectableService.class);
-        EasyMock.expect(svc2.getNodeId()).andReturn(43).anyTimes();
-        EasyMock.expect(svc2.getAddress()).andReturn(InetAddressUtils.UNPINGABLE_ADDRESS).anyTimes();
-        EasyMock.expect(svc2.getServiceName()).andReturn("WS-Man").anyTimes();
-        EasyMock.expect(svc2.getCollectorUpdates()).andReturn(svc2_udpates).anyTimes();
-        EasyMock.replay(svc2);
+        svc2 = mock(CollectableService.class);
+        when(svc2.getNodeId()).thenReturn(43);
+        when(svc2.getAddress()).thenReturn(InetAddressUtils.UNPINGABLE_ADDRESS);
+        when(svc2.getServiceName()).thenReturn("WS-Man");
+        when(svc2.getCollectorUpdates()).thenReturn(svc2_udpates);
         collectd.getCollectableServices().add(svc2);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(svc1);
+        verifyNoMoreInteractions(svc2);
     }
 
     @Test
@@ -88,6 +97,11 @@ public class CollectdEventHandlingTest {
         // The delete flag should be set (and only set) on svc1
         assertTrue("deletion flag was not set on svc1!", svc1.getCollectorUpdates().isDeletionFlagSet());
         assertFalse("deletion flag was set on svc2!", svc2.getCollectorUpdates().isDeletionFlagSet());
+
+        verify(svc1, times(2)).getCollectorUpdates();
+        verify(svc1, times(3)).getNodeId();
+        verify(svc2, times(1)).getCollectorUpdates();
+        verify(svc2, times(1)).getNodeId();
     }
 
     @Test
@@ -109,6 +123,13 @@ public class CollectdEventHandlingTest {
         // The delete flag should be set (and only set) on svc1
         assertTrue("deletion flag was not set on svc1!", svc1.getCollectorUpdates().isDeletionFlagSet());
         assertFalse("deletion flag was set on svc2!", svc2.getCollectorUpdates().isDeletionFlagSet());
+
+        verify(svc1, times(2)).getCollectorUpdates();
+        verify(svc1, times(2)).getAddress();
+        verify(svc1, times(3)).getNodeId();
+        verify(svc2, times(1)).getAddress();
+        verify(svc2, times(1)).getCollectorUpdates();
+        verify(svc2, times(1)).getNodeId();
     }
 
     @Test
@@ -131,5 +152,13 @@ public class CollectdEventHandlingTest {
         // The delete flag should be set (and only set) on svc2
         assertFalse("deletion flag was set on svc1!", svc1.getCollectorUpdates().isDeletionFlagSet());
         assertTrue("deletion flag was not set on svc2!", svc2.getCollectorUpdates().isDeletionFlagSet());
+
+        verify(svc1, times(1)).getAddress();
+        verify(svc1, times(1)).getCollectorUpdates();
+        verify(svc1, times(1)).getNodeId();
+        verify(svc2, times(2)).getAddress();
+        verify(svc2, times(2)).getCollectorUpdates();
+        verify(svc2, times(3)).getNodeId();
+        verify(svc2, times(3)).getServiceName();
     }
 }

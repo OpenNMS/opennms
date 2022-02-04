@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.opennms.netmgt.flows.classification.internal;
 
-import static org.easymock.EasyMock.createNiceMock;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -49,7 +48,7 @@ public class ExampleRulesTest {
 
     public void testRuleSet(String resource) throws InterruptedException {
         var rules = ClassificationEngineBenchmark.getRules(resource);
-        var classificationEngine = new DefaultClassificationEngine(() -> rules, createNiceMock(FilterService.class));
+        var classificationEngine = new DefaultClassificationEngine(() -> rules, org.mockito.Mockito.mock(FilterService.class));
 
         // create classifiers for brute force classification
         var classifiers = rules.stream()

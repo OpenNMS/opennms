@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,16 +28,11 @@
 
 package org.opennms.netmgt.correlation.drools;
 
-import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
 
 import org.drools.core.common.InternalFactHandle;
 import org.junit.Test;
 import org.kie.api.definition.type.FactType;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.mock.EasyMockUtils;
 
 public class FromModifyTest extends CorrelationRulesTestCase {
     @Test

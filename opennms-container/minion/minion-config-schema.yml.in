@@ -205,73 +205,6 @@ categories:
                 description: "A list of ObjectNames to not query. Takes precedence over whitelistObjectNames. Defaults to none."
                 key: "/java/agent/prom-jmx-exporter/blacklistObjectNames"
                 example: "org.apache.activemq:clientId=*,*"
-  # Karaf
-  - name: "karaf"
-    label: "Karaf"
-    description: "Karaf configuration"
-    categories:
-      # Karaf :: Management
-      - name: "management"
-        label: "Management"
-        description: "Configuration for Karaf JMX management access"
-        categories:
-          # Karaf :: Management :: RMI
-          - name: "rmi"
-            label: "RMI"
-            description: "Configuration for remote method invocation (RMI)"
-            config:
-              - name: "registry-host"
-                type:
-                  name: "host"
-                label: "Registry Host"
-                description: "RMI registry host IP address"
-                key: "/karaf/management/rmi/registry/host"
-                example: "127.0.0.1"
-              - name: "registry-port"
-                type:
-                  name: "port"
-                label: "Registry Port"
-                description: "RMI registry TCP port"
-                key: "/karaf/management/rmi/registry/port"
-                example: "1299"
-              - name: "server-host"
-                type:
-                  name: "host"
-                label: "Server Host"
-                description: "RMI server host IP address seen by the client"
-                key: "/karaf/management/rmi/server/host"
-                example: "127.0.0.1"
-              - name: "server-port"
-                type:
-                  name: "port"
-                label: "Server Port"
-                description: "RMI server TCP port"
-                key: "/karaf/management/rmi/server/port"
-                example: "45444"
-      # Karaf :: Shell
-      - name: "shell"
-        label: "Shell"
-        description: "Karaf shell access configuration"
-        categories:
-          # Karaf :: Shell :: SSH
-          - name: "ssh"
-            label: "SSH"
-            description: "Apache Karaf SSH configuration settings"
-            config:
-              - name: "host"
-                type:
-                  name: "host"
-                label: "Host"
-                description: "Listening IP address for the SSH service"
-                key: "/karaf/shell/ssh/host"
-                example: "0.0.0.0"
-              - name: "port"
-                type:
-                  name: "port"
-                label: "Port"
-                description: "TCP listening port for the SSH service"
-                key: "/karaf/shell/ssh/port"
-                example: "8201"
   # Minion Environment
   - name: "environment"
     label: "Environment"
@@ -294,32 +227,6 @@ categories:
     label: "IPC"
     description: "Core, Minion, and Sentinel distributed inter-process communication (IPC) settings"
     categories:
-      # IPC Configuration :: gRPC
-      - name: "grpc"
-        label: "gRPC"
-        description: "Configuration for IPC communication using gRPC"
-        config:
-          - name: "host"
-            type:
-              name: "host"
-            label: "Host"
-            description: gRPC host endpoint – typically the same as the core instance host"
-            key: "/ipc/grpc/host"
-            example: "my-opennms-instance-ip"
-          - name: "port"
-            type:
-              name: "port"
-            label: "gRPC TCP port"
-            description: "Set the gRPC TCP port the server is listening on."
-            key: "/ipc/grpc/port"
-            example: "8990"
-          - name: "properties"
-            type:
-              name: "properties"
-            label: "Properties"
-            description: "Generic gRPC configuration properties for IPC"
-            key: "/ipc/grpc"
-            example: "max.message.size: 10485760"
       # IPC Configuration :: RPC
       - name: "rpc"
         label: "RPC"
@@ -350,36 +257,36 @@ categories:
                 description: "Additional Kafka configuration properties"
                 key: "/ipc/rpc/kafka"
                 example: "compression.type: gzip"
-       # IPC Configuration :: Twin
-            - name: "twin"
-              label: "Twin"
-              description: "Configuration settings for Twin"
-              categories:
-                # IPC Configuration :: Twin :: Kafka
-                - name: "kafka"
-                  label: "Kafka"
-                  description: "Configuration for Twin using Apache Kafka as message broker"
-                  config:
-                    - name: "bootstrap-servers"
-                      type:
-                        name: "collection"
-                        strategy: "concat"
-                        items:
-                          label: "Server"
-                          type:
-                            name: "host-with-port"
-                          separator: ","
-                      label: "Bootstrap Servers"
-                      description: "Kafka bootstrap servers"
-                      key: "/ipc/twin/kafka/bootstrap.servers"
-                      example: "kafka-01-ip:9092, kafka-02-ip:9092"
-                    - name: "properties"
-                      type:
-                        name: "properties"
-                      label: "Properties"
-                      description: "Additional Kafka configuration properties"
-                      key: "/ipc/twin/kafka"
-                      example: "compression.type: gzip"
+      # IPC Configuration :: Twin
+      - name: "twin"
+        label: "Twin"
+        description: "Configuration settings for Twin"
+        categories:
+          # IPC Configuration :: Twin :: Kafka
+          - name: "kafka"
+            label: "Kafka"
+            description: "Configuration for Twin using Apache Kafka as message broker"
+            config:
+              - name: "bootstrap-servers"
+                type:
+                  name: "collection"
+                  strategy: "concat"
+                  items:
+                    label: "Server"
+                    type:
+                      name: "host-with-port"
+                    separator: ","
+                label: "Bootstrap Servers"
+                description: "Kafka bootstrap servers"
+                key: "/ipc/twin/kafka/bootstrap.servers"
+                example: "kafka-01-ip:9092, kafka-02-ip:9092"
+              - name: "properties"
+                type:
+                  name: "properties"
+                label: "Properties"
+                description: "Additional Kafka configuration properties"
+                key: "/ipc/twin/kafka"
+                example: "compression.type: gzip"
       # IPC Configuration :: Sink
       - name: "sink"
         label: "Sink"
@@ -418,31 +325,31 @@ categories:
                 description: "Additional generic Kafka configuration properties for IPC Sink"
                 key: "/ipc/sink/kafka"
                 example: "compression.type: gzip"
-       # IPC Configuration :: Kafka IPC
-        - name: "kafka"
-          label: "Kafka IPC"
-          description: "Configuration settings for Kafka IPC"
-          config:
-            - name: "bootstrap-servers"
-              type:
-                name: "collection"
-                strategy: "concat"
-                items:
-                  label: "Server"
-                  type:
-                    name: "host-with-port"
-                  separator: ","
-              label: "Bootstrap Servers"
-              description: "Kafka bootstrap servers"
-              key: "/ipc/kafka/bootstrap.servers"
-              example: "kafka-01-ip:9092, kafka-02-ip:9092"
-            - name: "properties"
-              type:
-                name: "properties"
-              label: "Properties"
-              description: "Additional Kafka configuration properties"
-              key: "/ipc/kafka"
-              example: "compression.type: gzip"
+      # IPC Configuration :: Kafka IPC
+      - name: "kafka"
+        label: "Kafka IPC"
+        description: "Configuration settings for Kafka IPC"
+        config:
+          - name: "bootstrap-servers"
+            type:
+              name: "collection"
+              strategy: "concat"
+              items:
+                label: "Server"
+                type:
+                  name: "host-with-port"
+                separator: ","
+            label: "Bootstrap Servers"
+            description: "Kafka bootstrap servers"
+            key: "/ipc/kafka/bootstrap.servers"
+            example: "kafka-01-ip:9092, kafka-02-ip:9092"
+          - name: "properties"
+            type:
+              name: "properties"
+            label: "Properties"
+            description: "Additional Kafka configuration properties"
+            key: "/ipc/kafka"
+            example: "compression.type: gzip"
 
   # Netmgt
   - name: "netmgt"
@@ -472,37 +379,7 @@ categories:
             label: "Properties"
             description: "Set Syslog daemon properties."
             key: "/netmgt/syslog"
-            example: "syslog.listen.interface: 0.0.0.0, syslog.listen.port: 1514" 
-  # Web
-  - name: "web"
-    label: "Web"
-    description: "Configuration for the core instance web server"
-    categories:
-      # Web :: Jetty
-      - name: "jetty"
-        label: "Jetty"
-        description: "Set generic Jetty web server configuration parameters."
-        config:
-          - name: "http-listen-port"
-            type:
-              name: "port"
-            label: "HTTP Listen Port"
-            description: "Jetty HTTP listen port"
-            key: "/jetty/web/port"
-            example: "8181"
-          - name: "listen-address"
-            type:
-              name: "collection"
-              strategy: "concat"
-              items:
-                label: "Listen Address"
-                type:
-                  name: "host"
-                separator: ","
-            label: "Listen Address"
-            description: "Jetty listen addresses"
-            key: "/jetty/web/host"
-            example: "0.0.0.0"
+            example: "syslog.listen.interface: 0.0.0.0, syslog.listen.port: 1514"
   # Telemetry
   - name: "telemetry"
     label: "Telemetry"

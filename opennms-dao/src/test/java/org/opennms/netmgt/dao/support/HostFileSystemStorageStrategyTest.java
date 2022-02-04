@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,11 @@
 
 package org.opennms.netmgt.dao.support;
 
-import org.junit.Assert;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-import org.easymock.EasyMock;
+import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.StorageStrategyService;
@@ -46,11 +48,11 @@ public class HostFileSystemStorageStrategyTest {
 	@Test
     public void testStrategy() throws Exception {
         // Create Mocks
-        StorageStrategyService service = EasyMock.createMock(StorageStrategyService.class);
+        StorageStrategyService service = mock(StorageStrategyService.class);
         SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddressUtils.addr("127.0.0.1"));
         agentConfig.setPort(1161);
-        EasyMock.expect(service.getAgentConfig()).andReturn(agentConfig).anyTimes();
-        EasyMock.replay(service);
+
+        when(service.getAgentConfig()).thenReturn(agentConfig);
 
         // Create Strategy
         HostFileSystemStorageStrategy strategy = new HostFileSystemStorageStrategy();
@@ -72,6 +74,6 @@ public class HostFileSystemStorageStrategyTest {
         // Test RelativePath
         Assert.assertEquals(ResourcePath.get("1", "hrStorageIndex", "_root_fs"), strategy.getRelativePathForAttribute(parentResource, resourceName));
 
-        EasyMock.verify(service);
+        verifyNoMoreInteractions(service);
     }
 }

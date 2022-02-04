@@ -48,8 +48,15 @@
         </xsd:restriction>
     </xsd:simpleType>
 
-
     <xsd:element name="importConfig">
+        <xsd:complexType>
+            <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
+            <xsd:attribute name="filePath" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="importConfigs">
+        <!-- used for multiple configs, currently only cfg files are supported -->
         <xsd:complexType>
             <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
             <xsd:attribute name="filePath" type="xsd:string" use="required"/>
