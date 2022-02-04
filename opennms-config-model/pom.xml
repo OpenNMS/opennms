@@ -129,8 +129,18 @@
       <artifactId>org.opennms.features.collection.api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>org.opennms.features.config.util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
+      <version>${jackson2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
       <version>${jackson2Version}</version>
     </dependency>
   </dependencies>

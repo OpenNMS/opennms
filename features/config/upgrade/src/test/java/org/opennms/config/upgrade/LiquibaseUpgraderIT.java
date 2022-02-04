@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -198,10 +198,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
             // check for org.opennms.features.datachoices.cfg
             Optional<JSONObject> config = this.cm.getJSONConfiguration("org.opennms.features.datachoices", "default");
-            assertEquals(7, config.get().keySet().size());
+            // only fields with a default value will auto fill
+            assertEquals(4, config.get().keySet().size());
             // boolean in openable is impossible to be null
             assertEquals(false, config.get().get("enabled"));
-            assertEquals(JSONObject.NULL, config.get().get("acknowledged-by"));
             assertEquals(BigDecimal.valueOf(86400000), config.get().get("interval"));
             assertEquals("http://stats.opennms.org/datachoices/", config.get().get("url"));
         } finally {

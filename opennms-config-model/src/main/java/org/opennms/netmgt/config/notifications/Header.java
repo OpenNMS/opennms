@@ -1,25 +1,25 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
- * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
- * 
+ *
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * 
+ *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
- * 
+ *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *     http://www.gnu.org/licenses/
- * 
+ *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
@@ -30,63 +30,50 @@ package org.opennms.netmgt.config.notifications;
 
 
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Header containing information about this configuration
- *  file.
- * 
+ * file.
+ *
  * @version $Revision$ $Date$
  */
-@XmlRootElement(name = "header")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Header implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
      * Revision of this file.
      */
-    @XmlElement(name = "rev", required = true)
     private String rev;
 
     /**
      * Creation time in the 'dow mon dd hh:mm:ss zzz yyyy'
-     *  format.
+     * format.
      */
-    @XmlElement(name = "created", required = true)
     private String created;
 
     /**
      * Monitoring station? This is seemingly
-     *  unused.
+     * unused.
      */
-    @XmlElement(name = "mstation", required = true)
     private String mstation;
-
-    public Header() {
-    }
 
     /**
      * Overrides the Object.equals method.
-     * 
+     *
      * @param obj
      * @return true if the objects are equal.
      */
     @Override
     public boolean equals(final Object obj) {
-        if ( this == obj ) {
+        if (this == obj) {
             return true;
         }
-        
+
         if (obj instanceof Header) {
-            Header temp = (Header)obj;
-            boolean equals = Objects.equals(temp.rev, rev)
-                && Objects.equals(temp.created, created)
-                && Objects.equals(temp.mstation, mstation);
-            return equals;
+            Header temp = (Header) obj;
+            return Objects.equals(temp.rev, rev)
+                    && Objects.equals(temp.created, created)
+                    && Objects.equals(temp.mstation, mstation);
         }
         return false;
     }
@@ -94,8 +81,8 @@ public class Header implements java.io.Serializable {
     /**
      * Returns the value of field 'created'. The field 'created' has the following
      * description: Creation time in the 'dow mon dd hh:mm:ss zzz yyyy'
-     *  format.
-     * 
+     * format.
+     *
      * @return the value of field 'Created'.
      */
     public String getCreated() {
@@ -105,8 +92,8 @@ public class Header implements java.io.Serializable {
     /**
      * Returns the value of field 'mstation'. The field 'mstation' has the
      * following description: Monitoring station? This is seemingly
-     *  unused.
-     * 
+     * unused.
+     *
      * @return the value of field 'Mstation'.
      */
     public String getMstation() {
@@ -116,7 +103,7 @@ public class Header implements java.io.Serializable {
     /**
      * Returns the value of field 'rev'. The field 'rev' has the following
      * description: Revision of this file.
-     * 
+     *
      * @return the value of field 'Rev'.
      */
     public String getRev() {
@@ -125,23 +112,22 @@ public class Header implements java.io.Serializable {
 
     /**
      * Method hashCode.
-     * 
+     *
      * @return a hash code value for the object.
      */
     @Override
     public int hashCode() {
-        int hash = Objects.hash(
-            rev, 
-            created, 
-            mstation);
-        return hash;
+        return Objects.hash(
+                rev,
+                created,
+                mstation);
     }
 
     /**
      * Sets the value of field 'created'. The field 'created' has the following
      * description: Creation time in the 'dow mon dd hh:mm:ss zzz yyyy'
-     *  format.
-     * 
+     * format.
+     *
      * @param created the value of field 'created'.
      */
     public void setCreated(final String created) {
@@ -151,8 +137,8 @@ public class Header implements java.io.Serializable {
     /**
      * Sets the value of field 'mstation'. The field 'mstation' has the following
      * description: Monitoring station? This is seemingly
-     *  unused.
-     * 
+     * unused.
+     *
      * @param mstation the value of field 'mstation'.
      */
     public void setMstation(final String mstation) {
@@ -162,7 +148,7 @@ public class Header implements java.io.Serializable {
     /**
      * Sets the value of field 'rev'. The field 'rev' has the following
      * description: Revision of this file.
-     * 
+     *
      * @param rev the value of field 'rev'.
      */
     public void setRev(final String rev) {

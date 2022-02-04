@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -28,55 +28,41 @@
 
 package org.opennms.netmgt.config.notifications;
 
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.opennms.core.xml.ValidateUsing;
-import org.opennms.netmgt.config.utils.ConfigUtils;
-
 /**
  * Class Parameter.
  */
-@XmlRootElement(name = "parameter")
-@XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("notifications.xsd")
+
 public class Parameter implements Serializable {
     private static final long serialVersionUID = 2L;
 
-    @XmlAttribute(name = "name", required = true)
-    private String m_name;
+    private String name;
 
-    @XmlAttribute(name = "value", required = true)
-    private String m_value;
-
-    public Parameter() {
-    }
+    private String value;
 
     public String getName() {
-        return m_name;
+        return this.name;
     }
 
     public void setName(final String name) {
-        m_name = ConfigUtils.assertNotEmpty(name, "name");
+        this.name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
     public String getValue() {
-        return m_value;
+        return this.value;
     }
 
     public void setValue(final String value) {
-        m_value = ConfigUtils.assertNotEmpty(value, "value");
+        this.value = ConfigUtils.assertNotEmpty(value, "value");
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_name, m_value);
+        return Objects.hash(this.name, this.value);
     }
 
     @Override
@@ -87,8 +73,8 @@ public class Parameter implements Serializable {
 
         if (obj instanceof Parameter) {
             final Parameter that = (Parameter)obj;
-            return Objects.equals(this.m_name, that.m_name)
-                    && Objects.equals(this.m_value, that.m_value);
+            return Objects.equals(this.name, that.name)
+                    && Objects.equals(this.value, that.value);
         }
         return false;
     }

@@ -44,6 +44,7 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
+import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
@@ -118,6 +119,8 @@ public class CmWillItUnmarshalIT {
         // since notifd have default values, the checkFormat will never right.
         addFile(Source.CLASSPATH, "/defaults/notifd-configuration.xml", NotifdConfiguration.class,  "notifd-configuration.xsd", "notifd-configuration", false, null);
         addFile(Source.CLASSPATH, "/defaults/wmi-config.xml", WmiConfig.class,"wmi-config.xsd","wmi-config",true, null);
+        addFile(Source.CLASSPATH, "/defaults/notifications.xml", Notifications.class,  "notifications.xsd", "notifications", false, null);
+        addFile(Source.EXAMPLE, "notifications.xml", Notifications.class,  "notifications.xsd", "notifications", false, null);
     }
 
     /**

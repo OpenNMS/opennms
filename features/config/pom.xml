@@ -19,6 +19,8 @@
     <!-- to store service & dao's unit test to prevent circular dependency problem -->
     <module>test</module>
     <module>upgrade</module>
+    <!-- util that will not include any opennms packages -->
+    <module>util</module>
   </modules>
   <properties>
     <!-- Misc. -->

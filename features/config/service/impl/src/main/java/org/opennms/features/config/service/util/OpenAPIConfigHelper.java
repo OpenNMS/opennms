@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -82,21 +82,20 @@ public class OpenAPIConfigHelper {
         if (propertySchema instanceof ArraySchema) {
             configJsonObj.put(key, new JSONArray());
         } else if (isSimpleDataType(propertySchema)) {
-            // only fill with default value
-            if (propertySchema.getDefault() != null)
+            // only fill with default value, give up fill null values. It may cause validation exception
+            if(propertySchema.getDefault() != null) {
                 configJsonObj.put(key, propertySchema.getDefault());
-            else if (propertySchema instanceof BooleanSchema) {
-                configJsonObj.put(key, false);
-            } else {
-                configJsonObj.put(key, JSONObject.NULL);
             }
         } else if (propertySchema instanceof Schema && propertySchema.get$ref() != null) {
             String schemaName = propertySchema.get$ref().replaceAll("^" + OpenAPIBuilder.SCHEMA_REF_TAG, "");
             if(isNewObject)
             {
                 JSONObject children = new JSONObject();
-                configJsonObj.put(key, children);
                 fillWithDefaultValue(openapi, schemaName, children);
+                // only add if children is not empty
+                if (children.length() > 0) {
+                    configJsonObj.put(key, children);
+                }
             } else {
                 fillWithDefaultValue(openapi, schemaName, configJsonObj);
             }

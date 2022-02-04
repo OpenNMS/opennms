@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -140,7 +140,8 @@ public class WillItUnmarshalCoverageMetaIT {
         ignoreFile(new File(getDaemonEtcDirectory(), "trapd-configuration.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "notifd-configuration.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "wmi-config.xml"));
-
+        ignoreFile(new File(getDaemonEtcDirectory(), "notifications.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "examples/notifications.xml"));
 
         LOG.debug("FILES.size() = {}", FILES.size());
 

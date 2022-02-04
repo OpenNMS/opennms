@@ -6,8 +6,9 @@
         xmlns:this="http://xmlns.opennms.org/xsd/notifications"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
-		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
-		  elementFormDefault="qualified">
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+        xmlns:ejaxb="http://xmlns.opennms.org/xsd/config/extended-schema-for-jaxb"
+        elementFormDefault="qualified">
   <annotation>
     <documentation>XML Schema for the notifications.xml configuration file.
     Version: $Id$</documentation>
@@ -103,7 +104,7 @@
     </complexType>
   </element>
 
-  <element name="rule">
+  <element name="rule" ejaxb:body-name="content">
     <complexType>
       <simpleContent>
         <extension base="string">

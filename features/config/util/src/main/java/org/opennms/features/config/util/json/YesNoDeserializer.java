@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -24,48 +24,23 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ ******************************************************************************/
 
-package org.opennms.netmgt.config.notifications;
+package org.opennms.features.config.util.json;
 
-import java.io.Serializable;
-import java.util.Objects;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 
-public class Rule implements Serializable {
+import java.io.IOException;
 
-    private static final long serialVersionUID = 2L;
-
-    private String content;
-
-    private Boolean strict;
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Boolean getStrict() {
-        return this.strict;
-    }
-
-    public void setStrict(Boolean strict) {
-        this.strict = strict;
-    }
-
+public class YesNoDeserializer extends JsonDeserializer<Boolean> {
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Rule rule = (Rule) o;
-        return Objects.equals(content, rule.content) &&
-                Objects.equals(this.strict, rule.strict);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(content, this.strict);
+    public Boolean deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+        String valStr = jsonParser.getValueAsString();
+        if ("yes".equalsIgnoreCase(valStr)) return true;
+        if ("no".equalsIgnoreCase(valStr)) return false;
+        return Boolean.valueOf(valStr);
     }
 }

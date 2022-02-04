@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.notifications;
+package org.opennms.features.config.convert;
+
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.netmgt.config.notifications.Header;
+import org.opennms.netmgt.config.notifications.Notification;
+import org.opennms.netmgt.config.notifications.Notifications;
+import org.opennms.netmgt.config.notifications.Rule;
 
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class NotificationsTest extends XmlTestNoCastor<Notifications> {
+public class NotificationsTest extends CmConfigTest<Notifications> {
 
-    public NotificationsTest(Notifications sampleObject, Object sampleXml) {
-        super(sampleObject, sampleXml, "src/main/resources/xsds/notifications.xsd");
+    public NotificationsTest(Notifications sampleObject, String sampleXml) {
+        super(sampleObject, sampleXml, "notifications.xsd", "notifications");
+
     }
 
     @Parameters

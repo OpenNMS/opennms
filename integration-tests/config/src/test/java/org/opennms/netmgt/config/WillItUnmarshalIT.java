@@ -227,7 +227,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "ksc-performance-reports.xml", ReportsList.class, true, null);
         addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, false, null);
         addFile(Source.CONFIG, "notificationCommands.xml", NotificationCommands.class, true, null);
-        addFile(Source.CONFIG, "notifications.xml", Notifications.class, true, null);
         addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, false, null);
         addFile(Source.CONFIG, "poll-outages.xml", Outages.class, true, null);
         addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, true, null);
@@ -289,7 +288,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-mbeans/OpenNMS/1.10/OpenNMSLegacy.xml", Mbeans.class, false, null);
         addFile(Source.EXAMPLE, "mail-transport-test.xml", MailTransportTest.class, false, null);
         addFile(Source.EXAMPLE, "notificationCommands.xml", NotificationCommands.class, false, null);
-        addFile(Source.EXAMPLE, "notifications.xml", Notifications.class, false, null);
         addFile(Source.EXAMPLE, "old-datacollection-config.xml", DatacollectionConfig.class, false, null);
         addFile(Source.EXAMPLE, "poll-outages.xml", Outages.class, false, null);
         addFile(Source.EXAMPLE, "poller-configuration.xml", PollerConfiguration.class, false, null);
