@@ -32,6 +32,8 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import java.io.File;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -57,7 +59,7 @@ public class EventConfPriorityTest {
     }
 
     @Test
-    public void canFindHigherpriorityInFile() throws Exception {
+    public void canFindHigherPriorityInFile() throws Exception {
         eventConfDao.setConfigResource(new FileSystemResource(new File("src/test/resources/priority/eventconf.xml")));
         eventConfDao.afterPropertiesSet();
         Assert.assertEquals(3, eventConfDao.getAllEvents().size());
@@ -74,7 +76,7 @@ public class EventConfPriorityTest {
     }
 
     @Test
-    public void canFindHigherpriorityInLaterFile() throws Exception {
+    public void canFindHigherPriorityInLaterFile() throws Exception {
         eventConfDao.setConfigResource(new FileSystemResource(new File("src/test/resources/priority/eventconf2.xml")));
         eventConfDao.afterPropertiesSet();
         Assert.assertEquals(4, eventConfDao.getAllEvents().size());
@@ -105,6 +107,22 @@ public class EventConfPriorityTest {
         Assert.assertNotNull(event);
         assertThat(event.getPriority(), equalTo(2000));
         Assert.assertEquals("ROOT3 CONFIG", event.getEventLabel());
+    }
+
+    @Test
+    public void doesNotDuplicateWhenGettingByUEI() throws Exception {
+        eventConfDao.setConfigResource(new FileSystemResource(new File("src/test/resources/priority/eventconf3.xml")));
+        eventConfDao.afterPropertiesSet();
+        Assert.assertEquals(4, eventConfDao.getAllEvents().size());
+
+        EventBuilder eb = new EventBuilder("uei.opennms.org/vendor/3Com/traps/a3ComFddiMACNeighborChangeEvent", "JUnit");
+        eb.setEnterpriseId(".1.3.6.1.4.1.43.29.10");
+        eb.setGeneric(6);
+        eb.setSpecific(6);
+
+        List<Event> eventConfigList = eventConfDao.getEvents(eb.getEvent().getUei());
+        Assert.assertNotNull(eventConfigList);
+        assertThat(eventConfigList.size(), equalTo(3));
     }
 
 }
