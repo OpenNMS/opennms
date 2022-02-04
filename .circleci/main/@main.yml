@@ -1051,20 +1051,30 @@ jobs:
       - run:
           name: Create & push multi-arch manifest
           command: |
-            IMAGE_REF="${MINION_IMAGE}:${MINION_IMAGE_VERSION}"
-            docker manifest create ${IMAGE_REF} \
-              ${IMAGE_REF}-linux-amd64 \
-              ${IMAGE_REF}-linux-arm64 \
-              ${IMAGE_REF}-linux-arm-v7 \
-              --amend
-            SHA_256="$(docker manifest push "${IMAGE_REF}" --purge | cut -d ':' -f 2)"
-            echo "Manifest SHA-256: ${SHA_256}"
-            echo "Image-Ref: ${IMAGE_REF}"
-            MANIFEST_FROM_REG="$(docker manifest inspect "${IMAGE_REF}" -v)";
-            BYTES_SIZE="$(printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor.size' | uniq)";
-            echo "Manifest-inspect BYTES: ${BYTES_SIZE}";
-            echo "Manifest contents:\n";
-            printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor | "Architecture: " + .platform.architecture + .platform.variant + ", digest: " + .digest';
+            create_and_push_manifest(){
+              IMAGE_REF="${1}:${MINION_IMAGE_VERSION}"
+              docker manifest create ${IMAGE_REF} \
+                ${IMAGE_REF}-linux-amd64 \
+                ${IMAGE_REF}-linux-arm64 \
+                ${IMAGE_REF}-linux-arm-v7 \
+                --amend
+              SHA_256="$(docker manifest push "${IMAGE_REF}" --purge | cut -d ':' -f 2)"
+              echo "Manifest SHA-256: ${SHA_256}"
+              echo "Image-Ref: ${IMAGE_REF}"
+              MANIFEST_FROM_REG="$(docker manifest inspect "${IMAGE_REF}" -v)";
+              BYTES_SIZE="$(printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor.size' | uniq)";
+              echo "Manifest-inspect BYTES: ${BYTES_SIZE}";
+              echo "Manifest contents:\n";
+              printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor | "Architecture: " + .platform.architecture + .platform.variant + ", digest: " + .digest';
+            }
+
+            # Docker multi-arch manifest
+            # create_and_push_manifest MINION_IMAGE
+
+            # Azure multi-arch manifest
+            create_and_push_manifest MINION_AZ_IMAGE
+
+            # Notary Docker
             export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
             echo "Sign ${SHA_256} with the notary"
             # when the multi-arch image is signed by the delegate key then docker pull reports "No valid trust data..."
@@ -1081,10 +1091,11 @@ jobs:
 
             # TODO function for duplication ?
             # AZURE notary
+
             NOTARY_SERVER="https://openmspubacr.azureacr.io"
             export NOTARY_AUTH="$(printf "${AZURE_SP}:${AZURE_SP_PASSWORD}" | base64 -w0)"
             export NOTARY_TARGETS_PASSPHRASE="${AZURE_DCT_CI_PASSPHRASE}"
-            notary -d ~/.docker/trust/ -s "${NOTARY_SERVER}" addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
+            notary -d ~/.docker/trust/ -s "${NOTARY_SERVER}" addhash "${MINION_AZ_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
             notary -s "${NOTARY_SERVER}" list "${IMAGE}"
 
   horizon-rpm-build:
