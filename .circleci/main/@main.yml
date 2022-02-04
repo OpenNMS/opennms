@@ -1062,19 +1062,19 @@ jobs:
               echo "Manifest SHA-256: ${SHA_256}"
               echo "Image-Ref: ${IMAGE_REF}"
               MANIFEST_FROM_REG="$(docker manifest inspect "${IMAGE_REF}" -v)";
-              BYTES_SIZE="$(printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor.size' | uniq)";
+              BYTES_SIZE_${2}="$(printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor.size' | uniq)";
               echo "Manifest-inspect BYTES: ${BYTES_SIZE}";
               echo "Manifest contents:\n";
               printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor | "Architecture: " + .platform.architecture + .platform.variant + ", digest: " + .digest';
             }
 
             # Docker multi-arch manifest
-            # create_and_push_manifest $MINION_IMAGE
+            # create_and_push_manifest $MINION_IMAGE DK
 
             # Azure multi-arch manifest
-            create_and_push_manifest $MINION_AZ_IMAGE
+            create_and_push_manifest $MINION_AZ_IMAGE AZ
 
-            # Notary Docker
+            # Notary sign on Docker
             export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
             echo "Sign ${SHA_256} with the notary"
             # when the multi-arch image is signed by the delegate key then docker pull reports "No valid trust data..."
@@ -1086,17 +1086,16 @@ jobs:
             # -> use the targets key of the minion repository to sign the multi-arch image instead
             export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
             # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
-            echo "Done!"
+            echo "Dockerhub Done!"
             # notary -s https://notary.docker.io list "${IMAGE}"
 
-            # TODO function for duplication ?
-            # AZURE notary
-
+            # Notary sign on Azure
             NOTARY_SERVER="https://opennmspubacr.azurecr.io"
             export NOTARY_AUTH="$(printf "${AZURE_SP}:${AZURE_SP_PASSWORD}" | base64 -w0)"
             export NOTARY_TARGETS_PASSPHRASE="${AZURE_DCT_CI_PASSPHRASE}"
             notary -d ~/.docker/trust/ -s "${NOTARY_SERVER}" addhash "${MINION_AZ_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
-            notary -s "${NOTARY_SERVER}" list "${IMAGE}"
+            echo "ACR Done!"
+            notary -d ~/.docker/trust/ -s "${NOTARY_SERVER}" list "${IMAGE}"
 
   horizon-rpm-build:
     executor: centos-build-executor
