@@ -48,11 +48,5 @@
             <name>OpenNMS Repository</name>
             <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
         </repository>
-        <repository>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
-            <id>opennms-maven-3rdparty</id>
-            <url>https://packages.opennms.com/public/3rdparty/maven/</url>
-        </repository>
     </repositories>
 </project>

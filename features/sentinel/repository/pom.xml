@@ -613,15 +613,5 @@
             <releases><enabled>false</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
         </repository>
-        <repository>
-            <id>opennms-maven-3rdparty</id>
-            <url>https://packages.opennms.com/public/3rdparty/maven/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
     </repositories>
 </project>
