@@ -44,7 +44,7 @@ sudo /opt/opennms/bin/install -dis
 {page-component-title} runs as a non-root user, which requires having a Linux kernel greater than 3.10.
 If you run on an older kernel, and are unable to upgrade your OS, you need to assign CAP_NET_RAW capabilities:
 
-Edit the systemd unit `/etc/systemd/system/multi-user.target.wants/opennms.service` by adding the lines in the `[service]` section as follows:
+Run `systemctl edit --full opennms.service` and add the following lines to the `[Service]` section:
 
 [source, console]
 ----
