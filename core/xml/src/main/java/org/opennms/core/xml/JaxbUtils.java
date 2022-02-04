@@ -71,6 +71,7 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.opennms.core.network.IPValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -97,7 +98,9 @@ public abstract class JaxbUtils {
         @Override
         public boolean handleEvent(final ValidationEvent event) {
             LOG.trace("event = {}", event, event.getLinkedException());
-            return false;
+            // If the issue is with IP validation, skip the problematic interface
+            // but attempt to continue parsing
+            return (event.getLinkedException() instanceof IPValidationException);
         }
     }
 

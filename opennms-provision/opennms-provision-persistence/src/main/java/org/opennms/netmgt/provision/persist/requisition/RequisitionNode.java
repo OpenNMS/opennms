@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -45,7 +46,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.netmgt.model.PrimaryType;
-
+import org.opennms.core.utils.InetAddressUtils;
 
 /**
  * <p>RequisitionNode class.</p>
@@ -144,7 +145,7 @@ public class RequisitionNode {
      */
     public RequisitionInterface getInterface(String ipAddress) {
         for (RequisitionInterface iface : m_interfaces) {
-            if (iface.getIpAddr().getHostAddress().equals(ipAddress)) {
+            if (InetAddressUtils.str(iface.getIpAddr()).equals(ipAddress)) {
                 return iface;
             }
         }
@@ -169,7 +170,7 @@ public class RequisitionNode {
         final Iterator<RequisitionInterface> i = m_interfaces.iterator();
         while (i.hasNext()) {
             final RequisitionInterface iface = i.next();
-            if (iface.getIpAddr().getHostAddress().equals(ipAddress)) {
+            if (InetAddressUtils.str(iface.getIpAddr()).equals(ipAddress)) {
                 i.remove();
                 return true;
             }
@@ -183,7 +184,7 @@ public class RequisitionNode {
      * @param iface a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
      */
     public void putInterface(RequisitionInterface iface) {
-        deleteInterface(iface.getIpAddr() == null ? null : iface.getIpAddr().getHostAddress());
+        deleteInterface(iface.getIpAddr() == null ? null : InetAddressUtils.str(iface.getIpAddr()));
         m_interfaces.add(0, iface);
     }
 
@@ -597,5 +598,4 @@ public class RequisitionNode {
                 + ", parentNodeLabel=" + m_parentNodeLabel
                 + ", location=" + m_location + "]";
     }
-
 }

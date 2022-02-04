@@ -1017,6 +1017,7 @@ public abstract class EventConstants {
     public static final String PARM_APPLICATION_ID = "applicationId";
     public static final String PARM_APPLICATION_NAME = "applicationName";
     public static final String PARM_AFFECTED_NODE_LABEL = "affectedNodeLabel";
+    public static final String PARM_INVALID_HOST = "invalidHost";
 
     //
     // For Trapd
