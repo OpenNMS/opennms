@@ -96,7 +96,7 @@
     </changeSet>
 
     <changeSet author="pschweizer" id="import-graphml">
-        <cm:registerSchema id="org.opennms.netmgt.graph.provider.graphml"/>
+        <cm:registerSchema id="org.opennms.netmgt.graph.provider.graphml" allowMultiple="true"/>
         <cm:changeSchema schemaId="org.opennms.netmgt.graph.provider.graphml">
             <cm:put name="graphLocation" type="string"/>
         </cm:changeSchema>
