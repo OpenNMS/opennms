@@ -28,13 +28,13 @@
 
 package org.opennms.features.config.osgi.cm;
 
+import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
+
 import java.util.Objects;
 
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 
 public class CmIdentifierUtil {
-
-    final static String CONFIG_ID = "default";
 
     public static ConfigUpdateInfo pidToCmIdentifier(String pid) {
         Objects.requireNonNull(pid);
@@ -46,7 +46,7 @@ public class CmIdentifierUtil {
             configId = pid.substring(lastIndexOf + 1);
         } else {
             configName = pid;
-            configId = CONFIG_ID;
+            configId = DEFAULT_CONFIG_ID;
         }
         return new ConfigUpdateInfo(configName, configId);
     }
@@ -54,7 +54,7 @@ public class CmIdentifierUtil {
     public static String cmIdentifierToPid(ConfigUpdateInfo identifier) {
         Objects.requireNonNull(identifier);
         StringBuilder b = new StringBuilder(identifier.getConfigName());
-        if (!CONFIG_ID.equals(identifier.getConfigId())) {
+        if (!DEFAULT_CONFIG_ID.equals(identifier.getConfigId())) {
             b.append("-")
                     .append(identifier.getConfigId());
         }
