@@ -37,6 +37,7 @@ import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.exception.ConfigNotFoundException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.EventType;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ import java.util.function.Consumer;
 
 /**
  * It is a minimal mock for CM use. If configFile is passed, it will read and return as configEntity.
- * Otherwise, I will return a new instance.
+ * Otherwise, it will return a new instance.
  */
 @Component
 public class ConfigurationManagerServiceMock implements ConfigurationManagerService {
@@ -123,7 +124,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer) {
+    public void registerEventHandler(EventType type, ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer) {
         // mock not support yet
     }
 

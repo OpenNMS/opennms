@@ -62,7 +62,11 @@ public interface ConfigurationManagerService {
 
     Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName);
 
-    void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer);
+    @Deprecated
+    default void registerEventHandler(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer) {
+        registerEventHandler(EventType.UPDATE, info, consumer);
+    }
+    void registerEventHandler(EventType type, ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer);
 
     /**
      * register a new configuration by config object.
@@ -73,7 +77,9 @@ public interface ConfigurationManagerService {
      * @param configObject (config object / JSONObject)
      */
     void registerConfiguration(String configName, String configId, JsonAsString configObject);
-
+    default void registerConfiguration(ConfigUpdateInfo configIdentifier, JsonAsString configObject) {
+        this.registerConfiguration(configIdentifier.getConfigName(), configIdentifier.getConfigId(), configObject);
+    }
     /**
      * remove configure from service
      *
@@ -100,7 +106,9 @@ public interface ConfigurationManagerService {
      * @see #getJSONStrConfiguration(String, String)
      */
     Optional<String> getJSONStrConfiguration(String configName, String configId);
-
+    default Optional<String> getJSONStrConfiguration(ConfigUpdateInfo configIdentifier){
+        return getJSONStrConfiguration(configIdentifier.getConfigName(), configIdentifier.getConfigId());
+    }
     /**
      * get whole ConfigData by configName
      *

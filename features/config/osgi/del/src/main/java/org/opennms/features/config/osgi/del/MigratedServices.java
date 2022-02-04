@@ -28,6 +28,7 @@
 
 package org.opennms.features.config.osgi.del;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -36,14 +37,28 @@ import java.util.Set;
  * We can't use the start of the pid name ("org.opennms") since features might be started from fileinstall before
  * cm is available.
  * This class can be deleted once we have moved all opennms plugins to cm.
+ * Migrated services come in two flavors: simple and multi. Simple services have only one instance, multi have several instances.
  */
 public class MigratedServices {
 
-    final public static Set<String> PIDS =  Set.of(
+    final public static Set<String> PIDS_SINGLE_INSTANCE = Set.of(
             "org.opennms.features.datachoices"
+            // add you migrated service here...
+    );
+
+    final public static Set<String> PIDS_MULTI_INSTANCE = Set.of(
+            // "org.opennms.netmgt.graph.provider.graphml"
+            // ... or here
     );
 
     public static boolean isMigrated(final String pid) {
-        return PIDS.contains(pid);
+        Objects.requireNonNull(pid);
+        return PIDS_SINGLE_INSTANCE.contains(pid) || isMultiInstanceService(pid);
+    }
+
+    public static boolean isMultiInstanceService(final String pid) {
+        Objects.requireNonNull(pid);
+        return PIDS_MULTI_INSTANCE.stream()
+                .anyMatch(pid::startsWith);
     }
 }

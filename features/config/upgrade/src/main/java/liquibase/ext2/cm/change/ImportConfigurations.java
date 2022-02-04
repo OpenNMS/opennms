@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,22 +28,17 @@
 
 package liquibase.ext2.cm.change;
 
-import static liquibase.ext2.cm.change.ConfigFileUtil.OPENNMS_HOME;
 import static liquibase.ext2.cm.change.ConfigFileUtil.checkFileType;
-import static liquibase.ext2.cm.change.ConfigFileUtil.findConfigFiles;
 import static liquibase.ext2.cm.change.ConfigFileUtil.validateAndGetArchiveDir;
 import static liquibase.ext2.cm.change.ImportConfigurationUtil.importConfig;
-import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
 
 import java.nio.file.Path;
-import java.util.Optional;
+import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import liquibase.change.ChangeMetaData;
@@ -55,48 +50,72 @@ import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
 
 /**
- * Imports an existing configuration. It can either live in {opennms.home}/etc (user defined) or in the class path (default).
+ * Imports existing configurations for the same schema. They can either live in  {opennms.home}/etc (user defined) or in the class path (default).
  */
-@DatabaseChange(name = "importConfig", description = "Imports a configuration from file.", priority = ChangeMetaData.PRIORITY_DATABASE)
-public class ImportConfiguration extends AbstractCmChange {
+@DatabaseChange(name = "importConfigs", description = "Imports configurations. Only osgi (.cfg) files are supported.", priority = ChangeMetaData.PRIORITY_DATABASE)
+public class ImportConfigurations extends AbstractCmChange {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ImportConfiguration.class);
-    private final static Set<String> ALLOWED_EXTENSIONS = Set.of("xml", "cfg");
+    private final static Set<String> ALLOWED_EXTENSIONS = Set.of("cfg");
 
     private String schemaId;
-    private String configId;
     private String filePath;
     private Path archivePath;
-    private Resource configResource;
+    private Collection<Resource> configResources;
 
     @Override
     public ValidationErrors validate(CmDatabase db, ValidationErrors validationErrors) {
         validationErrors.checkRequiredField("schemaId", this.schemaId);
         validationErrors.checkRequiredField("filePath", this.filePath);
-        Optional<Resource> configResource = findConfigFiles(this.filePath).stream().findAny();
-
-        if (configResource.isEmpty() || !configResource.get().isReadable()) {
-            validationErrors.addError(String.format("Can not read configuration in file: %s/etc/%s or in classpath: /defaults/%s",
-                    OPENNMS_HOME, this.filePath, this.filePath));
-        } else {
-            this.configResource = configResource.get();
-        }
-
-        archivePath = validateAndGetArchiveDir(validationErrors);
         checkFileType(validationErrors, ALLOWED_EXTENSIONS, this.filePath);
+        checkForWildcard(validationErrors);
+        configResources = ConfigFileUtil.findConfigFiles(this.filePath);
+        for(Resource resource : configResources) {
+           if(!resource.isReadable()) {
+               validationErrors.addError("Found configuration file but can not read it: " + resource.getFilename());
+           }
+        }
+        archivePath = validateAndGetArchiveDir(validationErrors);
         return validationErrors;
+    }
+
+    void checkForWildcard(ValidationErrors validationErrors) {
+
+        if (this.filePath == null) {
+            return; // nothing to do
+        }
+        if (!this.filePath.endsWith("-*.cfg")) {
+            validationErrors.addError(String.format("filePath doesn't end in '-*.cfg', check your filePath: %s", filePath));
+        }
     }
 
     @Override
     public String getConfirmationMessage() {
-        return String.format("Imported configuration from %s with id=%s for schema=%s", this.filePath, getConfigId(), this.schemaId);
+        if(this.configResources.isEmpty()) {
+            return String.format("No configurations files found with pattern %s for schema=%s.", this.filePath, this.schemaId);
+        } else {
+            return String.format("Imported configurations with pattern %s for schema=%s:%n%s", this.filePath, this.schemaId,
+                    this.configResources.stream()
+                            .map(Resource::getFilename)
+                            .collect(Collectors.joining("%n")));
+        }
     }
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
         return new SqlStatement[] {
-                new GenericCmStatement((ConfigurationManagerService cm) -> importConfig(cm, this.configResource, new ConfigUpdateInfo(schemaId, getConfigId()), archivePath))
+                // this method is called before validate(), therefore we wrap everything in one statement.
+                new GenericCmStatement(this::importConfigs)
         };
+    }
+
+    private void importConfigs(ConfigurationManagerService cm) {
+        for(Resource config : this.configResources) {
+            String configId = new Substring(config.getFilename())
+                    .getAfterLast("-")
+                    .getBeforeLast(".cfg")
+                    .toString();
+            importConfig(cm, config, new ConfigUpdateInfo(schemaId, configId), archivePath);
+        }
     }
 
     public String getSchemaId() {
@@ -105,14 +124,6 @@ public class ImportConfiguration extends AbstractCmChange {
 
     public void setSchemaId(String schemaId) {
         this.schemaId = schemaId;
-    }
-
-    public String getConfigId() {
-        return configId == null ? ConfigDefinition.DEFAULT_CONFIG_ID : configId;
-    }
-
-    public void setConfigId(String configId) {
-        this.configId = configId;
     }
 
     public String getFilePath() {
