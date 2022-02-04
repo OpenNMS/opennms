@@ -29,6 +29,7 @@
 package org.opennms.features.config.osgi.cm;
 
 import static org.junit.Assert.assertEquals;
+import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
 
 import org.junit.Test;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
@@ -37,8 +38,8 @@ public class CmIdentifierUtilTest {
 
     @Test
     public void shouldParse() {
-        checkParse("", "", CmIdentifierUtil.CONFIG_ID);
-        checkParse("abc", "abc", CmIdentifierUtil.CONFIG_ID);
+        checkParse("", "", DEFAULT_CONFIG_ID);
+        checkParse("abc", "abc", DEFAULT_CONFIG_ID);
         checkParse("abc-def", "abc", "def");
     }
 
