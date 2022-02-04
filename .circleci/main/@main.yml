@@ -1120,10 +1120,11 @@ jobs:
 
             # TODO function for duplication ?
             # AZURE notary
+
             NOTARY_SERVER="https://openmspubacr.azureacr.io"
             export NOTARY_AUTH="$(printf "${AZURE_SP}:${AZURE_SP_PASSWORD}" | base64 -w0)"
             export NOTARY_TARGETS_PASSPHRASE="${AZURE_DCT_CI_PASSPHRASE}"
-            notary -d ~/.docker/trust/ -s "${NOTARY_SERVER}" addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
+            notary -d ~/.docker/trust/ -s "${NOTARY_SERVER}" addhash "${MINION_AZ_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
             notary -s "${NOTARY_SERVER}" list "${IMAGE}"
 
   horizon-rpm-build:
