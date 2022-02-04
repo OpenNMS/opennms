@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,17 @@
 
 package org.opennms.features.reporting.repository.local;
 
-import org.easymock.EasyMock;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,12 +49,6 @@ import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportDefinition;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * <p>LegacyLocalReportRepositoryTest class.</p>
@@ -60,6 +64,9 @@ import static org.junit.Assert.assertNotNull;
 public class LegacyLocalReportRepositoryTest {
 
     private LegacyLocalReportRepository m_legacyLocalReportRepository;
+
+    private LocalReportsDao m_localReportsDao;
+    private LocalJasperReportsDao m_localJasperReportsDao;
 
     /**
      * <p>setUp</p>
@@ -80,30 +87,27 @@ public class LegacyLocalReportRepositoryTest {
         onlineReports.add(new LegacyLocalReportDefinition());
 
         // Mock DAOs for the local repository test
-        LocalReportsDao m_localReportsDao = EasyMock.createMock(LocalReportsDao.class);
-        LocalJasperReportsDao m_localJasperReportsDao = EasyMock.createMock(LocalJasperReportsDao.class);
+        m_localReportsDao = mock(LocalReportsDao.class);
+        m_localJasperReportsDao = mock(LocalJasperReportsDao.class);
 
-        //TODO indigo: Mockup an InputStream with EasyMock is not trivial, InputStream isn't an interface
-        // InputStream jrTemplateStream = EasyMock.createMock(InputStream.class);
-        // EasyMock.expect(m_localJasperReportsDao.getTemplateStream("sample-report")).andReturn(jrTemplateStream);
+        //TODO indigo: Mockup an InputStream with Mockito is not trivial, InputStream isn't an interface
+        // InputStream jrTemplateStream = mock(InputStream.class);
+        // when(m_localJasperReportsDao.getTemplateStream("sample-report")).thenReturn(jrTemplateStream);
 
         // Initialize the local report repository to provide reports from database-reports.xml and jasper-reports.xml
         m_legacyLocalReportRepository = new LegacyLocalReportRepository(m_localReportsDao, m_localJasperReportsDao);
         m_legacyLocalReportRepository.setLocalReportsDao(m_localReportsDao);
         m_legacyLocalReportRepository.setLocalJasperReportsDao(m_localJasperReportsDao);
 
-        EasyMock.expect(m_localReportsDao.getOnlineReports()).andReturn(onlineReports);
+        when(m_localReportsDao.getOnlineReports()).thenReturn(onlineReports);
 
-        EasyMock.expect(m_localReportsDao.getDisplayName("sample-report")).andReturn("displayNameMockup");
-        EasyMock.expect(m_localReportsDao.getReports()).andReturn(reports);
-        EasyMock.expect(m_localReportsDao.getOnlineReports()).andReturn(onlineReports);
-        EasyMock.expect(m_localReportsDao.getReportService("sample-report")).andReturn("jasperReportServiceMockup");
+        when(m_localReportsDao.getDisplayName("sample-report")).thenReturn("displayNameMockup");
+        when(m_localReportsDao.getReports()).thenReturn(reports);
+        when(m_localReportsDao.getOnlineReports()).thenReturn(onlineReports);
+        when(m_localReportsDao.getReportService("sample-report")).thenReturn("jasperReportServiceMockup");
 
-        EasyMock.expect(m_localJasperReportsDao.getTemplateLocation("sample-report")).andReturn("mocked-jdbc");
-        EasyMock.expect(m_localJasperReportsDao.getEngine("sample-report")).andReturn("mocked-jdbc");
-
-        EasyMock.replay(m_localReportsDao);
-        EasyMock.replay(m_localJasperReportsDao);
+        when(m_localJasperReportsDao.getTemplateLocation("sample-report")).thenReturn("mocked-jdbc");
+        when(m_localJasperReportsDao.getEngine("sample-report")).thenReturn("mocked-jdbc");
 
         // Sanitycheck
         assertNotNull("Test if mocked DAO for database-reports.xml is not null", m_legacyLocalReportRepository.getLocalReportsDao());
@@ -119,6 +123,8 @@ public class LegacyLocalReportRepositoryTest {
      */
     @After
     public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_localReportsDao);
+        verifyNoMoreInteractions(m_localJasperReportsDao);
         m_legacyLocalReportRepository = null;
     }
 
@@ -132,6 +138,8 @@ public class LegacyLocalReportRepositoryTest {
     @Test
     public void testGetReports() throws Exception {
         assertEquals("Test get mocked *ALL* reports from configured local repository", 2, m_legacyLocalReportRepository.getReports().size());
+
+        verify(m_localReportsDao, atLeastOnce()).getReports();
     }
 
     /**
@@ -145,6 +153,8 @@ public class LegacyLocalReportRepositoryTest {
     public void testGetOnlineReports() throws Exception {
         //TODO indigo: Code covers no test for IllegalAccessException and InvocationTargetException
         assertEquals("Test get mocked *ONLINE* reports from configured local repository", 1, m_legacyLocalReportRepository.getOnlineReports().size());
+
+        verify(m_localReportsDao, atLeastOnce()).getOnlineReports();
     }
 
     /**
@@ -158,6 +168,8 @@ public class LegacyLocalReportRepositoryTest {
     public void testGetReportService() throws Exception {
         //TODO indigo: Code covers no test for IllegalAccessException and InvocationTargetException
         assertEquals("Test get mocket report service from repository by sample-report", "jasperReportServiceMockup", m_legacyLocalReportRepository.getReportService("sample-report"));
+
+        verify(m_localReportsDao, atLeastOnce()).getReportService("sample-report");
     }
 
     /**
@@ -170,6 +182,8 @@ public class LegacyLocalReportRepositoryTest {
     @Test
     public void testGetDisplayName() throws Exception {
         assertEquals("Test get mocked display name from repository by sample-report", "displayNameMockup", m_legacyLocalReportRepository.getDisplayName("sample-report"));
+
+        verify(m_localReportsDao, atLeastOnce()).getDisplayName("sample-report");
     }
 
     /**
@@ -182,6 +196,8 @@ public class LegacyLocalReportRepositoryTest {
     @Test
     public void testGetEngine() throws Exception {
         assertEquals("Test get mocked engine from repository by ID", "mocked-jdbc", m_legacyLocalReportRepository.getEngine("sample-report"));
+
+        verify(m_localJasperReportsDao, atLeastOnce()).getEngine("sample-report");
     }
 
     /**
@@ -193,7 +209,7 @@ public class LegacyLocalReportRepositoryTest {
      */
     @Test
     public void testGetTemplateStream() throws Exception {
-        //TODO indigo: Mockup an InputStream with EasyMock is not trivial, InputStream isn't an interface
+        //TODO indigo: Mockup an InputStream is not trivial, InputStream isn't an interface
     }
 
     /**

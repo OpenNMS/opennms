@@ -12,19 +12,19 @@
 		<property name="parameterConversionService" ref="mockParameterConversionService" />
 	</bean>
   
-  <bean id="mockConfigDao" class="org.easymock.EasyMock" factory-method="createStrictMock">
+  <bean id="mockConfigDao" class="org.mockito.Mockito" factory-method="mock">
 	<constructor-arg value="org.opennms.netmgt.dao.api.OnmsReportConfigDao"/>
   </bean>
   
-  <bean id="mockCalendarCalculator" class="org.easymock.EasyMock" factory-method="createStrictMock">
+  <bean id="mockCalendarCalculator" class="org.mockito.Mockito" factory-method="mock">
 	<constructor-arg value="org.opennms.reporting.availability.AvailabilityCalculator"/>
   </bean>
   
-  <bean id="mockClassicCalculator" class="org.easymock.EasyMock" factory-method="createStrictMock">
+  <bean id="mockClassicCalculator" class="org.mockito.Mockito" factory-method="mock">
 	<constructor-arg value="org.opennms.reporting.availability.AvailabilityCalculator"/>
   </bean>
   
-  <bean id="mockParameterConversionService" class="org.easymock.EasyMock" factory-method="createStrictMock">
+  <bean id="mockParameterConversionService" class="org.mockito.Mockito" factory-method="mock">
 	<constructor-arg value="org.opennms.reporting.core.svclayer.ParameterConversionService"/>
   </bean>
   

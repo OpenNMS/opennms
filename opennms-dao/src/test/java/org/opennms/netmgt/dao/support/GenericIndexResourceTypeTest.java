@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,14 +28,16 @@
 
 package org.opennms.netmgt.dao.support;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -47,7 +49,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.rrd.NullRrdStrategy;
 import org.opennms.test.FileAnticipator;
-import org.opennms.test.mock.EasyMockUtils;
 
 import com.google.common.base.Throwables;
 
@@ -56,11 +57,11 @@ public class GenericIndexResourceTypeTest {
     private static final String RRD_FILE_NAME = "ds.nullRrd";
 
     private FileAnticipator m_fileAnticipator;
-    private EasyMockUtils m_mocks = new EasyMockUtils();
+
     private FilesystemResourceStorageDao m_resourceStorageDao;
-    private StorageStrategy m_storageStrategy = m_mocks.createMock(StorageStrategy.class);
-    private NodeDao m_nodeDao = m_mocks.createMock(NodeDao.class);
-    private ResourceDao m_resourceDao = m_mocks.createMock(ResourceDao.class);
+    private StorageStrategy m_storageStrategy = mock(StorageStrategy.class);
+    private NodeDao m_nodeDao = mock(NodeDao.class);
+    private ResourceDao m_resourceDao = mock(ResourceDao.class);
 
     @Before
     public void setUp() throws IOException {
@@ -73,6 +74,10 @@ public class GenericIndexResourceTypeTest {
 
     @After
     public void tearDown() {
+        verifyNoMoreInteractions(m_storageStrategy);
+        verifyNoMoreInteractions(m_nodeDao);
+        verifyNoMoreInteractions(m_resourceDao);
+
         if (m_fileAnticipator.isInitialized()) {
             m_fileAnticipator.deleteExpected();
         }
@@ -86,9 +91,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1");
-        m_mocks.verifyAll();
 
         assertNotNull("resource", resource);
         assertEquals("resource label", "plain", resource.getLabel());
@@ -100,9 +103,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1", RRD_FILE_NAME);
         
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "1", resource.getLabel());
@@ -115,9 +116,7 @@ public class GenericIndexResourceTypeTest {
         File rrd = touch("snmp", "1", "foo", "1", RRD_FILE_NAME);
         m_fileAnticipator.tempFile(rrd.getParentFile(), RrdResourceAttributeUtils.STRINGS_PROPERTIES_FILE_NAME, "stringAttribute=hello!!!!");
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "hello!!!!", resource.getLabel());
@@ -133,9 +132,7 @@ public class GenericIndexResourceTypeTest {
             File rrd = touch("snmp", "fs", "source1", "123", "foo", "1", RRD_FILE_NAME);
             m_fileAnticipator.tempFile(rrd.getParentFile(), RrdResourceAttributeUtils.STRINGS_PROPERTIES_FILE_NAME, "stringAttribute=hello!!!!");
 
-            m_mocks.replayAll();
             OnmsResource resource = rt.getChildByName(getNodeResource("source1", "123"), "1");
-            m_mocks.verifyAll();
 
             assertNotNull("resource", resource);
             assertEquals("resource label", "hello!!!!", resource.getLabel());
@@ -150,9 +147,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1.2.3.4", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1.2.3.4");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "4", resource.getLabel());
@@ -164,9 +159,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1.2.3.4", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1.2.3.4");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "${subIndex(absolutely bogus)}", resource.getLabel());
@@ -178,9 +171,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1.2.3.4", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1.2.3.4");
-        m_mocks.verifyAll();
 
         assertNotNull("resource", resource);
         assertEquals("resource label", "${subIndex(foo, 1)}", resource.getLabel());
@@ -192,9 +183,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1.2.3.4", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1.2.3.4");
-        m_mocks.verifyAll();
 
         assertNotNull("resource", resource);
         assertEquals("resource label", "${subIndex(4, 1)}", resource.getLabel());
@@ -206,9 +195,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1.2.3.4", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1.2.3.4");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "2.3.4", resource.getLabel());
@@ -220,9 +207,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1.2.3.4", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1.2.3.4");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "1.2.3", resource.getLabel());
@@ -234,9 +219,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1.2.3.4", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1.2.3.4");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "${subIndex()}", resource.getLabel());
@@ -248,9 +231,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1.2.3.4", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1.2.3.4");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "${subIndex(4)}", resource.getLabel());
@@ -262,9 +243,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1.2.3.4", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1.2.3.4");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "${subIndex(0, 5)}", resource.getLabel());
@@ -276,9 +255,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1.2.3.4.14.15", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1.2.3.4.14.15");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "01:02:03:04:0E:0F", resource.getLabel());
@@ -290,9 +267,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "foo", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "foo");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "${hex(index)}", resource.getLabel());
@@ -307,9 +282,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "0.21.109.80.9.66.4", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "0.21.109.80.9.66.4");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "MAC Address 00:15:6D:50:09:42 on interface 4", resource.getLabel());
@@ -321,9 +294,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "5.1.2.3.4.5", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "5.1.2.3.4.5");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "Easy as 1.2.3.4.5", resource.getLabel());
@@ -335,9 +306,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1.1.2.1.2.3.1.2.3", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1.1.2.1.2.3.1.2.3");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "Easy as 1 and 1.2 and 1.2.3", resource.getLabel());
@@ -349,9 +318,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "3.3.1.2.3.3.4.5.6.0", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "3.3.1.2.3.3.4.5.6.0");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "Easy as 3 and 1.2.3 and 4.5.6 and 0", resource.getLabel());
@@ -363,9 +330,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "3.112.105.101", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "3.112.105.101");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "Easy as pie", resource.getLabel());
@@ -377,9 +342,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "1.3.112.105.101.2.80.105.3.1.4.1.5.9", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1.3.112.105.101.2.80.105.3.1.4.1.5.9");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "Easy as 1 piece of pie or just under Pi pieces of 3.1.4.1.5.9", resource.getLabel());
@@ -391,9 +354,7 @@ public class GenericIndexResourceTypeTest {
 
         touch("snmp", "1", "foo", "3.1.2.3", RRD_FILE_NAME);
 
-        m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "3.1.2.3");
-        m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
         assertEquals("resource label", "Easy as ${subIndex(n, 3)}", resource.getLabel());

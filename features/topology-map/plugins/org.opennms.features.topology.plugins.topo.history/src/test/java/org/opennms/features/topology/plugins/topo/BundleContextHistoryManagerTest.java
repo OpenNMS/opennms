@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,9 @@ package org.opennms.features.topology.plugins.topo;
 
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,12 +45,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
@@ -59,6 +60,7 @@ import org.opennms.features.topology.api.support.HistoryAwareSearchProvider;
 import org.opennms.features.topology.api.support.SavedHistory;
 import org.opennms.features.topology.api.support.ServiceLocator;
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -66,10 +68,9 @@ import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SearchCriteria;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchResult;
-import org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.BackendGraph;
+import org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider;
 import org.opennms.features.topology.app.internal.AlarmProvider;
 import org.opennms.features.topology.app.internal.AlarmSearchProvider;
 import org.opennms.features.topology.app.internal.CategoryProvider;
@@ -148,12 +149,12 @@ public class BundleContextHistoryManagerTest  {
             new File(DATA_FILE_NAME).delete();
         }
 
-        serviceLocatorMock = Mockito.mock(ServiceLocator.class);
-    	bundleContextMock = Mockito.mock(BundleContext.class);
-    	graphContainerMock = Mockito.mock(GraphContainer.class);
-    	topologyServiceClientMock = Mockito.mock(TopologyServiceClient.class);
-        graphMock = Mockito.mock(Graph.class);
-        graphProviderMock = Mockito.mock(GraphProvider.class);
+        serviceLocatorMock = mock(ServiceLocator.class);
+    	bundleContextMock = mock(BundleContext.class);
+    	graphContainerMock = mock(GraphContainer.class);
+    	topologyServiceClientMock = mock(TopologyServiceClient.class);
+        graphMock = mock(Graph.class);
+        graphProviderMock = mock(GraphProvider.class);
 
         startingSearchResults = new HashMap<>();
         startingProviders = new HashMap<>();
@@ -359,7 +360,7 @@ public class BundleContextHistoryManagerTest  {
         // Initializing available (initial) SearchProviders
         final DefaultTopologyService topologyService = new DefaultTopologyService();
         topologyService.setServiceLocator(serviceLocatorMock);
-        topologyService.setTopologyEntityCache(EasyMock.niceMock(TopologyEntityCache.class));
+        topologyService.setTopologyEntityCache(mock(TopologyEntityCache.class));
 
         this.startingProviders.put(CriteriaTypes.category, new CategorySearchProvider(topologyService, vertexProvider));
         this.startingProviders.put(CriteriaTypes.ipLike, new IpLikeSearchProvider(ipInterfaceProvider));
@@ -378,78 +379,78 @@ public class BundleContextHistoryManagerTest  {
     }
 
     private void setBehaviour(GraphProvider graphProviderMock) {
-        BackendGraph graphMock = Mockito.mock(BackendGraph.class);
-        Mockito.when(graphMock.getVertices(any())).thenReturn(Lists.newArrayList());
-        Mockito.when(graphMock.getNamespace()).thenReturn("test");
+        BackendGraph graphMock = mock(BackendGraph.class);
+        when(graphMock.getVertices(any())).thenReturn(Lists.newArrayList());
+        when(graphMock.getNamespace()).thenReturn("test");
 
-        Mockito.when(graphProviderMock.getCurrentGraph()).thenReturn(graphMock);
-        Mockito.when(graphProviderMock.getNamespace()).thenReturn("test");
+        when(graphProviderMock.getCurrentGraph()).thenReturn(graphMock);
+        when(graphProviderMock.getNamespace()).thenReturn("test");
     }
 
     private void setBehaviour(TopologyServiceClient topologyServiceClientMock) {
-        Mockito.when(topologyServiceClientMock.getNamespace()).
+        when(topologyServiceClientMock.getNamespace()).
                 thenReturn("test");
 
-        Mockito.when(topologyServiceClientMock.getGraphProviderBy("test")).
+        when(topologyServiceClientMock.getGraphProviderBy("test")).
                 thenReturn(this.graphProviderMock);
     }
 
     private void setBehaviour(ServiceLocator serviceLocator) {
-        Mockito.when(serviceLocator.findServices(SearchProvider.class, null))
+        when(serviceLocator.findServices(SearchProvider.class, null))
                .thenAnswer(invocationOnMock -> Lists.newArrayList(startingProviders.values()));
 
-        Mockito.when(serviceLocator.findServices(MetaTopologyProvider.class, null))
+        when(serviceLocator.findServices(MetaTopologyProvider.class, null))
                .thenAnswer(invocationOnMock -> Lists.newArrayList(new SimpleMetaTopologyProvider(graphProviderMock)));
     }
 
     private void setBehaviour(Graph graphMock) {
-        Mockito.when(graphMock.getDisplayEdges()).
+        when(graphMock.getDisplayEdges()).
                 thenReturn(new ArrayList<Edge>());
 
-        Mockito.when(graphMock.getDisplayVertices()).
+        when(graphMock.getDisplayVertices()).
                 thenReturn(displayableVertices);
 
-        Mockito.when(graphMock.getLayout()).
+        when(graphMock.getLayout()).
                 thenReturn(selectedLayout);
     }
 
     private void setBehaviour(GraphContainer graphContainerMock) {
-    	MapViewManager mapViewManagerMock = Mockito.mock(MapViewManager.class);
-        SelectionManager selectionManagerMock = Mockito.mock(SelectionManager.class);
+    	MapViewManager mapViewManagerMock = mock(MapViewManager.class);
+        SelectionManager selectionManagerMock = mock(SelectionManager.class);
 
-        Mockito.when(mapViewManagerMock.getCurrentBoundingBox()).
+        when(mapViewManagerMock.getCurrentBoundingBox()).
                 thenReturn(new BoundingBox(0,0,Integer.MAX_VALUE, Integer.MAX_VALUE));
 
-        Mockito.when(selectionManagerMock.getSelectedVertexRefs()).
+        when(selectionManagerMock.getSelectedVertexRefs()).
                 thenReturn(new ArrayList<VertexRef>());
 
-    	Mockito.when(graphContainerMock.getGraph()).
+    	when(graphContainerMock.getGraph()).
                 thenReturn(graphMock);
 
-        Mockito.when(graphContainerMock.getSemanticZoomLevel()).
+        when(graphContainerMock.getSemanticZoomLevel()).
                 thenReturn(0);
 
-        Mockito.when(graphContainerMock.getLayoutAlgorithm()).
+        when(graphContainerMock.getLayoutAlgorithm()).
                 thenReturn(new CircleLayoutAlgorithm());
         
-        Mockito.when(graphContainerMock.getMapViewManager()).
+        when(graphContainerMock.getMapViewManager()).
                 thenReturn(mapViewManagerMock);
         
-        Mockito.when(graphContainerMock.getSelectionManager()).
+        when(graphContainerMock.getSelectionManager()).
                 thenReturn(selectionManagerMock);
 
-        Mockito.when(graphContainerMock.getTopologyServiceClient()).
+        when(graphContainerMock.getTopologyServiceClient()).
                 thenReturn(topologyServiceClientMock);
 
-        Mockito.doAnswer(invocationOnMock -> capturedCriteria.toArray(new Criteria[capturedCriteria.size()]))
+        doAnswer(invocationOnMock -> capturedCriteria.toArray(new Criteria[capturedCriteria.size()]))
                 .when(graphContainerMock).getCriteria();
 
-        Mockito.doAnswer(invocationOnMock -> {
+        doAnswer(invocationOnMock -> {
 			capturedCriteria.clear();
 			return null;
 		}).when(graphContainerMock).clearCriteria();
 
-        Mockito.doAnswer(invocation -> {
+        doAnswer(invocation -> {
 			if (invocation.getArguments()[0] != null && invocation.getArguments()[0] instanceof Criteria) {
 				capturedCriteria.add((Criteria) invocation.getArguments()[0]);
 			}
@@ -458,7 +459,7 @@ public class BundleContextHistoryManagerTest  {
     }
 
     private void setBehaviour(BundleContext bundleContextMock) {
-        Mockito.when(bundleContextMock.getDataFile(DATA_FILE_NAME)).
+        when(bundleContextMock.getDataFile(DATA_FILE_NAME)).
                 thenReturn(new File(DATA_FILE_NAME));
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,20 +28,21 @@
 
 package org.opennms.web.svclayer.support;
 
-import junit.framework.TestCase;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
-import org.opennms.test.mock.EasyMockUtils;
+
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class DefaultRrdGraphServiceTest extends TestCase {
-    private EasyMockUtils m_mockUtils;
     private FileAnticipator m_fileAnticipator;
     
     private DefaultRrdGraphService m_service;
@@ -57,13 +58,14 @@ public class DefaultRrdGraphServiceTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        m_mockUtils = new EasyMockUtils();
         m_fileAnticipator = new FileAnticipator(false);
         m_service = new DefaultRrdGraphService();
     }
     
     @Override
     protected void tearDown() throws Exception {
+        if (m_resourceDao != null) verifyNoMoreInteractions(m_resourceDao);
+        if (m_graphDao != null)    verifyNoMoreInteractions(m_graphDao);
         m_fileAnticipator.tearDown();
     }
     
@@ -78,14 +80,12 @@ public class DefaultRrdGraphServiceTest extends TestCase {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalStateException("resourceDao property has not been set"));
         
-        m_mockUtils.replayAll();
         try {
             m_service.afterPropertiesSet();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
-        m_mockUtils.verifyAll();
     }
     
     public void testNoGraphDao() {
@@ -95,14 +95,12 @@ public class DefaultRrdGraphServiceTest extends TestCase {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalStateException("graphDao property has not been set"));
         
-        m_mockUtils.replayAll();
         try {
             m_service.afterPropertiesSet();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
-        m_mockUtils.verifyAll();
     }
 
     public void testNoRrdDao() {
@@ -111,69 +109,14 @@ public class DefaultRrdGraphServiceTest extends TestCase {
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalStateException("rrdDao property has not been set"));
-        
-        m_mockUtils.replayAll();
+
         try {
             m_service.afterPropertiesSet();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
-        m_mockUtils.verifyAll();
     }
-    
-//    public void testLoadPropertiesNullWorkDir() {
-//        ThrowableAnticipator ta = new ThrowableAnticipator();
-//        ta.anticipate(new IllegalArgumentException("workDir argument cannot be null"));
-//        try {
-//            m_service.loadProperties(null, "foo");
-//        } catch (Throwable t) {
-//            ta.throwableReceived(t);
-//        }
-//        ta.verifyAnticipated();
-//    }
-//    
-//    public void testLoadPropertiesNullPropertiesFile() {
-//        ThrowableAnticipator ta = new ThrowableAnticipator();
-//        ta.anticipate(new IllegalArgumentException("propertiesFile argument cannot be null"));
-//        try {
-//            m_service.loadProperties(new File(""), null);
-//        } catch (Throwable t) {
-//            ta.throwableReceived(t);
-//        }
-//        ta.verifyAnticipated();
-//    }
-//    
-//    public void testLoadPropertiesEmpty() throws Exception {
-//        m_fileAnticipator.initialize();
-//        m_fileAnticipator.tempFile("strings.properties", "");
-//        Properties p = m_service.loadProperties(m_fileAnticipator.getTempDir(), "strings.properties");
-//        assertNotNull("properties should not be null", p);
-//        assertEquals("properties size", 0, p.size());
-//    }
-//    
-//    public void testLoadPropertiesNonEmpty() throws Exception {
-//        m_fileAnticipator.initialize();
-//        m_fileAnticipator.tempFile("strings.properties", "foo=bar");
-//        Properties p = m_service.loadProperties(m_fileAnticipator.getTempDir(), "strings.properties");
-//        assertNotNull("properties should not be null", p);
-//        assertEquals("properties size", 1, p.size());
-//        assertNotNull("property 'foo' should exist", p.get("foo"));
-//        assertEquals("property 'foo' value", "bar", p.get("foo"));
-//    }
-//
-//    public void testLoadPropertiesDoesNotExist() throws Exception {
-//        m_fileAnticipator.initialize();
-//
-//        ThrowableAnticipator ta = new ThrowableAnticipator();
-//        ta.anticipate(new ObjectRetrievalFailureException(Properties.class, "strings.properties", "This resource does not have a string properties file: " + new File(m_fileAnticipator.getTempDir(), "strings.properties").getAbsolutePath(), null));
-//        try {
-//            m_service.loadProperties(m_fileAnticipator.getTempDir(), "strings.properties");
-//        } catch (Throwable t) {
-//            ta.throwableReceived(t);
-//        }
-//        ta.verifyAnticipated();
-//    }
 
     private void setUpAll() {
         setUpResourceDao();
@@ -183,17 +126,17 @@ public class DefaultRrdGraphServiceTest extends TestCase {
     }
     
     private void setUpResourceDao() {
-        m_resourceDao = m_mockUtils.createMock(ResourceDao.class);
+        m_resourceDao = mock(ResourceDao.class);
         m_service.setResourceDao(m_resourceDao);
     }
     
     private void setUpGraphDao() {
-        m_graphDao = m_mockUtils.createMock(GraphDao.class);
+        m_graphDao = mock(GraphDao.class);
         m_service.setGraphDao(m_graphDao);
     }
     
     private void setUpRrdDao() {
-        m_rrdDao = m_mockUtils.createMock(RrdDao.class);
+        m_rrdDao = mock(RrdDao.class);
         m_service.setRrdDao(m_rrdDao);
     }
     

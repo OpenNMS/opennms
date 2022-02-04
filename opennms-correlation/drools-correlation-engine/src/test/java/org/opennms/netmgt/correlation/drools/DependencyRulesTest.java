@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,12 +34,9 @@ import org.junit.Test;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.mock.EasyMockUtils;
 
 
 public class DependencyRulesTest extends CorrelationRulesTestCase {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    
     @Test
     public void testInitialize() throws Exception {
         
@@ -67,8 +64,6 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
 
         // event + initialized
         m_anticipatedMemorySize = 18;
-        	
-        m_mocks.verifyAll();
 
         verify(engine);
         

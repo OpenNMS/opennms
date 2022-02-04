@@ -50,11 +50,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.opennms</groupId>
 			<artifactId>opennms-icmp-jni</artifactId>
 			<version>${project.version}</version>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,16 @@
 
 package org.opennms.netmgt.dao.support;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Test;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -41,15 +46,19 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceVisitor;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.test.ThrowableAnticipator;
-import org.opennms.test.mock.EasyMockUtils;
 
 /**
  * @author <a href="dj@opennms.org">DJ Gregor</a>
  */
-public class ResourceAttributeFilteringResourceVisitorTest extends TestCase {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    private ResourceVisitor m_delegatedVisitor = m_mocks.createMock(ResourceVisitor.class);
+public class ResourceAttributeFilteringResourceVisitorTest {
+    private ResourceVisitor m_delegatedVisitor = mock(ResourceVisitor.class);
     
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_delegatedVisitor);
+    }
+
+    @Test
     public void testAfterPropertiesSet() throws Exception {
         ResourceAttributeFilteringResourceVisitor filteringVisitor = new ResourceAttributeFilteringResourceVisitor();
         filteringVisitor.setDelegatedVisitor(m_delegatedVisitor);
@@ -57,7 +66,8 @@ public class ResourceAttributeFilteringResourceVisitorTest extends TestCase {
         filteringVisitor.setResourceAttributeValueMatch("100000000");
         filteringVisitor.afterPropertiesSet();
     }
-    
+
+    @Test
     public void testAfterPropertiesSetNoDelegatedVisitor() throws Exception {
         ResourceAttributeFilteringResourceVisitor filteringVisitor = new ResourceAttributeFilteringResourceVisitor();
         
@@ -74,7 +84,8 @@ public class ResourceAttributeFilteringResourceVisitorTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
+    @Test
     public void testAfterPropertiesSetNoResourceTypeMatch() throws Exception {
         ResourceAttributeFilteringResourceVisitor filteringVisitor = new ResourceAttributeFilteringResourceVisitor();
         
@@ -91,7 +102,8 @@ public class ResourceAttributeFilteringResourceVisitorTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
+    @Test
     public void testAfterPropertiesSetNoResourceAttributeValueMatch() throws Exception {
         ResourceAttributeFilteringResourceVisitor filteringVisitor = new ResourceAttributeFilteringResourceVisitor();
         
@@ -108,7 +120,8 @@ public class ResourceAttributeFilteringResourceVisitorTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
+    @Test
     public void testVisitWithExternalValueMatch() throws Exception {
         ResourceAttributeFilteringResourceVisitor filteringVisitor = new ResourceAttributeFilteringResourceVisitor();
         filteringVisitor.setDelegatedVisitor(m_delegatedVisitor);
@@ -122,15 +135,14 @@ public class ResourceAttributeFilteringResourceVisitorTest extends TestCase {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
         OnmsResource resource = new OnmsResource("1", "Node One", resourceType, attributes, ResourcePath.get("foo"));
-        
-        // Expect
-        m_delegatedVisitor.visit(resource);
 
-        m_mocks.replayAll();
+        m_delegatedVisitor.visit(resource);
         filteringVisitor.visit(resource);
-        m_mocks.verifyAll();
+
+        verify(m_delegatedVisitor, times(2)).visit(resource);
     }
-    
+
+    @Test
     public void testVisitWithStringPropertyMatch() throws Exception {
         ResourceAttributeFilteringResourceVisitor filteringVisitor = new ResourceAttributeFilteringResourceVisitor();
         filteringVisitor.setDelegatedVisitor(m_delegatedVisitor);
@@ -145,14 +157,13 @@ public class ResourceAttributeFilteringResourceVisitorTest extends TestCase {
         resourceType.setName("interfaceSnmp");
         OnmsResource resource = new OnmsResource("1", "Node One", resourceType, attributes, ResourcePath.get("foo"));
         
-        // Expect
         m_delegatedVisitor.visit(resource);
-
-        m_mocks.replayAll();
         filteringVisitor.visit(resource);
-        m_mocks.verifyAll();
+
+        verify(m_delegatedVisitor, times(2)).visit(resource);
     }
-    
+
+    @Test
     public void testVisitWithoutMatch() throws Exception {
         ResourceAttributeFilteringResourceVisitor filteringVisitor = new ResourceAttributeFilteringResourceVisitor();
         filteringVisitor.setDelegatedVisitor(m_delegatedVisitor);
@@ -164,8 +175,6 @@ public class ResourceAttributeFilteringResourceVisitorTest extends TestCase {
         resourceType.setName("something other than interfaceSnmp");
         OnmsResource resource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0), ResourcePath.get("foo"));
 
-        m_mocks.replayAll();
         filteringVisitor.visit(resource);
-        m_mocks.verifyAll();
     }
 }

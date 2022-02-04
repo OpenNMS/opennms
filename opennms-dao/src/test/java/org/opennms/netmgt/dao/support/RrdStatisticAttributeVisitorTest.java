@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,18 @@
 
 package org.opennms.netmgt.dao.support;
 
-import static org.easymock.EasyMock.expect;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 
+import org.junit.After;
+import org.junit.Test;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.model.Source;
@@ -43,20 +51,23 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.test.ThrowableAnticipator;
-import org.opennms.test.mock.EasyMockUtils;
-
-import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class RrdStatisticAttributeVisitorTest extends TestCase {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    private MeasurementFetchStrategy m_fetchStrategy = m_mocks.createMock(MeasurementFetchStrategy.class);
+public class RrdStatisticAttributeVisitorTest {
+    private MeasurementFetchStrategy m_fetchStrategy = mock(MeasurementFetchStrategy.class);
     private Long m_startTime = System.currentTimeMillis();
     private Long m_endTime = m_startTime + (24 * 60 * 60 * 1000); // one day
-    private AttributeStatisticVisitor m_statisticVisitor = m_mocks.createMock(AttributeStatisticVisitor.class);
+    private AttributeStatisticVisitor m_statisticVisitor = mock(AttributeStatisticVisitor.class);
     
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_fetchStrategy);
+        verifyNoMoreInteractions(m_statisticVisitor);
+    }
+
+    @Test
     public void testAfterPropertiesSet() throws Exception {
         RrdStatisticAttributeVisitor attributeVisitor = new RrdStatisticAttributeVisitor();
         attributeVisitor.setFetchStrategy(m_fetchStrategy);
@@ -67,7 +78,7 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
         attributeVisitor.afterPropertiesSet();
     }
 
-
+    @Test
     public void testAfterPropertiesSetNoStatisticVisitor() throws Exception {
         RrdStatisticAttributeVisitor attributeVisitor = new RrdStatisticAttributeVisitor();
         
@@ -87,7 +98,8 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
+    @Test
     public void testAfterPropertiesSetNoConsolidationFunction() throws Exception {
         RrdStatisticAttributeVisitor attributeVisitor = new RrdStatisticAttributeVisitor();
         
@@ -107,7 +119,8 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
+    @Test
     public void testAfterPropertiesSetNoRrdDao() throws Exception {
         RrdStatisticAttributeVisitor attributeVisitor = new RrdStatisticAttributeVisitor();
         
@@ -127,7 +140,8 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
+    @Test
     public void testAfterPropertiesSetNoStartTime() throws Exception {
         RrdStatisticAttributeVisitor attributeVisitor = new RrdStatisticAttributeVisitor();
         
@@ -147,7 +161,8 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
+    @Test
     public void testAfterPropertiesSetNoEndTime() throws Exception {
         RrdStatisticAttributeVisitor attributeVisitor = new RrdStatisticAttributeVisitor();
         
@@ -168,6 +183,7 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
         ta.verifyAnticipated();
     }
 
+    @Test
     public void testVisitWithRrdAttribute() throws Exception {
         RrdStatisticAttributeVisitor attributeVisitor = new RrdStatisticAttributeVisitor();
         attributeVisitor.setFetchStrategy(m_fetchStrategy);
@@ -192,22 +208,25 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
                                                 Collections.emptyMap(),
                                                 null);
 
-        expect(m_fetchStrategy.fetch(m_startTime,
+        final var sourceList = Collections.singletonList(source);
+        when(m_fetchStrategy.fetch(m_startTime,
                                      m_endTime,
                                      1,
                                      0,
                                      null,
                                      null,
-                                     Collections.singletonList(source),
+                                     sourceList,
                                     false))
-                .andReturn(results);
+                .thenReturn(results);
         m_statisticVisitor.visit(attribute, 1.0);
 
-        m_mocks.replayAll();
         attributeVisitor.visit(attribute);
-        m_mocks.verifyAll();
+
+        verify(m_fetchStrategy, times(1)).fetch(m_startTime, m_endTime, 1, 0, null, null, sourceList, false);
+        verify(m_statisticVisitor, times(2)).visit(any(OnmsAttribute.class), eq(1.0));
     }
-    
+
+    @Test
     public void testVisitWithNonRrdAttribute() throws Exception {
         RrdStatisticAttributeVisitor attributeVisitor = new RrdStatisticAttributeVisitor();
         attributeVisitor.setFetchStrategy(m_fetchStrategy);
@@ -222,11 +241,10 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
         OnmsAttribute attribute = new StringPropertyAttribute("ifInOctets", "one billion octets!");
         attribute.setResource(new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo")));
 
-        m_mocks.replayAll();
         attributeVisitor.visit(attribute);
-        m_mocks.verifyAll();
     }
-    
+
+    @Test
     public void testVisitWithNotANumberRrdAttribute() throws Exception {
         RrdStatisticAttributeVisitor attributeVisitor = new RrdStatisticAttributeVisitor();
         attributeVisitor.setFetchStrategy(m_fetchStrategy);
@@ -250,21 +268,23 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
                                                 m_endTime - m_startTime,
                                                 Collections.emptyMap(),
                                                 null);
-        expect(m_fetchStrategy.fetch(m_startTime,
+        final var sourceList = Collections.singletonList(source);
+        when(m_fetchStrategy.fetch(m_startTime,
                                      m_endTime,
                                      1,
                                      0,
                                      null,
                                      null,
-                                     Collections.singletonList(source),
+                                     sourceList,
                                     false))
-                .andReturn(results);
+                .thenReturn(results);
 
-        m_mocks.replayAll();
         attributeVisitor.visit(attribute);
-        m_mocks.verifyAll();
+
+        verify(m_fetchStrategy, times(1)).fetch(m_startTime, m_endTime, 1, 0, null, null, sourceList, false);
     }
 
+    @Test
     public void testVisitTwice() throws Exception {
         final RrdStatisticAttributeVisitor attributeVisitor1 = new RrdStatisticAttributeVisitor();
         attributeVisitor1.setFetchStrategy(m_fetchStrategy);
@@ -294,39 +314,42 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
         source.setAttribute(attribute.getName());
         source.setAggregation(attributeVisitor1.getConsolidationFunction().toUpperCase());
 
-        expect(m_fetchStrategy.fetch(m_startTime,
+        final var sourceList = Collections.singletonList(source);
+        when(m_fetchStrategy.fetch(m_startTime,
                                      m_endTime,
                                      1,
                                      0,
                                      null,
                                      null,
-                                     Collections.singletonList(source),
+                                     sourceList,
                                      false))
-                .andReturn(new FetchResults(new long[]{m_startTime},
+                .thenReturn(new FetchResults(new long[]{m_startTime},
                                             Collections.singletonMap("result", new double[]{1.0}),
                                             m_endTime - m_startTime,
                                             Collections.emptyMap(),
                                             null));
         m_statisticVisitor.visit(attribute, 1.0);
 
-        expect(m_fetchStrategy.fetch(m_startTime,
+        when(m_fetchStrategy.fetch(m_startTime,
                                      m_endTime,
                                      1,
                                      0,
                                      null,
                                      null,
-                                     Collections.singletonList(source),
+                                     sourceList,
                                      false))
-                .andReturn(new FetchResults(new long[]{m_startTime},
+                .thenReturn(new FetchResults(new long[]{m_startTime},
                                             Collections.singletonMap("result", new double[]{2.0}),
                                             m_endTime - m_startTime,
                                             Collections.emptyMap(),
                                             null));
         m_statisticVisitor.visit(attribute, 2.0);
 
-        m_mocks.replayAll();
         attributeVisitor1.visit(attribute);
         attributeVisitor2.visit(attribute);
-        m_mocks.verifyAll();
+
+        verify(m_fetchStrategy, times(2)).fetch(m_startTime, m_endTime, 1, 0, null, null, sourceList, false);
+        verify(m_statisticVisitor, times(1)).visit(any(OnmsAttribute.class), eq(1.0));
+        verify(m_statisticVisitor, times(3)).visit(any(OnmsAttribute.class), eq(2.0));
     }
 }

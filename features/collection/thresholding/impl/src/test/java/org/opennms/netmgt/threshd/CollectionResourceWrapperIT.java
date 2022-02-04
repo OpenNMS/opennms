@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.threshd;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
@@ -35,7 +39,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -143,8 +146,6 @@ public class CollectionResourceWrapperIT {
         Assert.assertEquals(Double.valueOf(100.0), wrapper.getAttributeValue("myGauge"));
         Assert.assertEquals(Double.valueOf(100.0), wrapper.getAttributeValue("myGauge"));
         Assert.assertEquals(Double.valueOf(100.0), wrapper.getAttributeValue("myGauge"));
-        
-        EasyMock.verify(agent);
     }
     
     @Test(expected=IllegalArgumentException.class)
@@ -324,8 +325,6 @@ public class CollectionResourceWrapperIT {
         Assert.assertEquals(Double.valueOf(8.0), wrapper.getAttributeValue(attributeName));
         Assert.assertEquals(Double.valueOf(7300.0),
                             CollectionResourceWrapper.s_cache.get(attributeId).getValue());
-
-        EasyMock.verify(agent);
     }
 
     @Test
@@ -367,8 +366,6 @@ public class CollectionResourceWrapperIT {
         Assert.assertEquals(Double.valueOf(40000.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
         Assert.assertEquals(Double.valueOf(200.0), wrapper.getAttributeValue(attributeName));
         Assert.assertEquals(Double.valueOf(40000.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
-
-        EasyMock.verify(agent);
     }
     
     @Test
@@ -558,8 +555,6 @@ public class CollectionResourceWrapperIT {
         attributes.put(attribute.getName(), attribute);
         wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 1200000));
         Assert.assertEquals(Double.valueOf(0.2), wrapper.getAttributeValue(attributeName)); // 120 - 60 / 300 = 0.2
-
-        EasyMock.verify(agent);
     }
 
     private SnmpCollectionResource createNodeResource(SnmpCollectionAgent agent) {
@@ -581,14 +576,13 @@ public class CollectionResourceWrapperIT {
     }
 
     private SnmpCollectionAgent createCollectionAgent() {
-        SnmpCollectionAgent agent = EasyMock.createMock(SnmpCollectionAgent.class);
-        EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
-        EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
-        EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
-        EasyMock.expect(agent.getForeignSource()).andReturn("JUnit").anyTimes();
-        EasyMock.expect(agent.getForeignId()).andReturn("T001").anyTimes();
-        EasyMock.expect(agent.getStorageResourcePath()).andReturn(ResourcePath.get(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, "JUnit", "T001")).anyTimes();
-        EasyMock.replay(agent);
+        SnmpCollectionAgent agent = mock(SnmpCollectionAgent.class);
+        when(agent.getNodeId()).thenReturn(1);
+        when(agent.getHostAddress()).thenReturn("127.0.0.1");
+        when(agent.getSnmpInterfaceInfo(any(IfResourceType.class))).thenReturn(new HashSet<IfInfo>());
+        when(agent.getForeignSource()).thenReturn("JUnit");
+        when(agent.getForeignId()).thenReturn("T001");
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, "JUnit", "T001"));
         return agent;
     }
 

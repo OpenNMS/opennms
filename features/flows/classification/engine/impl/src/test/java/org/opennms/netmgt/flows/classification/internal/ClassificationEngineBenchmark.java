@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,8 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 package org.opennms.netmgt.flows.classification.internal;
-
-import static org.easymock.EasyMock.createNiceMock;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,7 +73,7 @@ public class ClassificationEngineBenchmark {
 
     public static List<Rule> getRules(String resource) {
         var group = new GroupBuilder().withName(Groups.USER_DEFINED).build();
-        final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
+        final CsvService csvService = new CsvServiceImpl(org.mockito.Mockito.mock(RuleValidator.class));
         final List<Rule> rules = csvService.parseCSV(group, CsvServiceTest.class.getResourceAsStream(resource), true).getRules();
         int cnt = 0;
         for (var r: rules) {
@@ -99,7 +97,7 @@ public class ClassificationEngineBenchmark {
         @Setup
         public void setup() throws InterruptedException {
             var rules = getRules(ruleSet);
-            classificationEngine = new DefaultClassificationEngine(() -> rules, createNiceMock(FilterService.class));
+            classificationEngine = new DefaultClassificationEngine(() -> rules, org.mockito.Mockito.mock(FilterService.class));
             classificationRequests = RandomClassificationEngineTest.streamOfclassificationRequests(rules, 123456l).skip(index * BATCH_SIZE).limit(BATCH_SIZE).collect(Collectors.toList());
         }
 

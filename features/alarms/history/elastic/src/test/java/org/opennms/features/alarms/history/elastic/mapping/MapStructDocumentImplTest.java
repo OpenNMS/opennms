@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,19 +28,22 @@
 
 package org.opennms.features.alarms.history.elastic.mapping;
 
-import static org.easymock.EasyMock.mock;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.mock;
 
 import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.cache.Cache;
+import org.opennms.core.cache.CacheConfig;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.alarms.history.elastic.dto.AlarmDocumentDTO;
 import org.opennms.features.alarms.history.elastic.dto.NodeDocumentDTO;
 import org.opennms.netmgt.model.OnmsAlarm;
+
+import com.google.common.cache.CacheLoader;
 
 public class MapStructDocumentImplTest {
 
@@ -48,7 +51,10 @@ public class MapStructDocumentImplTest {
 
     @Before
     public void setUp() {
-        Cache<Integer, Optional<NodeDocumentDTO>> nodeInfoCache = mock(Cache.class);
+        final CacheConfig config = new CacheConfig("test");
+        @SuppressWarnings("unchecked")
+        final CacheLoader<Integer, Optional<NodeDocumentDTO>> loader = mock(CacheLoader.class);
+        Cache<Integer, Optional<NodeDocumentDTO>> nodeInfoCache = new Cache<>(config, loader);
         mapper = new MapStructDocumentImpl(nodeInfoCache, () -> 0L);
     }
 

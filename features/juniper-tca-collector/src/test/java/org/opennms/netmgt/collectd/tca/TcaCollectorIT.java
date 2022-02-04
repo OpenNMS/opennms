@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,12 @@
 
 package org.opennms.netmgt.collectd.tca;
 
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,7 +42,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.easymock.EasyMock;
 import org.jrobin.core.Robin;
 import org.jrobin.core.RrdDb;
 import org.junit.After;
@@ -74,7 +79,6 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -187,8 +191,8 @@ public class TcaCollectorIT implements InitializingBean {
 		if (testNodes == null || testNodes.size() < 1) {
 			NetworkBuilder builder = new NetworkBuilder();
 			builder.addNode(TEST_NODE_LABEL).setId(1).setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
-			InterfaceBuilder ifBldr = builder.addInterface(TEST_NODE_IP).setIsSnmpPrimary("P");
-			ifBldr.addSnmpInterface(6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true);
+			builder.addInterface(TEST_NODE_IP).setIsSnmpPrimary("P");
+			builder.addSnmpInterface(6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true);
 			testNode = builder.getCurrentNode();
 			Assert.assertNotNull(testNode);
 			m_nodeDao.save(testNode);
@@ -222,14 +226,12 @@ public class TcaCollectorIT implements InitializingBean {
 		TcaDataCollectionConfig tcadcc = new TcaDataCollectionConfig();
 		tcadcc.addDataCollection(tcadc);
 		tcadcc.setRrdRepository(getSnmpRoot().getAbsolutePath());
-		EasyMock.expect(m_configDao.getConfig()).andReturn(tcadcc).atLeastOnce();
-		EasyMock.replay(m_configDao);
+		when(m_configDao.getConfig()).thenReturn(tcadcc);
 
 		// Define the resource type
 		ResourceType resourceType = getJuniperTcaEntryResourceType();
-		m_resourceTypesDao = EasyMock.createMock(ResourceTypesDao.class);
-		EasyMock.expect(m_resourceTypesDao.getResourceTypeByName(TcaCollectionHandler.RESOURCE_TYPE_NAME)).andReturn(resourceType).anyTimes();
-		EasyMock.replay(m_resourceTypesDao);
+		m_resourceTypesDao = mock(ResourceTypesDao.class);
+		when(m_resourceTypesDao.getResourceTypeByName(TcaCollectionHandler.RESOURCE_TYPE_NAME)).thenReturn(resourceType);
 	}
 
 	public static ResourceType getJuniperTcaEntryResourceType() {
@@ -253,7 +255,7 @@ public class TcaCollectorIT implements InitializingBean {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		EasyMock.verify(m_configDao);
+		verifyNoMoreInteractions(m_configDao);
 		MockLogAppender.assertNoWarningsOrGreater();
 	}
 
@@ -326,11 +328,13 @@ public class TcaCollectorIT implements InitializingBean {
 		Assert.assertEquals(ts - 1, jrb.getArchive(0).getEndTime());
 		Robin inboundDelay = jrb.getArchive(0).getRobin(0);
 		for (int i = inboundDelay.getSize() - 49; i < inboundDelay.getSize() - 25; i++) {
-			Assert.assertEquals(new Double(11), Double.valueOf(inboundDelay.getValue(i)));
+			Assert.assertEquals(Double.valueOf(11), Double.valueOf(inboundDelay.getValue(i)));
 		}
 		for (int i = inboundDelay.getSize() - 24; i < inboundDelay.getSize(); i++) {
-			Assert.assertEquals(new Double(12), Double.valueOf(inboundDelay.getValue(i)));
+			Assert.assertEquals(Double.valueOf(12), Double.valueOf(inboundDelay.getValue(i)));
 		}
+
+		verify(m_configDao, atLeastOnce()).getConfig();
 	}
 
 	/**

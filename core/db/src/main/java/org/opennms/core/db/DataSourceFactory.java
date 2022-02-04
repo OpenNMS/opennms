@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -86,6 +86,9 @@ public abstract class DataSourceFactory {
 				final Constructor<?> constructor = ((Class<?>) DEFAULT_FACTORY_CLASS).getConstructor(new Class<?>[] { JdbcDataSource.class });
 				dataSource = (ClosableDataSource)constructor.newInstance(new Object[] { m_dataSourceConfigFactory.getJdbcDataSource(dsName) });
 			} catch (final Throwable cause) {
+			    if (isUnfilteredConfigException(cause)) {
+			        throw new IllegalArgumentException("Failed to load " + defaultClassName + " because the configuration is unfiltered. If you see this in a unit/integration test, you can ignore it.");
+			    }
 				LOG.error("Unable to load {}.", DEFAULT_FACTORY_CLASS.getName(), cause);
 				throw new IllegalArgumentException("Unable to load " + defaultClassName + ".", cause);
 			}
@@ -104,6 +107,16 @@ public abstract class DataSourceFactory {
     	}
     	
     	return dataSource;
+    }
+
+    private static boolean isUnfilteredConfigException(final Throwable cause) {
+        if (cause.getCause() == null) {
+            return cause.getMessage() != null && cause.getMessage().contains("${install.database.driver}");
+        }
+        if (cause.getMessage() != null && cause.getMessage().contains("${install.database.driver}")) {
+            return true;
+        }
+        return isUnfilteredConfigException(cause.getCause());
     }
 
     /**
@@ -138,20 +151,28 @@ public abstract class DataSourceFactory {
             }
         }
 
-        final ClosableDataSource dataSource = parseDataSource(dsName);
+        try {
+            final ClosableDataSource dataSource = parseDataSource(dsName);
 
-        m_closers.add(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    dataSource.close();
-                } catch (final Throwable cause) {
-                	LOG.info("Unable to close datasource {}.", dsName, cause);
+            m_closers.add(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        dataSource.close();
+                    } catch (final Throwable cause) {
+                            LOG.info("Unable to close datasource {}.", dsName, cause);
+                    }
                 }
-            }
-        });
+            });
 
-        setInstance(dsName, dataSource);
+            setInstance(dsName, dataSource);
+        } catch (final Exception e) {
+            if (e.getMessage() != null && e.getMessage().contains("configuration is unfiltered")) {
+                LOG.warn(e.getMessage());
+                return;
+            }
+            throw e;
+        }
     }
 
     private static synchronized boolean isLoaded(final String dsName) {

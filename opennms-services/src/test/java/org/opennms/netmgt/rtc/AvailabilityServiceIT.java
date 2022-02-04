@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,11 +29,12 @@
 package org.opennms.netmgt.rtc;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Date;
 import java.util.List;
 
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -97,11 +98,10 @@ public class AvailabilityServiceIT implements TemporaryDatabaseAware<MockDatabas
 
     @Test
     public void categoryIsFullyAvailableWhenNoServicesArePresent() throws Exception {
-        final RTCCategory rtcCat = EasyMock.createNiceMock(RTCCategory.class);
-        EasyMock.expect(rtcCat.getLabel()).andReturn("Routers");
+        final RTCCategory rtcCat = mock(RTCCategory.class);
+        when(rtcCat.getLabel()).thenReturn("Routers");
         // This nodeid should not exist in the database
-        EasyMock.expect(rtcCat.getNodes()).andReturn(Lists.newArrayList(99999));
-        EasyMock.replay(rtcCat);
+        when(rtcCat.getNodes()).thenReturn(Lists.newArrayList(99999));
 
         final EuiLevel euiLevel = m_availabilityService.getEuiLevel(rtcCat);
         assertEquals(1, euiLevel.getCategory().size());
@@ -123,10 +123,9 @@ public class AvailabilityServiceIT implements TemporaryDatabaseAware<MockDatabas
         mockNetwork.createStandardNetwork();
         m_mockDatabase.populate(mockNetwork);
 
-        final RTCCategory rtcCat = EasyMock.createNiceMock(RTCCategory.class);
-        EasyMock.expect(rtcCat.getLabel()).andReturn("NOC").anyTimes();
-        EasyMock.expect(rtcCat.getNodes()).andReturn(Lists.newArrayList(1, 2)).anyTimes();
-        EasyMock.replay(rtcCat);
+        final RTCCategory rtcCat = mock(RTCCategory.class);
+        when(rtcCat.getLabel()).thenReturn("NOC");
+        when(rtcCat.getNodes()).thenReturn(Lists.newArrayList(1, 2));
 
         // Verify the availability when no outages are present
         EuiLevel euiLevel = m_availabilityService.getEuiLevel(rtcCat);
@@ -173,10 +172,9 @@ public class AvailabilityServiceIT implements TemporaryDatabaseAware<MockDatabas
         mockNetwork.createStandardNetwork();
         m_mockDatabase.populate(mockNetwork);
 
-        final RTCCategory rtcCat = EasyMock.createNiceMock(RTCCategory.class);
-        EasyMock.expect(rtcCat.getLabel()).andReturn("TEST").anyTimes();
-        EasyMock.expect(rtcCat.getNodes()).andReturn(Lists.newArrayList(1, 2, 3)).anyTimes();
-        EasyMock.replay(rtcCat);
+        final RTCCategory rtcCat = mock(RTCCategory.class);
+        when(rtcCat.getLabel()).thenReturn("TEST");
+        when(rtcCat.getNodes()).thenReturn(Lists.newArrayList(1, 2, 3));
 
         final long now = System.currentTimeMillis();
         final long oneDayAgo = now - (1000 * 60 * 60 * 24);
