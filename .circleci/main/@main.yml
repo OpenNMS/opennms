@@ -1069,10 +1069,10 @@ jobs:
             }
 
             # Docker multi-arch manifest
-            # create_and_push_manifest MINION_IMAGE
+            # create_and_push_manifest $MINION_IMAGE
 
             # Azure multi-arch manifest
-            create_and_push_manifest MINION_AZ_IMAGE
+            create_and_push_manifest $MINION_AZ_IMAGE
 
             # Notary Docker
             export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
