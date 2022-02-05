@@ -27,11 +27,12 @@
  *******************************************************************************/
 
 
-package liquibase.ext2.cm.change;
+package org.opennms.features.config.osgi.cm.util;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.opennms.features.config.service.util.Substring;
 
 public class SubstringTest {
 
@@ -48,6 +49,14 @@ public class SubstringTest {
         assertEquals("def", new Substring("abc-def").getAfterLast("-").toString());
         assertEquals("", new Substring("-abc-def-ghi-").getAfterLast("-").toString());
         assertEquals("", new Substring("abc").getAfterLast("-").toString());
+        assertEquals("", new Substring("").getAfterLast("-").toString());
+    }
+
+    @Test
+    public void shouldDoAfter() {
+        assertEquals("def-ghi", new Substring("abc-def-ghi").getAfter("-").toString());
+        assertEquals("abc-def-ghi-", new Substring("-abc-def-ghi-").getAfter("-").toString());
+        assertEquals("", new Substring("abc").getAfter("-").toString());
         assertEquals("", new Substring("").getAfterLast("-").toString());
     }
 

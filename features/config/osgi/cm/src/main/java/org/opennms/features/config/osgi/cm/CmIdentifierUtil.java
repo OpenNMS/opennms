@@ -32,21 +32,31 @@ import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFI
 
 import java.util.Objects;
 
+import org.opennms.features.config.service.util.Substring;
+import org.opennms.features.config.exception.ConfigRuntimeException;
+import org.opennms.features.config.osgi.del.MigratedServices;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 
 public class CmIdentifierUtil {
 
+    private final static String DEFAULT_SUFFIX = "-" + DEFAULT_CONFIG_ID;
+
+    /**
+     * The delimiter between configName and configId is a dash (-).
+     * However, there is no guarantee that the configName or the configId doesn't contain a dash as well.
+     */
     public static ConfigUpdateInfo pidToCmIdentifier(String pid) {
         Objects.requireNonNull(pid);
         String configName;
         String configId;
-        int lastIndexOf = pid.lastIndexOf("-");
-        if (lastIndexOf > 0) {
-            configName = pid.substring(0, lastIndexOf);
-            configId = pid.substring(lastIndexOf + 1);
-        } else {
-            configName = pid;
+        if(pid.endsWith(DEFAULT_SUFFIX)) {
+            configName =  new Substring(pid).getBeforeLast(DEFAULT_SUFFIX).toString();
             configId = DEFAULT_CONFIG_ID;
+        } else {
+            configName = MigratedServices.PIDS_MULTI_INSTANCE.stream().filter(pid::startsWith)
+                    .findAny()
+                    .orElseThrow(() -> new ConfigRuntimeException(String.format("Pid=%s could not be parsed into ConfigUpdateInfo", pid)));
+            configId = new Substring(pid).getAfterLast(configName + "-").toString();
         }
         return new ConfigUpdateInfo(configName, configId);
     }
