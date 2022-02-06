@@ -28,111 +28,82 @@
 
 package org.opennms.features.deviceconfig.monitors;
 
+import static java.util.stream.Collectors.toMap;
+
+import java.time.Duration;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.features.deviceconfig.sshscripting.SshScriptingService;
-import org.opennms.features.deviceconfig.tftp.TftpFileReceiver;
-import org.opennms.features.deviceconfig.tftp.TftpServer;
+import org.opennms.features.deviceconfig.retrieval.api.Retriever;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
+    public static final String SCRIPT = "script";
+    public static final String USERNAME = "username";
+    public static final String PORT = "port";
+    public static final String TIMEOUT = "timeout";
+    public static final String PASSWORD = "password";
+
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitor.class);
-    private TftpServer tftpServer;
-    private SshScriptingService sshScriptingService;
+    private Retriever retriever;
     private static final Duration DEFAULT_DURATION = Duration.ofMinutes(1); // 60sec
-    private static final long DEFAULT_TTL = 180000; //180sec
     private static final int DEFAULT_SSH_PORT = 22;
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        if (tftpServer == null) {
-            tftpServer = BeanUtils.getBean("daoContext", "tftpServer", TftpServer.class);
+        if (retriever == null) {
+            retriever = BeanUtils.getBean("daoContext", "deviceConfigRetriever", Retriever.class);
         }
-        if (sshScriptingService == null) {
-            sshScriptingService = BeanUtils.getBean("daoContext", "sshScriptingService", SshScriptingService.class);
-        }
-        TftpReceiver tftpReceiver = new TftpReceiver(svc.getAddress());
+        String script = getObjectAsStringFromParams(parameters, SCRIPT);
+        String user = getObjectAsStringFromParams(parameters, USERNAME);
+        String password = getObjectAsStringFromParams(parameters, PASSWORD);
+        Integer port = getKeyedInteger(parameters, PORT, DEFAULT_SSH_PORT);
+        Long timeout = getKeyedLong(parameters, TIMEOUT, DEFAULT_DURATION.toMillis());
+        var host = svc.getIpAddr();
+        var stringParameters = parameters.entrySet().stream().collect(toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue())));
+        var future = retriever.retrieveConfig(
+                Retriever.Protocol.TFTP,
+                script,
+                user,
+                password,
+                host,
+                port,
+                stringParameters,
+                Duration.ofMillis(timeout)
+        ).thenApply(either ->
+                either.fold(
+                        failure -> {
+                            var reason = "Device config retrieval could not be triggered - host: " + host + ";  message: " + failure.message
+                                         + "\nstdout: " + failure.stdout
+                                         + "\nstderr: " + failure.stderr;
+                            LOG.error(reason);
+                            return PollStatus.unavailable(reason);
+                        },
+                        success -> {
+                            LOG.debug("Retrieved device configuration - host: " + host);
+                            var pollStatus = PollStatus.up();
+                            pollStatus.setDeviceConfig(success.config);
+                            return pollStatus;
+                        }
+                )
+        );
+
         try {
-            tftpServer.register(tftpReceiver);
-            try {
-                String script = getObjectAsStringFromParams(parameters, "script");
-                String user = getObjectAsStringFromParams(parameters, "username");
-                String password = getObjectAsStringFromParams(parameters, "password");
-                Integer port = getKeyedInteger(parameters, "port", DEFAULT_SSH_PORT);
-                Long timeout = getKeyedLong(parameters, "timeout", DEFAULT_DURATION.toMillis());
-                Duration duration = Duration.ofMillis(timeout);
-                Long ttl = getKeyedLong(parameters, "ttl", DEFAULT_TTL);
-                Optional<SshScriptingService.Failure> sshResult =
-                        sshScriptingService.execute(script, user, password, svc.getIpAddr(), port, new HashMap<>(), duration);
-                return sshResult.map(failure -> {
-                    var reason = "Config retrieval could not be triggered - message: " + failure.message
-                            + "\nstdout: " + failure.stdout
-                            + "\nstderr: " + failure.stderr;
-                    LOG.error(reason);
-                    return PollStatus.unavailable(reason);
-                }).orElseGet(() -> {
-                    CompletableFuture<byte[]> configObj = tftpReceiver.getConfigFuture();
-                    try {
-                        byte[] config = configObj.get(ttl, TimeUnit.MILLISECONDS);
-                        PollStatus pollStatus = PollStatus.up();
-                        pollStatus.setDeviceConfig(config);
-                        return pollStatus;
-                    } catch (TimeoutException | InterruptedException | ExecutionException e) {
-                        LOG.error("Config retrieval failed", e);
-                        return PollStatus.unresponsive("Config retrieval failed : " + e.getMessage());
-                    }
-                });
-            } finally {
-                tftpServer.deregister(tftpReceiver);
-            }
-        } catch (IOException e) {
-            LOG.error("Exception while connecting to TFTP Server ", e);
-            return PollStatus.down("Couldn't connect to Tftp Server" + e.getMessage());
+            return future.toCompletableFuture().get(timeout, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            LOG.error("Device config retrieval failed - host: " + host, e);
+            return PollStatus.unavailable("Device config retrieval failed - host: " + host + "; message: " + e.getMessage());
         }
     }
 
-    static private class TftpReceiver implements TftpFileReceiver {
-
-        private final CompletableFuture<byte[]> configFuture = new CompletableFuture<>();
-        private final InetAddress serviceAddress;
-
-        public TftpReceiver(InetAddress serviceAddress) {
-            this.serviceAddress = serviceAddress;
-        }
-
-        @Override
-        public void onFileReceived(InetAddress address, String fileName, byte[] content) {
-            if (serviceAddress.equals(address)) {
-                configFuture.complete(content);
-            }
-        }
-
-        public CompletableFuture<byte[]> getConfigFuture() {
-            return configFuture;
-        }
-    }
-
-    public void setTftpServer(TftpServer tftpServer) {
-        this.tftpServer = tftpServer;
-    }
-
-    public void setSshScriptingService(SshScriptingService sshScriptingService) {
-        this.sshScriptingService = sshScriptingService;
+    public void setRetriever(Retriever retriever) {
+        this.retriever = retriever;
     }
 
     private String getObjectAsStringFromParams(Map<String, Object> params, String key) {
