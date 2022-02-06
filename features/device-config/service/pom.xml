@@ -10,9 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.opennms.features.device-config</groupId>
-    <artifactId>org.opennms.features.device-config.monitor-adaptor</artifactId>
+    <artifactId>org.opennms.features.device-config.service</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS :: Features :: Device Config :: Monitor Adaptor</name>
+    <name>OpenNMS :: Features :: Device Config :: Service</name>
     <build>
         <plugins>
             <plugin>
@@ -40,53 +40,15 @@
             <artifactId>org.opennms.features.device-config.persistence.api</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-dao-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-config</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-rrd-jrobin</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.collection</groupId>
-            <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core.test-api</groupId>
-            <artifactId>org.opennms.core.test-api.services</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core.test-api</groupId>
-            <artifactId>org.opennms.core.test-api.db</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-dao-mock</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.device-config.persistence</groupId>
-            <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

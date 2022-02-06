@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.shell;
+package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.config.PollerConfigManager;
 
 /**
  * This class can be used to read an up-to-date copy of

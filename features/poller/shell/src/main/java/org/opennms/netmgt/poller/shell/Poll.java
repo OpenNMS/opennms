@@ -50,6 +50,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.ReadOnlyPollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
