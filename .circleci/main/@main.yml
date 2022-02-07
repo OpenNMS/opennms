@@ -574,9 +574,6 @@ workflows:
               ignore:
                 - /^from-foundation.*/
       - tarball-assembly:
-          context:
-            - docker-content-trust
-            - Service Principal
           requires:
             - build
       - minion-image-single-arch:
@@ -591,11 +588,11 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
-            # - smoke-test-core
-            # - smoke-test-flaky
-            # - smoke-test-minion
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
             - smoke-test-minimal
-            # - smoke-test-sentinel
+            - smoke-test-sentinel
           filters:
             branches:
               only:
@@ -713,9 +710,9 @@ workflows:
       - smoke-test-minimal:
           requires:
             - tarball-assembly
-            #- horizon-rpm-build
+            - horizon-rpm-build
             - tarball-assembly
-            #- sentinel-rpm-build
+            - sentinel-rpm-build
           filters:
             branches:
               ignore:
@@ -733,11 +730,11 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
-            # - smoke-test-core
-            # - smoke-test-flaky
-            # - smoke-test-minion
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
             - smoke-test-minimal
-            # - smoke-test-sentinel
+            - smoke-test-sentinel
           filters:
             branches:
               only:
@@ -1087,7 +1084,7 @@ jobs:
             #
             # -> use the targets key of the minion repository to sign the multi-arch image instead
             export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
-            # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_DK_REPO}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE_DK}" --sha256 "${SHA_256_DK}" --publish --verbose
+            notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_DK_REPO}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE_DK}" --sha256 "${SHA_256_DK}" --publish --verbose
             echo "Dockerhub Done!"
             # notary -s https://notary.docker.io list "${MINION_DK_REPO}"
 
