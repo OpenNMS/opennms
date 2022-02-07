@@ -32,5 +32,13 @@ import java.io.IOException;
 
 public interface DeviceConfigService {
 
-    public void triggerConfigBackup(String host, String location, String configType, String serviceName) throws IOException;
+    /**
+     *   Trigger device config backup for the given ipAddress at given location.
+     *
+     * @param ipAddress  specific IpAddress for which we need to fetch device config.
+     * @param location   specific minion location at which we need to fetch device config.
+     * @param serviceName  optional serviceName either default service or running config service.
+     * @throws IOException
+     */
+    public void triggerConfigBackup(String ipAddress, String location, String serviceName) throws IOException;
 }

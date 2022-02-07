@@ -28,7 +28,7 @@
 
 package org.opennms.features.deviceconfig.service;
 
-import org.opennms.core.utils.InetAddressUtils;
+import joptsimple.internal.Strings;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.ReadOnlyPollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
@@ -45,6 +45,7 @@ import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -53,6 +54,7 @@ import java.util.concurrent.CompletableFuture;
 public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     private static final String DEVICE_CONFIG_PACKAGE_NAME = "device-config";
+    private static final String DEVICE_CONFIG_SERVICE_NAME = "DeviceConfig";
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigServiceImpl.class);
 
     @Autowired
@@ -64,18 +66,18 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Autowired
     private IpInterfaceDao ipInterfaceDao;
 
-    @Autowired
+    @Qualifier("deviceConfigMonitorAdaptor")
     private ServiceMonitorAdaptor serviceMonitorAdaptor;
 
 
     @Override
-    public void triggerConfigBackup(String host, String location, String configType, String serviceName) throws IOException {
+    public void triggerConfigBackup(String ipAddress, String location, String serviceName) throws IOException {
 
         String className = retrieveClassName(serviceName);
 
         MonitoredService service = sessionUtils.withReadOnlyTransaction(() -> {
 
-            Optional<OnmsIpInterface> ipInterfaceOptional = ipInterfaceDao.findByIpAddress(host).stream().filter(ipInterface ->
+            Optional<OnmsIpInterface> ipInterfaceOptional = ipInterfaceDao.findByIpAddress(ipAddress).stream().filter(ipInterface ->
                     ipInterface.getNode().getLocation().getLocationName().equals(location)).findFirst();
             if (ipInterfaceOptional.isEmpty()) {
                 return null;
@@ -87,9 +89,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         });
 
         if (service == null) {
-            throw new IllegalArgumentException("No interface found with ipAddress " + host + "at location " + location);
+            throw new IllegalArgumentException("No interface found with ipAddress " + ipAddress + "at location " + location);
         }
-        // All the service parameters should be loaded in PollerRequestBuilderImpl
+        // All the service parameters should be loaded from metadata in PollerRequestBuilderImpl
+        // Persistence will be performed in DeviceConfigMonitorAdaptor.
         final CompletableFuture<PollerResponse> future = locationAwarePollerClient.poll()
                 .withService(service)
                 .withAdaptor(serviceMonitorAdaptor)
@@ -97,17 +100,20 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .execute();
         future.whenComplete(((pollerResponse, throwable) -> {
             if (throwable != null) {
-                LOG.info("Error while manually triggering config backup for IpAddress {} at location {}", host, location);
+                LOG.info("Error while manually triggering config backup for IpAddress {} at location {} for service {}", ipAddress, location, service);
             }
         }));
     }
 
-    private String retrieveClassName(final String serviceName) throws IOException {
+    private String retrieveClassName(String serviceName) throws IOException {
         final PollerConfig pollerConfig = ReadOnlyPollerConfigManager.create();
         org.opennms.netmgt.config.poller.Package pkg = pollerConfig.getPackage(DEVICE_CONFIG_PACKAGE_NAME);
         if (pkg == null) {
             LOG.error("Couldn't find package {} in poller-config", pkg);
             throw new IllegalArgumentException("Couldn't find package " + DEVICE_CONFIG_PACKAGE_NAME);
+        }
+        if (Strings.isNullOrEmpty(serviceName)) {
+            serviceName = DEVICE_CONFIG_SERVICE_NAME;
         }
         final org.opennms.netmgt.config.poller.Service svc = pollerConfig.getServiceInPackage(serviceName, pkg);
         if (svc == null) {

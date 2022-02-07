@@ -37,6 +37,8 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.charset.Charset;
@@ -48,6 +50,7 @@ import java.util.Optional;
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
     private static final String DEVICE_CONFIG_MONITOR = "DeviceConfig";
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitorAdaptor.class);
 
     @Autowired
     private DeviceConfigDao deviceConfigDao;
@@ -119,6 +122,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
             deviceConfig.setConfigType(configType);
             deviceConfig.setLastUpdated(currentTime);
             deviceConfigDao.saveOrUpdate(deviceConfig);
+            LOG.info("Persisted new device config at the node {} and interface {} ", svc.getNodeId(), svc.getAddress());
         }
         return status;
     }
