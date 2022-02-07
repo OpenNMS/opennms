@@ -14,7 +14,7 @@
   "dependencies": {
     "@featherds/app-bar": "0.9.2",
     "@featherds/app-layout": "0.9.2",
-    "@featherds/autocomplete": "0.9.2",
+    "@featherds/autocomplete": "0.9.4",
     "@featherds/button": "0.9.2",
     "@featherds/checkbox": "0.9.2",
     "@featherds/chips": "0.9.2",
