@@ -19,10 +19,10 @@
     <ConfigurationDrawer
       :edit="editing"
       :configurationDrawerActive="sidePanelState.isActive"
-      :activeUpdate="advanceActiveUpdate"
       :closePanel="closeConfigurationDrawer"
       :item="selectedProvisionDItem"
       :advancedActive="advancedActive.active"
+      :activeUpdate="advanceActiveUpdate"
       :addAdvancedOption="addAdvancedOption"
       :deleteAdvancedOption="deleteAdvancedOption"
       :saveCurrentState="saveCurrentState"
@@ -119,12 +119,6 @@ const closeConfigurationDrawer = () => {
   selectedProvisionDItem.errors = ConfigurationService.createBlankErrors();
 }
 
-const stripOriginalIndexes = (dataToUpdate: Array<ProvisionDServerConfiguration>) => {
-  return dataToUpdate.map((item) => {
-    let { originalIndex, currentSort, ...others } = item;
-    return others;
-  })
-}
 
 /**
  * User has decided to save and upload the current state.
@@ -148,8 +142,10 @@ const saveCurrentState = async () => {
     if (!updatedProvisionDData){
       updatedProvisionDData = {}
     }
+
     //Set New State
-    updatedProvisionDData['requisition-def'] = stripOriginalIndexes(provisionDList.value)
+    updatedProvisionDData['requisition-def'] = ConfigurationService.stripOriginalIndexes(provisionDList.value)
+
     //Actually Update the Server
     await putProvisionDService(updatedProvisionDData)
 
@@ -199,7 +195,7 @@ const doubleCheckSelected = async (selection: boolean) => {
     const updatedProvisionDData = store?.state?.configuration?.provisionDService
 
     // Remove the entry from the existing state.
-    updatedProvisionDData['requisition-def'] = stripOriginalIndexes(copiedList)
+    updatedProvisionDData['requisition-def'] = ConfigurationService.stripOriginalIndexes(copiedList)
 
     try {
       await putProvisionDService(updatedProvisionDData)
@@ -223,26 +219,20 @@ const doubleCheckSelected = async (selection: boolean) => {
 }
 
 /**
+ * Called when the user updates the page.
+ * @param newPage New Page Number
+ */
+const setNewPage = (newPage: number) => {
+  currentPage.page = newPage
+}
+
+/**
  * Should we open the advanced panel when opened?
  * Don't do it if the user has previously explicitly hidden
  * the drawer.
  */
 const advanceActiveUpdate = (newVal: boolean) => {
   advancedActive.active = newVal
-  const disabled = localStorage.getItem('disable-help') === 'true'
-  if (newVal && !disabled) {
-    helpState.open = true
-  } else {
-    helpState.open = false
-  }
-}
-
-/**
- * Called when the user updates the page.
- * @param newPage New Page Number
- */
-const setNewPage = (newPage: number) => {
-  currentPage.page = newPage
 }
 
 </script>
@@ -255,6 +245,7 @@ const setNewPage = (newPage: number) => {
 }
 .title-padding {
   padding: 20px;
+  padding-bottom:0;
 }
 .margin-bottom {
   margin-bottom: 20px;

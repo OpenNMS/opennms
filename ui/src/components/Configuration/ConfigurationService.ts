@@ -1,30 +1,42 @@
-import { requisitionTypes, requisitionSubTypes } from './copy/requisitionTypes'
+import {
+  RequisitionData,
+  RescanVals,
+  SplitTypes,
+  VMWareFields,
+  RequsitionTypesUsingHost,
+  ErrorStrings,
+  RequisitionFields,
+  requisitionSubTypes,
+  requisitionTypeList,
+  RequisitionTypes
+} from './copy/requisitionTypes'
 
 export const ConfigurationService = {
-  validateName: (name: string, nameType: string = 'Name') => {
+  validateName: (name: string, nameType: string = RequisitionFields.Name) => {
     let nameError = ''
+    const maxNameLength = 255
     if (!name) {
-      nameError = `Must have a ${nameType.toLocaleLowerCase()}`
+      nameError = ErrorStrings.MustHave(nameType)
     }
     if (!nameError && name.length < 2) {
-      nameError = `${nameType} must have at least two chars`
+      nameError = ErrorStrings.NameShort(nameType)
     }
-    if (!nameError && name.length > 255) {
-      nameError = `${nameType} must be shorter than 255`
+    if (!nameError && name.length > maxNameLength) {
+      nameError = ErrorStrings.NameLong(nameType, maxNameLength)
     }
     return nameError
   },
   validateType: (typeName: string) => {
     let typeError = ''
     if (!typeName) {
-      typeError = 'Must select a type'
+      typeError = ErrorStrings.TypeError
     }
     return typeError
   },
   validateOccurance: (typeName: string) => {
     let typeError = ''
     if (!typeName) {
-      typeError = 'Must select a schedule time'
+      typeError = ErrorStrings.ScheduleTime
     }
     return typeError
   },
@@ -35,7 +47,7 @@ export const ConfigurationService = {
     )
     const isHostValid = ipv4.test(host)
     if (!isHostValid) {
-      hostError = 'Invalid hostname'
+      hostError = ErrorStrings.InvalidHostname
     }
     return hostError
   },
@@ -43,9 +55,9 @@ export const ConfigurationService = {
   validatePath: (path: string) => {
     let pathError = ''
     if (!path) {
-      pathError = 'Must include a file path'
+      pathError = ErrorStrings.FilePath
     } else if (!path.startsWith('/')) {
-      pathError = 'Path must start with a /'
+      pathError = ErrorStrings.FilePathStart
     }
     return pathError
   },
@@ -70,10 +82,10 @@ export const ConfigurationService = {
       errors.name = ConfigurationService.validateName(localItem.name)
       errors.type = ConfigurationService.validateType(localItem.type.name)
 
-      if (['DNS', 'VMWare', 'HTTP', 'HTTPS'].includes(localItem.type.name)) {
+      if (RequsitionTypesUsingHost.includes(localItem.type.name)) {
         errors.host = ConfigurationService.validateHost(localItem.host)
       }
-      if (localItem.type.name === 'DNS') {
+      if (localItem.type.name === RequisitionTypes.DNS) {
         errors.zone = ConfigurationService.validateHost(localItem.zone)
 
         // Only validate foreign source if it's set.
@@ -81,12 +93,8 @@ export const ConfigurationService = {
           errors.foreignSource = ConfigurationService.validateHost(localItem.foreignSource)
         }
       }
-      if (localItem.type.name === 'File') {
+      if (localItem.type.name === RequisitionTypes.File) {
         errors.path = ConfigurationService.validatePath(localItem.path)
-      }
-      if (localItem.type.name === 'VMWare') {
-        errors.username = ConfigurationService.validateName(localItem.username, 'Username')
-        errors.password = ConfigurationService.validateName(localItem.password, 'Password')
       }
       errors.occurance = ConfigurationService.validateOccurance(localItem.occurance.name)
     }
@@ -151,19 +159,20 @@ export const ConfigurationService = {
     }
   },
   convertItemToURL: (localItem: LocalConfiguration) => {
-    const protocol = localItem.type.name.toLowerCase()
+    let protocol = localItem.type.name.toLowerCase()
     const type = localItem.type.name
     let host = localItem.host
-    if (type === 'Requisition') {
+    if (type === RequisitionTypes.RequisitionPlugin) {
       host = localItem.subType.value
-    } else if (type === 'DNS') {
+      protocol = RequisitionTypes.RequisitionPluginForServer
+    } else if (type === RequisitionTypes.DNS) {
       host = `${localItem.host}/${localItem.zone || ''}`
       if (localItem.foreignSource) {
         host += `/${localItem.foreignSource}`
       }
-    } else if (type === 'VMWare') {
-      host = `${localItem.host}?username=${localItem.username}&password=${localItem.password}`
-    } else if (type === 'File') {
+    } else if (type === RequisitionTypes.VMWare) {
+      host = `${localItem.host}?${VMWareFields.Username}=${localItem.username}&${VMWareFields.Password}=${localItem.password}`
+    } else if (type === RequisitionTypes.File) {
       host = `${localItem.path}`
     }
 
@@ -178,21 +187,22 @@ export const ConfigurationService = {
     const occurance = localItem.occurance
     const time = localItem.time
     const schedule = ConfigurationService.convertLocalToCronTab(occurance, time)
-    let rescanVal = 'true'
+    let rescanVal = RescanVals.True
     if (localItem.rescanBehavior === 0) {
-      rescanVal = 'false'
+      rescanVal = RescanVals.False
     } else if (localItem.rescanBehavior === 2) {
-      rescanVal = 'dbonly'
+      rescanVal = RescanVals.DBOnly
     }
     const finalURL = ConfigurationService.convertItemToURL(localItem)
-    let fullRet: ProvisionDServerConfiguration = {
-      'import-name': localItem.name,
-      'import-url-resource': finalURL,
-      'cron-schedule': schedule,
-      'rescan-existing': rescanVal,
+
+    let fullRet = {
+      [RequisitionData.ImportName]: localItem.name,
+      [RequisitionData.ImportURL]: finalURL,
+      [RequisitionData.CronSchedule]: schedule,
+      [RequisitionData.RescanExisting]: rescanVal,
       currentSort: { property: '', value: '' },
       originalIndex: 0
-    }
+    } as ProvisionDServerConfiguration
 
     if (stripIndex) {
       delete fullRet.originalIndex
@@ -230,6 +240,13 @@ export const ConfigurationService = {
       }
     }
   },
+
+  stripOriginalIndexes: (dataToUpdate: Array<ProvisionDServerConfiguration>) => {
+    return dataToUpdate.map((item) => {
+      let { originalIndex, currentSort, ...others } = item
+      return others
+    })
+  },
   convertURLToLocal: (urlIn: string) => {
     let host = ''
     let path = ''
@@ -241,33 +258,39 @@ export const ConfigurationService = {
 
     const url = urlIn.split('/')
     let typeRaw = url[0].split(':')[0]
-    let type = requisitionTypes.find((item) => item.name.toLowerCase() === typeRaw)
+    let type = requisitionTypeList.find((item) => {
+      let match = item.name.toLowerCase() === typeRaw
+      if (item.name === RequisitionTypes.RequisitionPlugin) {
+        match = true
+      }
+      return match
+    })
     if (!type) {
       type = { id: 0, name: '' }
     }
 
-    if (type.name === 'File') {
-      let pathPart = urlIn.split('file://')[1]
+    if (type.name === RequisitionTypes.File) {
+      let pathPart = urlIn.split(SplitTypes.file)[1]
       if (pathPart.includes('?')) {
         path = pathPart.split('?')[0]
       } else {
         path = pathPart
       }
-    } else if (type.name === 'VMWare') {
+    } else if (type.name === RequisitionTypes.VMWare) {
       if (url[2].includes('?')) {
         const vals = url[2].split('?')
         host = vals[0]
       } else {
         host = url[2]
       }
-    } else if (type.name === 'Requisition') {
+    } else if (type.name === RequisitionTypes.RequisitionPlugin) {
       typeRaw = url[2].split('?')[0]
       const foundSubType = requisitionSubTypes.find((item) => item.value.toLowerCase() === typeRaw)
       if (foundSubType) {
         subType = foundSubType
       }
-    } else if (type.name === 'DNS') {
-      let urlPart = urlIn.split('dns://')[1].split('/')
+    } else if (type.name === RequisitionTypes.DNS) {
+      let urlPart = urlIn.split(SplitTypes.dns)[1].split('/')
       host = urlPart[0]
       zone = urlPart[1]
       if (urlPart[2]) {
@@ -277,24 +300,23 @@ export const ConfigurationService = {
           foreignSource = urlPart[2]
         }
       }
-    } else if (type.name === 'HTTP' || type.name === 'HTTPS') {
+    } else if (type.name === RequisitionTypes.HTTP || type.name === RequisitionTypes.HTTPS) {
       host = url[2]
     }
 
     const advancedOptions = ConfigurationService.gatherAdvancedOptions(urlIn).filter((item) => {
-      if (type?.name === 'VMWare') {
-        if (item.key.name === 'username') {
+      if (type?.name === RequisitionTypes.VMWare) {
+        if (item.key.name === VMWareFields.Username) {
           username = item.value
           return false
         }
-        if (item.key.name === 'password') {
+        if (item.key.name === VMWareFields.Password) {
           password = item.value
           return false
         }
-        return true
       }
+      return true
     })
-
     return { path, type, host, username, password, subType, zone, foreignSource, advancedOptions }
   },
   gatherAdvancedOptions: (fullURL: string) => {
@@ -310,17 +332,19 @@ export const ConfigurationService = {
   },
   convertServerConfigurationToLocal: (clickedItem: ProvisionDServerConfiguration) => {
     let rescanBehavior = 1
-    if (clickedItem?.['rescan-existing'] === 'false') {
+    if (clickedItem?.[RequisitionData.RescanExisting] === RescanVals.False) {
       rescanBehavior = 0
-    } else if (clickedItem?.['rescan-existing'] === 'dbonly') {
+    } else if (clickedItem?.[RequisitionData.RescanExisting] === RescanVals.DBOnly) {
       rescanBehavior = 2
     }
-    const { occurance, twentyFourHour: time } = ConfigurationService.convertCronTabToLocal(clickedItem['cron-schedule'])
+    const { occurance, twentyFourHour: time } = ConfigurationService.convertCronTabToLocal(
+      clickedItem[RequisitionData.CronSchedule]
+    )
 
-    const urlVars = ConfigurationService.convertURLToLocal(clickedItem['import-url-resource'])
+    const urlVars = ConfigurationService.convertURLToLocal(clickedItem[RequisitionData.ImportURL])
 
     return {
-      name: clickedItem['import-name'],
+      name: clickedItem[RequisitionData.ImportName],
       occurance: { name: occurance, id: 0 },
       time,
       rescanBehavior,

@@ -33,6 +33,7 @@ import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
+import { RequisitionPluginSubTypes, RequisitionTypes, RequsitionTypesUsingHost } from './copy/requisitionTypes';
 
 /**
  * Props
@@ -61,7 +62,7 @@ const helpText = computed(() => {
     link: 'https://docs.opennms.com/horizon/29/reference/provisioning'
   }
 
-  if (typeName === 'File') {
+  if (typeName === RequisitionTypes.File) {
     helpVals = {
       title: 'File',
       subTitle: 'The file handler imports a properly-formatted requisition definition from an XML file stored locally on the server.',
@@ -69,16 +70,16 @@ const helpText = computed(() => {
       linkCopy: 'READ FULL ARTICLE',
       link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/file.html'
     }
-  } else if (typeName === 'Requisition') {
+  } else if (typeName === RequisitionTypes.RequisitionPlugin) {
     if (subType === '') {
       helpVals = {
-        title: 'Requisition',
+        title: RequisitionTypes.RequisitionPlugin,
         subTitle: 'Some information about Requisition...',
         help: 'Detailed information on the options it supports is available in the online documentation:',
         linkCopy: 'READ FULL ARTICLE',
         link: ''
       }
-    } else if (subType === 'OpenDaylight') {
+    } else if (subType === RequisitionPluginSubTypes.OpenDaylight) {
       helpVals = {
         title: 'Open Daylight',
         subTitle: 'Open Daylight...',
@@ -86,7 +87,7 @@ const helpText = computed(() => {
         linkCopy: 'READ FULL ARTICLE',
         link: ''
       }
-    } else if (subType === 'ACI') {
+    } else if (subType === RequisitionPluginSubTypes.ACI) {
       helpVals = {
         title: 'ACI',
         subTitle: 'ACI...',
@@ -94,7 +95,7 @@ const helpText = computed(() => {
         linkCopy: 'READ FULL ARTICLE',
         link: ''
       }
-    } else if (subType === 'Zabbix') {
+    } else if (subType === RequisitionPluginSubTypes.Zabbix) {
       helpVals = {
         title: 'Zabbix',
         subTitle: 'Zabbix...',
@@ -102,7 +103,7 @@ const helpText = computed(() => {
         linkCopy: 'READ FULL ARTICLE',
         link: ''
       }
-  } else if (subType === 'Azure IoT') {
+  } else if (subType === RequisitionPluginSubTypes.AzureIot) {
       helpVals = {
         title: 'Azure IoT',
         subTitle: 'Azure IoT...',
@@ -110,16 +111,24 @@ const helpText = computed(() => {
         linkCopy: 'READ FULL ARTICLE',
         link: ''
       }
+ } else if (subType === RequisitionPluginSubTypes.PRIS) {
+      helpVals = {
+        title: 'PRIS',
+        subTitle: 'PRIS...',
+        help: 'Detailed information on the options it supports is available in the online documentation:',
+        linkCopy: 'READ FULL ARTICLE',
+        link: ''
+      }
     }
-  } else if (typeName === 'VMWare') {
+  } else if (typeName === RequisitionTypes.VMWare) {
     helpVals = {
-      title: 'VMWare',
+      title: RequisitionTypes.VMWare,
       subTitle: 'The VMware adapter pulls hosts and/or virtual machines from a vCenter server into Horizon. With this adapter, nodes can automatically be added, updated, or removed from your Horizon based on the status of the VMware entity.',
       help: 'Detailed information on the options it supports is available in the online documentation:',
       linkCopy: 'READ FULL ARTICLE',
       link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/vmware.html'
     }
-  } else if (typeName === 'HTTP' || typeName === 'HTTPS') {
+  } else if (typeName === RequisitionTypes.HTTP || typeName === RequisitionTypes.HTTPS) {
     helpVals = {
       title: 'HTTP(S)',
       subTitle: 'The HTTP ...',
@@ -127,7 +136,7 @@ const helpText = computed(() => {
       linkCopy: 'READ FULL ARTICLE',
       link: ''
     }
-  } else if (typeName === 'DNS') {
+  } else if (typeName === RequisitionTypes.DNS) {
     helpVals = {
       title: 'DNS',
       subTitle: 'The DNS handler requests a zone transfer (AXFR) from a DNS server. The A and AAAA records are retrieved and used to build an import requisition.',

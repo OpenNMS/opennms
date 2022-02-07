@@ -44,6 +44,7 @@ import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
 
 import { advancedKeys,dnsKeys, openDaylightKeys,aciKeys,zabbixKeys,prisKeys } from './copy/advancedKeys'
+import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'
 
 /**
  * Props
@@ -70,18 +71,18 @@ const getKeysBasedOnType = (type:string,subType:string) => {
   
   let keys = new Array<AdvancedKey>();
 
-  if (type === 'DNS'){
+  if (type === RequisitionTypes.DNS){
     keys = dnsKeys;
-  }else if (type === 'VMWare'){
+  }else if (type === RequisitionTypes.VMWare){
     keys = advancedKeys;
-  }else if (type === 'Requisition'){
-    if (subType === 'OpenDaylight'){
+  }else if (type === RequisitionTypes.RequisitionPlugin){
+    if (subType === RequisitionPluginSubTypes.OpenDaylight){
       keys = openDaylightKeys;
-    }else if (subType === 'ACI'){
+    }else if (subType === RequisitionPluginSubTypes.ACI){
       keys = aciKeys;
-    }else if (subType === 'Zabbix'){
+    }else if (subType === RequisitionPluginSubTypes.Zabbix){
       keys = zabbixKeys;
-    }else if (subType === 'PRIS'){
+    }else if (subType === RequisitionPluginSubTypes.PRIS){
       keys = prisKeys;
     }
   }
@@ -109,17 +110,6 @@ const search = (searchVal: string, type:string,subType:string, index: number) =>
     return includeInResults;
   })
   results.list[index] = [...newResu]
-}
-
-/**
- * If help has been closed manually by the user, 
- * this will reopen upon explicit click.
- */
-const forceOpenHelp = () => {
-  localStorage.removeItem('disable-help')
-  if (props.activeUpdate) {
-    props.activeUpdate(true)
-  }
 }
 
 /**

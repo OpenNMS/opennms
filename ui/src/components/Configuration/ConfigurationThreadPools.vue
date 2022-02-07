@@ -72,6 +72,7 @@ import { FeatherChip, FeatherChipList } from '@featherds/chips'
 import { populateProvisionD, putProvisionDService } from '@/services/configurationService'
 import { useConfigurationToast } from './hooks/configurationToast'
 import { threadPoolKeys } from './copy/threadPoolKeys'
+import { ConfigurationService } from './ConfigurationService'
 
 
 /**
@@ -127,6 +128,8 @@ const updateThreadpools = async () => {
 
     // Set Update State
     threadPoolKeys.forEach((key) => (updatedProvisionDData[key] = parseInt(currentThreadpoolState?.[key])))
+    
+    updatedProvisionDData['requisition-def'] = ConfigurationService.stripOriginalIndexes(updatedProvisionDData['requisition-def'])
 
     // Push Updates to Server
     await putProvisionDService(updatedProvisionDData)

@@ -9,7 +9,7 @@
             property="import-name"
             :sort="sorts['import-name']"
             v-on:sort-changed="sortChanged"
-          >RequisitionName</FeatherSortHeader>
+          >Name</FeatherSortHeader>
           <FeatherSortHeader
             scope="col"
             class="onms-sort-header"
@@ -36,19 +36,23 @@
       </thead>
       <tbody>
         <tr v-bind:key="key" v-for="(item, key) in filteredItems">
-          <td>{{ item['import-name'] }}</td>
+          <td>
+            <ConfigurationCopyPasteDisplay :text="item['import-name']" />
+          </td>
           <td>
             <ConfigurationCopyPasteDisplay :text="item['import-url-resource']" />
           </td>
           <td>{{ cronToEnglish(item['cron-schedule']) }}</td>
           <td>{{ rescanToEnglish(item['rescan-existing']) }}</td>
           <td>
+          <div class="flex">
             <FeatherButton icon="Edit" @click="() => props.editClicked(item.originalIndex)">
               <FeatherIcon :icon="editIcon" class="edit-icon"></FeatherIcon>
             </FeatherButton>
             <FeatherButton icon="Delete" @click="() => props.deleteClicked(item.originalIndex)">
               <FeatherIcon class="delete-icon" :icon="deleteIcon"></FeatherIcon>
             </FeatherButton>
+          </div>
           </td>
         </tr>
       </tbody>
@@ -211,6 +215,9 @@ const rescanToEnglish = (rescanVal: string) => {
 </style>
 <style lang="scss" scoped>
 @import "@featherds/table/scss/table";
+.flex {
+  display:flex;
+}
 .tr {
   background-color: #e6e8f9;
 }

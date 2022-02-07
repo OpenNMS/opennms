@@ -23,7 +23,6 @@ const convertedItem = computed(() => {
   const converted = props.item?.type ?
     ConfigurationService.convertLocalToServer(props.item) :
     { 'import-url-resource': '' }
-    console.log('URL:',converted['import-url-resource'])
   return {
     item: converted,
     url: converted['import-url-resource']

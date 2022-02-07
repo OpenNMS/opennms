@@ -44,7 +44,7 @@ let timeout = reactive({ value: -1 })
 const editIcon = computed(() => Edit)
 const shortText = computed(() => {
   const len = props?.text?.length || 0
-  return len > 40 ? props?.text?.slice(0, 40) + '...' : props.text
+  return len > 30 ? props?.text?.slice(0, 30) + '...' : props.text
 })
 
 /**

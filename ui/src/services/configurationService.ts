@@ -1,8 +1,5 @@
 import { rest } from '@/services/axiosInstances'
 import { Store } from 'vuex'
-import getDropdownTypes from '../../src/components/Common/Demo/MockupData/types.json'
-import getSchedulePeriod from '../../src/components/Common/Demo/MockupData/schedulePeriod.json'
-import getAdvancedDropdown from '../../src/components/Common/Demo/MockupData/advancedDropdown.json'
 
 const getProvisionD = '/cm/provisiond/default'
 
@@ -33,11 +30,4 @@ const putProvisionDService = async (payload: any) => {
   })
 }
 
-export {
-  getDropdownTypes,
-  getSchedulePeriod,
-  getAdvancedDropdown,
-  getProvisionDService,
-  putProvisionDService,
-  populateProvisionD
-}
+export { getProvisionDService, putProvisionDService, populateProvisionD }
