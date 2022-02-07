@@ -20,7 +20,7 @@
     "@featherds/chips": "0.9.2",
     "@featherds/date-input": "0.9.2",
     "@featherds/dialog": "0.9.2",
-    "@featherds/drawer": "0.9.2",
+    "@featherds/drawer": "0.9.4",
     "@featherds/dropdown": "0.9.2",
     "@featherds/icon": "0.9.2",
     "@featherds/input": "0.9.2",
