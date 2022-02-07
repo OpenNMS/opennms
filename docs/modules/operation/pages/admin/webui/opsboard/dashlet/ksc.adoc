@@ -58,4 +58,3 @@ Be sure to keep each `id` unique for each `<Report>`.`
 == Using KSC Reports
 
 The *KSC Reports* area on the right side of the main page of OpenNMS includes a drop-down menu where you can select the KSC reports you have configured.
-=======

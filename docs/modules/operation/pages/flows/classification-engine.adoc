@@ -3,17 +3,25 @@
 = Application Classification
 
 The Classification Engine applies a set of user- and/or system-defined rules to each flow to classify it.
-This lets users group flows by applications, for example, if all flows to port 80 are marked as `http`.
+This lets users group flows by applications; for example, if all flows to port 80 are marked as `http`.
 
 To classify a flow, you must define a rule.
-A rule defines at least a name, which the flow is classified with, and additional parameters that must match for a successful classification.
+A rule defines at least a name that classifies the flow and additional parameters that must match for a successful classification.
+
+A list of predefined rules already exist in the group `pre-defined`.
+The predefined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].
+
+Use the Classification UI to define new rules.
+menu:Gear icon[Flow Management > Manage Flow Classification].
 
 == Rule definition
 A rule has the following fields:
 
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3"]
 |===
-| Name            | Description
+| Name
+| Description
 2+| *Required*
 
 | group
@@ -21,10 +29,10 @@ A rule has the following fields:
 See also <<rule-groups,Rule Groups>>.
 
 | position
-| The position at which it is placed within its group, relevant for the <<evaluation-order, order of evaluation>>.
+| The position to place it within its group, relevant for the <<evaluation-order, order of evaluation>>.
 
 | name
-| The name the flow is classified with; for example, `http`.
+| The classification name for the flow; for example, `http`.
 
 2+| *Optional*
 
@@ -54,23 +62,21 @@ This parameter supports all capabilities of the {page-component-title} xref:refe
 
 Even if all fields (besides `group`, `position`, and `name`) are optional, at least one of them must be defined to be considered a valid rule.
 
-A list of predefined rules already exist in the group `pre-defined`.
-The predefined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].
-Define new rules using the Classification UI, under the gears icon in the web UI: menu:Gear icon[Flow Management > Manage Flow Classification].
 
-== Omnidirectional Rules
+
+== Omnidirectional rules
 You can mark rules as omnidirectional, which additionally evaluates the rules with interchanged endpoint addresses and ports.
 This is helpful if traffic related to a matching classification should be classified the same way.
 
 [[rule-groups]]
-== Rule Groups
+== Rule groups
 Rules live within a rule group.
 New groups can be added, edited, and deleted via the Classification UI.
 The `pre-defined` group is read only.
 You cannot alter it or its rules.
 
 [[evaluation-order]]
-== Order of Evaluation
+== Order of evaluation
 Rules and groups have a position.
 Lower positions are evaluated first.
 The position of a rules group is more important than the rule's position within its group.
@@ -79,18 +85,62 @@ The system-defined group is always evaluated last.
 An example of an evaluation:
 
 [options="header"]
+[cols="1,2,1,2"]
 |===
-| Group Position | Group   | Rule Position | Rule
-| 1              | group 1 | 1             | rule 1.1
-| 1              | group 1 | 2             | rule 1.2
-| 1              | group 1 | 3             | rule 1.3
-| 1              | group 1 | 4             | rule 1.4
-| 2              | group 2 | 1             | rule 2.1
-| 2              | group 2 | 2             | rule 2.2
-| 2              | group 2 | 3             | rule 2.3
-| 2              | group 2 | 4             | rule 2.4
-| 3              | group 3 | 1             | rule 3.1
-| 3              | group 3 | 2             | rule 3.2
+| Group Position
+| Group
+| Rule Position
+| Rule
+
+| 1
+| group 1
+| 1
+| rule 1.1
+
+| 1
+| group 1
+| 2
+| rule 1.2
+
+| 1
+| group 1
+| 3
+| rule 1.3
+
+| 1
+| group 1
+| 4
+| rule 1.4
+
+| 2
+| group 2
+| 1
+| rule 2.1
+
+| 2
+| group 2
+| 2
+| rule 2.2
+
+| 2
+| group 2
+| 3
+| rule 2.3
+
+| 2
+| group 2
+| 4
+| rule 2.4
+
+| 3
+| group 3
+| 1
+| rule 3.1
+
+| 3
+| group 3
+| 2
+| rule 3.2
 |===
 
 Change the positions of rules and groups by drag and drop or by editing the position field in the edit dialogs.
@@ -108,19 +158,56 @@ This simulates sending a flow to the Classification Engine with certain fields.
 Let's assume the following rules are defined:
 
 [options="header"]
+[cols="1,1,1,1,1,1,1"]
 |===
-| name       |  srcAddress | srcPort | dstAddress | dstPort           | protocol | exporterFilter
-| OpenNMS    |             |         | 10.0.0.1   | 8980              | tcp,udp  |
-| http       |             |         |            | 80,8980,8080,9000 | udp,tcp  |
-| https      |             |         |            | 443               |          |
-| Exporters  |             |         |            |                   |          | categoryName == 'Exporters'
+| name
+| srcAddress
+| srcPort
+| dstAddress
+| dstPort
+| protocol
+| exporterFilter
+
+| OpenNMS
+|
+|
+| 10.0.0.1
+| 8980
+| tcp,udp
+|
+
+| http
+|
+|
+|
+| 80,8980,8080,9000
+| udp,tcp
+|
+
+| https
+|
+|
+|
+| 443
+|
+|
+
+| Exporters
+|
+|
+|
+|
+|
+| categoryName == 'Exporters'
 |===
 
 The following flows are sent to {page-component-title} and with the rules defined above classified accordingly.
 
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3"]
 |===
-| Flow    | Classification
+| Flow
+| Classification
 
 | protocol: tcp, +
   srcAddress: 10.0.0.5, srcPort: 60123, +
