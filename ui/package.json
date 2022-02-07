@@ -27,7 +27,7 @@
     "@featherds/list": "0.9.2",
     "@featherds/navigation-rail": "0.9.2",
     "@featherds/pagination": "0.9.2",
-    "@featherds/progress": "0.9.2",
+    "@featherds/progress": "0.9.4",
     "@featherds/protected-input": "0.9.2",
     "@featherds/select": "0.9.2",
     "@featherds/styles": "0.9.2",

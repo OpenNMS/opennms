@@ -263,12 +263,12 @@
     "@featherds/styles" "^0.9.2"
     vue "^3.1.0-0"
 
-"@featherds/progress@0.9.2":
-  version "0.9.2"
-  resolved "https://registry.yarnpkg.com/@featherds/progress/-/progress-0.9.2.tgz#a7711ed460b92d0178366a8dd206e9570ead30a9"
-  integrity sha512-Exd8qvjBr0k0OYacV3AevUgvVicQbRsOWjDvlWuyMpJBj/cvT/MHbJIS7us0faOxxIhrfDg0FDEVCA4gNlVBhg==
+"@featherds/progress@0.9.4":
+  version "0.9.4"
+  resolved "https://registry.yarnpkg.com/@featherds/progress/-/progress-0.9.4.tgz#668c88da22f18577aa2fc08053bc212faf99cbab"
+  integrity sha512-VN3GVwvVDk5V0VYfm6N8c/xnWsK+fS3Hvchi4VTZW7TUgccM7h4AZ6FanZoeklv6Yo4U6D/4waQUhkbVzHFDMw==
   dependencies:
-    "@featherds/styles" "^0.9.2"
+    "@featherds/styles" "^0.9.4"
     vue "^3.1.0-0"
 
 "@featherds/protected-input@0.9.2":
@@ -312,10 +312,15 @@
     "@featherds/utils" "^0.9.2"
     vue "^3.1.0-0"
 
-"@featherds/styles@0.9.2", "@featherds/styles@^0.9.2":
+"@featherds/styles@0.9.2":
   version "0.9.2"
   resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.9.2.tgz#512540f0796a6e51ee646a264c5581de50e2854c"
   integrity sha512-+PwG6uBA+xUWdHhOpr/0gfzjyaNRP3XGEpNuRbT0UiLDDWF60qSnYLerJh+EA3iQxk0RxtRMHql4qIDqoIT/XQ==
+
+"@featherds/styles@^0.9.2", "@featherds/styles@^0.9.4":
+  version "0.9.4"
+  resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.9.4.tgz#d0b9b8662604d9a0f3f13bb01d26e726b6c2d10d"
+  integrity sha512-uGUm/TwnktfVHleJEaEwcVLubDxrGhIVFymICUiy+XJ1/H3w3HzvBtJZxn1Uq4ynA8n3WPBHxfYD88mvk8cS3A==
 
 "@featherds/switch@^0.9.2":
   version "0.9.2"
