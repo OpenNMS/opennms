@@ -31,7 +31,7 @@
     "@featherds/protected-input": "0.9.2",
     "@featherds/select": "0.9.2",
     "@featherds/styles": "0.9.2",
-    "@featherds/table": "0.9.2",
+    "@featherds/table": "0.9.4",
     "@featherds/tabs": "0.9.2",
     "@featherds/utils": "0.9.2",
     "@vueuse/core": "^7.5.3",
