@@ -1090,7 +1090,7 @@ jobs:
             export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
             # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE_DK}" --sha256 "${SHA_256_DK}" --publish --verbose
             echo "Dockerhub Done!"
-            # notary -s https://notary.docker.io list "${IMAGE}"
+            # notary -s https://notary.docker.io list "${MINION_IMAGE}"
 
             # Notary sign on Azure
             NOTARY_SERVER="https://opennmspubacr.azurecr.io"
@@ -1098,7 +1098,7 @@ jobs:
             export NOTARY_TARGETS_PASSPHRASE="${AZURE_DCT_CI_PASSPHRASE}"
             notary -d ~/.docker/trust/ -s "${NOTARY_SERVER}" addhash "${MINION_AZ_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE_AZ}" --sha256 "${SHA_256_AZ}" --publish --verbose
             echo "ACR Done!"
-            notary -d ~/.docker/trust/ -s "${NOTARY_SERVER}" list "${IMAGE}"
+            notary -d ~/.docker/trust/ -s "${NOTARY_SERVER}" list "${MINION_AZ_IMAGE}"
 
   horizon-rpm-build:
     executor: centos-build-executor
