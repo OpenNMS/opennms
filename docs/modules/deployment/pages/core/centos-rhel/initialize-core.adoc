@@ -40,6 +40,22 @@ sudo /opt/opennms/bin/runjava -s
 sudo /opt/opennms/bin/install -dis
 ----
 
+._Assign CAP_NET_RAW capabilities_
+{page-component-title} runs as a non-root user, which requires having a Linux kernel greater than 3.10.
+If you run on an older kernel, and are unable to upgrade your OS, you need to assign CAP_NET_RAW capabilities:
+
+Run `systemctl edit --full opennms.service` and add the following lines to the `[Service]` section:
+
+[source, console]
+----
+CapabilityBoundingSet=CAP_NET_RAW
+AmbientCapabilities=CAP_NET_RAW
+----
+
+Reload the sytemd unit with `systemctl daemon-reload` and restart the service with `systemctl restart opennms`.
+
+(For more background on this issue, see https://opennms.discourse.group/t/h29-wont-start-with-permission-error-to-open-icmp-socket/2387[H29+ won't start with permission error to open ICMP socket] on Discourse.)
+
 .Enable {page-component-title} core instance on system boot and start immediately
 [source, console]
 ----
