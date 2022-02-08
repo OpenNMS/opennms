@@ -89,7 +89,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         });
 
         if (service == null) {
-            throw new IllegalArgumentException("No interface found with ipAddress " + ipAddress + "at location " + location);
+            throw new IllegalArgumentException("No interface found with ipAddress " + ipAddress + " at location " + location);
         }
         // All the service parameters should be loaded from metadata in PollerRequestBuilderImpl
         // Persistence will be performed in DeviceConfigMonitorAdaptor.
@@ -118,17 +118,17 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         final org.opennms.netmgt.config.poller.Service svc = pollerConfig.getServiceInPackage(serviceName, pkg);
         if (svc == null) {
             LOG.error("Couldn't find {} service in package {}", serviceName, pkg);
-            throw new IllegalArgumentException("Couldn't find service " + serviceName + "in the package " + DEVICE_CONFIG_PACKAGE_NAME);
+            throw new IllegalArgumentException("Couldn't find service " + serviceName + " in the package " + DEVICE_CONFIG_PACKAGE_NAME);
         }
         final Optional<Package.ServiceMatch> service = pkg.findService(serviceName);
         if (service.isEmpty()) {
             LOG.error("Couldn't find {} service", serviceName);
-            throw new IllegalArgumentException("Couldn't find service " + serviceName + "in the package " + DEVICE_CONFIG_PACKAGE_NAME);
+            throw new IllegalArgumentException("Couldn't find service " + serviceName + " in the package " + DEVICE_CONFIG_PACKAGE_NAME);
         }
         final ServiceMonitor monitor = pollerConfig.getServiceMonitor(service.get().service.getName());
         if (monitor == null) {
             LOG.error("Service {} doesn't have a monitor class defined", serviceName);
-            throw new IllegalArgumentException("Service " + serviceName + "doesn't have a monitor class defined");
+            throw new IllegalArgumentException("Service " + serviceName + " doesn't have a monitor class defined");
         }
         return monitor.getClass().getName();
     }
