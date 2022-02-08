@@ -200,11 +200,6 @@ commands:
       - load-oci:
           key: sentinel
       - run:
-          name: Load Sentinel OCI image
-          command: |
-            cd opennms-container/sentinel
-            docker image load -i /tmp/oci-sentinel/container.oci
-      - run:
           name: Monitor JVM processes
           background: true
           command: |
@@ -463,9 +458,13 @@ commands:
       - run:
           name: Load Docker Image(s) in oci-<< parameters.key >>
           command: |
+            if [ ! -d d "/tmp/oci-<< parameters.key >>" ]; then
+              echo "ERROR: /tmp/oci-<< parameters.key >> does not exist. This should have been cached in an earlier step."
+              exit 1
+            fi
             cd "/tmp/oci-<< parameters.key >>"
             if [ "$(ls -1 *.oci | wc -l)" -eq 0 ]; then
-              echo "ERROR: No OCI files to load. Something probably went wrong earlier."
+              echo "ERROR: No OCI files to load. s should have been cached in an earlier step."
               exit 1
             fi
             for FILE in *.oci; do
