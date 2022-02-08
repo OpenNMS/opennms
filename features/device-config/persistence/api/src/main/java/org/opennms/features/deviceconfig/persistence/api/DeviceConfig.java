@@ -63,7 +63,7 @@ public class DeviceConfig implements Serializable {
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "interface_id")
+    @JoinColumn(name = "ipinterface_id")
     private OnmsIpInterface ipInterface;
 
     @Type(type = "org.hibernate.type.BinaryType")
@@ -73,24 +73,28 @@ public class DeviceConfig implements Serializable {
     @Column(name = "encoding", nullable = false)
     private String encoding;
 
-    @Column(name = "config_type")
+    @Column(name = "config_type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private ConfigType configType;
+    private ConfigType configType = ConfigType.Default;
 
     @Column(name = "failure_reason")
     private String failureReason;
 
-    @Column(name = "created_time", nullable = false)
+    @Column(name = "created_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime;
 
-    @Column(name = "last_updated")
+    @Column(name = "last_updated", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdated;
 
     @Column(name = "last_failed")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastFailed;
+
+    @Column(name = "last_succeeded")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastSucceeded;
 
     public Long getId() {
         return id;
@@ -164,26 +168,25 @@ public class DeviceConfig implements Serializable {
         this.lastFailed = lastFailed;
     }
 
+    public Date getLastSucceeded() {
+        return lastSucceeded;
+    }
+
+    public void setLastSucceeded(Date lastSucceeded) {
+        this.lastSucceeded = lastSucceeded;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof DeviceConfig)) return false;
         DeviceConfig that = (DeviceConfig) o;
-        return ipInterface.equals(that.ipInterface) &&
-                Arrays.equals(config, that.config) &&
-                encoding.equals(that.encoding) &&
-                configType.equals(that.configType) &&
-                Objects.equals(failureReason, that.failureReason) &&
-                createdTime.equals(that.createdTime) &&
-                lastUpdated.equals(that.lastUpdated) &&
-                Objects.equals(lastFailed, that.lastFailed);
+        return ipInterface.equals(that.ipInterface) && Arrays.equals(config, that.config) && encoding.equals(that.encoding) && configType == that.configType && Objects.equals(failureReason, that.failureReason) && Objects.equals(createdTime, that.createdTime) && lastUpdated.equals(that.lastUpdated) && Objects.equals(lastFailed, that.lastFailed) && Objects.equals(lastSucceeded, that.lastSucceeded);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(ipInterface,
-                encoding, configType, failureReason, createdTime, lastUpdated, lastFailed);
+        int result = Objects.hash(ipInterface, encoding, configType, failureReason, createdTime, lastUpdated, lastFailed, lastSucceeded);
         result = 31 * result + Arrays.hashCode(config);
         return result;
     }

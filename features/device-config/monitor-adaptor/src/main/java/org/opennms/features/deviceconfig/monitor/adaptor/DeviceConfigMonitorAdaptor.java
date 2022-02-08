@@ -69,48 +69,45 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         ConfigType configType = !Strings.isNullOrEmpty(configTypeAttribute) ? ConfigType.valueOf(configTypeAttribute) : ConfigType.Default;
         Date currentTime = new Date();
         Optional<DeviceConfig> configOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
-        DeviceConfig latestDeviceConfig = configOptional.orElse(null);
+        DeviceConfig lastDeviceConfig = configOptional.orElse(null);
         byte[] deviceConfigBytes = status.getDeviceConfig();
 
         // Config retrieval failed
         if (deviceConfigBytes == null) {
             DeviceConfig deviceConfig;
-            // If last config also failed, update the same entry.
-            if (latestDeviceConfig != null && latestDeviceConfig.getConfig() == null) {
-                deviceConfig = latestDeviceConfig;
+            // If there is config already, update the same entry.
+            if (lastDeviceConfig != null) {
+                deviceConfig = lastDeviceConfig;
             } else {
                 deviceConfig = new DeviceConfig();
-                deviceConfig.setCreatedTime(currentTime);
                 deviceConfig.setIpInterface(ipInterface);
                 deviceConfig.setConfigType(configType);
                 deviceConfig.setEncoding(encoding);
             }
             deviceConfig.setFailureReason(status.getReason());
             deviceConfig.setLastFailed(currentTime);
+            deviceConfig.setLastUpdated(currentTime);
             deviceConfigDao.saveOrUpdate(deviceConfig);
             return status;
         }
 
         // Config retrieval succeeded
-        // If last config was failure, clear failed fields and update config.
-        if (latestDeviceConfig != null && latestDeviceConfig.getConfig() == null) {
-            latestDeviceConfig.setConfig(deviceConfigBytes);
-            latestDeviceConfig.setCreatedTime(currentTime);
-            latestDeviceConfig.setConfigType(configType);
-            latestDeviceConfig.setEncoding(encoding);
-            latestDeviceConfig.setFailureReason(null);
-            latestDeviceConfig.setLastFailed(null);
-            deviceConfigDao.saveOrUpdate(latestDeviceConfig);
-            return status;
-        }
-
-        // Config didn't change, just update last updated field.
-        if (latestDeviceConfig != null &&
-                Arrays.equals(latestDeviceConfig.getConfig(), deviceConfigBytes)) {
-            latestDeviceConfig.setLastUpdated(currentTime);
-            deviceConfigDao.saveOrUpdate(latestDeviceConfig);
+        if (lastDeviceConfig != null &&
+                // Config didn't change, just update last updated field.
+                Arrays.equals(lastDeviceConfig.getConfig(), deviceConfigBytes)) {
+            lastDeviceConfig.setLastUpdated(currentTime);
+            lastDeviceConfig.setLastSucceeded(currentTime);
+            deviceConfigDao.saveOrUpdate(lastDeviceConfig);
+        } else if (lastDeviceConfig != null
+                // last config was failure, update config now.
+                && lastDeviceConfig.getConfig() == null) {
+            lastDeviceConfig.setConfig(deviceConfigBytes);
+            lastDeviceConfig.setCreatedTime(currentTime);
+            lastDeviceConfig.setLastUpdated(currentTime);
+            lastDeviceConfig.setLastSucceeded(currentTime);
+            deviceConfigDao.saveOrUpdate(lastDeviceConfig);
         } else {
-            // Config changed, or there is no config for the device, create new entry.
+            // Config changed, or there is no config for the device yet, create new entry.
             DeviceConfig deviceConfig = new DeviceConfig();
             deviceConfig.setConfig(deviceConfigBytes);
             deviceConfig.setCreatedTime(currentTime);
@@ -118,6 +115,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
             deviceConfig.setEncoding(encoding);
             deviceConfig.setConfigType(configType);
             deviceConfig.setLastUpdated(currentTime);
+            deviceConfig.setLastSucceeded(currentTime);
             deviceConfigDao.saveOrUpdate(deviceConfig);
         }
         return status;

@@ -131,28 +131,21 @@ public class DeviceConfigDaoIT {
         // Take middle element and update it's created time.
         // This is not the way we should update versions of the latest. This is just for the test.
         DeviceConfig middleElement = deviceConfigList.get((count / 2) - 1);
-        middleElement.setCreatedTime(Date.from(Instant.now().plus(1, HOURS)));
+        middleElement.setLastUpdated(Date.from(Instant.now().plus(1, HOURS)));
         deviceConfigDao.saveOrUpdate(middleElement);
         deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, ConfigType.Default);
         DeviceConfig retrievedMiddleElement = deviceConfigList.get(0);
-        Optional<DeviceConfig> latestElementOptional = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, ConfigType.Default);
+        Optional<DeviceConfig> latestElementOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
         Assert.assertTrue(latestElementOptional.isPresent());
         DeviceConfig latestConfig = latestElementOptional.get();
         Assert.assertArrayEquals(retrievedMiddleElement.getConfig(), latestConfig.getConfig());
-        // Populate failed retrieval for devices.
+        // Populate failed retrieval.
         populateFailedRetrievalDeviceConfig();
-        deviceConfigList = deviceConfigDao.findAll();
-        // Verify that it got persisted
-        Assert.assertThat(deviceConfigList.size(), Matchers.is(count + 1));
-        // Verify that query doesn't consider failed elements.
-        Optional<DeviceConfig> elementsWithNullConfig = deviceConfigDao.getLatestSucceededConfigForInterface(ipInterface, ConfigType.Default);
-        Assert.assertTrue(elementsWithNullConfig.isPresent());
-        DeviceConfig retrievedConfig = elementsWithNullConfig.get();
-        Assert.assertArrayEquals(retrievedConfig.getConfig(), latestConfig.getConfig());
-        // Verify that this will give all elements including last failed one.
-        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, ConfigType.Default);
-        DeviceConfig failedElement = deviceConfigList.get(0);
-        Assert.assertNull(failedElement.getConfig());
+        Optional<DeviceConfig> elementWithFailedConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Assert.assertTrue(elementWithFailedConfig.isPresent());
+        DeviceConfig retrievedConfig = elementWithFailedConfig.get();
+        // Verify that last failed got updated and it is same as last updated.
+        Assert.assertEquals(retrievedConfig.getLastUpdated(), retrievedConfig.getLastFailed());
     }
 
     private void populateDeviceConfigs(int count) {
@@ -174,7 +167,6 @@ public class DeviceConfigDaoIT {
         DeviceConfig deviceConfig = new DeviceConfig();
         deviceConfig.setIpInterface(ipInterface);
         deviceConfig.setEncoding(Charset.defaultCharset().name());
-        deviceConfig.setCreatedTime(Date.from(Instant.now().plus(2, HOURS)));
         deviceConfig.setConfigType(ConfigType.Default);
         deviceConfig.setLastUpdated(Date.from(Instant.now().plus(2, HOURS)));
         deviceConfig.setLastFailed(Date.from(Instant.now().plus(2, HOURS)));
