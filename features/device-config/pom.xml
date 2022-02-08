@@ -19,6 +19,7 @@
         <module>monitor-adaptor</module>
         <module>persistence</module>
         <module>rest</module>
+        <module>retrieval</module>
         <module>tftp</module>
         <module>shell</module>
         <module>ssh-scripting</module>
