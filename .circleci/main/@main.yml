@@ -1068,14 +1068,14 @@ jobs:
             }
 
             # Docker multi-arch manifest
-            # create_and_push_manifest $MINION_DK_REPO DK
+            create_and_push_manifest $MINION_DK_REPO DK
 
             # Azure multi-arch manifest
             create_and_push_manifest $MINION_AZ_REPO AZ
 
             # Notary sign on Docker
             export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
-            echo "Sign ${SHA_256} with the notary"
+            echo "Sign ${SHA_256_DK} with Docker notary"
             # when the multi-arch image is signed by the delegate key then docker pull reports "No valid trust data..."
             # -> the following lines can not be used:
             #
@@ -1092,6 +1092,7 @@ jobs:
             NOTARY_SERVER="https://opennmspubacr.azurecr.io"
             export NOTARY_AUTH="$(printf "${AZURE_SP}:${AZURE_SP_PASSWORD}" | base64 -w0)"
             export NOTARY_TARGETS_PASSPHRASE="${AZURE_DCT_CI_PASSPHRASE}"
+            echo "Sign ${SHA_256_AZ} with Docker notary"
             notary -d ~/.docker/trust/ -s "${NOTARY_SERVER}" addhash "${MINION_AZ_REPO}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE_AZ}" --sha256 "${SHA_256_AZ}" --publish --verbose
             echo "ACR Done!"
             notary -d ~/.docker/trust/ -s "${NOTARY_SERVER}" list "${MINION_AZ_REPO}"
