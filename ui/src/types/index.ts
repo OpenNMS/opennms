@@ -512,3 +512,9 @@ export interface Expression {
   functionName: string
   metricName: string
 }
+
+export interface Plugin {
+  id: string
+  menu: string
+  enabled: boolean
+}

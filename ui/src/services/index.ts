@@ -28,6 +28,7 @@ import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
 import { getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
+import { getPlugins, updatePluginStatus } from './pluginService'
 
 export default {
   search,
@@ -62,5 +63,7 @@ export default {
   getPreFabGraphs,
   getDefinitionData,
   getResourceForNode,
-  getGraphDefinitionsByResourceId
+  getGraphDefinitionsByResourceId,
+  getPlugins,
+  updatePluginStatus
 }

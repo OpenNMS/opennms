@@ -18,6 +18,17 @@ const router = createRouter({
       component: () => import('@/containers/NodeDetails.vue')
     },
     {
+      path: '/plugin-management',
+      name: 'Plugin Management',
+      component: () => import('@/containers/PluginManagement.vue')
+    },
+    {
+      path: '/plugins/:id',
+      name: 'Plugin',
+      props: true,
+      component: () => import('@/containers/Plugin.vue')
+    },
+    {
       path: '/inventory',
       name: 'Inventory',
       component: () => import('@/containers/Inventory.vue'),
