@@ -2,6 +2,35 @@
 
 = Changelog
 
+[[releasenotes-changelog-Meridian-2021.1.11]]
+
+== Release Meridian-2021.1.11
+
+Release 2021.1.11 is a small release with a number of bug fixes, including a few security
+fixes related to Grafana PDF reports and Protobuf.
+
+Thanks to Sahil Tikoo from Etisalat for reporting the Grafana endpoint issue.
+
+A note about security issues: we have traditionally created CVEs in a pretty ad-hoc manner.
+We are in the process of formalizing how we'll be doing so going into the future.
+
+The codename for Horizon 2021.1.11 is https://wikipedia.org/wiki/$$Mid-ocean_ridge$$[_Mid-Ocean Ridge_].
+
+=== Bug
+
+* config-tester doesn't find malformed resourceTypes (Issue http://issues.opennms.org/browse/NMS-13723[NMS-13723])
+* Event configuration UI fails to persist logmsg dest changes (Issue http://issues.opennms.org/browse/NMS-13729[NMS-13729])
+* Outdated javascript library (Issue http://issues.opennms.org/browse/NMS-13848[NMS-13848])
+* org.opennms.core.commands never got added to Karaf build (Issue http://issues.opennms.org/browse/NMS-13910[NMS-13910])
+* grafana endpoint can be used to port-scan internal resources (Issue http://issues.opennms.org/browse/NMS-13917[NMS-13917])
+* Minion fails to marshall requisition with JAXB error: Class [org.opennms.netmgt.model.PrimaryTypeAdapter] not found (Issue http://issues.opennms.org/browse/NMS-13927[NMS-13927])
+* Unsynchronized access to service factories in TelemetryServiceRegistryImpl (Issue http://issues.opennms.org/browse/NMS-13961[NMS-13961])
+
+=== Enhancement
+
+* Split SNMP Property Extenders into multiple pages (Issue http://issues.opennms.org/browse/NMS-13760[NMS-13760])
+* Upgrade protobuf-java version (Issue http://issues.opennms.org/browse/NMS-13889[NMS-13889])
+
 [[releasenotes-changelog-Meridian-2021.1.10]]
 
 == Release Meridian-2021.1.10
