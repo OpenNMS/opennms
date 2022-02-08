@@ -333,7 +333,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
             m_ipAddress = InetAddressUtils.getInetAddress(value);
             m_ipAddressStr = value;
         } catch (Throwable e) {
-            throw new IllegalArgumentException(String.format("Invalid IP address specified: {}", value), e);
+            throw new IllegalArgumentException(String.format("Invalid IP address specified: %s", value), e);
         }
     }
 
@@ -423,7 +423,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
             for (final RequisitionMonitoredService svc : m_monitoredServices) {
                 svc.validate();
                 if (!serviceNameSet.add(svc.getServiceName())) {
-                    throw new ValidationException("Duplicate service name: " + svc.getServiceName());
+                    throw new ValidationException(String.format("Duplicate service name: %s", svc.getServiceName()));
                 }
             }
         }
