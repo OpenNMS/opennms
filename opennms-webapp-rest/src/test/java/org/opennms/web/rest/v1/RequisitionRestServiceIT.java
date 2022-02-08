@@ -44,8 +44,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -187,18 +185,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml, xml.contains("descr=\"Total Crap\""));
         assertTrue(xml, xml.contains("snmp-primary=\"N\""));
         assertTrue(xml, xml.contains("status=\"3\""));
-
-        // Attempt to set an invalid interface IP
-        m_eventProxy.getEventAnticipator().reset();
-        m_eventProxy.getEventAnticipator().anticipateEvent(
-                new EventBuilder(EventConstants.INTERFACE_REJECTED_EVENT_UEI, "Provisiond").getEvent());
-        sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"not.a.host\" descr=\"invalid-interface\"></interface>", 500, null);
-        xml = sendRequest(GET, url, 200);
-        assertFalse(xml, xml.contains("not.a.host"));
-        assertFalse(xml, xml.contains("invalid-interface"));
-        m_eventProxy.getEventAnticipator().waitForAnticipated(10000);
-        m_eventProxy.getEventAnticipator().verifyAnticipated();
-
+ 
         // delete interface
         xml = sendRequest(DELETE, url, 202);
         xml = sendRequest(GET, url, 404);

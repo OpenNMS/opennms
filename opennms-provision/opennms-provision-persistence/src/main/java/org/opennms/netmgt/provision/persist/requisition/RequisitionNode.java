@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.opennms.core.network.IPValidationException;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.core.utils.InetAddressUtils;
 
@@ -533,6 +534,7 @@ public class RequisitionNode {
     }
 
     public void validate() throws ValidationException {
+        //this.pruneInterfaces();
         if (m_nodeLabel == null) {
             throw new ValidationException("Requisition node 'node-label' is a required attribute!");
         }
@@ -543,8 +545,18 @@ public class RequisitionNode {
             throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains invalid characters. ('/' is forbidden.)");
         }
         if (m_interfaces != null) {
-            for (final RequisitionInterface iface : m_interfaces) {
-                iface.validate(this);
+            Iterator<RequisitionInterface> iter = m_interfaces.iterator();
+            while (iter.hasNext()) {
+                try {
+                    iter.next().validate(this);
+                }
+                catch (IPValidationException ive) {
+                    iter.remove();
+                }
+            }
+            // there can be only one primary interface per node
+            if(m_interfaces.stream().filter(iface -> PrimaryType.PRIMARY == iface.m_snmpPrimary).count() > 1) {
+                throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains multiple primary interfaces. Maximum one is allowed.");
             }
         }
         if (m_categories != null) {

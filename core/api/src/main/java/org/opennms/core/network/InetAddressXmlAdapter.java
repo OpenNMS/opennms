@@ -28,11 +28,16 @@
 
 package org.opennms.core.network;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.InetAddress;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class InetAddressXmlAdapter extends XmlAdapter<String, InetAddress> {
+
+    private static Logger LOG = LoggerFactory.getLogger(InetAddressXmlAdapter.class);
 
     /** {@inheritDoc} */
     @Override
@@ -43,7 +48,13 @@ public class InetAddressXmlAdapter extends XmlAdapter<String, InetAddress> {
     /** {@inheritDoc} */
     @Override
     public InetAddress unmarshal(final String ipAddr) throws Exception {
-        return (ipAddr == null || ipAddr.isEmpty())? null : new IPAddress(ipAddr).toInetAddress();
+        try {
+            return (ipAddr == null || ipAddr.isEmpty()) ? null : new IPAddress(ipAddr).toInetAddress();
+        }
+        catch (Throwable t) {
+            LOG.warn(String.format("Invalid IP address <%s>", ipAddr));
+            return null;
+        }
     }
 
 }

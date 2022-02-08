@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -98,9 +98,7 @@ public abstract class JaxbUtils {
         @Override
         public boolean handleEvent(final ValidationEvent event) {
             LOG.trace("event = {}", event, event.getLinkedException());
-            // If the issue is with IP validation, skip the problematic interface
-            // but attempt to continue parsing
-            return (event.getLinkedException() instanceof IPValidationException);
+            return false;
         }
     }
 

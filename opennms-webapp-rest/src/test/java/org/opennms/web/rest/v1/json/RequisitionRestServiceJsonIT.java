@@ -28,11 +28,6 @@
 
 package org.opennms.web.rest.v1.json;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.List;
 
 import org.json.JSONArray;
@@ -53,6 +48,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import static org.junit.Assert.*;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -260,6 +257,56 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         json = sendRequest(GET, base, 200);
         interfaces = new JSONObject(json);
         assertEquals(2, interfaces.getInt("count"));
+    }
+
+    @Test
+    public void testInvalidInterfaces() throws Exception {
+        createRequisition();
+
+        String base = "/requisitions/test/nodes/4243/interfaces";
+
+        // create an invalid interface
+        JSONObject badIntf = new JSONObject();
+        badIntf.put("ip-addr", "this is not a host name");
+        badIntf.put("status", 1);
+        badIntf.put("snmp-primary", "S");
+        badIntf.put("descr", "invalid");
+        sendPost(base, badIntf.toString(), 400, null);
+
+        String json = sendRequest(GET, base, 200);
+        JSONObject intfs = new JSONObject(json);
+        for (Object intf : intfs.getJSONArray("interface")) {
+            assertNotEquals(((JSONObject) intf).getString("descr"), badIntf.getString("descr"));
+        }
+
+        // Now, create a node with an invalid interface in a single call. The node should remain
+        // with only the valid interfaces
+        JSONObject node = new JSONObject();
+        node.put("node-label", "derrick");
+        node.put("foreign-id", "4245");
+        node.put("interface", new JSONArray());
+
+        JSONObject badIP = new JSONObject();
+        badIP.put("ip-addr", "another invalid host");
+        badIP.put("status", "1");
+        badIP.put("snmp-primary", "S");
+        badIP.put("descr", "invalid");
+        node.append("interface", badIP);
+
+        JSONObject goodIP = new JSONObject();
+        goodIP.put("ip-addr", "192.168.0.1");
+        goodIP.put("status", "1");
+        goodIP.put("snmp-primary", "P");
+        goodIP.put("descr", "Management interface");
+        node.append("interface", goodIP);
+
+        sendPost("/requisitions/test/nodes", node.toString(), 202, null);
+
+        json = sendRequest(GET, "requisitions/test/nodes/4245/interfaces", 200);
+        intfs = new JSONObject(json);
+        for (Object intf : intfs.getJSONArray("interface")) {
+            assertNotEquals(((JSONObject)intf).getString("descr"), badIP.getString("descr"));
+        }
     }
 
     @Test

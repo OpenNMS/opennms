@@ -54,17 +54,15 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.opennms.core.network.IPValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.network.IPAddress;
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.PrimaryTypeAdapter;
-import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.core.network.IPValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>RequisitionInterface class.</p>
@@ -73,6 +71,8 @@ import org.opennms.netmgt.xml.event.Event;
 @XmlType(name="", propOrder = { "m_monitoredServices", "m_categories", "m_metaData" })
 @XmlRootElement(name = "interface")
 public class RequisitionInterface implements Comparable<RequisitionInterface> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RequisitionInterface.class);
 
     //TODO Change these to be sets so that we don't have to verify duplicates in the lists
     @XmlElement(name="monitored-service")
@@ -98,9 +98,6 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     
     @XmlAttribute(name="status")
     protected Integer m_status;
-
-    @Autowired
-    private EventForwarder m_eventForwarder;
 
     protected InetAddress m_ipAddress;
 
@@ -411,7 +408,12 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     public void validate(RequisitionNode node) throws ValidationException {
         if (m_ipAddress == null) {
             if (m_ipAddressStr != null) {
-                validateHost();
+                try {
+                    m_ipAddress = new IPAddress(m_ipAddressStr).toInetAddress();
+                } catch (IllegalArgumentException iae) {
+                    LOG.warn(String.format("Invalid IP address %s", m_ipAddressStr));
+                    throw new IPValidationException(String.format("Invalid IP address %s", m_ipAddressStr), iae);
+                }
             }
             else {
                 throw new ValidationException("Requisition interface 'ip-addr' is a required attribute!");
@@ -527,41 +529,5 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
             .append(m_metaData, other.m_metaData)
             .append(m_description, other.m_description)
             .toComparison();
-    }
-
-    @SuppressWarnings("unused")
-    public void beforeMarshal(Marshaller u) {
-        if (m_ipAddressStr == null && m_ipAddress != null) {
-            m_ipAddressStr = InetAddressUtils.str(m_ipAddress);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public void afterUnmarshal(Unmarshaller u, Object parent) throws IPValidationException {
-        try {
-            validateHost();
-        }
-        catch (ValidationException ve) {
-            final Event e = EventUtils.createInterfaceRejectedEvent("Provisiond", "filler", m_ipAddressStr);
-            // TODO how to wire this
-            // m_eventForwarder.sendNow(e);
-            throw new IPValidationException(ve.getMessage(), ve);
-        }
-    }
-
-    /**
-     *  Post-unmarshall, this is called to construct the InetAddress
-     *  from the parsed ip-addr String.
-     *
-     * @throws ValidationException  If the parsed ip-addr attribute
-     *                              does not resolve to a valid address
-     */
-    protected void validateHost() throws ValidationException {
-        try {
-            m_ipAddress = new IPAddress(m_ipAddressStr).toInetAddress();
-        }
-        catch (IllegalArgumentException iae) {
-            throw new ValidationException(m_ipAddressStr);
-        }
     }
 }
