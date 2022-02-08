@@ -1,18 +1,104 @@
 
 [[ga-flow-support-classification-engine]]
-= Application Classification
+= Flows Classification
+
+For improved flows management, OpenNMS uses a classification engine that applies user- and/or pre-defined rules to filter and classify flows.
+This lets users to group flows by any combination of parameters: source/destination port, source/destination address, IP protocol, and exporter filter. (add more about why this is useful)
+
+
+
+
+The predefined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].
+For improved flow management, users can create 
 
 The Classification Engine applies a set of user- and/or system-defined rules to each flow to classify it.
 This lets users group flows by applications; for example, if all flows to port 80 are marked as `http`.
 
+
+
 To classify a flow, you must define a rule.
 A rule defines at least a name that classifies the flow and additional parameters that must match for a successful classification.
 
-A list of predefined rules already exist in the group `pre-defined`.
-The predefined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].
+
 
 Use the Classification UI to define new rules.
 menu:Gear icon[Flow Management > Manage Flow Classification].
+
+== Example
+
+Let's assume the following rules are defined:
+
+[options="header"]
+[cols="1,1,1,1,1,1,1"]
+|===
+| name
+| srcAddress
+| srcPort
+| dstAddress
+| dstPort
+| protocol
+| exporterFilter
+
+| OpenNMS
+|
+|
+| 10.0.0.1
+| 8980
+| tcp,udp
+|
+
+| http
+|
+|
+|
+| 80,8980,8080,9000
+| udp,tcp
+|
+
+| https
+|
+|
+|
+| 443
+|
+|
+
+| Exporters
+|
+|
+|
+|
+|
+| categoryName == 'Exporters'
+|===
+
+The following flows are sent to {page-component-title} and with the rules defined above classified accordingly.
+
+[options="header"]
+[cols="1,3"]
+|===
+| Flow
+| Classification
+
+| protocol: tcp, +
+  srcAddress: 10.0.0.5, srcPort: 60123, +
+  dstAddress: 54.246.188.65, dstPort: 80, +
+  exporterAddress: 10.0.0.55
+| http
+
+| protocol: tcp, +
+  srcAddress: 10.0.0.5, srcPort: 60123, +
+  dstAddress: 54.246.188.65, dstPort: 443, +
+  exporterAddress: 10.0.0.55
+| https
+
+| protocol: tcp, +
+  srcAddress: 10.0.0.5, srcPort: 60123, +
+  dstAddress: 10.0.0.1, dstPort: 8980, +
+  exporterAddress: 10.0.0.55
+| OpenNMS
+
+|===
 
 == Rule definition
 A rule has the following fields:
@@ -153,78 +239,3 @@ To do so, navigate to the Classification UI:
 menu:Gear icon[Flow Management > Manage Flow Classification] and select the Test classification icon in the top right.
 This simulates sending a flow to the Classification Engine with certain fields.
 
-== Example
-
-Let's assume the following rules are defined:
-
-[options="header"]
-[cols="1,1,1,1,1,1,1"]
-|===
-| name
-| srcAddress
-| srcPort
-| dstAddress
-| dstPort
-| protocol
-| exporterFilter
-
-| OpenNMS
-|
-|
-| 10.0.0.1
-| 8980
-| tcp,udp
-|
-
-| http
-|
-|
-|
-| 80,8980,8080,9000
-| udp,tcp
-|
-
-| https
-|
-|
-|
-| 443
-|
-|
-
-| Exporters
-|
-|
-|
-|
-|
-| categoryName == 'Exporters'
-|===
-
-The following flows are sent to {page-component-title} and with the rules defined above classified accordingly.
-
-[options="header"]
-[cols="1,3"]
-|===
-| Flow
-| Classification
-
-| protocol: tcp, +
-  srcAddress: 10.0.0.5, srcPort: 60123, +
-  dstAddress: 54.246.188.65, dstPort: 80, +
-  exporterAddress: 10.0.0.55
-| http
-
-| protocol: tcp, +
-  srcAddress: 10.0.0.5, srcPort: 60123, +
-  dstAddress: 54.246.188.65, dstPort: 443, +
-  exporterAddress: 10.0.0.55
-| https
-
-| protocol: tcp, +
-  srcAddress: 10.0.0.5, srcPort: 60123, +
-  dstAddress: 10.0.0.1, dstPort: 8980, +
-  exporterAddress: 10.0.0.55
-| OpenNMS
-
-|===
