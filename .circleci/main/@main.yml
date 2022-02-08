@@ -73,6 +73,11 @@ commands:
   save-cached-checkout:
       description: "Cache a checkout"
       steps:
+        - run:
+            name: optimize git cache
+            command: |
+              git prune || :
+              git gc || :
         - save_cache:
             key: source-v3-{{ .Branch }}-{{ .Revision }}
             paths:
