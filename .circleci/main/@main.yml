@@ -1021,7 +1021,7 @@ jobs:
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
-            echo "docker push ${MINION_DK_REPO}:${TAG}"
+            docker push ${MINION_DK_REPO}:${TAG}
             docker tag ${MINION_DK_REPO}:${TAG} ${MINION_AZ_REPO}:${TAG}
             export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${AZURE_DCT_CI_PASSPHRASE}
             docker trust key load $KEY_FOLDER/$AZURE_DCT_CI_KEY_NAME.key
