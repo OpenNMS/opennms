@@ -39,8 +39,10 @@ public class CmIdentifierUtilTest {
 
     @Test
     public void shouldParse() {
-        checkParse("org.opennms.netmgt.graph.provider.graphml-" + DEFAULT_CONFIG_ID,
-                "org.opennms.netmgt.graph.provider.graphml", DEFAULT_CONFIG_ID);
+        checkParse("org.opennms.features.datachoices-" + DEFAULT_CONFIG_ID,
+                "org.opennms.features.datachoices", DEFAULT_CONFIG_ID); // single instance
+        checkParse("org.opennms.netmgt.graph.provider.graphml-someid",
+                "org.opennms.netmgt.graph.provider.graphml", "someid"); // multi instance
     }
 
     private void checkParse(String pid, String expectedName, String expectedId) {
