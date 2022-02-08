@@ -199,7 +199,7 @@ public class Events implements Serializable {
 
             final Events events = JaxbUtils.unmarshal(Events.class, eventResource);
             if (events.getEvents().isEmpty()) {
-                throw new IllegalStateException("Uh oh! An event file " + eventResource.getFile() + " with no events has been laoded!");
+                throw new IllegalStateException("Uh oh! An event file " + eventResource.getFile() + " with no events has been loaded!");
             }
             if (events.getGlobal() != null) {
                 throw new ObjectRetrievalFailureException(Resource.class, eventResource, "The event resource " + eventResource + " included from the root event configuration file cannot have a 'global' element", null);
