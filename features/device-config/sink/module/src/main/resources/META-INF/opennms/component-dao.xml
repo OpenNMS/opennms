@@ -11,7 +11,7 @@
 		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 	">
 
-  <bean id="deviceConfigSinkModule" class="org.opennms.features.deviceconfig.sink.module.DeviceConfigSinkModule"/>
+  <bean id="deviceConfigSinkModule" class="org.opennms.features.deviceconfig.sink.module.DeviceConfigSinkModuleImpl"/>
 
   <onmsgi:service ref="deviceConfigSinkModule"/>
 

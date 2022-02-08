@@ -74,7 +74,13 @@
                                 <feature>minion-health-check</feature>
                                 <feature>minion-api-layer</feature>
                                 <feature>minion-plugin-sample</feature>
-                                <feature>opennms-deviceconfig</feature>
+                                <feature>opennms-deviceconfig-deps</feature>
+                                <feature>opennms-deviceconfig-tftp</feature>
+                                <feature>opennms-deviceconfig-retrieval</feature>
+                                <feature>opennms-deviceconfig-ipc-client</feature>
+                                <feature>opennms-deviceconfig-poller-client</feature>
+                                <feature>opennms-deviceconfig-sink-module</feature>
+                                <feature>opennms-deviceconfig-sink-dispatcher</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>

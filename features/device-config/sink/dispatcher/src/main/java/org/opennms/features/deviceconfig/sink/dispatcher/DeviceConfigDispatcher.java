@@ -32,9 +32,11 @@ import java.net.InetAddress;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
+import org.opennms.distributed.core.api.Identity;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.features.deviceconfig.sink.module.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.sink.module.DeviceConfigSinkModule;
+import org.opennms.features.deviceconfig.sink.module.DeviceConfigSinkModuleImpl;
 import org.opennms.features.deviceconfig.tftp.TftpFileReceiver;
 import org.opennms.features.deviceconfig.tftp.TftpServer;
 import org.slf4j.Logger;
@@ -44,19 +46,19 @@ public class DeviceConfigDispatcher implements TftpFileReceiver, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigDispatcher.class);
 
-    private final MinionIdentity minionIdentity;
+    private final Identity identity;
     private final TftpServer tftpServer;
     private final DeviceConfigSinkModule sinkModule;
     private final MessageDispatcherFactory messageDispatcherFactory;
     private final AsyncDispatcher<DeviceConfigDTO> asyncDispatcher;
 
     public DeviceConfigDispatcher(
-            MinionIdentity minionIdentity,
+            Identity identity,
             TftpServer tftpServer,
             DeviceConfigSinkModule sinkModule,
             MessageDispatcherFactory messageDispatcherFactory
     ) throws Exception {
-        this.minionIdentity = minionIdentity;
+        this.identity = identity;
         this.tftpServer = tftpServer;
         this.sinkModule = sinkModule;
         this.messageDispatcherFactory = messageDispatcherFactory;
@@ -67,7 +69,7 @@ public class DeviceConfigDispatcher implements TftpFileReceiver, AutoCloseable {
     @Override
     public void onFileReceived(InetAddress address, String fileName, byte[] content) {
         LOG.debug("received - address: " + address.getHostAddress() + "; fileName: " + fileName + "; contentLength: " + content.length);
-        var dto = new DeviceConfigDTO(minionIdentity.getLocation(), address.getAddress(), fileName, content);
+        var dto = new DeviceConfigDTO(identity.getLocation(), address.getAddress(), fileName, content);
         asyncDispatcher.send(dto).whenComplete((status, throwable) -> {
             if (status != null) {
                 LOG.debug("sent - address: " + address.getHostAddress() + "; fileName: " + fileName + "; dispatchStatus: " + status.name());
@@ -75,7 +77,8 @@ public class DeviceConfigDispatcher implements TftpFileReceiver, AutoCloseable {
         });
     }
 
-    public void close() {
+    public void close() throws Exception {
+        asyncDispatcher.close();
         tftpServer.unregister(this);
     }
 }

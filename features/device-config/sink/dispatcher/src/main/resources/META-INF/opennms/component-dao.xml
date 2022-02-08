@@ -12,7 +12,7 @@
 	">
 
   <bean id="deviceConfigDispatcher" class="org.opennms.features.deviceconfig.sink.dispatcher.DeviceConfigDispatcher" destroy-method="close">
-    <constructor-arg ref="minionIdentity"/>
+    <constructor-arg ref="identity"/>
     <constructor-arg ref="tftpServer"/>
     <constructor-arg ref="deviceConfigSinkModule"/>
     <constructor-arg ref="messageDispatcherFactory"/>

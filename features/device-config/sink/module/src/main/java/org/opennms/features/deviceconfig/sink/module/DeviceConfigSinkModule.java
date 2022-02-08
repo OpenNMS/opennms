@@ -28,73 +28,7 @@
 
 package org.opennms.features.deviceconfig.sink.module;
 
-import org.opennms.core.ipc.sink.api.AggregationPolicy;
-import org.opennms.core.ipc.sink.api.AsyncPolicy;
-import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
+import org.opennms.core.ipc.sink.api.SinkModule;
 
-public class DeviceConfigSinkModule extends AbstractXmlSinkModule<DeviceConfigDTO, DeviceConfigDTO> implements AsyncPolicy {
-
-    public static final String MODULE_ID = "DeviceConfig";
-
-    private int numConsumerThreads = 3;
-    private int queueSize = 1000;
-    private int numThreads = 3;
-    private boolean isBlockWhenFull = true;
-
-    public DeviceConfigSinkModule() {
-        super(DeviceConfigDTO.class);
-    }
-
-    @Override
-    public String getId() {
-        return MODULE_ID;
-    }
-
-    @Override
-    public AggregationPolicy<DeviceConfigDTO, DeviceConfigDTO, ?> getAggregationPolicy() {
-        // no aggregation
-        return null;
-    }
-
-    @Override
-    public AsyncPolicy getAsyncPolicy() {
-        return this;
-    }
-
-    @Override
-    public int getNumConsumerThreads() {
-        return numConsumerThreads;
-    }
-
-    public void setNumConsumerThreads(int numConsumerThreads) {
-        this.numConsumerThreads = numConsumerThreads;
-    }
-
-    @Override
-    public int getQueueSize() {
-        return queueSize;
-    }
-
-    public void setQueueSize(int queueSize) {
-        this.queueSize = queueSize;
-    }
-
-    @Override
-    public int getNumThreads() {
-        return numThreads;
-    }
-
-    public void setNumThreads(int numThreads) {
-        this.numThreads = numThreads;
-    }
-
-    @Override
-    public boolean isBlockWhenFull() {
-        return isBlockWhenFull;
-    }
-
-    public void setBlockWhenFull(boolean blockWhenFull) {
-        isBlockWhenFull = blockWhenFull;
-    }
-
+public interface DeviceConfigSinkModule extends SinkModule<DeviceConfigDTO, DeviceConfigDTO> {
 }
