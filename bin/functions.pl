@@ -126,6 +126,10 @@ if (not $MAVEN_OPTS =~ /UseParallelGC/) {
 	$MAVEN_OPTS .= " -XX:+UseParallelGC -XX:+UseParallelOldGC";
 }
 
+if (not $MAVEN_OPTS =~ /MaxFDLimit/) {
+	$MAVEN_OPTS .= " -XX:-MaxFDLimit";
+}
+
 my $result = GetOptions(
 	"help|h"                    => \$HELP,
 	"enable-tests|tests|test|t" => \$TESTS,

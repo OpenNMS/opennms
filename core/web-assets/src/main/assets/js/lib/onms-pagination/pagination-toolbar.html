@@ -21,7 +21,7 @@
             <pre class="pull-right" ng-show="model.totalItems == 0">No items found.</pre>
             <pre class="pull-right" ng-show="model.totalItems > 0">{{model.totalItems / model.page === 1
             ? "Item " + (model.offset + 1)
-            : "Items " + ((model.page - 1) * model.limit + 1) + " - " + (model.page * model.limit > model.totalItems ? model.totalItems : model.page * model.limit)}} ({{model.totalItems}} total)</pre>
+            : "Items " + ((model.page - 1) * model.limit + 1) + " - " + (model.page * model.limit &gt; model.totalItems ? model.totalItems : model.page * model.limit)}} ({{model.totalItems}} total)</pre>
         </div>
     </div>
 

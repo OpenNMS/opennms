@@ -8,7 +8,7 @@
                         ng-change="onGeocoderChange(geocoder)"
                         ng-model="geocoder.active"
                         size="btn-sm"
-                />
+                ></toggle>
                 <span class="text-muted" ng-show="geocoder.active && geocoder.error">
                     <a ui-sref="geocoding.details({'id': geocoder.id})">Please configure the Geocoder</a>
                 </span>

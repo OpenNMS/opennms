@@ -3,16 +3,16 @@ version: 2.1
 executors:
   centos-build-executor:
     docker:
-      - image: opennms/build-env:11.0.12.0.7-3.6.3-b7295
+      - image: opennms/build-env:11.0.14_9-3.8.4-b8184
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk11-b7291
+      - image: opennms/build-env:debian-jdk11-b8177
   docker-executor:
     docker:
       - image: docker:20.10.1-git
   docs-executor:
     docker:
-      - image: opennms/antora:2.3.4-b6293
+      - image: opennms/antora:2.3.4-b7274
   integration-test-executor:
     machine:
       image: ubuntu-2004:202010-01
@@ -30,11 +30,11 @@ parameters:
   previous_branch:
     description: the previous branch, if any
     type: string
-    default: foundation-2021
+    default: foundation-2022
   previous_branch_label:
     description: the previous branch, if any (escaped, no slashes)
     type: string
-    default: foundation-2021
+    default: foundation-2022
   main_branch:
     description: the auto-merge main branch
     type: string
@@ -329,10 +329,18 @@ commands:
       - run:
           name: Compile OpenNMS
           command: |
+            export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             .circleci/scripts/configure-signing.sh
             ./clean.pl
             << parameters.node-memory >>
             export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
+            MAVEN_TARGETS="install"
+            case "${CIRCLE_BRANCH}" in
+              "master-"*|"release-"*|develop|jira/NMS-13820)
+                mkdir -p target/artifacts
+                MAVEN_TARGETS="$MAVEN_TARGETS javadoc:aggregate"
+                ;;
+            esac
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -341,7 +349,13 @@ commands:
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
               -Psmoke \
-              install --batch-mode
+              --batch-mode \
+              $MAVEN_TARGETS
+            if [ -d target/site/apidocs ]; then
+              pushd target/site/apidocs
+                tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+              popd
+            fi
       - update-maven-cache
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
@@ -357,6 +371,9 @@ commands:
             # now move them back so they end up in the workspace for builds further down the workflow
             mv /tmp/maven-keep/* ~/.m2/repository/org/opennms/
       - save-nodejs-cache
+      - store_artifacts:
+          path: ~/project/target/artifacts
+          destination: artifacts
       - persist_to_workspace:
           root: ~/
           paths:
@@ -993,6 +1010,16 @@ jobs:
             with open(output_path, 'w') as fp:
               fp.write(json.dumps(mappings))
 
+      - run:
+          name: check for empty trigger config
+          command: |
+            if [ "$(grep -c trigger-setup /tmp/pipeline-parameters.json)" -eq 0 ]; then
+              # this can happen in the case of merges or other similar "empty" commits
+              echo '{ "trigger-setup": false, "trigger-build": true }' > /tmp/pipeline-parameters.json
+            fi
+      - store_artifacts:
+          path: /tmp/pipeline-parameters.json
+          destination: pipeline-parameters.json
       - continuation/continue:
           circleci_domain: circleci.com
           configuration_path: .circleci/config.yml
@@ -1066,27 +1093,6 @@ jobs:
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
               install --batch-mode
-            # javadoc
-            date
-            case "${CIRCLE_BRANCH}" in
-              "master-"*|"release-"*)
-                ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
-                  -DupdatePolicy=never \
-                  -Daether.connector.resumeDownloads=false \
-                  -Daether.connector.basic.threads=1 \
-                  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-                  -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
-                  -DmaxCpus=<< parameters.number-vcpu >> \
-                  -Pbuild-bamboo \
-                  -Prun-expensive-tasks \
-                  -Dopennms.home=/opt/opennms \
-                  javadoc:aggregate --batch-mode
-                date
-                ;;
-              *)
-                echo "Skipping Javadoc compilation; it is enabled only on master/release branches."
-                ;;
-            esac
       - run:
           name: Build Minion OCI
           command: |
@@ -1107,11 +1113,6 @@ jobs:
             find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
-            if [ -d target/site/apidocs ]; then
-              pushd target/site/apidocs
-                tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
-              popd
-            fi
             cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
             cp target/*-source.tar.gz ./target/artifacts/
             cp opennms-container/minion/minion-config-schema.yml "./target/config-schema/"

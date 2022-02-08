@@ -1,3 +1,4 @@
+<span>
 <style type="text/css">
     .ui-select-bootstrap.is-invalid > .ui-select-match > .btn {
         border-color: #dc3545;
@@ -96,7 +97,7 @@
                    class="form-control"
                    type="text"
                    ng-model="parameter.value"
-                   required/>
+                   required>
             <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a value.</div>
             <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
         </div>
@@ -110,7 +111,7 @@
                    type="text"
                    ng-pattern="/^-?[0-9]*$/"
                    ng-model="parameter.value"
-                   required />
+                   required>
             <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide an integer value.</div>
             <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
         </div>
@@ -123,7 +124,7 @@
                    class="form-control"
                    type="number"
                    ng-model="parameter.value"
-                   required/>
+                   required>
             <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a decimal number.</div>
             <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
         </div>
@@ -136,7 +137,7 @@
                    class="form-control"
                    type="number"
                    ng-model="parameter.value"
-                   required/>
+                   required>
             <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a decimal number.</div>
             <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
         </div>
@@ -152,7 +153,7 @@
                        ng-pattern="/^[0-9]*$/"
                        ng-model="parameter.count"
                        placeholder="count"
-                       required/>
+                       required>
                 <select class="form-control custom-select" ng-model="parameter.interval">
                     <option value="day">day</option>
                     <option value="month">month</option>
@@ -167,7 +168,7 @@
                        ng-pattern="/^[0-9]*$/"
                        ng-model="parameter.hours"
                        placeholder="hours"
-                       required />
+                       required>
                 <input type="number"
                        name="{{parameter.name}}Minutes"
                        ng-class="{ 'is-invalid' : reportForm[parameter.name + 'Minutes'].$invalid || report.errors[parameter.name + 'Minutes'] }"
@@ -176,7 +177,7 @@
                        ng-pattern="/^[0-9]*$/"
                        ng-model="parameter.minutes"
                        placeholder="minutes"
-                       required />
+                       required>
                 <div ng-show="reportForm[parameter.name + 'Count'].$invalid || report.errors[parameter.name + 'Count']" class="invalid-feedback">{{report.errors[parameter.name + 'Count'] || 'Please provide a count value between 0 and 31.'}}</div>
                 <div ng-show="reportForm[parameter.name + 'Hours'].$invalid || report.errors[parameter.name + 'Hours']" class="invalid-feedback">{{report.errors[parameter.name + 'Hours'] || 'Please provide an hours value between 0 and 23.'}}</div>
                 <div ng-show="reportForm[parameter.name + 'Minutes'].$invalid || report.errors[parameter.name + 'Minutes']" class="invalid-feedback">{{report.errors[parameter.name + 'Minutes'] || 'Please provide a minutes value between 0 and 59.'}}</div>
@@ -213,7 +214,7 @@
             </div>
             <div ng-show="report.errors[parameter.name]" class="text-danger mt-1" style="font-size: 80%">{{report.errors[parameter.name]}}</div>
         </div>
-        <hr class="mb-4"/>
+        <hr class="mb-4">
     </div>
 
     <!-- FORMAT -->
@@ -227,11 +228,11 @@
                 ng-options="format as format for format in report.supportedFormats">
         </select>
         <div ng-show="report.errors.format" class="invalid-feedback">{{report.errors.format}}</div>
-        <hr class="mb-4"/>
+        <hr class="mb-4">
     </div>
 
     <div class="form-group ml-4" ng-if="options.showDeliveryOptions && options.showDeliveryOptionsToggle">
-        <input type="checkbox" id="deliverReport" ng-model="options.deliverReport" class="form-check-input" ng-change="options.scheduleReport = options.deliverReport && options.scheduleReport" />
+        <input type="checkbox" id="deliverReport" ng-model="options.deliverReport" class="form-check-input" ng-change="options.scheduleReport = options.deliverReport && options.scheduleReport">
         <label class="form-check-label"
                data-toggle="tooltip"
                data-placement="right"
@@ -247,7 +248,7 @@
                 <label for="instanceId">Unique name</label>
                 <button class="btn btn-link text-secondary px-0"
                         popover-trigger="'mouseenter'"
-                        uib-popover="A name to identify this report. Must be unique overall schedules/deliveries."><i class="fa fa-info-circle"/>
+                        uib-popover="A name to identify this report. Must be unique overall schedules/deliveries."><i class="fa fa-info-circle"></i>
                 </button>
                 <input ng-disabled="!options.canEditTriggerName"
                        id="instanceId"
@@ -259,7 +260,7 @@
                        data-placement="right"
                        title="A name to identify this report. Must be unique overall reports."
                        required
-                />
+                >
                 <div ng-show="reportForm.instanceId.$invalid" class="invalid-feedback">Please provide a value.</div>
                 <div ng-show="report.errors.instanceId" class="invalid-feedback">{{report.errors.instanceId}}</div>
             </div>
@@ -278,7 +279,7 @@
                 <div ng-show="report.errors.format" class="invalid-feedback">{{report.errors.format}}</div>
             </div>
             <div class="form-group ml-4">
-                <input type="checkbox" id="persistToggle" ng-model="report.deliveryOptions.persist" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist_webhook }"/>
+                <input type="checkbox" id="persistToggle" ng-model="report.deliveryOptions.persist" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist_webhook }">
                 <label class="form-check-label"
                        data-toggle="tooltip"
                        data-placement="right"
@@ -288,13 +289,13 @@
                 </label>
             </div>
             <div class="form-group ml-4">
-                <input type="checkbox" id="sendMailToggle" ng-model="report.deliveryOptions.sendMail" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist_webhook }" />
+                <input type="checkbox" id="sendMailToggle" ng-model="report.deliveryOptions.sendMail" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist_webhook }">
                 <label class="form-check-label" for="sendMailToggle" data-toggle="tooltip" data-placement="right" title="Indicates whether the generated report is send via email to the defined recipient.">
                     Email report
                 </label>
             </div>
             <div class="form-group ml-4">
-                <input type="checkbox" id="webhookToggle" ng-model="report.deliveryOptions.webhook" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist_webhook }" />
+                <input type="checkbox" id="webhookToggle" ng-model="report.deliveryOptions.webhook" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist_webhook }">
                 <label class="form-check-label" for="webhookToggle" data-toggle="tooltip" data-placement="right" title="Indicates wheter the generated report is pushed to an URL">
                     Webhook
                 </label>
@@ -304,7 +305,7 @@
                 <label for="mailRecipient">Recipient</label>
                 <button class="btn btn-link text-secondary px-0"
                         popover-trigger="'mouseenter'"
-                        uib-popover="Allows multiple recipients by separating them via comma: test@opennms.org,ulf@opennms.org"><i class="fa fa-info-circle"/>
+                        uib-popover="Allows multiple recipients by separating them via comma: test@opennms.org,ulf@opennms.org"><i class="fa fa-info-circle"></i>
                 </button>
                 <input id="mailRecipient"
                        name="mailRecipient"
@@ -318,7 +319,7 @@
                        title="The recipient of the generated report if 'Email report' is enabled."
                        multi-emails
                        required
-                />
+                >
                 <div ng-show="reportForm.mailRecipient.$invalid" class="invalid-feedback">Please provide a valid email.</div>
                 <div ng-show="report.errors.mailTo" class="invalid-feedback">{{report.errors.mailTo}}</div>
             </div>
@@ -329,12 +330,12 @@
                         uib-popover-html="'
                         <div>
                             Posts the generated report to this http endpoint.
-                            If url parameters are required, substitution of the URL supports the following parameters: <br/> <br/>
-                            - <strong>format</strong> Format of the report <br/>
-                            - <strong>instanceId</strong> Unique name of the report <br/>
-                            - <strong>parameter_&lt;parameterName&gt;</strong> Any report parameter <br/> <br/>
+                            If url parameters are required, substitution of the URL supports the following parameters: <br><br>
+                            - <strong>format</strong> Format of the report <br>
+                            - <strong>instanceId</strong> Unique name of the report <br>
+                            - <strong>parameter_&lt;parameterName&gt;</strong> Any report parameter <br><br>
 
-                            <strong>Example</strong> <br/>
+                            <strong>Example</strong> <br>
                             <span>http://localhost:8080/files?instanceId=:instanceId&format=:format&option=:parameter_option</pre>
                         </div>'">
                     <i class="fa fa-info-circle"></i>
@@ -350,16 +351,16 @@
                        data-placement="right"
                        title="The report is sent to this URL with an http post request after generated"
                        required
-                />
+                >
                 <div ng-show="reportForm.webhookUrl.$invalid" class="invalid-feedback">Please provide a valid webhook url.</div>
                 <div ng-show="report.errors.webhookUrl" class="invalid-feedback">{{report.errors.webhookUrl}}</div>
             </div>
         </div>
-        <hr class="mb-4"/>
+        <hr class="mb-4">
     </div>
 
     <div class="form-group ml-4" ng-if="options.showScheduleOptions && options.showScheduleOptionsToggle">
-        <input type="checkbox" id="createSchedule" ng-model="options.scheduleReport" class="form-check-input" ng-change="options.deliverReport = options.deliverReport || options.scheduleReport" />
+        <input type="checkbox" id="createSchedule" ng-model="options.scheduleReport" class="form-check-input" ng-change="options.deliverReport = options.deliverReport || options.scheduleReport">
         <label class="form-check-label"
                data-toggle="tooltip"
                data-placement="right"
@@ -371,12 +372,13 @@
     <div class="" ng-if="options.showScheduleOptions && options.scheduleReport">
         <h3>Schedule Editor</h3>
         <div class="">
-            <onms-schedule-editor ng-model="report.scheduleOptions" />
+            <onms-schedule-editor ng-model="report.scheduleOptions"></onms-schedule-editor>
             <div class="text-danger" style="font-size: 80%; max-width: 300px" ng-if="report.errors.cronExpression">{{report.errors.cronExpression}}</div>
         </div>
-        <hr />
+        <hr>
     </div>
     <p class="text-danger" style="font-size: 80%" ng-if="report.errors.entity">
         {{report.errors.entity}}
     </p>
 </form>
+</span>

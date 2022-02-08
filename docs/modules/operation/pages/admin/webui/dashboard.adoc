@@ -1,7 +1,7 @@
 
 = Dashboard
 
-In Network Operation Centers NOC an overview about issues in the network is important and often described as dashboards.
+In Network Operations Centers (NOCs) an overview of issues in the network is important and often presented as dashboards.
 Large networks have people (operators) with different responsibilities and the dashboard should show only information for a given monitoring context.
 Network or Server operators need to customize or filter information on the dashboard.
 A dashboard as an at-a-glance overview is also often used to give an entry point for more detailed diagnosis through the information provided by the monitoring system.

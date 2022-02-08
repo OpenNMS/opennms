@@ -20,11 +20,11 @@ case "${CIRCLE_BRANCH}" in
   release-*)
     REPO="testing"
     ;;
-  master)
+  master-*)
     REPO="stable"
     ;;
-  jira/NMS-13285)
-    REPO="foundation-2021"
+  master)
+    REPO="stable"
     ;;
   *)
     echo "This branch is not eligible for deployment: ${CIRCLE_BRANCH}"

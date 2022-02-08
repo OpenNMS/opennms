@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>29.0.5</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-util</artifactId>
@@ -30,7 +30,8 @@
               <!-- org.opennms.core.utils.*;version="${project.version}", -->
               org.opennms.core.utils.url.*;version="${project.version}",
               org.opennms.core.utils.http.*;version="${project.version}",
-              org.opennms.core.utils.jexl.*;version="${project.version}"
+              org.opennms.core.utils.jexl.*;version="${project.version}",
+              org.opennms.core.utils.properties.*;version="${project.version}"
             </Export-Package>
           </instructions>
         </configuration>

@@ -1,0 +1,80 @@
+
+= SNMP Property Extenders
+
+When collecting tabular numeric metrics from a given MIB table, it's helpful to include one or more string properties from each conceptual row of the table in question.
+These properties can be used in the `resourceLabel` attribute of the `resourceType` associated with the collected data.
+When the string property exists as a column in the same table that contains the numeric metrics, it's easy to associate the string to the correct resource by adding a `mibObj` with the same `instance` attribute and a type of `string`.
+
+For example, the Cisco ENVMON MIB's temperature status table contains both a numeric gauge for the temperature value and a string describing the associated temperature sensor.
+A partial snmpwalk of this table illustrates this direct relationship:
+
+[options="header" cols="1,1,1"]
+|===
+| ciscoEnvMonTemperatureStatusIndex
+| ciscoEnvMonTemperatureStatusDescr +
+(.1.3.6.1.4.1.9.9.13.1.3.1.2)
+| ciscoEnvMonTemperatureStatusValue +
+(.1.3.6.1.4.1.9.9.13.1.3.1.3)
+
+| 1
+| I/O Cont Inlet
+| 22
+
+| 2
+| I/O Cont Outlet
+| 23
+
+| 3
+| NPE Inlet
+| 22
+
+| 4
+| NPE Outlet
+| 24
+|===
+
+To collect the ciscoEnvMonTemperatureStatusDescr and ciscoEnvMonTemperatureStatusValue columns within an SNMP data-collection group, all that's needed is a `resourceType` and a `group` to hold the two `mibObj` elements corresponding to these two columns.
+The `mibObj` aliases are shortened to maintain compatibility with storage engines that limit the length of column names to 19 characters.
+
+[source, xml]
+----
+<resourceType name="ciscoEnvMonTemperatureStatusIndex<1>" label="Cisco Temperature" resourceLabel="${cvmTempStatusDescr} (index ${index})">
+   <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+   <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+</resourceType>
+...
+<group name="cisco-temperature" ifType="all">
+   <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.2" instance="ciscoEnvMonTemperatureStatusIndex" alias="cvmTempStatusDescr" type="string"/>
+   <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="ciscoEnvMonTemperatureStatusIndex" alias="cvmTempStatusValue" type="gauge"/>
+</group>
+----
+
+Even in cases where the string property exists in a separate MIB table, it's straightforward to include it as long as the "source" table uses an identical set of index variables.
+For example, the `ifXTable` augments the `ifTable`, meaning the two tables use the same set of instance identifiers – namely `ifIndex`.
+Whether or not the MIB definition of the second table declares an `AUGMENTS` relationship to the first table, objects from tables with this kind of relationship can be mixed in the same group.
+
+In this contrived configuration example, `ifDescr` (which is from `ifTable`) is freely mixed with `ifName` and `ifAlias` (from `ifXTable`):
+
+[source, xml]
+----
+<group name="mib2-string-properties-example" ifType="all">
+   <mibObj oid=".1.3.6.1.2.1.2.2.1.2" instance="ifIndex" alias="ifDescr" type="string"/>
+   <mibObj oid=".1.3.6.1.2.1.31.1.1.1.1" instance="ifIndex" alias="ifName" type="string"/>
+   <mibObj oid=".1.3.6.1.2.1.31.1.1.1.18" instance="ifIndex" alias="ifAlias" type="string"/>
+</group>
+----
+
+Most SNMP property extenders make it possible to include string properties from a "source" MIB table that is indexed differently from the table containing most of the relevant data.
+For the purpose of configuring property extenders, the table containing the majority of the data (and into which we want to include the string properties) is called the `target table`, and the table containing the string property is called the `source table`.
+Several different extenders are available; selecting the right one depends on the relationship between the target table and the source table.
+
+A few property extenders also exist whose effect is strictly local to the "target" resource.
+These extenders are useful to deal with partial indices and other similar operations that do not involve looking outside the target MIB table.
+
+Use SNMP property extenders in the context of a `property` element inside an SNMP data-collection `group` parent element.
+The `property` element, when it appears, is a sibling of any `mibObj` elements beneath the same parent `group`.
+The `instance` and `alias` attributes of the `property` element are both required, and serve the same purpose as the same attributes of `mibObj`.
+The `class-name` attribute of the `property` element contains the full class name (including package) of the property extender class needed to join the source and target tables.
+The `property` element takes a number of `parameter` child elements.
+Use these parameters to configure the property extender class named in `class-name`.
+Each extender class recognizes a different set of parameters.

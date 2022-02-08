@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>minion-parent</artifactId>
-        <version>29.0.5</version>
+        <version>29.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -64,6 +64,7 @@
                                 <feature>opennms-dnsresolver-netty</feature>
                                 <feature>opennms-core-ipc-grpc-client</feature>
                                 <feature>opennms-distributed-core-impl</feature>
+                                <feature>opennms-util</feature>
                                 <feature>scv-api</feature>
                                 <feature>scv-shell</feature>
                                 <feature>scv-jceks-impl</feature>
@@ -446,6 +447,11 @@
         <dependency>
             <groupId>org.opennms.features.minion</groupId>
             <artifactId>health-check</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-util</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

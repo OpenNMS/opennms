@@ -6,7 +6,7 @@
             </li>
 
             <li role="presentation" ng-repeat="group in groups" class="nav-item">
-                <a ui-sref-active="active" ui-sref="classifications.group({'id': group.id, 'group': group})" title="{{group.description}}" data-name={{group.name}} class="nav-link">
+                <a ui-sref-active="active" ui-sref="classifications.group({'id': group.id, 'group': group})" title="{{group.description}}" data-name="{{group.name}}" class="nav-link">
                     {{group.name | capitalize}} Rules <span class="badge badge-primary" title="{{group.ruleCount}} defined rules">{{group.ruleCount}}</span>
                 </a>
             </li>
@@ -14,14 +14,14 @@
                     style="position: absolute; right: 0px; z-index: 900"
                     ng-click="isClassificationCollapsed = !isClassificationCollapsed"
                     title="{{isClassificationCollapsed ? 'Test classification' : 'Collapse classification panel'}}">
-                <i class="fa" ng-class="{'fa-magic': isClassificationCollapsed, 'fa-caret-right': !isClassificationCollapsed}"/>
+                <i class="fa" ng-class="{'fa-magic': isClassificationCollapsed, 'fa-caret-right': !isClassificationCollapsed}"></i>
             </button>
         </ul>
         <div class="card border-top-0" ui-view>
         </div>
     </div>
 
-    <div id="classification-tab" class="col-md-3" class="collapse" uib-collapse="isClassificationCollapsed">
+    <div id="classification-tab" class="col-md-3 collapse" uib-collapse="isClassificationCollapsed">
         <div>
             <ul class="nav nav-tabs">
                 <li role="presentation" class="nav-item">
@@ -44,7 +44,7 @@
                                    typeahead-min-length="0"
                                    uib-typeahead="protocol.keyword for protocol in protocols | filter:$viewValue"
                                    typeahead-editable="false"
-                                   ng-class="{ 'is-invalid' : ruleForm['classify-protocol'].$invalid || classifyError.protocol }"/>
+                                   ng-class="{ 'is-invalid' : ruleForm['classify-protocol'].$invalid || classifyError.protocol }">
                             <p id="classifyError.protocol" ng-show="classifyError.protocol" class="form-text text-muted">{{classifyError.protocol}}</p>
                         </div>
                         <div class="form-group">

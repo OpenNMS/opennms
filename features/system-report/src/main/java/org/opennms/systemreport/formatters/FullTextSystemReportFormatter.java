@@ -86,7 +86,7 @@ public class FullTextSystemReportFormatter extends AbstractSystemReportFormatter
                 }
                 is.close();
 
-                out.write("%n%n".getBytes());
+                out.write(String.format("%n%n").getBytes());
             }
 
         } catch (final Exception e) {
