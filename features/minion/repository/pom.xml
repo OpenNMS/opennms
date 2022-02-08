@@ -479,6 +479,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.device-config.sink</groupId>
+            <artifactId>org.opennms.features.device-config.sink.module</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.device-config.sink</groupId>
+            <artifactId>org.opennms.features.device-config.sink.dispatcher</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-util</artifactId>
             <version>${project.version}</version>
