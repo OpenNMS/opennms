@@ -596,7 +596,6 @@ workflows:
           filters:
             branches:
               only:
-                - jbuliga/CLOUD-475
                 - develop
                 - /^master-.*/
                 - /^release-.*/
@@ -609,7 +608,6 @@ workflows:
           filters:
             branches:
               only:
-                - jbuliga/CLOUD-475
                 - develop
                 - /^master-.*/
                 - /^release-.*/
