@@ -55,6 +55,18 @@ commands:
         - run:
             name: Extract Maven POM version
             command: .circleci/scripts/pom2version.sh pom.xml > pom-version-cache.key
+  shallow-readonly-checkout:
+      description: "Shallow checkout without caching"
+      steps:
+        - run:
+            name: git clone (shallow)
+            command: |
+              mkdir -p "$HOME/project"
+              cd "$HOME/project"
+              git config --global url."https://github.com/".insteadOf "ssh://git@github.com:" || true
+              git config --global url."https://github.com/".insteadOf "git@github.com:" || true
+              git clone "$CIRCLE_REPOSITORY_URL" --depth 5 --branch "$CIRCLE_BRANCH" --single-branch .
+              git checkout --force -B "$CIRCLE_BRANCH" "$CIRCLE_SHA1"
   cached-checkout:
       description: "Checkout with caching"
       steps:
@@ -853,7 +865,7 @@ jobs:
   build-ui:
     executor: ui-executor
     steps:
-      - checkout
+      - shallow-readonly-checkout
       - run:
           name: Build
           command: |
@@ -861,7 +873,7 @@ jobs:
   build-docs:
     executor: docs-executor
     steps:
-      - cached-checkout
+      - shallow-readonly-checkout
       - run:
           name: Validate Xrefs in docs
           command: |
@@ -1053,7 +1065,7 @@ jobs:
   horizon-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: large
+    resource_class: medium+
     steps:
       - attach_workspace:
           at: ~/
@@ -1208,7 +1220,7 @@ jobs:
           source_path: target/debs
   minion-deb-build:
     executor: debian-build-executor
-    resource_class: large
+    resource_class: medium+
     steps:
       - attach_workspace:
           at: ~/
@@ -1235,7 +1247,7 @@ jobs:
           source_path: target/debs
   sentinel-deb-build:
     executor: debian-build-executor
-    resource_class: large
+    resource_class: medium+
     steps:
       - attach_workspace:
           at: ~/
@@ -1262,6 +1274,7 @@ jobs:
           source_path: target/debs
   horizon-publish-oci:
     executor: centos-build-executor
+    resource_class: small
     steps:
       - cached-checkout
       - setup_remote_docker:
@@ -1277,6 +1290,7 @@ jobs:
             ./publish.sh
   sentinel-publish-oci:
     executor: centos-build-executor
+    resource_class: small
     steps:
       - cached-checkout
       - setup_remote_docker:
@@ -1496,7 +1510,7 @@ jobs:
     executor: cloudsmith/default
     resource_class: small
     steps:
-      - checkout
+      - shallow-readonly-checkout
       - cloudsmith/ensure-api-key
       - cloudsmith/install-cli
       - restore-workflow-assets:
