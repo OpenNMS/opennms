@@ -44,6 +44,7 @@ public class CmIdentifierUtil {
     /**
      * The delimiter between configName and configId is a dash (-).
      * However, there is no guarantee that the configName or the configId doesn't contain a dash as well.
+     * Therefore, we have to check against the PIDS_MULTI_INSTANCE.
      */
     public static ConfigUpdateInfo pidToCmIdentifier(String pid) {
         Objects.requireNonNull(pid);
