@@ -46,21 +46,8 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     @Override
     public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, ConfigType configType) {
 
-        return find("from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? ORDER BY createdTime DESC",
+        return find("from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? ORDER BY lastUpdated DESC",
                 ipInterface.getId(), configType);
-    }
-
-    @Override
-    public Optional<DeviceConfig> getLatestSucceededConfigForInterface(OnmsIpInterface ipInterface, ConfigType configType) {
-
-        List<DeviceConfig> deviceConfigs =
-                findObjects(DeviceConfig.class,
-                        "from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? AND config IS NOT NULL " +
-                                "ORDER BY createdTime DESC LIMIT 1", ipInterface.getId(), configType);
-        if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
-            return Optional.of(deviceConfigs.get(0));
-        }
-        return Optional.empty();
     }
 
     @Override
@@ -68,7 +55,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         List<DeviceConfig> deviceConfigs =
                 findObjects(DeviceConfig.class,
                         "from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? " +
-                                "ORDER BY createdTime DESC LIMIT 1", ipInterface.getId(), configType);
+                                "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), configType);
         if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
             return Optional.of(deviceConfigs.get(0));
         }

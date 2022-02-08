@@ -55,15 +55,10 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -98,9 +93,29 @@ public class DeviceConfigMonitorAdaptorIT {
         populateIpInterface();
     }
 
+    /**
+     *  Verfies following scenarios.
+     *
+     * scenario         created_time             last_updated       last_succeeded          last_failed          config
+     * 1                  NULL                    Monday                NULL                  Monday             NULL
+     * 2.                Tuesday                  Tuesday               Tuesday               Monday             Tuesday
+     * 3.                Tuesday                  Wednesday             Wednesday             Monday             Tuesday
+     * 4.                Thursday                 Thursday              Thursday              Monday             Thursday
+     * 5.                Thursday                 Friday                Thursday              Friday             Thursday
+     * 6.                Thursday                 Saturday              Thursday              Saturday           Thursday
+     * 7.                Thursday                 Sunday                 Sunday               Saturday           Thursday
+     *
+     * 1. First retrieval failed, last_updated & last_failed are updated, config is NULL and created_time is NULL
+     * 2. Retrieval succeeded, last_updated & last_succeeded got updated,  config is updated.
+     * 3. Retrieval succeeded but config didn't change, created_time didn't update, last succeeded & last_updated are updated.
+     * 4. Retrieval succeeded and config got updated, created_time & last_succeeded & last_updated are updated.
+     * 5. Retrieval failed, last_updated & last_failed got updated
+     * 6. Retrieval failed again, last_updated & last_failed got updated
+     * 7. Retrieval succeded but config didn't update, last_updated & last_succeded are updated but config remained on Thurdsay.
+     *
+     */
     @Test
     public void testDeviceConfigPersistence() {
-        int count = 10;
         String config = "OpenNMS-Device-Config";
         MonitoredService service = Mockito.mock(MonitoredService.class);
         PollStatus pollStatus = Mockito.mock(PollStatus.class);
@@ -111,63 +126,90 @@ public class DeviceConfigMonitorAdaptorIT {
         // Set charset information in attributes.
         attributes.put("encoding", StandardCharsets.UTF_16.name());
 
-        // Send failed update first
+        // Send failed update first ( scenario 1)
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(null);
         Mockito.when(pollStatus.getReason()).thenReturn("Failed to connect to SSHServer");
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        Optional<DeviceConfig> failedDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
-        Assert.assertTrue(failedDeviceConfig.isPresent());
-        Assert.assertNull(failedDeviceConfig.get().getConfig());
-        List<DeviceConfig> deviceConfigList = deviceConfigDao.findAll();
-        Assert.assertThat(deviceConfigList, Matchers.hasSize(1));
-        // Send valid config
+        Optional<DeviceConfig> configOnMonday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Assert.assertTrue(configOnMonday.isPresent());
+        Assert.assertNull(configOnMonday.get().getConfig());
+        Assert.assertEquals(configOnMonday.get().getLastFailed(), configOnMonday.get().getLastUpdated());
+        Assert.assertNull(configOnMonday.get().getCreatedTime());
+        Assert.assertNull(configOnMonday.get().getLastSucceeded());
+
+
+        // Send valid config (Scenario 2)
         byte[] configInBytes = config.getBytes(StandardCharsets.UTF_16);
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(configInBytes);
         // Send pollStatus with config to adaptor.
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
 
-        Optional<DeviceConfig> succeededDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
-        Assert.assertTrue(succeededDeviceConfig.isPresent());
-        byte[] retrievedConfigInBytes = succeededDeviceConfig.get().getConfig();
+        Optional<DeviceConfig> configOnTuesday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Assert.assertTrue(configOnTuesday.isPresent());
+        byte[] retrievedConfigInBytes = configOnTuesday.get().getConfig();
         // Compare binary values
         Assert.assertArrayEquals(configInBytes, retrievedConfigInBytes);
         // Make use of encoding
-        String retrievedConfig = new String(retrievedConfigInBytes, Charset.forName(succeededDeviceConfig.get().getEncoding()));
+        String retrievedConfig = new String(retrievedConfigInBytes, Charset.forName(configOnTuesday.get().getEncoding()));
         Assert.assertEquals(config, retrievedConfig);
         // Check that same entry got overwritten
-        Assert.assertEquals(failedDeviceConfig.get().getId(), succeededDeviceConfig.get().getId());
+        Assert.assertEquals(configOnMonday.get().getId(), configOnTuesday.get().getId());
+        Assert.assertEquals(configOnTuesday.get().getLastSucceeded(), configOnTuesday.get().getLastUpdated());
+        Assert.assertEquals(configOnTuesday.get().getCreatedTime(), configOnTuesday.get().getLastUpdated());
 
-        // Try to persist same config again.
+        // Try to persist same config again ( Scenario 3)
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        Optional<DeviceConfig> deviceConfigOptional1 = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
-        Assert.assertTrue(deviceConfigOptional1.isPresent());
-        // Verify that config doesn't change
-        Assert.assertArrayEquals(deviceConfigOptional1.get().getConfig(), succeededDeviceConfig.get().getConfig());
+        Optional<DeviceConfig> configOnWednesday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Assert.assertTrue(configOnWednesday.isPresent());
+        // Verify that config doesn't change.
+        Assert.assertArrayEquals(configOnWednesday.get().getConfig(), configOnTuesday.get().getConfig());
+        Assert.assertEquals(configOnWednesday.get().getLastSucceeded(), configOnWednesday.get().getLastUpdated());
+        Assert.assertNotEquals(configOnWednesday.get().getCreatedTime(), configOnWednesday.get().getLastUpdated());
 
-        // Send failed update again
+        // Send updated config ( Scenario 4)
+        configInBytes = "updated-device-config".getBytes(StandardCharsets.UTF_16);
+        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(configInBytes);
+        // Send pollStatus with config to adaptor.
+        deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
+        Optional<DeviceConfig> configOnThursday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Assert.assertTrue(configOnThursday.isPresent());
+        // Creates new entry and all created time, succeded and updated are equal
+        Assert.assertNotEquals(configOnThursday.get().getId(), configOnWednesday.get().getId());
+        Assert.assertEquals(configOnThursday.get().getLastSucceeded(), configOnThursday.get().getLastUpdated());
+        Assert.assertEquals(configOnThursday.get().getCreatedTime(), configOnThursday.get().getLastUpdated());
+
+        // Send failed update ( Scenario 5)
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(null);
         Mockito.when(pollStatus.getReason()).thenReturn("Failed to connect to SSHServer");
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        failedDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
-        Assert.assertTrue(failedDeviceConfig.isPresent());
-        Assert.assertNull(failedDeviceConfig.get().getConfig());
-        // Verify that failed config creates new entry.
-        Assert.assertNotEquals(failedDeviceConfig.get().getId(), succeededDeviceConfig.get().getId());
-    }
+        Optional<DeviceConfig> configOnFriday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Assert.assertTrue(configOnFriday.isPresent());
+        // Verify that failed config doesn't create new entry
+        Assert.assertEquals(configOnFriday.get().getId(), configOnThursday.get().getId());
+        // Verify that lastupdated matches with lastfailed.
+        Assert.assertEquals(configOnFriday.get().getLastUpdated(), configOnFriday.get().getLastFailed());
 
-    private void populateDeviceConfigs(int count) {
+        // Send failed update again ( Scenario 6)
+        deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
+        Optional<DeviceConfig> configOnSaturday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Assert.assertTrue(configOnSaturday.isPresent());
+        // Verify that failed config doesn't create new entry
+        Assert.assertEquals(configOnSaturday.get().getId(), configOnFriday.get().getId());
+        // Verify that lastUpdated got updated and matches with last failed.
+        Assert.assertNotEquals(configOnSaturday.get().getLastUpdated(), configOnFriday.get().getLastUpdated());
+        Assert.assertEquals(configOnSaturday.get().getLastUpdated(), configOnSaturday.get().getLastFailed());
+        Assert.assertArrayEquals(configOnSaturday.get().getConfig(), configOnThursday.get().getConfig());
 
-        for (int i = 1; i <= count; i++) {
-            DeviceConfig deviceConfig = new DeviceConfig();
-            deviceConfig.setIpInterface(ipInterface);
-            deviceConfig.setConfig(UUID.randomUUID().toString().getBytes(StandardCharsets.US_ASCII));
-            deviceConfig.setEncoding("ASCII");
-            // Persist old configs with time 1 day before.
-            Date timeForDeviceConfig = Date.from(Instant.now().minus(1, ChronoUnit.DAYS).plusSeconds(i * 60));
-            deviceConfig.setCreatedTime(timeForDeviceConfig);
-            deviceConfig.setLastUpdated(timeForDeviceConfig);
-            deviceConfigDao.saveOrUpdate(deviceConfig);
-        }
+        // Send successful config but that matches old config ( Scenario 7)
+        configInBytes = "updated-device-config".getBytes(StandardCharsets.UTF_16);
+        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(configInBytes);
+        deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
+        Optional<DeviceConfig> configOnSunday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Assert.assertTrue(configOnSunday.isPresent());
+        // Verify that config is same
+        Assert.assertArrayEquals(configOnSunday.get().getConfig(), configOnThursday.get().getConfig());
+        Assert.assertEquals(configOnSunday.get().getLastUpdated(), configOnSunday.get().getLastSucceeded());
+        Assert.assertNotEquals(configOnSunday.get().getLastUpdated(), configOnSunday.get().getCreatedTime());
     }
 
     private void populateIpInterface() {

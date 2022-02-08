@@ -204,6 +204,7 @@ public class PollableServiceConfigIT {
                     .withAdaptor(any())
                     .withAdaptor(any())
                     .withAdaptor(any())
+                        .withAdaptor(any())
                     .withPatternVariables(any())
                     .execute()
         ).thenReturn(future);

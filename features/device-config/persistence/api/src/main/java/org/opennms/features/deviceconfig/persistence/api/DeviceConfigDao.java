@@ -38,8 +38,6 @@ public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
 
     List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, ConfigType configType);
 
-    Optional<DeviceConfig> getLatestSucceededConfigForInterface(OnmsIpInterface ipInterface, ConfigType configType);
-
     Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, ConfigType configType);
 
 }
