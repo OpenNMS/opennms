@@ -50,7 +50,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlRootElement(name="datacollection-group", namespace="http://xmlns.opennms.org/xsd/config/datacollection")
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder={"m_name", "m_resourceTypes", "m_groups", "m_systemDefs"})
-@ValidateUsing("datacollection-groups.xsd")
+@ValidateUsing("datacollection-config.xsd")
 public class DatacollectionGroup implements Serializable {
     private static final long serialVersionUID = 4158343236805226912L;
 
