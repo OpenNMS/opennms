@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,19 @@
 
 package org.opennms.netmgt.notifd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -43,17 +49,14 @@ import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.notifd.TicketNotificationStrategy.AlarmType;
-import org.opennms.test.mock.EasyMockUtils;
 
 /**
  * Basic test cases for the TicketNotificationStrategy.
  * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
-public class TicketNotificationStrategyTest extends TestCase {
+public class TicketNotificationStrategyTest {
 
-    private EasyMockUtils m_easyMockUtils;
     private MockEventIpcManager m_eventIpcManager;
     private MockTicketNotificationStrategy m_ticketNotificationStrategy;
     private DataSource m_dataSource;
@@ -96,30 +99,28 @@ public class TicketNotificationStrategyTest extends TestCase {
     	}
     };
 
-    /** {@inheritDoc} */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         m_eventIpcManager = new MockEventIpcManager();
         m_eventIpcManager.setSynchronous(true);
         EventIpcManagerFactory.setIpcManager(m_eventIpcManager);
         MockLogAppender.setupLogging();
         m_ticketNotificationStrategy = new MockTicketNotificationStrategy();
-        m_easyMockUtils = new EasyMockUtils();
-        m_dataSource = m_easyMockUtils.createMock(DataSource.class);
+        m_dataSource = mock(DataSource.class);
         DataSourceFactory.setInstance(m_dataSource);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_dataSource);
     }
-        
+
+    @Test
     public void testNoticeWithNoEventID() {
     	assertEquals("Strategy should fail if no event id is given.", 1, m_ticketNotificationStrategy.send(new ArrayList<Argument>()));
     }
-    
+
+    @Test
     public void testNoticeWithNoAlarmID() {
     	m_ticketNotificationStrategy.setAlarmState(new TicketNotificationStrategy.AlarmState(0));
     	m_ticketNotificationStrategy.setAlarmType(AlarmType.NOT_AN_ALARM);
@@ -127,7 +128,8 @@ public class TicketNotificationStrategyTest extends TestCase {
     	assertEquals("Strategy should fail silently if the event has no alarm id.", 0, m_ticketNotificationStrategy.send(arguments));
     	assertTrue("Strategy should log a warning if the event has no alarm id.", !MockLogAppender.noWarningsOrHigherLogged());
     }
-    
+
+    @Test
     public void testCreateTicket() {
         // Setup the event anticipator
     	EventBuilder newSuspectBuilder = new EventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, m_ticketNotificationStrategy.getName());

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,11 @@ package org.opennms.netmgt.threshd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
@@ -48,7 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -254,15 +258,13 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         m_fileAnticipator = new FileAnticipator();
 
         // Use a mock FilterDao that always returns 127.0.0.1 in the active IP list
-        FilterDao filterDao = EasyMock.createMock(FilterDao.class);
-        EasyMock.expect(filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();
+        FilterDao filterDao = mock(FilterDao.class);
+        when(filterDao.getActiveIPAddressList(anyString())).thenReturn(Collections.singletonList(addr("127.0.0.1")));
         filterDao.flushActiveIpAddressListCache();
-        EasyMock.expectLastCall().anyTimes();
         FilterDaoFactory.setInstance(filterDao);
-        EasyMock.replay(filterDao);
 
         mockIfInfo = new HashMap<>();
-        m_ifLabelDao = EasyMock.createMock(IfLabel.class);
+        m_ifLabelDao = mock(IfLabel.class);
 
 
         DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
@@ -309,9 +311,8 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
     @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
     public void testBug3488() throws Exception {
         setupSnmpInterfaceDatabase(m_db, m_ipAddress, null);
-        EasyMock.expect(m_ifLabelDao.getIfLabel(EasyMock.anyInt(), EasyMock.anyObject(InetAddress.class))).andReturn(IfLabel.NO_IFLABEL).anyTimes();
-        EasyMock.expect(m_ifLabelDao.getInterfaceInfoFromIfLabel(EasyMock.anyInt(), EasyMock.anyString())).andReturn(mockIfInfo).anyTimes();
-        EasyMock.replay(m_ifLabelDao);
+        when(m_ifLabelDao.getIfLabel(anyInt(), any(InetAddress.class))).thenReturn(IfLabel.NO_IFLABEL);
+        when(m_ifLabelDao.getInterfaceInfoFromIfLabel(anyInt(), anyString())).thenReturn(mockIfInfo);
 
         LatencyCollectionResource resource = new LatencyCollectionResource(m_svcName, m_ipAddress, null);
         LatencyCollectionAttributeType type = new LatencyCollectionAttributeType();
@@ -341,9 +342,8 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         initFactories("/threshd-configuration-bug3575.xml","/test-thresholds-bug3575.xml");
         String ifName = "eth0";
         setupSnmpInterfaceDatabase(m_db, m_ipAddress, ifName);
-        EasyMock.expect(m_ifLabelDao.getIfLabel(EasyMock.anyInt(), EasyMock.anyObject(InetAddress.class))).andReturn(ifName).anyTimes();
-        EasyMock.expect(m_ifLabelDao.getInterfaceInfoFromIfLabel(EasyMock.anyInt(), EasyMock.anyString())).andReturn(mockIfInfo).anyTimes();
-        EasyMock.replay(m_ifLabelDao);
+        when(m_ifLabelDao.getIfLabel(anyInt(), any(InetAddress.class))).thenReturn(ifName);
+        when(m_ifLabelDao.getInterfaceInfoFromIfLabel(anyInt(), anyString())).thenReturn(mockIfInfo);
 
         Map<String, Double> attributes = new HashMap<String, Double>();
         for (double i=1; i<21; i++) {
@@ -376,9 +376,8 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         String ifName = "lo0";
         setupSnmpInterfaceDatabase(m_db, m_ipAddress, ifName);
         mockIfInfo.put("snmpifindex", "1");
-        EasyMock.expect(m_ifLabelDao.getIfLabel(EasyMock.anyInt(), EasyMock.anyObject(InetAddress.class))).andReturn(ifName).anyTimes();
-        EasyMock.expect(m_ifLabelDao.getInterfaceInfoFromIfLabel(EasyMock.anyInt(), EasyMock.anyString())).andReturn(mockIfInfo).anyTimes();
-        EasyMock.replay(m_ifLabelDao);
+        when(m_ifLabelDao.getIfLabel(anyInt(), any(InetAddress.class))).thenReturn(ifName);
+        when(m_ifLabelDao.getInterfaceInfoFromIfLabel(anyInt(), anyString())).thenReturn(mockIfInfo);
 
         ThresholdingSession session = m_thresholdingService.createSession(m_nodeId, m_ipAddress, m_svcName, m_serviceParams);
 
@@ -425,9 +424,8 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
     public void testCounterReset() throws Exception {
         String ifName = "lo0";
         setupSnmpInterfaceDatabase(m_db, m_ipAddress, ifName);
-        EasyMock.expect(m_ifLabelDao.getIfLabel(EasyMock.anyInt(), EasyMock.anyObject(InetAddress.class))).andReturn(ifName).anyTimes();
-        EasyMock.expect(m_ifLabelDao.getInterfaceInfoFromIfLabel(EasyMock.anyInt(), EasyMock.anyString())).andReturn(mockIfInfo).anyTimes();
-        EasyMock.replay(m_ifLabelDao);
+        when(m_ifLabelDao.getIfLabel(anyInt(), any(InetAddress.class))).thenReturn(ifName);
+        when(m_ifLabelDao.getInterfaceInfoFromIfLabel(anyInt(), anyString())).thenReturn(mockIfInfo);
 
         ThresholdingSession session = m_thresholdingService.createSession(m_nodeId, m_ipAddress, m_svcName, m_serviceParams);
 

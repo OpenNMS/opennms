@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -50,10 +56,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -95,7 +101,6 @@ import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
-import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.dao.outages.api.OverrideablePollOutagesDao;
@@ -123,6 +128,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -280,12 +286,9 @@ public class ThresholdingVisitorIT {
         m_fileAnticipator = new FileAnticipator();
         m_hrStorageProperties = new HashMap<Integer, File>();
 
-        m_filterDao = EasyMock.createMock(FilterDao.class);
-        EasyMock.expect(m_filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();
-        m_filterDao.flushActiveIpAddressListCache();
-        EasyMock.expectLastCall().anyTimes();
+        m_filterDao = mock(FilterDao.class);
+        when(m_filterDao.getActiveIPAddressList(anyString())).thenReturn(Collections.singletonList(addr("127.0.0.1")));
         FilterDaoFactory.setInstance(m_filterDao);
-        EasyMock.replay(m_filterDao);
 
         m_anticipator = new EventAnticipator();
         eventMgr = new MockEventIpcManager();
@@ -294,7 +297,7 @@ public class ThresholdingVisitorIT {
         EventIpcManager eventdIpcMgr = (EventIpcManager)eventMgr;
         EventIpcManagerFactory.setIpcManager(eventdIpcMgr);
         
-        DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+        DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss", Locale.US);
         final StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<outages>");
         sb.append("<outage name=\"junit outage\" type=\"specific\">");
@@ -329,7 +332,9 @@ public class ThresholdingVisitorIT {
     
     @After
     public void tearDown() throws Exception {
-        EasyMock.verify(m_filterDao);
+        verify(m_filterDao, atLeastOnce()).flushActiveIpAddressListCache();
+        verify(m_filterDao, atLeastOnce()).getActiveIPAddressList(anyString());
+        verifyNoMoreInteractions(m_filterDao);
         m_fileAnticipator.deleteExpected(true);
         m_fileAnticipator.tearDown();
     }
@@ -449,7 +454,6 @@ public class ThresholdingVisitorIT {
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(6100));
         resource.visit(visitor);
 
-        EasyMock.verify(agent);
         verifyEvents(0);
     }
 
@@ -503,7 +507,6 @@ public class ThresholdingVisitorIT {
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(6100));
         resource.visit(visitor);
 
-        EasyMock.verify(agent);
         verifyEvents(0);
     }
 
@@ -740,7 +743,6 @@ public class ThresholdingVisitorIT {
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getGauge32(55));
         resource.visit(visitor);
 
-        EasyMock.verify(agent);
         verifyEvents(0);
     }
 
@@ -935,7 +937,6 @@ public class ThresholdingVisitorIT {
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(65000));
         resource.visit(visitor);
 
-        EasyMock.verify(agent);
         verifyEvents(0);
     }
     
@@ -1089,7 +1090,6 @@ public class ThresholdingVisitorIT {
         GenericIndexResourceType resourceType = createGenericIndexResourceType(agent, "ciscoEnvMonTemperatureStatusIndex");
         SnmpCollectionResource resource = new GenericIndexResource(resourceType, "ciscoEnvMonTemperatureStatusIndex", new SnmpInstId(45));
         resource.visit(visitor);
-        EasyMock.verify(agent);
     }
 
     /*
@@ -1172,7 +1172,6 @@ public class ThresholdingVisitorIT {
         addAttributeToCollectionResource(resource, resourceType, "memTotalSwap", "gauge", "0", 100);
 
         resource.visit(visitor);
-        EasyMock.verify(agent);
         verifyEvents(0);
     }
 
@@ -1361,7 +1360,6 @@ public class ThresholdingVisitorIT {
         resource = new AliasedResource(resourceType, domain, ifInfo, ifAliasComment, ifAlias);
         resource.visit(visitor);
 
-        EasyMock.verify(agent);
         verifyEvents(0);
     }
 
@@ -1441,7 +1439,6 @@ public class ThresholdingVisitorIT {
         resource = new AliasedResource(resourceType, domain, ifInfo, ifAliasComment, ifAlias);
         resource.visit(visitor);
 
-        EasyMock.verify(agent);
         verifyEvents(0);
     }
 
@@ -1480,7 +1477,6 @@ public class ThresholdingVisitorIT {
         addAttributeToCollectionResource(resource, resourceType, "ifOutOctets", "counter", "ifIndex", 46000);
         resource.visit(visitor);
 
-        EasyMock.verify(agent);
         verifyEvents(1);
     }
 
@@ -1564,7 +1560,6 @@ public class ThresholdingVisitorIT {
 
         // Run Visitor and Verify Events
         resource.visit(visitor);
-        EasyMock.verify(agent);
         verifyEvents(0);
     }
 
@@ -1597,7 +1592,6 @@ public class ThresholdingVisitorIT {
 
         // Run Visitor and Verify Events
         collectionSet.visit(visitor);
-        EasyMock.verify(agent);
         verifyEvents(0);
     }
 
@@ -1730,7 +1724,6 @@ public class ThresholdingVisitorIT {
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(6100));
         resource.visit(visitor);
 
-        EasyMock.verify(agent);
         verifyEvents(0);
 
         // For a value of 11, only "test1" should be triggered.
@@ -1742,7 +1735,6 @@ public class ThresholdingVisitorIT {
         resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(9400));
         resource.visit(visitor);
-        EasyMock.verify(agent);
         verifyEvents(0);
 
     }
@@ -1761,8 +1753,8 @@ public class ThresholdingVisitorIT {
     private ThresholdingVisitor createVisitor(int node, String location, String serviceName, ServiceParameters svcParams) throws ThresholdInitializationException {
         ThresholdingEventProxyImpl eventProxy = new ThresholdingEventProxyImpl(eventMgr);
         ThresholdingSetImpl thresholdingSet = new ThresholdingSetImpl(node, location, serviceName,
-                                                                      svcParams, eventProxy, MockSession.getSession(), m_threshdDao, m_thresholdingDao,
-                                                                      m_pollOutagesDao, m_ifLabelDao, m_entityScopeProvider);
+                svcParams, eventProxy, MockSession.getSession(), m_threshdDao, m_thresholdingDao,
+                m_pollOutagesDao, m_ifLabelDao, m_entityScopeProvider);
         ThresholdingVisitor visitor = new ThresholdingVisitorImpl(thresholdingSet, eventProxy, null);
         assertNotNull(visitor);
         return visitor;
@@ -1774,7 +1766,6 @@ public class ThresholdingVisitorIT {
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
         addAttributeToCollectionResource(resource, resourceType, "freeMem", "gauge", "0", value);
         resource.visit(visitor);
-        EasyMock.verify(agent);
     }
 
     private void runInterfaceResource(ThresholdingVisitor visitor, String ipAddress, String ifName, Long ifSpeed, Integer ifIndex, long v1, long v2) {
@@ -1797,8 +1788,6 @@ public class ThresholdingVisitorIT {
         addAttributeToCollectionResource(resource, resourceType, "ifOutOctets", "counter", "ifIndex", v2);
         addAttributeToCollectionResource(resource, resourceType, "myMockParam", "string", "ifIndex", "myMockValue");
         resource.visit(visitor);
-
-        EasyMock.verify(agent);
     }
 
     private void runFileSystemDataTest(ThresholdingVisitor visitor, int resourceId, String fs, long value, long max) throws Exception {
@@ -1815,7 +1804,6 @@ public class ThresholdingVisitorIT {
         addAttributeToCollectionResource(resource, resourceType, "hrStorageDescr", "string", "hrStorageIndex", fs);
         // Run Visitor
         resource.visit(visitor);
-        EasyMock.verify(agent);
     }
 
     private void runFileSystemDataTestWithCollectionSetBuilder(ThresholdingVisitor visitor, int resourceId, String fs, long value, long max) throws Exception {
@@ -1824,7 +1812,7 @@ public class ThresholdingVisitorIT {
         // Creating Generic ResourceType
         org.opennms.netmgt.config.datacollection.ResourceType indexResourceType = createIndexResourceType(agent, "hrStorageIndex");
         GenericTypeResource genericResource = new GenericTypeResource(nodeResource, indexResourceType, Integer.toString(resourceId));
-        // Build the collection set
+
         CollectionSet collectionSet = new CollectionSetBuilder(agent)
                 .withNumericAttribute(genericResource, "hd-usage", "hrStorageUsed", value, AttributeType.GAUGE)
                 .withNumericAttribute(genericResource, "hd-usage", "hrStorageSize", max, AttributeType.GAUGE)
@@ -1834,7 +1822,6 @@ public class ThresholdingVisitorIT {
                 .build();
         // Run Visitor
         collectionSet.visit(visitor);
-        EasyMock.verify(agent);
     }
 
     /*
@@ -1877,27 +1864,24 @@ public class ThresholdingVisitorIT {
         resource2.setAttributeValue(objectType, snmpValue2);
         resource2.visit(visitor);
 
-        // Verify Events
-        EasyMock.verify(agent);
         verifyEvents(0);
     }
 
     private static SnmpCollectionAgent createCollectionAgent() {
-        SnmpCollectionAgent agent = EasyMock.createMock(SnmpCollectionAgent.class);
-        EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
-        EasyMock.expect(agent.getStorageResourcePath()).andReturn(ResourcePath.get(String.valueOf(1))).anyTimes();
-        EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
-        EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType) EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
-        EasyMock.expect(agent.getAttributeNames()).andReturn(Collections.emptySet()).anyTimes();
-        EasyMock.expect(agent.getAddress()).andReturn(InetAddrUtils.getLocalHostAddress()).anyTimes();
-        EasyMock.expect(agent.isStoreByForeignSource()).andReturn(false).anyTimes();
-        EasyMock.expect(agent.getNodeLabel()).andReturn("test").anyTimes();
-        EasyMock.expect(agent.getForeignSource()).andReturn(null).anyTimes();
-        EasyMock.expect(agent.getForeignId()).andReturn(null).anyTimes();
-        EasyMock.expect(agent.getLocationName()).andReturn(null).anyTimes();
-        EasyMock.expect(agent.getSysObjectId()).andReturn(null).anyTimes();
-        EasyMock.expect(agent.getSavedSysUpTime()).andReturn(0L).anyTimes();
-        EasyMock.replay(agent);
+        SnmpCollectionAgent agent = mock(SnmpCollectionAgent.class);
+        when(agent.getNodeId()).thenReturn(1);
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get(String.valueOf(1)));
+        when(agent.getHostAddress()).thenReturn("127.0.0.1");
+        when(agent.getSnmpInterfaceInfo(any(IfResourceType.class))).thenReturn(new HashSet<IfInfo>());
+        when(agent.getAttributeNames()).thenReturn(Collections.emptySet());
+        when(agent.getAddress()).thenReturn(InetAddrUtils.getLocalHostAddress());
+        when(agent.isStoreByForeignSource()).thenReturn(false);
+        when(agent.getNodeLabel()).thenReturn("test");
+        when(agent.getForeignSource()).thenReturn(null);
+        when(agent.getForeignId()).thenReturn(null);
+        when(agent.getLocationName()).thenReturn(null);
+        when(agent.getSysObjectId()).thenReturn(null);
+        when(agent.getSavedSysUpTime()).thenReturn(0L);
         return agent;
     }
 
@@ -1956,6 +1940,7 @@ public class ThresholdingVisitorIT {
 
     private static void addAttributeToCollectionResource(SnmpCollectionResource resource, ResourceType type, String attributeName, String attributeType, String attributeInstance, Object value) {
         MibObject object = createMibObject(attributeType, attributeName, attributeInstance);
+
         final var mibGroup = new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE);
 
         final SnmpAttributeType objectType;
@@ -1967,6 +1952,7 @@ public class ThresholdingVisitorIT {
             objectType = new NumericAttributeType(type, "default", object, mibGroup);
             snmpValue = attributeType.equals("counter") ? SnmpUtils.getValueFactory().getCounter32(((Number) value).longValue()) : SnmpUtils.getValueFactory().getGauge32(((Number) value).longValue());
         }
+
         resource.setAttributeValue(objectType, snmpValue);
     }
 

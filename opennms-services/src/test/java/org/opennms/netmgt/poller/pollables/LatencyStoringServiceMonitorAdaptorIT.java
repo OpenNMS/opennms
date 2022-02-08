@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.poller.pollables;
 
-import static org.easymock.EasyMock.expect;
+import static org.mockito.Mockito.*;
+
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
@@ -41,7 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +73,6 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
@@ -97,8 +96,6 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
 public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseAware<MockDatabase> {
-    private EasyMockUtils m_mocks;
-
     private PollerConfig m_pollerConfig;
 
     private MockDatabase m_db;
@@ -148,8 +145,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
     public void setUp() throws Exception {
         BeanUtils.setStaticApplicationContext(m_context);
 
-        m_mocks = new EasyMockUtils();
-        m_pollerConfig = m_mocks.createMock(PollerConfig.class);
+        m_pollerConfig = mock(PollerConfig.class);
 
         MockLogAppender.setupLogging();
 
@@ -172,6 +168,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
     @After
     public void tearDown() throws Throwable {
         MockLogAppender.assertNoWarningsOrGreater();
+        verifyNoMoreInteractions(m_pollerConfig);
     }
 
     @Test
@@ -191,6 +188,9 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
 
         executeThresholdTest(new Double[] {100.0, 10.0}); // This should emulate a trigger and a rearm
         m_eventIpcManager.getEventAnticipator().verifyAnticipated();
+
+        verify(m_pollerConfig, atLeastOnce()).getStep(any(Package.class));
+        verify(m_pollerConfig, atLeastOnce()).getRRAList(any(Package.class));
     }
 
     // TODO: This test will fail if you have a default locale with >3 characters for month, e.g. Locale.FRENCH
@@ -224,6 +224,9 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         // Reset the state for any subsequent tests
         m_pollOutagesDao.overrideConfig(oldConfig);
         file.delete();
+
+        verify(m_pollerConfig, atLeastOnce()).getStep(any(Package.class));
+        verify(m_pollerConfig, atLeastOnce()).getRRAList(any(Package.class));
     }
 
     private void executeThresholdTest(Double[] rtValues) throws Exception {
@@ -234,17 +237,16 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         parameters.put("rrd-base-name", "icmp");
         parameters.put("thresholding-enabled", "true");
 
-        FilterDao filterDao = m_mocks.createMock(FilterDao.class);
-        expect(filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();
+        FilterDao filterDao = mock(FilterDao.class);
+        when(filterDao.getActiveIPAddressList(anyString())).thenReturn(Collections.singletonList(addr("127.0.0.1")));
         filterDao.flushActiveIpAddressListCache();
-        EasyMock.expectLastCall().anyTimes();
         FilterDaoFactory.setInstance(filterDao);
 
-        MonitoredService svc = m_mocks.createMock(MonitoredService.class);
-        expect(svc.getNodeId()).andReturn(1).anyTimes();
-        expect(svc.getIpAddr()).andReturn("127.0.0.1").atLeastOnce();
-        expect(svc.getSvcName()).andReturn("ICMP").atLeastOnce();
-        expect(svc.getNodeLocation()).andReturn(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).atLeastOnce();
+        MonitoredService svc = mock(MonitoredService.class);
+        when(svc.getNodeId()).thenReturn(1);
+        when(svc.getIpAddr()).thenReturn("127.0.0.1");
+        when(svc.getSvcName()).thenReturn("ICMP");
+        when(svc.getNodeLocation()).thenReturn(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
 
         ServiceMonitor service = new MockServiceMonitor(rtValues);
 
@@ -256,10 +258,9 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         rrd.setRras(rras);
         pkg.setRrd(rrd);
 
-        expect(m_pollerConfig.getRRAList(pkg)).andReturn(rras).anyTimes();
-        expect(m_pollerConfig.getStep(pkg)).andReturn(step).anyTimes();
+        when(m_pollerConfig.getRRAList(pkg)).thenReturn(rras);
+        when(m_pollerConfig.getStep(pkg)).thenReturn(step);
 
-        m_mocks.replayAll();
         LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(m_pollerConfig, 
                                                                                               pkg, 
                                                                                               m_persisterFactory, 
@@ -273,6 +274,5 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
             Thread.sleep(1000 * step); // Emulate the appropriate wait time prior inserting another value into the RRD files.
         }
         System.setProperty("opennms.home", previousOpennmsHome);
-        m_mocks.verifyAll();
     }
 }

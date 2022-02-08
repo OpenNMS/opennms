@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,9 @@
 
 package org.opennms.reporting.core.svclayer.support;
 
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -81,22 +81,20 @@ public class DefaultReportStoreServiceTest implements InitializingBean {
         BeanUtils.assertAutowiring(this);
     }
 
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_reportCatalogDao);
+        verifyNoMoreInteractions(m_reportServiceLocator);
+        verifyNoMoreInteractions(m_databaseReportConfigDao);
+    }
+
     @Test
     public void testSave(){
         
         ReportCatalogEntry reportCatalogEntry = new ReportCatalogEntry();
         m_reportCatalogDao.save(reportCatalogEntry);
         m_reportCatalogDao.flush();
-        replay(m_reportCatalogDao);
         
         m_reportStoreService.save(reportCatalogEntry);
-        verify(m_reportCatalogDao);
-        
     }
-    
-    @Test
-    public void testReder(){
-        // TODO something useful here
-    }
-    
 }

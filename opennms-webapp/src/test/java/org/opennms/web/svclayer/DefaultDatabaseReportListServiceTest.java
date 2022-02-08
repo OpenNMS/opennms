@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,13 @@
 
 package org.opennms.web.svclayer;
 
-import org.easymock.EasyMock;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,11 +42,6 @@ import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.web.svclayer.model.DatabaseReportDescription;
 import org.opennms.web.svclayer.support.DefaultDatabaseReportListService;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 //import org.springframework.core.io.ClassPathResource;
 //import org.springframework.core.io.Resource;
@@ -53,10 +54,9 @@ public class DefaultDatabaseReportListServiceTest {
 
     @Before
     public void setupDao() throws Exception {
-        m_globalReportRepository = EasyMock.createNiceMock(GlobalReportRepository.class);
-        EasyMock.expect(m_globalReportRepository.getAllOnlineReports()).andReturn(new ArrayList<BasicReportDefinition>());
-        EasyMock.expect(m_globalReportRepository.getAllOnlineReports()).andReturn(new ArrayList<BasicReportDefinition>());
-        EasyMock.replay(m_globalReportRepository);
+        m_globalReportRepository = mock(GlobalReportRepository.class);
+        when(m_globalReportRepository.getAllOnlineReports()).thenReturn(new ArrayList<BasicReportDefinition>());
+        when(m_globalReportRepository.getAllOnlineReports()).thenReturn(new ArrayList<BasicReportDefinition>());
         m_defaultDatabaseReportListService = new DefaultDatabaseReportListService();
         m_defaultDatabaseReportListService.setGlobalReportRepository(m_globalReportRepository);
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,15 @@
 
 package org.opennms.protocols.xml.vtdxml;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.easymock.EasyMock;
 import org.jrobin.core.Datasource;
 import org.jrobin.core.RrdDb;
 import org.junit.After;
@@ -107,15 +109,13 @@ public abstract class AbstractVTDXmlCollectorTest {
         m_persisterFactory.setRrdStrategy(m_rrdStrategy);
 
         m_collectionAgent = new MockCollectionAgent(1, "mynode.local", InetAddrUtils.addr("127.0.0.1"));
-        m_eventProxy = EasyMock.createMock(EventProxy.class);
+        m_eventProxy = mock(EventProxy.class);
 
         m_xmlCollectionDao = new XmlDataCollectionConfigDaoJaxb();
         Resource resource = new FileSystemResource(getXmlConfigFileName());
         m_xmlCollectionDao.setConfigResource(resource);
         m_xmlCollectionDao.afterPropertiesSet();
         MockDocumentBuilder.setXmlFileName(getXmlSampleFileName());
-
-        EasyMock.replay(m_eventProxy);
     }
 
     /**
@@ -148,7 +148,7 @@ public abstract class AbstractVTDXmlCollectorTest {
      */
     @After
     public void tearDown() throws Exception {
-        EasyMock.verify(m_eventProxy);
+        verifyNoMoreInteractions(m_eventProxy);
         MockLogAppender.assertNoWarningsOrGreater();
     }
 

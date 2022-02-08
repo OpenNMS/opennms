@@ -13,6 +13,10 @@ parameters:
     description: whether to trigger a code coverage build
     type: boolean
     default: false
+  trigger-automation:
+    description: whether to trigger garbage collection for older feature images
+    type: boolean
+    default: false
 
 setup: true
 
@@ -55,6 +59,7 @@ workflows:
       and:
         - equal: [ true, << pipeline.parameters.trigger-coverage-api >> ]
         - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
+        - equal: [ false, << pipeline.parameters.trigger-automation >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
@@ -66,6 +71,7 @@ workflows:
       and:
         - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
         - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
+        - equal: [ false, << pipeline.parameters.trigger-automation >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
@@ -78,7 +84,41 @@ workflows:
             .circleci/.*      trigger-docs     true
             .circleci/.*      trigger-ui       true
 
+  automation:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
+        - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
+        - equal: [ true, << pipeline.parameters.trigger-automation >> ]
+    jobs:
+      - docker_gc
+
 jobs:
+  docker_gc:
+    docker:
+      - image: docker
+    steps:
+      - run:
+          name:  Docker GC - remove inactive images on feature branches
+          # TODO replace expect when https://github.com/docker/hub-tool/pull/198 is merged
+          command: |
+            wget https://github.com/docker/hub-tool/releases/download/v0.4.4/hub-tool-linux-amd64.tar.gz
+            tar -xzf hub-tool-linux-amd64.tar.gz
+            apk update
+            apk add expect
+            expect_commands="
+            spawn hub-tool/hub-tool login ${DOCKERHUB_LOGIN}
+            expect 'Password:'
+            send \"${DOCKERHUB_PASS}\n\"
+            interact"
+            expect -c "${expect_commands//
+            /;}"
+            GC_LIST=$( hub-tool/hub-tool tag ls opennms/horizon | grep feature | grep inactive | cut -d" " -f1 )
+            for image in $GC_LIST; do
+              echo "Delete image $image"
+              ( yes || true ) | hub-tool/hub-tool tag rm $image
+            done
+
   trigger-coverage:
     docker:
       - image: cimg/python:3.10.1

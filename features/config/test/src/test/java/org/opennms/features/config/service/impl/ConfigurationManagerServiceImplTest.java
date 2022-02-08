@@ -28,6 +28,8 @@
 
 package org.opennms.features.config.service.impl;
 
+import static org.opennms.features.config.service.api.EventType.UPDATE;
+
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -171,7 +173,7 @@ public class ConfigurationManagerServiceImplTest {
         TestCallback callback = Mockito.mock(TestCallback.class);
         JSONObject json = configManagerService
                 .getJSONConfiguration(CONFIG_NAME, CONFIG_ID).get();
-        configManagerService.registerReloadConsumer(new ConfigUpdateInfo(CONFIG_NAME, CONFIG_ID), callback);
+        configManagerService.registerEventHandler(UPDATE, new ConfigUpdateInfo(CONFIG_NAME, CONFIG_ID), callback);
         configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JsonAsString(json.toString()), false);
         Mockito.verify(callback, Mockito.atLeastOnce()).accept(Mockito.any());
     }

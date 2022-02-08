@@ -28,6 +28,8 @@
 
 package org.opennms.features.config.osgi.cm;
 
+import static org.opennms.features.config.osgi.cm.CmPersistenceManager.OSGI_PROPERTIES;
+
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Objects;
@@ -57,7 +59,9 @@ public class DictionaryUtil {
         while (keys.hasMoreElements()) {
             Object key = keys.nextElement();
             Object value = dictionary.get(key);
-            json.put(key.toString(), value);
+            if(!OSGI_PROPERTIES.contains(key.toString())) {
+                json.put(key.toString(), value);
+            }
         }
         return new JsonAsString(json.toString());
     }
