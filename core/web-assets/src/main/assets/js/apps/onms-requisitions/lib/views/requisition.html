@@ -18,9 +18,9 @@
     <form class="form-inline pull-right" role="search">
       <div class="input-group ml-auto">
         <div class="input-group-prepend">
-          <div class="input-group-text"><i class="fa fa-search"/></div>
+          <div class="input-group-text"><i class="fa fa-search"></i></div>
         </div>
-        <input class="form-control" id="search-nodes" type="text" placeholder="Search/Filter Nodes" ng-model="reqFilter"></input>
+        <input class="form-control" id="search-nodes" type="text" placeholder="Search/Filter Nodes" ng-model="reqFilter">
       </div>
       <div class="pl-1 ml-auto my-4">
         <div class="btn-group" uib-dropdown>
@@ -33,13 +33,13 @@
           </ul>
         </div>
         <button type="button" class="btn btn-secondary" id="edit-foreign-source" ng-click="editForeignSource()">
-          <i class="fa fa-edit"/> Edit Definition
+          <i class="fa fa-edit"></i> Edit Definition
         </button>
         <button type="button" class="btn btn-secondary" id="synchronize" ng-disabled="timingStatus.isRunning" ng-click="synchronize()">
-          <i class="fa fa-exchange"/> Synchronize
+          <i class="fa fa-exchange"></i> Synchronize
         </button>
         <button type="button" class="btn btn-secondary" id="add-node" ng-click="addNode()">
-          <i class="fa fa-plus"/> Add Node
+          <i class="fa fa-plus"></i> Add Node
         </button>
         <button type="button" class="btn btn-primary" id="go-back" ng-click="goBack()">
           <i class="fa fa-reply" aria-hidden="true"></i> Return

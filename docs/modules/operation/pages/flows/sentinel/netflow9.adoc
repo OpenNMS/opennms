@@ -1,0 +1,33 @@
+[source, karaf]
+----
+config:edit --alias netflow9 --factory org.opennms.features.telemetry.adapters
+config:property-set name Netflow-9<1>
+config:property-set adapters.0.name Netflow-9-Adapter<2>
+config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter<3>
+config:update
+----
+
+<1> Queue name from which Sentinel will fetch messages.
+By default for {page-component-title} components, the queue name convention is `Netflow-9`.
+<2> Set a name for the Netflow v9 adapter.
+<3> Assign an adapter to enrich Netflow v9 messages.
+
+The configuration is persisted with the suffix specified as alias in `etc/org.opennms.features.telemetry.adapters-netflow9.cfg`.
+
+TIP: To process multiple protocols, increase the index `0` in the adapters name and class name accordingly for additional protocols.
+
+.Run health-check to verify adapter configuration
+[source, karaf]
+----
+opennms:health-check
+----
+
+.Ensure the configured flow adapters work properly
+[source, output]
+----
+Verifying the health of the container
+
+...
+Verifying Adapter Netflow-9-Adapter (org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter)   [ Success  ]
+----
+

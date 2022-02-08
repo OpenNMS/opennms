@@ -47,7 +47,7 @@
         </div>
     </div>
 
-    <hr />
+    <hr>
 
     <!-- Days per Week -->
     <div class="" ng-if="options.type === 'daysPerWeek'">
@@ -73,7 +73,7 @@
             <onms-time-input
                     ng-model="options.at"
                     options="options.at"
-            />
+            ></onms-time-input>
             <span class="zone">{{options.timezone}}</span>
         </div>
 
@@ -83,14 +83,14 @@
             <onms-time-input
                     ng-model="options.from"
                     options="options.from"
-            />
+            ></onms-time-input>
         </div>
         <div class="form-group" ng-if="options.interval !== '0'">
             <label>To</label>
             <onms-time-input
                     ng-model="options.to"
                     options="options.to"
-            />
+            ></onms-time-input>
         </div>
     </div>
 
@@ -102,7 +102,7 @@
             <onms-time-input
                     ng-model="options.at"
                     options="options.at"
-            />
+            ></onms-time-input>
             <span class="zone">{{options.timezone}}</span>
         </div>
 
@@ -175,7 +175,7 @@
     <!-- Custom Cron Expression -->
     <div class="" ng-if="options.type === 'custom'">
         <div class="form-inline">
-            <input id="customCronExpressionInput" type="text" class="form-control" ng-class="{'is-invalid': errors.cronExpression}" ng-model="options.cronExpression "/>
+            <input id="customCronExpressionInput" type="text" class="form-control" ng-class="{'is-invalid': errors.cronExpression}" ng-model="options.cronExpression ">
             <span class="zone">{{options.timezone}}</span>
             <a href="http://www.quartz-scheduler.org/documentation/quartz-2.2.2/tutorials/crontrigger.html" class="ml-2" target="_blank" title="Help me">
                 <i class="fa fa-question-circle" aria-hidden="true"></i>
@@ -226,7 +226,7 @@
     </div>
 
     <div class="text-muted mt-2" ng-if="options.showDebugOptions">
-        <hr />
+        <hr>
         <label>Generated Cron Expression</label>
         <pre class="bg-light px-2 py-2 text-muted">{{options.getCronExpression()}}</pre>
         <label>Schedule Options</label>

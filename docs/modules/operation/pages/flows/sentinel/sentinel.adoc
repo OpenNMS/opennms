@@ -1,0 +1,131 @@
+
+[[flows-scaling]]
+= Scale Flow Processing with Sentinel
+
+When your flows data collection volume increases to the point that {page-component-title} is too busy processing flows, you can add Sentinel(s) to do the processing instead.
+Sentinel can do the following:
+
+* Persist network flow messages with Sentinel to Elasticsearch
+* Consume flow messages from Minions through a message broker (ActiveMQ or Apache Kafka)
+* Generate and send events to Horizon Core instance via message broker
+
+Follow the procedures below to set up Sentinel to scale your flows data.
+
+.Flow integration with Sentinel
+image::flows/flow_integration_sentinel.png[width=70%]
+
+== Before you begin
+
+Make sure you have the following:
+
+* xref:operation:flows/basic.adoc#flows-basic[Basic flows environment] set up
+* xref:deployment:sentinel/runtime/install.adoc#install-sentinel[Sentinel installed] on your system
+* PostgreSQL, Elasticsearch, and REST endpoint to {page-component-title} Core instance running and reachable from the Sentinel node
+* Message broker (ActiveMQ or Apache Kafka) running and reachable from the Sentinel node
+* Credentials for authentication configured for the REST endpoint in the {page-component-title} Core instance, message broker, Elasticsearch, and the PostgreSQL database
+
+NOTE: You must set configuration in the `etc` directory relative to the {page-component-title} Sentinel home directory.
+      Depending on your operating system, the home directory is `/usr/share/sentinel` for Debian/Ubuntu or `/opt/sentinel` for CentOS/RHEL.
+
+== Configure access to PostgreSQL database
+
+.Connect to the Sentinel Karaf shell via SSH
+[source, console]
+----
+ssh -p 8301 admin@localhost
+----
+
+.Configure access to the PostgreSQL database
+[source, karaf]
+----
+config:edit org.opennms.netmgt.distributed.datasource
+config:property-set datasource.url jdbc:postgresql://postgres-ip:postgres-port/opennms-db-name<1>
+config:property-set datasource.username my-db-user<2>
+config:property-set datasource.password my-db-password<3>
+config:property-set datasource.databaseName opennms-db-name<4>
+config:update
+----
+
+<1> JDBC connection string; replace `postgres-ip`, `postgres-port`, and `opennms-db-name` accordingly.
+<2> PostgreSQL user name with read/write access to the `opennms-db-name` database
+<3> PostgreSQL password for `my-db-user` user
+<4> Database name of your {page-component-title} Core instance database
+
+== Configure access to Elasticsearch
+
+.Connect to the Sentinel Karaf shell via SSH
+[source, console]
+----
+ssh -p 8301 admin@localhost
+----
+
+.Configure access to persist flows to Elasticsearch
+[source, karaf]
+----
+config:edit org.opennms.features.flows.persistence.elastic
+config:property-set elasticUrl http://elastic-ip:9200<1>
+config:property-set elasticIndexStrategy hourly<2>
+config:property-set settings.index.number_of_replicas 0<3>
+config:property-set connTimeout 30000<4>
+config:property-set readTimeout 60000<5>
+config:update
+----
+
+<1> Add the URL to the Elasticsearch cluster.
+<2> Select an index strategy.
+<3> Set number of replicas; 0 is a default.
+In production you should have at least 1.
+<4> Timeout, in milliseconds, Sentinel waits to connect to the Elasticsearch cluster.
+<5> Read timeout when data is fetched from the Elasticsearch cluster.
+
+== Set up message broker
+
+[{tabs}]
+====
+Kafka::
++
+--
+include::message-broker/kafka.adoc[]
+--
+
+ActiveMQ::
++
+--
+include::message-broker/activemq.adoc[]
+--
+====
+
+== Enable flow processing protocols
+
+.Connect to the Sentinel Karaf shell via SSH
+[source, console]
+----
+ssh -p 8301 admin@localhost
+----
+
+[{tabs}]
+====
+Netflow v5::
++
+--
+include::netflow5.adoc[]
+--
+
+Netflow v9::
++
+--
+include::netflow9.adoc[]
+--
+
+sFlow::
++
+--
+include::sflow.adoc[]
+--
+
+IPFIX::
++
+--
+include::ipfix.adoc[]
+--
+====

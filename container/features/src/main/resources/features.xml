@@ -323,6 +323,7 @@
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.commands/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.criteria/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.logging/${project.version}</bundle>
@@ -689,6 +690,7 @@
         <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
     </feature>
     <feature name="opennms-provisioning-api" version="${project.version}" description="OpenNMS :: Provisioning :: API">
+        <feature>opennms-model</feature>
         <bundle dependency="true">mvn:org.apache.mina/mina-core/${minaVersion}</bundle>
         <bundle dependency="true">mvn:io.netty/netty/3.9.4.Final</bundle>
         <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
@@ -1051,7 +1053,7 @@
     </feature>
     <feature name="opennms-telemetry-jti" version="${project.version}" description="OpenNMS :: Telemetry :: JTI">
         <feature>opennms-telemetry-collection</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf2Version}</bundle>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.jti/org.opennms.features.telemetry.protocols.jti.adapter/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-nxos" version="${project.version}" description="OpenNMS :: Telemetry :: NX-OS">

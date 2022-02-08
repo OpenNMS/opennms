@@ -1,6 +1,6 @@
 // Allow image rendering
 :imagesdir: ../../images
-
+[[graphml]]
 = GraphML
 
 In {page-component-title}, the `GraphMLTopoloyProvider` uses http://graphml.graphdrawing.org/[GraphML] formatted files to visualize graphs.

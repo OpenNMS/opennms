@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -87,8 +87,8 @@ public class GrafanaEndpointRestServiceImpl implements GrafanaEndpointRestServic
         try {
             client.getDashboards();
             return Response.ok().build();
-        } catch (IOException ex) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(createErrorObject(ex).toString()).build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(createErrorObject("Grafana endpoint could not be verified.", "entity").toString()).build();
         }
     }
 

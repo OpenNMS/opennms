@@ -1,3 +1,4 @@
+<div>
 <div class="modal-header">
   <h5 class="modal-title">Import Classification Rules</h5>
 </div>
@@ -16,7 +17,7 @@
           <span class="input-group-prepend">
               <button ng-click="openFileDialogue()" class="btn btn-secondary" type="button">Choose</button>
           </span>
-          <input ng-click="openFileDialogue()" type="text" id="importFile" class="form-control" placeholder='Choose a file...' ng-model="fileToUpload.name"/>
+          <input ng-click="openFileDialogue()" type="text" id="importFile" class="form-control" placeholder="Choose a file..." ng-model="fileToUpload.name">
           <span class="input-group-append">
              <button class="btn btn-secondary" type="button" ng-click="resetInput()">Reset</button>
           </span>
@@ -37,7 +38,7 @@
         </div>
       </div>
     </div>
-    <input id="fileToImport" type="file" style="visibility:hidden; display:none" onchange="angular.element(this).scope().setFile(this)" />
+    <input id="fileToImport" type="file" style="visibility:hidden; display:none" onchange="angular.element(this).scope().setFile(this)">
   </form>
   <div class="alert alert-danger" ng-show="error">
     {{error}}
@@ -65,4 +66,5 @@
     <button type="button" class="btn btn-primary" ng-click="uploadFile()" ng-show="fileToUpload" title="Upload Rule">Upload</button>
   </div>
   <button type="button" class="btn btn-secondary" ng-click="$dismiss('cancelled by user')" >Cancel</button>
+</div>
 </div>

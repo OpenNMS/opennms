@@ -12,7 +12,7 @@
                        value="{{group.id}}_rules.csv" ng-model="export.requestedFileName"
                        ng-pattern="/^[a-zA-Z1-9_ .-]{1,}$/"
                        required
-                       ng-class="{ 'is-invalid' : exportGroupForm.requestedFileName.$invalid }"/>
+                       ng-class="{ 'is-invalid' : exportGroupForm.requestedFileName.$invalid }">
                 <p ng-show="exportGroupForm.requestedFileName.$invalid" class="invalid-feedback">
                     A valid file name is required, allowed characters: [a-zA-Z1-9_ .-]</p>
             </div>

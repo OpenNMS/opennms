@@ -22,7 +22,7 @@
       <button type="button" class="btn btn-secondary" id="go-vertical" ng-click="goVerticalLayout()">
         <span class="fa fa-align-center"></span> Use Vertical Layout
       </button>
-      <button type="button" class="btn btn-primary" id="save-node" ng-click="save()" ng-show="nodeForm.$dirty" ng-disabled="nodeForm.$invalid" ng-disabled="timingStatus.isRunning">
+      <button type="button" class="btn btn-primary" id="save-node" ng-click="save()" ng-show="nodeForm.$dirty" ng-disabled="nodeForm.$invalid || timingStatus.isRunning">
         <span class="fa fa-save"></span> Save
       </button>
       <button type="button" class="btn btn-secondary" uib-tooltip="Delete the current Node" ng-click="deleteNode(node)">
@@ -46,32 +46,32 @@
 
         <!-- Basic Information Tab -->
         <uib-tab heading="Basic Information" id="tab-basic-information">
-          <ng-include src="nodeBasicView"/>
+          <ng-include src="nodeBasicView"></ng-include>
         </uib-tab>
 
         <!-- Path Outage Tab -->
         <uib-tab heading="Path Outage" id="tab-path-outage">
-          <ng-include src="nodePathoutagesView"/>
+          <ng-include src="nodePathoutagesView"></ng-include>
         </uib-tab>
 
         <!-- Interfaces Tab -->
         <uib-tab heading="Interfaces" id="tab-interfaces">
-          <ng-include src="nodeInterfacesView"/>
+          <ng-include src="nodeInterfacesView"></ng-include>
         </uib-tab>
 
         <!-- Assets Tab -->
         <uib-tab heading="Assets" id="tab-assets">
-          <ng-include src="nodeAssetsView"/>
+          <ng-include src="nodeAssetsView"></ng-include>
         </uib-tab>
 
         <!-- Categories Tab -->
         <uib-tab heading="Categories" id="tab-categories">
-          <ng-include src="nodeCategoriesView"/>
+          <ng-include src="nodeCategoriesView"></ng-include>
         </uib-tab>
 
         <!-- Metadata Tab -->
         <uib-tab heading="Meta-Data" id="tab-metadata" select="onMetadataTabSelect()">
-          <ng-include src="nodeMetaDataView"/>
+          <ng-include src="nodeMetaDataView"></ng-include>
         </uib-tab>
 
       </uib-tabset>

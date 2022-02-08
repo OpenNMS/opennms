@@ -1,0 +1,97 @@
+.Create a file in etc/featuresBoot.d/flows.boot
+[source, console]
+----
+sudo vi etc/featuresBoot.d/flows.boot
+----
+
+.Add the following features to Sentinel on startup
+[source, flows.boot]
+----
+sentinel-jsonstore-postgres
+sentinel-blobstore-noop
+sentinel-kafka
+sentinel-flows
+----
+
+.Connect to the Karaf shell via SSH
+[source, console]
+----
+ssh -p 8301 admin@localhost
+----
+
+.Configure Sentinel tracing and REST endpoint
+[source, karaf]
+----
+config:edit org.opennms.sentinel.controller
+config:property-set location SENTINEL<1>
+config:property-set id 00000000-0000-0000-0000-000000ddba11<2>
+config:property-set http-url http://core-instance-ip:8980/opennms<3>
+config:update
+----
+
+<1> A location string is used to assign the Sentinel to a monitoring location with Minions.
+<2> Unique identifier used as a node label for monitoring the Sentinel instance within {page-component-title).
+<3> Base URL for the web UI, which provides the REST endpoints.
+
+.Configure Sentinel as Kafka consumer for flow messages
+[source, karaf]
+----
+config:edit org.opennms.core.ipc.sink.kafka.consumer<1>
+config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<2>
+config:update
+----
+
+<1> Edit the configuration for the flow consumer from Kafka.
+<2> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
+
+.Configure Sentinel to generate and send events
+[source, karaf]
+----
+config:edit org.opennms.core.ipc.sink.kafka<1>
+config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<2>
+config:update
+----
+
+<1> Edit the configuration to send generated events from Sentinel via Kafka.
+<2> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
+
+TIP: To use a Kafka cluster with multiple {page-component-title} instances, customize the topic prefix by setting `group.id`, which is by default set to `OpenNMS`.
+     You can set a different topic prefix for each instance with `config:edit group.id my-group-id` for the consumer and sink.
+
+.Configure the credentials and exit Karaf shell
+[source, karaf]
+----
+opennms:scv-set opennms.http my-sentinel-user my-sentinel-password<1>
+----
+<1> Set the credentials for the REST endpoint created in your {page-component-title} Core instance.
+
+The credentials are encrypted on disk in `$\{SENTINEL_HOME}/etc/scv.jce`.
+
+Exit the Karaf Shell with kbd:[Ctrl+d]
+
+.Restart the Sentinel to apply the configuration
+[source, console]
+----
+sudo systemctl restart sentinel
+----
+
+.Run health-check to verify configuration
+[source, karaf]
+----
+opennms:health-check
+----
+
+.Ensure features are installed and work properly
+[source, output]
+----
+Verifying the health of the container
+
+Verifying installed bundles                    [ Success  ]
+Connecting to Kafka from Sink Producer         [ Success  ]
+Connecting to Kafka from Sink Consumer         [ Success  ]
+Retrieving NodeDao                             [ Success  ]
+Connecting to ElasticSearch ReST API (Flows)   [ Success  ]
+Connecting to OpenNMS ReST API                 [ Success  ]
+
+=> Everything is awesome
+----

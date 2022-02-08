@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -77,15 +77,18 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.StreamsConfig;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
@@ -131,6 +134,7 @@ import com.google.common.base.Strings;
         "classpath:/applicationContext-test-kafka-producer.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = false, tempDbClass = MockDatabase.class, reuseDatabase = false)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaForwarderIT.class);
 
@@ -139,6 +143,8 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private static final String NODE_TOPIC_NAME = "test-nodes";
     private static final String METRIC_TOPIC_NAME = "test-metrics";
     private static final String ALARM_FEEDBACK_TOPIC_NAME = "test-alarm-feedback";
+
+    private int _id = 1;
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -182,6 +188,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     @Before
     public void setUp() throws IOException {
         File data = tempFolder.newFolder("data");
+
         eventdIpcMgr.setEventWriter(mockDatabase);
 
         databasePopulator.addExtension(new DatabasePopulator.Extension<HwEntityDao>() {
@@ -193,8 +200,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
             @Override
             public void onPopulate(DatabasePopulator populator, HwEntityDao dao) {
-                OnmsNode node = new OnmsNode();
-                node.setId(1);
+                OnmsNode node = databasePopulator.getNode1();
                 OnmsHwEntity port = getHwEntityPort(node);
                 dao.save(port);
                 OnmsHwEntity container = getHwEntityContainer(node);
@@ -209,6 +215,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                 chassis.addChildEntity(module);
                 chassis.addChildEntity(powerSupply);
                 dao.save(chassis);
+                dao.flush();
             }
 
             @Override
@@ -256,6 +263,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     }
 
     @Test
+    @JUnitTemporaryDatabase(dirtiesContext=true, tempDbClass=MockDatabase.class, reuseDatabase=false)
     public void canProduceAndConsumeMessages() throws Exception {
         // Send a node down event (should be forwarded)
         eventdIpcMgr.sendNow(MockEventUtil.createNodeDownEventBuilder("test", databasePopulator.getNode1()).getEvent());
@@ -269,7 +277,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
         // Send a unrelated newSuspect event (should not be forwarded)
         eventdIpcMgr.sendNow(MockEventUtil.createNewSuspectEventBuilder("test",
-                EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "192.168.1.1")
+                EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, InetAddressUtils.str(InetAddressUtils.UNPINGABLE_ADDRESS))
                 .getEvent());
 
         // Send a node up (should be forwarded)
@@ -337,7 +345,8 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         assertThat(kafkaConsumer.getAlarmByReductionKey(alarmReductionKey).getDescription(), equalTo("node down"));
         // Verify the consumed Node objects
         List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node> nodes = kafkaConsumer.getNodes();
-        assertThat(nodes.size(), equalTo(2));
+        LOG.debug("got nodes: {}", nodes);
+        assertThat(nodes, hasSize(greaterThanOrEqualTo(2)));
         // Verify the first node has hwInventory DAG including the Port with a hwEntAlias
         assertThat(nodes.get(0), not(nullValue()));
         assertThat(nodes.get(0).getHwInventory(), not(nullValue()));
@@ -469,14 +478,14 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private OnmsAlarm nodeDownAlarmWithRelatedAlarm() {
         OnmsAlarm alarm = nodeDownAlarm();
         OnmsAlarm relatedAlarm = nodeDownAlarm();
-        relatedAlarm.setId(2);
+        relatedAlarm.setId(_id++);
         alarm.addRelatedAlarm(relatedAlarm);        
         return alarm;
     }
     
     private OnmsAlarm nodeDownAlarm() {
         OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setId(1);
+        alarm.setId(_id++);
         alarm.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
         alarm.setNode(databasePopulator.getNode1());
         alarm.setCounter(1);
@@ -499,13 +508,6 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         return kafkaConsumer.getNodes().stream()
                 .filter(Objects::nonNull)
                 .map(n -> (int)n.getId())
-                .collect(Collectors.toSet());
-    }
-
-    private Set<String> getReductionKeysForConsumedAlarms() {
-        return kafkaConsumer.getAlarms().stream()
-                .filter(Objects::nonNull)
-                .map(OpennmsModelProtos.Alarm::getReductionKey)
                 .collect(Collectors.toSet());
     }
 
@@ -695,13 +697,23 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        if (kafkaAlarmaDataStore != null) {
+            kafkaAlarmaDataStore.destroy();
+        }
+        if (kafkaProducer != null) {
+            kafkaProducer.destroy();
+        }
         if (kafkaConsumer != null) {
+            alarmLifecycleListenerManager.onListenerUnregistered(kafkaProducer, Collections.emptyMap());
             kafkaConsumer.shutdown();
         }
         if (executor != null) {
             executor.shutdown();
+            executor.awaitTermination(2, TimeUnit.MINUTES);
         }
+        eventdIpcMgr.reset();
+        alarmDao.findAll().forEach(alarm -> alarmDao.delete(alarm));
         databasePopulator.resetDatabase();
     }
 

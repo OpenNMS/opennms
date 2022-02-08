@@ -2,56 +2,53 @@
 [[ops-board]]
 = Operator Board
 
-In a network operation center (NOC) you can use the ops board to visualize monitoring information.
-The monitoring information for various use-cases are arranged in configurable dashlets.
-To address different user groups it is possible to create multiple ops boards.
+An operator board helps network operations centers (NOCs) visualize monitoring information.
+Use configurable dashlets to arrange how to display different types of information (alarms, maps, KSC reports, and so on) on the board.
+You can also create multiple ops boards, customized for different user groups.
 
-There are two visualisation components to display dashlets:
+There are two visualization modes to display dashlets:
 
- * Ops Panel: Shows multiple dashlets on one screen, e.g., on a NOC operators workstation
- * Ops Board: Shows one dashlet at a time in rotation, e.g., for a screen wall in a NOC
+ * Ops Panel: Shows multiple dashlets on one screen (for example, on a NOC operator's workstation)
+ * Ops Board: Shows one dashlet at a time in rotation (for example, for a screen wall in a NOC)
 
-.Concept of dashlets displayed in ps panel
+.Dashlets in ops panel
 image::webui/opsboard/01_opspanel-concept.png[]
 
-.Concept to show dashlets in rotation on the ops board
+.Dashlets in rotation on ops board
 image::webui/opsboard/02_opsboard-concept.png[]
 
+[[opsboard-config]]
 == Configuration
 
-To create and configure ops boards administration permissions are required.
-The configuration section is in admin area of {page-component-title} and named "Ops Board Configuration".
+You must have administrative permissions to create and configure ops boards.
+After you create an ops board, you can specify how to visualize the information (panel or board).
 
-.Navigation to the Ops Board configuration
-image::webui/opsboard/03_admin-configure-opsboard.png[]
+. Click the gears icon in the top-right corner.
+. In the *Additional Tools* area choose *Ops Board Configuration*.
+. Click the plus sign beside the *Overview* tab.
+. In the *New Ops Board* dialog, type a name for the ops board and click *Save*.
+. Click *Add dashlet*.
+. Choose a dashlet from the drop-down.
+. Specify additional information including the following:
++
+* Title (dashlet name to display in the operator board)
+* Priority (How often dashlet displays in rotation. Priority 1 is highest and appears more often.)
+* Duration (How long dashlet displays in rotation)
+* Boost-Priority (Change priority if dashlet is in alert state. Optional, not available with all dashlets.)
+* Boost-Duration (Change duration if dashlet is in alert state. Optional, not available in all dashlets.)
+* Properties associated with the dashlet (alarm severity, type of chart, filter criteria, and so on)
 
-Create or modify ops boards is described in the following screenshot.
+. Use the up/down arrows to change the order the dashlet appears in rotation on the ops board and the tile view in the ops panel.
+. Click *Preview* in the dashlet area to view the dashlet.
+. Click *Preview* on the top left to view the ops board and all its dashlets.
+. Click *Remove* to delete the dashlet from the ops board.
 
-.Adding a Dashlet to an existing Ops Board
-image::webui/opsboard/04_add-dashlet.png[]
-
- . Create a new ops board to organize and arrange different dashlets
- . The name to identify the ops board
- . Add a dashlet to show {page-component-title} monitoring information
- . Show a preview of the whole ops board
- . List of available dashlets
- . Priority for this dashlet in ops board rotation, lower priority means it will be displayed more often
- . Duration in seconds for this dashlet in the ops board rotation
- . Change Priority if the dashlet is in alert state, this is optional and maybe not available in all dashlets
- . Change Duration if the dashlet is in alert state, it is optional and maybe not available in all dashlets
- . Configuration properties for this dashlet
- . Remove this dashlet from the ops board
- . Order dashlets for the rotation on the ops board and the tile view in the Ops Panel
- . Show a preview for the whole ops board
-
-Use the configured ops board by navigating in the main menu to *Dashboard -> Ops Board*.
-
-.Navigation to use the Ops Board
-image::webui/opsboard/05_opsboard-user.png[]
+To view the ops board, in the top-menu select *Dashboards>Ops Board*.
+Click *Ops Panel* or *Ops Board* to view that type of visualization.
 
 == Dashlets
 
-Visualization of information is implemented in dashlets.
-The different dashlets are described in this section with all available configuration parameter.
+Each dashlet visualizes specific information.
+The following sections describe each dashlet with its available configuration parameters.
 
-To allow filter information, configure the dashlet with a generic <<admin/webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder,Criteria Builder>>.
+To be able to filter this information, configure the dashlet with a generic <<admin/webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder,criteria builder>>.

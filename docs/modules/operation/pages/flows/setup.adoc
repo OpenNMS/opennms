@@ -212,6 +212,7 @@ $ ssh -p 8101 admin@localhost
 ...
 admin@opennms()> config:edit org.opennms.features.flows.persistence.kafka
 admin@opennms()> config:property-set bootstrap.servers 127.0.0.1:9092
+admin@opennms()> config:property-set topic opennms-flows
 admin@opennms()> config:update
 ----
 
