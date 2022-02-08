@@ -243,6 +243,7 @@ public class DefaultDeviceConfigRestServiceIT {
         dc.setCreatedTime(new Date(createdTime(version)));
         dc.setEncoding(String.valueOf(version));
         dc.setIpInterface(ipInterface1);
+        dc.setLastUpdated(new Date(createdTime(version)));
         return dc;
     }
 
