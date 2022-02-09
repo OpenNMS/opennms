@@ -2,7 +2,7 @@
   <div :class="configurationDrawerActive ? 'active' : 'hidden'">
     <div class="click-close" @click="props.closePanel"></div>
     <ConfigurationHelpPanel
-      :item="stateIn"
+      :item="props.item.config"
       :active="helpState.open"
       :onClose="() => {
         disableHelp();
@@ -27,7 +27,8 @@
         </p>
         <div class="slide-inner-body">
           <ProvisionDForm 
-          :item="item" :stateIn="stateIn" :clearAdvancedOptions="clearAdvancedOptions"
+          :updateFormValue="updateFormValue"
+          :item="props.item" 
            :helpState="helpState.open"
            :toggleHelp="toggleHelp"
             />
@@ -37,24 +38,31 @@
           :active="props.advancedActive"
           :activeUpdate="props.activeUpdate"
           :helpState="props.helpState"
-          :items="stateIn.advancedOptions"
-          :type="stateIn.type.name"
-          :subType="stateIn.subType.name"
+          :items="props.item.config.advancedOptions"
+          :type="props.item.config.type.name"
+          :subType="props.item.config.subType.name"
           :addAdvancedOption="props.addAdvancedOption"
           :deleteAdvancedOption="props.deleteAdvancedOption"
         />
         <ConfigurationGeneratedUrl :item="props.item.config" />
-        <FeatherButton @click="props.saveCurrentState" primary>Save &amp; Close</FeatherButton>
+        <div class="spinner-button">
+        <FeatherButton @click="props.saveCurrentState" primary :disabled="loading">
+          <FeatherSpinner v-if="loading" />
+          <span v-if="!loading">Save &amp; Close</span>
+        </FeatherButton>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, watch, ref, PropType } from 'vue'
+import { computed, watch, ref, PropType } from 'vue'
 
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
+import { FeatherSpinner } from '@featherds/progress'
+
 
 import Cancel from '@featherds/icon/navigation/Cancel'
 
@@ -62,6 +70,7 @@ import ConfigurationAdvancedPanel from './ConfigurationAdvancedPanel.vue'
 import ConfigurationGeneratedUrl from './ConfigurationGeneratedUrl.vue'
 import ConfigurationHelpPanel from './ConfigurationHelpPanel.vue'
 import ProvisionDForm from './ProvisionDForm.vue'
+import { LocalConfigurationWrapper } from './configuration.types'
 
 /**
  * Props
@@ -76,7 +85,9 @@ const props = defineProps({
   deleteAdvancedOption: { type: Function, required: true },
   saveCurrentState: Function,
   edit: Boolean,
-  helpState: { type: Object, required: true }
+  helpState: { type: Object, required: true },
+  updateFormValue: {type: Function,required:true},
+  loading: {type:Boolean,required:true}
 })
 
 /**
@@ -84,20 +95,15 @@ const props = defineProps({
  */
 
 const firstInput = ref<HTMLInputElement | null>(null)
-const bounceOutTimeout = ref(-1);
-const bounceInTimeout = ref(-1);
-const initialWatchTimeout = ref(-1);
+const bounceOutTimeout = ref(-1)
+const bounceInTimeout = ref(-1)
+const initialWatchTimeout = ref(-1)
 
 const configurationDrawerActive = computed(() => props?.configurationDrawerActive)
 const cancelIcon = computed(() => Cancel)
 const helpState = computed(() => props.helpState)
 const editing = computed(() => props.edit)
 const errors = computed(() => props?.item?.errors)
-
-const stateIn = computed(() => {
-  const currentItem = props?.item?.config
-  return reactive(currentItem || {})
-})
 
 /**
  * Scrolls the drawer to the first error on creation 
@@ -108,26 +114,26 @@ watch(errors, () => {
   if (props.item?.errors?.hasErrors) {
     clearTimeout(initialWatchTimeout.value)
     initialWatchTimeout.value = window.setTimeout(() => {
-    const elem = document.querySelector('.feather-input-error')
-    const wrapper = document.querySelector('.slide-outer-body')
+      const elem = document.querySelector('.feather-input-error')
+      const wrapper = document.querySelector('.slide-outer-body')
 
-    //Scrolls the drawer to the first error.
-    wrapper?.scrollTo({ top: elem?.getBoundingClientRect().top, behavior: 'smooth' })
+      //Scrolls the drawer to the first error.
+      wrapper?.scrollTo({ top: elem?.getBoundingClientRect().top, behavior: 'smooth' })
 
-    //This 'bounce' animation is an attempt to further draw
-    //the user's eye to the field with the error. It quickly scales and then descales
-    //the element. The delays are to allow the above scroll to complete before moving on.
-    clearTimeout(bounceOutTimeout.value)
-    clearTimeout(bounceInTimeout.value)
+      //This 'bounce' animation is an attempt to further draw
+      //the user's eye to the field with the error. It quickly scales and then descales
+      //the element. The delays are to allow the above scroll to complete before moving on.
+      clearTimeout(bounceOutTimeout.value)
+      clearTimeout(bounceInTimeout.value)
 
-    bounceOutTimeout.value = window.setTimeout(() => {
-      const inputWrapper = elem?.parentElement?.parentElement
-      inputWrapper?.classList.add('bounce')
-      inputWrapper?.querySelector<HTMLInputElement>('.feather-input')?.focus()
-      bounceInTimeout.value = window.setTimeout(() => {
-        inputWrapper?.classList.remove('bounce')
-      }, 200)
-    }, 300)
+      bounceOutTimeout.value = window.setTimeout(() => {
+        const inputWrapper = elem?.parentElement?.parentElement
+        inputWrapper?.classList.add('bounce')
+        inputWrapper?.querySelector<HTMLInputElement>('.feather-input')?.focus()
+        bounceInTimeout.value = window.setTimeout(() => {
+          inputWrapper?.classList.remove('bounce')
+        }, 200)
+      }, 300)
     },50)
   }
 })
@@ -161,9 +167,6 @@ const disableHelp = () => {
   localStorage.setItem('disable-help', 'true')
 }
 
-const clearAdvancedOptions = () => {
-
-}
 const toggleHelp = () => {
   helpState.value.open = !helpState.value.open
 }
@@ -190,6 +193,18 @@ const toggleHelp = () => {
     color: #273180;
   }
 }
+
+.spinner-button {
+  .spinner {
+    width:20px;
+    height:20px;
+  }
+  .spinner-container {
+    display:flex;
+    align-items:center;
+    height:100%;
+  }
+}
 </style>
 <style lang="scss" scoped>
 @import "@featherds/styles/mixins/typography";
@@ -211,11 +226,15 @@ const toggleHelp = () => {
   opacity: 1;
   pointer-events: all;
   transition: opacity ease-in-out 0.4s;
+  z-index:2;
+  position:relative;
 }
 .hidden {
   opacity: 0;
   pointer-events: none;
   transition: opacity ease-in-out 0.4s;
+  z-index:2;
+  position:relative;
 }
 .click-close {
   transition: opacity ease-in-out 0.3s;

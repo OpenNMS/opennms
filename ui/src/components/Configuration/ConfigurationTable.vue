@@ -77,8 +77,9 @@ import { FeatherIcon } from '@featherds/icon'
 import Edit from '@featherds/icon/action/Edit'
 import Delete from '@featherds/icon/action/Delete'
 
-import { ConfigurationService } from './ConfigurationService'
+import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationCopyPasteDisplay from './ConfigurationCopyPasteDisplay.vue'
+import { ConfigurationPageVals, ConfigurationTableSort, ProvisionDServerConfiguration } from './configuration.types'
 
 /**
  * Props
@@ -119,21 +120,19 @@ const pageVals: ComputedRef<ConfigurationPageVals> = computed(() => {
  */
 const filteredItems = computed(() => {
   const currentTablePage = pageVals.value.pageSize * (pageVals.value.page - 1)
-  const currentSortKey = sorts.currentSort.property
+  const currentSortKey = sorts.currentSort?.property || ''
 
   let myItems: Array<ProvisionDServerConfiguration> = [...itemList.value]
   
   // Determine Sort Order
   let sortOrderValues = [0, 0]
-  if (sorts.currentSort.value === SORT.ASCENDING) {
+  if (sorts.currentSort?.value === SORT.ASCENDING) {
     sortOrderValues = [-1, 1]
-  } else if (sorts.currentSort.value === SORT.DESCENDING) {
+  } else if (sorts.currentSort?.value === SORT.DESCENDING) {
     sortOrderValues = [1, -1]
   }
   
   // Sort the Items
-  // TODO: Remove use of 'any' below. It kicks off a whole chain that I cant
-  // get to the bottom of yet.
   const sortedItemsTotal = myItems.sort((a, b) => {
     if (a[currentSortKey] > b[currentSortKey]) {
       return sortOrderValues[0]
@@ -176,7 +175,7 @@ const pageSizeUpdate = (newPageSize: number) => {
  * Convert our Cron Schedules to Human Readable String.
  */
 const cronToEnglish = (cronFormatted: string) => {
-  const converted = ConfigurationService.convertCronTabToLocal(cronFormatted)
+  const converted = ConfigurationHelper.convertCronTabToLocal(cronFormatted)
   let occurance = 'Every day at '
   if (converted.occurance === 'Monthly') {
     occurance = 'Monthly at '

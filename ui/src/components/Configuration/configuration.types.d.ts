@@ -1,55 +1,46 @@
-type ConfigurationTableSort = {
+export type ConfigurationTableSort = {
   property: string
   value: string
 }
 
-type ProvisionDServerConfiguration = {
+export type ProvisionDServerConfiguration = {
   [b: string]: string | ConfigurationTableSort | number | Array
   'import-name': string
   'cron-schedule': string
   'import-url-resource': string
   'rescan-existing': string
-  currentSort: ConfigurationTableSort
+  currentSort: ConfigurationTableSort | undefined
   originalIndex: number | undefined
 }
 
-type ConfigurationResponse = { error: boolean; message: unknown }
-type FullProvisionDPayload = {}
+export type ConfigurationResponse = { error: boolean; message: unknown }
 
-type ConfigurationPageVals = {
+export type ConfigurationPageVals = {
   total: number
   page: number
   pageSize: number
 }
 
-type AdvancedOption = {
+export type AdvancedOption = {
   key: { _text: string; name: string }
   value: string
 }
 
-type AdvancedKey = {
+export type AdvancedKey = {
   _text: string
   name: string
   id: number
 }
 
-type LocalConfiguration = {
+export interface  LocalConfiguration extends LocalSubConfiguration {
   name: string
-  path: string
-  type: { name: string; id: number }
-  subType: { name: string; value: string; id: number }
-  host: string
-  username: string
-  password: string
   occurance: { name: string; id: number }
   time: string
   rescanBehavior: number
   advancedOptions: Array<AdvancedOption>
-  zone: string
-  foreignSource: string
 }
 
-type LocalErrors = {
+export type LocalErrors = {
   hasErrors: boolean
   host: string
   name: string
@@ -62,7 +53,18 @@ type LocalErrors = {
   occurance: string
 }
 
-type LocalConfigurationWrapper = {
+export type LocalConfigurationWrapper = {
   config: LocalConfiguration
   errors: LocalErrors
+}
+
+export type LocalSubConfiguration = {
+    host : string
+    path : string
+    username : string
+    password : string
+    zone : string
+    foreignSource : string
+    subType : { id: number, name: string, value: string },
+    type:{name:string,id:number}
 }

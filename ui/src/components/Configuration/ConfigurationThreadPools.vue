@@ -9,16 +9,16 @@
         <div class="title">Thread Pools</div>
         <div v-if="!threadPoolsActive">
           <FeatherChipList>
-            <FeatherChip>
+            <FeatherChip v-if="unTouchedThreadPoolData.importThreads">
               <template v-slot:icon>{{ unTouchedThreadPoolData.importThreads }}</template>Import Threads
             </FeatherChip>
-            <FeatherChip>
+            <FeatherChip v-if="unTouchedThreadPoolData.scanThreads">
               <template v-slot:icon>{{ unTouchedThreadPoolData.scanThreads }}</template>Scan Threads
             </FeatherChip>
-            <FeatherChip>
+            <FeatherChip v-if="unTouchedThreadPoolData.rescanThreads">
               <template v-slot:icon>{{ unTouchedThreadPoolData.rescanThreads }}</template>Rescan Threads
             </FeatherChip>
-            <FeatherChip>
+            <FeatherChip v-if="unTouchedThreadPoolData.writeThreads">
               <template v-slot:icon>{{ unTouchedThreadPoolData.writeThreads }}</template>Write Threads
             </FeatherChip>
           </FeatherChipList>
@@ -55,7 +55,12 @@
         v-model="threadPoolData.writeThreads"
         @keypress="enterCheck"
       />
-      <FeatherButton primary @click="updateThreadpools">Update Threadpools</FeatherButton>
+      <div class="spinner-button">
+      <FeatherButton primary @click="updateThreadpools" :disabled="loading">
+          <FeatherSpinner v-if="loading" />
+          <span v-if="!loading">Update Threadpools</span>
+      </FeatherButton>
+      </div>
     </div>
   </FeatherExpansionPanel>
 </template>
@@ -68,18 +73,19 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherButton } from '@featherds/button'
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherChip, FeatherChipList } from '@featherds/chips'
+import { FeatherSpinner } from '@featherds/progress'
 
 import { populateProvisionD, putProvisionDService } from '@/services/configurationService'
 import { useConfigurationToast } from './hooks/configurationToast'
 import { threadPoolKeys } from './copy/threadPoolKeys'
-import { ConfigurationService } from './ConfigurationService'
-
+import { ConfigurationHelper } from './ConfigurationHelper'
 
 /**
  * Local State
  */
 const threadPoolsErrors = ref<Record<string, boolean>>({})
 const threadPoolsActive = ref(false)
+const loading = ref(false)
 
 const threadPoolData = computed(() => {
   const localThreads: Record<string, string> = {}
@@ -103,6 +109,7 @@ const { updateToast } = useConfigurationToast()
  * User has opted to update threadpool data.
  */
 const updateThreadpools = async () => {
+  loading.value = true
   // Clear Errors
   threadPoolsErrors.value = {}
 
@@ -126,26 +133,39 @@ const updateThreadpools = async () => {
   // If there are no errors.
   if (Object.keys(threadPoolsErrors.value).length === 0) {
 
-    // Set Update State
-    threadPoolKeys.forEach((key) => (updatedProvisionDData[key] = parseInt(currentThreadpoolState?.[key])))
-    
-    updatedProvisionDData['requisition-def'] = ConfigurationService.stripOriginalIndexes(updatedProvisionDData['requisition-def'])
-
-    // Push Updates to Server
-    await putProvisionDService(updatedProvisionDData)
-
-    // Redownload + Populate Data.
-    populateProvisionD(store)
-    toastMessage = {
-      basic: 'Success!',
-      detail: 'Thread Pool data saved.',
-      hasErrors: false
+    try {
+      // Set Update State
+      threadPoolKeys.forEach((key) => {
+        if (updatedProvisionDData?.[key]) {
+          updatedProvisionDData[key] = parseInt(currentThreadpoolState?.[key])
+        }
+      })
+      if (updatedProvisionDData){
+        updatedProvisionDData['requisition-def'] = ConfigurationHelper.stripOriginalIndexes(updatedProvisionDData['requisition-def'])
+      }
+      // Push Updates to Server
+      await putProvisionDService(updatedProvisionDData)
+      // Redownload + Populate Data.
+      await populateProvisionD(store)
+      toastMessage = {
+        basic: 'Success!',
+        detail: 'Thread Pool data saved.',
+        hasErrors: false
+      }
+    }catch(e){
+      console.log('HI!',e)
+      toastMessage = {
+        basic: 'Error!',
+        detail: 'Thread Pool data not saved.',
+        hasErrors: true
+      }
+ 
     }
   }
 
   //Send Toast Message
   updateToast(toastMessage)
-
+  loading.value = false
 }
 
 /**
@@ -170,7 +190,19 @@ const getError = (key: string) => {
 }
 </script>
 
-
+<style lang="scss">
+.spinner-button {
+  .spinner {
+    width:20px;
+    height:20px;
+  }
+  .spinner-container {
+    display:flex;
+    align-items:center;
+    height:100%;
+  }
+}
+</style>
 
 <style lang="scss" scoped>
 @import "@featherds/styles/mixins/typography";

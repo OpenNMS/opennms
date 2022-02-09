@@ -45,6 +45,7 @@ import Delete from '@featherds/icon/action/Delete'
 
 import { advancedKeys,dnsKeys, openDaylightKeys,aciKeys,zabbixKeys,prisKeys } from './copy/advancedKeys'
 import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'
+import { AdvancedKey, AdvancedOption } from './configuration.types'
 
 /**
  * Props
@@ -67,47 +68,59 @@ const results = reactive({
   list: [[{}]]
 })
 
+/**
+ * Depending on which Type is selected, we have different 
+ * keys in our Advanced Options select options. This
+ * method determines which to load. This should eventually be 
+ * moved to an API solution so we don't store values locally.
+ */
 const getKeysBasedOnType = (type:string,subType:string) => {
   
-  let keys = new Array<AdvancedKey>();
+  let keys = new Array<AdvancedKey>()
 
   if (type === RequisitionTypes.DNS){
-    keys = dnsKeys;
+    keys = dnsKeys
   }else if (type === RequisitionTypes.VMWare){
-    keys = advancedKeys;
+    keys = advancedKeys
   }else if (type === RequisitionTypes.RequisitionPlugin){
     if (subType === RequisitionPluginSubTypes.OpenDaylight){
-      keys = openDaylightKeys;
+      keys = openDaylightKeys
     }else if (subType === RequisitionPluginSubTypes.ACI){
-      keys = aciKeys;
+      keys = aciKeys
     }else if (subType === RequisitionPluginSubTypes.Zabbix){
-      keys = zabbixKeys;
+      keys = zabbixKeys
     }else if (subType === RequisitionPluginSubTypes.PRIS){
-      keys = prisKeys;
+      keys = prisKeys
     }
   }
-  return keys;
+  return keys
 }
 
 /**
  * 
  * @param searchVal The Key Name to search for
- * @param index Since there are multiple search boxes, we need to know which one for which to generate results.
+ * @param index Since there are multiple search boxes, we need to know which one to generate results for.
  */
 const search = (searchVal: string, type:string,subType:string, index: number) => {
   const advancedKeys = getKeysBasedOnType(type,subType)
+
+  //Find keys based on search text.
   let newResu = advancedKeys.filter((key) => key.name.includes(searchVal) || key.name === searchVal)
+  
+  //If there are no results, add one to the list. This enables custom advanced keys.
   if (newResu.length === 0) {
     newResu.push({ name: searchVal, _text: searchVal, id: props.items?.length || 1 })
   }
+
+  //Make sure you can't select the same key twice.
   newResu = newResu.filter((res) => {
-    let includeInResults = true;
+    let includeInResults = true
     props.items.forEach((item) => {
       if (item.key.name === res.name){
-        includeInResults = false;
+        includeInResults = false
       }
     })
-    return includeInResults;
+    return includeInResults
   })
   results.list[index] = [...newResu]
 }

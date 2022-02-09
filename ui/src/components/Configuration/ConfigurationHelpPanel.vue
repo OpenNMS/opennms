@@ -33,7 +33,8 @@ import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
-import { RequisitionPluginSubTypes, RequisitionTypes, RequsitionTypesUsingHost } from './copy/requisitionTypes';
+import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'
+import { LocalConfiguration } from './configuration.types'
 
 /**
  * Props
@@ -103,7 +104,7 @@ const helpText = computed(() => {
         linkCopy: 'READ FULL ARTICLE',
         link: ''
       }
-  } else if (subType === RequisitionPluginSubTypes.AzureIot) {
+    } else if (subType === RequisitionPluginSubTypes.AzureIot) {
       helpVals = {
         title: 'Azure IoT',
         subTitle: 'Azure IoT...',
@@ -111,7 +112,7 @@ const helpText = computed(() => {
         linkCopy: 'READ FULL ARTICLE',
         link: ''
       }
- } else if (subType === RequisitionPluginSubTypes.PRIS) {
+    } else if (subType === RequisitionPluginSubTypes.PRIS) {
       helpVals = {
         title: 'PRIS',
         subTitle: 'PRIS...',
@@ -145,7 +146,7 @@ const helpText = computed(() => {
       link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/dns.html'
     }
   }
-  return helpVals;
+  return helpVals
 })
 
 
@@ -159,7 +160,7 @@ const getFooterClickClass = () => {
     vals = 'footer-wrap-yes'
   }
   if (footerVals.no) {
-   vals = 'footer-wrap-no'
+    vals = 'footer-wrap-no'
   }
   return vals
 }
@@ -170,7 +171,7 @@ const getFooterClickClass = () => {
  */
 const footerYes = () => {
   footerVals.yes = true
-  footerVals.no = false;
+  footerVals.no = false
   console.log('The User Has Selected Yes!',props.item)
 }
 
@@ -180,8 +181,8 @@ const footerYes = () => {
  */
 const footerNo = () => {
   console.log('The User Has Selected No!',props.item)
-  footerVals.no = true;
-  footerVals.yes = false;
+  footerVals.no = true
+  footerVals.yes = false
 }
 
 </script>

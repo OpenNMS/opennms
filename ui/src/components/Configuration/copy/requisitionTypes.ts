@@ -53,13 +53,13 @@ export const SplitTypes = {
 
 export const ErrorStrings = {
   TypeError: 'Must select a type',
-  ScheduleTime: 'Must schedule a time',
+  OccuranceTime: 'Must schedule a time',
   InvalidHostname: 'Invalid hostname',
   FilePath: 'Must include a file path',
   FilePathStart: 'Path must start with a /',
   MustHave: (nameType: string) => `Must have a ${nameType.toLocaleLowerCase()}`,
   NameShort: (nameType: string) => `${nameType} must have at least two chars`,
-  NameLong: (nameType: string, length: number = 255) => `${nameType} must be shorter than ${length}`
+  NameLong: (nameType: string, length = 255) => `${nameType} must be shorter than ${length}`
 }
 
 export const requisitionTypeList = [

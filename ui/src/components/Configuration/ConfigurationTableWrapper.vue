@@ -17,6 +17,8 @@
     />
     <ConfigurationEmptyTable v-if="provisionDList?.length === 0" :newDefinition="addNew" />
     <ConfigurationDrawer
+      :loading="loading"
+      :updateFormValue="updateFormValue"
       :edit="editing"
       :configurationDrawerActive="sidePanelState.isActive"
       :closePanel="closeConfigurationDrawer"
@@ -45,10 +47,10 @@ import { FeatherButton } from '@featherds/button'
 
 import Add from '@featherds/icon/action/Add'
 
-import { getProvisionDService, populateProvisionD, putProvisionDService } from '@/services/configurationService'
+import { populateProvisionD, putProvisionDService } from '@/services/configurationService'
 
 import { useConfigurationToast, useProvisionD } from './hooks'
-import { ConfigurationService } from './ConfigurationService'
+import { ConfigurationHelper } from './ConfigurationHelper'
 
 import ConfigurationTable from './ConfigurationTable.vue'
 import ConfigurationEmptyTable from './ConfigurationEmptyTable.vue'
@@ -76,18 +78,33 @@ const doubleCheck = reactive({ active: false, index: -1, title: '' })
  * Hooks
  */
 const {
-  updateActiveIndex,
+  activeIndex,
+  addAdvancedOption,
+  deleteAdvancedOption,
+  selectedProvisionDItem,
   setEditingStateTo,
   setItemToEdit,
-  activeIndex,
-  deleteAdvancedOption,
-  addAdvancedOption,
-  selectedProvisionDItem,
+  updateActiveIndex,
   provisionDList,
-  editing
+  editing,
+  updateFormValue,
+  setLoading,
+  loading
 } = useProvisionD()
+
 const { updateToast } = useConfigurationToast()
 
+
+/**
+ * Create a Blank Requisition Definition
+ */
+const addNew = () => {
+  selectedProvisionDItem.config = ConfigurationHelper.createBlankLocal().config
+  sidePanelState.isActive = true
+  activeIndex.index = provisionDList.value.length
+  setEditingStateTo(false)
+  disableMainScroll()
+}
 
 /**
  * User has decided to edit a table entry.
@@ -96,8 +113,8 @@ const editClicked = (index: number) => {
   updateActiveIndex(index)
   sidePanelState.isActive = true
   setEditingStateTo(true)
-  const actual = (currentPage.page - 1) * 10 + index
   setItemToEdit(index)
+  disableMainScroll()
 }
 
 /**
@@ -109,6 +126,22 @@ const deleteClicked = (index: string) => {
   doubleCheck.title = provisionDList?.value[doubleCheck?.index]?.['import-name']
 }
 
+const disableMainScroll = () => {
+  const html = document.querySelector('html')
+  if (html){
+    html.style.overflowY = 'hidden'
+    html.style.height = '100vh'
+  }
+}
+
+const enableMainScroll = () => {
+  const html = document.querySelector('html')
+  if (html){
+    html.style.overflowY = 'auto'
+    html.style.height = 'auto'
+  }
+}
+
 /**
  * Disable the Drawer
  */
@@ -116,7 +149,8 @@ const closeConfigurationDrawer = () => {
   sidePanelState.isActive = false
   advancedActive.active = false
   helpState.open = false
-  selectedProvisionDItem.errors = ConfigurationService.createBlankErrors();
+  selectedProvisionDItem.errors = ConfigurationHelper.createBlankErrors()
+  enableMainScroll()
 }
 
 
@@ -124,18 +158,20 @@ const closeConfigurationDrawer = () => {
  * User has decided to save and upload the current state.
  */
 const saveCurrentState = async () => {
+  setLoading(true)
   // Clear our errors.
-  selectedProvisionDItem.errors = ConfigurationService.createBlankErrors();
+  selectedProvisionDItem.errors = ConfigurationHelper.createBlankErrors()
 
   // Validate the local state.
-  const validatedItem = ConfigurationService.validateLocalItem(selectedProvisionDItem?.config)
+  const validatedItem = ConfigurationHelper.validateLocalItem(selectedProvisionDItem?.config)
 
   // If we're valid.
   if (!validatedItem.hasErrors) {
     //Convert Local Values to Server Ready Values
-    const readyForServ = ConfigurationService.convertLocalToServer(selectedProvisionDItem?.config, true)
+    const readyForServ = ConfigurationHelper.convertLocalToServer(selectedProvisionDItem?.config, true)
+    const forSending = [...provisionDList.value]
     //Update Local State
-    provisionDList.value[activeIndex.index] = readyForServ
+    forSending[activeIndex.index] = readyForServ
     //Get Existing State
     let updatedProvisionDData = store?.state?.configuration?.provisionDService
 
@@ -144,40 +180,37 @@ const saveCurrentState = async () => {
     }
 
     //Set New State
-    updatedProvisionDData['requisition-def'] = ConfigurationService.stripOriginalIndexes(provisionDList.value)
-
-    //Actually Update the Server
-    await putProvisionDService(updatedProvisionDData)
-
-    //Close The Drawer
-    closeConfigurationDrawer()
-
+    updatedProvisionDData['requisition-def'] = ConfigurationHelper.stripOriginalIndexes(forSending)
     //Build Toast & Send.
     let mods = ['Addition', 'was']
     if (editing.value) {
       mods = ['Edits', 'were']
     }
+    try {
+      //Actually Update the Server
+      await putProvisionDService(updatedProvisionDData)
+      await populateProvisionD(store)
 
-    updateToast({
-      basic: 'Success!',
-      detail: `${mods[0]} to requisition definition ${mods[1]} successful.`,
-      hasErrors: false
-    })
+      //Close The Drawer
+      closeConfigurationDrawer()
+      updateToast({
+        basic: 'Success!',
+        detail: `${mods[0]} to requisition definition ${mods[1]} successful.`,
+        hasErrors: false
+      })
+    }catch(e){
+      updateToast({
+        basic: 'Error!',
+        detail: `${mods[0]} to requisition definition ${mods[1]} not successful.`,
+        hasErrors: true
+      })
+    }
 
   } else {
     // Inform User of Errors.
     selectedProvisionDItem.errors = validatedItem
   }
-}
-
-/**
- * Create a Blank Requisition Definition
- */
-const addNew = () => {
-  selectedProvisionDItem.config = ConfigurationService.createBlankLocal().config
-  sidePanelState.isActive = true
-  activeIndex.index = provisionDList.value.length
-  setEditingStateTo(false)
+  setLoading(false)
 }
 
 /**
@@ -195,7 +228,7 @@ const doubleCheckSelected = async (selection: boolean) => {
     const updatedProvisionDData = store?.state?.configuration?.provisionDService
 
     // Remove the entry from the existing state.
-    updatedProvisionDData['requisition-def'] = ConfigurationService.stripOriginalIndexes(copiedList)
+    updatedProvisionDData['requisition-def'] = ConfigurationHelper.stripOriginalIndexes(copiedList)
 
     try {
       await putProvisionDService(updatedProvisionDData)
@@ -211,7 +244,7 @@ const doubleCheckSelected = async (selection: boolean) => {
         hasErrors: true
       })
     }
-      populateProvisionD(store);
+    populateProvisionD(store)
 
   }
   doubleCheck.active = false

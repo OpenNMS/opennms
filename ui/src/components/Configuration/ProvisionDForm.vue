@@ -5,9 +5,9 @@
             class="side-input"
             label="Name"
             hint="Hint Text"
-            :error="props.item.errors.name"
-            v-model="props.item.config.name"
-            @update:modelValue="updateValidation"
+            :error="errors.name"
+            :modelValue="config.name"
+            @update:modelValue="(val:string) => updateFormValue('name',val)"
         />
         <div class="flex-center">
             <FeatherSelect
@@ -16,9 +16,9 @@
                 hint="Hint Text"
                 label="Type"
                 :options="requisitionTypeList"
-                :error="props.item.errors.type"
-                v-model="props.item.config.type"
-                @update:modelValue="newRequisition"
+                :error="errors.type"
+                :modelValue="config.type"
+                @update:modelValue="(val:string) => updateFormValue('type',val)"
             />
             <div class="icon">
                 <FeatherButton icon="Help" @click="() => props.toggleHelp()">
@@ -26,73 +26,73 @@
                 </FeatherButton>
             </div>
         </div>
-        <div v-if="RequsitionTypesUsingHost.includes(stateIn?.type?.name)">
+        <div v-if="RequsitionTypesUsingHost.includes(config.type.name)">
             <FeatherInput
                 label="Host"
                 class="side-input"
-                :error="props.item.errors.host"
-                v-model="props.item.config.host"
-                @update:modelValue="updateValidation"
+                :error="errors.host"
+                :modelValue="config.host"
+                @update:modelValue="(val:string) => updateFormValue('host',val)"
                 hint="Hint Text"
             />
         </div>
-        <div v-if="[RequisitionTypes.RequisitionPlugin].includes(stateIn?.type?.name)">
+        <div v-if="[RequisitionTypes.RequisitionPlugin].includes(config.type.name)">
             <FeatherSelect
                 class="side-input"
                 textProp="name"
                 hint="Hint Text"
                 label="Requisition Plugin"
                 :options="requisitionSubTypes"
-                @update:modelValue="updateValidation"
-                v-model="stateIn.subType"
+                @update:modelValue="(val:string) => updateFormValue('subType',val)"
+                :modelValue="config.subType"
             />
         </div>
-        <div v-if="[RequisitionTypes.DNS].includes(stateIn?.type?.name)">
+        <div v-if="[RequisitionTypes.DNS].includes(config.type.name)">
             <FeatherInput
                 label="Zone"
                 class="side-input"
-                :error="props.item.errors.zone"
-                v-model="props.item.config.zone"
-                @update:modelValue="updateValidation"
+                :error="errors.zone"
+                :modelValue="config.zone"
+                @update:modelValue="(val:string) => updateFormValue('zone',val)"
                 hint="Hint Text"
             />
             <FeatherInput
                 label="Foreign Source"
                 class="side-input"
-                :error="props.item.errors.foreignSource"
-                v-model="props.item.config.foreignSource"
-                @update:modelValue="updateValidation"
+                :error="errors.foreignSource"
+                :modelValue="config.foreignSource"
+                @update:modelValue="(val:string) => updateFormValue('foreignSource',val)"
                 hint="Hint Text"
             />
         </div>
-        <div v-if="[RequisitionTypes.VMWare].includes(stateIn?.type?.name)">
+        <div v-if="[RequisitionTypes.VMWare].includes(config.type.name)">
             <div class="flex-center side-input">
                 <FeatherInput
                     label="Username"
                     class="side-input full-width margin-right"
-                    :error="props.item.errors.username"
-                    v-model="props.item.config.username"
-                    @update:modelValue="updateValidation"
+                    :error="errors.username"
+                    :modelValue="config.username"
+                @update:modelValue="(val:string) => updateFormValue('username',val)"
                     hint="Hint Text"
                 />
                 <FeatherInput
                     type="password"
                     label="Password"
                     class="side-input full-width"
-                    :error="props.item.errors.password"
-                    v-model="props.item.config.password"
-                    @update:modelValue="updateValidation"
+                    :error="errors.password"
+                    :modelValue="config.password"
+                @update:modelValue="(val:string) => updateFormValue('password',val)"
                     hint="Hint Text"
                 />
             </div>
         </div>
-        <div v-if="[RequisitionTypes.File].includes(stateIn?.type?.name)">
+        <div v-if="[RequisitionTypes.File].includes(config.type.name)">
             <FeatherInput
                 label="Path"
                 class="side-input"
-                :error="props.item.errors.path"
-                v-model="props.item.config.path"
-                @update:modelValue="updateValidation"
+                :error="errors.path"
+                :modelValue="config.path"
+                @update:modelValue="(val:string) => updateFormValue('path',val)"
                 hint="Hint Text"
             />
         </div>
@@ -101,18 +101,19 @@
                 textProp="name"
                 label="Monthly"
                 :options="scheduleTypes"
-                :error="props.item.errors.occurance"
-                @update:modelValue="updateValidation"
-                v-model="stateIn.occurance"
+                :error="errors.occurance"
+                @update:modelValue="(val:string) => updateFormValue('occurance',val)"
+                :modelValue="config.occurance"
                 class="occurance"
             />
-            <FeatherInput type="time" class="time" label="Schedule Time" v-model="stateIn.time" />
+            <FeatherInput type="time" class="time" label="Schedule Time" :modelValue="config.time" />
         </div>
         <div>
             <FeatherRadioGroup
                 class="side-label"
                 label="Rescan Behavior"
-                v-model="stateIn.rescanBehavior"
+                :modelValue="config.rescanBehavior"
+                @update:modelValue="(val:string) => updateFormValue('rescanBehavior',val)"
             >
                 <FeatherRadio
                     v-for="item in rescanItems"
@@ -132,27 +133,19 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import { FeatherRadioGroup, FeatherRadio } from '@featherds/radio'
-import { PropType } from 'vue'
-import { ConfigurationService } from './ConfigurationService'
+import { PropType,computed } from 'vue'
 import Help from '@featherds/icon/action/Help'
+import { LocalConfigurationWrapper } from './configuration.types'
 
 const props = defineProps({
-    item: { type: Object as PropType<LocalConfigurationWrapper>, required: true },
-    stateIn: { type: Object, required: true },
-    clearAdvancedOptions: { type: Function, required: true },
-    helpState: { type: Boolean, required: true },
-    toggleHelp: { type: Function, required: true },
+  item: { type: Object as PropType<LocalConfigurationWrapper>, required: true },
+  helpState: { type: Boolean, required: true },
+  toggleHelp: { type: Function, required: true },
+  updateFormValue: {type: Function, required:true}
 })
 
-const newRequisition = () => {
-    props.item.config.host = '';
-    props.item.config.advancedOptions = []
-}
-
-const updateValidation = () => {
-    props.item.errors = ConfigurationService.validateLocalItem(props.item.config, true);
-}
-
+const config = computed(() => props.item.config)
+const errors = computed(() => props.item.errors)
 </script>
 <style lang="scss" scoped>
 .side-input {

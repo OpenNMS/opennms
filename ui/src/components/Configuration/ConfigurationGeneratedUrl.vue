@@ -7,7 +7,8 @@
 
 <script lang="ts" setup>
 import { computed, PropType } from 'vue'
-import { ConfigurationService } from './ConfigurationService'
+import { LocalConfiguration } from './configuration.types'
+import { ConfigurationHelper } from './ConfigurationHelper'
 
 /**
  * Props
@@ -21,7 +22,7 @@ const props = defineProps({
  */
 const convertedItem = computed(() => {
   const converted = props.item?.type ?
-    ConfigurationService.convertLocalToServer(props.item) :
+    ConfigurationHelper.convertLocalToServer(props.item) :
     { 'import-url-resource': '' }
   return {
     item: converted,
