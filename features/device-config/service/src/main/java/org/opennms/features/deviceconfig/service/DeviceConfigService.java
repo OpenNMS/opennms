@@ -37,8 +37,8 @@ public interface DeviceConfigService {
      *
      * @param ipAddress  specific IpAddress for which we need to fetch device config.
      * @param location   specific minion location at which we need to fetch device config.
-     * @param serviceName  optional serviceName either default service or running config service.
+     * @param configType  configType whether it is Default or Running.
      * @throws IOException
      */
-    public void triggerConfigBackup(String ipAddress, String location, String serviceName) throws IOException;
+    public void triggerConfigBackup(String ipAddress, String location, String configType) throws IOException;
 }

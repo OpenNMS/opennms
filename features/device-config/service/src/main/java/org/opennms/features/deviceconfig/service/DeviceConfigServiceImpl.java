@@ -29,6 +29,7 @@
 package org.opennms.features.deviceconfig.service;
 
 import joptsimple.internal.Strings;
+import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.ReadOnlyPollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
@@ -48,14 +49,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     private static final String DEVICE_CONFIG_PACKAGE_NAME = "device-config";
-    private static final String DEVICE_CONFIG_SERVICE_NAME = "DeviceConfig";
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigServiceImpl.class);
+    private static final Map<ConfigType, String> deviceConfigServiceMap = new HashMap<>();
+
+    static {
+        deviceConfigServiceMap.put(ConfigType.Default, "DeviceConfig-Default");
+        deviceConfigServiceMap.put(ConfigType.Running, "DeviceConfig-Running");
+    }
 
     @Autowired
     private LocationAwarePollerClient locationAwarePollerClient;
@@ -71,9 +79,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
 
     @Override
-    public void triggerConfigBackup(String ipAddress, String location, String serviceName) throws IOException {
+    public void triggerConfigBackup(String ipAddress, String location, String configType) throws IOException {
 
-        String className = retrieveClassName(serviceName);
+        if (!deviceConfigServiceMap.containsKey(ConfigType.valueOf(configType))) {
+            throw new IllegalArgumentException("Unknown configType " + configType);
+        }
+        String serviceName = deviceConfigServiceMap.get(ConfigType.valueOf(configType));
+        String className = retrieveClassName(configType);
 
         MonitoredService service = sessionUtils.withReadOnlyTransaction(() -> {
 
@@ -112,9 +124,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             LOG.error("Couldn't find package {} in poller-config", pkg);
             throw new IllegalArgumentException("Couldn't find package " + DEVICE_CONFIG_PACKAGE_NAME);
         }
-        if (Strings.isNullOrEmpty(serviceName)) {
-            serviceName = DEVICE_CONFIG_SERVICE_NAME;
-        }
+
         final org.opennms.netmgt.config.poller.Service svc = pollerConfig.getServiceInPackage(serviceName, pkg);
         if (svc == null) {
             LOG.error("Couldn't find {} service in package {}", serviceName, pkg);
