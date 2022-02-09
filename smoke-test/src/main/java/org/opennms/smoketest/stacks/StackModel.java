@@ -52,6 +52,7 @@ public class StackModel {
     private final boolean elasticsearchEnabled;
     private final boolean telemetryProcessingEnabled;
     private final IpcStrategy ipcStrategy;
+    private final SSLStrategy sslStrategy;
     private final TimeSeriesStrategy timeSeriesStrategy;
     private final BlobStoreStrategy blobStoreStrategy;
     private final JsonStoreStrategy jsonStoreStrategy;
@@ -70,6 +71,7 @@ public class StackModel {
 
         // Enums
         ipcStrategy = builder.ipcStrategy;
+        sslStrategy = builder.sslStrategy;
         timeSeriesStrategy = builder.timeSeriesStrategy;
         blobStoreStrategy = builder.blobStoreStrategy;
         jsonStoreStrategy = builder.jsonStoreStrategy;
@@ -89,6 +91,7 @@ public class StackModel {
         private boolean telemetryProcessingEnabled = false;
 
         private IpcStrategy ipcStrategy = IpcStrategy.JMS;
+        private SSLStrategy sslStrategy = SSLStrategy.SSL;
         private TimeSeriesStrategy timeSeriesStrategy = TimeSeriesStrategy.RRD;
         
         private BlobStoreStrategy blobStoreStrategy = BlobStoreStrategy.NOOP;
@@ -198,6 +201,17 @@ public class StackModel {
         }
 
         /**
+         * Type of service used to provide SSL information
+         *
+         * @param sslStrategy SSL
+         * @return this builder
+         */
+        public Builder withSSLStrategy(SSLStrategy sslStrategy) {
+            this.sslStrategy = Objects.requireNonNull(sslStrategy);
+            return this;
+        }
+
+        /**
          * Type of service used to persist time series data.
          *
          * @param timeSeriesStrategy RRD vs Newts
@@ -297,6 +311,8 @@ public class StackModel {
     public IpcStrategy getIpcStrategy() {
         return ipcStrategy;
     }
+
+    public SSLStrategy getSSLStrategy() { return sslStrategy; }
 
     public TimeSeriesStrategy getTimeSeriesStrategy() {
         return timeSeriesStrategy;
