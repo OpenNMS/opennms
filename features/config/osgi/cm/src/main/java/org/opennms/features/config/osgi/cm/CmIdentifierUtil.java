@@ -50,10 +50,13 @@ public class CmIdentifierUtil {
         Objects.requireNonNull(pid);
         String configName;
         String configId;
-        if(pid.endsWith(DEFAULT_SUFFIX)) {
-            configName =  new Substring(pid).getBeforeLast(DEFAULT_SUFFIX).toString();
+
+        // Single instance pid
+        if (MigratedServices.PIDS_SINGLE_INSTANCE.contains(pid)) {
+            configName =  pid;
             configId = DEFAULT_CONFIG_ID;
         } else {
+            // multi instance pid: has a suffix
             configName = MigratedServices.PIDS_MULTI_INSTANCE.stream().filter(pid::startsWith)
                     .findAny()
                     .orElseThrow(() -> new ConfigRuntimeException(String.format("Pid=%s could not be parsed into ConfigUpdateInfo", pid)));
