@@ -39,6 +39,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.charset.Charset;
@@ -49,8 +50,8 @@ import java.util.Optional;
 
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
-    private static final String DEVICE_CONFIG_MONITOR = "DeviceConfig";
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitorAdaptor.class);
+    private static final String DEVICE_CONFIG_MONITOR = "DeviceConfig";
 
     @Autowired
     private DeviceConfigDao deviceConfigDao;
