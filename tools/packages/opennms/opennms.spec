@@ -546,7 +546,7 @@ echo "=== BUILDING ASSEMBLIES ==="
 	-Dinstall.version="%{version}-%{release}" \
 	-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 	-Dopennms.home="%{instprefix}" \
-	-Dinstall.init.dir="%{bindir}" \
+	-Dinstall.bin.dir="%{bindir}" \
 	-Dbuild=all \
 	-Dbuild.profile=full \
 	-Prun-expensive-tasks \
