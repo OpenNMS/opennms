@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.util.Date;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
+import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
@@ -42,18 +43,26 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigDTO, DeviceConfigDTO> {
+public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigDTO, DeviceConfigDTO>, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigConsumer.class);
 
+    private final MessageConsumerManager consumerManager;
     private final DeviceConfigSinkModule module;
     private final IpInterfaceDao ipInterfaceDao;
     private final DeviceConfigDao deviceConfigDao;
 
-    public DeviceConfigConsumer(DeviceConfigSinkModule module, IpInterfaceDao ipInterfaceDao, DeviceConfigDao deviceConfigDao) {
+    public DeviceConfigConsumer(
+            MessageConsumerManager consumerManager,
+            DeviceConfigSinkModule module,
+            IpInterfaceDao ipInterfaceDao,
+            DeviceConfigDao deviceConfigDao
+    ) throws Exception {
+        this.consumerManager = consumerManager;
         this.module = module;
         this.ipInterfaceDao = ipInterfaceDao;
         this.deviceConfigDao = deviceConfigDao;
+        this.consumerManager.registerConsumer(this);
     }
 
     @Override
@@ -89,5 +98,10 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigDTO, De
         } catch (Exception e) {
             LOG.error("could not handle device config backup message", e);
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        consumerManager.unregisterConsumer(this);
     }
 }
