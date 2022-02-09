@@ -29,11 +29,11 @@
 package org.opennms.features.deviceconfig.sink.consumer;
 
 import java.net.InetAddress;
-import java.util.Date;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.sink.module.DeviceConfigDTO;
@@ -74,24 +74,16 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigDTO, De
     public void handleMessage(DeviceConfigDTO message) {
         try {
             var address = InetAddress.getByAddress(message.address);
-            LOG.debug("handle message - location: " + message.location + "; " + address.getHostAddress() + "; fileName: " + message.fileName);
-            OnmsIpInterface itf = ipInterfaceDao.findByIpAddressAndLocation(address.getHostAddress(), message.location);
-            if (itf != null) {
-                // TODO consider config type
-                var latest = deviceConfigDao.getLatestConfigForInterface(itf);
-                if (latest.isPresent()) {
-                    var dc = latest.get();
-                    dc.setConfig(message.config);
-                    // TODO set updated time & reset failure
-                    deviceConfigDao.update(dc);
-                } else {
-                    // TODO set config type, updated time
-                    var dc = new DeviceConfig();
-                    dc.setIpInterface(itf);
-                    dc.setConfig(message.config);
-                    dc.setCreatedTime(new Date());
-                    deviceConfigDao.save(dc);
-                }
+            LOG.debug("handle message - location: " + message.location + "; address: " + address.getHostAddress() + "; fileName: " + message.fileName);
+            OnmsIpInterface ipInterface = ipInterfaceDao.findByIpAddressAndLocation(address.getHostAddress(), message.location);
+            if (ipInterface != null) {
+                DeviceConfig.updateDeviceConfigContent(
+                        deviceConfigDao,
+                        ipInterface,
+                        ConfigType.Default,
+                        null,
+                        message.config
+                );
             } else {
                 LOG.warn("can not persist device config; did not find interface - location: "+ message.location + "; " + address.getHostAddress());
             }

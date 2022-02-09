@@ -29,7 +29,7 @@
             </column>
             <column name="config" type="bytea"/>
             <column name="encoding" type="varchar(16)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="created_time" type="timestamp"/>
             <column name="config_type" type="varchar(64)"/>
