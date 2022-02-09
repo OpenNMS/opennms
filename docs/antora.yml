@@ -4,7 +4,7 @@ title: Horizon
 prerelease: true
 asciidoc:
   attributes:
-    full-display-version: '29.0.6-SNAPSHOT'
+    full-display-version: '29.0.7-SNAPSHOT'
     experimental: true
     prerelease: true
     source-language: asciidoc@
