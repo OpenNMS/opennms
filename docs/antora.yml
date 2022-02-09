@@ -4,6 +4,7 @@ title: Meridian
 prerelease: false
 asciidoc:
   attributes:
+    full-display-version: '27.1.1-SNAPSHOT'
     experimental: true
     prerelease: false
     source-language: asciidoc@
