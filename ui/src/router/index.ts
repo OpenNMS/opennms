@@ -86,13 +86,13 @@ const router = createRouter({
         },
         {
           path: 'graphs/:label/:singleGraphDefinition/:singleGraphResourceId',
-          component: () => Graphs,
+          component: Graphs,
           props: true
         },
         {
           path: 'graphs',
           name: 'Graphs',
-          component: () => Graphs
+          component: Graphs
         }
       ]
     },

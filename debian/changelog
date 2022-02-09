@@ -1,3 +1,14 @@
+opennms (29.0.6-1) stable; urgency=medium
+
+  * New minor release. It contains a number of bug fixes, including
+    security fixes related to Grafana PDF reports and Protobuf, as well
+    as a few enhancements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/29.0.6/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 08 Feb 2021 13:40:00 -0400
+ 
 opennms (29.0.5-1) stable; urgency=low
 
   * New minor release. It contains a number of bug and security fixes,

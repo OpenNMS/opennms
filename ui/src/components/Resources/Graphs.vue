@@ -125,6 +125,8 @@ onMounted(() => {
 })
 
 onBeforeMount(() => {
+  if (props.singleGraphDefinition) return
+  
   // if no resources, route to resource selection
   const resources = store.state.resourceModule.resources
 

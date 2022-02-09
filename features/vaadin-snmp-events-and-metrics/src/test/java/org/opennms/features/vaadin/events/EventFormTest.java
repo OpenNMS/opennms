@@ -85,7 +85,7 @@ public class EventFormTest {
         Field<?> logMsgDest = group.getField("logmsg.dest");
         Assert.assertNotNull(logMsgDest);
         Assert.assertTrue(logMsgDest instanceof ComboBox);
-        Assert.assertEquals(LogDestType.LOGNDISPLAY, logMsgDest.getValue());
+        Assert.assertEquals(LogDestType.LOGNDISPLAY, LogDestType.valueOf(logMsgDest.getValue().toString().toUpperCase()));
 
         String eventUei = "uei.opennms.org/ietf/mplsTeStdMib/traps/mplsTunnelUp";
         Event event = dao.findByUei(eventUei);
@@ -95,7 +95,7 @@ public class EventFormTest {
         logMsgDest = group.getField("logmsg.dest");
         Assert.assertNotNull(logMsgDest);
         Assert.assertTrue(logMsgDest instanceof ComboBox);
-        Assert.assertEquals(event.getLogmsg().getDest(), logMsgDest.getValue());
+        Assert.assertEquals(event.getLogmsg().getDest(), LogDestType.valueOf(logMsgDest.getValue().toString().toUpperCase()));
     }
 
 
