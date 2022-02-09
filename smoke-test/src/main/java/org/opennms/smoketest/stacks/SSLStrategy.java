@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,41 +28,9 @@
 
 package org.opennms.smoketest.stacks;
 
-import static org.opennms.smoketest.stacks.InternetProtocol.UDP;
-import static org.opennms.smoketest.stacks.InternetProtocol.TCP;
-
-import java.util.Objects;
-
 /**
- * Network protocols used by our services.
- *
- * This includes both ports for management and communication from devices.
- *
+ * JMS vs Kafka
  */
-public enum NetworkProtocol {
-    SSH(TCP),
-    HTTP(TCP),
-
-    // Java Debug Wire Protocol
-    JDWP(TCP),
-
-    SYSLOG(UDP),
-    SNMP(UDP),
-    JTI(UDP),
-    NXOS(UDP),
-    FLOWS(UDP),
-    BMP(TCP),
-    IPFIX_TCP(TCP),
-    GRPC(TCP),
-    HTTPS(TCP);
-
-    private final InternetProtocol ipProtocol;
-
-    NetworkProtocol(InternetProtocol ipProtocol) {
-        this.ipProtocol = Objects.requireNonNull(ipProtocol);
-    }
-
-    public InternetProtocol getIpProtocol() {
-        return ipProtocol;
-    }
+public enum SSLStrategy {
+    SSL
 }

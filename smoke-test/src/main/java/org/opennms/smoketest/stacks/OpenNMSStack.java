@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest.stacks;
 
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -77,6 +78,13 @@ public final class OpenNMSStack implements TestRule {
     public static final OpenNMSStack SENTINEL = OpenNMSStack.withModel(StackModel.newBuilder()
             .withSentinel()
             .build());
+
+    public static final OpenNMSStack SSL = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withOpenNMS(OpenNMSProfile.newBuilder()
+                    .withFile("jetty.keystore", "etc/jetty.keystore")
+                    .build())
+                    .withSSLStrategy(SSLStrategy.SSL)
+                    .build());
 
     public static final OpenNMSStack ALEC = OpenNMSStack.withModel(StackModel.newBuilder()
             .withMinions(MinionProfile.DEFAULT, MinionProfile.newBuilder()

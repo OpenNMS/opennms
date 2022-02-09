@@ -56,12 +56,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.awaitility.core.ConditionTimeoutException;
-import org.opennms.smoketest.stacks.InternetProtocol;
-import org.opennms.smoketest.stacks.IpcStrategy;
-import org.opennms.smoketest.stacks.NetworkProtocol;
-import org.opennms.smoketest.stacks.OpenNMSProfile;
-import org.opennms.smoketest.stacks.StackModel;
-import org.opennms.smoketest.stacks.TimeSeriesStrategy;
+import org.opennms.smoketest.stacks.*;
 import org.opennms.smoketest.utils.DevDebugUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.RestClient;
@@ -101,6 +96,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSContainer.class);
 
     public static final int OPENNMS_WEB_PORT = 8980;
+    public static final int OPENNMS_SSL_PORT = 8443;
     private static final int OPENNMS_SSH_PORT = 8101;
     private static final int OPENNMS_SYSLOG_PORT = 10514;
     private static final int OPENNMS_SNMP_PORT = 1162;
@@ -124,6 +120,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             .put(NetworkProtocol.NXOS, OPENNMS_TELEMETRY_NXOS_PORT)
             .put(NetworkProtocol.GRPC, OPENNMMS_GRPC_PORT)
             .put(NetworkProtocol.BMP, OPENNMMS_BMP_PORT)
+            .put(NetworkProtocol.HTTPS,OPENNMS_SSL_PORT)
             .build();
 
     private final StackModel model;
@@ -307,6 +304,10 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         return getMappedPort(OPENNMS_WEB_PORT);
     }
 
+    public int getSSLPort() {
+        return getMappedPort(OPENNMS_SSL_PORT);
+    }
+
     public InetSocketAddress getWebAddress() {
         return InetSocketAddress.createUnresolved(getContainerIpAddress(), getMappedPort(OPENNMS_WEB_PORT));
     }
@@ -333,6 +334,12 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             props.put("org.opennms.newts.config.hostname", CASSANDRA_ALIAS);
             props.put("org.opennms.newts.config.port", Integer.toString(CassandraContainer.CQL_PORT));
             props.put("org.opennms.rrd.storeByForeignSource", Boolean.TRUE.toString());
+        }
+        if(SSLStrategy.SSL.equals(model.getSSLStrategy())){
+            // Set SSL properties
+            props.put("org.opennms.netmgt.jetty.https-port", OPENNMS_SSL_PORT);
+            props.put("org.opennms.netmgt.jetty.https-keystorepassword", "changeit");
+            props.put("org.opennms.netmgt.jetty.https-keypassword", "changeit");
         }
 
         // output Karaf logs to the console to help in debugging intermittent container startup failures
