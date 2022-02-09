@@ -1200,6 +1200,11 @@
       <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.monitor-adaptor</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- config manager -->
     <dependency>

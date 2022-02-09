@@ -109,5 +109,4 @@ public interface PollContext {
 
     void trackPoll(PollableService service, PollStatus result);
 
-    void persistDeviceConfig(PollableService pollableService, Map<String, Object> parameters, byte[] deviceConfig);
 }

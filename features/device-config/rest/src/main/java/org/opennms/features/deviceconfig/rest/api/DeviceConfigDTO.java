@@ -34,19 +34,15 @@ public class DeviceConfigDTO {
 
     private final long id;
     private final int ipInterfaceId;
-    private final int version;
     private final byte[] config;
     private final String encoding;
-    private final String deviceType;
     private final Date createdTime;
 
-    public DeviceConfigDTO(long id, int ipInterfaceId, int version, byte[] config, String encoding, String deviceType, Date createdTime) {
+    public DeviceConfigDTO(long id, int ipInterfaceId, byte[] config, String encoding, Date createdTime) {
         this.id = id;
         this.ipInterfaceId = ipInterfaceId;
-        this.version = version;
         this.config = config;
         this.encoding = encoding;
-        this.deviceType = deviceType;
         this.createdTime = createdTime;
     }
 
@@ -58,9 +54,6 @@ public class DeviceConfigDTO {
         return ipInterfaceId;
     }
 
-    public int getVersion() {
-        return version;
-    }
 
     public byte[] getConfig() {
         return config;
@@ -68,10 +61,6 @@ public class DeviceConfigDTO {
 
     public String getEncoding() {
         return encoding;
-    }
-
-    public String getDeviceType() {
-        return deviceType;
     }
 
     public Date getCreatedTime() {

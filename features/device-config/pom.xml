@@ -16,6 +16,7 @@
 
     <modules>
         <module>monitor</module>
+        <module>monitor-adaptor</module>
         <module>persistence</module>
         <module>rest</module>
         <module>retrieval</module>

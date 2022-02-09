@@ -125,11 +125,10 @@ public class DefaultDeviceConfigRestServiceIT {
             String orderBy,
             String order,
             Integer ipInterfaceId,
-            String deviceType,
             Long createdAfter,
             Long createdBefore
     ) {
-        var response = deviceConfigRestService.getDeviceConfigs(limit, offset, orderBy, order, ipInterfaceId, deviceType, createdAfter, createdBefore);
+        var response = deviceConfigRestService.getDeviceConfigs(limit, offset, orderBy, order, ipInterfaceId, createdAfter, createdBefore);
         if (response.hasEntity()) {
             return (List<DeviceConfigDTO>) response.getEntity();
         } else {
@@ -139,7 +138,7 @@ public class DefaultDeviceConfigRestServiceIT {
 
     @Test
     public void retrieveAll() {
-        var res = getDeviceConfigs(null, null, null, null, null, null, null, null);
+        var res = getDeviceConfigs(null, null, null, null, null, null, null);
         assertThat(res, hasSize(VERSIONS * INTERFACES));
         for (var itf : interfaces) {
             var set = res.stream().filter(dc -> dc.getIpInterfaceId() == itf.getId()).collect(Collectors.toSet());
@@ -150,39 +149,33 @@ public class DefaultDeviceConfigRestServiceIT {
     @Test
     public void filterOnInterface() {
         for (var itf : interfaces) {
-            var res = getDeviceConfigs(null, null, null, null, itf.getId(), null, null, null);
+            var res = getDeviceConfigs(null, null, null, null, itf.getId(), null, null);
             assertThat(res, hasSize(VERSIONS));
             assertThat(res, everyItem(hasProperty("ipInterfaceId", is(itf.getId()))));
         }
     }
 
-    @Test
-    public void filterOnDeviceType() {
-        for (int v = 0; v < VERSIONS; v++) {
-            var res = getDeviceConfigs(null, null, null, null, null, String.valueOf(v), null, null);
-            assertThat(res, hasSize(INTERFACES));
-        }
-    }
 
     @Test
     public void filterOnCreatedTime() {
         for (var itf : interfaces) {
             {
                 var createdAfter = createdTime(5);
-                var res = getDeviceConfigs(null, null, null, null, itf.getId(), null, createdAfter, null);
+                List<DeviceConfigDTO> configList = getDeviceConfigs(null, null, null, null, itf.getId(), null, null);
+                var res = getDeviceConfigs(null, null, null, null, itf.getId(),  createdAfter, null);
                 assertThat(res, hasSize(VERSIONS - 5));
                 assertThat(res, everyItem(hasProperty("createdTime", Matchers.greaterThanOrEqualTo(new Date(createdAfter)))));
             }
             {
                 var createdBefore = createdTime(5);
-                var res = getDeviceConfigs(null, null, null, null, itf.getId(), null, null, createdBefore);
+                var res = getDeviceConfigs(null, null, null, null, itf.getId(),  null, createdBefore);
                 assertThat(res, hasSize(6));
                 assertThat(res, everyItem(hasProperty("createdTime", Matchers.lessThanOrEqualTo(new Date(createdBefore)))));
             }
             {
                 var createdAfter = createdTime(5);
                 var createdBefore = createdTime(10);
-                var res = getDeviceConfigs(null, null, null, null, itf.getId(), null, createdAfter, createdBefore);
+                var res = getDeviceConfigs(null, null, null, null, itf.getId(),  createdAfter, createdBefore);
                 assertThat(res, hasSize(6));
                 assertThat(res, everyItem(hasProperty("createdTime", Matchers.greaterThanOrEqualTo(new Date(createdAfter)))));
                 assertThat(res, everyItem(hasProperty("createdTime", Matchers.lessThanOrEqualTo(new Date(createdBefore)))));
@@ -193,18 +186,21 @@ public class DefaultDeviceConfigRestServiceIT {
     @Test
     public void sortDesc() {
         for (var itf : interfaces) {
-            var res = getDeviceConfigs(null, null, "version", "desc", itf.getId(), null, null, null);
+            var res = getDeviceConfigs(null, null, "createdTime", "desc", itf.getId(), null, null);
             assertThat(res, hasSize(VERSIONS));
-            assertThat(res.stream().map(DeviceConfigDTO::getVersion).collect(Collectors.toList()), contains(IntStream.range(0, VERSIONS).map(v -> VERSIONS - 1 - v).boxed().toArray()));
+            assertThat(res.stream().map(DeviceConfigDTO::getEncoding).collect(Collectors.toList()),
+                    contains(IntStream.range(0, VERSIONS).map(v -> VERSIONS - 1 - v).boxed().map(String::valueOf).toArray()));
         }
     }
 
     @Test
     public void sortAsc() {
         for (var itf : interfaces) {
-            var res = getDeviceConfigs(null, null, "version", "asc", itf.getId(), null, null, null);
+            var res = getDeviceConfigs(null, null, "createdTime", "asc", itf.getId(), null, null);
             assertThat(res, hasSize(VERSIONS));
-            assertThat(res.stream().map(DeviceConfigDTO::getVersion).collect(Collectors.toList()), contains(IntStream.range(0, VERSIONS).boxed().toArray()));
+            assertThat(res.stream().map(DeviceConfigDTO::getEncoding).collect(Collectors.toList()), contains(IntStream.range(0, VERSIONS).boxed()
+                    .map(String::valueOf).toArray()));
+
         }
     }
 
@@ -213,16 +209,18 @@ public class DefaultDeviceConfigRestServiceIT {
         for (var itf : interfaces) {
             {
                 var limit = 5;
-                var res = getDeviceConfigs(limit, 0, "version", "asc", itf.getId(), null, null, null);
+                var res = getDeviceConfigs(limit, 0, "createdTime", "asc", itf.getId(), null, null);
                 assertThat(res, hasSize(limit));
-                assertThat(res.stream().map(DeviceConfigDTO::getVersion).collect(Collectors.toList()), contains(IntStream.range(0, limit).boxed().toArray()));
+                assertThat(res.stream().map(DeviceConfigDTO::getEncoding).collect(Collectors.toList()), contains(IntStream.range(0, limit).boxed()
+                        .map(String::valueOf).toArray()));
             }
             {
                 var limit = 5;
                 var offset = 10;
-                var res = getDeviceConfigs(limit, offset, "version", "asc", itf.getId(), null, null, null);
+                var res = getDeviceConfigs(limit, offset, "createdTime", "asc", itf.getId(), null, null);
                 assertThat(res, hasSize(limit));
-                assertThat(res.stream().map(DeviceConfigDTO::getVersion).collect(Collectors.toList()), contains(IntStream.range(offset, offset + limit).boxed().toArray()));
+                assertThat(res.stream().map(DeviceConfigDTO::getEncoding).collect(Collectors.toList()), contains(IntStream.range(offset, offset + limit).boxed()
+                        .map(String::valueOf).toArray()));
             }
         }
     }
@@ -242,11 +240,10 @@ public class DefaultDeviceConfigRestServiceIT {
     private static DeviceConfig createDeviceConfig(int version, OnmsIpInterface ipInterface1) {
         var dc = new DeviceConfig();
         dc.setConfig(new byte[version]);
-        dc.setDeviceType(String.valueOf(version));
         dc.setCreatedTime(new Date(createdTime(version)));
         dc.setEncoding(String.valueOf(version));
         dc.setIpInterface(ipInterface1);
-        dc.setVersion(version);
+        dc.setLastUpdated(new Date(createdTime(version)));
         return dc;
     }
 

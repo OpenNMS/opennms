@@ -48,6 +48,7 @@ import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.opennms.netmgt.scheduler.ScheduleInterval;
 import org.opennms.netmgt.scheduler.Timer;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
@@ -77,6 +78,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private final LatencyStoringServiceMonitorAdaptor m_latencyStoringServiceMonitorAdaptor;
     private final StatusStoringServiceMonitorAdaptor m_statusStoringServiceMonitorAdaptor;
     private final InvertedStatusServiceMonitorAdaptor m_invertedStatusServiceMonitorAdaptor = new InvertedStatusServiceMonitorAdaptor();
+    private final ServiceMonitorAdaptor m_DeviceConfigMonitorAdaptor;
 
     private final ReadablePollOutagesDao m_pollOutagesDao;
     
@@ -89,7 +91,8 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * @param timer a {@link org.opennms.netmgt.scheduler.Timer} object.
      */
     public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, Package pkg, Timer timer, PersisterFactory persisterFactory,
-                                 ThresholdingService thresholdingService, LocationAwarePollerClient locationAwarePollerClient, ReadablePollOutagesDao pollOutagesDao) {
+                                 ThresholdingService thresholdingService, LocationAwarePollerClient locationAwarePollerClient,
+                                 ReadablePollOutagesDao pollOutagesDao, ServiceMonitorAdaptor serviceMonitorAdaptor) {
         m_service = svc;
         m_pollerConfig = pollerConfig;
         m_pkg = pkg;
@@ -97,6 +100,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_locationAwarePollerClient = Objects.requireNonNull(locationAwarePollerClient);
         m_latencyStoringServiceMonitorAdaptor = new LatencyStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory, thresholdingService);
         m_statusStoringServiceMonitorAdaptor = new StatusStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory);
+        m_DeviceConfigMonitorAdaptor = serviceMonitorAdaptor;
         m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
 
         this.findService();
@@ -134,6 +138,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 .withAdaptor(m_latencyStoringServiceMonitorAdaptor)
                 .withAdaptor(m_statusStoringServiceMonitorAdaptor)
                 .withAdaptor(m_invertedStatusServiceMonitorAdaptor)
+                .withAdaptor(m_DeviceConfigMonitorAdaptor)
                 .withPatternVariables(m_patternVariables)
                 .execute();
 
@@ -143,9 +148,6 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
             // Track the results of the poll
             m_service.getContext().trackPoll(m_service, result);
-            if (result.getDeviceConfig() != null) {
-                m_service.getContext().persistDeviceConfig(m_service, getParameters(), result.getDeviceConfig());
-            }
             return result;
         } catch (Throwable e) {
             return RpcExceptionUtils.handleException(e, new RpcExceptionHandler<PollStatus>() {

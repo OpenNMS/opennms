@@ -56,7 +56,6 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             String orderBy,
             String order,
             Integer ipInterfaceId,
-            String deviceType,
             Long createdAfter,
             Long createdBefore
     ) {
@@ -74,10 +73,6 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
         if (ipInterfaceId != null) {
             criteriaBuilder.eq("ipInterface.id", ipInterfaceId);
-        }
-
-        if (StringUtils.isNoneBlank(deviceType)) {
-            criteriaBuilder.ilike("deviceType", deviceType);
         }
 
         if (createdAfter != null) {
@@ -122,10 +117,8 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         return new DeviceConfigDTO(
                 deviceConfig.getId(),
                 deviceConfig.getIpInterface().getId(),
-                deviceConfig.getVersion(),
                 deviceConfig.getConfig(),
                 deviceConfig.getEncoding(),
-                deviceConfig.getDeviceType(),
                 deviceConfig.getCreatedTime()
         );
     }

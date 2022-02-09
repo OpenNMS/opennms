@@ -49,7 +49,6 @@ public interface DeviceConfigRestService {
      * @param orderBy used for paging; defaults to "version"
      * @param order used for paging; defaults to "desc"
      * @param ipInterfaceId database id of OnmsIpInterface instance
-     * @param deviceType
      * @param createdAfter epoche millis
      * @param createdBefore epoche millis
      * @return
@@ -62,7 +61,6 @@ public interface DeviceConfigRestService {
             @QueryParam("order") @DefaultValue("desc") String order,
 
             @QueryParam("ipInterfaceId") Integer ipInterfaceId,
-            @QueryParam("deviceType") String deviceType,
             @QueryParam("createdAfter") Long createdAfter,
             @QueryParam("createdBefore") Long createdBefore
     );

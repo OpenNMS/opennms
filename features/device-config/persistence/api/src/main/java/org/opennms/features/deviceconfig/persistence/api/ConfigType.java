@@ -28,16 +28,7 @@
 
 package org.opennms.features.deviceconfig.persistence.api;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
-
-import java.util.List;
-import java.util.Optional;
-
-public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
-
-    List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, ConfigType configType);
-
-    Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, ConfigType configType);
-
+public enum ConfigType {
+    Default,
+    Running
 }

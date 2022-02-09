@@ -28,6 +28,7 @@
 
 package org.opennms.features.deviceconfig.persistence.impl;
 
+import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
@@ -43,17 +44,18 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     }
 
     @Override
-    public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface) {
+    public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, ConfigType configType) {
 
-        return find("from DeviceConfig dc where dc.ipInterface.id = ? ORDER BY createdTime DESC", ipInterface.getId());
+        return find("from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? ORDER BY lastUpdated DESC",
+                ipInterface.getId(), configType);
     }
 
     @Override
-    public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface) {
-
+    public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, ConfigType configType) {
         List<DeviceConfig> deviceConfigs =
                 findObjects(DeviceConfig.class,
-                        "from DeviceConfig dc where dc.ipInterface.id = ? ORDER BY createdTime DESC LIMIT 1", ipInterface.getId());
+                        "from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? " +
+                                "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), configType);
         if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
             return Optional.of(deviceConfigs.get(0));
         }
