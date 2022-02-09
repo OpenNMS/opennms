@@ -113,7 +113,7 @@ jobs:
             interact"
             expect -c "${expect_commands//
             /;}"
-            GC_LIST=$( hub-tool/hub-tool tag ls opennms/horizon | grep feature | grep inactive | cut -d" " -f1 )
+            GC_LIST=$( hub-tool/hub-tool tag ls opennms/horizon | ( grep feature || true ) | ( grep inactive || true ) | cut -d" " -f1 )
             for image in $GC_LIST; do
               echo "Delete image $image"
               ( yes || true ) | hub-tool/hub-tool tag rm $image
