@@ -22,8 +22,8 @@
   "rules": {
     "vue/script-setup-uses-vars": "error",
     "indent": [
-      "error", 2, {"SwitchCase": 1}
-    ],
+        "error", 2, {"SwitchCase": 1}
+      ],
       "semi": [
         "error",
         "never"

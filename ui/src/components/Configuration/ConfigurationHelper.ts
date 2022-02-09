@@ -14,6 +14,20 @@ import {
 
 
 /**
+ * 
+ * @param split String array from a crontab, split on a space
+ * @returns Human Readable time in 12 hour format.
+ */
+const buildFullTime = (split:Array<string>) => {
+  const {hour,AM} = parseHour(split)
+  let finalHour = `${hour}`
+  if (hour < 12) {
+    finalHour = '0' + hour
+  }
+  return finalHour + ':' + split[0] + (AM ? 'AM' : 'PM')
+}
+
+/**
  * Create an empty/blank Configuration/ProvisionD error object.
  * @returns An empty/blank Error Object
  */
@@ -64,38 +78,17 @@ const createBlankLocal =  () => {
  */
 const convertCronTabToLocal =  (cronFormatted: string) => {
   const split = cronFormatted.split(' ')
-  let hour = parseInt(split?.[1] || '')
-  let AM = true
-  if (hour > 12) {
-    AM = false
-    hour = hour - 12
-  }
-  if (hour === 0) {
-    hour = 12
-  }
-  let finalHour = `${hour}`
-  if (hour < 12) {
-    finalHour = '0' + hour
-  }
-  const time = finalHour + ':' + split[0] + (AM ? 'AM' : 'PM')
+  const time = buildFullTime(split)
   const monthly = parseInt(split[2])
   const weekly = parseInt(split[4])
-  let occurance = 'Daily'
-  let occuranceIndex = 0
-  if (!isNaN(monthly)) {
-    occurance = 'Monthly'
-    occuranceIndex = 1
-  } else if (!isNaN(weekly)) {
-    occurance = 'Weekly'
-    occuranceIndex = 2
-  }
+  const occuranceDetails = parseOccuranceDetails(monthly,weekly)
+ 
   return {
     twentyFourHour: split[1] + ':' + split[0],
     time,
-    occurance,
-    occuranceIndex,
     monthly,
-    weekly
+    weekly,
+    ...occuranceDetails,
   }
 }
 
@@ -260,7 +253,13 @@ const convertURLToLocal =  (urlIn: string) => {
       break
   }
  
-  const advancedOptions = gatherAdvancedOptions(urlIn).filter((item) => {
+  /**
+   * Get our Advanced Options from the Query parameters.
+   * While we're in there, if the type is set to VMWare,
+   * remove username/password and attach them as fully-fledged
+   * form elements.
+   */
+  const advancedOptions = parseAdvancedOptions(urlIn).filter((item) => {
     const {newOptions,keepItem} = filterForVMWareValues(localConfig.type.name,item,localConfig)
     localConfig = newOptions
     return keepItem
@@ -387,7 +386,7 @@ const filterForVMWareValues = (type:string,item: {key:{name:string},value:string
  * @param fullURL A full URL with query string parameters (advanced options)
  * @returns An Object we can use in our Advanced Options section of the ProvisionD Form
  */
-const gatherAdvancedOptions =  (fullURL: string) => {
+const parseAdvancedOptions =  (fullURL: string) => {
   return fullURL.includes('?')
     ? fullURL
       .split('?')[1]
@@ -397,6 +396,38 @@ const gatherAdvancedOptions =  (fullURL: string) => {
         return { key: { _text: key, name: key }, value }
       })
     : []
+}
+
+
+/**
+ * Used to parse a Crontab into human readable values.
+ * @param split A crontab, split on spaces.
+ * @returns The hour (with AM/PM) the crontab will be occuring on.
+ */
+const parseHour = (split:Array<string>) => {
+  let hour = parseInt(split?.[1] || '')
+  let AM = true
+  if (hour > 12) {
+    AM = false
+    hour = hour - 12
+  }
+  if (hour === 0) {
+    hour = 12
+  }
+  return {AM,hour}
+}
+
+/**
+ * Used to parse a Crontab into human readable values.
+ * @param monthly Monthly Crontab Value
+ * @param weekly Weekly Crontab Value
+ * @returns On what schedule this Crontab is happening.
+ */
+const parseOccuranceDetails = (monthly: number,weekly: number) => {
+  let occuranceDetails = {occurance:'Daily',occuranceIndex:0}
+  occuranceDetails = !isNaN(monthly) ? {occurance:'Monthly',occuranceIndex:1} : occuranceDetails
+  occuranceDetails = !isNaN(weekly) ? {occurance:'Weekly',occuranceIndex:2} : occuranceDetails
+  return occuranceDetails
 }
 
 /**
@@ -536,7 +567,6 @@ export const ConfigurationHelper = {
   convertLocalToServer,
   convertServerConfigurationToLocal,
   convertURLToLocal,
-  gatherAdvancedOptions,
   stripOriginalIndexes,
   validateHost,
   validateLocalItem,

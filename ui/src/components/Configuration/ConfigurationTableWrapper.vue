@@ -126,6 +126,10 @@ const deleteClicked = (index: string) => {
   doubleCheck.title = provisionDList?.value[doubleCheck?.index]?.['import-name']
 }
 
+/**
+ * When the user opens our side panel, we want to hide the main scroll bar so we don't
+ * double up on them.
+ */
 const disableMainScroll = () => {
   const html = document.querySelector('html')
   if (html){
@@ -134,6 +138,9 @@ const disableMainScroll = () => {
   }
 }
 
+/**
+ * When the user closes the side panel, re-enable the main scroll bar.
+ */
 const enableMainScroll = () => {
   const html = document.querySelector('html')
   if (html){
@@ -170,29 +177,33 @@ const saveCurrentState = async () => {
     //Convert Local Values to Server Ready Values
     const readyForServ = ConfigurationHelper.convertLocalToServer(selectedProvisionDItem?.config, true)
     const forSending = [...provisionDList.value]
-    //Update Local State
+    
+    //Update with our values
     forSending[activeIndex.index] = readyForServ
-    //Get Existing State
+
+    //Get Existing Full State (including thread pools)
     let updatedProvisionDData = store?.state?.configuration?.provisionDService
 
     if (!updatedProvisionDData){
       updatedProvisionDData = {}
     }
 
-    //Set New State
+    //Set New State with our requisition definitions
     updatedProvisionDData['requisition-def'] = ConfigurationHelper.stripOriginalIndexes(forSending)
-    //Build Toast & Send.
+
+    //Toast messages can differ depending on our editing state.
     let mods = ['Addition', 'was']
     if (editing.value) {
       mods = ['Edits', 'were']
     }
+
     try {
       //Actually Update the Server
       await putProvisionDService(updatedProvisionDData)
       await populateProvisionD(store)
 
-      //Close The Drawer
       closeConfigurationDrawer()
+
       updateToast({
         basic: 'Success!',
         detail: `${mods[0]} to requisition definition ${mods[1]} successful.`,
@@ -214,7 +225,7 @@ const saveCurrentState = async () => {
 }
 
 /**
- * The user has made their deletion chicken switch selection.
+ * The user has made their deletion chicken switch/double check selection.
  * @param selection Did the user choose to delete or not?
  */
 const doubleCheckSelected = async (selection: boolean) => {

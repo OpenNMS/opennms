@@ -5,10 +5,9 @@
       :item="props.item.config"
       :active="helpState.open"
       :onClose="() => {
-        disableHelp();
         helpState.open = false
       }"
-    ></ConfigurationHelpPanel>
+    />
     <div class="sideshared" :class="wrapperClass()">
       <div class="side-inner">
         <div class="side-inner-title">
@@ -62,7 +61,6 @@ import { computed, watch, ref, PropType } from 'vue'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherSpinner } from '@featherds/progress'
-
 
 import Cancel from '@featherds/icon/navigation/Cancel'
 
@@ -138,6 +136,9 @@ watch(errors, () => {
   }
 })
 
+/**
+ * Focus the first field in the drawer when opened.
+ */
 watch(configurationDrawerActive, () => {
   if (configurationDrawerActive.value) {
     if (firstInput.value) {
@@ -158,13 +159,6 @@ const wrapperClass = () => {
     classes += 'help-open'
   }
   return classes
-}
-
-/**
- * Disables the Help on Page Reload
- */
-const disableHelp = () => {
-  localStorage.setItem('disable-help', 'true')
 }
 
 const toggleHelp = () => {

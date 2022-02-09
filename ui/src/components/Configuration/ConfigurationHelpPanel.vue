@@ -51,6 +51,11 @@ const props = defineProps({
 const chevronRight = computed(() => ChevronRight)
 const footerVals = reactive({ yes: false,no:false })
 
+/**
+ * Get the copy for the help window based on the selected
+ * type and subtype (if Requisition is selected)
+ * This should probably be moved to an API call in the future
+ */
 const helpText = computed(() => {
   const typeName = props.item.type.name
   const subType = props.item.subType.name
@@ -167,7 +172,8 @@ const getFooterClickClass = () => {
 
 /**
  * Stub for when the user clicks YES on two zone click box.
- * Functionality for this to be determined.
+ * Functionality for this to be determined. Included in design from UX.
+ * 
  */
 const footerYes = () => {
   footerVals.yes = true
@@ -177,7 +183,7 @@ const footerYes = () => {
 
 /**
  * Stub for when the user clicks NO on the two zone click box.
- * Functionality for this to be determined.
+ * Functionality for this to be determined. Included in design from UX.
  */
 const footerNo = () => {
   console.log('The User Has Selected No!',props.item)

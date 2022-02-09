@@ -84,6 +84,7 @@ import { ConfigurationHelper } from './ConfigurationHelper'
  * Local State
  */
 const threadPoolsErrors = ref<Record<string, boolean>>({})
+const errorMessage = 'Thread pool values have to be between 1 and 2000.'
 const threadPoolsActive = ref(false)
 const loading = ref(false)
 
@@ -120,14 +121,14 @@ const updateThreadpools = async () => {
   // Validate Threadpool Data
   threadPoolKeys.forEach((key) => {
     const val = parseInt(currentThreadpoolState?.[key])
-    if (val < 1 || val > 1000) {
+    if (val < 1 || val > 2000) {
       threadPoolsErrors.value[key] = true
     }
   })
 
   let toastMessage = {
     basic: 'Error!',
-    detail: 'Thread pool values have to be between 1 and 1000.',
+    detail: errorMessage,
     hasErrors: true
   }
   // If there are no errors.
@@ -182,11 +183,7 @@ const enterCheck = (key: { key: string }) => {
  * Determine is error is set for a key, and if so, return generic error message.
  */
 const getError = (key: string) => {
-  let helper = ''
-  if (threadPoolsErrors.value[key]) {
-    helper = 'Thread pool values must be between 1 and 1000'
-  }
-  return helper
+  return threadPoolsErrors.value[key] ? errorMessage : ''
 }
 </script>
 

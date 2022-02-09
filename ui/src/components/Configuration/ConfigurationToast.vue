@@ -1,47 +1,3 @@
-<script lang="ts" setup>
-import { computed, reactive, watch } from 'vue'
-import { useStore } from 'vuex'
-import { FeatherIcon } from '@featherds/icon'
-import { FeatherButton } from '@featherds/button'
-import Edit from '@featherds/icon/action/Edit'
-import CheckCircle from '@featherds/icon/action/CheckCircle'
-import Cancel from '@featherds/icon/navigation/Cancel'
-
-const store = useStore()
-const toastMessage = computed(() => store?.state?.configuration?.toast)
-const editIcon = computed(() => Edit)
-const successIcon = computed(() => CheckCircle)
-const cancelIcon = computed(() => Cancel)
-const toastState = reactive({ isOpen: false, toastTimeout: 0 })
-const closeToast = () => {
-  toastState.isOpen = false
-  clearTimeout(toastState.toastTimeout)
-}
-watch(toastMessage, () => {
-  toastState.isOpen = true
-  clearTimeout(toastState.toastTimeout)
-  toastState.toastTimeout = window.setTimeout(() => {
-    toastState.isOpen = false
-  }, 5000)
-})
-const getToastClass = () => {
-  let classes = ''
-  if (toastState.isOpen) {
-    classes += 'config-toast-open '
-  }
-  if (toastMessage?.value?.hasErrors) {
-    classes += 'config-toast-errors '
-  }
-  return classes
-}
-const getIconClass = () => {
-  let classes = ''
-  if (toastMessage?.value?.hasErrors) {
-    classes += 'config-icon-errors '
-  }
-  return classes
-}
-</script>
 <template>
   <div class="config-toast" :class="getToastClass()">
     <div class="message">
@@ -66,6 +22,68 @@ const getIconClass = () => {
     </div>
   </div>
 </template>
+
+<script lang="ts" setup>
+
+import { computed, reactive, watch } from 'vue'
+import { useStore } from 'vuex'
+
+import { FeatherIcon } from '@featherds/icon'
+import { FeatherButton } from '@featherds/button'
+
+import Edit from '@featherds/icon/action/Edit'
+import CheckCircle from '@featherds/icon/action/CheckCircle'
+import Cancel from '@featherds/icon/navigation/Cancel'
+
+const store = useStore()
+
+/**
+ * Local State
+ */
+const toastMessage = computed(() => store?.state?.configuration?.toast)
+const editIcon = computed(() => Edit)
+const successIcon = computed(() => CheckCircle)
+const cancelIcon = computed(() => Cancel)
+const toastState = reactive({ isOpen: false, toastTimeout: 0 })
+
+watch(toastMessage, () => {
+  toastState.isOpen = true
+  clearTimeout(toastState.toastTimeout)
+  toastState.toastTimeout = window.setTimeout(() => {
+    toastState.isOpen = false
+  }, 5000)
+})
+
+/**
+ * Cloase the Toast Message
+ */
+const closeToast = () => {
+  toastState.isOpen = false
+  clearTimeout(toastState.toastTimeout)
+}
+
+/**
+ * Helper method to get all the toast classes in a clean way
+ */
+const getToastClass = () => {
+  let classes = ''
+  if (toastState.isOpen) {
+    classes += 'config-toast-open '
+  }
+  if (toastMessage?.value?.hasErrors) {
+    classes += 'config-toast-errors '
+  }
+  return classes
+}
+
+/**
+ * Helper method to get all the icon class in a clean way.
+ */
+const getIconClass = () => {
+  return toastMessage?.value?.hasErrors ? 'config-icon-errors '  : ''
+}
+
+</script>
 <style lang="scss" scoped>
 @import '@featherds/styles/mixins/typography';
 @import '@featherds/styles/mixins/elevation';
