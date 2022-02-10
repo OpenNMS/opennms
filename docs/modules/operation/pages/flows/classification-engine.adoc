@@ -3,7 +3,9 @@
 = Flows Classification
 
 For improved flows management, OpenNMS uses a classification engine that applies user- and/or pre-defined rules to filter and classify flows.
-This lets users to group flows by any combination of parameters: source/destination port, source/destination address, IP protocol, and exporter filter. (add more about why this is useful)
+This lets users group flows by any combination of parameters: source/destination port, source/destination address, IP protocol, and exporter filter, and view classifications by group in the analytics UI.
+
+
 
 
 
