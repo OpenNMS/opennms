@@ -33,6 +33,7 @@ import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Properties;
@@ -52,9 +53,9 @@ public class PropertiesFileSanitizer implements ConfigFileSanitizer {
 
     @Override
     public Resource getSanitizedResource(final File file) throws FileSanitizationException {
-        try {
+        try (InputStream fis = new FileInputStream(file)) {
             Properties properties = new Properties();
-            properties.load(new FileInputStream(file));
+            properties.load(fis);
 
             sanitizeProperties(properties);
 

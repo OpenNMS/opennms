@@ -28,6 +28,8 @@
 
 package org.opennms.systemreport.sanitizer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
@@ -35,18 +37,25 @@ import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigurationSanitizer {
 
-    private final Map<String, ConfigFileSanitizer> sanitizers = new HashMap<>();
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationSanitizer.class);
+
+    private final Map<String, ConfigFileSanitizer> sanitizers;
 
     @Autowired
     public ConfigurationSanitizer(Collection<ConfigFileSanitizer> configFileSanitizerList) {
+        Map<String, ConfigFileSanitizer> modifiableMap = new HashMap<>();
+
         for (ConfigFileSanitizer sanitizer : configFileSanitizerList) {
-            sanitizers.put(sanitizer.getFileName(), sanitizer);
+            modifiableMap.put(sanitizer.getFileName(), sanitizer);
         }
+
+        sanitizers = Collections.unmodifiableMap(modifiableMap);
     }
 
     public Resource getSanitizedResource(final File file) {
@@ -56,7 +65,7 @@ public class ConfigurationSanitizer {
             try {
                 return fileSanitizer.getSanitizedResource(file);
             } catch (FileSanitizationException e) {
-                e.getCause().printStackTrace();
+                LOG.error("Could not sanitize file {}: {}", file, e.getCause().getMessage(), e);
 
                 return new ByteArrayResource(e.getMessage().getBytes());
             }
