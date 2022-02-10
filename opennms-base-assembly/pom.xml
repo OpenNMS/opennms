@@ -169,6 +169,12 @@
         </configuration>
         <dependencies>
           <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jasper-dependencies</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+          </dependency>
+          <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
             <version>${jasperreportsVersion}</version>
@@ -1020,6 +1026,12 @@
           <artifactId>spring-core</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jasper-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
