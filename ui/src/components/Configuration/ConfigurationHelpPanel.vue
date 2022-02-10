@@ -49,7 +49,7 @@ const props = defineProps({
  * Local State
  */
 const chevronRight = computed(() => ChevronRight)
-const footerVals = reactive({ yes: false,no:false })
+const footerVals = reactive({ yes: false, no: false })
 
 /**
  * Get the copy for the help window based on the selected
@@ -178,7 +178,7 @@ const getFooterClickClass = () => {
 const footerYes = () => {
   footerVals.yes = true
   footerVals.no = false
-  console.log('The User Has Selected Yes!',props.item)
+  console.log('The User Has Selected Yes!', props.item)
 }
 
 /**
@@ -186,7 +186,7 @@ const footerYes = () => {
  * Functionality for this to be determined. Included in design from UX.
  */
 const footerNo = () => {
-  console.log('The User Has Selected No!',props.item)
+  console.log('The User Has Selected No!', props.item)
   footerVals.no = true
   footerVals.yes = false
 }
@@ -212,7 +212,7 @@ const footerNo = () => {
     color: var(--feather-secondary-variant);
     display: flex;
     align-items: center;
-    margin:0;
+    margin: 0;
   }
 }
 .config-help-panel {

@@ -8,12 +8,8 @@
           :class="getIconClass()"
         />
       </div>
-      <div class="basic">
-        {{toastMessage?.basic}}
-      </div>
-      <div class="detail">
-        {{toastMessage?.detail}}
-      </div>
+      <div class="basic">{{ toastMessage?.basic }}</div>
+      <div class="detail">{{ toastMessage?.detail }}</div>
       <div class="close">
         <FeatherButton icon="Cancel" text @click="closeToast">
           <FeatherIcon class="close-icon" :icon="cancelIcon" />
@@ -80,13 +76,13 @@ const getToastClass = () => {
  * Helper method to get all the icon class in a clean way.
  */
 const getIconClass = () => {
-  return toastMessage?.value?.hasErrors ? 'config-icon-errors '  : ''
+  return toastMessage?.value?.hasErrors ? 'config-icon-errors ' : ''
 }
 
 </script>
 <style lang="scss" scoped>
-@import '@featherds/styles/mixins/typography';
-@import '@featherds/styles/mixins/elevation';
+@import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/mixins/elevation";
 .icon-inner {
   color: var(--feather-success);
   font-size: 32px;

@@ -84,10 +84,10 @@ export const useProvisionD = () => {
    * @param key Key in the LocalConfiguration we want to update
    * @param value New value associated to the key
    */
-  const updateFormValue = (key:string,value:string) => {
-    (selectedProvisionDItem.config as Record<string,unknown>)[key] = value
+  const updateFormValue = (key: string, value: string) => {
+    (selectedProvisionDItem.config as Record<string, unknown>)[key] = value
     updateValidation(selectedProvisionDItem.config)
-    if (key === 'type' || key === 'subType'){
+    if (key === 'type' || key === 'subType') {
       createNewRequisition()
     }
   }
@@ -96,7 +96,7 @@ export const useProvisionD = () => {
    * Updates our current error/validation state.
    * @param localConfig Full Local Configuration Item
    */
-  const updateValidation = (localConfig:LocalConfiguration) => {
+  const updateValidation = (localConfig: LocalConfiguration) => {
     selectedProvisionDItem.errors = ConfigurationHelper.validateLocalItem(localConfig, true)
   }
 
@@ -111,7 +111,7 @@ export const useProvisionD = () => {
     createNewRequisition,
     deleteAdvancedOption,
     setEditingStateTo,
-    setLoading: (val:boolean) => loading.value = val,
+    setLoading: (val: boolean) => loading.value = val,
     setItemToEdit,
     updateActiveIndex,
     updateFormValue,

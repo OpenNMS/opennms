@@ -25,12 +25,12 @@
           schedule for it.
         </p>
         <div class="slide-inner-body">
-          <ProvisionDForm 
-          :updateFormValue="updateFormValue"
-          :item="props.item" 
-           :helpState="helpState.open"
-           :toggleHelp="toggleHelp"
-            />
+          <ProvisionDForm
+            :updateFormValue="updateFormValue"
+            :item="props.item"
+            :helpState="helpState.open"
+            :toggleHelp="toggleHelp"
+          />
         </div>
         <ConfigurationAdvancedPanel
           v-if="props.item.config.type.name !== 'File'"
@@ -45,10 +45,10 @@
         />
         <ConfigurationGeneratedUrl :item="props.item.config" />
         <div class="spinner-button">
-        <FeatherButton @click="props.saveCurrentState" primary :disabled="loading">
-          <FeatherSpinner v-if="loading" />
-          <span v-if="!loading">Save &amp; Close</span>
-        </FeatherButton>
+          <FeatherButton @click="props.saveCurrentState" primary :disabled="loading">
+            <FeatherSpinner v-if="loading" />
+            <span v-if="!loading">Save &amp; Close</span>
+          </FeatherButton>
         </div>
       </div>
     </div>
@@ -84,8 +84,8 @@ const props = defineProps({
   saveCurrentState: Function,
   edit: Boolean,
   helpState: { type: Object, required: true },
-  updateFormValue: {type: Function,required:true},
-  loading: {type:Boolean,required:true}
+  updateFormValue: { type: Function, required: true },
+  loading: { type: Boolean, required: true }
 })
 
 /**
@@ -132,7 +132,7 @@ watch(errors, () => {
           inputWrapper?.classList.remove('bounce')
         }, 200)
       }, 300)
-    },50)
+    }, 50)
   }
 })
 
@@ -190,13 +190,13 @@ const toggleHelp = () => {
 
 .spinner-button {
   .spinner {
-    width:20px;
-    height:20px;
+    width: 20px;
+    height: 20px;
   }
   .spinner-container {
-    display:flex;
-    align-items:center;
-    height:100%;
+    display: flex;
+    align-items: center;
+    height: 100%;
   }
 }
 </style>
@@ -220,15 +220,15 @@ const toggleHelp = () => {
   opacity: 1;
   pointer-events: all;
   transition: opacity ease-in-out 0.4s;
-  z-index:2;
-  position:relative;
+  z-index: 2;
+  position: relative;
 }
 .hidden {
   opacity: 0;
   pointer-events: none;
   transition: opacity ease-in-out 0.4s;
-  z-index:2;
-  position:relative;
+  z-index: 2;
+  position: relative;
 }
 .click-close {
   transition: opacity ease-in-out 0.3s;

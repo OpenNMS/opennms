@@ -132,7 +132,7 @@ const deleteClicked = (index: string) => {
  */
 const disableMainScroll = () => {
   const html = document.querySelector('html')
-  if (html){
+  if (html) {
     html.style.overflowY = 'hidden'
     html.style.height = '100vh'
   }
@@ -143,7 +143,7 @@ const disableMainScroll = () => {
  */
 const enableMainScroll = () => {
   const html = document.querySelector('html')
-  if (html){
+  if (html) {
     html.style.overflowY = 'auto'
     html.style.height = 'auto'
   }
@@ -177,14 +177,14 @@ const saveCurrentState = async () => {
     //Convert Local Values to Server Ready Values
     const readyForServ = ConfigurationHelper.convertLocalToServer(selectedProvisionDItem?.config, true)
     const forSending = [...provisionDList.value]
-    
+
     //Update with our values
     forSending[activeIndex.index] = readyForServ
 
     //Get Existing Full State (including thread pools)
     let updatedProvisionDData = store?.state?.configuration?.provisionDService
 
-    if (!updatedProvisionDData){
+    if (!updatedProvisionDData) {
       updatedProvisionDData = {}
     }
 
@@ -209,7 +209,7 @@ const saveCurrentState = async () => {
         detail: `${mods[0]} to requisition definition ${mods[1]} successful.`,
         hasErrors: false
       })
-    }catch(e){
+    } catch (e) {
       updateToast({
         basic: 'Error!',
         detail: `${mods[0]} to requisition definition ${mods[1]} not successful.`,
@@ -289,7 +289,7 @@ const advanceActiveUpdate = (newVal: boolean) => {
 }
 .title-padding {
   padding: 20px;
-  padding-bottom:0;
+  padding-bottom: 0;
 }
 .margin-bottom {
   margin-bottom: 20px;

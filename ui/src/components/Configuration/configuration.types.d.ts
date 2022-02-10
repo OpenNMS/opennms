@@ -32,7 +32,7 @@ export type AdvancedKey = {
   id: number
 }
 
-export interface  LocalConfiguration extends LocalSubConfiguration {
+export interface LocalConfiguration extends LocalSubConfiguration {
   name: string
   occurance: { name: string; id: number }
   time: string
@@ -59,12 +59,12 @@ export type LocalConfigurationWrapper = {
 }
 
 export type LocalSubConfiguration = {
-    host : string
-    path : string
-    username : string
-    password : string
-    zone : string
-    foreignSource : string
-    subType : { id: number, name: string, value: string },
-    type:{name:string,id:number}
+  host: string
+  path: string
+  username: string
+  password: string
+  zone: string
+  foreignSource: string
+  subType: { id: number, name: string, value: string },
+  type: { name: string, id: number }
 }

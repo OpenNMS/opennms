@@ -7,7 +7,7 @@
             hint="Hint Text"
             :error="errors.name"
             :modelValue="config.name"
-            @update:modelValue="(val:string) => updateFormValue('name',val)"
+            @update:modelValue="(val: string) => updateFormValue('name', val)"
         />
         <div class="flex-center">
             <FeatherSelect
@@ -18,7 +18,7 @@
                 :options="requisitionTypeList"
                 :error="errors.type"
                 :modelValue="config.type"
-                @update:modelValue="(val:string) => updateFormValue('type',val)"
+                @update:modelValue="(val: string) => updateFormValue('type', val)"
             />
             <div class="icon">
                 <FeatherButton icon="Help" @click="() => props.toggleHelp()">
@@ -32,7 +32,7 @@
                 class="side-input"
                 :error="errors.host"
                 :modelValue="config.host"
-                @update:modelValue="(val:string) => updateFormValue('host',val)"
+                @update:modelValue="(val: string) => updateFormValue('host', val)"
                 hint="Hint Text"
             />
         </div>
@@ -43,7 +43,7 @@
                 hint="Hint Text"
                 label="Requisition Plugin"
                 :options="requisitionSubTypes"
-                @update:modelValue="(val:string) => updateFormValue('subType',val)"
+                @update:modelValue="(val: string) => updateFormValue('subType', val)"
                 :modelValue="config.subType"
             />
         </div>
@@ -53,7 +53,7 @@
                 class="side-input"
                 :error="errors.zone"
                 :modelValue="config.zone"
-                @update:modelValue="(val:string) => updateFormValue('zone',val)"
+                @update:modelValue="(val: string) => updateFormValue('zone', val)"
                 hint="Hint Text"
             />
             <FeatherInput
@@ -61,7 +61,7 @@
                 class="side-input"
                 :error="errors.foreignSource"
                 :modelValue="config.foreignSource"
-                @update:modelValue="(val:string) => updateFormValue('foreignSource',val)"
+                @update:modelValue="(val: string) => updateFormValue('foreignSource', val)"
                 hint="Hint Text"
             />
         </div>
@@ -72,7 +72,7 @@
                     class="side-input full-width margin-right"
                     :error="errors.username"
                     :modelValue="config.username"
-                @update:modelValue="(val:string) => updateFormValue('username',val)"
+                    @update:modelValue="(val: string) => updateFormValue('username', val)"
                     hint="Hint Text"
                 />
                 <FeatherInput
@@ -81,7 +81,7 @@
                     class="side-input full-width"
                     :error="errors.password"
                     :modelValue="config.password"
-                @update:modelValue="(val:string) => updateFormValue('password',val)"
+                    @update:modelValue="(val: string) => updateFormValue('password', val)"
                     hint="Hint Text"
                 />
             </div>
@@ -92,7 +92,7 @@
                 class="side-input"
                 :error="errors.path"
                 :modelValue="config.path"
-                @update:modelValue="(val:string) => updateFormValue('path',val)"
+                @update:modelValue="(val: string) => updateFormValue('path', val)"
                 hint="Hint Text"
             />
         </div>
@@ -102,7 +102,7 @@
                 label="Monthly"
                 :options="scheduleTypes"
                 :error="errors.occurance"
-                @update:modelValue="(val:string) => updateFormValue('occurance',val)"
+                @update:modelValue="(val: string) => updateFormValue('occurance', val)"
                 :modelValue="config.occurance"
                 class="occurance"
             />
@@ -113,7 +113,7 @@
                 class="side-label"
                 label="Rescan Behavior"
                 :modelValue="config.rescanBehavior"
-                @update:modelValue="(val:string) => updateFormValue('rescanBehavior',val)"
+                @update:modelValue="(val: string) => updateFormValue('rescanBehavior', val)"
             >
                 <FeatherRadio
                     v-for="item in rescanItems"
@@ -133,7 +133,7 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import { FeatherRadioGroup, FeatherRadio } from '@featherds/radio'
-import { PropType,computed } from 'vue'
+import { PropType, computed } from 'vue'
 import Help from '@featherds/icon/action/Help'
 import { LocalConfigurationWrapper } from './configuration.types'
 
@@ -141,7 +141,7 @@ const props = defineProps({
   item: { type: Object as PropType<LocalConfigurationWrapper>, required: true },
   helpState: { type: Boolean, required: true },
   toggleHelp: { type: Function, required: true },
-  updateFormValue: {type: Function, required:true}
+  updateFormValue: { type: Function, required: true }
 })
 
 const config = computed(() => props.item.config)

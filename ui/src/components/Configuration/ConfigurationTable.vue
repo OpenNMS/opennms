@@ -45,14 +45,14 @@
           <td>{{ cronToEnglish(item['cron-schedule']) }}</td>
           <td>{{ rescanToEnglish(item['rescan-existing']) }}</td>
           <td>
-          <div class="flex">
-            <FeatherButton icon="Edit" @click="() => props.editClicked(item.originalIndex)">
-              <FeatherIcon :icon="editIcon" class="edit-icon"></FeatherIcon>
-            </FeatherButton>
-            <FeatherButton icon="Delete" @click="() => props.deleteClicked(item.originalIndex)">
-              <FeatherIcon class="delete-icon" :icon="deleteIcon"></FeatherIcon>
-            </FeatherButton>
-          </div>
+            <div class="flex">
+              <FeatherButton icon="Edit" @click="() => props.editClicked(item.originalIndex)">
+                <FeatherIcon :icon="editIcon" class="edit-icon"></FeatherIcon>
+              </FeatherButton>
+              <FeatherButton icon="Delete" @click="() => props.deleteClicked(item.originalIndex)">
+                <FeatherIcon class="delete-icon" :icon="deleteIcon"></FeatherIcon>
+              </FeatherButton>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -100,7 +100,7 @@ const sorts = reactive<ProvisionDServerConfiguration>({
   ['import-url-resource']: SORT.NONE,
   ['rescan-existing']: SORT.NONE,
   currentSort: { property: 'import-name', value: SORT.NONE },
-  originalIndex:0
+  originalIndex: 0
 })
 
 const itemList = computed(() => props.itemList)
@@ -123,7 +123,7 @@ const filteredItems = computed(() => {
   const currentSortKey = sorts.currentSort?.property || ''
 
   let myItems: Array<ProvisionDServerConfiguration> = [...itemList.value]
-  
+
   // Determine Sort Order
   let sortOrderValues = [0, 0]
   if (sorts.currentSort?.value === SORT.ASCENDING) {
@@ -131,7 +131,7 @@ const filteredItems = computed(() => {
   } else if (sorts.currentSort?.value === SORT.DESCENDING) {
     sortOrderValues = [1, -1]
   }
-  
+
   // Sort the Items
   const sortedItemsTotal = myItems.sort((a, b) => {
     if (a[currentSortKey] > b[currentSortKey]) {
@@ -215,7 +215,7 @@ const rescanToEnglish = (rescanVal: string) => {
 <style lang="scss" scoped>
 @import "@featherds/table/scss/table";
 .flex {
-  display:flex;
+  display: flex;
 }
 .tr {
   background-color: #e6e8f9;

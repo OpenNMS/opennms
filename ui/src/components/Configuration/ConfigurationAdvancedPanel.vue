@@ -12,7 +12,7 @@
           type="single"
           label="Key"
           textProp="name"
-          @search="(query: string) => search(query, props.type,props.subType, index)"
+          @search="(query: string) => search(query, props.type, props.subType, index)"
           v-model="item.key"
           :results="results.list[index]"
         ></FeatherAutocomplete>
@@ -42,7 +42,7 @@ import { FeatherAutocomplete } from '@featherds/autocomplete'
 import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
 
-import { advancedKeys,dnsKeys, openDaylightKeys,aciKeys,zabbixKeys,prisKeys } from './copy/advancedKeys'
+import { advancedKeys, dnsKeys, openDaylightKeys, aciKeys, zabbixKeys, prisKeys } from './copy/advancedKeys'
 import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'
 import { AdvancedKey, AdvancedOption } from './configuration.types'
 
@@ -51,8 +51,8 @@ import { AdvancedKey, AdvancedOption } from './configuration.types'
  */
 const props = defineProps({
   items: { type: Array as PropType<Array<AdvancedOption>>, required: true },
-  type: {type: String, required:true},
-  subType: {type: String, required:true},
+  type: { type: String, required: true },
+  subType: { type: String, required: true },
   addAdvancedOption: { type: Function, required: true },
   deleteAdvancedOption: { type: Function, required: true },
   active: { type: Boolean, required: true },
@@ -73,22 +73,22 @@ const results = reactive({
  * method determines which to load. This should eventually be 
  * moved to an API solution so we don't store values locally.
  */
-const getKeysBasedOnType = (type:string,subType:string) => {
-  
+const getKeysBasedOnType = (type: string, subType: string) => {
+
   let keys = new Array<AdvancedKey>()
 
-  if (type === RequisitionTypes.DNS){
+  if (type === RequisitionTypes.DNS) {
     keys = dnsKeys
-  }else if (type === RequisitionTypes.VMWare){
+  } else if (type === RequisitionTypes.VMWare) {
     keys = advancedKeys
-  }else if (type === RequisitionTypes.RequisitionPlugin){
-    if (subType === RequisitionPluginSubTypes.OpenDaylight){
+  } else if (type === RequisitionTypes.RequisitionPlugin) {
+    if (subType === RequisitionPluginSubTypes.OpenDaylight) {
       keys = openDaylightKeys
-    }else if (subType === RequisitionPluginSubTypes.ACI){
+    } else if (subType === RequisitionPluginSubTypes.ACI) {
       keys = aciKeys
-    }else if (subType === RequisitionPluginSubTypes.Zabbix){
+    } else if (subType === RequisitionPluginSubTypes.Zabbix) {
       keys = zabbixKeys
-    }else if (subType === RequisitionPluginSubTypes.PRIS){
+    } else if (subType === RequisitionPluginSubTypes.PRIS) {
       keys = prisKeys
     }
   }
@@ -100,12 +100,12 @@ const getKeysBasedOnType = (type:string,subType:string) => {
  * @param searchVal The Key Name to search for
  * @param index Since there are multiple search boxes, we need to know which one to generate results for.
  */
-const search = (searchVal: string, type:string,subType:string, index: number) => {
-  const advancedKeys = getKeysBasedOnType(type,subType)
+const search = (searchVal: string, type: string, subType: string, index: number) => {
+  const advancedKeys = getKeysBasedOnType(type, subType)
 
   //Find keys based on search text.
   let newResu = advancedKeys.filter((key) => key.name.includes(searchVal) || key.name === searchVal)
-  
+
   //If there are no results, add one to the list. This enables custom advanced keys.
   if (newResu.length === 0) {
     newResu.push({ name: searchVal, _text: searchVal, id: props.items?.length || 1 })
@@ -115,7 +115,7 @@ const search = (searchVal: string, type:string,subType:string, index: number) =>
   newResu = newResu.filter((res) => {
     let includeInResults = true
     props.items.forEach((item) => {
-      if (item.key.name === res.name){
+      if (item.key.name === res.name) {
         includeInResults = false
       }
     })

@@ -18,8 +18,8 @@ import {
  * @param split String array from a crontab, split on a space
  * @returns Human Readable time in 12 hour format.
  */
-const buildFullTime = (split:Array<string>) => {
-  const {hour,AM} = parseHour(split)
+const buildFullTime = (split: Array<string>) => {
+  const { hour, AM } = parseHour(split)
   let finalHour = `${hour}`
   if (hour < 12) {
     finalHour = '0' + hour
@@ -31,7 +31,7 @@ const buildFullTime = (split:Array<string>) => {
  * Create an empty/blank Configuration/ProvisionD error object.
  * @returns An empty/blank Error Object
  */
-const createBlankErrors =  () => {
+const createBlankErrors = () => {
   return {
     name: '',
     hasErrors: false,
@@ -50,7 +50,7 @@ const createBlankErrors =  () => {
  * 
  * @returns An empty/blank Configuration/ProvisionD Form Object
  */
-const createBlankLocal =  () => {
+const createBlankLocal = () => {
   return {
     config: {
       name: '',
@@ -76,13 +76,13 @@ const createBlankLocal =  () => {
  * @param cronFormatted A Crontab string
  * @returns A formatted object for display to humans
  */
-const convertCronTabToLocal =  (cronFormatted: string) => {
+const convertCronTabToLocal = (cronFormatted: string) => {
   const split = cronFormatted.split(' ')
   const time = buildFullTime(split)
   const monthly = parseInt(split[2])
   const weekly = parseInt(split[4])
-  const occuranceDetails = parseOccuranceDetails(monthly,weekly)
- 
+  const occuranceDetails = parseOccuranceDetails(monthly, weekly)
+
   return {
     twentyFourHour: split[1] + ':' + split[0],
     time,
@@ -98,7 +98,7 @@ const convertCronTabToLocal =  (cronFormatted: string) => {
  * @param localItem Our Client/Local version of the Server Configuration
  * @returns A URL ready for the server
  */
-const convertItemToURL =  (localItem: LocalConfiguration) => {
+const convertItemToURL = (localItem: LocalConfiguration) => {
   let protocol = localItem.type.name.toLowerCase()
   const type = localItem.type.name
   let host = localItem.host
@@ -135,7 +135,7 @@ const convertItemToURL =  (localItem: LocalConfiguration) => {
  * @param time Local Time Value
  * @returns crontab-ready string
  */
-const convertLocalToCronTab =  (occurance: { name: string }, time: string) => {
+const convertLocalToCronTab = (occurance: { name: string }, time: string) => {
   let schedule = '1 * * * * *'
   if (occurance.name === 'Daily') {
     const [hours, minutes] = time.split(':')
@@ -156,7 +156,7 @@ const convertLocalToCronTab =  (occurance: { name: string }, time: string) => {
  * @param stripIndex Should we strip Non-Server values from the object?
  * @returns An object ready to be sent to the server.
  */
-const convertLocalToServer =  (localItem: LocalConfiguration, stripIndex = false) => {
+const convertLocalToServer = (localItem: LocalConfiguration, stripIndex = false) => {
   const occurance = localItem.occurance
   const time = localItem.time
   const schedule = convertLocalToCronTab(occurance, time)
@@ -189,7 +189,7 @@ const convertLocalToServer =  (localItem: LocalConfiguration, stripIndex = false
  * @param clickedItem The ServerConfiguration item clicked in the table by the user
  * @returns A ProvisionD form-ready Object.
  */
-const convertServerConfigurationToLocal =  (clickedItem: ProvisionDServerConfiguration) => {
+const convertServerConfigurationToLocal = (clickedItem: ProvisionDServerConfiguration) => {
   let rescanBehavior = 1
   if (clickedItem?.[RequisitionData.RescanExisting] === RescanVals.False) {
     rescanBehavior = 0
@@ -217,22 +217,22 @@ const convertServerConfigurationToLocal =  (clickedItem: ProvisionDServerConfigu
  * @param urlIn A Raw URL from the server
  * @returns An object that can be used in the ProvisionD Form
  */
-const convertURLToLocal =  (urlIn: string) => {
+const convertURLToLocal = (urlIn: string) => {
   let localConfig: LocalSubConfiguration = {
-    host : '',
-    path : '',
-    username : '',
-    password : '',
-    zone : '',
-    foreignSource : '',
-    subType : { id: 0, name: '', value: '' },
-    type:{name:'',id:0}
+    host: '',
+    path: '',
+    username: '',
+    password: '',
+    zone: '',
+    foreignSource: '',
+    subType: { id: 0, name: '', value: '' },
+    type: { name: '', id: 0 }
   }
   const url = urlIn.split('/')
   const typeRaw = url[0].split(':')[0]
 
   localConfig.type = findFullType(typeRaw)
-  switch(localConfig.type.name){
+  switch (localConfig.type.name) {
     case RequisitionTypes.File:
       localConfig.path = findPath(urlIn)
       break
@@ -243,7 +243,7 @@ const convertURLToLocal =  (urlIn: string) => {
       localConfig.subType = findSubType(url)
       break
     case RequisitionTypes.DNS:
-      localConfig = findDNS(localConfig,urlIn)
+      localConfig = findDNS(localConfig, urlIn)
       break
     case RequisitionTypes.HTTP:
       localConfig.host = url[2]
@@ -252,7 +252,7 @@ const convertURLToLocal =  (urlIn: string) => {
       localConfig.host = url[2]
       break
   }
- 
+
   /**
    * Get our Advanced Options from the Query parameters.
    * While we're in there, if the type is set to VMWare,
@@ -260,7 +260,7 @@ const convertURLToLocal =  (urlIn: string) => {
    * form elements.
    */
   const advancedOptions = parseAdvancedOptions(urlIn).filter((item) => {
-    const {newOptions,keepItem} = filterForVMWareValues(localConfig.type.name,item,localConfig)
+    const { newOptions, keepItem } = filterForVMWareValues(localConfig.type.name, item, localConfig)
     localConfig = newOptions
     return keepItem
   })
@@ -273,7 +273,7 @@ const convertURLToLocal =  (urlIn: string) => {
  * @param typeRaw Find the Server Type from our Local list.
  * @returns The Type value, ready for the ProvisionD Form.
  */
-const findFullType = (typeRaw:string) => {
+const findFullType = (typeRaw: string) => {
   let type = requisitionTypeList.find((item) => {
     let match = item.name.toLowerCase() === typeRaw
     if (item.name === RequisitionTypes.RequisitionPlugin) {
@@ -293,7 +293,7 @@ const findFullType = (typeRaw:string) => {
  * @param urlIn 
  * @returns A File Path from the URL
  */
-const findPath = (urlIn:string) => {
+const findPath = (urlIn: string) => {
   let path = ''
   const pathPart = urlIn.split(SplitTypes.file)[1]
   if (pathPart.includes('?')) {
@@ -309,7 +309,7 @@ const findPath = (urlIn:string) => {
  * @param url A full URL split by '/'
  * @returns The hostname portion of the URL
  */
-const findHost = (url:Array<string>) => {
+const findHost = (url: Array<string>) => {
   let host = ''
   if (url[2].includes('?')) {
     const vals = url[2].split('?')
@@ -325,8 +325,8 @@ const findHost = (url:Array<string>) => {
  * @param url A full URL split by '/'
  * @returns The requisition subtype if it exists
  */
-const findSubType = (url:Array<string>) => {
-  let subType = {id:0,name:'',value:''}
+const findSubType = (url: Array<string>) => {
+  let subType = { id: 0, name: '', value: '' }
   const typeRaw = url[2].split('?')[0]
   const foundSubType = requisitionSubTypes.find((item) => item.value.toLowerCase() === typeRaw)
   if (foundSubType) {
@@ -341,9 +341,9 @@ const findSubType = (url:Array<string>) => {
  * @param urlIn Full URL In
  * @returns Current Local Configuration with updated DNS Related fields.
  */
-const findDNS = (currentConfig:LocalSubConfiguration,urlIn:string) => {
+const findDNS = (currentConfig: LocalSubConfiguration, urlIn: string) => {
 
-  const localConfig = {...currentConfig}
+  const localConfig = { ...currentConfig }
 
   const urlPart = urlIn.split(SplitTypes.dns)[1].split('/')
   localConfig.host = urlPart[0]
@@ -366,8 +366,8 @@ const findDNS = (currentConfig:LocalSubConfiguration,urlIn:string) => {
  * @returns Local Configuration Object with attached username/password and boolean
  * indiciating whether or not to filter this result from the list.
  */
-const filterForVMWareValues = (type:string,item: {key:{name:string},value:string},fullItem: LocalSubConfiguration) => {
-  const newOptions = {...fullItem}
+const filterForVMWareValues = (type: string, item: { key: { name: string }, value: string }, fullItem: LocalSubConfiguration) => {
+  const newOptions = { ...fullItem }
   let keepItem = true
   if (type === RequisitionTypes.VMWare) {
     if (item.key.name === VMWareFields.Username) {
@@ -378,7 +378,7 @@ const filterForVMWareValues = (type:string,item: {key:{name:string},value:string
       newOptions.password = item.value
     }
   }
-  return {newOptions,keepItem}
+  return { newOptions, keepItem }
 }
 
 /**
@@ -386,7 +386,7 @@ const filterForVMWareValues = (type:string,item: {key:{name:string},value:string
  * @param fullURL A full URL with query string parameters (advanced options)
  * @returns An Object we can use in our Advanced Options section of the ProvisionD Form
  */
-const parseAdvancedOptions =  (fullURL: string) => {
+const parseAdvancedOptions = (fullURL: string) => {
   return fullURL.includes('?')
     ? fullURL
       .split('?')[1]
@@ -404,7 +404,7 @@ const parseAdvancedOptions =  (fullURL: string) => {
  * @param split A crontab, split on spaces.
  * @returns The hour (with AM/PM) the crontab will be occuring on.
  */
-const parseHour = (split:Array<string>) => {
+const parseHour = (split: Array<string>) => {
   let hour = parseInt(split?.[1] || '')
   let AM = true
   if (hour > 12) {
@@ -414,7 +414,7 @@ const parseHour = (split:Array<string>) => {
   if (hour === 0) {
     hour = 12
   }
-  return {AM,hour}
+  return { AM, hour }
 }
 
 /**
@@ -423,10 +423,10 @@ const parseHour = (split:Array<string>) => {
  * @param weekly Weekly Crontab Value
  * @returns On what schedule this Crontab is happening.
  */
-const parseOccuranceDetails = (monthly: number,weekly: number) => {
-  let occuranceDetails = {occurance:'Daily',occuranceIndex:0}
-  occuranceDetails = !isNaN(monthly) ? {occurance:'Monthly',occuranceIndex:1} : occuranceDetails
-  occuranceDetails = !isNaN(weekly) ? {occurance:'Weekly',occuranceIndex:2} : occuranceDetails
+const parseOccuranceDetails = (monthly: number, weekly: number) => {
+  let occuranceDetails = { occurance: 'Daily', occuranceIndex: 0 }
+  occuranceDetails = !isNaN(monthly) ? { occurance: 'Monthly', occuranceIndex: 1 } : occuranceDetails
+  occuranceDetails = !isNaN(weekly) ? { occurance: 'Weekly', occuranceIndex: 2 } : occuranceDetails
   return occuranceDetails
 }
 
@@ -435,7 +435,7 @@ const parseOccuranceDetails = (monthly: number,weekly: number) => {
  * @param dataToUpdate Full Server-Ready, already converted with convertLocalToServer object to be saved to the server.
  * @returns An object for the server without the additional fields we tacked on for context.
  */
-const stripOriginalIndexes =  (dataToUpdate: Array<ProvisionDServerConfiguration>) => {
+const stripOriginalIndexes = (dataToUpdate: Array<ProvisionDServerConfiguration>) => {
   return dataToUpdate.map((item) => {
     delete item.originalIndex
     delete item.currentSort
@@ -448,7 +448,7 @@ const stripOriginalIndexes =  (dataToUpdate: Array<ProvisionDServerConfiguration
  * @param host Hostname
  * @returns Blank if Valid, Error Message if Not.
  */
-const validateHost =  (host: string) => {
+const validateHost = (host: string) => {
   let hostError = ''
   const ipv4 = new RegExp(
     /^(([a-z0-9]|[a-z0-9][a-z0-9-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9-]*[a-z0-9])(:[0-9]+)?$/gim
@@ -469,7 +469,7 @@ const validateHost =  (host: string) => {
  * @param quickUpdate Just clear the errors when the user starts to type.
  * @returns If the Local Configuration Item is valid (and therefore ready to close the window)
  */
-const validateLocalItem =  (localItem: LocalConfiguration, quickUpdate = false): LocalErrors => {
+const validateLocalItem = (localItem: LocalConfiguration, quickUpdate = false): LocalErrors => {
   const errors: LocalErrors = createBlankErrors()
 
   if (!quickUpdate) {
@@ -529,7 +529,7 @@ const validateName = (name: string, nameType: string = RequisitionFields.Name) =
  * @param occuranceName Occurance selected (Monthly/Daily/Weekly)
  * @returns Message if empty, empty string on value.
  */
-const validateOccurance =  (occuranceName: string) => {
+const validateOccurance = (occuranceName: string) => {
   return !occuranceName ? ErrorStrings.OccuranceTime : ''
 }
 
@@ -538,7 +538,7 @@ const validateOccurance =  (occuranceName: string) => {
  * @param path File path to validate
  * @returns Message if error, empty string on valid.
  */
-const validatePath =  (path: string) => {
+const validatePath = (path: string) => {
   let pathError = ''
   if (!path) {
     pathError = ErrorStrings.FilePath
@@ -554,7 +554,7 @@ const validatePath =  (path: string) => {
  * @returns Message if empty, empty string on value.
  */
 
-const validateType =  (typeName: string) => {
+const validateType = (typeName: string) => {
   return !typeName ? ErrorStrings.TypeError : ''
 }
 

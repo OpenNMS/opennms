@@ -14,7 +14,7 @@ import { ConfigurationHelper } from './ConfigurationHelper'
  * Props
  */
 const props = defineProps({
-  item: {type:Object as PropType<LocalConfiguration>, required:true}
+  item: { type: Object as PropType<LocalConfiguration>, required: true }
 })
 
 /**
@@ -41,7 +41,7 @@ const convertedItem = computed(() => {
   align-items: flex-start;
   padding: 16px 24px;
   @include elevation(2);
-  margin-top:16px;
+  margin-top: 16px;
 }
 .title {
   @include headline4();

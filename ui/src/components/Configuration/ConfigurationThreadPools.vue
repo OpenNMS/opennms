@@ -56,10 +56,10 @@
         @keypress="enterCheck"
       />
       <div class="spinner-button">
-      <FeatherButton primary @click="updateThreadpools" :disabled="loading">
+        <FeatherButton primary @click="updateThreadpools" :disabled="loading">
           <FeatherSpinner v-if="loading" />
           <span v-if="!loading">Update Threadpools</span>
-      </FeatherButton>
+        </FeatherButton>
       </div>
     </div>
   </FeatherExpansionPanel>
@@ -141,7 +141,7 @@ const updateThreadpools = async () => {
           updatedProvisionDData[key] = parseInt(currentThreadpoolState?.[key])
         }
       })
-      if (updatedProvisionDData){
+      if (updatedProvisionDData) {
         updatedProvisionDData['requisition-def'] = ConfigurationHelper.stripOriginalIndexes(updatedProvisionDData['requisition-def'])
       }
       // Push Updates to Server
@@ -153,14 +153,14 @@ const updateThreadpools = async () => {
         detail: 'Thread Pool data saved.',
         hasErrors: false
       }
-    }catch(e){
-      console.log('HI!',e)
+    } catch (e) {
+      console.log('HI!', e)
       toastMessage = {
         basic: 'Error!',
         detail: 'Thread Pool data not saved.',
         hasErrors: true
       }
- 
+
     }
   }
 
@@ -190,13 +190,13 @@ const getError = (key: string) => {
 <style lang="scss">
 .spinner-button {
   .spinner {
-    width:20px;
-    height:20px;
+    width: 20px;
+    height: 20px;
   }
   .spinner-container {
-    display:flex;
-    align-items:center;
-    height:100%;
+    display: flex;
+    align-items: center;
+    height: 100%;
   }
 }
 </style>
