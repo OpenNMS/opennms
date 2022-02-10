@@ -283,20 +283,20 @@ const advanceActiveUpdate = (newVal: boolean) => {
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
 .title {
   @include headline3();
 }
 .title-padding {
-  padding: 20px;
-  padding-bottom: 0;
+  margin: 20px;
 }
 .margin-bottom {
   margin-bottom: 20px;
 }
 .white-bg {
-  background-color: white;
+  background-color: var(--feather-background);
   border: 1px solid #ebedf0;
   margin-top: 16px;
   margin-bottom: 24px;

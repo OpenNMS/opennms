@@ -217,7 +217,7 @@ const footerNo = () => {
 }
 .config-help-panel {
   position: fixed;
-  background-color: white;
+  background-color: var(--feather-background);
   z-index: 5;
   top: 60px;
   right: 0;

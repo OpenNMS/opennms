@@ -495,8 +495,8 @@ const validateLocalItem = (localItem: LocalConfiguration, quickUpdate = false): 
   }
 
   //If any key is set, then we have errors.
-  for (const [_, val] of Object.entries(errors)) {
-    if (val) {
+  for (const val of Object.entries(errors)) {
+    if (val[1]) {
       errors.hasErrors = true
     }
   }

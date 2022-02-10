@@ -160,7 +160,7 @@ const toggleHelp = () => {
 <style lang="scss">
 .side-label {
   .group-label {
-    color: #2a358a;
+    color: var(--feather-primary);
   }
 }
 .slide-inner-body {
@@ -236,7 +236,7 @@ const toggleHelp = () => {
 .slide-inner-body {
   padding: 4px 20px;
   margin-top: 20px;
-  background-color: #fff;
+  background-color: var(--feather-background);
   @include elevation(1);
 }
 
@@ -248,14 +248,14 @@ const toggleHelp = () => {
   padding-left: 40px;
   padding-right: 40px;
   padding-bottom: 8px;
-  background-color: #fff;
+  background-color: var(--feather-background);
   border-top: 1px solid #d7d7dc;
   border-bottom: 1px solid #d7d7dc;
 }
 
 .title {
   @include headline2();
-  color: #2a358a;
+  color: var(--feather-primary);
   min-height: 40px;
   display: flex;
   align-items: center;
@@ -270,7 +270,8 @@ const toggleHelp = () => {
 }
 .sideshared {
   z-index: 2;
-  background-color: #f4f7fc;
+
+  background-color: var(--feather-background);
   width: 40vw;
   min-width: 320px;
   height: 100vh;
