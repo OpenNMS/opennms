@@ -35,9 +35,12 @@ import org.opennms.systemreport.sanitizer.FileSanitizationException;
 import org.opennms.systemreport.sanitizer.PropertiesFileSanitizer;
 import org.springframework.core.io.Resource;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertFalse;
 
@@ -59,7 +62,8 @@ public class PropertiesFileSanitizerTest {
     public void testSanitizesPasswords() throws FileSanitizationException, IOException {
         File file = new File("target/test-classes/mock/password-properties.properties");
         Resource result = propertiesFileSanitizer.getSanitizedResource(file);
-        String content = new String(result.getInputStream().readAllBytes());
+        String content = new BufferedReader(new InputStreamReader(result.getInputStream()))
+                .lines().collect(Collectors.joining("\n"));
         assertFalse(content.contains("secretValue"));
     }
 
