@@ -161,15 +161,11 @@
                         <form role="form" method="post" action="support/index.htm" class="form">
                             <div class="form-group">
                                 <label for="username" class="col-form-label">Username</label>
-                                    <%-- This form uses different credentials from the main login form. Use a different
-                                        'name' attribute from 'j_username' to prevent autocomplete conflicts. --%>
-                                <input type="text" name="supportUsername" class="form-control" id="username"
+                                <input type="text" name="username" class="form-control" id="username"
                                        placeholder="Username">
                             </div>
                             <div class="form-group">
                                 <label for="password" class="col-form-label">Password</label>
-                                    <%-- This form uses different credentials from the main login form. Use a different
-                                    'name' attribute from 'j_password' to prevent autocomplete conflicts. --%>
                                 <input type="password" name="password" class="form-control" id="password"
                                        placeholder="Password" autocomplete="new-password">
                             </div>
