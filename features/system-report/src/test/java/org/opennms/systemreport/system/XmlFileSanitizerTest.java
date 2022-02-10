@@ -35,9 +35,12 @@ import org.opennms.systemreport.sanitizer.FileSanitizationException;
 import org.opennms.systemreport.sanitizer.XmlFileSanitizer;
 import org.springframework.core.io.Resource;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertFalse;
 
@@ -59,7 +62,8 @@ public class XmlFileSanitizerTest {
     public void testSanitizesPasswordAttributes() throws FileSanitizationException, IOException {
         File file = new File("target/test-classes/mock/password-attributes.xml");
         Resource result = xmlFileSanitizer.getSanitizedResource(file);
-        String content = new String(result.getInputStream().readAllBytes());
+        String content = new BufferedReader(new InputStreamReader(result.getInputStream()))
+                .lines().collect(Collectors.joining("\n"));
         assertFalse(content.contains("secretValue"));
     }
 
@@ -67,7 +71,8 @@ public class XmlFileSanitizerTest {
     public void testSanitizesPasswordElements() throws FileSanitizationException, IOException {
         File file = new File("target/test-classes/mock/password-elements.xml");
         Resource result = xmlFileSanitizer.getSanitizedResource(file);
-        String content = new String(result.getInputStream().readAllBytes());
+        String content = new BufferedReader(new InputStreamReader(result.getInputStream()))
+                .lines().collect(Collectors.joining("\n"));
         assertFalse(content.contains("secretValue"));
     }
 
@@ -75,7 +80,8 @@ public class XmlFileSanitizerTest {
     public void testSanitizesPasswordParams() throws FileSanitizationException, IOException {
         File file = new File("target/test-classes/mock/password-params.xml");
         Resource result = xmlFileSanitizer.getSanitizedResource(file);
-        String content = new String(result.getInputStream().readAllBytes());
+        String content = new BufferedReader(new InputStreamReader(result.getInputStream()))
+                .lines().collect(Collectors.joining("\n"));
         assertFalse(content.contains("secretValue"));
     }
 
@@ -83,7 +89,8 @@ public class XmlFileSanitizerTest {
     public void testSanitizesSnmpConfig() throws FileSanitizationException, IOException {
         File file = new File("target/test-classes/mock/snmp-config.xml");
         Resource result = xmlFileSanitizer.getSanitizedResource(file);
-        String content = new String(result.getInputStream().readAllBytes());
+        String content = new BufferedReader(new InputStreamReader(result.getInputStream()))
+                .lines().collect(Collectors.joining("\n"));
         assertFalse(content.contains("secretValue"));
     }
 
@@ -91,7 +98,8 @@ public class XmlFileSanitizerTest {
     public void testSanitizesTrapdConfiguration() throws FileSanitizationException, IOException {
         File file = new File("target/test-classes/mock/trapd-configuration.xml");
         Resource result = xmlFileSanitizer.getSanitizedResource(file);
-        String content = new String(result.getInputStream().readAllBytes());
+        String content = new BufferedReader(new InputStreamReader(result.getInputStream()))
+                .lines().collect(Collectors.joining("\n"));
         assertFalse(content.contains("secretValue"));
     }
 
@@ -99,7 +107,8 @@ public class XmlFileSanitizerTest {
     public void testSanitizesHttpDatacollectionConfig() throws FileSanitizationException, IOException {
         File file = new File("target/test-classes/mock/http-datacollection-config.xml");
         Resource result = xmlFileSanitizer.getSanitizedResource(file);
-        String content = new String(result.getInputStream().readAllBytes());
+        String content = new BufferedReader(new InputStreamReader(result.getInputStream()))
+                .lines().collect(Collectors.joining("\n"));
         assertFalse(content.contains("secretValue"));
     }
 

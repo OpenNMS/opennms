@@ -35,9 +35,13 @@ import org.opennms.systemreport.sanitizer.FileSanitizationException;
 import org.opennms.systemreport.sanitizer.UsersPropertiesFileSanitizer;
 import org.springframework.core.io.Resource;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
@@ -60,7 +64,8 @@ public class UsersPropertiesFileSanitizerTest {
     public void testSanitizesPasswords() throws FileSanitizationException, IOException {
         File file = new File("target/test-classes/mock/users.properties");
         Resource result = usersPropertiesFileSanitizer.getSanitizedResource(file);
-        String content = new String(result.getInputStream().readAllBytes());
+        String content = new BufferedReader(new InputStreamReader(result.getInputStream()))
+                .lines().collect(Collectors.joining("\n"));
         assertFalse(content.contains("secretValue"));
     }
 
@@ -68,7 +73,8 @@ public class UsersPropertiesFileSanitizerTest {
     public void testSanitizationPreservesRoles() throws FileSanitizationException, IOException {
         File file = new File("target/test-classes/mock/users.properties");
         Resource result = usersPropertiesFileSanitizer.getSanitizedResource(file);
-        String content = new String(result.getInputStream().readAllBytes());
+        String content = new BufferedReader(new InputStreamReader(result.getInputStream()))
+                .lines().collect(Collectors.joining("\n"));
         assertTrue(content.contains("roleName"));
     }
 }
