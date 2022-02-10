@@ -65,6 +65,10 @@ parameters:
     description: whether to trigger the main build
     type: boolean
     default: false
+  trigger-coverage-api:
+    description: whether to trigger the main build
+    type: boolean
+    default: false
 
 setup: << pipeline.parameters.trigger-setup >>
 
@@ -541,7 +545,10 @@ commands:
 
 workflows:
   pre-build:
-    when: << pipeline.parameters.trigger-setup >>
+    when:
+      and:
+        - equal: [ true, << pipeline.parameters.trigger-setup >> ]
+        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
@@ -550,31 +557,27 @@ workflows:
             ((?!docs/).)* trigger-build true
             docs/.*       trigger-docs  true
             .circleci/.*  trigger-docs  true
-#  weekly-coverage:
-#    when:
-#      equal: [ false, << pipeline.parameters.minimal >> ]
-#    triggers:
-#      - schedule:
-#          # Saturday at 12:00 AM
-#          cron: "0 0 * * 6"
-#          filters:
-#            branches:
-#              only:
-#                - develop
-#    jobs:
-#      - build
-#      - integration-test-with-coverage:
-#          requires:
-#            - build
-#      - code-coverage:
-#          requires:
-#            - integration-test-with-coverage
+  coverage:
+    when:
+      when:
+        and:
+          - equal: [ true, << pipeline.parameters.trigger-setup >> ]
+          - equal: [ true, << pipeline.parameters.trigger-coverage-api >> ]
+    jobs:
+      - build
+      - integration-test-with-coverage:
+          requires:
+            - build
+      - code-coverage:
+          requires:
+            - integration-test-with-coverage
   build-minimal:
     when:
       and:
         - equal: [ true, << pipeline.parameters.trigger-build >> ]
         - equal: [ false, << pipeline.parameters.trigger-setup >> ]
         - equal: [ true, << pipeline.parameters.minimal >> ]
+        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
     jobs:
       - build
       - create-merge-foundation-branch:
@@ -610,6 +613,7 @@ workflows:
         - equal: [ true,  << pipeline.parameters.trigger-docs >> ]
         - equal: [ false, << pipeline.parameters.trigger-setup >> ]
         - equal: [ false, << pipeline.parameters.minimal >> ]
+        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
     jobs:
       - build-docs:
           filters:
@@ -622,6 +626,7 @@ workflows:
         - equal: [ true,  << pipeline.parameters.trigger-build >> ]
         - equal: [ false, << pipeline.parameters.trigger-setup >> ]
         - equal: [ false, << pipeline.parameters.minimal >> ]
+        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
     jobs:
       - build:
           filters:
