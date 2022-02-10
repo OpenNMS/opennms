@@ -33,16 +33,24 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 import org.junit.*;
+import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 
 import io.restassured.RestAssured;
+import org.opennms.smoketest.stacks.SSLStrategy;
+import org.opennms.smoketest.stacks.StackModel;
 
 // Ensures if "X-Requeste-With" is set to "XMLHttpRequest" no "WWW-Authenticate" header is sent with the response
 
 public class SSLPortTestIT {
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.SSL;
+    public static final OpenNMSStack stack =  OpenNMSStack.withModel(StackModel.newBuilder()
+            .withOpenNMS(OpenNMSProfile.newBuilder()
+                    .withFile("jetty.keystore", "etc/jetty.keystore")
+                    .build())
+            .withSSLStrategy(SSLStrategy.SSL)
+            .build());
 
     @Before
     public void setUp() {

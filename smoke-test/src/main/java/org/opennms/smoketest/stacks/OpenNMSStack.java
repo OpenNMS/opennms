@@ -79,12 +79,6 @@ public final class OpenNMSStack implements TestRule {
             .withSentinel()
             .build());
 
-    public static final OpenNMSStack SSL = OpenNMSStack.withModel(StackModel.newBuilder()
-            .withOpenNMS(OpenNMSProfile.newBuilder()
-                    .withFile("jetty.keystore", "etc/jetty.keystore")
-                    .build())
-                    .withSSLStrategy(SSLStrategy.SSL)
-                    .build());
 
     public static final OpenNMSStack ALEC = OpenNMSStack.withModel(StackModel.newBuilder()
             .withMinions(MinionProfile.DEFAULT, MinionProfile.newBuilder()
