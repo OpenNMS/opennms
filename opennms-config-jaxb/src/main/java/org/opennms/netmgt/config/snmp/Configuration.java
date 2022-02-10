@@ -38,6 +38,9 @@ import java.io.Serializable;
 
 @XmlRootElement(name="configuration")
 @XmlAccessorType(XmlAccessType.NONE)
+/**
+ * Keep the XML annotation is due to existing UI still using xml output
+ */
 public class Configuration implements Serializable {
     private static final long serialVersionUID = 6018795999027969844L;
 

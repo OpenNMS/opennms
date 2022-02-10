@@ -78,7 +78,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-dns.xml",
-       // "classpath*:/META-INF/opennms/detectors.xml",
+        "classpath*:/META-INF/opennms/detectors.xml",
         "classpath:/mockForeignSourceContext.xml",
         "classpath:/importerServiceTest.xml"
 })
@@ -170,7 +170,7 @@ public class NodeLocationChangeIT {
         OnmsNode node = nodes.get(0);
         assertEquals("Hyderabad", node.getLocation().getLocationName());
         assertEquals(1, node.getIpInterfaces().size());
-        //assertEquals(1, node.getSnmpInterfaces().size());
+        assertEquals(1, node.getSnmpInterfaces().size());
         // Verify that persisted Ip interface will have resolved hostname.
         assertEquals("opennms-com", node.getIpInterfaces().iterator().next().getIpHostName());
         m_eventAnticipator.reset();

@@ -113,7 +113,7 @@ public class SnmpProfileMapperIT {
                     null);
             Optional<SnmpAgentConfig> agentConfig = future.get();
             assertTrue(agentConfig.isPresent());
-           // assertEquals(ttl, agentConfig.get().getTTL().longValue());
+            assertEquals(ttl, agentConfig.get().getTTL().longValue());
             assertEquals(timeout, agentConfig.get().getTimeout());
             snmpPeerFactory.saveAgentConfigAsDefinition(agentConfig.get(), "Default", "test");
             List<Definition> definitions = snmpPeerFactory.getSnmpConfig().getDefinitions();
@@ -137,7 +137,7 @@ public class SnmpProfileMapperIT {
                     "Minion", ".1.3.6.1.2.1.1.3.0");
             Optional<SnmpAgentConfig> agentConfig = future.get();
             assertTrue(agentConfig.isPresent());
-            //assertEquals(agentConfig.get().getTTL().longValue(), ttl);
+            assertEquals(agentConfig.get().getTTL().longValue(), ttl);
             assertEquals(agentConfig.get().getTimeout(), timeout);
             snmpPeerFactory.saveAgentConfigAsDefinition(agentConfig.get(), "Default", "test");
             List<Definition> definitions = snmpPeerFactory.getSnmpConfig().getDefinitions();
@@ -167,7 +167,7 @@ public class SnmpProfileMapperIT {
                 snmpAgentConfig = agentConfig.get();
             }
             assertNotNull(snmpAgentConfig);
-            //assertEquals(snmpAgentConfig.getTTL().longValue(), ttl);
+            assertEquals(snmpAgentConfig.getTTL().longValue(), ttl);
             assertEquals(snmpAgentConfig.getTimeout(), timeout);
             // Check that fit profile doesn't actually save definitions in the config.
             List<Definition> definitions = snmpPeerFactory.getSnmpConfig().getDefinitions();

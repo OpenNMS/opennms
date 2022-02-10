@@ -41,6 +41,9 @@ import java.io.Serializable;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder={"begin", "end"})
 @JsonPropertyOrder({"begin","end"})
+/**
+ * Keep the XML annotation is due to existing UI still using xml output
+ */
 public class Range implements Serializable {
     private static final long serialVersionUID = 3817543154652004131L;
 

@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Top-level element for the snmp-config.xml configuration file.
+ * Keep the XML annotation is due to existing UI still using xml output
  */
 @XmlRootElement(name="snmp-config")
 @XmlAccessorType(XmlAccessType.NONE)

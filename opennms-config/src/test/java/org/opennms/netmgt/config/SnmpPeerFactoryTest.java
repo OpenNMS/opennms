@@ -69,20 +69,15 @@ public class SnmpPeerFactoryTest  {
     SnmpPeerFactory snmpPeerFactory;
 
     private void updateConfig(String configXml) throws IOException {
-        try {
-            JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config", null);
-            String json = converter.xmlToJson(configXml);
-            snmpPeerFactory.updateConfig(json);
-            snmpPeerFactory.reload();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config", null);
+        String json = converter.xmlToJson(configXml);
+        snmpPeerFactory.updateConfig(json);
+        snmpPeerFactory.reload();
     }
 
     public void setVersion(int version) {
         m_version = version;
     }
-
 
     /**
      * String representing snmp-config.xml

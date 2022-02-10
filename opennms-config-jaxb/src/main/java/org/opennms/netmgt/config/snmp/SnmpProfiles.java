@@ -44,6 +44,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="profiles")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("snmp-config.xsd")
+/**
+ * Keep the XML annotation is due to existing UI still using xml output
+ */
 public class SnmpProfiles {
 
     @XmlElement(name="profile")

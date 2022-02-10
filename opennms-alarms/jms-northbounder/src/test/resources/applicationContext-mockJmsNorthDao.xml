@@ -163,18 +163,6 @@
     <bean id="requisitionedCategoryAssociationDao" class="org.opennms.netmgt.dao.mock.MockRequisitionedCategoryAssociationDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao" ref="requisitionedCategoryAssociationDao" />
 
-    <!-- 
-    <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
-        <property name="nodeDao" ref="nodeDao" />
-        <property name="collectdConfig" ref="collectdConfig" />
-        <property name="dataCollectionConfigDao" ref="dataCollectionConfig" />
-        <property name="rrdDirectory" value="${rrd.base.dir}" />
-    </bean>
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceDao" ref="resourceDao" />
-
-    <bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
-    -->
-
     <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.dao.mock.MockDataCollectionConfigDao" />
     <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod">

@@ -31,11 +31,17 @@ package org.opennms.netmgt.config.snmp;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 
 /**
  * Provides a mechanism for associating one or more specific IP addresses
@@ -46,6 +52,9 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder={"ranges","specifics","ipMatches"})
 @JsonPropertyOrder({"ranges","specifics","ipMatches"})
+/**
+ * Keep the XML annotation is due to existing UI still using xml output
+ */
 public class Definition extends Configuration implements Serializable {
     private static final long serialVersionUID = 5646937263626185373L;
     /**

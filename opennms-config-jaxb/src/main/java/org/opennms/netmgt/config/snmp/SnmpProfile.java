@@ -40,6 +40,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="profile")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("snmp-config.xsd")
+/**
+ * Keep the XML annotation is due to existing UI still using xml output
+ */
 public class SnmpProfile extends Configuration {
 
     private static final long serialVersionUID = 6047134979704016780L;

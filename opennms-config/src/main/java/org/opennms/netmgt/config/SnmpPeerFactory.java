@@ -81,7 +81,6 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
         private static File s_configFile;
 
         private static final String CONFIG_NAME = "snmp";
-        private static final String DEFAULT_CONFIG_ID = "default";
         /**
          * The singleton instance of this factory
          */
@@ -96,9 +95,6 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
         private final Lock m_readLock = m_globalLock.updateLock();
         private final Lock m_writeLock = m_globalLock.writeLock();
 
-        /**
-         * The config class loaded from the config file
-         */
         private SnmpConfig m_config;
 
         public SnmpPeerFactory() {
@@ -139,9 +135,7 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
         }
 
         /**
-         * Load the config from the default config file and create the singleton instance of this factory.
-         *
-         * @exception java.io.IOException Thrown if the specified config file cannot be read
+         * Load the config from the cm and create the singleton instance of this factory.
          */
         public static synchronized SnmpPeerFactory getInstance() {
             if (!s_loaded.get()) {
@@ -182,7 +176,7 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
         }
 
         /**
-         * Saves the current settings to disk
+         * Saves the current settings to cm
          *
          * @throws java.io.IOException if any.
          */
@@ -515,10 +509,5 @@ public class SnmpPeerFactory extends AbstractCmJaxbConfigDao<SnmpConfig> impleme
     @Override
     public String getConfigName() {
         return CONFIG_NAME;
-    }
-
-    @Override
-    public String getDefaultConfigId() {
-        return DEFAULT_CONFIG_ID;
     }
 }

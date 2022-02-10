@@ -235,11 +235,8 @@ public class Snmpv3User implements java.io.Serializable {
      * 
      * @return the value of field 'SecurityLevel'.
      */
-    public Integer getSecurityLevel(
-    ) {
+    public Integer getSecurityLevel() {
         return this.securityLevel;
-
-        //return this.securityLevel == null ? 0 : this.securityLevel;
     }
 
     /**

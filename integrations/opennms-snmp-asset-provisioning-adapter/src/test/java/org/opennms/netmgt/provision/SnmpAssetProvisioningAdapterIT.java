@@ -108,7 +108,7 @@ public class SnmpAssetProvisioningAdapterIT implements InitializingBean {
 
 		assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
 		assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
-		//assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
+		assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
 		assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(n.getId()).size());
 
 		// TODO: Add assertions to check that the addNode() adapter call updated the asset record
