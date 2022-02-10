@@ -64,7 +64,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         String encodingAttribute = getObjectAsString(parameters.get("encoding"));
         String configTypeAttribute = getObjectAsString(parameters.get("config-type"));
         String encoding = !Strings.isNullOrEmpty(encodingAttribute) ? encodingAttribute : Charset.defaultCharset().name();
-        ConfigType configType = !Strings.isNullOrEmpty(configTypeAttribute) ? ConfigType.valueOf(configTypeAttribute) : ConfigType.Default;
+        String configType = !Strings.isNullOrEmpty(configTypeAttribute) ? configTypeAttribute : ConfigType.Default;
         byte[] deviceConfigBytes = status.getDeviceConfig();
 
         if (deviceConfigBytes == null) {

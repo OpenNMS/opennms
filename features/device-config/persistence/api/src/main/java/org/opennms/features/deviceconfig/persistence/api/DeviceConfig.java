@@ -63,7 +63,7 @@ public class DeviceConfig implements Serializable {
     public static void updateDeviceConfigContent(
             DeviceConfigDao deviceConfigDao,
             OnmsIpInterface ipInterface,
-            ConfigType configType,
+            String configType,
             String encoding,
             byte[] deviceConfigBytes
     ) {
@@ -105,7 +105,7 @@ public class DeviceConfig implements Serializable {
     public static void updateDeviceConfigFailure(
             DeviceConfigDao deviceConfigDao,
             OnmsIpInterface ipInterface,
-            ConfigType configType,
+            String configType,
             String encoding,
             String reason
     ) {
@@ -150,7 +150,7 @@ public class DeviceConfig implements Serializable {
 
     @Column(name = "config_type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private ConfigType configType = ConfigType.Default;
+    private String configType;
 
     @Column(name = "failure_reason")
     private String failureReason;
@@ -211,11 +211,11 @@ public class DeviceConfig implements Serializable {
         this.createdTime = createdTime;
     }
 
-    public ConfigType getConfigType() {
+    public String getConfigType() {
         return configType;
     }
 
-    public void setConfigType(ConfigType configType) {
+    public void setConfigType(String configType) {
         this.configType = configType;
     }
 

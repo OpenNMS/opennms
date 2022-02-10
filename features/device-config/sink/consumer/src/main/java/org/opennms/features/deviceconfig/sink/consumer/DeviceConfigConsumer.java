@@ -33,7 +33,6 @@ import java.net.InetAddress;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.sink.module.DeviceConfigDTO;
@@ -80,7 +79,7 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigDTO, De
                 DeviceConfig.updateDeviceConfigContent(
                         deviceConfigDao,
                         ipInterface,
-                        ConfigType.Default,
+                        message.fileName,
                         null,
                         message.config
                 );

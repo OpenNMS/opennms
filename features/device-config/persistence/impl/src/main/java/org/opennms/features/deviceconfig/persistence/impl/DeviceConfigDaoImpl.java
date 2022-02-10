@@ -44,14 +44,14 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     }
 
     @Override
-    public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, ConfigType configType) {
+    public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, String configType) {
 
         return find("from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? ORDER BY lastUpdated DESC",
                 ipInterface.getId(), configType);
     }
 
     @Override
-    public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, ConfigType configType) {
+    public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String configType) {
         List<DeviceConfig> deviceConfigs =
                 findObjects(DeviceConfig.class,
                         "from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? " +
