@@ -30,6 +30,7 @@
             :item="props.item"
             :helpState="helpState.open"
             :toggleHelp="toggleHelp"
+            :formActive="props.configurationDrawerActive"
           />
         </div>
         <ConfigurationAdvancedPanel
@@ -92,7 +93,6 @@ const props = defineProps({
  * Local State
  */
 
-const firstInput = ref<HTMLInputElement | null>(null)
 const bounceOutTimeout = ref(-1)
 const bounceInTimeout = ref(-1)
 const initialWatchTimeout = ref(-1)
@@ -136,16 +136,6 @@ watch(errors, () => {
   }
 })
 
-/**
- * Focus the first field in the drawer when opened.
- */
-watch(configurationDrawerActive, () => {
-  if (configurationDrawerActive.value) {
-    if (firstInput.value) {
-      firstInput.value.focus()
-    }
-  }
-})
 
 /**
  * Determines which classes to apply to the drawer.

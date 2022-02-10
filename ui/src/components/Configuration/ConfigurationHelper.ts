@@ -111,7 +111,7 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
       host += `/${localItem.foreignSource}`
     }
   } else if (type === RequisitionTypes.VMWare) {
-    host = `${localItem.host}?${VMWareFields.Username}=${localItem.username}&${VMWareFields.Password}=${localItem.password}`
+    host = `${localItem.host}?${VMWareFields.Username}=${localItem.username}&${VMWareFields.Password}=${localItem.password}&`
   } else if (type === RequisitionTypes.File) {
     host = `${localItem.path}`
   }

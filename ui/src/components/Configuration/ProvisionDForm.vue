@@ -133,19 +133,33 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import { FeatherRadioGroup, FeatherRadio } from '@featherds/radio'
-import { PropType, computed } from 'vue'
+import { PropType, computed,watch, ref } from 'vue'
 import Help from '@featherds/icon/action/Help'
 import { LocalConfigurationWrapper } from './configuration.types'
+
+const firstInput = ref<HTMLInputElement | null>(null)
 
 const props = defineProps({
   item: { type: Object as PropType<LocalConfigurationWrapper>, required: true },
   helpState: { type: Boolean, required: true },
   toggleHelp: { type: Function, required: true },
-  updateFormValue: { type: Function, required: true }
+  updateFormValue: { type: Function, required: true },
+  formActive: {type: Boolean, required:true}
 })
 
 const config = computed(() => props.item.config)
 const errors = computed(() => props.item.errors)
+const formActive = computed(() => props.formActive)
+/**
+ * Focus the first field in the drawer when opened.
+ */
+watch(formActive, () => {
+  if (formActive.value) {
+    if (firstInput.value) {
+      firstInput.value.focus()
+    }
+  }
+})
 </script>
 <style lang="scss" scoped>
 .side-input {
