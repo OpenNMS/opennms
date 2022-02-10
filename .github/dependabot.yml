@@ -17,6 +17,8 @@ updates:
     ignore:
       - dependency-name: "d3"
       - dependency-name: "ionicons"
+      - dependency-name: "@types/lodash"
+      - dependency-name: "@types/node"
 
   - package-ecosystem: "maven"
     directory: "/"
