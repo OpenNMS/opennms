@@ -9,7 +9,6 @@ const populateProvisionD = (store: Store<unknown>) => {
 
 const getProvisionDService = rest.get(getProvisionD).then((response) => {
   try {
-    console.log(response, response.data)
     if (response.status === 200) {
       return response.data
     }

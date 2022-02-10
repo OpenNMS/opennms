@@ -6,7 +6,6 @@
     :modelValue="props.active"
     @update:modelValue="props.activeUpdate"
   >
- 
     <div>
       <div v-bind:key="index" v-for="(item, index) in props.items" class="item-wrapper">
         <FeatherAutocomplete
