@@ -1884,6 +1884,7 @@
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.retrieval/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.ssh-scripting/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.tftp/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.monitor/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-deviceconfig-rest" description="OpenNMS :: Features :: Device Config :: Rest">
