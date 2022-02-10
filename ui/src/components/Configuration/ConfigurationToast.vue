@@ -4,7 +4,7 @@
       <div class="icon">
         <FeatherIcon
           class="icon-inner"
-          :icon="toastMessage?.hasError ? editIcon : successIcon"
+          :icon="toastMessage?.hasError ? Edit : CheckCircle"
           :class="getIconClass()"
         />
       </div>
@@ -12,7 +12,7 @@
       <div class="detail">{{ toastMessage?.detail }}</div>
       <div class="close">
         <FeatherButton icon="Cancel" text @click="closeToast">
-          <FeatherIcon class="close-icon" :icon="cancelIcon" />
+          <FeatherIcon class="close-icon" :icon="Cancel" />
         </FeatherButton>
       </div>
     </div>
@@ -37,9 +37,6 @@ const store = useStore()
  * Local State
  */
 const toastMessage = computed(() => store?.state?.configuration?.toast)
-const editIcon = computed(() => Edit)
-const successIcon = computed(() => CheckCircle)
-const cancelIcon = computed(() => Cancel)
 const toastState = reactive({ isOpen: false, toastTimeout: 0 })
 
 watch(toastMessage, () => {

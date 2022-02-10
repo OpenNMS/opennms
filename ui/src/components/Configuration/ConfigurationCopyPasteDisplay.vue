@@ -5,7 +5,7 @@
       <div class="floating" ref="floating">{{ props.text }}</div>
       <div class="button">
         <FeatherButton icon="Edit" @click="copyURLToClipboard">
-          <FeatherIcon :icon="editIcon" class="edit-icon"></FeatherIcon>
+          <FeatherIcon :icon="Edit" class="edit-icon"></FeatherIcon>
         </FeatherButton>
       </div>
     </div>
@@ -41,7 +41,6 @@ const hover = ref(false)
 const floating = ref<HTMLElement | null>(null)
 let timeout = reactive({ value: -1 })
 
-const editIcon = computed(() => Edit)
 const shortText = computed(() => {
   const len = props?.text?.length || 0
   return len > 30 ? props?.text?.slice(0, 30) + '...' : props.text

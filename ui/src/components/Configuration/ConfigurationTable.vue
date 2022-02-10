@@ -47,10 +47,10 @@
           <td>
             <div class="flex">
               <FeatherButton icon="Edit" @click="() => props.editClicked(item.originalIndex)">
-                <FeatherIcon :icon="editIcon" class="edit-icon"></FeatherIcon>
+                <FeatherIcon :icon="Edit" class="edit-icon"></FeatherIcon>
               </FeatherButton>
               <FeatherButton icon="Delete" @click="() => props.deleteClicked(item.originalIndex)">
-                <FeatherIcon class="delete-icon" :icon="deleteIcon"></FeatherIcon>
+                <FeatherIcon class="delete-icon" :icon="Delete"></FeatherIcon>
               </FeatherButton>
             </div>
           </td>
@@ -105,8 +105,6 @@ const sorts = reactive<ProvisionDServerConfiguration>({
 })
 
 const itemList = computed(() => props.itemList)
-const editIcon = computed(() => Edit)
-const deleteIcon = computed(() => Delete)
 
 const pageVals: ComputedRef<ConfigurationPageVals> = computed(() => {
   return reactive({
