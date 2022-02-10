@@ -124,12 +124,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             LOG.error("Couldn't find package {} in poller-config", pkg);
             throw new IllegalArgumentException("Couldn't find package " + DEVICE_CONFIG_PACKAGE_NAME);
         }
-
-        final org.opennms.netmgt.config.poller.Service svc = pollerConfig.getServiceInPackage(serviceName, pkg);
-        if (svc == null) {
-            LOG.error("Couldn't find {} service in package {}", serviceName, pkg);
-            throw new IllegalArgumentException("Couldn't find service " + serviceName + " in the package " + DEVICE_CONFIG_PACKAGE_NAME);
-        }
+        
         final Optional<Package.ServiceMatch> service = pkg.findService(serviceName);
         if (service.isEmpty()) {
             LOG.error("Couldn't find {} service", serviceName);
