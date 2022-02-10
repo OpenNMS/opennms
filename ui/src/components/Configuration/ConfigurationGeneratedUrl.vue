@@ -9,6 +9,7 @@
 import { computed, PropType } from 'vue'
 import { LocalConfiguration } from './configuration.types'
 import { ConfigurationHelper } from './ConfigurationHelper'
+import { RequisitionData } from './copy/requisitionTypes'
 
 /**
  * Props
@@ -23,10 +24,10 @@ const props = defineProps({
 const convertedItem = computed(() => {
   const converted = props.item?.type ?
     ConfigurationHelper.convertLocalToServer(props.item) :
-    { 'import-url-resource': '' }
+    { [RequisitionData.ImportURL]: '' }
   return {
     item: converted,
-    url: converted['import-url-resource']
+    url: converted[RequisitionData.ImportURL]
   }
 })
 

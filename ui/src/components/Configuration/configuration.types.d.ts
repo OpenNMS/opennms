@@ -1,3 +1,5 @@
+import { RequisitionData } from './copy/requisitionTypes'
+
 export type ConfigurationTableSort = {
   property: string
   value: string
@@ -5,10 +7,10 @@ export type ConfigurationTableSort = {
 
 export type ProvisionDServerConfiguration = {
   [b: string]: string | ConfigurationTableSort | number | Array
-  'import-name': string
-  'cron-schedule': string
-  'import-url-resource': string
-  'rescan-existing': string
+  [RequisitionData.ImportName]: string
+  [RequisitionData.CronSchedule]: string
+  [RequisitionData.ImportURL]: string
+  [RequisitionData.RescanExisting]: string
   currentSort: ConfigurationTableSort | undefined
   originalIndex: number | undefined
 }

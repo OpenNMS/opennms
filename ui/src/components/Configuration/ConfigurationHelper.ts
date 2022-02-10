@@ -276,7 +276,7 @@ const convertURLToLocal = (urlIn: string) => {
 const findFullType = (typeRaw: string) => {
   let type = requisitionTypeList.find((item) => {
     let match = item.name.toLowerCase() === typeRaw
-    if (item.name === RequisitionTypes.RequisitionPlugin) {
+    if (item.name === RequisitionTypes.RequisitionPlugin && typeRaw === RequisitionTypes.RequisitionPluginForServer) {
       match = true
     }
     return match
@@ -376,6 +376,7 @@ const filterForVMWareValues = (type: string, item: { key: { name: string }, valu
     }
     if (item.key.name === VMWareFields.Password) {
       newOptions.password = item.value
+      keepItem = false
     }
   }
   return { newOptions, keepItem }

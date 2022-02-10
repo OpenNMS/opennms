@@ -6,29 +6,29 @@
           <FeatherSortHeader
             scope="col"
             class="onms-sort-header"
-            property="import-name"
-            :sort="sorts['import-name']"
+            :property="RequisitionData.ImportName"
+            :sort="sorts[RequisitionData.ImportName]"
             v-on:sort-changed="sortChanged"
           >Name</FeatherSortHeader>
           <FeatherSortHeader
             scope="col"
             class="onms-sort-header"
-            property="import-url-resource"
-            :sort="sorts['import-url-resource']"
+            :property="RequisitionData.ImportURL"
+            :sort="sorts[RequisitionData.ImportURL]"
             v-on:sort-changed="sortChanged"
           >URL</FeatherSortHeader>
           <FeatherSortHeader
             scope="col"
             class="onms-sort-header"
-            property="cron-schedule"
-            :sort="sorts['cron-schedule']"
+            :property="RequisitionData.CronSchedule"
+            :sort="sorts[RequisitionData.CronSchedule]"
             v-on:sort-changed="sortChanged"
           >Schedule Frequency</FeatherSortHeader>
           <FeatherSortHeader
             scope="col"
-            property="rescan-existing"
             class="onms-sort-header"
-            :sort="sorts['rescan-existing']"
+            :property="RequisitionData.RescanExisting"
+            :sort="sorts[RequisitionData.RescanExisting]"
             v-on:sort-changed="sortChanged"
           >Rescan Behavior</FeatherSortHeader>
           <th></th>
@@ -37,13 +37,13 @@
       <tbody>
         <tr v-bind:key="key" v-for="(item, key) in filteredItems">
           <td>
-            <ConfigurationCopyPasteDisplay :text="item['import-name']" />
+            <ConfigurationCopyPasteDisplay :text="item[RequisitionData.ImportName]" />
           </td>
           <td>
-            <ConfigurationCopyPasteDisplay :text="item['import-url-resource']" />
+            <ConfigurationCopyPasteDisplay :text="item[RequisitionData.ImportURL]" />
           </td>
-          <td>{{ cronToEnglish(item['cron-schedule']) }}</td>
-          <td>{{ rescanToEnglish(item['rescan-existing']) }}</td>
+          <td>{{ cronToEnglish(item[RequisitionData.CronSchedule]) }}</td>
+          <td>{{ rescanToEnglish(item[RequisitionData.RescanExisting]) }}</td>
           <td>
             <div class="flex">
               <FeatherButton icon="Edit" @click="() => props.editClicked(item.originalIndex)">
@@ -77,6 +77,7 @@ import { FeatherIcon } from '@featherds/icon'
 import Edit from '@featherds/icon/action/Edit'
 import Delete from '@featherds/icon/action/Delete'
 
+import { RequisitionData } from './copy/requisitionTypes'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationCopyPasteDisplay from './ConfigurationCopyPasteDisplay.vue'
 import { ConfigurationPageVals, ConfigurationTableSort, ProvisionDServerConfiguration } from './configuration.types'
@@ -95,11 +96,11 @@ const props = defineProps({
  * Local State
  */
 const sorts = reactive<ProvisionDServerConfiguration>({
-  ['import-name']: SORT.NONE,
-  ['cron-schedule']: SORT.NONE,
-  ['import-url-resource']: SORT.NONE,
-  ['rescan-existing']: SORT.NONE,
-  currentSort: { property: 'import-name', value: SORT.NONE },
+  [RequisitionData.ImportName]: SORT.NONE,
+  [RequisitionData.CronSchedule]: SORT.NONE,
+  [RequisitionData.ImportURL]: SORT.NONE,
+  [RequisitionData.RescanExisting]: SORT.NONE,
+  currentSort: { property: RequisitionData.ImportName, value: SORT.NONE },
   originalIndex: 0
 })
 

@@ -56,6 +56,7 @@ import ConfigurationTable from './ConfigurationTable.vue'
 import ConfigurationEmptyTable from './ConfigurationEmptyTable.vue'
 import ConfigurationDrawer from './ConfigurationDrawer.vue'
 import ConfigurationDoubleCheckModal from './ConfigurationDoubleCheckModal.vue'
+import { RequisitionData } from './copy/requisitionTypes'
 
 const store = useStore()
 
@@ -123,7 +124,7 @@ const editClicked = (index: number) => {
 const deleteClicked = (index: string) => {
   doubleCheck.active = true
   doubleCheck.index = parseInt(index)
-  doubleCheck.title = provisionDList?.value[doubleCheck?.index]?.['import-name']
+  doubleCheck.title = provisionDList?.value[doubleCheck?.index]?.[RequisitionData.ImportName]
 }
 
 /**
