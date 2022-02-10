@@ -32,5 +32,5 @@ public abstract class ConfigType {
     private ConfigType() {
     }
 
-    public static final String Default = "default.cfg";
+    public static final String Default = "default";
 }

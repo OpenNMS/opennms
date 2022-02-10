@@ -63,9 +63,10 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
     private static Logger LOG = LoggerFactory.getLogger(RetrieverImpl.class);
 
-    private static String FILENAME = "filename";
-    private static String TFTP_SERVER_IP = "tftpServerIp";
-    private static String TFTP_SERVER_PORT = "tftpServerPort";
+    private static String SCRIPT_VAR_FILENAME = "filename";
+    private static String SCRIPT_VAR_TFTP_SERVER_IP = "tftpServerIp";
+    private static String SCRIPT_VAR_TFTP_SERVER_PORT = "tftpServerPort";
+    private static String SCRIPT_VAR_CONFIG_TYPE = "configType";
 
     private final SshScriptingService sshScriptingService;
     private final TftpServer tftpServer;
@@ -105,11 +106,12 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         // -> the filename is used to distinguish incoming files
         // -> scripts must use "tftp put <localfile> ${filename}" (or similar) to upload the device config
         var filename = configTypeToUploadFileName(configType);
-        vs.put(FILENAME, filename);
+        vs.put(SCRIPT_VAR_FILENAME, filename);
 
         // set the ip address and port of the tftp server
-        vs.put(TFTP_SERVER_IP, tftpServerIp);
-        vs.put(TFTP_SERVER_PORT, String.valueOf(tftpServer.getPort()));
+        vs.put(SCRIPT_VAR_TFTP_SERVER_IP, tftpServerIp);
+        vs.put(SCRIPT_VAR_TFTP_SERVER_PORT, String.valueOf(tftpServer.getPort()));
+        vs.put(SCRIPT_VAR_CONFIG_TYPE, configType);
 
         if (protocol == Protocol.TFTP) {
             // the file receiver is registered with the tftp server
