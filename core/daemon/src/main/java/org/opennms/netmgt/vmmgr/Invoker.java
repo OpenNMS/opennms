@@ -179,10 +179,11 @@ public class Invoker {
                 if ("status".equals(invoke.getMethod())) {
                     try {
                         Object result = invoke(invoke, invokerService.getMbean());
-                        output.append(serviceName).append("=").append(result.toString()).append("\n");
+                        output.append(StatusGetter.formatStatusEntry(serviceName, result.toString())).append("\n");
                     } catch (final Throwable e) {
                         System.err.println("ERROR: an error occurred while calling 'status' on " + serviceName);
                         e.printStackTrace();
+                        output.append(StatusGetter.formatStatusEntry(serviceName, "STATUS_CHECK_ERROR")).append("\n");
                         output.append(serviceName).append("=").append("STATUS_CHECK_ERROR").append("\n");
                     }
                 }
