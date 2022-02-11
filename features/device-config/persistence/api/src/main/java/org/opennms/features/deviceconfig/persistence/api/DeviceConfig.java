@@ -75,7 +75,6 @@ public class DeviceConfig implements Serializable {
     private String encoding;
 
     @Column(name = "config_type", nullable = false)
-    @Enumerated(EnumType.STRING)
     private String configType;
 
     @Column(name = "failure_reason")

@@ -1888,20 +1888,11 @@
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.tftp/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-deviceconfig-retrieval" description="OpenNMS :: Features :: Device Config :: Retrieval">
+    <feature name="opennms-deviceconfig-monitor" description="OpenNMS :: Features :: Device Config :: Remote Poller">
         <feature>opennms-deviceconfig-tftp</feature>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.ssh-scripting/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.retrieval/${project.version}</bundle>
-    </feature>
-
-    <feature name="opennms-deviceconfig-ipc-client" description="OpenNMS :: Features :: Device Config :: IPC">
-        <feature>opennms-deviceconfig-retrieval</feature>
-        <!-- ipc client bundle missing here -->
-    </feature>
-
-    <feature name="opennms-deviceconfig-poller-client" description="OpenNMS :: Features :: Device Config :: Remote Poller">
-        <feature>opennms-deviceconfig-retrieval</feature>
-        <!-- remote poller bundle missing here -->
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.monitor/${project.version}</bundle>
     </feature>
 
     <!-- common module for sink client and server -->
@@ -1917,7 +1908,7 @@
     </feature>
 
     <!-- client side feature for the device config sink -->
-    <feature name="opennms-deviceconfig-sink-dispatcher" description="OpenNMS :: Features :: Device Config :: Sink :: Dispatcher">
+    <feature name="opennms-deviceconfig-sink" description="OpenNMS :: Features :: Device Config :: Sink :: Dispatcher">
         <feature>opennms-deviceconfig-sink-module</feature>
         <feature>opennms-deviceconfig-tftp</feature>
         <bundle>mvn:org.opennms.features.device-config.sink/org.opennms.features.device-config.sink.dispatcher/${project.version}</bundle>
