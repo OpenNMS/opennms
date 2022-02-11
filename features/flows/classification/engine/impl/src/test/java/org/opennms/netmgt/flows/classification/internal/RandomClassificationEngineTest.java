@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,8 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 package org.opennms.netmgt.flows.classification.internal;
-
-import static org.easymock.EasyMock.createNiceMock;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -92,7 +90,7 @@ public class RandomClassificationEngineTest {
 
     private static int MAX_RULES = 100;
 
-    private static final FilterService FILTER_SERVICE = createNiceMock(FilterService.class);
+    private static final FilterService FILTER_SERVICE = org.mockito.Mockito.mock(FilterService.class);
 
     private static IPAddress ipAddress(int value) {
         var bytes = new byte[]{(byte) (value >>> 24), (byte) (value >>> 16), (byte) (value >>> 8), (byte) value};

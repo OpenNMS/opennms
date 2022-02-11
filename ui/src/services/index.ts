@@ -10,7 +10,13 @@ import {
 import { getProvisionDService, putProvisionDService, populateProvisionD } from './configurationService'
 import { getAlarms, modifyAlarm } from './alarmService'
 
-import { getGraphNodesNodes } from './graphService'
+import {
+  getGraphNodesNodes,
+  getGraphDefinitionsByResourceId,
+  getDefinitionData,
+  getGraphMetrics,
+  getPreFabGraphs
+} from './graphService'
 
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
 import { getLogs, getLog } from './logsService'
@@ -20,6 +26,7 @@ import { getNodeIfServices } from './ifService'
 import { search } from './searchService'
 import { getInfo } from './infoService'
 import { getOpenApi } from './helpService'
+import { getResources, getResourceForNode } from './resourceService'
 
 export default {
   search,
@@ -48,4 +55,10 @@ export default {
   getProvisionDService,
   populateProvisionD,
   putProvisionDService
+  getResources,
+  getGraphMetrics,
+  getPreFabGraphs,
+  getDefinitionData,
+  getResourceForNode,
+  getGraphDefinitionsByResourceId
 }

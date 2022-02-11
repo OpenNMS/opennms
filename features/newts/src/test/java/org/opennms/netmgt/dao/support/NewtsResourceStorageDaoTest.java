@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,15 +32,26 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
@@ -77,7 +88,7 @@ public class NewtsResourceStorageDaoTest {
 
     @Before
     public void setUp() {
-        m_searcher = EasyMock.createNiceMock(CassandraSearcher.class);
+        m_searcher = mock(CassandraSearcher.class);
 
         m_nrs = new NewtsResourceStorageDao();
         m_nrs.setSearcher(m_searcher);
@@ -90,25 +101,25 @@ public class NewtsResourceStorageDaoTest {
         // Path is missing when the resource does not exist
         replay();
         assertFalse(m_nrs.exists(ResourcePath.get("should", "not", "exist"), 1));
-        verify();
+        doVerify();
 
         // Path is missing when the resource exists, but does not have a bucket
         index(ResourcePath.get("a"));
         replay();
         assertFalse(m_nrs.exists(ResourcePath.get("a"), 1));
-        verify();
+        doVerify();
 
         // Path exists when a child resource with a bucket exists
         index(ResourcePath.get("a", "b", "bucket"));
         replay();
         assertTrue(m_nrs.exists(ResourcePath.get("a"), 1));
-        verify();
+        doVerify();
 
         // Path exists when the resource with a bucket exists
         index(ResourcePath.get("a", "bucket"));
         replay();
         assertTrue(m_nrs.exists(ResourcePath.get("a"), 0));
-        verify();
+        doVerify();
     }
 
     @Test
@@ -120,7 +131,7 @@ public class NewtsResourceStorageDaoTest {
         assertTrue(m_nrs.existsWithin(ResourcePath.get("a", "b", "c"), 1));
         assertTrue(m_nrs.existsWithin(ResourcePath.get("a", "b"), 1));
         assertFalse(m_nrs.existsWithin(ResourcePath.get("a", "b"), 0));
-        verify();
+        doVerify();
     }
 
     @Test
@@ -128,13 +139,13 @@ public class NewtsResourceStorageDaoTest {
         // Children are empty when the resource id does not exist
         replay();
         assertEquals(0, m_nrs.children(ResourcePath.get("should", "not", "exist"), 1).size());
-        verify();
+        doVerify();
 
         // Children are empty when there are no child resources
         index(ResourcePath.get("a"));
         replay();
         assertEquals(0, m_nrs.children(ResourcePath.get("a"), 1).size());
-        verify();
+        doVerify();
 
         // Child exists when the is a child resource
         index(ResourcePath.get("a", "b", "bucket"));
@@ -142,7 +153,7 @@ public class NewtsResourceStorageDaoTest {
         Set<ResourcePath> children = m_nrs.children(ResourcePath.get("a"), 1);
         assertEquals(1, children.size());
         assertEquals(ResourcePath.get("a", "b"), children.iterator().next());
-        verify();
+        doVerify();
 
         // Same call but specifying the depth
         index(ResourcePath.get("a", "b", "bucket"));
@@ -150,7 +161,7 @@ public class NewtsResourceStorageDaoTest {
         children = m_nrs.children(ResourcePath.get("a"), 1);
         assertEquals(1, children.size());
         assertEquals(ResourcePath.get("a", "b"), children.iterator().next());
-        verify();
+        doVerify();
 
         // Only returns the next level
         index(ResourcePath.get("a", "b", "c", "bucket"));
@@ -158,14 +169,14 @@ public class NewtsResourceStorageDaoTest {
         children = m_nrs.children(ResourcePath.get("a"), 2);
         assertEquals(1, children.size());
         assertEquals(ResourcePath.get("a", "b"), children.iterator().next());
-        verify();
+        doVerify();
 
         // No children when depth is 0
         index(ResourcePath.get("a", "b", "bucket"));
         replay();
         children = m_nrs.children(ResourcePath.get("a"), 0);
         assertEquals(0, children.size());
-        verify();
+        doVerify();
     }
 
     @Test
@@ -173,7 +184,7 @@ public class NewtsResourceStorageDaoTest {
         // Attributes are empty when the resource does not exist
         replay();
         assertEquals(0, m_nrs.getAttributes(ResourcePath.get("should", "not", "exist")).size());
-        verify();
+        doVerify();
 
         // Metrics from all buckets should be present
         index(ResourcePath.get("a", "bucket1"), Sets.newHashSet("metric11", "metric12"));
@@ -194,7 +205,7 @@ public class NewtsResourceStorageDaoTest {
         }
         assertNotNull(metric11);
 
-        verify();
+        doVerify();
     }
 
     @Test
@@ -207,7 +218,7 @@ public class NewtsResourceStorageDaoTest {
         assertEquals(1, attributes.size());
         assertEquals("strafeping", attributes.iterator().next().getName());
 
-        verify();
+        doVerify();
     }
 
     private void index(ResourcePath path) {
@@ -219,10 +230,11 @@ public class NewtsResourceStorageDaoTest {
     }
 
     private void replay() {
-        EasyMock.expect(m_searcher.search(EasyMock.eq(m_context), EasyMock.anyObject(), EasyMock.anyBoolean())).andAnswer(new IAnswer<SearchResults>() {
-            public SearchResults answer() throws Throwable {
+        doAnswer(new Answer<SearchResults>() {
+            @Override
+            public SearchResults answer(final InvocationOnMock invocation) throws Throwable {
                 // Assume there is a single term query
-                Query q = (Query)EasyMock.getCurrentArguments()[1];
+                Query q = invocation.getArgument(1);
                 BooleanQuery bq = (BooleanQuery)q;
                 TermQuery tq = (TermQuery)bq.getClauses().get(0).getQuery();
                 String field = tq.getTerm().getField("");
@@ -239,14 +251,14 @@ public class NewtsResourceStorageDaoTest {
                 }
                 return searchResults;
             }
-        }).atLeastOnce();
-        EasyMock.expect(m_searcher.getResourceAttributes(EasyMock.eq(m_context), EasyMock.anyObject())).andReturn(Maps.newHashMap()).anyTimes();
-        EasyMock.replay(m_searcher);
+        }).when(m_searcher).search(eq(m_context), any(), anyBoolean());
+        when(m_searcher.getResourceAttributes(eq(m_context), any())).thenReturn(Maps.newHashMap());
     }
 
-    private void verify() {
-        EasyMock.verify(m_searcher);
-        EasyMock.reset(m_searcher);
+    private void doVerify() {
+        verify(m_searcher, atLeastOnce()).search(eq(m_context), any(Query.class), anyBoolean());
+        verify(m_searcher, atLeast(0)).getResourceAttributes(eq(m_context), anyString());
+        verifyNoMoreInteractions(m_searcher);
         m_indexedPaths.clear();
     }
 }

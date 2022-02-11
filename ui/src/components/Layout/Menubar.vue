@@ -66,9 +66,10 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 .return-btn {
-  background: var(--feather-secondary-variant);
-  color: var(--feather-primary-text-on-color);
+  background: var($secondary-variant);
+  color: var($primary-text-on-color);
   margin-right: 20px;
 }
 </style>
@@ -76,13 +77,13 @@ onMounted(async () => {
 <style lang="scss">
 @import "@featherds/styles/themes/open-mixins";
 body {
-  background: var(--feather-background);
+  background: var($background);
 }
 .open-light {
-  @include open-light();
+  @include open-light;
 }
 .open-dark {
-  @include open-dark();
+  @include open-dark;
 }
 .light-dark {
   font-size: 24px;

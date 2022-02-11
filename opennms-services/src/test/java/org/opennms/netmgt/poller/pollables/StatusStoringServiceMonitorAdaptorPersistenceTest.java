@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,22 @@
 
 package org.opennms.netmgt.poller.pollables;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.endsWith;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.net.InetAddress;
 import java.nio.file.Path;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -77,13 +89,14 @@ public class StatusStoringServiceMonitorAdaptorPersistenceTest {
         this.resourceStorageDao.setRrdDirectory(this.tempFolder.newFolder("status"));
         this.persisterFactory = new RrdPersisterFactory();
         this.persisterFactory.setResourceStorageDao(this.resourceStorageDao);
-        this.rrdStrategy = EasyMock.createMock(RrdStrategy.class);
+        this.rrdStrategy = mock(RrdStrategy.class);
         this.persisterFactory.setRrdStrategy(this.rrdStrategy);
     }
 
     @After
     public void tearDown() {
         MockLogAppender.assertNoWarningsOrGreater();
+        verifyNoMoreInteractions(rrdStrategy);
     }
 
     @Test
@@ -98,36 +111,14 @@ public class StatusStoringServiceMonitorAdaptorPersistenceTest {
         final MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", "Default",
                                                                            InetAddress.getByName("192.168.1.5"), "SMTP");
 
-        this.rrdStrategy.getDefaultFileExtension();
-        EasyMock.expectLastCall().andReturn(".jrb").atLeastOnce();
+        when(this.rrdStrategy.getDefaultFileExtension()).thenReturn(".jrb");
 
-        this.rrdStrategy.createDefinition(EasyMock.eq("192.168.1.5"),
-                                                     EasyMock.eq(getStatusRoot().resolve("192.168.1.5").toString()),
-                                                     EasyMock.eq("smtp-base"),
-                                                     EasyMock.anyInt(),
-                                                     EasyMock.anyObject(),
-                                                     EasyMock.anyObject());
-        EasyMock.expectLastCall().andReturn(null).atLeastOnce();
-
-        this.rrdStrategy.createFile(EasyMock.anyObject());
-        EasyMock.expectLastCall().atLeastOnce();
-
-        this.rrdStrategy.openFile(EasyMock.eq(getStatusRoot().resolve("192.168.1.5").resolve("smtp-base.jrb").toString()));
-        EasyMock.expectLastCall().andReturn(null).atLeastOnce();
-
-        this.rrdStrategy.updateFile(EasyMock.isNull(), EasyMock.eq("192.168.1.5"), EasyMock.endsWith(":1"));
-        EasyMock.expectLastCall().once();
-
-        this.rrdStrategy.updateFile(EasyMock.isNull(), EasyMock.eq("192.168.1.5"), EasyMock.endsWith(":-1"));
-        EasyMock.expectLastCall().once();
-
-        this.rrdStrategy.updateFile(EasyMock.isNull(), EasyMock.eq("192.168.1.5"), EasyMock.endsWith(":U"));
-        EasyMock.expectLastCall().once();
-
-        this.rrdStrategy.updateFile(EasyMock.isNull(), EasyMock.eq("192.168.1.5"), EasyMock.endsWith(":0"));
-        EasyMock.expectLastCall().once();
-
-        EasyMock.replay(this.rrdStrategy);
+        when(this.rrdStrategy.createDefinition(eq("192.168.1.5"),
+                                                     eq(getStatusRoot().resolve("192.168.1.5").toString()),
+                                                     eq("smtp-base"),
+                                                     anyInt(),
+                                                     anyList(),
+                                                     anyList())).thenReturn(null);
 
         sssma.handlePollResult(monitoredService, Maps.newHashMap(ImmutableMap.<String, Object>builder()
                                                              .put("rrd-repository", getStatusRoot().toString())
@@ -153,8 +144,20 @@ public class StatusStoringServiceMonitorAdaptorPersistenceTest {
                                                                              .put("rrd-status", "true")
                                                                              .build()), PollStatus.unknown(""));
 
-        EasyMock.verify(this.rrdStrategy);
-        EasyMock.reset(this.rrdStrategy);
+        verify(this.rrdStrategy, atLeastOnce()).getDefaultFileExtension();
+        verify(this.rrdStrategy, atLeastOnce()).createDefinition(eq("192.168.1.5"),
+                                                                 eq(getStatusRoot().resolve("192.168.1.5").toString()),
+                                                                 eq("smtp-base"),
+                                                                 anyInt(),
+                                                                 anyList(),
+                                                                 isNull());
+
+        verify(this.rrdStrategy, atLeastOnce()).createFile(anyObject());
+        verify(this.rrdStrategy, atLeastOnce()).openFile(eq(getStatusRoot().resolve("192.168.1.5").resolve("smtp-base.jrb").toString()));
+        verify(this.rrdStrategy, atLeastOnce()).updateFile(isNull(), eq("192.168.1.5"), endsWith(":1"));
+        verify(this.rrdStrategy, atLeastOnce()).updateFile(isNull(), eq("192.168.1.5"), endsWith(":-1"));
+        verify(this.rrdStrategy, atLeastOnce()).updateFile(isNull(), eq("192.168.1.5"), endsWith(":U"));
+        verify(this.rrdStrategy, times(1)).updateFile(isNull(), eq("192.168.1.5"), endsWith(":0"));
     }
 
     @Test
@@ -169,15 +172,10 @@ public class StatusStoringServiceMonitorAdaptorPersistenceTest {
         final MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", "Default",
                                                                            InetAddress.getByName("192.168.1.5"), "SMTP");
 
-        EasyMock.replay(this.rrdStrategy);
-
         sssma.handlePollResult(monitoredService, Maps.newHashMap(ImmutableMap.<String, Object>builder()
                                                              .put("rrd-repository", getStatusRoot().toString())
                                                              .put("rrd-base-name", "smtp-base")
                                                              .build()), PollStatus.available(42.0));
-
-        EasyMock.verify(this.rrdStrategy);
-        EasyMock.reset(this.rrdStrategy);
     }
 
     public Path getStatusRoot() {

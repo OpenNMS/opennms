@@ -105,6 +105,7 @@
         <feature>opennms-dao</feature>
         <feature>opennms-core-tracing</feature>
         <feature>sentinel-thresholding-service</feature>
+        <feature>opennms-util</feature>
 
         <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
 

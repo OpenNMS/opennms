@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,8 +29,15 @@
 package org.opennms.features.vaadin.nodemaps.ui;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-import org.easymock.EasyMock;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -54,10 +61,17 @@ public class OpenlayersWidgetCompontentTest {
 
     @Before
     public void setUp() {
-        m_nodeDao = EasyMock.createMock(NodeDao.class);
-        m_assetDao = EasyMock.createMock(AssetRecordDao.class);
-        m_geocoder = EasyMock.createMock(GeocoderService.class);
+        m_nodeDao = mock(NodeDao.class);
+        m_assetDao = mock(AssetRecordDao.class);
+        m_geocoder = mock(GeocoderService.class);
         m_component = new NodeMapComponent();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_nodeDao);
+        verifyNoMoreInteractions(m_assetDao);
+        verifyNoMoreInteractions(m_geocoder);
     }
 
     @Test
@@ -78,20 +92,19 @@ public class OpenlayersWidgetCompontentTest {
         
         assertEquals("220 Chatham Business Dr., Pittsboro, NC 27312", geo.asAddressString());
 
-        EasyMock.expect(m_geocoder.resolveAddress(geo.asAddressString())).andReturn(GeocoderResult.success(geo.asAddressString(), -1.0f, 1.0f).build()).times(1);
-        final PaintTarget target = EasyMock.createMock(PaintTarget.class);
+        when(m_geocoder.resolveAddress(geo.asAddressString())).thenReturn(GeocoderResult.success(geo.asAddressString(), -1.0f, 1.0f).build());
+        final PaintTarget target = mock(PaintTarget.class);
 
-        m_assetDao.saveOrUpdate(EasyMock.isA(OnmsAssetRecord.class));
+        m_assetDao.saveOrUpdate(isA(OnmsAssetRecord.class));
+        target.startTag(eq("1"));
+        target.addAttribute(eq("longitude"), eq("-1.0"));
+        target.addAttribute(eq("latitude"), eq("1.0"));
+        target.endTag(eq("1"));
 
-        target.startTag(EasyMock.eq("1"));
-        target.addAttribute(EasyMock.eq("longitude"), EasyMock.eq("-1.0"));
-        target.addAttribute(EasyMock.eq("latitude"), EasyMock.eq("1.0"));
-        target.endTag(EasyMock.eq("1"));
-        
-        EasyMock.replay(m_nodeDao, m_assetDao, m_geocoder, target);
-
-        // m_component.paintNode(target, node);
-        
-        EasyMock.verify(m_nodeDao, m_assetDao, m_geocoder, target);
+        verify(m_geocoder, times(1)).resolveAddress(geo.asAddressString());
+        verify(target, times(1)).startTag("1");
+        verify(target, times(1)).addAttribute("longitude", "-1.0");
+        verify(target, times(1)).addAttribute("latitude", "1.0");
+        verify(target, times(1)).endTag("1");
     }
 }

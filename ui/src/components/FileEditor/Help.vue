@@ -17,19 +17,20 @@ const triggerHelp = () => store.dispatch('fileEditorModule/setIsHelpOpen', false
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 .help-bar {
   height: calc(100vh - 200px);
-  border: 1px solid var(--feather-border-on-surface);
+  border: 1px solid var($border-on-surface);
   padding: 10px;
   overflow: auto;
   .feather-icon {
     position: absolute;
     right: 35px;
-    color: var(--feather-primary-text-on-surface)
+    color: var($primary-text-on-surface)
   }
   .snippets {
     padding: 15px;
-    color: var(--feather-primary-text-on-surface);
+    color: var($primary-text-on-surface);
   }
 }
 </style>

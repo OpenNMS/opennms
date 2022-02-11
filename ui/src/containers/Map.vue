@@ -71,14 +71,15 @@ onDeactivated(() => store.dispatch('appModule/setNavRailOpen', true))
 </style>
 
 <style lang="scss">
+@import "@featherds/styles/themes/variables";
 .default-theme {
   .splitpanes__splitter {
     height: 10px !important;
-    background: var(--feather-shade-3) !important;
+    background: var($shade-3) !important;
   }
   .splitpanes__splitter::after,
   .splitpanes__splitter::before {
-    background: var(--feather-primary-text-on-surface) !important;
+    background: var($primary-text-on-surface) !important;
   }
 }
 </style>

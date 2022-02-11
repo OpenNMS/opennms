@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.easymock.EasyMock;
 import org.jrobin.core.Datasource;
 import org.jrobin.core.RrdDb;
 import org.junit.After;
@@ -45,6 +44,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
@@ -52,11 +52,9 @@ import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
-import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
-import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
 import org.springframework.core.io.FileSystemResource;
@@ -71,9 +69,6 @@ public class NodeLevelDataOnMultipleNodesTest {
 
     @Rule
     public TemporaryFolder m_temporaryFolder = new TemporaryFolder();
-
-    /** The event proxy. */
-    private EventProxy m_eventProxy;
 
     /** The XML collection DAO. */
     private XmlDataCollectionConfigDaoJaxb m_xmlCollectionDao;
@@ -106,8 +101,6 @@ public class NodeLevelDataOnMultipleNodesTest {
         m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
         m_persisterFactory.setRrdStrategy(m_rrdStrategy);
 
-        m_eventProxy = EasyMock.createMock(EventProxy.class);
-
         m_xmlCollectionDao = new XmlDataCollectionConfigDaoJaxb();
         Resource resource = new FileSystemResource(getXmlConfigFileName());
         m_xmlCollectionDao.setConfigResource(resource);
@@ -115,8 +108,6 @@ public class NodeLevelDataOnMultipleNodesTest {
 
         m_collector = new XmlCollector();
         m_collector.setXmlCollectionDao(m_xmlCollectionDao);
-
-        EasyMock.replay(m_eventProxy);
     }
 
     protected RrdStrategy<?, ?> getRrdStrategy() throws Exception {
@@ -130,7 +121,6 @@ public class NodeLevelDataOnMultipleNodesTest {
      */
     @After
     public void tearDown() throws Exception {
-        EasyMock.verify(m_eventProxy);
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
@@ -204,7 +194,7 @@ public class NodeLevelDataOnMultipleNodesTest {
     public void executeCollectorTest(int nodeId, String ipAddress, String xmlSampleFileName, Map<String, Object> parameters, int expectedFiles) throws Exception {
         MockDocumentBuilder.setXmlFileName(xmlSampleFileName);
 
-        CollectionAgent collectionAgent = new MockCollectionAgent(nodeId, "mynode", InetAddrUtils.addr(ipAddress));
+        CollectionAgent collectionAgent = new MockCollectionAgent(nodeId, "mynode", InetAddressUtils.addr(ipAddress));
 
         CollectionSet collectionSet = XmlCollectorTestUtils.doCollect(m_collector, collectionAgent, parameters);
         Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());

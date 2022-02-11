@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,18 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,10 +98,8 @@ public class RrdPersistOperationBuilderTest {
         m_intf.setIpAddress(InetAddressUtils.addr("1.1.1.1"));
         m_intf.setId(27);
 
-        m_ifDao = EasyMock.createMock(IpInterfaceDao.class);
-        EasyMock.expect(m_ifDao.load(m_intf.getId())).andReturn(m_intf).anyTimes();
-
-        EasyMock.replay(m_ifDao);
+        m_ifDao = mock(IpInterfaceDao.class);
+        when(m_ifDao.load(m_intf.getId())).thenReturn(m_intf);
     }
 
     @After
@@ -103,6 +107,7 @@ public class RrdPersistOperationBuilderTest {
         MockLogAppender.assertNoWarningsOrGreater();
         m_fileAnticipator.deleteExpected();
         m_fileAnticipator.tearDown();
+        verifyNoMoreInteractions(m_ifDao);
     }
 
     private SnmpCollectionAgent getCollectionAgent() {
@@ -126,6 +131,8 @@ public class RrdPersistOperationBuilderTest {
 
         RrdPersistOperationBuilder builder = new RrdPersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName", false);
         builder.commit();
+
+        verify(m_ifDao, atLeastOnce()).load(anyInt());
     }
 
     @Test
@@ -162,6 +169,8 @@ public class RrdPersistOperationBuilderTest {
         RrdPersistOperationBuilder builder = new RrdPersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName", false);
         builder.declareAttribute(attributeType);
         builder.commit();
+
+        verify(m_ifDao, atLeastOnce()).load(anyInt());
     }
 
     @Test
@@ -199,6 +208,8 @@ public class RrdPersistOperationBuilderTest {
         builder.declareAttribute(attributeType);
         builder.setAttributeValue(attributeType, 6.022E23d);
         builder.commit();
+
+        verify(m_ifDao, atLeastOnce()).load(anyInt());
     }
 
 
@@ -234,6 +245,8 @@ public class RrdPersistOperationBuilderTest {
         builder.declareAttribute(attributeType);
         builder.setAttributeValue(attributeType, null);
         builder.commit();
+
+        verify(m_ifDao, atLeastOnce()).load(anyInt());
     }
 
     private RrdRepository createRrdRepository() throws IOException {

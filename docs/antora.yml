@@ -1,9 +1,10 @@
 name: horizon
-version: '30.0.0-SNAPSHOT'
+version: '30-SNAPSHOT'
 title: Horizon
 prerelease: true
 asciidoc:
   attributes:
+    full-display-version: '30.0.0-SNAPSHOT'
     experimental: true
     prerelease: true
     source-language: asciidoc@
@@ -31,3 +32,4 @@ nav:
 - modules/operation/nav.adoc
 - modules/development/nav.adoc
 - modules/reference/nav.adoc
+

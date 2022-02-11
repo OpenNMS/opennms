@@ -60,7 +60,7 @@ onMounted(() => {
 @import "@featherds/styles/mixins/elevation";
 .card {
   @include elevation(2);
-  background: var(--feather-surface);
+  background: var($surface);
   padding: 15px;
   position: relative;
 }

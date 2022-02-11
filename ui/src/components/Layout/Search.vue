@@ -48,11 +48,12 @@ const results = computed(() => {
 </script>
   
 <style lang="scss">
+@import "@featherds/styles/themes/variables";
 .menubar-search {
   width: 350px !important;
   margin-right: 20px;
   .feather-input-border {
-    background: var(--feather-surface);
+    background: var($surface);
   }
   &.feather-autocomplete-container {
     padding-top: 0px;

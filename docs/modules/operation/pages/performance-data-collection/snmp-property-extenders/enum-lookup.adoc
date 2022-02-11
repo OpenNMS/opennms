@@ -1,0 +1,76 @@
+= Enum Lookup property extender
+The Enum Lookup property extender provides a mechanism that works like a lookup table for values of a local MIB table column.
+
+== When to use the Enum Lookup property extender
+Use the Enum Lookup property extender to map an enumerated set of integer values to a corresponding set of human-sensible text values.
+For example, the `dot1dStpPortTable` contains two integer columns whose values reflect port attributes.
+
+[source, snmp-mib]
+----
+   dot1dStpPortState OBJECT-TYPE <1>
+       SYNTAX      INTEGER {
+                       disabled(1),
+                       blocking(2),
+                       listening(3),
+                       learning(4),
+                       forwarding(5),
+                       broken(6)
+                   }
+  -- ...
+
+   dot1dStpPortEnable OBJECT-TYPE <2>
+       SYNTAX      INTEGER {
+                       enabled(1),
+                       disabled(2)
+                   }
+----
+<1> Port STP state enumerated type
+<2> Port enablement status enumerated type
+
+This extender enables persisting the values of these enumerated integer columns as text that an operator can easily recognize.
+
+NOTE: While this extender is intended primarily for translating integer values to more descriptive ones as shown in the example below, it could also be used to translate from one set of alphanumeric values to another set.
+
+== Configure the Enum Lookup Property Extender
+The Enum Lookup property extender expects zero or more parameters.
+Only the `default-value` parameter has a fixed name; if it is present, its value is used any time a lookup cannot be completed.
+If `default-value` is not provided and a lookup fails, no value will be returned for the property.
+The remaining parameters are named for the input values, and their values represent the output values.
+
+This example shows how to map values of `dot1dStpPortState` and `dot1dStpPortEnable` to their text equivalents.
+
+[source, xml]
+----
+<resourceType name="dot1dStpPortEntry" label="dot1d STP Port" resourceLabel="${index}">
+  <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+  <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+</resourceType>
+
+...
+
+<groups>
+  <group name="dot1dStpPortTable" ifType="all">
+    <mibObj oid=".1.3.6.1.2.1.17.2.15.1.3"  instance="dot1dStpPortEntry" alias="dot1dStpPortState"  type="string"/> <1>
+    <mibObj oid=".1.3.6.1.2.1.17.2.15.1.4"  instance="dot1dStpPortEntry" alias="dot1dStpPortEnable" type="string"/> <2>
+    <mibObj oid=".1.3.6.1.2.1.17.2.15.1.10" instance="dot1dStpPortEntry" alias="dot1dStpPortFwTrans"   type="counter" />
+    <property instance="dot1dStpPortEntry" alias="dot1dStpPortStateText" class-name="org.opennms.netmgt.collectd.EnumLookupPropertyExtender"> <3>
+      <parameter key="enum-attribute" value="dot1dStpPortState"/>
+      <parameter key="1" value="disabled(1)"/>
+      <parameter key="2" value="blocking(2)"/>
+      <parameter key="3" value="listening(3)"/>
+      <parameter key="4" value="learning(4)"/>
+      <parameter key="5" value="forwarding(5)"/>
+      <parameter key="6" value="broken(6)"/>
+    </property>
+    <property instance="dot1dStpPortEntry" alias="dot1dStpPortEnableText" class-name="org.opennms.netmgt.collectd.EnumLookupPropertyExtender"> <4>
+      <!-- Note absence of parenthetical numeric values; they are entirely optional -->
+      <parameter key="1" value="enabled"/>
+      <parameter key="2" value="disabled"/>
+    </property>
+  </group>
+</groups>
+----
+<1> Port STP state enumerated integer attribute
+<2> Port enablement status enumerated integer attribute
+<3> Derived port STP state text attribute `dot1dStpPortStateText`
+<4> Derived port enablement status text attribute `dot1dStpPortEnableText`

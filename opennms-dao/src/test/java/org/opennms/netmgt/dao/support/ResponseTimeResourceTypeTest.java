@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,15 @@
 
 package org.opennms.netmgt.dao.support;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +46,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -66,19 +71,19 @@ public class ResponseTimeResourceTypeTest {
 
     private FilesystemResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
 
-    private IpInterfaceDao ipInterfaceDao = createMock(IpInterfaceDao.class);
+    private IpInterfaceDao ipInterfaceDao = mock(IpInterfaceDao.class);
 
-    private OnmsNode node = createMock(OnmsNode.class);
+    private OnmsNode node = mock(OnmsNode.class);
 
-    private OnmsIpInterface ipInterface = createMock(OnmsIpInterface.class);
+    private OnmsIpInterface ipInterface = mock(OnmsIpInterface.class);
 
     private Set<OnmsIpInterface> ipInterfaces = new HashSet<>();
 
     private ResponseTimeResourceType responseTimeResourceType = new ResponseTimeResourceType(resourceStorageDao, ipInterfaceDao);
 
-    private NodeDao nodeDao = createMock(NodeDao.class);
+    private NodeDao nodeDao = mock(NodeDao.class);
 
-    private ResourceDao resourceDao = createMock(ResourceDao.class);
+    private ResourceDao resourceDao = mock(ResourceDao.class);
 
     @Before
     public void setUp() throws IOException {
@@ -96,22 +101,33 @@ public class ResponseTimeResourceTypeTest {
         ipInterfaces.add(ipInterface);
     }
 
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(ipInterfaceDao);
+        verifyNoMoreInteractions(node);
+        verifyNoMoreInteractions(ipInterface);
+        verifyNoMoreInteractions(nodeDao);
+        verifyNoMoreInteractions(resourceDao);
+    }
+
     @Test
     public void canGetResourcesForNode() throws IOException {
-        expect(node.getIpInterfaces()).andReturn(ipInterfaces);
-        expect(node.getLocation()).andReturn(null);
-        expect(ipInterface.getIpAddress()).andReturn(InetAddress.getByName("127.0.0.1")).atLeastOnce();
+        when(node.getIpInterfaces()).thenReturn(ipInterfaces);
+        when(node.getLocation()).thenReturn(null);
+        when(ipInterface.getIpAddress()).thenReturn(InetAddress.getByName("127.0.0.1"));
 
-        replay(node, ipInterface);
         NodeResourceType nodeResourceType = new NodeResourceType(resourceDao, nodeDao);
         OnmsResource nodeResource = new OnmsResource("1", "Node", nodeResourceType, Collections.emptySet(), ResourcePath.get("foo"));
         nodeResource.setEntity(node);
         
         List<OnmsResource> resources = responseTimeResourceType.getResourcesForParent(nodeResource);
-        verify(node, ipInterface);
 
         assertEquals(1, resources.size());
         assertEquals("127.0.0.1", resources.get(0).getName());
+
+        verify(ipInterface, atLeastOnce()).getIpAddress();
+        verify(node, times(1)).getLocation();
+        verify(node, times(1)).getIpInterfaces();
     }
 
     @Test
@@ -119,34 +135,38 @@ public class ResponseTimeResourceTypeTest {
         OnmsMonitoringLocation location = new OnmsMonitoringLocation();
         location.setLocationName(NON_DEFAULT_LOCATION_NAME);
 
-        expect(node.getIpInterfaces()).andReturn(ipInterfaces);
-        expect(node.getLocation()).andReturn(location).atLeastOnce();
-        expect(ipInterface.getIpAddress()).andReturn(InetAddress.getByName("127.0.0.1")).atLeastOnce();
+        when(node.getIpInterfaces()).thenReturn(ipInterfaces);
+        when(node.getLocation()).thenReturn(location);
+        when(ipInterface.getIpAddress()).thenReturn(InetAddress.getByName("127.0.0.1"));
 
-        replay(node, ipInterface);
         NodeResourceType nodeResourceType = new NodeResourceType(resourceDao, nodeDao);
         OnmsResource nodeResource = new OnmsResource("1", "Node", nodeResourceType, Collections.emptySet(), ResourcePath.get("foo"));
         nodeResource.setEntity(node);
 
         List<OnmsResource> resources = responseTimeResourceType.getResourcesForParent(nodeResource);
-        verify(node, ipInterface);
 
         assertEquals(1, resources.size());
         assertEquals("127.0.0.1", resources.get(0).getName());
+
+        verify(node, atLeastOnce()).getLocation();
+        verify(node, times(1)).getIpInterfaces();
+        verify(ipInterface, atLeastOnce()).getIpAddress();
     }
 
     @Test
     public void canGetChildByName() throws IOException {
-        expect(ipInterfaceDao.get(node, "127.0.0.1")).andReturn(ipInterface);
+        when(ipInterfaceDao.get(node, "127.0.0.1")).thenReturn(ipInterface);
 
-        OnmsResource parent = createMock(OnmsResource.class);
-        expect(parent.getEntity()).andReturn(node);
+        OnmsResource parent = mock(OnmsResource.class);
+        when(parent.getEntity()).thenReturn(node);
 
-        replay(ipInterface, parent, ipInterfaceDao);
         OnmsResource resource = responseTimeResourceType.getChildByName(parent, "127.0.0.1");
-        verify(ipInterface, parent, ipInterfaceDao);
 
         assertEquals("127.0.0.1", resource.getName());
         assertEquals(parent, resource.getParent());
+
+        verify(parent, atLeastOnce()).getEntity();
+        verify(node, times(1)).getLocation();
+        verify(ipInterfaceDao, times(1)).get(any(OnmsNode.class), anyString());
     }
 }

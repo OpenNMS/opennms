@@ -28,6 +28,13 @@
 
 package org.opennms.features.config.service.impl;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
@@ -37,22 +44,18 @@ import org.opennms.features.config.exception.SchemaAlreadyExistsException;
 import org.opennms.features.config.exception.SchemaNotFoundException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.EventType;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.features.config.service.util.OpenAPIConfigHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-
 @Component
 public class ConfigurationManagerServiceImpl implements ConfigurationManagerService {
     private final static Logger LOG = LoggerFactory.getLogger(ConfigurationManagerServiceImpl.class);
     private final ConfigStoreDao<JSONObject> configStoreDao;
-    // This map contains key: ConfigUpdateInfo value: list of Consumer
-    private final ConcurrentHashMap<ConfigUpdateInfo, Collection<Consumer<ConfigUpdateInfo>>> onloadNotifyMap = new ConcurrentHashMap<>();
+    private final EventHandlerManager eventHandlerManager = new EventHandlerManager();
 
     public ConfigurationManagerServiceImpl(final ConfigStoreDao<JSONObject> configStoreDao) {
         this.configStoreDao = configStoreDao;
@@ -91,28 +94,8 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer) {
-        onloadNotifyMap.computeIfAbsent(info, (k) -> new ArrayList<>()).add(consumer);
-    }
-
-    /**
-     * It will be trigger when a config is updated.
-     *
-     * @param configUpdateInfo
-     */
-    private void triggerReloadConsumer(ConfigUpdateInfo configUpdateInfo) {
-        LOG.debug("Calling onReloaded callbacks");
-        onloadNotifyMap.computeIfPresent(configUpdateInfo, (k, v) -> {
-            v.forEach(c -> {
-                try {
-                    c.accept(configUpdateInfo);
-                } catch (Exception e) {
-                    LOG.warn("Fail to notify configName: {}, callback: {}, error: {}",
-                            configUpdateInfo.getConfigName(), v, e.getMessage());
-                }
-            });
-            return v;
-        });
+    public void registerEventHandler(EventType type, ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer) {
+        eventHandlerManager.registerEventHandler(type, info, consumer);
     }
 
     /**
@@ -134,18 +117,20 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 
         configStoreDao.addConfig(configName, configId, new JSONObject(configObject.toString()));
         LOG.info("ConfigurationManager.registeredConfiguration(configName={}, configId={}, config={});", configName, configId, configObject);
+
+        this.eventHandlerManager.callEventHandlers(EventType.CREATE, new ConfigUpdateInfo(configName, configId));
     }
 
     @Override
     public void unregisterConfiguration(final String configName, final String configId) {
         this.configStoreDao.deleteConfig(configName, configId);
+        this.eventHandlerManager.callEventHandlers(EventType.DELETE, new ConfigUpdateInfo(configName, configId));
     }
 
     @Override
     public void updateConfiguration(String configName, String configId, JsonAsString config, boolean isReplace) {
         configStoreDao.updateConfig(configName, configId, new JSONObject(config.toString()), isReplace);
-        ConfigUpdateInfo updateInfo = new ConfigUpdateInfo(configName, configId);
-        this.triggerReloadConsumer(updateInfo);
+        this.eventHandlerManager.callEventHandlers(EventType.UPDATE, new ConfigUpdateInfo(configName, configId));
     }
 
     @Override

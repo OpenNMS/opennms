@@ -1,9 +1,9 @@
 
 = Alarm Details
 
-This Alarm-Details Dashlet shows a table with alarms and some detailed information.
+This dashlet displays a table with alarms and details about them in the xref:admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
 
-.Information of the alarms
+.Alarm information displayed in dashlet
 [options="header, autowidth", cols="1,2"]
 |===
 | Field
@@ -16,25 +16,28 @@ This Alarm-Details Dashlet shows a table with alarms and some detailed informati
 | Alarm severity (Cleared, Indeterminate, Normal, Warning, Minor, Major, Critical)
 
 | Node label
-| Node label of the node where the alarm occurred
+| Node label of the node where the alarm occurred.
 
 | Alarm count
-| Alarm count based on reduction key for deduplication
+| Alarm count based on reduction key for deduplication.
 
 | Last Event Time
-| Last time the alarm occurred
+| Last time the alarm occurred.
 
 | Log Message
-| Reason and detailed log message of the alarm
+| Reason and detailed log message of the alarm.
 |===
 
-Configure the Alarm Details Dashlet with the following parameters.
+.Alarm Details dashlet configuration options
 
 [options="autowidth", cols="1,2"]
 |===
 | Boost support
-| <<admin/webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted Severity>>
+| Change priority of the dashlet on ops board depending on the alarm level. (See <<admin/webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted Severity>>.)
 
-| Configuration
-| <<admin/webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder, Criteria Builder>>
+| Properties: Boosted severity
+| Specify the alarm severity that boosts the dashlet to a higher priority on the ops board.
+
+| Properties: Criteria
+| Specify criteria on which to filter alarms. (See <<admin/webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder, Criteria Builder>>.)
 |===

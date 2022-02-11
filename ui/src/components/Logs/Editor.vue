@@ -89,17 +89,18 @@ const init = (editor: any) => {
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
 .editor {
   height: calc(100vh - 120px);
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--feather-border-on-surface);
+  border: 1px solid var($border-on-surface);
 
   .toolbar {
     display: block;
     width: 100%;
     height: 30px;
-    background: var(--feather-shade-3);
+    background: var($shade-3);
 
     .btn {
       margin: 0px;
