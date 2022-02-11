@@ -152,8 +152,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         String config = "{\n" +
                 "\t\"location\": \"" + profile.getLocation() + "\",\n" +
                 "\t\"id\": \"" + profile.getId() + "\",\n" +
-                "\t\"broker-url\": \"failover:tcp://" + OpenNMSContainer.ALIAS + ":61616\",\n" +
-                "\t\"http-url\": \"http://" + OpenNMSContainer.ALIAS + ":8980/opennms\"\n" +
+                "\t\"broker-url\": \"failover:tcp://" + OpenNMSContainer.ALIAS + ":61616\"\n" +
                 "}";
         OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(config, Map.class));
         
