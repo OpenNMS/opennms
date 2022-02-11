@@ -76,8 +76,7 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigDTO, De
             LOG.debug("handle message - location: " + message.location + "; address: " + address.getHostAddress() + "; fileName: " + message.fileName);
             OnmsIpInterface ipInterface = ipInterfaceDao.findByIpAddressAndLocation(address.getHostAddress(), message.location);
             if (ipInterface != null) {
-                DeviceConfig.updateDeviceConfigContent(
-                        deviceConfigDao,
+                deviceConfigDao.updateDeviceConfigContent(
                         ipInterface,
                         message.fileName,
                         null,

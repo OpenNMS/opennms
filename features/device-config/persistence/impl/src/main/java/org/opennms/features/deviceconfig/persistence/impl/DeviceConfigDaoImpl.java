@@ -28,16 +28,21 @@
 
 package org.opennms.features.deviceconfig.persistence.impl;
 
-import org.opennms.features.deviceconfig.persistence.api.ConfigType;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.model.OnmsIpInterface;
-
-import java.util.List;
-import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long> implements DeviceConfigDao {
+
+    private static Logger LOG = LoggerFactory.getLogger(DeviceConfigDaoImpl.class);
 
     public DeviceConfigDaoImpl() {
         super(DeviceConfig.class);
@@ -61,4 +66,75 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         }
         return Optional.empty();
     }
+
+    @Override
+    public void updateDeviceConfigContent(
+            OnmsIpInterface ipInterface,
+            String configType,
+            String encoding,
+            byte[] deviceConfigBytes
+    ) {
+        Date currentTime = new Date();
+        Optional<DeviceConfig> configOptional = getLatestConfigForInterface(ipInterface, configType);
+        DeviceConfig lastDeviceConfig = configOptional.orElse(null);
+        // Config retrieval succeeded
+        if (lastDeviceConfig != null &&
+            // Config didn't change, just update last updated field.
+            Arrays.equals(lastDeviceConfig.getConfig(), deviceConfigBytes)) {
+            lastDeviceConfig.setLastUpdated(currentTime);
+            lastDeviceConfig.setLastSucceeded(currentTime);
+            saveOrUpdate(lastDeviceConfig);
+            LOG.debug("Device config did not change - ipInterface: {}; type: {}", ipInterface, configType);
+        } else if (lastDeviceConfig != null
+                   // last config was failure, update config now.
+                   && lastDeviceConfig.getConfig() == null) {
+            lastDeviceConfig.setConfig(deviceConfigBytes);
+            lastDeviceConfig.setCreatedTime(currentTime);
+            lastDeviceConfig.setLastUpdated(currentTime);
+            lastDeviceConfig.setLastSucceeded(currentTime);
+            saveOrUpdate(lastDeviceConfig);
+            LOG.info("Persisted device config - ipInterface: {}; type: {}", ipInterface, configType);
+        } else {
+            // Config changed, or there is no config for the device yet, create new entry.
+            DeviceConfig deviceConfig = new DeviceConfig();
+            deviceConfig.setConfig(deviceConfigBytes);
+            deviceConfig.setCreatedTime(currentTime);
+            deviceConfig.setIpInterface(ipInterface);
+            deviceConfig.setEncoding(encoding);
+            deviceConfig.setConfigType(configType);
+            deviceConfig.setLastUpdated(currentTime);
+            deviceConfig.setLastSucceeded(currentTime);
+            saveOrUpdate(deviceConfig);
+            LOG.info("Persisted changed device config - ipInterface: {}; type: {}", ipInterface, configType);
+        }
+    }
+
+    @Override
+    public void updateDeviceConfigFailure(
+            OnmsIpInterface ipInterface,
+            String configType,
+            String encoding,
+            String reason
+    ) {
+        Date currentTime = new Date();
+        Optional<DeviceConfig> configOptional = getLatestConfigForInterface(ipInterface, configType);
+        DeviceConfig lastDeviceConfig = configOptional.orElse(null);
+        DeviceConfig deviceConfig;
+        // If there is config already, update the same entry.
+        if (lastDeviceConfig != null) {
+            deviceConfig = lastDeviceConfig;
+        } else {
+            deviceConfig = new DeviceConfig();
+            deviceConfig.setIpInterface(ipInterface);
+            deviceConfig.setConfigType(configType);
+            deviceConfig.setEncoding(encoding);
+        }
+        deviceConfig.setFailureReason(reason);
+        deviceConfig.setLastFailed(currentTime);
+        deviceConfig.setLastUpdated(currentTime);
+        saveOrUpdate(deviceConfig);
+        LOG.warn("Persisted device config backup failure - ipInterface: {}; type: {}; reason: {}", ipInterface, configType, reason);
+    }
+
+
 }

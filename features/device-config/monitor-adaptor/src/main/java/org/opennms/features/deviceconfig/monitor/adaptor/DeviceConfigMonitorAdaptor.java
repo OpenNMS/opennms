@@ -69,8 +69,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
         if (deviceConfigBytes == null) {
             // Config retrieval failed
-            DeviceConfig.updateDeviceConfigFailure(
-                    deviceConfigDao,
+            deviceConfigDao.updateDeviceConfigFailure(
                     ipInterface,
                     configType,
                     encoding,
@@ -78,8 +77,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
             );
         } else {
             // Config retrieval succeeded
-            DeviceConfig.updateDeviceConfigContent(
-                    deviceConfigDao,
+            deviceConfigDao.updateDeviceConfigContent(
                     ipInterface,
                     configType,
                     encoding,

@@ -40,4 +40,18 @@ public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
 
     Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String configType);
 
+    void updateDeviceConfigContent(
+            OnmsIpInterface ipInterface,
+            String configType,
+            String encoding,
+            byte[] deviceConfigBytes
+    );
+
+    void updateDeviceConfigFailure(
+            OnmsIpInterface ipInterface,
+            String configType,
+            String encoding,
+            String reason
+    );
+
 }

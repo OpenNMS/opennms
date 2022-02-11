@@ -32,7 +32,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,83 +50,10 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "device_config")
 public class DeviceConfig implements Serializable {
-
-    private static Logger LOG = LoggerFactory.getLogger(DeviceConfig.class);
-
-    public static void updateDeviceConfigContent(
-            DeviceConfigDao deviceConfigDao,
-            OnmsIpInterface ipInterface,
-            String configType,
-            String encoding,
-            byte[] deviceConfigBytes
-    ) {
-        Date currentTime = new Date();
-        Optional<DeviceConfig> configOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
-        DeviceConfig lastDeviceConfig = configOptional.orElse(null);
-        // Config retrieval succeeded
-        if (lastDeviceConfig != null &&
-            // Config didn't change, just update last updated field.
-            Arrays.equals(lastDeviceConfig.getConfig(), deviceConfigBytes)) {
-            lastDeviceConfig.setLastUpdated(currentTime);
-            lastDeviceConfig.setLastSucceeded(currentTime);
-            deviceConfigDao.saveOrUpdate(lastDeviceConfig);
-            LOG.debug("Device config did not change - ipInterface: {}; type: {}", ipInterface, configType);
-        } else if (lastDeviceConfig != null
-                   // last config was failure, update config now.
-                   && lastDeviceConfig.getConfig() == null) {
-            lastDeviceConfig.setConfig(deviceConfigBytes);
-            lastDeviceConfig.setCreatedTime(currentTime);
-            lastDeviceConfig.setLastUpdated(currentTime);
-            lastDeviceConfig.setLastSucceeded(currentTime);
-            deviceConfigDao.saveOrUpdate(lastDeviceConfig);
-            LOG.info("Persisted device config - ipInterface: {}; type: {}", ipInterface, configType);
-        } else {
-            // Config changed, or there is no config for the device yet, create new entry.
-            DeviceConfig deviceConfig = new DeviceConfig();
-            deviceConfig.setConfig(deviceConfigBytes);
-            deviceConfig.setCreatedTime(currentTime);
-            deviceConfig.setIpInterface(ipInterface);
-            deviceConfig.setEncoding(encoding);
-            deviceConfig.setConfigType(configType);
-            deviceConfig.setLastUpdated(currentTime);
-            deviceConfig.setLastSucceeded(currentTime);
-            deviceConfigDao.saveOrUpdate(deviceConfig);
-            LOG.info("Persisted changed device config - ipInterface: {}; type: {}", ipInterface, configType);
-        }
-    }
-
-    public static void updateDeviceConfigFailure(
-            DeviceConfigDao deviceConfigDao,
-            OnmsIpInterface ipInterface,
-            String configType,
-            String encoding,
-            String reason
-    ) {
-        Date currentTime = new Date();
-        Optional<DeviceConfig> configOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
-        DeviceConfig lastDeviceConfig = configOptional.orElse(null);
-        DeviceConfig deviceConfig;
-        // If there is config already, update the same entry.
-        if (lastDeviceConfig != null) {
-            deviceConfig = lastDeviceConfig;
-        } else {
-            deviceConfig = new DeviceConfig();
-            deviceConfig.setIpInterface(ipInterface);
-            deviceConfig.setConfigType(configType);
-            deviceConfig.setEncoding(encoding);
-        }
-        deviceConfig.setFailureReason(reason);
-        deviceConfig.setLastFailed(currentTime);
-        deviceConfig.setLastUpdated(currentTime);
-        deviceConfigDao.saveOrUpdate(deviceConfig);
-        LOG.warn("Persisted device config backup failure - ipInterface: {}; type: {}; reason: {}", ipInterface, configType, reason);
-    }
 
     private static final long serialVersionUID = 1078656993339537763L;
 
