@@ -28,32 +28,56 @@
 
 package org.opennms.core.snmp.profile.mapper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.google.common.io.Resources;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
+import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
-import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Test;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.snmp.Definition;
-import org.opennms.netmgt.config.snmp.SnmpProfile;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import static org.junit.Assert.*;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml"
+})
+@JUnitConfigurationEnvironment
 public class SnmpProfileMapperTest {
+
+    @Autowired
+    private SnmpPeerFactory snmpPeerFactory;
 
     // This tests SnmpPeerFactory w.r.to profiles.
     @Test
-    public void testSnmpPeerFactoryWithProfiles() {
+    public void testSnmpPeerFactoryWithProfiles() throws IOException {
 
         URL url = getClass().getResource("/snmp-config.xml");
         assertNotNull(url);
-        SnmpPeerFactory.setFile(new File(url.getFile()));
-        SnmpPeerFactory snmpPeerFactory = SnmpPeerFactory.getInstance();
+        String configXml = Resources.toString(url, StandardCharsets.UTF_8);
+        JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+        String snmpConfigJson = converter.xmlToJson(configXml);
+        SnmpConfig config = ConfigConvertUtil.jsonToObject(snmpConfigJson, SnmpConfig.class);
+        snmpPeerFactory.updateConfig(config);
+        snmpPeerFactory.reload();
         assertNotNull(snmpPeerFactory.getSnmpConfig());
         List<SnmpProfile> profiles = snmpPeerFactory.getProfiles();
         assertEquals(4, profiles.size());

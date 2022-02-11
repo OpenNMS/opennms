@@ -2,20 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
-           http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
-           http://www.springframework.org/schema/context
-           http://www.springframework.org/schema/context/spring-context-4.2.xsd">
-
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+    ">
 	<context:annotation-config/>
-
-	<bean id="mockSnmpConfig" class="org.opennms.core.test.ConfigurationTestUtils" factory-method="getInputStreamForConfigFile">
-		<constructor-arg value="snmp-config.xml"/>
-	</bean>
-
-	<bean id="snmpPeerFactory" class="org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory">
-		<constructor-arg ref="mockSnmpConfig"/>
-	</bean>
 
     <bean id="init-snmpPeerFactory" depends-on="snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
       <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.setInstance</value></property>
@@ -25,7 +18,15 @@
         </list>
       </property>      
     </bean>
+    <bean id="snmpPeerFactory" class="org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory"/>
 
+
+    <util:map id="configFileMap" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
+    </util:map>
+
+    <bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
+        <property name="configFileMap" ref="configFileMap"/>
+    </bean>
     <import resource="classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml" />
     <import resource="classpath:/META-INF/opennms/applicationContext-rpc-snmp.xml" />
 </beans>

@@ -54,7 +54,6 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
 		"classpath:/META-INF/opennms/applicationContext-soa.xml",
-		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
 		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
 		"classpath:/META-INF/opennms/applicationContext-mockDao.xml",
 		"classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -62,7 +61,6 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
 		"classpath*:/META-INF/opennms/provisiond-extensions.xml",
-		"classpath*:/META-INF/opennms/component-dao.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

@@ -31,10 +31,12 @@ package org.opennms.core.test.snmp;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -46,8 +48,12 @@ public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ProxySnmpAgentConfigFactory.class);
 
-    public ProxySnmpAgentConfigFactory(final InputStream config) throws FileNotFoundException {
-        super(new InputStreamResource(config));
+    public ProxySnmpAgentConfigFactory() throws IOException {
+        super();
+    }
+
+    public ProxySnmpAgentConfigFactory(SnmpConfig snmpConfig) throws IOException {
+        super(snmpConfig);
     }
 
     @Override

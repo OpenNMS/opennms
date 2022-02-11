@@ -33,18 +33,18 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.opennms.core.xml.ValidateUsing;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.xml.ValidateUsing;
-
 /**
  * Top-level element for the snmp-config.xml configuration file.
+ * Keep the XML annotation is due to existing UI still using xml output
  */
-
 @XmlRootElement(name="snmp-config")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("snmp-config.xsd")
@@ -55,10 +55,12 @@ public class SnmpConfig extends Configuration implements Serializable {
      * Maps IP addresses to specific SNMP parameters (retries, timeouts...)
      */
     @XmlElement(name="definition")
-    private List<Definition> m_definitions = new ArrayList<>();
+    @JsonProperty("definition")
+    private List<Definition> definitions = new ArrayList<>();
 
     @XmlElement(name="profiles")
-    private SnmpProfiles m_snmpProfiles;
+    @JsonProperty("profiles")
+    private SnmpProfiles profiles;
 
     public SnmpConfig() {
         super();
@@ -93,38 +95,48 @@ public class SnmpConfig extends Configuration implements Serializable {
     }
 
     public List<Definition> getDefinitions() {
-        if (m_definitions == null) {
+        if (definitions == null) {
             return Collections.emptyList();
         } else {
-            return Collections.unmodifiableList(m_definitions);
+            return Collections.unmodifiableList(definitions);
         }
     }
 
     public void setDefinitions(final List<Definition> definitions) {
-        m_definitions = new ArrayList<Definition>(definitions);
+        this.definitions = new ArrayList<Definition>(definitions);
     }
 
     public void addDefinition(final Definition definitions) throws IndexOutOfBoundsException {
-        this.m_definitions.add(definitions);
+        this.definitions.add(definitions);
     }
 
     public boolean removeDefinition(final Definition definitions) {
-        return m_definitions.remove(definitions);
+        return this.definitions.remove(definitions);
+    }
+
+
+    public SnmpProfiles getProfiles() {
+        return profiles;
+    }
+
+
+    public void setProfiles(SnmpProfiles profiles) {
+        this.profiles = profiles;
     }
 
     public SnmpProfiles getSnmpProfiles() {
-        return m_snmpProfiles;
+        return profiles;
     }
-
+    // changed for backward compatibility
     public void setSnmpProfiles(SnmpProfiles snmpProfiles) {
-        this.m_snmpProfiles = snmpProfiles;
+        this.profiles = snmpProfiles;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((m_definitions == null) ? 0 : m_definitions.hashCode());
+        result = prime * result + ((definitions == null) ? 0 : definitions.hashCode());
         return result;
     }
 
@@ -140,11 +152,11 @@ public class SnmpConfig extends Configuration implements Serializable {
             return false;
         }
         SnmpConfig other = (SnmpConfig) obj;
-        if (m_definitions == null) {
-            if (other.m_definitions != null) {
+        if (definitions == null) {
+            if (other.definitions != null) {
                 return false;
             }
-        } else if (!m_definitions.equals(other.m_definitions)) {
+        } else if (!definitions.equals(other.definitions)) {
             return false;
         }
         return true;
@@ -152,12 +164,12 @@ public class SnmpConfig extends Configuration implements Serializable {
 
     @Override
     public String toString() {
-        return "SnmpConfig [definitions=" + m_definitions + "]";
+        return "SnmpConfig [definitions=" + definitions + "]";
     }
 
     public void visit(SnmpConfigVisitor visitor) {
         visitor.visitSnmpConfig(this);
-        for (final Definition definition : m_definitions) {
+        for (final Definition definition : definitions) {
             definition.visit(visitor);
         }
         visitor.visitSnmpConfigFinished();

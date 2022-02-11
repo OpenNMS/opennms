@@ -28,17 +28,21 @@
 
 package org.opennms.netmgt.config;
 
+import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 
+import com.google.common.io.Resources;
 import junit.framework.TestCase;
 
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.springframework.core.io.Resource;
 
 /**
  * 
@@ -54,9 +58,12 @@ public class ConfigureSnmpTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
     	super.setUp();
-    	
-        Resource rsrc = ConfigurationTestUtils.getSpringResourceForResource(this, "snmp-config-configureSnmpTest.xml");
-    	SnmpPeerFactory.setInstance(new SnmpPeerFactory(rsrc));
+        URL url = Thread.currentThread().getContextClassLoader().getResource("org/opennms/netmgt/config/snmp-config-configureSnmpTest.xml");
+        String configXml = Resources.toString(url, StandardCharsets.UTF_8);
+        JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+        String snmpConfigJson = converter.xmlToJson(configXml);
+        SnmpConfig config = ConfigConvertUtil.jsonToObject(snmpConfigJson, SnmpConfig.class);
+    	SnmpPeerFactory.setInstance(new SnmpPeerFactory(config));
     }
 
     /**
@@ -71,7 +78,7 @@ public class ConfigureSnmpTest extends TestCase {
     }
 
     /**
-     * Test method for {@link org.opennms.netmgt.config.SnmpPeerFactory#createSnmpEventInfo(org.opennms.netmgt.events.api.model.IEvent)}.
+     * Test method for {@link org.opennms.netmgt.config.SnmpPeerFactory# createSnmpEventInfo(org.opennms.netmgt.events.api.model.IEvent)}.
      * Tests creating an SNMP config definition from a configureSNMP event.
      * 
      * @throws UnknownHostException 
@@ -203,9 +210,8 @@ public class ConfigureSnmpTest extends TestCase {
         assertEquals("10.1.1.7", SnmpPeerFactory.getInstance().getSnmpConfig().getDefinitions().get(3).getSpecifics().get(0));
         assertEquals("10.1.1.10", SnmpPeerFactory.getInstance().getSnmpConfig().getDefinitions().get(3).getRanges().get(0).getBegin());
 
-        String marshalledConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
-        assertNotNull(marshalledConfig);
-        
+        String jsonConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsJson();
+        assertFalse(jsonConfig.isEmpty());
     }
 
     private EventBuilder createConfigureSnmpEventBuilder(final String firstIp, final String lastIp) {

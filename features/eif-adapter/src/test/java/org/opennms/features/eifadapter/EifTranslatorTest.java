@@ -57,7 +57,7 @@ import org.xbill.DNS.Address;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+        "classpath:/META-INF/opennms/applicationContext-mockSnmpDao.xml"
 })
 @JUnitConfigurationEnvironment
 public class EifTranslatorTest {

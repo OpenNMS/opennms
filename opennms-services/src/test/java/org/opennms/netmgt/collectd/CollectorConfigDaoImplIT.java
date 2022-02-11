@@ -40,6 +40,7 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.InputStreamResource;
 
@@ -86,7 +87,7 @@ public class CollectorConfigDaoImplIT extends TestCase {
 
         InputStream stream = null;
         stream = getInputStreamForFile("/org/opennms/netmgt/config/snmp-config.xml");
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new InputStreamResource(stream)));
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new SnmpConfig()));
         stream.close();
 
         stream = getInputStreamForFile("/org/opennms/netmgt/config/datacollection-config.xml");

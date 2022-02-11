@@ -43,8 +43,11 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.dao.mock.JdbcEventdServiceManager;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.eventd.BroadcastEventProcessor;
@@ -153,9 +156,11 @@ public class OpenNMSITCase {
             populateDatabase();
             
             DataSourceFactory.setInstance(m_db);
-
-            SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
-            
+            JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+            String json = converter.xmlToJson(getSnmpConfig());
+            SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(json, SnmpConfig.class);
+            SnmpPeerFactory snmpPeerFactory = new SnmpPeerFactory(snmpConfig);
+            SnmpPeerFactory.setInstance(snmpPeerFactory);
             if (isStartEventd()) {
                 m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_registry);
 

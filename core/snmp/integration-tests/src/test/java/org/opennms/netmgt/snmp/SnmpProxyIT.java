@@ -31,6 +31,8 @@ package org.opennms.netmgt.snmp;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,14 +40,18 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.io.Resources;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +114,12 @@ public class SnmpProxyIT {
     public void agentShouldUseConfiguredProxy() throws Exception {
 
         Resource configuration = createConfiguration();
-        SnmpPeerFactory snmpAgentConfigFactory = new SnmpPeerFactory(configuration);
+        URL url = configuration.getURL();
+        String configXml = Resources.toString(url, StandardCharsets.UTF_8);
+        JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+        String snmpConfigJson = converter.xmlToJson(configXml);
+        SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(snmpConfigJson, SnmpConfig.class);
+        SnmpPeerFactory snmpAgentConfigFactory = new SnmpPeerFactory(snmpConfig);
 
         agentShouldUseConfiguredProxy(snmpAgentConfigFactory, "169.254.1.1"); // proxy1
         agentShouldUseConfiguredProxy(snmpAgentConfigFactory, "169.254.1.2"); // proxy2

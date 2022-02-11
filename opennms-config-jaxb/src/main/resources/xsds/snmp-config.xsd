@@ -247,18 +247,29 @@
               </annotation>
             </element>
 
-            <element maxOccurs="unbounded" minOccurs="0" name="specific"
-                 type="string">
+            <element maxOccurs="unbounded" minOccurs="0" name="specific">
               <annotation>
                 <documentation>Specific IP address to which this definition
                   applies.</documentation>
               </annotation>
+              <!-- workaround for the issue https://github.com/eclipse-ee4j/eclipselink/issues/1388 -->
+              <complexType>
+                <simpleContent>
+                  <extension base="string"/>
+                </simpleContent>
+              </complexType>
             </element>
 
-            <element maxOccurs="unbounded" minOccurs="0" ref="this:ip-match">
+            <element maxOccurs="unbounded" minOccurs="0" name="ip-match">
               <annotation>
                 <documentation>Match Octets (as in IPLIKE)</documentation>
               </annotation>
+              <!-- workaround for the issue https://github.com/eclipse-ee4j/eclipselink/issues/1388 -->
+              <complexType>
+                <simpleContent>
+                  <extension base="this:ip-match"/>
+                </simpleContent>
+              </complexType>
             </element>
           </sequence>
 
@@ -322,18 +333,15 @@
     </complexType>
   </element>
 
-  <element name="ip-match">
+  <simpleType name="ip-match">
     <annotation>
       <documentation>Octet Range</documentation>
     </annotation>
+    <restriction base="string">
+      <pattern value="([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)"/>
+    </restriction>
+  </simpleType>
 
-    <simpleType>
-      <restriction base="string">
-        <pattern value="([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)"/>
-      </restriction>
-    </simpleType>
-    
-  </element>
   <simpleType name="pdu-size-limit">
     <restriction base="int">
       <fractionDigits value="0"/>

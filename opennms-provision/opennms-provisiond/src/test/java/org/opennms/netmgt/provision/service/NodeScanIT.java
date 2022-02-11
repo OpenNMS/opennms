@@ -36,9 +36,11 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.io.Resources;
 import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +52,10 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.filter.api.FilterDao;
@@ -110,6 +115,7 @@ public class NodeScanIT {
     @Qualifier("scheduledExecutor")
     private PausibleScheduledThreadPoolExecutor m_scheduledExecutor;
 
+    @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
 
     private ForeignSourceRepository m_foreignSourceRepository;
@@ -138,9 +144,12 @@ public class NodeScanIT {
         // This has profiles with valid config.
         URL url =  getClass().getResource("/snmp-config1.xml");
         try (InputStream configStream = url.openStream()) {
-            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactory(configStream);
+            String configXml = Resources.toString(url, StandardCharsets.UTF_8);
+            JaxbXmlConverter converter = new JaxbXmlConverter("snmp-config.xsd", "snmp-config",null);
+            String configJson = converter.xmlToJson(configXml);
+            SnmpConfig snmpConfig = ConfigConvertUtil.jsonToObject(configJson, SnmpConfig.class);
+            SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactory(snmpConfig);
             // This is to not override snmp-config from etc
-            SnmpPeerFactory.setFile(new File(url.getFile()));
             m_provisioner.setAgentConfigFactory(snmpPeerFactory);
             LocationAwareSnmpClient locationAwareSnmpClient = m_provisionService.getLocationAwareSnmpClient();
             FilterDao filterDao = Mockito.mock(FilterDao.class);

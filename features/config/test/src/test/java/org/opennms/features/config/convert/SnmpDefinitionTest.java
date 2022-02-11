@@ -26,20 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.snmp;
+package org.opennms.features.config.convert;
+
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.Range;
 
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+public class SnmpDefinitionTest extends CmConfigTest<Definition> {
 
-public class DefinitionTest extends XmlTestNoCastor<Definition> {
-
-	public DefinitionTest(final Definition sampleObject,
-			final String sampleXml, final String schemaFile) {
-		super(sampleObject, sampleXml, schemaFile);
+	public SnmpDefinitionTest(final Definition sampleObject,
+                              final String sampleXml, final String schemaFile) {
+		super(sampleObject, sampleXml, "snmp-config.xsd", "definition");
 	}
 
 	@Parameters

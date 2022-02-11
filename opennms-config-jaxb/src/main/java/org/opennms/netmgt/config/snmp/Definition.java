@@ -28,10 +28,8 @@
 
 package org.opennms.netmgt.config.snmp;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,16 +37,24 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 
 /**
  * Provides a mechanism for associating one or more specific IP addresses
  * and/or IP address ranges with a set of SNMP parms which will be used in
  * place of the default values during SNMP data collection.
  */
-
 @XmlRootElement(name="definition")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder={"m_ranges","m_specifics","m_ipMatches"})
+@XmlType(propOrder={"ranges","specifics","ipMatches"})
+@JsonPropertyOrder({"ranges","specifics","ipMatches"})
+/**
+ * Keep the XML annotation is due to existing UI still using xml output
+ */
 public class Definition extends Configuration implements Serializable {
     private static final long serialVersionUID = 5646937263626185373L;
     /**
@@ -56,116 +62,121 @@ public class Definition extends Configuration implements Serializable {
      *  applies.
      */
     @XmlElement(name="range")
-    private List<Range> m_ranges = new ArrayList<>();
+    @JsonProperty("range")
+    private List<Range> ranges = new ArrayList<>();
 
     /**
      * Specific IP address to which this definition
      *  applies.
      */
     @XmlElement(name="specific")
-    private List<String> m_specifics = new ArrayList<>();
+    @JsonProperty("specific")
+    private List<String> specifics = new ArrayList<>();
 
     /**
      * Match Octets (as in IPLIKE)
      */
     @XmlElement(name="ip-match")
-    private List<String> m_ipMatches = new ArrayList<>();
+    @JsonProperty("ip-match")
+    private List<String> ipMatches = new ArrayList<>();
 
     @XmlAttribute(name="location")
-    private String m_location;
+    @JsonProperty("location")
+    private String location;
 
     @XmlAttribute(name="profile-label")
-    private String m_profileLabel;
+    @JsonProperty("profile-label")
+    private String profileLabel;
 
     public Definition() {
         super();
     }
 
     public List<Range> getRanges() {
-        if (m_ranges == null) {
+        if (ranges == null) {
             return Collections.emptyList();
         } else {
-            return Collections.unmodifiableList(m_ranges);
+            return Collections.unmodifiableList(ranges);
         }
     }
 
     public void setRanges(final List<Range> ranges) {
-        m_ranges = new ArrayList<Range>(ranges);
+        this.ranges = new ArrayList<Range>(ranges);
     }
 
     public void addRange(final Range range) throws IndexOutOfBoundsException {
-        m_ranges.add(range);
+        ranges.add(range);
     }
 
     public boolean removeRange(final Range range) {
-        return m_ranges.remove(range);
+        return ranges.remove(range);
     }
 
     public List<String> getSpecifics() {
-        if (m_specifics == null) {
+        if (specifics == null) {
             return Collections.emptyList();
         } else {
-            return Collections.unmodifiableList(m_specifics);
+            return Collections.unmodifiableList(specifics);
         }
     }
 
     public void setSpecifics(final List<String> specifics) {
-        m_specifics = new ArrayList<String>(specifics);
+        this.specifics = new ArrayList<String>(specifics);
     }
 
     public void addSpecific(final String specific) throws IndexOutOfBoundsException {
-        m_specifics.add(specific);
+        specifics.add(specific);
     }
 
     public boolean removeSpecific(final String specific) {
-        return m_specifics.remove(specific);
+        return specifics.remove(specific);
     }
 
     public List<String> getIpMatches() {
-        if (m_ipMatches == null) {
+        if (ipMatches == null) {
             return Collections.emptyList();
         } else {
-            return Collections.unmodifiableList(m_ipMatches);
+            return Collections.unmodifiableList(ipMatches);
         }
     }
 
     public void setIpMatches(final List<String> ipMatches) {
-        m_ipMatches = new ArrayList<String>(ipMatches);
+        this.ipMatches = new ArrayList<String>(ipMatches);
     }
 
     public void addIpMatch(final String ipMatch) throws IndexOutOfBoundsException {
-        m_ipMatches.add(ipMatch);
+        ipMatches.add(ipMatch);
     }
 
     public boolean removeIpMatch(final String ipMatch) {
-        return m_ipMatches.remove(ipMatch);
+        return ipMatches.remove(ipMatch);
     }
 
     public String getLocation() {
-        return m_location;
+        return location;
     }
 
     public void setLocation(String location) {
-        this.m_location = location;
+        this.location = location;
     }
 
     public String getProfileLabel() {
-        return m_profileLabel;
+        return profileLabel;
     }
 
     public void setProfileLabel(String profileLabel) {
-        this.m_profileLabel = profileLabel;
+        this.profileLabel = profileLabel;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((m_ipMatches == null) ? 0 : m_ipMatches.hashCode());
-        result = prime * result + ((m_ranges == null) ? 0 : m_ranges.hashCode());
-        result = prime * result + ((m_specifics == null) ? 0 : m_specifics.hashCode());
-        result = prime * result + ((m_location == null) ? 0 : m_location.hashCode());
-        result = prime * result + ((m_profileLabel == null) ? 0 : m_profileLabel.hashCode());
+        result = prime * result + ((ipMatches == null) ? 0 : ipMatches.hashCode());
+        result = prime * result + ((ranges == null) ? 0 : ranges.hashCode());
+        result = prime * result + ((specifics == null) ? 0 : specifics.hashCode());
+        result = prime * result + ((location == null) ? 0 : location.hashCode());
+        result = prime * result + ((profileLabel == null) ? 0 : profileLabel.hashCode());
         return result;
     }
 
@@ -181,34 +192,34 @@ public class Definition extends Configuration implements Serializable {
             return false;
         }
         final Definition other = (Definition) obj;
-        if (m_ipMatches == null) {
-            if (other.m_ipMatches != null) {
+        if (ipMatches == null) {
+            if (other.ipMatches != null) {
                 return false;
             }
-        } else if (!m_ipMatches.equals(other.m_ipMatches)) {
+        } else if (!ipMatches.equals(other.ipMatches)) {
             return false;
         }
-        if (m_ranges == null) {
-            if (other.m_ranges != null) {
+        if (ranges == null) {
+            if (other.ranges != null) {
                 return false;
             }
-        } else if (!m_ranges.equals(other.m_ranges)) {
+        } else if (!ranges.equals(other.ranges)) {
             return false;
         }
-        if (m_specifics == null) {
-            if (other.m_specifics != null) {
+        if (specifics == null) {
+            if (other.specifics != null) {
                 return false;
             }
-        } else if (!m_specifics.equals(other.m_specifics)) {
+        } else if (!specifics.equals(other.specifics)) {
             return false;
         }
-        if (m_location == null) {
-            if (other.m_location != null) {
+        if (location == null) {
+            if (other.location != null) {
                 return false;
             }
-        } else if (!m_location.equals(other.m_location)) {
+        } else if (!location.equals(other.location)) {
             return false;
-        } else if (!m_profileLabel.equals(other.m_profileLabel)) {
+        } else if (profileLabel!=null && other.profileLabel!=null && !profileLabel.equals(other.profileLabel)) {
             return false;
         }
 
@@ -235,6 +246,6 @@ public class Definition extends Configuration implements Serializable {
                 + getMaxRequestSize() + ", maxVarsPerPdu=" + getMaxVarsPerPdu() + ", port=" + getPort() + ", privacyPassphrase=" + getPrivacyPassphrase() + ", privacyProtocol="
                 + getPrivacyProtocol() + ", proxyHost=" + getProxyHost() + ", readCommunity=" + getReadCommunity() + ", retries=" + getRetry() + ", securityLevel="
                 + getSecurityLevel() + ", securityName=" + getSecurityName() + ", timeout=" + getTimeout() + ", version=" + getVersion() + ", writeCommunity="
-                + getWriteCommunity() + ", ranges=" + m_ranges + ", specifics=" + m_specifics + ", ipMatches=" + m_ipMatches + "]";
+                + getWriteCommunity() + ", ranges=" + ranges + ", specifics=" + specifics + ", ipMatches=" + ipMatches + "]";
     }
 }

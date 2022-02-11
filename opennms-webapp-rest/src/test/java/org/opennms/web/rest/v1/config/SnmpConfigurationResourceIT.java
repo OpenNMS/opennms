@@ -32,15 +32,30 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.features.config.dao.api.ConfigConverter;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -64,8 +79,11 @@ public class SnmpConfigurationResourceIT extends AbstractSpringJerseyRestTestCas
     @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(SnmpConfigurationResourceIT.class);
 
+    @Autowired
+    private ConfigurationManagerServiceMock cm;
+
     @Override
-    protected void beforeServletStart() throws Exception {
+    protected void beforeServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
     }
     

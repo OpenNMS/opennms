@@ -36,9 +36,11 @@ import javax.ws.rs.core.Response;
 
 import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("snmpConfigurationResource")
@@ -46,12 +48,14 @@ public class SnmpConfigurationResource {
     @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(SnmpConfigurationResource.class);
 
-    @Resource(name="snmp-config.xml")
-    ConfigurationResource<SnmpConfig> m_snmpConfigResource;
+    @Autowired
+    private SnmpPeerFactory snmpPeerFactory;
     
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getSnmpConfiguration() throws ConfigurationResourceException {
-        return Response.ok(m_snmpConfigResource.get()).build();
+    public Response getSnmpConfiguration() {
+        // make sure it is up-to-date
+        snmpPeerFactory.reload();
+        return Response.ok(snmpPeerFactory.getSnmpConfig()).build();
     }
 }

@@ -242,7 +242,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "site-status-views.xml", SiteStatusViewConfiguration.class, true, null);
         addFile(Source.CONFIG, "snmptrap-northbounder-configuration.xml", SnmpTrapNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "snmp-asset-adapter-configuration.xml", SnmpAssetAdapterConfiguration.class, true, null);
-        addFile(Source.CONFIG, "snmp-config.xml", SnmpConfig.class, true, null);
+        addFile(Source.CLASSPATH, "/defaults/snmp-config.xml", SnmpConfig.class, true, null);
         addFile(Source.CONFIG, "snmp-hardware-inventory-adapter-configuration.xml", HwInventoryAdapterConfiguration.class, false, null);
         addFile(Source.CONFIG, "snmp-interface-poller-configuration.xml", SnmpInterfacePollerConfiguration.class, true, null);
         addFile(Source.CONFIG, "snmp-metadata-adapter-configuration.xml", SnmpMetadataConfig.class, false, null);

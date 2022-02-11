@@ -89,6 +89,12 @@
         <cm:importConfig schemaId="notifications" filePath="notifications.xml"/>
     </changeSet>
 
+    <changeSet author="psuthar" id="1.0-register-schema-snmp">
+        <cm:registerSchema id="snmp"/>
+        <cm:importSchemaFromXsd id="snmp" xsdFileName="snmp-config.xsd" xsdFileHash="0d1a0c83acd21b95089193e72f020e49ad3b91e812223704829337ee92cfd81d" rootElement="snmp-config"/>
+        <cm:importConfig schemaId="snmp" filePath="snmp-config.xml"/>
+    </changeSet>
+
     <!--TODO check which schemas can have multiple configurations-->
     <!-- to create schema with multiple configurations use allowMultiple="true" in  <cm:registerSchema ...>
     <changeSet author="..." id="...">

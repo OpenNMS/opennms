@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+    ">
+
+	<context:annotation-config />
+	<bean id="skipConfigUpgrades" class="java.lang.Boolean">
+		<constructor-arg value="true"/>
+	</bean>
+
+	<bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" />
+
+	<util:map id="configFileMap" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
+		<entry key="snmp" value="etc/snmp-config.xml"/>
+	</util:map>
+
+	<bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
+		<property name="configFileMap" ref="configFileMap"/>
+	</bean>
+
+</beans>
