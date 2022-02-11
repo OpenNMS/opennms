@@ -1,0 +1,91 @@
+= Regex Property Extender
+
+The Regex property extender works similarly to the Index Split property extender, with the added capability of importing a string property from a source table.
+
+== When to Use the Regex Property Extender
+
+The Regex property extender is useful when some portion of the target MIB table's index can be used as an index to the source MIB table.
+For example, the Cisco Airespace `bsnAPIfLoadParametersTable` is indexed using the tuple of `bsnAPDot3MacAdddress` and `bsnAPIfSlotId`, whereas the `bsnAPTable` is indexed on `bsnAPDot3MacAddress` alone.
+
+[source, snmp-mib]
+----
+bsnAPIfLoadParametersEntry OBJECT-TYPE
+    -- ...
+    DESCRIPTION
+        "An entry (conceptual row) in the Table.
+        Entries in this MIB are indexed by
+        bsnAPDot3MacAddress and bsnAPIfSlotId"
+    INDEX           {
+                        bsnAPDot3MacAddress,
+                        bsnAPIfSlotId
+                    } <1>
+
+    -- ...
+
+bsnAPEntry OBJECT-TYPE
+    -- ...
+    DESCRIPTION
+        "An entry in the bsnAPTable."
+    INDEX           { bsnAPDot3MacAddress } <2>
+    -- ...
+----
+<1> `bsnAPDot3MacAddress` is the first component of the compound index for the entry type for `bsnAPIfLoadParametersTable`.
+<2> `bsnAPDot3MacAddress` is the sole index for the entry type for `bsnAPTable`.
+
+By extracting just the first index component and using the result as an index into the source MIB table, it's possible to import the human-sensible `bsnAPName` string property from the source MIB table.
+
+== Configure the Regex Property Extender
+
+The Regex property extender expects three parameters, all of which are required:
+
+.Regex Property Extender Parameters
+[options="header", cols="1,3"]
+|===
+| Name
+| Description
+
+| source-type
+| The name of the `resourceType` associated with the source MIB table.
+
+| source-alias
+| The alias name of the string property to import from the source MIB table.
+
+| index-pattern
+| A regular expression containing one matching group.
+|===
+
+The `index-pattern` expression must meet the same criteria as for the Index Split property extender.
+The subpattern matched by its first capturing group will be used as an index into the source MIB table; any further groups are ignored.
+
+This example shows how to use the value of `bsnAPDot3MacAddress` as an index into the `bsnAPTable`.
+
+[source, xml]
+----
+<resourceType name="bsnAPEntry" label="Cisco Wireless AP" resourceLabel="${bsnAPName} (index ${index})">
+  <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+  <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+</resourceType>
+
+<resourceType name="bsnAPIfLoadParametersEntry" label="Cisco Wireless AP Resources" resourceLabel="${bsnAPName} (index ${index})">
+  <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+  <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+</resourceType>
+
+<groups>
+  <group name="bsnAPTable" ifType="all">
+    <mibObj oid=".1.3.6.1.4.1.14179.2.2.1.1.3" instance="bsnAPEntry" alias="bsnAPName" type="string" /> <1>
+  </group>
+
+  <group name="bsnAPIfLoadParametersTable" ifType="all">
+    <mibObj oid=".1.3.6.1.4.1.14179.2.2.13.1.4" instance="bsnAPIfLoadParametersEntry" alias="bsnAPIfLoadNumOfCli" type="integer" />
+    <property instance="bsnAPIfLoadParametersEntry" alias="bsnAPName" class-name="org.opennms.netmgt.collectd.RegExPropertyExtender"> <2>
+      <parameter key="source-type" value="bsnAPEntry" />
+      <parameter key="source-alias" value="bsnAPName" />
+      <parameter key="index-pattern" value="^(.+)\.\d+$" /> <3>
+    </property>
+  </group>
+</groups>
+----
+<1> Regular string property `bsnAPName` on the source table
+<2> Extended string property `bsnAPName` on the target table
+<3> Regular expression; the portion in parentheses is what gets extracted. `\d+` means "one or more decimal digit characters".

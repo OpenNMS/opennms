@@ -57,6 +57,9 @@ Additional settings are needed on both Minion and {page-component-title} to enab
 
 Refer to the deployment section in the documentation for details.
 
+NOTE : Horizon 29.0.5 consolidated IPC features into one feature on Minion. This groups all IPC (Sink/RPC/Twin) features of JMS into one feature as `openms-core-ipc-jms`. Similarly for Kafka and gRPC.
+When using Kafka or gRPC, you need to disable `opennms-core-ipc-jms` instead of disabling individual features such as `opennms-core-ipc-sink-camel`.
+
 
 === SQS Minion IPC Support Dropped
 

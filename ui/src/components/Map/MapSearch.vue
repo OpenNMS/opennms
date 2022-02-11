@@ -64,11 +64,12 @@ const results = computed(() => {
 </script>
   
 <style lang="scss">
+@import "@featherds/styles/themes/variables";
 .map-search {
   z-index: 1000;
   width: 290px !important;
   .feather-input-border {
-    background: var(--feather-surface);
+    background: var($surface);
   }
   &.feather-autocomplete-container {
     padding-top: 0px;

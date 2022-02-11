@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.easymock.EasyMock;
 import org.jrobin.core.Datasource;
 import org.jrobin.core.RrdDb;
 import org.junit.After;
@@ -44,6 +43,7 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
@@ -51,11 +51,9 @@ import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
-import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
-import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
 import org.springframework.core.io.FileSystemResource;
@@ -67,16 +65,12 @@ import org.springframework.core.io.Resource;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public abstract class XmlCollectorITCase {
-
     /** The temporary folder. */
     @Rule
     public TemporaryFolder m_temporaryFolder = new TemporaryFolder();
 
     /** The collection agent. */
     private CollectionAgent m_collectionAgent;
-
-    /** The event proxy. */
-    private EventProxy m_eventProxy;
 
     /** The XML collection DAO. */
     private XmlDataCollectionConfigDaoJaxb m_xmlCollectionDao;
@@ -102,15 +96,12 @@ public abstract class XmlCollectorITCase {
         initializeRrdStrategy();
         initializeDocumentBuilder();
         
-        m_collectionAgent = new MockCollectionAgent(1, "mynode.local", InetAddrUtils.addr("127.0.0.1"));
-        m_eventProxy = EasyMock.createMock(EventProxy.class);
+        m_collectionAgent = new MockCollectionAgent(1, "mynode.local", InetAddressUtils.addr("127.0.0.1"));
 
         m_xmlCollectionDao = new XmlDataCollectionConfigDaoJaxb();
         Resource resource = new FileSystemResource(getConfigFileName());
         m_xmlCollectionDao.setConfigResource(resource);
         m_xmlCollectionDao.afterPropertiesSet();
-
-        EasyMock.replay(m_eventProxy);
     }
 
     /**
@@ -185,7 +176,6 @@ public abstract class XmlCollectorITCase {
      */
     @After
     public void tearDown() throws Exception {
-        EasyMock.verify(m_eventProxy);
         MockLogAppender.assertNoWarningsOrGreater();
     }
 

@@ -53,7 +53,7 @@ html {
 }
 a {
   text-decoration: none;
-  color: var(--feather-primary);
+  color: var($primary);
 }
 .pointer {
   cursor: pointer !important;
@@ -61,15 +61,15 @@ a {
 
 // global feather typography classes
 .headline3 {
-  @include headline3();
+  @include headline3;
 }
 .headline4 {
-  @include headline4();
+  @include headline4;
 }
 .subtitle1 {
-  @include subtitle1();
+  @include subtitle1;
 }
 .subtitle2 {
-  @include subtitle2();
+  @include subtitle2;
 }
 </style>

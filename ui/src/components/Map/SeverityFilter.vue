@@ -29,6 +29,7 @@ const onSeveritySelect = () => store.dispatch('mapModule/setSelectedSeverity', s
 </script>
 
 <style lang="scss">
+@import "@featherds/styles/themes/variables";
 .severity-select {
   position: absolute;
   width: 250px;
@@ -36,11 +37,11 @@ const onSeveritySelect = () => store.dispatch('mapModule/setSelectedSeverity', s
   top: -12px;
   z-index: 1000;
   .feather-input-wrapper {
-    background: var(--feather-primary-text-on-color);
-    border: 2px solid var(--feather-secondary);
+    background: var($primary-text-on-color);
+    border: 2px solid var($secondary);
   }
   .feather-input-label {
-    border: 2px solid var(--feather-secondary);
+    border: 2px solid var($secondary);
     border-bottom: none;
   }
 }

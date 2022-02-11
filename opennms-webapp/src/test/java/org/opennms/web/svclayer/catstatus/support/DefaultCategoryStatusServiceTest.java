@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,13 @@
 
 package org.opennms.web.svclayer.catstatus.support;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.isA;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,9 +70,9 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
         @Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		viewDisplayDao = createMock(ViewDisplayDao.class);
-		categoryDao = createMock(CategoryConfigDao.class);
-		outageDao = createMock(OutageDao.class);
+		viewDisplayDao = mock(ViewDisplayDao.class);
+		categoryDao = mock(CategoryConfigDao.class);
+		outageDao = mock(OutageDao.class);
 		categoryStatusService = new DefaultCategoryStatusService();	 
 		categoryStatusService.setViewDisplayDao(viewDisplayDao);
 		categoryStatusService.setCategoryConfigDao(categoryDao);
@@ -84,14 +86,13 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		View view = new View();
 		
 		
-		expect(viewDisplayDao.getView()).andReturn(view);
-		replay(viewDisplayDao);
+		when(viewDisplayDao.getView()).thenReturn(view);
 		
 		Collection<StatusSection> categories = categoryStatusService.getCategoriesStatus();
 	
-		verify(viewDisplayDao);
-		
 		assertTrue("Collection Should Be Empty", categories.isEmpty());
+
+		verify(viewDisplayDao, atLeastOnce()).getView();
 	}
 	
 	
@@ -132,19 +133,11 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		
 		
 		
-		expect(viewDisplayDao.getView()).andReturn(view);
-		expect(categoryDao.getCategoryByLabel("Category One")).andReturn(createCategoryFromLabel("Category One"));
-		expect(outageDao.matchingCurrentOutages(isA(ServiceSelector.class))).andReturn(outages);
-		
-		
-		replay(categoryDao);
-		replay(viewDisplayDao);
-		replay(outageDao);
-		
+		when(viewDisplayDao.getView()).thenReturn(view);
+		when(categoryDao.getCategoryByLabel("Category One")).thenReturn(createCategoryFromLabel("Category One"));
+		when(outageDao.matchingCurrentOutages(isA(ServiceSelector.class))).thenReturn(outages);
+
 		Collection<StatusSection> statusSections = categoryStatusService.getCategoriesStatus();
-		verify(viewDisplayDao);
-		verify(categoryDao);
-		verify(outageDao);
 		
 		assertEquals("Wrong Number of StatusSections",view.getSections().size(),statusSections.size());
 		
@@ -169,8 +162,10 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 			}
 			
 		}
-		
-		
+
+                verify(viewDisplayDao, atLeastOnce()).getView();
+                verify(categoryDao, atLeastOnce()).getCategoryByLabel(anyString());
+                verify(outageDao, atLeastOnce()).matchingCurrentOutages(any(ServiceSelector.class));
 	}
 
 

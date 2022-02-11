@@ -546,7 +546,7 @@ echo "=== BUILDING ASSEMBLIES ==="
 	-Dinstall.version="%{version}-%{release}" \
 	-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 	-Dopennms.home="%{instprefix}" \
-	-Dinstall.init.dir="/etc/init.d" \
+	-Dinstall.bin.dir="%{bindir}" \
 	-Dbuild=all \
 	-Dbuild.profile=full \
 	-Prun-expensive-tasks \
@@ -952,7 +952,7 @@ fi
 
 rm -f $ROOT_INST/etc/configured
 for dir in /etc /etc/rc.d; do
-	if [ -d "$dir" ]; then
+	if [ -d "${dir}/init.d" ]; then
 		ln -sf $ROOT_INST/bin/opennms $dir/init.d/opennms
 		break
 	fi
