@@ -54,7 +54,7 @@ export default {
   getOpenApi,
   getProvisionDService,
   populateProvisionD,
-  putProvisionDService
+  putProvisionDService,
   getResources,
   getGraphMetrics,
   getPreFabGraphs,
