@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Nodes from '@/containers/Nodes.vue'
 import NodeDetails from '@/containers/NodeDetails.vue'
 import FileEditor from '@/containers/FileEditor.vue'
+import ProvisionDConfig from '@/containers/ProvisionDConfig.vue'
 import Logs from '@/containers/Logs.vue'
 import Resources from '@/components/Resources/Resources.vue'
 import Graphs from '@/components/Resources/Graphs.vue'
@@ -23,6 +24,11 @@ const router = createRouter({
       path: '/file-editor',
       name: 'FileEditor',
       component: FileEditor
+    },
+    {
+      path: '/configuration',
+      name: 'Configuration',
+      component: ProvisionDConfig
     },
     {
       path: '/logs',

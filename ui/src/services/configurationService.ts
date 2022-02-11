@@ -1,15 +1,14 @@
-import axios from 'axios'
 import { rest } from '@/services/axiosInstances'
-import { useStore } from 'vuex'
-import getDropdownTypes from '../../src/components/Common/Demo/MockupData/types.json'
-import getSchedulePeriod from '../../src/components/Common/Demo/MockupData/schedulePeriod.json'
-import getAdvancedDropdown from '../../src/components/Common/Demo/MockupData/advancedDropdown.json'
+import { Store } from 'vuex'
 
-let getProvisionD = '/cm/provisiond/default'
-const store = useStore()
+const getProvisionD = '/cm/provisiond/default'
+
+const populateProvisionD = (store: Store<unknown>) => {
+  store.dispatch('configuration/getProvisionDService')
+}
+
 const getProvisionDService = rest.get(getProvisionD).then((response) => {
   try {
-    console.log(response, response.data );
     if (response.status === 200) {
       return response.data
     }
@@ -20,11 +19,9 @@ const getProvisionDService = rest.get(getProvisionD).then((response) => {
 
 const putProvisionDService = async (payload: any) => {
   await rest.put(getProvisionD, payload).then((response) => {
-   
     try {
       if (response.status === 200) {
-        console.log('Data sucessfuly updated', response);
-        return response;
+        return response
       }
     } catch {
       console.error('issue with putProvisionDService api')
@@ -32,4 +29,4 @@ const putProvisionDService = async (payload: any) => {
   })
 }
 
-export { getDropdownTypes, getSchedulePeriod, getAdvancedDropdown, getProvisionDService, putProvisionDService }
+export { getProvisionDService, putProvisionDService, populateProvisionD }

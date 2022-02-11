@@ -7,6 +7,7 @@ import {
   getNodeAvailabilityPercentage
 } from './nodeService'
 
+import { getProvisionDService, putProvisionDService, populateProvisionD } from './configurationService'
 import { getAlarms, modifyAlarm } from './alarmService'
 
 import {
@@ -51,6 +52,9 @@ export default {
   getFileNames,
   getFileExtensions,
   getOpenApi,
+  getProvisionDService,
+  populateProvisionD,
+  putProvisionDService,
   getResources,
   getGraphMetrics,
   getPreFabGraphs,

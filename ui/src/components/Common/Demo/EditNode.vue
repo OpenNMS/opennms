@@ -9,7 +9,6 @@
 
 <script setup lang="ts">
 
-import { FeatherBackButton } from "@featherds/back-button"
 import router from '@/router'
 import ReqDefinitionForm from '../../Configuration/ReqDefinitionForm.vue'
 
