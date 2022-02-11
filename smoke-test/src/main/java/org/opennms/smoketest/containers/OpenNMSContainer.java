@@ -337,7 +337,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         }
         if(SSLStrategy.SSL.equals(model.getSSLStrategy())){
             // Set SSL properties
-            props.put("org.opennms.netmgt.jetty.https-port", OPENNMS_SSL_PORT);
+            props.put("org.opennms.netmgt.jetty.https-port", String.valueOf(OPENNMS_SSL_PORT));
             props.put("org.opennms.netmgt.jetty.https-keystorepassword", "changeit");
             props.put("org.opennms.netmgt.jetty.https-keypassword", "changeit");
         }
