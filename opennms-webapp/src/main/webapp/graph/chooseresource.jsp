@@ -29,7 +29,7 @@
 --%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
+<%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
 <%
   String node = request.getParameter("node");
   if (node == null) {
@@ -43,9 +43,9 @@
   }
   String reports = request.getParameter("reports");
   String endUrl = request.getParameter("endUrl");
-  pageContext.setAttribute("node", node == null ? "null" : "'" + node + "'");
-  pageContext.setAttribute("reports", reports == null ? "null" : "'" + reports + "'");
-  pageContext.setAttribute("endUrl", endUrl == null ? "null" : "'" + endUrl + "'");
+  pageContext.setAttribute("node", node == null ? "null" : node);
+  pageContext.setAttribute("reports", reports == null ? "null" : reports);
+  pageContext.setAttribute("endUrl", endUrl == null ? "null" : endUrl);
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -58,7 +58,7 @@
   <jsp:param name="breadcrumb" value="Choose" />
 </jsp:include>
 
-<div class="" ng-app="onms-resources" ng-controller="NodeResourcesCtrl" ng-init="init(${node},${reports},${endUrl})">
+<div class="" ng-app="onms-resources" ng-controller="NodeResourcesCtrl" ng-init="init('${e:forJavaScript(node)}','${e:forJavaScript(reports)}','${e:forJavaScript(endUrl)}')">
 
   <div growl></div>
 
