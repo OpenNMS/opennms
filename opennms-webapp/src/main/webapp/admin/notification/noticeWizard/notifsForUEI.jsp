@@ -52,7 +52,7 @@
 %>
 
 <%
-	String uei = WebSecurityUtils.sanitizeString(request.getParameter("uei"));
+	String uei = request.getParameter("uei");
 	Map<String, Notification> allNotifications=NotificationFactory.getInstance().getNotifications();
 	List<Notification> notifsForUEI=new ArrayList<>();
 	for(String key : allNotifications.keySet()) {
@@ -102,12 +102,12 @@
 <form action="admin/notification/noticeWizard/notificationWizard"  method="post" name="newNotificationForm">
 	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_NOTIFS_FOR_UEI%>"/>
 	<input type="hidden" name="userAction" value="new"/>
-	<input type="hidden" name="uei" value="<%=uei%>"/>
+	<input type="hidden" name="uei" value="<%=WebSecurityUtils.sanitizeString(uei)%>"/>
 </form>
 
 <div class="card">
   <div class="card-header">
-    <span>Existing Notifications for UEI <%=uei%></span>
+    <span>Existing Notifications for UEI <%=WebSecurityUtils.sanitizeString(uei)%></span>
   </div>
       <table class="table table-sm">
       	 <tr><th>Name</th><th>Description</th><th>Rule</th><th>Destination path</th><th>Varbinds</th><th>Actions</th></tr>
