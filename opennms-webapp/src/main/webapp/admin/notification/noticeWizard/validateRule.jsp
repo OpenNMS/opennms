@@ -41,6 +41,7 @@
 		org.opennms.netmgt.config.notifications.*
 	"
 %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%!
     public void init() throws ServletException {
@@ -88,7 +89,7 @@
   
 </script>
 
-<h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
+<h2><%=(newNotice.getName()!=null ? "Editing notice: " + WebSecurityUtils.sanitizeString(newNotice.getName()) + "<br/>" : "")%></h2>
 
 <div class="row">
   <div class="col-md-12">

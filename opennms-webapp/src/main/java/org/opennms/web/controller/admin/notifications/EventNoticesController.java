@@ -88,10 +88,6 @@ public class EventNoticesController extends AbstractController {
             return m_name;
         }
 
-        public String getEscapedName() {
-            return StringEscapeUtils.escapeJavaScript(m_name);
-        }
-
         public boolean getIsOn() {
             return "on".equalsIgnoreCase(m_notification.getStatus());
         }

@@ -43,6 +43,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.xml.eventconf.Event;
@@ -78,7 +79,7 @@ public class ChooseUeisController extends AbstractController {
     private Map<String, Object> createModel(Notification newNotice) throws FileNotFoundException,
             IOException {
         Map<String, Object> model = Maps.newHashMap();
-        model.put("title", newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() : "");
+        model.put("title", newNotice.getName()!=null ? "Editing notice: " + WebSecurityUtils.sanitizeString(newNotice.getName()) : "");
         model.put("noticeUei", newNotice.getUei()!=null ? newNotice.getUei() : "");
         model.put("eventSelect", buildEventSelect(newNotice));
         return model;

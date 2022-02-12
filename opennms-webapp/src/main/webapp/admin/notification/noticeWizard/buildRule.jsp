@@ -74,7 +74,7 @@
 
 </script>
 
-<h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
+<h2><%=(newNotice.getName()!=null ? "Editing notice: " + WebSecurityUtils.sanitizeString(newNotice.getName()) + "<br/>" : "")%></h2>
 
 <form method="post" name="rule"
      action="admin/notification/noticeWizard/notificationWizard" >
