@@ -38,6 +38,7 @@
 		org.opennms.netmgt.config.notifications.*
 	"
 %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%!
     public void init() throws ServletException {
@@ -51,7 +52,7 @@
 %>
 
 <%
-	String uei=request.getParameter("uei");
+	String uei = WebSecurityUtils.sanitizeString(request.getParameter("uei"));
 	Map<String, Notification> allNotifications=NotificationFactory.getInstance().getNotifications();
 	List<Notification> notifsForUEI=new ArrayList<>();
 	for(String key : allNotifications.keySet()) {
@@ -118,10 +119,10 @@
           	}
       		%>
 	        <tr>
-	        	<td><%=notif.getName()%></td>
-	        	<td><%=notif.getDescription().orElse("")%></td>
+	        	<td><%=WebSecurityUtils.sanitizeString(notif.getName())%></td>
+	        	<td><%=WebSecurityUtils.sanitizeString(notif.getDescription().orElse(""))%></td>
 	        	<td><%=notif.getRule()%></td>
-	        	<td><%=notif.getDestinationPath()%></td>
+	        	<td><%=WebSecurityUtils.sanitizeString(notif.getDestinationPath())%></td>
 	        	<td><%=varbindDescription%></td>
 	        	<td><a href="javascript: void submitEditForm('<%=notif.getName()%>');">Edit</a></td>
 			</tr>
