@@ -126,7 +126,6 @@ ENV SENTINEL_HOME="/opt/sentinel" \
     SENTINEL_ID="" \
     SENTINEL_LOCATION="SENTINEL" \
     OPENNMS_BROKER_URL="tcp://127.0.0.1:61616" \
-    OPENNMS_HTTP_URL="http://127.0.0.1:8980/opennms" \
     OPENNMS_HTTP_USER="minion" \
     OPENNMS_HTTP_PASS="minion" \
     OPENNMS_BROKER_USER="minion" \

@@ -106,7 +106,6 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
                 .withEnv("OPENNMS_DBUSER", "opennms")
                 .withEnv("OPENNMS_DBPASS", "opennms")
                 .withEnv("OPENNMS_BROKER_URL", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616")
-                .withEnv("OPENNMS_HTTP_URL", "http://" + OpenNMSContainer.ALIAS + ":8980/opennms")
                 .withEnv("OPENNMS_HTTP_USER", "admin")
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
                 .withEnv("OPENNMS_BROKER_USER", "admin")
