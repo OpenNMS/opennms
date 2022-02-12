@@ -28,6 +28,8 @@
 
 package org.opennms.web.utils;
 
+import org.opennms.core.utils.WebSecurityUtils;
+
 import static org.opennms.web.utils.UriInfoUtils.hasKey;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -44,14 +46,14 @@ public abstract class QueryParametersBuilder {
     public static QueryParameters buildFrom(MultivaluedMap<String, String> params) {
         final QueryParameters queryParameters = new QueryParameters();
         if (hasKey(params, "limit")) {
-            queryParameters.setLimit(Integer.valueOf(params.getFirst("limit").trim()));
+            queryParameters.setLimit(WebSecurityUtils.safeParseInt(params.getFirst("limit")));
         }
         if (hasKey(params, "offset")) {
-            queryParameters.setOffset(Integer.valueOf(params.getFirst("offset").trim()));
+            queryParameters.setOffset(WebSecurityUtils.safeParseInt(params.getFirst("offset")));
         }
         if (hasKey(params, "orderBy")) {
-            String orderBy = params.getFirst("orderBy").trim();
-            String order = params.getFirst("order");
+            String orderBy = WebSecurityUtils.sanitizeString(params.getFirst("orderBy").trim());
+            String order = WebSecurityUtils.sanitizeString(params.getFirst("order"));
             if (order != null) {
                 order = order.trim();
             }

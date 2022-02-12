@@ -43,6 +43,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.InetAddressTypeEditor;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSeverityEditor;
@@ -117,21 +118,21 @@ public class OnmsRestService {
 	    builder.limit(defaultLimit);
 
     	if (params.containsKey("limit")) {
-    		builder.limit(Integer.valueOf(params.getFirst("limit")));
+    		builder.limit(WebSecurityUtils.safeParseInt(params.getFirst("limit")));
     		params.remove("limit");
     	}
     	if (params.containsKey("offset")) {
-    		builder.offset(Integer.valueOf(params.getFirst("offset")));
+    		builder.offset(WebSecurityUtils.safeParseInt(params.getFirst("offset")));
     		params.remove("offset");
     	}
 
 	    if(params.containsKey("orderBy")) {
 	    	builder.clearOrder();
-	    	builder.orderBy(params.getFirst("orderBy"));
+	    	builder.orderBy(WebSecurityUtils.sanitizeString(params.getFirst("orderBy")));
 			params.remove("orderBy");
 			
 			if(params.containsKey("order")) {
-				if("desc".equalsIgnoreCase(params.getFirst("order"))) {
+				if("desc".equalsIgnoreCase(WebSecurityUtils.sanitizeString(params.getFirst("order")))) {
 					builder.desc();
 				} else {
 					builder.asc();
