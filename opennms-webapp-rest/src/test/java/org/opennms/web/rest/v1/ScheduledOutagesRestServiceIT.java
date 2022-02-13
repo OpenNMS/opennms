@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,8 +28,16 @@
 
 package org.opennms.web.rest.v1;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.charset.Charset;
 import java.util.Collections;
 
 import javax.servlet.ServletContext;
@@ -38,7 +46,6 @@ import javax.xml.bind.JAXBContext;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.easymock.EasyMock;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -118,17 +125,13 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "<interface address='match-any'/>"
                 + "<node id='18'/><node id='40'/>"
                 + "</outage>"
-                + "</outages>");
+                + "</outages>", Charset.defaultCharset());
         m_pollOutagesDao.overrideConfig(new FileSystemResource(outagesConfig).getInputStream());
 
         // Setup Filter DAO
-        m_filterDao = EasyMock.createMock(FilterDao.class);
-        EasyMock.expect(m_filterDao.getActiveIPAddressList("IPADDR != '0.0.0.0'")).andReturn(Collections.singletonList(InetAddressUtils.getLocalHostAddress())).anyTimes();
-        m_filterDao.validateRule("IPADDR != '0.0.0.0'");
-        EasyMock.expectLastCall().anyTimes();
-        m_filterDao.flushActiveIpAddressListCache();
-        EasyMock.expectLastCall().anyTimes();
-        EasyMock.replay(m_filterDao);
+        m_filterDao = mock(FilterDao.class);
+        when(m_filterDao.getActiveIPAddressList("IPADDR != '0.0.0.0'")).thenReturn(Collections.singletonList(InetAddressUtils.getLocalHostAddress()));
+        
         FilterDaoFactory.setInstance(m_filterDao);
 
         // Setup Collectd Configuration
@@ -143,8 +146,8 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "</service>"
                 + "</package>"
                 + "<collector service=\"SNMP\" class-name=\"org.opennms.netmgt.collectd.SnmpCollector\"/>"
-                + "</collectd-configuration>");
-        CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory(new FileInputStream(collectdConfig));
+                + "</collectd-configuration>", Charset.defaultCharset());
+        new CollectdConfigFactory(new FileInputStream(collectdConfig));
 
         // Setup Pollerd Configuration
         File pollerdConfig = new File(etc, "poller-configuration.xml");
@@ -163,7 +166,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "<downtime begin=\"0\" end=\"30000\"/>"
                 + "</package>"
                 + "<monitor service=\"ICMP\" class-name=\"org.opennms.netmgt.mock.MockMonitor\"/>"
-                + "</poller-configuration>");
+                + "</poller-configuration>", Charset.defaultCharset());
         PollerConfigFactory.setInstance(new PollerConfigFactory(1, new FileInputStream(pollerdConfig)));
 
         // Setup Threshd Configuration
@@ -177,7 +180,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "<parameter key=\"thresholding-group\" value=\"mib2\"/>"
                 + "</service>"
                 + "</package>"
-                + "</threshd-configuration>");
+                + "</threshd-configuration>", Charset.defaultCharset());
         m_threshdDao.overrideConfig(new FileInputStream(threshdConfig));
 
         // Setup Notifid Configuration
@@ -186,7 +189,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "<queue><queue-id>default</queue-id><interval>20s</interval>"
                 + "<handler-class><name>org.opennms.netmgt.notifd.DefaultQueueHandler</name></handler-class>"
                 + "</queue>"
-                + "</notifd-configuration>");
+                + "</notifd-configuration>", Charset.defaultCharset());
         NotifdConfigFactory.init();
 
         m_jaxbContext = JaxbUtils.getContextFor(Outages.class);
@@ -201,7 +204,9 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
 
     @Override
     public void afterServletDestroy() {
-        EasyMock.verify(m_filterDao);
+        verify(m_filterDao, atLeastOnce()).flushActiveIpAddressListCache();
+        verify(m_filterDao, atLeastOnce()).getActiveIPAddressList(anyString());
+        verifyNoMoreInteractions(m_filterDao);
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
@@ -232,7 +237,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         String json = sendRequest(jsonRequest, 200);
 
         JSONObject restObject = new JSONObject(json);
-        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/sched-outages.json")));
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/sched-outages.json"), Charset.defaultCharset()));
         JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 
@@ -268,6 +273,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
     @Test
     public void testDeleteOutage() throws Exception {
         sendRequest(DELETE, "/sched-outages/my-junit-test", 204);
+        verify(m_filterDao, atLeastOnce()).validateRule(anyString());
     }
 
     @Test
@@ -280,6 +286,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
     public void testUpdatePollerdConfig() throws Exception {
         sendRequest(PUT, "/sched-outages/my-junit-test/pollerd/example1", 204);
         sendRequest(DELETE, "/sched-outages/my-junit-test/pollerd/example1", 204);
+        verify(m_filterDao, atLeastOnce()).validateRule(anyString());
     }
 
     @Test

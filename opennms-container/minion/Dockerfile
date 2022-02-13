@@ -104,7 +104,6 @@ CMD [ "-f" ]
 ENV MINION_ID="00000000-0000-0000-0000-deadbeef0001" \
     MINION_LOCATION="MINION" \
     OPENNMS_BROKER_URL="tcp://127.0.0.1:61616" \
-    OPENNMS_HTTP_URL="http://127.0.0.1:8980/opennms" \
     OPENNMS_HTTP_USER="minion" \
     OPENNMS_HTTP_PASS="minion" \
     OPENNMS_BROKER_USER="minion" \

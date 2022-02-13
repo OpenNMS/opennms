@@ -1,5 +1,12 @@
-import { v2 } from './axiosInstances'
-import { QueryParameters, GraphNodesApiResponse } from '@/types'
+import { v2, rest } from './axiosInstances'
+import {
+  QueryParameters,
+  GraphNodesApiResponse,
+  ResourceDefinitionsApiResponse,
+  PreFabGraph,
+  GraphMetricsPayload,
+  GraphMetricsResponse
+} from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
 
 const endpoint = '/graphs/nodes/nodes'
@@ -25,4 +32,40 @@ const getGraphNodesNodes = async (queryParameters?: QueryParameters): Promise<Gr
   }
 }
 
-export { getGraphNodesNodes }
+const getGraphDefinitionsByResourceId = async (id: string): Promise<ResourceDefinitionsApiResponse> => {
+  try {
+    const resp = await rest.get(`/graphs/for/${id}`)
+    return resp.data
+  } catch (err) {
+    return (<unknown>{ name: [] }) as ResourceDefinitionsApiResponse
+  }
+}
+
+const getPreFabGraphs = async (node: string): Promise<PreFabGraph[]> => {
+  try {
+    const resp = await rest.get(`/graphs/fornode/${node}`)
+    return resp.data['prefab-graphs']['prefab-graph']
+  } catch (err) {
+    return []
+  }
+}
+
+const getDefinitionData = async (definition: string): Promise<PreFabGraph | null> => {
+  try {
+    const resp = await rest.get(`/graphs/${definition}`)
+    return resp.data
+  } catch (err) {
+    return null
+  }
+}
+
+const getGraphMetrics = async (payload: GraphMetricsPayload): Promise<GraphMetricsResponse | null> => {
+  try {
+    const resp = await rest.post('/measurements', payload)
+    return resp.data
+  } catch (err) {
+    return null
+  }
+}
+
+export { getGraphNodesNodes, getGraphDefinitionsByResourceId, getDefinitionData, getGraphMetrics, getPreFabGraphs }

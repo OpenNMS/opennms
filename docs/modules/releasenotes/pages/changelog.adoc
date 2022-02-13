@@ -2,9 +2,43 @@
 
 = Changelog
 
-[releasenotes-changelog-29.0.5]
+[[releasenotes-changelog-29.0.6]]
 
-==== Release 29.0.5
+== Release 29.0.6
+
+Release 29.0.6 contains a number of bug fixes, including security fixes related
+to Grafana PDF reports and Protobuf, as well as a few enhancements.
+
+Thanks to Sahil Tikoo from Etisalat for reporting the Grafana endpoint issue.
+
+A note about security issues: we have traditionally created CVEs in a pretty ad-hoc manner.
+We are in the process of formalizing how we'll be doing so going into the future.
+
+The codename for Horizon 29.0.6 is https://wikipedia.org/wiki/$$Dodo$$[_Dodo_].
+
+=== Bug
+
+* config-tester doesn't find malformed resourceTypes (Issue http://issues.opennms.org/browse/NMS-13723[NMS-13723])
+* Event configuration UI fails to persist logmsg dest changes (Issue http://issues.opennms.org/browse/NMS-13729[NMS-13729])
+* Outdated javascript library (Issue http://issues.opennms.org/browse/NMS-13848[NMS-13848])
+* fix-karaf-setup.sh should honor RUNAS (Issue http://issues.opennms.org/browse/NMS-13881[NMS-13881])
+* Remote RMI is broken in 29.0.x (Issue http://issues.opennms.org/browse/NMS-13887[NMS-13887])
+* org.opennms.core.commands never got added to Karaf build (Issue http://issues.opennms.org/browse/NMS-13910[NMS-13910])
+* grafana endpoint can be used to port-scan internal resources (Issue http://issues.opennms.org/browse/NMS-13917[NMS-13917])
+* Minion fails to marshall requisition with JAXB error: Class [org.opennms.netmgt.model.PrimaryTypeAdapter] not found (Issue http://issues.opennms.org/browse/NMS-13927[NMS-13927])
+* Kafka Minions with JMS disabled log errors loading JMS bundles (Issue http://issues.opennms.org/browse/NMS-13929[NMS-13929])
+* "full" report type in Support -> System Report inserts "%n%n" between entries instead of newlines (Issue http://issues.opennms.org/browse/NMS-13948[NMS-13948])
+* Unsynchronized access to service factories in TelemetryServiceRegistryImpl (Issue http://issues.opennms.org/browse/NMS-13961[NMS-13961])
+
+=== Enhancement
+
+* Split SNMP Property Extenders into multiple pages (Issue http://issues.opennms.org/browse/NMS-13760[NMS-13760])
+* Upgrade protobuf-java version (Issue http://issues.opennms.org/browse/NMS-13889[NMS-13889])
+* Agg Flow via Nephron showing gaps/drops since upgrading to 29.0.4 (Issue http://issues.opennms.org/browse/NMS-13926[NMS-13926])
+
+[[releasenotes-changelog-29.0.5]]
+
+== Release 29.0.5
 
 Release 29.0.5 contains a number of bug and security fixes, as well as a few enhancements.
 
@@ -14,7 +48,7 @@ but are updating anyway link:https://www.merriam-webster.com/dictionary/belt-and
 
 The codename for Horizon 29.0.5 is https://wikipedia.org/wiki/$$Kingfisher$$[_Kingfisher_].
 
-===== Bug
+=== Bug
 
 * TimescaleDB extension can't added to existing opennms DB. (Issue http://issues.opennms.org/browse/NMS-13441[NMS-13441])
 * Enlinkd API response extremely slow for some nodes (Issue http://issues.opennms.org/browse/NMS-13507[NMS-13507])
@@ -25,7 +59,7 @@ The codename for Horizon 29.0.5 is https://wikipedia.org/wiki/$$Kingfisher$$[_Ki
 * CVE-2021-45105: Update to Log4j 2.17.0 (Issue http://issues.opennms.org/browse/NMS-13868[NMS-13868])
 * upgrade to log4j2 2.17.1 and pax-logging 1.11.13/2.0.14 (Issue http://issues.opennms.org/browse/NMS-13878[NMS-13878])
 
-===== Enhancement
+=== Enhancement
 
 * Consolidate all IPC features into one / need conf.d changes (Issue http://issues.opennms.org/browse/NMS-13610[NMS-13610])
 * Add metrics about twin communication (Issue http://issues.opennms.org/browse/NMS-13649[NMS-13649])
