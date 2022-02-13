@@ -15,7 +15,7 @@ export BUILDDEFINES=\
 	-Dopennms.home=/usr/share/opennms \
 	-Ddist.dir=$(CURDIR)/debian -Ddist.name=temp \
 	-Dinstall.dir=/usr/share/opennms \
-	-Dinstall.init.dir=/usr/share/opennms/bin \
+	-Dinstall.bin.dir=/usr/share/opennms/bin \
 	-Dinstall.rrdtool.bin=/usr/bin/rrdtool \
 	-Dinstall.share.dir=/var/lib/opennms \
 	-Dinstall.servlet.dir=/usr/share/opennms/webapps \

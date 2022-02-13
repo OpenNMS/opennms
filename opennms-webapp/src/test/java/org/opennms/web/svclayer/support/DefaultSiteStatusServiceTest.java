@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,15 @@
 
 package org.opennms.web.svclayer.support;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +45,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.config.siteStatusViews.Category;
@@ -63,11 +68,18 @@ public class DefaultSiteStatusServiceTest {
     
     @Before
     public void setUp() throws Exception {
-        m_nodeDao = createMock(NodeDao.class);
-        m_categoryDao = createMock(CategoryDao.class);
-        m_siteStatusViewConfigDao = createMock(SiteStatusViewConfigDao.class);
+        m_nodeDao = mock(NodeDao.class);
+        m_categoryDao = mock(CategoryDao.class);
+        m_siteStatusViewConfigDao = mock(SiteStatusViewConfigDao.class);
     }
-    
+
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_nodeDao);
+        verifyNoMoreInteractions(m_categoryDao);
+        verifyNoMoreInteractions(m_siteStatusViewConfigDao);
+    }
+
     @Test
     public void testCreateAggregateStatusUsingNodeId() {
         Collection<AggregateStatus> aggrStati;
@@ -98,17 +110,15 @@ public class DefaultSiteStatusServiceTest {
         nodes.add(node);
         
         for (AggregateStatusDefinition def : defs) {
-            expect(m_nodeDao.findAllByVarCharAssetColumnCategoryList("building", "HQ", def.getCategories())).andReturn(nodes);
+            when(m_nodeDao.findAllByVarCharAssetColumnCategoryList("building", "HQ", def.getCategories())).thenReturn(nodes);
         }
         for (OnmsNode n : nodes) {
-            expect(m_nodeDao.load(n.getId())).andReturn(n);
+            when(m_nodeDao.load(n.getId())).thenReturn(n);
         }
-        replay(m_nodeDao);
         
-        expect(m_categoryDao.findByName("switches")).andReturn(catSwitches);
-        expect(m_categoryDao.findByName("routers")).andReturn(catRouters);
-        expect(m_categoryDao.findByName("servers")).andReturn(catServers);
-        replay(m_categoryDao);
+        when(m_categoryDao.findByName("switches")).thenReturn(catSwitches);
+        when(m_categoryDao.findByName("routers")).thenReturn(catRouters);
+        when(m_categoryDao.findByName("servers")).thenReturn(catServers);
         
         List<RowDef> rows = new ArrayList<>();
         RowDef rowDef = new RowDef();
@@ -128,16 +138,16 @@ public class DefaultSiteStatusServiceTest {
 
         View view = new View();
         view.setRows(rows);
-        expect(m_siteStatusViewConfigDao.getView("building")).andReturn(view);
-        replay(m_siteStatusViewConfigDao);
+        when(m_siteStatusViewConfigDao.getView("building")).thenReturn(view);
         
         aggrStati = aggregateSvc.createAggregateStatusesUsingNodeId(node.getId(), "building");
-        
-        verify(m_nodeDao);
-        verify(m_categoryDao);
-        verify(m_siteStatusViewConfigDao);
-        
+
         assertNotNull(aggrStati);
+
+        verify(m_nodeDao, atLeastOnce()).load(anyInt());
+        verify(m_nodeDao, atLeastOnce()).findAllByVarCharAssetColumnCategoryList(anyString(), anyString(), anyCollection());
+        verify(m_categoryDao, atLeastOnce()).findByName(anyString());
+        verify(m_siteStatusViewConfigDao, atLeastOnce()).getView(anyString());
     }
     
     @Test
@@ -163,9 +173,8 @@ public class DefaultSiteStatusServiceTest {
         nodes.add(node);
         
         for (AggregateStatusDefinition def : defs) {
-            expect(m_nodeDao.findAllByVarCharAssetColumnCategoryList("building", "HQ", def.getCategories())).andReturn(nodes);
+            when(m_nodeDao.findAllByVarCharAssetColumnCategoryList("building", "HQ", def.getCategories())).thenReturn(nodes);
         }
-        replay(m_nodeDao);
         
         AggregateStatusView view = new AggregateStatusView();
         view.setColumnName("building");
@@ -173,10 +182,10 @@ public class DefaultSiteStatusServiceTest {
         view.setTableName("assets");
         view.setStatusDefinitions(new LinkedHashSet<AggregateStatusDefinition>(defs));
         aggrStati = aggregateSvc.createAggregateStatusUsingAssetColumn(view);
-        verify(m_nodeDao);
         
         assertNotNull(aggrStati);
 
+        verify(m_nodeDao, atLeastOnce()).findAllByVarCharAssetColumnCategoryList(anyString(), anyString(), anyCollection());
     }
 
 }

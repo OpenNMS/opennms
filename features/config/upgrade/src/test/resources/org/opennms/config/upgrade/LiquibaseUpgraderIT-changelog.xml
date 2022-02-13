@@ -41,4 +41,11 @@
         </cm:changeSchema>
         <cm:importConfig schemaId="org.opennms.features.datachoices" filePath="org.opennms.features.datachoices.cfg"/>
     </changeSet>
+    <changeSet author="pschweizer" id="import-graphml">
+        <cm:registerSchema id="org.opennms.netmgt.graph.provider.graphml"/>
+        <cm:changeSchema schemaId="org.opennms.netmgt.graph.provider.graphml">
+            <cm:put name="graphLocation" type="string"/>
+        </cm:changeSchema>
+        <cm:importConfigs schemaId="org.opennms.netmgt.graph.provider.graphml" filePath="org.opennms.netmgt.graph.provider.graphml-*.cfg"/>
+    </changeSet>
 </databaseChangeLog>

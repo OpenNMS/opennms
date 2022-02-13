@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.app.internal.ui.breadcrumbs;
 
+import static org.mockito.Mockito.mock;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,19 +38,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.TopologyServiceClient;
-import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
-import org.opennms.features.topology.api.topo.simple.SimpleGraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.BackendGraph;
+import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
+import org.opennms.features.topology.api.topo.simple.SimpleGraphProvider;
 import org.opennms.features.topology.app.internal.DefaultTopologyServiceClient;
 import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
 import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
@@ -128,7 +129,7 @@ public class BreadcrumbPathCalculatorTest {
         };
         DefaultTopologyService topologyService = new DefaultTopologyService();
         topologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
-        topologyService.setTopologyEntityCache(EasyMock.niceMock(TopologyEntityCache.class));
+        topologyService.setTopologyEntityCache(mock(TopologyEntityCache.class));
         DefaultTopologyServiceClient client = new DefaultTopologyServiceClient(topologyService);
         client.setMetaTopologyId(metaTopologyProvider.getId());
         client.setNamespace(metaTopologyProvider.getDefaultGraphProvider().getNamespace());

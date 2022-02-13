@@ -24,7 +24,6 @@
         <event-file>/opt/OpenNMS/etc/events/BackupExec.events.xml</event-file>
         <event-file>/opt/OpenNMS/etc/events/BEA.events.xml</event-file>
         <event-file>/opt/OpenNMS/etc/events/BGP4.events.xml</event-file>
-        <event-file>/opt/OpenNMS/etc/events/BlackBerryServer.events.xml</event-file>
         <event-file>/opt/OpenNMS/etc/events/Brocade.events.xml</event-file>
         <event-file>/opt/OpenNMS/etc/events/Cisco2.events.xml</event-file>
         <event-file>/opt/OpenNMS/etc/events/Cisco.5300dchan.events.xml</event-file>
