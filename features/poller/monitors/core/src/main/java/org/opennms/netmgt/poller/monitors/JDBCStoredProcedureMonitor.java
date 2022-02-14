@@ -79,12 +79,13 @@ final public class JDBCStoredProcedureMonitor extends JDBCMonitor
 
          String schemaName = ParameterMap.getKeyedString(parameters, "schema", "test");
 
-         String procedureCall = "{ ? = call " + schemaName + "." + storedProcedure + "()}";
-         cs = con.prepareCall( procedureCall );
-         
-         LOG.debug("Calling stored procedure: {}", procedureCall);
-         
+         cs = con.prepareCall("{ ? = call ?.?()}");
          cs.registerOutParameter(1, java.sql.Types.BIT );
+         cs.setString(2, schemaName);
+         cs.setString(3, storedProcedure);
+         
+         LOG.debug("Calling stored procedure: {}", cs.toString());
+         
          cs.executeUpdate();
          bPass = cs.getBoolean( 1 );
 
