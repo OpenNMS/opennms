@@ -47,7 +47,7 @@ public class MigratedServices {
     );
 
     final public static Set<String> PIDS_MULTI_INSTANCE = Set.of(
-            // "org.opennms.netmgt.graph.provider.graphml"
+            "org.opennms.netmgt.graph.provider.graphml"
             // ... or here
     );
 

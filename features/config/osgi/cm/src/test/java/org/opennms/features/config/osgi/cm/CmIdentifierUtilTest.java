@@ -32,21 +32,33 @@ import static org.junit.Assert.assertEquals;
 import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
 
 import org.junit.Test;
+import org.opennms.features.config.exception.ConfigRuntimeException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 
 public class CmIdentifierUtilTest {
 
     @Test
     public void shouldParse() {
-        checkParse("", "", DEFAULT_CONFIG_ID);
-        checkParse("abc", "abc", DEFAULT_CONFIG_ID);
-        checkParse("abc-def", "abc", "def");
+        checkParse("org.opennms.features.datachoices",
+                "org.opennms.features.datachoices", DEFAULT_CONFIG_ID); // single instance
+        checkParse("org.opennms.netmgt.graph.provider.graphml-someid",
+                "org.opennms.netmgt.graph.provider.graphml", "someid"); // multi instance
     }
 
     private void checkParse(String pid, String expectedName, String expectedId) {
         ConfigUpdateInfo id = CmIdentifierUtil.pidToCmIdentifier(pid);
         assertEquals(expectedName, id.getConfigName());
         assertEquals(expectedId, id.getConfigId());
+    }
+
+    @Test(expected = ConfigRuntimeException.class)
+    public void shouldThrowExceptionForEmptyInput() {
+        CmIdentifierUtil.pidToCmIdentifier("");
+    }
+
+    @Test(expected = ConfigRuntimeException.class)
+    public void shouldThrowExceptionForMissingSuffix() {
+        CmIdentifierUtil.pidToCmIdentifier("abc");
     }
 
     @Test

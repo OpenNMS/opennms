@@ -36,8 +36,8 @@ public class ConfigUpdateInfo {
 
     public static String WILDCARD_ID = "*";
 
-    private String configName;
-    private String configId;
+    final private String configName;
+    final private String configId;
 
     /**
      * ConfigId is nullable, when it is null. It will reload all configIds.

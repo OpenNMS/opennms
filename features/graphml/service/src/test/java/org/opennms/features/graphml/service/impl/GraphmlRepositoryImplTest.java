@@ -28,9 +28,17 @@
 
 package org.opennms.features.graphml.service.impl;
 
-import static org.opennms.features.graphml.service.impl.GraphmlRepositoryImpl.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.opennms.features.graphml.service.impl.GraphmlRepositoryImpl.GRAPH_CFG_FILE_PREFIX;
+import static org.opennms.features.graphml.service.impl.GraphmlRepositoryImpl.GRAPH_LOCATION;
+import static org.opennms.features.graphml.service.impl.GraphmlRepositoryImpl.LABEL;
+import static org.opennms.features.graphml.service.impl.GraphmlRepositoryImpl.TOPOLOGY_LOCATION;
+import static org.opennms.features.graphml.service.impl.GraphmlRepositoryImpl.buildGraphmlFilepath;
+import static org.opennms.features.graphml.service.impl.GraphmlRepositoryImpl.buildTopologyCfgFilepath;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -38,31 +46,43 @@ import java.util.Properties;
 
 import org.graphdrawing.graphml.GraphmlType;
 import org.hamcrest.Matchers;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
 
 public class GraphmlRepositoryImplTest {
 
+    final static String NAME = "test-graph";
+
     @Before
-    public void setup() {
+    public void setup() throws IOException {
         System.setProperty("opennms.home", "target");
+        // make sure we start with a clean state:
+        Files.deleteIfExists(Paths.get(buildGraphmlFilepath(NAME)));
+        Files.deleteIfExists(Paths.get(buildTopologyCfgFilepath(NAME)));
     }
 
     @Test
     public void testCreateReadDelete() throws Exception {
-        final String NAME = "test-graph";
 
         // Create
-        GraphmlRepositoryImpl graphmlRepository = new GraphmlRepositoryImpl();
+        ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class);
+        ArgumentCaptor<JsonAsString> jsonCaptor = ArgumentCaptor.forClass(JsonAsString.class);
+        GraphmlRepositoryImpl graphmlRepository = new GraphmlRepositoryImpl(cm);
         final InputStream graphmlStream = getClass().getResourceAsStream("/test-graph.xml");
         final GraphmlType graphmlType = JaxbUtils.unmarshal(GraphmlType.class, graphmlStream);
         graphmlRepository.save(NAME, "Label *yay*", graphmlType);
+        verify(cm).registerConfiguration(eq(GRAPH_CFG_FILE_PREFIX), eq(NAME), jsonCaptor.capture());
 
         // Verify that xml was generated
-        Assert.assertEquals(true, graphmlRepository.exists(NAME));
+        Assert.assertTrue(graphmlRepository.exists(NAME));
 
         // Verify Topology cfg
         Properties properties = new Properties();
@@ -71,9 +91,8 @@ public class GraphmlRepositoryImplTest {
         Assert.assertEquals(buildGraphmlFilepath(NAME), properties.get(TOPOLOGY_LOCATION));
 
         // Verify Graph API 2.0 cfg
-        properties.load(new FileInputStream(buildGraphCfgFilepath(NAME)));
-        Assert.assertEquals("Label *yay*", properties.get(LABEL));
-        Assert.assertEquals(buildGraphmlFilepath(NAME), properties.get(GRAPH_LOCATION));
+        JSONObject json = new JSONObject(jsonCaptor.getValue().toString());
+        Assert.assertEquals(buildGraphmlFilepath(NAME), json.get(GRAPH_LOCATION));
 
         // Read
         GraphmlType byName = graphmlRepository.findByName(NAME);
@@ -93,6 +112,6 @@ public class GraphmlRepositoryImplTest {
         Assert.assertEquals(false, graphmlRepository.exists(NAME));
         Assert.assertThat(Files.exists(Paths.get(buildGraphmlFilepath(NAME))), Matchers.is(false));
         Assert.assertThat(Files.exists(Paths.get(buildTopologyCfgFilepath(NAME))), Matchers.is(false));
-        Assert.assertThat(Files.exists(Paths.get(buildGraphCfgFilepath(NAME))), Matchers.is(false));
+        verify(cm).unregisterConfiguration(GRAPH_CFG_FILE_PREFIX, NAME);
     }
 }
