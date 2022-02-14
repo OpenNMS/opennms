@@ -186,17 +186,19 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
 
     @Override
     public void deleteConfig(String configName, String configId) {
-        Optional<ConfigData<JSONObject>> configData = this.getConfigs(configName);
-        if (configData.isEmpty()) {
-            throw new ConfigNotFoundException("Config not found for config " + configName + ", configId " + configId);
-        }
-        if (configData.get().getConfigs().size() <= 1) {
+        ConfigDefinition configDefinition = this
+                .getConfigDefinition(configName)
+                .orElseThrow(() -> new ConfigNotFoundException("ConfigDefinition not found for config=" + configName));
+        ConfigData<JSONObject> configData = this
+                .getConfigs(configName)
+                .orElseThrow(() -> new ConfigNotFoundException("Config not found for config=" + configName + ", configId=" + configId));
+        if (configData.getConfigs().size() <= 1 && !configDefinition.getAllowMultiple()) {
             throw new ConfigRuntimeException("Deletion of the last config is not allowed. " + configName + ", configId " + configId, null);
         }
-        if (configData.get().getConfigs().remove(configId) == null) {
+        if (configData.getConfigs().remove(configId) == null) {
             throw new ConfigNotFoundException("Config not found for config " + configName + ", configId " + configId);
         }
-        this.putConfig(configName, configData.get());
+        this.putConfig(configName, configData);
     }
 
     @Override
@@ -254,7 +256,11 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     private void validateConfigData(final ConfigDefinition configDefinition, final ConfigData<JSONObject> configData) throws ValidationException {
-        configData.getConfigs().forEach((key, config) -> this.validateConfig(configDefinition, config));
+        final Map<String, JSONObject> configs = configData.getConfigs();
+        if (!configDefinition.getAllowMultiple() && configs.size() > 1) {
+            throw new ConfigRuntimeException(String.format("Cannot set multiple configurations for '%s'", configDefinition.getConfigName()));
+        }
+        configs.forEach((key, config) -> this.validateConfig(configDefinition, config));
     }
 
     /**

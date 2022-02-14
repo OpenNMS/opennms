@@ -35,7 +35,7 @@ import org.opennms.features.config.service.api.ConfigurationManagerService;
 
 public class XmlConfigDefinitionTest {
     ConfigDefinition def = XsdHelper.buildConfigDefinition("provisiond", "provisiond-configuration.xsd",
-            "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
+            "provisiond-configuration", ConfigurationManagerService.BASE_PATH, false);
 
     @Test
     public void testPassValidation() {
