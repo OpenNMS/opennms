@@ -71,9 +71,10 @@ public class JDBCRequest {
     public JDBCResponse send(Connection conn) throws SQLException {
         if(getStoredProcedure() != null){
             
-            String procedureCall = "{ ? = call " + getStoredProcedure() + "()}";
+            String procedureCall = "{ ? = call ?()}";
             CallableStatement cs = conn.prepareCall(procedureCall);
             cs.registerOutParameter(1, java.sql.Types.BIT);
+            cs.setString(2, getStoredProcedure());
             cs.executeUpdate();
 
             JDBCResponse response = new JDBCResponse();

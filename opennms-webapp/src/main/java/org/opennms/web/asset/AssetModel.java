@@ -332,7 +332,9 @@ public class AssetModel {
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement("SELECT ASSETS.NODEID, NODE.NODELABEL, ASSETS." + columnName + " FROM ASSETS, NODE WHERE LOWER(ASSETS." + columnName + ") LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL");
+            PreparedStatement stmt = conn.prepareStatement("SELECT ASSETS.NODEID, NODE.NODELABEL, ASSETS.? FROM ASSETS, NODE WHERE LOWER(ASSETS.?) LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL");
+            stmt.setString(1, columnName);
+            stmt.setString(2, columnName);
             d.watch(stmt);
             stmt.setString(1, "%" + searchText.toLowerCase() + "%");
 

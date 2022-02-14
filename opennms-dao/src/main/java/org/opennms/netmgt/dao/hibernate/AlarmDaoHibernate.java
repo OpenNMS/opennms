@@ -171,11 +171,10 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
             @Override
             public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
-                return (List<HeatMapElement>) session.createSQLQuery(
-                        "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
+                Query query = session.createSQLQuery(
+                        "select coalesce(?,'Uncategorized'), ?, " +
                                 "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
-                                "count(distinct node.nodeid) as nodeTotalCount, " +
-                                maximumSeverityQuery +
+                                "count(distinct node.nodeid) as nodeTotalCount, ?" +
                                 "from node " +
                                 "left join category_node using (nodeid) " +
                                 "left join categories using (categoryid) " +
@@ -183,23 +182,28 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                                 "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
                                 "left outer join service on (ifservices.serviceid = service.serviceid) " +
                                 "left outer join alarms on (alarms.nodeid = node.nodeid and alarms.alarmtype in (1,3)) " +
-                                "where nodeType <> 'D' " +
-                                (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')='" + restrictionValue + "' " : "") +
-                                "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0")
-                        .setResultTransformer(new ResultTransformer() {
-                            private static final long serialVersionUID = 5152094813503430377L;
+                                "where nodeType <> 'D' ?" +
+                                "group by ? having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0");
+                query.setString(1, entityNameColumn);
+                query.setString(2, entityIdColumn);
+                query.setString(3, maximumSeverityQuery);
+                query.setString(4, (restrictionColumn != null ? String.format("and coalesce(%s,'Uncategorized')='%s' ", restrictionColumn, restrictionValue) : ""));
+                query.setString(5, groupByClause);
+                query.setResultTransformer(new ResultTransformer() {
+                        private static final long serialVersionUID = 5152094813503430377L;
 
-                            @Override
-                            public Object transformTuple(Object[] tuple, String[] aliases) {
-                                return new HeatMapElement((String) tuple[0], (Number) tuple[1], (Number) tuple[2], (Number) tuple[3], (Number) tuple[4]);
-                            }
+                        @Override
+                        public Object transformTuple(Object[] tuple, String[] aliases) {
+                            return new HeatMapElement((String) tuple[0], (Number) tuple[1], (Number) tuple[2], (Number) tuple[3], (Number) tuple[4]);
+                        }
 
-                            @SuppressWarnings("rawtypes")
-                            @Override
-                            public List transformList(List collection) {
-                                return collection;
-                            }
-                        }).list();
+                        @SuppressWarnings("rawtypes")
+                        @Override
+                        public List transformList(List collection) {
+                            return collection;
+                        }
+                });
+                return (List<HeatMapElement>) query.list();
             }
         });
     }
