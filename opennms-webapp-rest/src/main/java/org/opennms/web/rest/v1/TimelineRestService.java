@@ -211,27 +211,27 @@ public class TimelineRestService extends OnmsRestService {
         }
 
         /**
-         * Draws an event on a given graphics context.
+         * Draws an outage on a given graphics context.
          *
          * @param graphics2D the graphics context
-         * @param delta      the delta
-         * @param start      the start value
+         * @param timeDelta  the amount of time between the start and end of the graphic
+         * @param startTime  the time at the start of the graphic
          * @param width      the width of the graphic
          * @param onmsOutage the outage to be drawn
          * @return true, if no resolved yet
          */
-        public boolean drawEvent(Graphics2D graphics2D, long delta, long start, int width, OnmsOutage onmsOutage) throws IOException {
-            long p1 = onmsOutage.getIfLostService().getTime() / 1000;
-            long p2 = start + delta;
+        public boolean drawOutage(Graphics2D graphics2D, long timeDelta, long startTime, int width, OnmsOutage onmsOutage) {
+            long outageStartTime = onmsOutage.getIfLostService().getTime() / 1000;
+            long outageEndTime = startTime + timeDelta;
 
             if (onmsOutage.getIfRegainedService() != null) {
-                p2 = onmsOutage.getIfRegainedService().getTime() / 1000;
+                outageEndTime = onmsOutage.getIfRegainedService().getTime() / 1000;
             }
 
             graphics2D.setColor(ONMS_RED);
-            int n1 = (int) ((p1 - start) / (delta / width));
-            int n2 = (int) ((p2 - start) / (delta / width));
-            graphics2D.fillRect(n1, 2, (n2 - n1 > 0 ? n2 - n1 : 1), 16);
+            int graphicStart = (int) ((outageStartTime - startTime) / (timeDelta / width));
+            int graphicEnd = (int) ((outageEndTime - startTime) / (timeDelta / width));
+            graphics2D.fillRect(graphicStart, 2, (graphicEnd - graphicStart > 0 ? graphicEnd - graphicStart : 1), 16);
 
             return onmsOutage.getIfRegainedService() == null;
         }
@@ -277,28 +277,28 @@ public class TimelineRestService extends OnmsRestService {
          * Returns the HTML map entry for a given outage instance.
          *
          * @param graphics2D the graphics context
-         * @param delta      the delta
-         * @param start      the start value
+         * @param timeDelta  the amount of time between the start and end of the graphic
+         * @param startTime  the time at the start of the graphic
          * @param width      the width of the graphic
          * @param onmsOutage the outage to be used
          * @return the HTML map entry
          */
-        public String getMapEntry(Graphics2D graphics2D, long delta, long start, int width, OnmsOutage onmsOutage) {
-            long p1 = onmsOutage.getIfLostService().getTime() / 1000;
-            long p2 = start + delta;
+        public String getMapEntry(Graphics2D graphics2D, long timeDelta, long startTime, int width, OnmsOutage onmsOutage) {
+            long outageStartTime = onmsOutage.getIfLostService().getTime() / 1000;
+            long outageEndTime = startTime + timeDelta;
 
             if (onmsOutage.getIfRegainedService() != null) {
-                p2 = onmsOutage.getIfRegainedService().getTime() / 1000;
+                outageEndTime = onmsOutage.getIfRegainedService().getTime() / 1000;
             }
 
             graphics2D.setColor(ONMS_RED);
-            int n1 = (int) ((p1 - start) / (delta / width));
-            int n2 = (int) ((p2 - start) / (delta / width));
+            int graphicStart = (int) ((outageStartTime - startTime) / (timeDelta / width));
+            int graphicEnd = (int) ((outageEndTime - startTime) / (timeDelta / width));
             final StringBuilder stringBuffer = new StringBuilder();
             stringBuffer.append("<area shape=\"rect\" coords=\"");
-            stringBuffer.append(n1);
+            stringBuffer.append(graphicStart);
             stringBuffer.append(",2,");
-            stringBuffer.append(n2);
+            stringBuffer.append(graphicEnd);
             stringBuffer.append(",18\" ");
             stringBuffer.append("href=\"/opennms/outage/detail.htm?id=");
             stringBuffer.append(onmsOutage.getId());
@@ -502,7 +502,7 @@ public class TimelineRestService extends OnmsRestService {
                 desc.drawNode(graphics2D, delta, start, width, node);
 
                 for (OnmsOutage onmsOutage : onmsOutageCollection) {
-                    desc.drawEvent(graphics2D, delta, start, width, onmsOutage);
+                    desc.drawOutage(graphics2D, delta, start, width, onmsOutage);
                 }
 
                 desc.drawLine(graphics2D, delta, start, width);
