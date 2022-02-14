@@ -145,6 +145,7 @@ commands:
       - save_cache:
           key: nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
           paths:
+            - ~/.npm/_cacache
             - core/web-assets/node_modules
   restore-sonar-cache:
       description: "Sonar: Restore sonar cache"
