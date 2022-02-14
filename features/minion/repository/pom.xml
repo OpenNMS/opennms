@@ -487,6 +487,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.device-config</groupId>
+            <artifactId>org.opennms.features.device-config.ssh-scripting</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.device-config</groupId>
+            <artifactId>org.opennms.features.device-config.monitor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-util</artifactId>
             <version>${project.version}</version>
