@@ -616,11 +616,8 @@
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
                 <!-- Lots of deviceconfig features -->
-                <feature>opennms-deviceconfig-deps</feature>
                 <feature>opennms-deviceconfig-rest</feature>
-                <feature>opennms-deviceconfig-tftp</feature>
                 <feature>opennms-deviceconfig-monitor</feature>
-                <feature>opennms-deviceconfig-sink-module</feature>
                 <feature>opennms-deviceconfig-sink</feature>
                 <feature>opennms-deviceconfig-sink-consumer</feature>
 
