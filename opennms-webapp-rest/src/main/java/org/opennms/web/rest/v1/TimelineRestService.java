@@ -53,7 +53,9 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsOutageCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -235,14 +237,24 @@ public class TimelineRestService extends OnmsRestService {
         }
 
         /**
-         * Draws a solid green bar of a given length.
+         * Draws a solid green bar for a node on a given graphics context, beginning at the createTime of the node.
          *
          * @param graphics2D the graphics context
+         * @param timeDelta  the amount of time between the start and end of the graphic
+         * @param startTime  the time at the start of the graphic
          * @param width      the width of the graphic
+         * @param node       the node to be drawn
          */
-        public void drawGreen(Graphics2D graphics2D, int width) {
+        public void drawNode(Graphics2D graphics2D, long timeDelta, long startTime, int width, OnmsNode node) {
+            long nodeCreateTime = node.getCreateTime().getTime() / 1000;
+
+            if (nodeCreateTime < startTime) {
+                nodeCreateTime = startTime;
+            }
+
             graphics2D.setColor(ONMS_GREEN);
-            graphics2D.fillRect(0, 2, width, 16);
+            int graphicStart = (int) ((nodeCreateTime - startTime) / (timeDelta / width));
+            graphics2D.fillRect(graphicStart, 2, width - graphicStart, 16);
         }
 
         /**
@@ -366,6 +378,13 @@ public class TimelineRestService extends OnmsRestService {
         return onmsOutageCollection;
     }
 
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    private OnmsNode queryNode(final int nodeId) {
+        return m_nodeDao.get(nodeId);
+    }
+
     @GET
     @Produces("image/png")
     @Transactional
@@ -467,6 +486,7 @@ public class TimelineRestService extends OnmsRestService {
         long delta = end - start;
 
         OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceName, start, end);
+        OnmsNode node = queryNode(nodeId);
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);
 
@@ -479,7 +499,7 @@ public class TimelineRestService extends OnmsRestService {
 
         for (TimescaleDescriptor desc : TIMESCALE_DESCRIPTORS) {
             if (desc.match(delta, numLabels)) {
-                desc.drawGreen(graphics2D, width);
+                desc.drawNode(graphics2D, delta, start, width, node);
 
                 for (OnmsOutage onmsOutage : onmsOutageCollection) {
                     desc.drawEvent(graphics2D, delta, start, width, onmsOutage);
