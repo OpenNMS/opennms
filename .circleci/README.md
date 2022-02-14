@@ -54,10 +54,9 @@ docker image load -i sentinel.oci
 ### Cache node artifacts
 
 We're are caching `node_modules` in `core/web-assets` with
-`npm --prefer-offline --no-progress install`.
+`"install-deps": "npm --prefer-offline --no-progress install"`.
 In conjunction with this we added caching of the `~/.npm/_cacache`
 directory. As a future improvements we should use `npm ci` for releases
-and `npm --prefer-offline --no-progress install` for dev.
 
 ### Weekly / cron triggered jobs
 
