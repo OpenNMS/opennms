@@ -249,36 +249,43 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
             @Override
             @SuppressWarnings("unchecked")
             public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
-                return (List<HeatMapElement>) session.createSQLQuery(
-                        "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
-                                "count(distinct case when outages.outageid is not null and ifservices.status <> 'D' then ifservices.id else null end) as servicesDown, " +
-                                "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
-                                "count(distinct case when outages.outageid is null and ifservices.status <> 'D' then node.nodeid else null end) as nodesUp, " +
-                                "count(distinct node.nodeid) as nodeTotalCount " +
-                                "from node left " +
-                                "join category_node using (nodeid) left join categories using (categoryid) " +
-                                "left outer join ipinterface using (nodeid) " +
-                                "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
-                                "left outer join service on (ifservices.serviceid = service.serviceid) " +
-                                "left outer join outages on (outages.ifserviceid = ifservices.id and outages.perspective is null and outages.ifregainedservice is null) " +
-                                "where nodeType <> 'D' " +
-                                (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')='" + restrictionValue + "' " : "") +
-                                "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0")
-                        .setResultTransformer(new ResultTransformer() {
-                            private static final long serialVersionUID = 5152094813503430377L;
+                Query query = session.createSQLQuery(
+                    "select coalesce(?,'Uncategorized'), ?, " +
+                            "count(distinct case when outages.outageid is not null and ifservices.status <> 'D' then ifservices.id else null end) as servicesDown, " +
+                            "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
+                            "count(distinct case when outages.outageid is null and ifservices.status <> 'D' then node.nodeid else null end) as nodesUp, " +
+                            "count(distinct node.nodeid) as nodeTotalCount " +
+                            "from node left " +
+                            "join category_node using (nodeid) left join categories using (categoryid) " +
+                            "left outer join ipinterface using (nodeid) " +
+                            "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
+                            "left outer join service on (ifservices.serviceid = service.serviceid) " +
+                            "left outer join outages on (outages.ifserviceid = ifservices.id and outages.perspective is null and outages.ifregainedservice is null) " +
+                            "where nodeType <> 'D' ?" +
+                            "group by ? having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0");
+                query.setString(1, entityNameColumn);
+                query.setString(2, entityIdColumn);
+                query.setString(3, (restrictionColumn != null ? String.format("and coalesce(%s, 'Uncategorized')='%s' ", restrictionColumn, restrictionValue) : ""));
+                query.setString(4, groupByClause);
+                query.setResultTransformer(
+                    new ResultTransformer() {
+                        private static final long serialVersionUID = 5152094813503430377L;
 
-                            @Override
-                            public Object transformTuple(Object[] tuple, String[] aliases) {
-                                return new HeatMapElement((String) tuple[0], (Number) tuple[1], (Number) tuple[2], (Number) tuple[3], (Number) tuple[4], (Number) tuple[5]);
-                            }
+                        @Override
+                        public Object transformTuple(Object[] tuple, String[] aliases) {
+                            return new HeatMapElement((String) tuple[0], (Number) tuple[1], (Number) tuple[2], (Number) tuple[3], (Number) tuple[4], (Number) tuple[5]);
+                        }
 
-                            @SuppressWarnings("rawtypes")
-                            @Override
-                            public List transformList(List collection) {
-                                return collection;
-                            }
-                        }).list();
-            }
+                        @SuppressWarnings("rawtypes")
+                        @Override
+                        public List transformList(List collection) {
+                            return collection;
+                        }
+                    }
+                );
+                return (List<HeatMapElement>) query.list();
+                
+            };
         });
     }
 
