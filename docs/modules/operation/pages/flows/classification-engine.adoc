@@ -41,7 +41,7 @@ Assume that you define the following rules:
 |
 |
 | 80,8980,8080,9000
-| udp,tcp
+| tcp
 |
 
 | https
