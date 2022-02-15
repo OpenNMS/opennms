@@ -57,6 +57,7 @@ We're are caching `node_modules` in `core/web-assets` with
 `"install-deps": "npm --prefer-offline --no-progress install"`.
 In conjunction with this we added caching of the `~/.npm/_cacache`
 directory. As a future improvements we should use `npm ci` for releases
+and `npm --prefer-offline --no-progress install` for dev.
 
 ### Weekly / cron triggered jobs
 
