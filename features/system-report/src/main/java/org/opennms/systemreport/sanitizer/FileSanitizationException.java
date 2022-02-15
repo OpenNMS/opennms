@@ -26,47 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.xml.eventconf;
+package org.opennms.systemreport.sanitizer;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
-
-public class EventsTest {
-
-    private Events events;
-
-    private Event mockEvent;
-
-    private Partition mockPartition;
-
-    private EventOrdering mockEventOrdering;
-
-    @Before
-    public void setUp() {
-        events = new Events();
-        mockEvent = Mockito.mock(Event.class);
-        mockPartition = Mockito.mock(Partition.class);
-        mockEventOrdering = Mockito.mock(EventOrdering.class);
+public class FileSanitizationException extends Exception {
+    public FileSanitizationException(final String message, final Throwable t) {
+        super(message, t);
     }
-
-    @Test
-    public void testDoesNotDuplicateEventsWithPriority() {
-        when(mockPartition.group(mockEvent)).thenReturn(List.of(".1.3.6.1.2.1.10.166.3"));
-
-        events.addEvent(mockEvent);
-        when(mockEvent.getPriority()).thenReturn(1);
-
-        events.initialize(mockPartition, mockEventOrdering);
-
-        assertEquals(events.getEvents().size(), 1);
-        assertTrue(events.getEvents().contains(mockEvent));
-    }
-
 }
