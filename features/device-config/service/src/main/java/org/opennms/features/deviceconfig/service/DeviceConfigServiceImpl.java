@@ -29,10 +29,6 @@
 package org.opennms.features.deviceconfig.service;
 
 import joptsimple.internal.Strings;
-import org.opennms.features.deviceconfig.persistence.api.ConfigType;
-import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.ReadOnlyPollerConfigManager;
-import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -40,7 +36,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollerResponse;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 import org.slf4j.Logger;
@@ -49,22 +44,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class DeviceConfigServiceImpl implements DeviceConfigService {
 
-    private static final String DEVICE_CONFIG_PACKAGE_NAME = "device-config";
+    private static final String DEVICE_CONFIG_SERVICE_NAME_PREFIX = "DeviceConfig-";
+    private static final String DEFAULT_CONFIG_TYPE = "Default";
+    private static final String DEVICE_CONFIG_MONITOR_CLASS_NAME = "org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor";
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigServiceImpl.class);
-    private static final Map<ConfigType, String> deviceConfigServiceMap = new HashMap<>();
-
-    static {
-        deviceConfigServiceMap.put(ConfigType.Default, "DeviceConfig-Default");
-        deviceConfigServiceMap.put(ConfigType.Running, "DeviceConfig-Running");
-    }
-
     @Autowired
     private LocationAwarePollerClient locationAwarePollerClient;
 
@@ -81,12 +69,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Override
     public void triggerConfigBackup(String ipAddress, String location, String configType) throws IOException {
 
-        if (!deviceConfigServiceMap.containsKey(ConfigType.valueOf(configType))) {
-            throw new IllegalArgumentException("Unknown configType " + configType);
+        if (Strings.isNullOrEmpty(configType)) {
+            configType = DEFAULT_CONFIG_TYPE;
         }
-        String serviceName = deviceConfigServiceMap.get(ConfigType.valueOf(configType));
-        String className = retrieveClassName(configType);
-
+        String serviceName = DEVICE_CONFIG_SERVICE_NAME_PREFIX + configType;
         MonitoredService service = sessionUtils.withReadOnlyTransaction(() -> {
 
             Optional<OnmsIpInterface> ipInterfaceOptional = ipInterfaceDao.findByIpAddress(ipAddress).stream().filter(ipInterface ->
@@ -108,33 +94,12 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         final CompletableFuture<PollerResponse> future = locationAwarePollerClient.poll()
                 .withService(service)
                 .withAdaptor(serviceMonitorAdaptor)
-                .withMonitorClassName(className)
+                .withMonitorClassName(DEVICE_CONFIG_MONITOR_CLASS_NAME)
                 .execute();
         future.whenComplete(((pollerResponse, throwable) -> {
             if (throwable != null) {
                 LOG.info("Error while manually triggering config backup for IpAddress {} at location {} for service {}", ipAddress, location, service);
             }
         }));
-    }
-
-    private String retrieveClassName(String serviceName) throws IOException {
-        final PollerConfig pollerConfig = ReadOnlyPollerConfigManager.create();
-        org.opennms.netmgt.config.poller.Package pkg = pollerConfig.getPackage(DEVICE_CONFIG_PACKAGE_NAME);
-        if (pkg == null) {
-            LOG.error("Couldn't find package {} in poller-config", pkg);
-            throw new IllegalArgumentException("Couldn't find package " + DEVICE_CONFIG_PACKAGE_NAME);
-        }
-        
-        final Optional<Package.ServiceMatch> service = pkg.findService(serviceName);
-        if (service.isEmpty()) {
-            LOG.error("Couldn't find {} service", serviceName);
-            throw new IllegalArgumentException("Couldn't find service " + serviceName + " in the package " + DEVICE_CONFIG_PACKAGE_NAME);
-        }
-        final ServiceMonitor monitor = pollerConfig.getServiceMonitor(service.get().service.getName());
-        if (monitor == null) {
-            LOG.error("Service {} doesn't have a monitor class defined", serviceName);
-            throw new IllegalArgumentException("Service " + serviceName + " doesn't have a monitor class defined");
-        }
-        return monitor.getClass().getName();
     }
 }
