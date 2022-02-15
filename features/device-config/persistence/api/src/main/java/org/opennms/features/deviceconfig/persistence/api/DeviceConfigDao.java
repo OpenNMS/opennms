@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
-
     List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, String configType);
 
     Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String configType);
@@ -53,5 +52,4 @@ public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
             String encoding,
             String reason
     );
-
 }

@@ -120,4 +120,6 @@ public interface MonitoredServiceDao extends LegacyOnmsDao<OnmsMonitoredService,
     OnmsMonitoredService getPrimaryService(Integer nodeId, String svcName);
 
     List<OnmsMonitoredService> findByNode(final int nodeId);
+
+    List<OnmsMonitoredService> findByServiceTypeAndIpInterfaceId(String serviceTypePrefix, List<Integer> ipInterfaceIds);
 }

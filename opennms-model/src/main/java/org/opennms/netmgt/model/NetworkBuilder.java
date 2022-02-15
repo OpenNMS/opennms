@@ -387,7 +387,7 @@ public class NetworkBuilder {
 
     public void setServiceMetaDataEntry(final String context, final String key, final String value) {
         if (m_currentMonSvc != null) {
-            m_currentNode.addMetaData(context, key, value);
+            m_currentMonSvc.addMetaData(context, key, value);
         }
     }
 
