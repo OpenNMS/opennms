@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,55 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.systemreport.system;
+package org.opennms.systemreport.sanitizer;
 
-import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.springframework.core.io.Resource;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.io.File;
 
-public class LsofReportPlugin extends AbstractSystemReportPlugin {
-    @Override
-    public String getName() {
-        return "lsof";
-    }
+public interface ConfigFileSanitizer {
 
-    @Override
-    public String getDescription() {
-        return "Output of the 'lsof' command (full output only)";
-    }
+    String getFileName();
 
-    @Override
-    public int getPriority() {
-        return 12;
-    }
-
-    @Override
-    public boolean getFullOutputOnly() {
-        return true;
-    }
-
-    @Override
-    public boolean getOutputsFiles() {
-        return true;
-    }
-
-    @Override
-    public Map<String, Resource> getEntries() {
-        final Map<String,Resource> map = new TreeMap<String,Resource>();
-        String lsofOutput = null;
-
-        final String lsof = getResourceLocator().findBinary("lsof");
-
-        if (lsof != null) {
-            lsofOutput = getResourceLocator().slurpOutput(lsof, false);
-        }
-
-        if (lsofOutput != null) {
-            map.put("Output", getResource(lsofOutput));
-        }
-
-        return map;
-    }
+    Resource getSanitizedResource(final File file) throws FileSanitizationException;
 }
