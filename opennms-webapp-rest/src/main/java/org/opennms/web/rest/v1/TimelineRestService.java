@@ -344,6 +344,9 @@ public class TimelineRestService extends OnmsRestService {
     @Autowired
     private OutageDao m_outageDao;
 
+    @Autowired
+    private NodeDao m_nodeDao;
+
     private OnmsOutageCollection queryOutages(final UriInfo uriInfo, final int nodeId, final String ipAddress, final String serviceName, final long start, final long end) {
         OnmsOutageCollection onmsOutageCollection;
 
@@ -376,13 +379,6 @@ public class TimelineRestService extends OnmsRestService {
         onmsOutageCollection = new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
 
         return onmsOutageCollection;
-    }
-
-    @Autowired
-    private NodeDao m_nodeDao;
-
-    private OnmsNode queryNode(final int nodeId) {
-        return m_nodeDao.get(nodeId);
     }
 
     @GET
@@ -486,7 +482,7 @@ public class TimelineRestService extends OnmsRestService {
         long delta = end - start;
 
         OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceName, start, end);
-        OnmsNode node = queryNode(nodeId);
+        OnmsNode node = m_nodeDao.get(nodeId);
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);
 
