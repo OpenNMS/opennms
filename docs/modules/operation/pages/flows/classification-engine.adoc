@@ -168,7 +168,7 @@ This simulates sending a flow to the Classification Engine.
 
 If the configuration is correct, the name of the associated rule appears in the bottom left of the *Test Classification* dialog:
 
-image::operation/flows/test-classification.png[]
+image::flows/test-classification.png[]
 
 [[evaluation-order]]
 == Order of evaluation
