@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -66,21 +66,16 @@ public class TextSystemReportFormatter extends AbstractSystemReportFormatter imp
 
     @Override
     public void write(final SystemReportPlugin plugin) {
-        if (!hasDisplayable(plugin)) return;
+        if (plugin.getFullOutputOnly()) return;
+
         LOG.debug("write({})", plugin.getName());
         try {
             final String title = plugin.getName() + " (" + plugin.getDescription() + "):" + "\n";
             getOutputStream().write(title.getBytes());
             for (final Map.Entry<String,Resource> entry : plugin.getEntries().entrySet()) {
                 final Resource value = entry.getValue();
-                final boolean displayable = isDisplayable(value);
     
-                final String text;
-                if (displayable) {
-                    text = "\t" + entry.getKey() + ": " + getResourceText(value) + "\n";
-                } else {
-                    text = "\t" + entry.getKey() + ": " + (value == null? "NULL" : value.getClass().getSimpleName() + " resource is not displayable.  Try using the 'zip' format.") + "\n";
-                }
+                final String text = "\t" + entry.getKey() + ": " + getResourceText(value) + "\n";
                 getOutputStream().write(text.getBytes());
             }
         } catch (Throwable e) {
