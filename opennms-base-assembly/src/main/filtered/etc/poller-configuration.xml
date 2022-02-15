@@ -353,14 +353,8 @@
          <parameter key="timeout" value="3000"/>
          <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
          <parameter key="rrd-base-name" value="device-config"/>
-         <parameter key="config-type" value="Default"/>
-      </service>
-      <service name="DeviceConfig-Running" interval="30000" user-defined="false" status="on">
-         <parameter key="retry" value="3"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-         <parameter key="rrd-base-name" value="device-config"/>
-         <parameter key="config-type" value="Running"/>
+         <!-- match service name suffix with config-type -->
+         <parameter key="config-type" value="${requisition:config-type|Default}"/>
       </service>
       <downtime begin="0" interval="300000"/><!-- 300s -->
    </package>
@@ -400,5 +394,4 @@
    <monitor service="MS-RDP" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
    <monitor service="ActiveMQ" class-name="org.opennms.netmgt.poller.monitors.ActiveMQMonitor" />
    <monitor service="DeviceConfig-Default" class-name="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor" />
-   <monitor service="DeviceConfig-Running" class-name="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor" />
 </poller-configuration>
