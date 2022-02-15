@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 import org.opennms.core.concurrent.FutureUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
 import org.opennms.features.deviceconfig.sshscripting.SshScriptingService;
 import org.opennms.features.deviceconfig.tftp.TftpFileReceiver;
