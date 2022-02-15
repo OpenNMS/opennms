@@ -582,7 +582,7 @@ workflows:
               architecture: [linux/amd64,linux/arm64,linux/arm/v7]
           context:
             - docker-content-trust
-            - Service Principal
+            - azure-sp-dct
           requires:
             - horizon-deb-build
             - minion-deb-build
@@ -602,7 +602,7 @@ workflows:
       - minion-image-multi-arch:
           context:
             - docker-content-trust
-            - Service Principal
+            - azure-sp-dct
           requires:
             - minion-image-single-arch
           filters:
