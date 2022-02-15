@@ -650,7 +650,6 @@ workflows:
           filters:
             branches:
               only:
-                - jbuliga/CLOUD-475
                 - develop
                 - /^master-.*/
                 - /^release-.*/
@@ -667,7 +666,6 @@ workflows:
           filters:
             branches:
               only:
-                - jbuliga/CLOUD-475
                 - develop
                 - /^master-.*/
                 - /^release-.*/
@@ -747,11 +745,11 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
-            # - smoke-test-core
-            # - smoke-test-flaky
-            # - smoke-test-minion
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
             - smoke-test-minimal
-            # - smoke-test-sentinel
+            - smoke-test-sentinel
           filters:
             branches:
               only:
@@ -844,11 +842,11 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
-            # - smoke-test-core
-            # - smoke-test-flaky
-            # - smoke-test-minion
+            - smoke-test-core
+            - smoke-test-flaky
+            - smoke-test-minion
             - smoke-test-minimal
-            # - smoke-test-sentinel
+            - smoke-test-sentinel
           filters:
             branches:
               only:
