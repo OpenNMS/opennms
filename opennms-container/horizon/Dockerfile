@@ -2,7 +2,7 @@
 # Use Java base image and setup required RPMS as cacheable image.
 ##
 ARG BASE_IMAGE="opennms/openjdk"
-ARG BASE_IMAGE_VERSION="1.8.0.252.b09-b4094"
+ARG BASE_IMAGE_VERSION="1.8.0.322.b06-b8238"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-base
 
