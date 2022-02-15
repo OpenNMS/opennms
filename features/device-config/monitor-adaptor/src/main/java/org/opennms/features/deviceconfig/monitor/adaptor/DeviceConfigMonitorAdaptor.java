@@ -32,7 +32,6 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
-import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -45,7 +44,7 @@ import com.google.common.base.Strings;
 
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
-    private static final String DEVICE_CONFIG_MONITOR = "DeviceConfig";
+    private static final String DEVICE_CONFIG_MONITOR_PREFIX = "DeviceConfig";
 
     @Autowired
     private DeviceConfigDao deviceConfigDao;
@@ -56,7 +55,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
     @Override
     public PollStatus handlePollResult(MonitoredService svc, Map<String, Object> parameters, PollStatus status) {
 
-        if (!svc.getSvcName().equals(DEVICE_CONFIG_MONITOR)) {
+        if (!svc.getSvcName().startsWith(DEVICE_CONFIG_MONITOR_PREFIX)) {
             return status;
         }
         // Retrieve interface

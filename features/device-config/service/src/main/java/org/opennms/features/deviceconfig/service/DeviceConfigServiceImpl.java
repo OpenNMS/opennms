@@ -98,7 +98,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .execute();
         future.whenComplete(((pollerResponse, throwable) -> {
             if (throwable != null) {
-                LOG.info("Error while manually triggering config backup for IpAddress {} at location {} for service {}", ipAddress, location, service);
+                LOG.info("Error while manually triggering config backup for IpAddress {} at location {} for service {}",
+                        ipAddress, location, service, throwable);
             }
         }));
     }
