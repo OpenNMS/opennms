@@ -119,7 +119,6 @@ Simply copy it to `$\{SENTINEL_HOME}/deploy/`.
         <config name="org.opennms.sentinel.controller">
             location = SENTINEL
             id = 00000000-0000-0000-0000-000000ddba11
-            http-url = http://127.0.0.1:8980/opennms
             broker-url = failover:tcp://127.0.0.1:61616
         </config>
 
@@ -167,7 +166,6 @@ Simply copy it to `$\{SENTINEL_HOME}/deploy/`.
         <config name="org.opennms.sentinel.controller">
             location = SENTINEL
             id = 00000000-0000-0000-0000-000000ddba11
-            http-url = http://127.0.0.1:8980/opennms
             broker-url = failover:tcp://127.0.0.1:61616
         </config>
 
