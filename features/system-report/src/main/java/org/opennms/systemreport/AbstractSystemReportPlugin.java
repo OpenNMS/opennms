@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -85,10 +85,20 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         return 99;
     }
 
+    @Override
+    public boolean getFullOutputOnly() {
+        return false;
+    }
+
+    @Override
+    public boolean getOutputsFiles() {
+        return false;
+    }
+
     protected ResourceLocator getResourceLocator() {
         return m_resourceLocator;
     }
-    
+
     protected void setResourceLocator(final ResourceLocator resourceLocator) {
         m_resourceLocator = resourceLocator;
     }
@@ -190,23 +200,6 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
     protected Resource getResource(final String text) {
         if (text == null) return new ByteArrayResource(new byte[0]);
         return new ByteArrayResource(text.getBytes());
-    }
-    
-    protected File createTemporaryFileFromString(final String text) {
-        File tempFile = null;
-        FileWriter fw = null;
-        try {
-            tempFile = File.createTempFile("topReportPlugin", null);
-            tempFile.deleteOnExit();
-            fw = new FileWriter(tempFile);
-            fw.write(text);
-            fw.close();
-        } catch (final Exception e) {
-            LOG.debug("Unable to write to temporary file.", e);
-        } finally {
-            IOUtils.closeQuietly(fw);
-        }
-        return tempFile;
     }
 
     protected Set<Integer> getOpenNMSProcesses() {

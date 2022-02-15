@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<http-datacollection-config  
+    xmlns:http-dc="http://xmlns.opennms.org/xsd/config/http-datacollection" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/http-datacollection http://www.opennms.org/xsd/config/http-datacollection-config.xsd" 
+    rrdRepository="/opt/opennms/share/rrd/snmp/" >
+
+  <http-collection name="cpei25150-stats">
+    <uris>
+      <uri name="clear-stats">
+        <url path="/cgi-bin/webcm" method="POST"
+             user-agent=""
+             matches="" response-range="100-399" >
+          <parameters>
+            <parameter key="login:command/username" value="router" />
+            <parameter key="login:command/password" value="secretValue" />
+          </parameters>
+        </url>
+      </uri>
+    </uris>
+  </http-collection>
+</http-datacollection-config>
