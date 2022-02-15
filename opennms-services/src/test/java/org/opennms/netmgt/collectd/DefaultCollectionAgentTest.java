@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,7 +37,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Test;
 import org.opennms.core.test.MockPlatformTransactionManager;
@@ -105,15 +104,12 @@ public class DefaultCollectionAgentTest {
         iface.setNode(node);
         iface.setIpAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
 
-        IpInterfaceDao ifaceDao = EasyMock.createMock(IpInterfaceDao.class);
-        EasyMock.expect(ifaceDao.load(iface.getId())).andReturn(iface).times(5);
-        EasyMock.replay(ifaceDao);
+        IpInterfaceDao ifaceDao = mock(IpInterfaceDao.class);
+        when(ifaceDao.load(iface.getId())).thenReturn(iface);
 
         PlatformTransactionManager transMgr = new MockPlatformTransactionManager();
 
         CollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
-
-        EasyMock.verify(ifaceDao);
 
         assertEquals(iface.getIpAddress(), agent.getAddress());
         assertEquals(node.getId().intValue(), agent.getNodeId());

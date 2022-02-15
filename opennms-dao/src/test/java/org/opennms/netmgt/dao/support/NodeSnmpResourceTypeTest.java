@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.dao.support;
 
-import static org.easymock.EasyMock.createNiceMock;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -49,9 +51,15 @@ public class NodeSnmpResourceTypeTest {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
-    private NodeDao m_nodeDao = createNiceMock(NodeDao.class);
+    private NodeDao m_nodeDao = mock(NodeDao.class);
 
-    private ResourceDao m_resourceDao = createNiceMock(ResourceDao.class);
+    private ResourceDao m_resourceDao = mock(ResourceDao.class);
+
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_nodeDao);
+        verifyNoMoreInteractions(m_resourceDao);
+    }
 
     @Test
     public void canGetChildByName() throws IOException {

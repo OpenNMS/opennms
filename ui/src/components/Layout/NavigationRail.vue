@@ -33,6 +33,12 @@
         :icon="Cloud"
         title="Endpoints"
       />
+      <FeatherRailItem
+        :class="{ selected: isSelected('/resource-graphs') }"
+        href="#/resource-graphs"
+        :icon="Reporting"
+        title="Resource Graphs"
+      />
     </template>
   </FeatherNavigationRail>
 </template>
@@ -45,6 +51,7 @@ import AddNote from '@featherds/icon/action/AddNote'
 import Location from '@featherds/icon/action/Location'
 import MarkComplete from '@featherds/icon/action/MarkComplete'
 import Cloud from '@featherds/icon/action/Cloud'
+import Reporting from '@featherds/icon/action/Reporting'
 import {
   FeatherNavigationRail,
   FeatherRailItem,

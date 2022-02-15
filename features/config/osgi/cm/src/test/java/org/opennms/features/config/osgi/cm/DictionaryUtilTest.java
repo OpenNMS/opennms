@@ -31,6 +31,7 @@ package org.opennms.features.config.osgi.cm;
 import static org.junit.Assert.*;
 import static org.opennms.features.config.osgi.cm.DictionaryUtil.createFromJson;
 import static org.opennms.features.config.osgi.cm.DictionaryUtil.writeToJson;
+import static org.osgi.framework.Constants.SERVICE_PID;
 
 import java.util.Dictionary;
 import java.util.Properties;
@@ -57,6 +58,20 @@ public class DictionaryUtilTest {
         Dictionary propsConverted = createFromJson(new JsonAsString("{\"a1\":null, \"a2\":\"\"}"));
         assertEquals(1, propsConverted.size());
         assertEquals("", propsConverted.get("a2"));
+    }
+
+
+    @Test
+    public void shouldIgnoreServicePid() {
+        Properties props = new Properties();
+        props.put(SERVICE_PID, "value1");
+        props.put("attribute2", Boolean.TRUE);
+        props.put("attribute3", 42);
+        JsonAsString json = writeToJson(props);
+        Dictionary propsConverted = createFromJson(json);
+        assertNull(propsConverted.get(SERVICE_PID));
+        assertEquals(Boolean.TRUE, propsConverted.get("attribute2"));
+        assertEquals(42, propsConverted.get("attribute3"));
     }
 
 }

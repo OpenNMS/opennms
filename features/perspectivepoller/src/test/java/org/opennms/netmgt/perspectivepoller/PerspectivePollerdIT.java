@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,11 @@ import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_ID;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME;
@@ -42,7 +47,6 @@ import java.net.InetAddress;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -88,7 +92,6 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
@@ -585,12 +588,9 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         this.perspectivePollerd.start();
 
         // this will return 192.168.1.1 for each call for active IPs
-        final FilterDao filterDao = EasyMock.createMock(FilterDao.class);
-        EasyMock.expect(filterDao.getActiveIPAddressList((String) EasyMock.anyObject())).andReturn(Collections.singletonList(addr("192.168.1.1"))).anyTimes();
-        filterDao.flushActiveIpAddressListCache();
-        EasyMock.expectLastCall().anyTimes();
+        final FilterDao filterDao = mock(FilterDao.class);
+        when(filterDao.getActiveIPAddressList(anyString())).thenReturn(Collections.singletonList(addr("192.168.1.1")));
         FilterDaoFactory.setInstance(filterDao);
-        EasyMock.replay(filterDao);
 
         // load the thresholds.xml and thresd-configuration.xml configuration
         this.thresholdingDao.overrideConfig(getClass().getResourceAsStream("/thresholds.xml"));
@@ -614,6 +614,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         this.perspectivePollerd.persistResponseTimeData(perspectivePolledService, pollStatus);
 
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
+
+        verify(filterDao, atLeastOnce()).flushActiveIpAddressListCache();
     }
 
     @Test

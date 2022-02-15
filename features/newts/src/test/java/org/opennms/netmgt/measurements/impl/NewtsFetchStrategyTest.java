@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,13 @@ package org.opennms.netmgt.measurements.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,12 +45,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.easymock.Capture;
-import org.easymock.CaptureType;
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.impl.NewtsFetchStrategy.LateAggregationParams;
@@ -77,13 +82,13 @@ public class NewtsFetchStrategyTest {
 
     private Map<ResourceId, OnmsResource> m_resources = Maps.newHashMap();
 
-    private Capture<ResultDescriptor> lastCapturedResultDescriptor = Capture.newInstance(CaptureType.LAST);
+    private ArgumentCaptor<ResultDescriptor> capturedResultDescriptor = ArgumentCaptor.forClass(ResultDescriptor.class);
 
     @Before
     public void setUp() throws Exception {
         m_context = new Context("test");
-        m_resourceDao = EasyMock.createNiceMock(ResourceDao.class);
-        m_sampleRepository = EasyMock.createNiceMock(SampleRepository.class);
+        m_resourceDao = mock(ResourceDao.class);
+        m_sampleRepository = mock(SampleRepository.class);
  
         m_newtsFetchStrategy = new NewtsFetchStrategy();
         m_newtsFetchStrategy.setContext(m_context);
@@ -93,7 +98,8 @@ public class NewtsFetchStrategyTest {
 
     @After
     public void tearDown() throws Exception {
-        EasyMock.verify(m_resourceDao, m_sampleRepository);
+        verifyNoMoreInteractions(m_resourceDao);
+        verifyNoMoreInteractions(m_sampleRepository);
     }
 
     @Test
@@ -112,6 +118,10 @@ public class NewtsFetchStrategyTest {
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
         assertEquals(1, fetchResults.getTimestamps().length);
+
+        verify(m_resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
+        verify(m_sampleRepository, atLeastOnce()).select(eq(m_context), any(Resource.class), any(), any(),
+                                                         any(ResultDescriptor.class), any(), any());
     }
 
     @Test
@@ -130,6 +140,10 @@ public class NewtsFetchStrategyTest {
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
         assertEquals(1, fetchResults.getTimestamps().length);
+
+        verify(m_resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
+        verify(m_sampleRepository, atLeastOnce()).select(eq(m_context), any(Resource.class), any(), any(),
+                                                         any(ResultDescriptor.class), any(), any());
     }
 
     @Test
@@ -146,6 +160,8 @@ public class NewtsFetchStrategyTest {
 
         FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
         assertNull(fetchResults);
+
+        verify(m_resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
     }
 
     @Test
@@ -163,6 +179,10 @@ public class NewtsFetchStrategyTest {
         assertTrue(fetchResults.getColumns().containsKey("snmplocalhost"));
         assertTrue(fetchResults.getColumns().containsKey("snmp192"));
         assertEquals(1, fetchResults.getTimestamps().length);
+
+        verify(m_resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
+        verify(m_sampleRepository, atLeastOnce()).select(eq(m_context), any(Resource.class), any(), any(),
+                        any(ResultDescriptor.class), any(), any());
     }
 
     @Test
@@ -176,6 +196,10 @@ public class NewtsFetchStrategyTest {
         FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources, false);
         // It's not possible to fetch multiple resources with the same label, we should only get 1 ICMP result
         assertEquals(1, fetchResults.getColumns().keySet().size());
+
+        verify(m_resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
+        verify(m_sampleRepository, atLeastOnce()).select(eq(m_context), any(Resource.class), any(), any(),
+                                                         any(ResultDescriptor.class), any(), any());
     }
 
     @Test
@@ -224,7 +248,11 @@ public class NewtsFetchStrategyTest {
         assertTrue(fetchResults.getColumns().containsKey("ping1Micro"));
 
         // Verify that the name of the source matches the name of the DS provided in the source definition
-        assertEquals("ping1", lastCapturedResultDescriptor.getValue().getDatasources().get("ping1Micro").getSource());
+        assertEquals("ping1", capturedResultDescriptor.getValue().getDatasources().get("ping1Micro").getSource());
+
+        verify(m_resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
+        verify(m_sampleRepository, atLeastOnce()).select(eq(m_context), any(Resource.class), any(), any(),
+                                                         any(ResultDescriptor.class), any(), any());
     }
 
     public Source createMockResource(final String label, final String attr, final String node) {
@@ -236,15 +264,13 @@ public class NewtsFetchStrategyTest {
     }
 
     public Source createMockResource(final String label, final String attr, final String ds, final String node, boolean expect) {
-        OnmsResourceType nodeType = EasyMock.createMock(OnmsResourceType.class);
-        EasyMock.expect(nodeType.getName()).andReturn("nodeSource").anyTimes();
-        EasyMock.expect(nodeType.getLabel()).andReturn("nodeSourceTypeLabel").anyTimes();
-        EasyMock.replay(nodeType);
+        OnmsResourceType nodeType = mock(OnmsResourceType.class);
+        when(nodeType.getName()).thenReturn("nodeSource");
+        when(nodeType.getLabel()).thenReturn("nodeSourceTypeLabel");
 
-        OnmsResourceType type = EasyMock.createMock(OnmsResourceType.class);
-        EasyMock.expect(type.getName()).andReturn("newtsTypeName").anyTimes();
-        EasyMock.expect(type.getLabel()).andReturn("newtsTypeLabel").anyTimes();
-        EasyMock.replay(type);
+        OnmsResourceType type = mock(OnmsResourceType.class);
+        when(type.getName()).thenReturn("newtsTypeName");
+        when(type.getLabel()).thenReturn("newtsTypeLabel");
 
         final int nodeId = node.hashCode();
         final String newtsResourceId = "response:" + node + ":" + attr;
@@ -278,9 +304,9 @@ public class NewtsFetchStrategyTest {
         results.addRow(row);
 
         if (expect) {
-            EasyMock.expect(m_sampleRepository.select(
-                    EasyMock.eq(m_context), EasyMock.eq(res), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.capture(lastCapturedResultDescriptor), EasyMock.anyObject(), EasyMock.anyObject()
-            )).andReturn(results);
+            when(m_sampleRepository.select(
+                    eq(m_context), eq(res), any(), any(), capturedResultDescriptor.capture(), any(), any()
+            )).thenReturn(results);
         }
 
         final Source source = new Source();
@@ -295,9 +321,7 @@ public class NewtsFetchStrategyTest {
 
     private void replay() {
         for (Entry<ResourceId, OnmsResource> entry : m_resources.entrySet()) {
-            EasyMock.expect(m_resourceDao.getResourceById(entry.getKey())).andReturn(entry.getValue()).anyTimes();
+            when(m_resourceDao.getResourceById(entry.getKey())).thenReturn(entry.getValue());
         }
-
-        EasyMock.replay(m_resourceDao, m_sampleRepository);
     }
 }
