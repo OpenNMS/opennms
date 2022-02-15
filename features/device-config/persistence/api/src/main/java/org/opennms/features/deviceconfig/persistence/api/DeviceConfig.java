@@ -28,8 +28,10 @@
 
 package org.opennms.features.deviceconfig.persistence.api;
 
-import org.hibernate.annotations.Type;
-import org.opennms.netmgt.model.OnmsIpInterface;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,10 +47,9 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Objects;
+
+import org.hibernate.annotations.Type;
+import org.opennms.netmgt.model.OnmsIpInterface;
 
 @Entity
 @Table(name = "device_config")
@@ -74,8 +75,7 @@ public class DeviceConfig implements Serializable {
     private String encoding;
 
     @Column(name = "config_type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ConfigType configType = ConfigType.Default;
+    private String configType;
 
     @Column(name = "failure_reason")
     private String failureReason;
@@ -136,11 +136,11 @@ public class DeviceConfig implements Serializable {
         this.createdTime = createdTime;
     }
 
-    public ConfigType getConfigType() {
+    public String getConfigType() {
         return configType;
     }
 
-    public void setConfigType(ConfigType configType) {
+    public void setConfigType(String configType) {
         this.configType = configType;
     }
 

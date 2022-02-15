@@ -28,7 +28,8 @@
 
 package org.opennms.features.deviceconfig.service;
 
-import joptsimple.internal.Strings;
+import com.google.common.base.Strings;
+import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -50,7 +51,6 @@ import java.util.concurrent.CompletableFuture;
 public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     private static final String DEVICE_CONFIG_SERVICE_NAME_PREFIX = "DeviceConfig-";
-    private static final String DEFAULT_CONFIG_TYPE = "Default";
     private static final String DEVICE_CONFIG_MONITOR_CLASS_NAME = "org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor";
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigServiceImpl.class);
     @Autowired
@@ -70,7 +70,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     public void triggerConfigBackup(String ipAddress, String location, String configType) throws IOException {
 
         if (Strings.isNullOrEmpty(configType)) {
-            configType = DEFAULT_CONFIG_TYPE;
+            configType = ConfigType.Default;
         }
         String serviceName = DEVICE_CONFIG_SERVICE_NAME_PREFIX + configType;
         MonitoredService service = sessionUtils.withReadOnlyTransaction(() -> {
@@ -98,7 +98,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .execute();
         future.whenComplete(((pollerResponse, throwable) -> {
             if (throwable != null) {
-                LOG.info("Error while manually triggering config backup for IpAddress {} at location {} for service {}", ipAddress, location, service);
+                LOG.info("Error while manually triggering config backup for IpAddress {} at location {} for service {}",
+                        ipAddress, location, service, throwable);
             }
         }));
     }

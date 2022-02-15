@@ -1876,15 +1876,43 @@
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.shell/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-deviceconfig" description="OpenNMS :: Features :: Device Config">
+    <feature name="opennms-deviceconfig-deps" description="OpenNMS :: Features :: Device Config :: Deps">
         <feature>commons-net</feature>
         <feature>opennms-util</feature>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-deviceconfig-tftp" description="OpenNMS :: Features :: Device Config :: TFTP">
+        <feature>opennms-deviceconfig-deps</feature>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.shell/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.retrieval/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.ssh-scripting/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.tftp/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.monitor/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-deviceconfig-monitor" description="OpenNMS :: Features :: Device Config :: Monitor">
+        <feature>opennms-deviceconfig-tftp</feature>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.ssh-scripting/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.retrieval/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.monitor/${project.version}</bundle>
+    </feature>
+
+    <!-- common module for sink client and server -->
+    <feature name="opennms-deviceconfig-sink-module" description="OpenNMS :: Features :: Device Config :: Sink :: Common">
+        <feature>opennms-deviceconfig-deps</feature>
+        <bundle>mvn:org.opennms.features.device-config.sink/org.opennms.features.device-config.sink.module/${project.version}</bundle>
+    </feature>
+
+    <!-- server side feature for the device config sink -->
+    <feature name="opennms-deviceconfig-sink-consumer" description="OpenNMS :: Features :: Device Config :: Sink :: Consumer">
+        <feature>opennms-deviceconfig-sink-module</feature>
+        <bundle>mvn:org.opennms.features.device-config.sink/org.opennms.features.device-config.sink.consumer/${project.version}</bundle>
+    </feature>
+
+    <!-- client side feature for the device config sink -->
+    <feature name="opennms-deviceconfig-sink" description="OpenNMS :: Features :: Device Config :: Sink :: Dispatcher">
+        <feature>opennms-deviceconfig-sink-module</feature>
+        <feature>opennms-deviceconfig-tftp</feature>
+        <bundle>mvn:org.opennms.features.device-config.sink/org.opennms.features.device-config.sink.dispatcher/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-deviceconfig-rest" description="OpenNMS :: Features :: Device Config :: Rest">

@@ -64,6 +64,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         String user = getObjectAsStringFromParams(parameters, USERNAME);
         String password = getObjectAsStringFromParams(parameters, PASSWORD);
         Integer port = getKeyedInteger(parameters, PORT, DEFAULT_SSH_PORT);
+        String configType = getKeyedString(parameters, "config-type", "default");
         Long timeout = getKeyedLong(parameters, TIMEOUT, DEFAULT_DURATION.toMillis());
         var host = svc.getIpAddr();
         var stringParameters = parameters.entrySet().stream().collect(toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue())));
@@ -74,6 +75,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                 password,
                 host,
                 port,
+                configType,
                 stringParameters,
                 Duration.ofMillis(timeout)
         ).thenApply(either ->
