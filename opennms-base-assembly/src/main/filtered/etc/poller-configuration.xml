@@ -355,6 +355,12 @@
          <parameter key="rrd-base-name" value="device-config"/>
          <!-- match service name suffix with config-type -->
          <parameter key="config-type" value="${requisition:config-type|default}"/>
+         <parameter key="username" value="${requisition:username|admin}"/>
+         <parameter key="password" value="${requisition:password|admin}"/>
+         <parameter key="port" value="${requisition:port|22}"/>
+         <parameter key="timeout" value="${requisition:timeout|60000}"/>
+         <!-- schedule is a cron expression -->
+         <parameter key="schedule" value="${requisition:schedule|0 0 * * MON}"/>
       </service>
       <downtime begin="0" interval="300000"/><!-- 300s -->
    </package>

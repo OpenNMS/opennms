@@ -1886,7 +1886,6 @@
         <feature>opennms-deviceconfig-deps</feature>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.shell/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.tftp/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.monitor/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-deviceconfig-monitor" description="OpenNMS :: Features :: Device Config :: Monitor">
