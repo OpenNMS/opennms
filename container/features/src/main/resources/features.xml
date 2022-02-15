@@ -1888,7 +1888,7 @@
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.tftp/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-deviceconfig-monitor" description="OpenNMS :: Features :: Device Config :: Remote Poller">
+    <feature name="opennms-deviceconfig-monitor" description="OpenNMS :: Features :: Device Config :: Monitor">
         <feature>opennms-deviceconfig-tftp</feature>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.ssh-scripting/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.retrieval/${project.version}</bundle>
