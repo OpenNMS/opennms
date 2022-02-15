@@ -617,7 +617,6 @@
                 <feature>opennms-dao-minion</feature>
                 <!-- Lots of deviceconfig features -->
                 <feature>opennms-deviceconfig-rest</feature>
-                <feature>opennms-deviceconfig-monitor</feature>
                 <feature>opennms-deviceconfig-sink</feature>
                 <feature>opennms-deviceconfig-sink-consumer</feature>
 
