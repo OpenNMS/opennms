@@ -1,11 +1,11 @@
 import { Plugin } from '@/types'
-import { v2 } from './axiosInstances'
+import { rest } from './axiosInstances'
 
 const endpoint = '/plugins'
 
 const getPlugins = async (): Promise<Plugin[]> => {
   try {
-    const resp = await v2.get(`${endpoint}/extensions/enabled`)
+    const resp = await rest.get(`${endpoint}/extensions`)
     return resp.data
   } catch (err) {
     return []
@@ -19,7 +19,7 @@ const updatePluginStatus = async (plugin: Plugin): Promise<Plugin> => {
   }
 
   try {
-    const resp = await v2.put(`${endpoint}/extensions/${plugin.id}`, updatedPlugin)
+    const resp = await rest.put(`${endpoint}/extensions/${plugin.extensionID}`, updatedPlugin)
     return resp.data
   } catch (err) {
     return {} as Plugin

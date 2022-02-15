@@ -13,8 +13,8 @@ const externalComponent = (url: string) => {
     //@ts-ignore
     window[name] = new Promise((resolve, reject) => {
       const script = document.createElement('script')
-      script.type = 'module'
-      script.async = true
+      //script.type = 'module'
+      //script.async = true
 
       script.addEventListener('load', () => {
         resolve(window[name])

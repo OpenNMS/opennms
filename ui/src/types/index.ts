@@ -514,7 +514,9 @@ export interface Expression {
 }
 
 export interface Plugin {
-  id: string
-  menu: string
+  extensionID: string
+  menuEntry: string
+  moduleFileName: string
+  resourceRootPath: string
   enabled: boolean
 }

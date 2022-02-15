@@ -12,15 +12,23 @@ import { externalComponent, addStylesheet } from '@/components/Plugin/utils'
 window.Vue = Vue
 
 const props = defineProps({
-  id: {
+  extensionId: {
+    required: true,
+    type: String
+  },
+  resourceRootPath: {
+    required: true,
+    type: String
+  },
+  moduleFileName: {
     required: true,
     type: String
   }
 })
 
-const baseUrl = import.meta.env.VITE_BASE_V2_URL
-const externalJsUrl = `${baseUrl}/plugins/ui-extension/js/${props.id}`
-const externalCssUrl = `${baseUrl}/plugins/ui-extension/css/${props.id}`
+const baseUrl = import.meta.env.VITE_BASE_REST_URL
+const externalJsUrl = `${baseUrl}/plugins/ui-extension/module/${props.extensionId}?path=${props.resourceRootPath}/${props.moduleFileName}`
+const externalCssUrl = `${baseUrl}/plugins/ui-extension/css/${props.extensionId}`
 const Plugin: any = defineAsyncComponent(() => externalComponent(externalJsUrl))
 
 onMounted(() => addStylesheet(externalCssUrl))

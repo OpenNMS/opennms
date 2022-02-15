@@ -55,10 +55,10 @@
       <!-- loop plugin menu items -->
       <FeatherRailItem
         v-for="plugin of enabledPlugins"
-        :key="plugin.id"
-        :class="{ selected: isSelected(`/plugins/${plugin.id}`) }"
-        :href="`#/plugins/${plugin.id}`"
-        :title="plugin.menu"
+        :key="plugin.extensionID"
+        :class="{ selected: isSelected(`/plugins/${plugin.extensionID}/${plugin.resourceRootPath}/${plugin.moduleFileName}`) }"
+        :href="`#/plugins/${plugin.extensionID}/${plugin.resourceRootPath}/${plugin.moduleFileName}`"
+        :title="plugin.menuEntry"
         :icon="UpdateUtilities"
       />
     </template>
@@ -84,7 +84,7 @@ import { Plugin } from '@/types'
 
 const store = useStore()
 const route = useRoute()
-const enabledPlugins = computed<Plugin[]>(() => store.state.pluginModule.enabledPlugins)
+const enabledPlugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
 const isAdmin = computed(() => store.getters['authModule/isAdmin'])
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRailOpen.value)

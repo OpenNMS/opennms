@@ -14,9 +14,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="plugin in plugins" :key="plugin.id">
-              <td>{{ plugin.id }}</td>
-              <td>{{ plugin.menu }}</td>
+            <tr v-for="plugin in plugins" :key="plugin.extensionID">
+              <td>{{ plugin.extensionID }}</td>
+              <td>{{ plugin.menuEntry }}</td>
               <td>
                 <FeatherButton
                   @click="updatePluginStatus(plugin)"
