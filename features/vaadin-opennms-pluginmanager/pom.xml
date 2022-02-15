@@ -251,11 +251,11 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-      <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
+      <url>https://maven.opennms.org/content/groups/vaadin-snapshot/</url>
     </repository>
     <repository>
       <id>vaadin-addons</id>
-      <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
+      <url>https://maven.opennms.org/content/groups/vaadin.com-addons/</url>
     </repository>
     <repository>
       <snapshots>
@@ -266,7 +266,7 @@
       </releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+      <url>https://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
     <repository>
       <id>opennms-snapshots</id>
@@ -277,7 +277,7 @@
       <releases>
         <enabled>false</enabled>
       </releases>
-      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+      <url>https://maven.opennms.org/content/groups/opennms.org-snapshot</url>
     </repository>
   </repositories>
 
@@ -290,7 +290,7 @@
       <releases>
         <enabled>false</enabled>
       </releases>
-      <url>http://maven.opennms.org/content/groups/codehaus.org-snapshot/</url>
+      <url>https://maven.opennms.org/content/groups/codehaus.org-snapshot/</url>
     </pluginRepository>
     <pluginRepository>
       <id>vaadin-snapshots</id>
@@ -300,7 +300,7 @@
       <releases>
         <enabled>false</enabled>
       </releases>
-      <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
+      <url>https://maven.opennms.org/content/groups/vaadin-snapshot/</url>
     </pluginRepository>
   </pluginRepositories>
 
