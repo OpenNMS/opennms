@@ -419,7 +419,7 @@
       <releases><enabled>true</enabled></releases>
       <id>openoss-repo</id>
       <name>Sourceforge OSSbeans Release Repository</name>
-      <url>http://maven.opennms.org/content/repositories/openoss-repo/</url>
+      <url>https://maven.opennms.org/content/repositories/openoss-repo/</url>
     </repository>
   </repositories>
 </project>
