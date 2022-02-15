@@ -28,7 +28,9 @@
 
 package org.opennms.features.deviceconfig.persistence.api;
 
-public enum ConfigType {
-    Default,
-    Running
+public abstract class ConfigType {
+    private ConfigType() {
+    }
+
+    public static final String Default = "default";
 }

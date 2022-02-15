@@ -422,6 +422,10 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
         close();
     }
 
+    public int getPort() {
+        return port_;
+    }
+
     /**
      * Get the current value for maxTimeoutRetries
      *

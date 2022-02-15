@@ -70,7 +70,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     public void triggerConfigBackup(String ipAddress, String location, String configType) throws IOException {
 
         if (Strings.isNullOrEmpty(configType)) {
-            configType = ConfigType.Default.name();
+            configType = ConfigType.Default;
         }
         String serviceName = DEVICE_CONFIG_SERVICE_NAME_PREFIX + configType;
         MonitoredService service = sessionUtils.withReadOnlyTransaction(() -> {

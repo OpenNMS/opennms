@@ -28,6 +28,7 @@
 
 package org.opennms.features.deviceconfig.retrieval.impl;
 
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.time.Duration;
 import java.util.HashMap;
@@ -38,9 +39,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 import org.opennms.core.concurrent.FutureUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
 import org.opennms.features.deviceconfig.sshscripting.SshScriptingService;
 import org.opennms.features.deviceconfig.tftp.TftpFileReceiver;
@@ -61,16 +64,28 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
     private static Logger LOG = LoggerFactory.getLogger(RetrieverImpl.class);
 
-    private static String FILENAME = "filename";
+    private static String SCRIPT_VAR_FILENAME = "filename";
+    private static String SCRIPT_VAR_TFTP_SERVER_IP = "tftpServerIp";
+    private static String SCRIPT_VAR_TFTP_SERVER_PORT = "tftpServerPort";
+    private static String SCRIPT_VAR_CONFIG_TYPE = "configType";
 
     private final SshScriptingService sshScriptingService;
     private final TftpServer tftpServer;
     private final ExecutorService executor;
+    private final String tftpServerIp;
 
-    public RetrieverImpl(SshScriptingService sshScriptingService, TftpServer tftpServer) {
+    public RetrieverImpl(SshScriptingService sshScriptingService, TftpServer tftpServer) throws Exception {
         this.sshScriptingService = sshScriptingService;
         this.tftpServer = tftpServer;
         this.executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("device-config-retriever-%d").build());
+        this.tftpServerIp = determineIp();
+    }
+
+    private String determineIp() throws Exception {
+        try(final DatagramSocket socket = new DatagramSocket()) {
+            socket.connect(InetAddressUtils.UNPINGABLE_ADDRESS, 10002);
+            return socket.getLocalAddress().getHostAddress();
+        }
     }
 
     @Override
@@ -81,6 +96,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             String password,
             String host,
             int port,
+            String configType,
             Map<String, String> vars,
             Duration timeout
     ) {
@@ -89,8 +105,14 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         vs.putAll(vars);
         // generate a unique filename
         // -> the filename is used to distinguish incoming files
-        var filename = host + "-" + port + "-" + System.currentTimeMillis();
-        vs.put(FILENAME, filename);
+        // -> scripts must use "tftp put <localfile> ${filename}" (or similar) to upload the device config
+        var filename = configTypeToUploadFileName(configType);
+        vs.put(SCRIPT_VAR_FILENAME, filename);
+
+        // set the ip address and port of the tftp server
+        vs.put(SCRIPT_VAR_TFTP_SERVER_IP, tftpServerIp);
+        vs.put(SCRIPT_VAR_TFTP_SERVER_PORT, String.valueOf(tftpServer.getPort()));
+        vs.put(SCRIPT_VAR_CONFIG_TYPE, configType);
 
         if (protocol == Protocol.TFTP) {
             // the file receiver is registered with the tftp server
@@ -142,7 +164,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
         private final String host;
         private final int port;
-        private final String fileName;
+        private final String uploadFileName;
         private final Supplier<Optional<SshScriptingService.Failure>> uploadTrigger;
 
         private volatile CompletableFuture<Either<Failure, Success>> future;
@@ -150,12 +172,12 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         public TftpFileReceiverImpl(
                 String host,
                 int port,
-                String fileName,
+                String uploadFileName,
                 Supplier<Optional<SshScriptingService.Failure>> uploadTrigger
         ) {
             this.host = host;
             this.port = port;
-            this.fileName = Objects.requireNonNull(fileName);
+            this.uploadFileName = Objects.requireNonNull(uploadFileName);
             this.uploadTrigger = uploadTrigger;
         }
 
@@ -189,7 +211,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
         @Override
         public void onFileReceived(InetAddress address, String fileName, byte[] content) {
-            if (this.fileName.equals(fileName)) {
+            if (uploadFileName.equals(fileName)) {
                 // it is unlikely, that the file receiver receives a file (with matching filename!) before the file
                 // upload was triggered
                 // -> just to be sure check that the future is set
@@ -207,4 +229,14 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
     static String timeoutFailureMsg(String host, int port) {
         return "device config was not received in time. host: " + host + "; port: " + port;
     }
+
+    static String configTypeToUploadFileName(String configType) {
+        return configType + "." + uploadCounter.incrementAndGet();
+    }
+
+    static String uploadFileNameToConfigType(String filename) {
+        return filename.substring(0, filename.lastIndexOf('.'));
+    }
+
+    private static AtomicLong uploadCounter = new AtomicLong();
 }

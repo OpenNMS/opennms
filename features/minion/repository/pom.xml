@@ -74,7 +74,8 @@
                                 <feature>minion-health-check</feature>
                                 <feature>minion-api-layer</feature>
                                 <feature>minion-plugin-sample</feature>
-                                <feature>opennms-deviceconfig</feature>
+                                <feature>opennms-deviceconfig-monitor</feature>
+                                <feature>opennms-deviceconfig-sink</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -470,6 +471,26 @@
         <dependency>
             <groupId>org.opennms.features.device-config</groupId>
             <artifactId>org.opennms.features.device-config.retrieval</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.device-config.sink</groupId>
+            <artifactId>org.opennms.features.device-config.sink.module</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.device-config.sink</groupId>
+            <artifactId>org.opennms.features.device-config.sink.dispatcher</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.device-config</groupId>
+            <artifactId>org.opennms.features.device-config.ssh-scripting</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.device-config</groupId>
+            <artifactId>org.opennms.features.device-config.monitor</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
