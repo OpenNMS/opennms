@@ -348,13 +348,13 @@
          <rra>RRA:MAX:0.5:288:366</rra>
          <rra>RRA:MIN:0.5:288:366</rra>
       </rrd>
-      <service name="DeviceConfig-Default" interval="30000" user-defined="false" status="on">
+      <service name="DeviceConfig-default" interval="30000" user-defined="false" status="on">
          <parameter key="retry" value="3"/>
          <parameter key="timeout" value="3000"/>
          <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
          <parameter key="rrd-base-name" value="device-config"/>
          <!-- match service name suffix with config-type -->
-         <parameter key="config-type" value="${requisition:config-type|Default}"/>
+         <parameter key="config-type" value="${requisition:config-type|default}"/>
       </service>
       <downtime begin="0" interval="300000"/><!-- 300s -->
    </package>
@@ -393,5 +393,5 @@
    <monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
    <monitor service="MS-RDP" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
    <monitor service="ActiveMQ" class-name="org.opennms.netmgt.poller.monitors.ActiveMQMonitor" />
-   <monitor service="DeviceConfig-Default" class-name="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor" />
+   <monitor service="DeviceConfig-default" class-name="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor" />
 </poller-configuration>
