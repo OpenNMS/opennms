@@ -82,7 +82,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
     private String determineIp() throws Exception {
         try(final DatagramSocket socket = new DatagramSocket()) {
-            socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+            socket.connect(InetAddressUtils.UNPINGABLE_ADDRESS, 10002);
             return socket.getLocalAddress().getHostAddress();
         }
     }
