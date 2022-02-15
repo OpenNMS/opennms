@@ -112,8 +112,11 @@
                           uib-typeahead="suggestion for suggestion in getSuggestions(field.model) | filter:$viewValue"
                           ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine }">
                         <%-- Password fields --%>
+                        <%-- Set `autocomplete="new-password"` to prevent autocomplete.
+                             See MDN: https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion#preventing_autofilling_with_autocompletenew-password --%>
                         <input type="password" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='password'"
-                               ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}">
+                               ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}"
+                               autocomplete="new-password">
                         <%-- Textarea fields --%>
                         <textarea class="form-control" style="height: 20em;" ng-model="asset[field.model]" ng-if="field.type=='textarea'"
                                   ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}"></textarea>
