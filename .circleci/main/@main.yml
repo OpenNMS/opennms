@@ -137,13 +137,13 @@ commands:
             command: find core/web-assets -name package\*.json -o -name bower.json | grep -v /target/ | sort -u | xargs cat > nodejs-dependency-json-cache.key
         - restore_cache:
             keys:
-              - nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
-              - nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-
+              - nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+              - nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
   save-nodejs-cache:
     description: "NodeJS: Save cache"
     steps:
       - save_cache:
-          key: nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+          key: nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
           paths:
             - ~/.npm/_cacache
             - core/web-assets/node_modules
