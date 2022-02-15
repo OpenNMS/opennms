@@ -28,7 +28,9 @@
 
 package org.opennms.features.deviceconfig.monitor.adaptor;
 
-import com.google.common.base.Strings;
+import java.nio.charset.Charset;
+import java.util.Map;
+
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
@@ -39,11 +41,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Map;
-import java.util.Optional;
+import com.google.common.base.Strings;
 
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
@@ -66,58 +64,27 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         String encodingAttribute = getObjectAsString(parameters.get("encoding"));
         String configTypeAttribute = getObjectAsString(parameters.get("config-type"));
         String encoding = !Strings.isNullOrEmpty(encodingAttribute) ? encodingAttribute : Charset.defaultCharset().name();
-        ConfigType configType = !Strings.isNullOrEmpty(configTypeAttribute) ? ConfigType.valueOf(configTypeAttribute) : ConfigType.Default;
-        Date currentTime = new Date();
-        Optional<DeviceConfig> configOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
-        DeviceConfig lastDeviceConfig = configOptional.orElse(null);
+        String configType = !Strings.isNullOrEmpty(configTypeAttribute) ? configTypeAttribute : ConfigType.Default;
         byte[] deviceConfigBytes = status.getDeviceConfig();
 
-        // Config retrieval failed
         if (deviceConfigBytes == null) {
-            DeviceConfig deviceConfig;
-            // If there is config already, update the same entry.
-            if (lastDeviceConfig != null) {
-                deviceConfig = lastDeviceConfig;
-            } else {
-                deviceConfig = new DeviceConfig();
-                deviceConfig.setIpInterface(ipInterface);
-                deviceConfig.setConfigType(configType);
-                deviceConfig.setEncoding(encoding);
-            }
-            deviceConfig.setFailureReason(status.getReason());
-            deviceConfig.setLastFailed(currentTime);
-            deviceConfig.setLastUpdated(currentTime);
-            deviceConfigDao.saveOrUpdate(deviceConfig);
-            return status;
+            // Config retrieval failed
+            deviceConfigDao.updateDeviceConfigFailure(
+                    ipInterface,
+                    configType,
+                    encoding,
+                    status.getReason()
+            );
+        } else {
+            // Config retrieval succeeded
+            deviceConfigDao.updateDeviceConfigContent(
+                    ipInterface,
+                    configType,
+                    encoding,
+                    deviceConfigBytes
+            );
         }
 
-        // Config retrieval succeeded
-        if (lastDeviceConfig != null &&
-                // Config didn't change, just update last updated field.
-                Arrays.equals(lastDeviceConfig.getConfig(), deviceConfigBytes)) {
-            lastDeviceConfig.setLastUpdated(currentTime);
-            lastDeviceConfig.setLastSucceeded(currentTime);
-            deviceConfigDao.saveOrUpdate(lastDeviceConfig);
-        } else if (lastDeviceConfig != null
-                // last config was failure, update config now.
-                && lastDeviceConfig.getConfig() == null) {
-            lastDeviceConfig.setConfig(deviceConfigBytes);
-            lastDeviceConfig.setCreatedTime(currentTime);
-            lastDeviceConfig.setLastUpdated(currentTime);
-            lastDeviceConfig.setLastSucceeded(currentTime);
-            deviceConfigDao.saveOrUpdate(lastDeviceConfig);
-        } else {
-            // Config changed, or there is no config for the device yet, create new entry.
-            DeviceConfig deviceConfig = new DeviceConfig();
-            deviceConfig.setConfig(deviceConfigBytes);
-            deviceConfig.setCreatedTime(currentTime);
-            deviceConfig.setIpInterface(ipInterface);
-            deviceConfig.setEncoding(encoding);
-            deviceConfig.setConfigType(configType);
-            deviceConfig.setLastUpdated(currentTime);
-            deviceConfig.setLastSucceeded(currentTime);
-            deviceConfigDao.saveOrUpdate(deviceConfig);
-        }
         return status;
     }
 

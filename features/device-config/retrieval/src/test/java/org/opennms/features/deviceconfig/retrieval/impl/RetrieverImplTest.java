@@ -74,8 +74,10 @@ public class RetrieverImplTest {
 
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
 
+        var configType = "runtime.cfg";
+
         var future = retriever.retrieveConfig(
-                Retriever.Protocol.TFTP, "", "", "", "", 80,
+                Retriever.Protocol.TFTP, "", "", "", "", 80, configType,
                 Collections.emptyMap(),
                 Duration.ofMillis(1000)
         ).toCompletableFuture();
@@ -85,6 +87,10 @@ public class RetrieverImplTest {
         var receiver = waitFor(receiverCaptor);
 
         var filename = (String)vars.get("filename");
+
+        assertThat(filename, containsString(configType));
+        assertThat(configType, is(RetrieverImpl.uploadFileNameToConfigType(filename)));
+
         var bytes = new byte[]{1, 2, 3};
 
         // signal the receiver of some incoming file with the expected filename
@@ -115,7 +121,7 @@ public class RetrieverImplTest {
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
 
         var future = retriever.retrieveConfig(
-                Retriever.Protocol.TFTP, "", "", "", "host", 80,
+                Retriever.Protocol.TFTP, "", "", "", "host", 80, "runtime.cfg",
                 Collections.emptyMap(),
                 Duration.ofMillis(1000)
         ).toCompletableFuture();
@@ -146,7 +152,7 @@ public class RetrieverImplTest {
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
 
         var future = retriever.retrieveConfig(
-                Retriever.Protocol.TFTP, "", "", "", "host", 80,
+                Retriever.Protocol.TFTP, "", "", "", "host", 80, "runtime.cfg",
                 Collections.emptyMap(),
                 Duration.ofMillis(1000)
         ).toCompletableFuture();
@@ -176,7 +182,7 @@ public class RetrieverImplTest {
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
 
         var future = retriever.retrieveConfig(
-                Retriever.Protocol.TFTP, "", "", "", "host", 80,
+                Retriever.Protocol.TFTP, "", "", "", "host", 80, "runtime.cfg",
                 Collections.emptyMap(),
                 Duration.ofMillis(1000)
         ).toCompletableFuture();
@@ -207,7 +213,7 @@ public class RetrieverImplTest {
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
 
         var future = retriever.retrieveConfig(
-                Retriever.Protocol.TFTP, "", "", "", "host", 80,
+                Retriever.Protocol.TFTP, "", "", "", "host", 80, "runtime.cfg",
                 Collections.emptyMap(),
                 Duration.ofMillis(1000)
         ).toCompletableFuture();

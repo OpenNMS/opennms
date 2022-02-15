@@ -36,8 +36,22 @@ import java.util.Optional;
 
 public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
 
-    List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, ConfigType configType);
+    List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, String configType);
 
-    Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, ConfigType configType);
+    Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String configType);
+
+    void updateDeviceConfigContent(
+            OnmsIpInterface ipInterface,
+            String configType,
+            String encoding,
+            byte[] deviceConfigBytes
+    );
+
+    void updateDeviceConfigFailure(
+            OnmsIpInterface ipInterface,
+            String configType,
+            String encoding,
+            String reason
+    );
 
 }

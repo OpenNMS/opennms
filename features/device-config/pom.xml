@@ -22,6 +22,7 @@
         <module>retrieval</module>
         <module>tftp</module>
         <module>shell</module>
+        <module>sink</module>
         <module>ssh-scripting</module>
     </modules>
 

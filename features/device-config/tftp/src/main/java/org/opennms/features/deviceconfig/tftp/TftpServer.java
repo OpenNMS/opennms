@@ -35,6 +35,7 @@ public interface TftpServer {
     void register(TftpFileReceiver receiver) throws IOException;
     void unregister(TftpFileReceiver receiver);
 
+    int getPort();
     TftpStatistics getStatistics();
     TftpStatistics getAndResetStatistics();
 }

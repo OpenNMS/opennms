@@ -51,6 +51,7 @@ public interface Retriever {
             String password,
             String host,
             int port,
+            String configType,
             Map<String, String> vars,
             Duration timeout
     );
