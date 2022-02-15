@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -74,7 +74,7 @@ public class XmlSystemReportFormatter extends AbstractSystemReportFormatter impl
 
     @Override
     public void write(final SystemReportPlugin plugin) {
-        if (!hasDisplayable(plugin)) return;
+        if (plugin.getFullOutputOnly()) return;
         
         if (m_handler == null) {
             try {
@@ -108,24 +108,19 @@ public class XmlSystemReportFormatter extends AbstractSystemReportFormatter impl
             atts.addAttribute("", "", "description", "CDATA", plugin.getDescription());
             m_handler.startElement("", "", "plugin", atts);
             for (final Map.Entry<String,Resource> entry : plugin.getEntries().entrySet()) {
-                final boolean displayable = isDisplayable(entry.getValue());
 
                 atts = new AttributesImpl();
                 atts.addAttribute("", "", "key", "CDATA", entry.getKey());
 
-                if (!displayable) {
-                    atts.addAttribute("", "", "skipped", "CDATA", "true");
+                m_handler.startElement("", "", "entry", atts);
+
+                final String value = getResourceText(entry.getValue());
+                if (value != null) {
+                    m_handler.startCDATA();
+                    m_handler.characters(value.toCharArray(), 0, value.length());
+                    m_handler.endCDATA();
                 }
 
-                m_handler.startElement("", "", "entry", atts);
-                if (displayable) {
-                    final String value = getResourceText(entry.getValue());
-                    if (value != null) {
-                        m_handler.startCDATA();
-                        m_handler.characters(value.toCharArray(), 0, value.length());
-                        m_handler.endCDATA();
-                    }
-                }
                 m_handler.endElement("", "", "entry");
             }
             m_handler.endElement("", "", "plugin");
