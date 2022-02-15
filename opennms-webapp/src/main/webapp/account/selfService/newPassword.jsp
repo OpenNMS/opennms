@@ -71,15 +71,15 @@
           <input type="hidden" name="newPassword" value="">
           <div class="form-group">
             <label class="col-form-label" for="input_oldpass">Current Password</label>
-            <input type="password" class="form-control <% if ("redo".equals(request.getParameter("action"))) { %>is-invalid<% } %>" id="input_oldpass" name="oldpass">
+            <input type="password" class="form-control <% if ("redo".equals(request.getParameter("action"))) { %>is-invalid<% } %>" id="input_oldpass" name="oldpass" autocomplete="off">
           </div>
           <div class="form-group">
             <label class="col-form-label" for="input_pass1">New Password</label>
-            <input type="password" class="form-control" name="pass1" id="input_pass1">
+            <input type="password" class="form-control" name="pass1" id="input_pass1" autocomplete="off">
           </div>
           <div class="form-group">
             <label class="col-form-label" for="input_pass2">Confirm New Password</label>
-            <input type="password" class="form-control" name="pass2" id="input_pass2">
+            <input type="password" class="form-control" name="pass2" id="input_pass2" autocomplete="off">
           </div>
           <button type="submit" class="btn btn-primary">Submit</button>
           <a href="account/selfService/index.jsp" class="btn btn-secondary">Cancel</a>
