@@ -33,7 +33,7 @@ Assume that you define the following rules:
 |
 | 10.0.0.1
 | 8980
-| tcp,udp
+| tcp
 |
 
 | http
