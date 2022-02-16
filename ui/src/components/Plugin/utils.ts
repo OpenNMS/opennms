@@ -7,14 +7,19 @@ const externalComponent = (url: string) => {
         .match(/^(.*?)\.es/) as any[]
     )[1]
 
-    if (window[name]) return window[name]
+    if (window[name]) {
+      return new Promise((resolve) => {
+        resolve(window[name])
+      })
+    }
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     window[name] = new Promise((resolve, reject) => {
       const script = document.createElement('script')
-      //script.type = 'module'
-      //script.async = true
+      script.type = 'module'
+      script.async = true
+      script.crossOrigin = 'use-credentials'
 
       script.addEventListener('load', () => {
         resolve(window[name])
@@ -33,6 +38,9 @@ const externalComponent = (url: string) => {
 }
 
 const addStylesheet = (url: string) => {
+  const exists = document.querySelector(`link[href='${url}']`)
+  if (exists) return
+
   const head = document.head
   const link = document.createElement('link')
 
@@ -40,7 +48,7 @@ const addStylesheet = (url: string) => {
   link.rel = 'stylesheet'
   link.href = url
 
-  head.appendChild(link)
+  head.prepend(link)
 }
 
 export { externalComponent, addStylesheet }
