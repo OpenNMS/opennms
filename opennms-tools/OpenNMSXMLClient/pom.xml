@@ -167,7 +167,7 @@
       <releases><enabled>true</enabled></releases>
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net Repository for Maven</name>
-      <url>http://maven.opennms.org/content/repositories/maven2-repository.dev.java.net/</url>
+      <url>https://maven.opennms.org/content/repositories/maven2-repository.dev.java.net/</url>
       <layout>default</layout>
     </repository>
   </repositories>
