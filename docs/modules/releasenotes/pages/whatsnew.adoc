@@ -31,6 +31,23 @@ If you wish to revert to the previous behavior, create an `$OPENNMS_HOME/etc/ope
 RUNAS=root
 ----
 
+Change the user to `root` in the systemd unit by editing the systemd unit file.
+
+[source, shell]
+----
+systemctl edit opennms
+----
+
+.Add the following content
+[source, shell]
+----
+[Service]
+User=root
+----
+
+Save the file and reload systemd with `systemctl daemon-reload` and restart OpenNMS with `systemctl restart opennms`.
+The OpenNMS process should run as root user instead of `opennms` and can be verified with `ps -aux | grep java`.
+
 ==== Trapd Port Changes
 
 As OpenNMS can no longer listen on privileged ports by default, the default Trapd port is now `10162`.
@@ -57,7 +74,7 @@ Additional settings are needed on both Minion and {page-component-title} to enab
 
 Refer to the deployment section in the documentation for details.
 
-NOTE : Horizon 29.0.5 consolidated IPC features into one feature on Minion. This groups all IPC (Sink/RPC/Twin) features of JMS into one feature as `openms-core-ipc-jms`. Similarly for Kafka and gRPC.
+NOTE: Horizon 29.0.5 consolidated IPC features into one feature on Minion. This groups all IPC (Sink/RPC/Twin) features of JMS into one feature as `openms-core-ipc-jms`. Similarly for Kafka and gRPC.
 When using Kafka or gRPC, you need to disable `opennms-core-ipc-jms` instead of disabling individual features such as `opennms-core-ipc-sink-camel`.
 
 
