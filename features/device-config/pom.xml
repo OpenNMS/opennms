@@ -24,6 +24,7 @@
         <module>shell</module>
         <module>sink</module>
         <module>ssh-scripting</module>
+        <module>service</module>
     </modules>
 
 </project>
