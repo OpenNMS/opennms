@@ -115,6 +115,7 @@ public class FileUpdateWatcher {
     }
 
     public void destroy() {
+        closed.set(true);
         try {
             if (watcher != null) {
                 watcher.close();
@@ -122,7 +123,6 @@ public class FileUpdateWatcher {
         } catch (Exception e) {
             LOG.info("Exception while closing watcher", e);
         }
-        closed.set(true);
     }
 
 }
