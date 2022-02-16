@@ -1,0 +1,75 @@
+[[flows-troubleshoot]]
+= Flows Troubleshooting
+
+This section describes way to troubleshoot flows when the feature does not work or performs suboptimally.
+
+== Troubleshoot telemetryd
+
+<<telemetryd/introduction.adoc#ga-telemetryd, Telemetryd>> receives and decodes flows on {page-component-title}, so run the following checks to determine that it works as expected:
+
+* Telemetryd availability
+* Are routers sending data?
+* Docker networking
+* Minion health check
+* OpenNMS health check
+* Are sink consumer graphs populated?
+* Is SNMP available on the routers that provide Netflow?
+* Review OpenNMS and Minion logs
+
+The https://opennms.discourse.group/t/troubleshoot-telemetryd/1739[Troubleshoot Telemetryd] article on Discourse provides details on how to run these checks.
+
+
+==
+He (Marcel?) has a section on troubleshooting for flow - query for Kibana - in theory just replace the IP address in the query
+
+Filter data in Kibana to find unknown ones - Need to know Kibana as well.
+
+Netflow app exists in the Kibana UI? - gives you info and you see what it is “known services” - go to ONMS UI, create custom classification  rule - from that point on new flows will be classified - then you just have only a few kbs that are unknown -
+
+==
+
+If flows are stored in ElasticSearch then it is definitely a good idea to use Kibana and check if flow documents (raw and/or aggregated ones) are written to ES at all. I do not know the index names where the documents are stored out of my mind but I can look them up.
+
+If no raw flows are stored then etc/telemetryd-configuration.xml should be checked. Netflow listeners must be enabled.
+
+If flows are stored and still do not appear in Helm then etc/org.opennms.features.flows.persistence.elastic.cfg should be checked. In particular, the options alwaysUseRawForQueries/alwaysUseAggForQueries make a big difference of not both, raw & aggregated flows are stored in ES. Also enableForwarding must be set to true in order to forward flows via Kafka to  Nephron.
+
+Flows troubleshooting
+
+
+    TUI - opennms:telemetry-listeners - shows listener parameters/info - state - can see data and info. Coming in - debugging the whole telemetry set up -
+
+If I don't see data if not seeing data or data is wrong, check here
+
+
+See not updating or maybe paths are wrong - info. Not passed correctly
+
+
+
+Which routers communicating through onms
+
+
+    Karaf - whether docs are persisted - indicates that whole stack with ES worked
+
+    NODE page - flows indicator icon shows flows data for specific device - details SNMP  and which direction
+
+4. If the template is missing - this message appears in Grafana "template is missing" - this happens if you start ONMS before ES - first time installing flows - if start ES after ONMS, the template will not be in ES and doesn't know what to do with the docs -  ES uses template to write to itself - installed once, the first time you connect to ES
+
+
+Stop ONMS. Stop ES. Stop ES data (documents?)
+
+Start ES. Start ONMS.
+
+
+It will be fixed!
+
+===
+troubleshoot telemetryd: https://opennms.discourse.group/t/troubleshoot-telemetryd/1739
+
+===
+
+run health check?
+
+=== 
+
+https://opennms.discourse.group/t/unable-to-receive-snmp-traps-syslog-and-netflow/2056
