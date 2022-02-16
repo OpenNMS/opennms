@@ -1,13 +1,13 @@
 executors:
   centos-build-executor:
     docker:
-      - image: opennms/build-env:11.0.14_9-3.8.4-b8184
+      - image: opennms/build-env:11.0.14_9-3.8.4-b8249
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk11-b8177
+      - image: opennms/build-env:debian-jdk11-b8243
   docker-executor:
     docker:
-      - image: docker:20.10.1-git
+      - image: docker:20.10-git
   docs-executor:
     docker:
       - image: opennms/antora:2.3.4-b7274
