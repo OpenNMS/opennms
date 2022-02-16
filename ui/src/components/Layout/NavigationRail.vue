@@ -84,7 +84,7 @@ import { Plugin } from '@/types'
 
 const store = useStore()
 const route = useRoute()
-const enabledPlugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
+const enabledPlugins = computed<Plugin[]>(() => store.state.pluginModule.enabledPlugins)
 const isAdmin = computed(() => store.getters['authModule/isAdmin'])
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRailOpen.value)

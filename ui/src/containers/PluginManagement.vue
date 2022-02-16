@@ -11,5 +11,8 @@ import PluginTable from '@/components/Plugin/PluginTable.vue'
 
 const store = useStore()
 const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
-onMounted(() => store.dispatch('pluginModule/getPlugins'))
+onMounted(() => {
+  store.dispatch('pluginModule/getPlugins')
+  store.dispatch('pluginModule/getEnabledPlugins')
+})
 </script>

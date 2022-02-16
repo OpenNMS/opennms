@@ -1,17 +1,24 @@
 import API from '@/services'
-import { Plugin, VuexContext } from '@/types'
+import { VuexContext } from '@/types'
 
 const getPlugins = async (context: VuexContext) => {
   const plugins = await API.getPlugins()
   context.commit('SAVE_PLUGINS', plugins)
 }
 
-const updatePluginStatus = async (context: VuexContext, plugin: Plugin) => {
-  await API.updatePluginStatus(plugin)
-  context.dispatch('getPlugins')
+const getEnabledPlugins = async (context: VuexContext) => {
+  const plugins = await API.getEnabledPlugins()
+  context.commit('SAVE_ENABLED_PLUGINS', plugins)
+}
+
+const togglePlugin = async (context: VuexContext, id: string) => {
+  const updatedPlugin = await API.togglePlugin(id)
+  context.commit('UPDATE_PLUGINS', updatedPlugin)
+  context.dispatch('getEnabledPlugins')
 }
 
 export default {
   getPlugins,
-  updatePluginStatus
+  togglePlugin,
+  getEnabledPlugins
 }

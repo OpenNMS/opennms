@@ -19,7 +19,7 @@
               <td>{{ plugin.menuEntry }}</td>
               <td>
                 <FeatherButton
-                  @click="updatePluginStatus(plugin)"
+                  @click="togglePlugin(plugin.extensionID)"
                   secondary
                 >{{ plugin.enabled ? 'Disable' : 'Enable' }}</FeatherButton>
               </td>
@@ -39,7 +39,7 @@ import { FeatherButton } from '@featherds/button'
 
 const store = useStore()
 
-const updatePluginStatus = (plugin: Plugin) => store.dispatch('pluginModule/updatePluginStatus', plugin)
+const togglePlugin = (id: string) => store.dispatch('pluginModule/togglePlugin', id)
 
 defineProps({
   plugins: {

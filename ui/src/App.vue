@@ -36,7 +36,7 @@ const maxWidth = computed(() => navRailOpen.value ? '223px' : '0px')
 onMounted(() => {
   store.dispatch('authModule/getWhoAmI')
   store.dispatch('infoModule/getInfo')
-  store.dispatch('pluginModule/getPlugins')
+  store.dispatch('pluginModule/getEnabledPlugins')
 })
 </script>
   
