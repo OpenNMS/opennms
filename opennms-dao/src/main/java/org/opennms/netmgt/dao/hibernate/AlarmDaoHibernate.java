@@ -40,6 +40,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
+import org.hibernate.type.StringType;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -171,10 +172,10 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
             @Override
             public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
-                Query query = session.createSQLQuery(
-                        "select coalesce(?,'Uncategorized'), ?, " +
+                String queryStr =
+                        "select coalesce(:entityNameColumn,'Uncategorized'), :entityIdColumn, " +
                                 "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
-                                "count(distinct node.nodeid) as nodeTotalCount, ?" +
+                                "count(distinct node.nodeid) as nodeTotalCount, :maximumSeverityQuery" +
                                 "from node " +
                                 "left join category_node using (nodeid) " +
                                 "left join categories using (categoryid) " +
@@ -182,13 +183,23 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                                 "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
                                 "left outer join service on (ifservices.serviceid = service.serviceid) " +
                                 "left outer join alarms on (alarms.nodeid = node.nodeid and alarms.alarmtype in (1,3)) " +
-                                "where nodeType <> 'D' ?" +
-                                "group by ? having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0");
-                query.setString(1, entityNameColumn);
-                query.setString(2, entityIdColumn);
-                query.setString(3, maximumSeverityQuery);
-                query.setString(4, (restrictionColumn != null ? String.format("and coalesce(%s,'Uncategorized')='%s' ", restrictionColumn, restrictionValue) : ""));
-                query.setString(5, groupByClause);
+                                "where nodeType <> 'D' ";
+                if (restrictionColumn != null) {
+                    queryStr += "and coalesce(:restrictionColumn, 'Uncategorized')=':restrictionValue' ";
+                }
+                queryStr += "group by :groupByClause having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
+                Query query = session.createSQLQuery(queryStr);
+
+                query.setParameter("entityNameColumn",      entityNameColumn,     StringType.INSTANCE);
+                query.setParameter("entityIdColumn",        entityIdColumn,       StringType.INSTANCE);
+                query.setParameter("maximumSeverityQuery",  maximumSeverityQuery, StringType.INSTANCE);
+                // 'Dynamic' query construction
+                if (restrictionColumn != null) {
+                    query.setParameter("restrictionColumn", restrictionColumn,    StringType.INSTANCE);
+                    query.setParameter("restrictionValue",  restrictionValue,     StringType.INSTANCE);
+                }
+                query.setParameter("groupByClause",         groupByClause,        StringType.INSTANCE);
+
                 query.setResultTransformer(new ResultTransformer() {
                         private static final long serialVersionUID = 5152094813503430377L;
 
