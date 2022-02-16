@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,7 +40,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.systemreport.ResourceLocator;
-import org.springframework.core.io.FileSystemResource;
 
 public class TopReportPluginIT {
     private ResourceLocator m_resourceLocator;
@@ -113,7 +112,6 @@ public class TopReportPluginIT {
         Mockito.when(m_resourceLocator.slurpOutput("/usr/bin/top -l 1", false)).thenReturn(topOutput);
         assertEquals(1, m_reportPlugin.getEntries().size());
         assertEquals("Output", m_reportPlugin.getEntries().keySet().iterator().next());
-        assertEquals(FileSystemResource.class, m_reportPlugin.getEntries().entrySet().iterator().next().getValue().getClass());
     }
 
     @Test
@@ -141,7 +139,6 @@ public class TopReportPluginIT {
         Mockito.when(m_resourceLocator.slurpOutput("/usr/bin/top -n 1 -b", false)).thenReturn(topOutput);
         assertEquals(1, m_reportPlugin.getEntries().size());
         assertEquals("Output", m_reportPlugin.getEntries().keySet().iterator().next());
-        assertEquals(FileSystemResource.class, m_reportPlugin.getEntries().entrySet().iterator().next().getValue().getClass());
     }
 
     @Test
@@ -165,7 +162,6 @@ public class TopReportPluginIT {
         Mockito.when(m_resourceLocator.slurpOutput("/usr/bin/top -n 1 -b", false)).thenReturn(topOutput);
         assertEquals(1, m_reportPlugin.getEntries().size());
         assertEquals("Output", m_reportPlugin.getEntries().keySet().iterator().next());
-        assertEquals(FileSystemResource.class, m_reportPlugin.getEntries().entrySet().iterator().next().getValue().getClass());
     }
 
     @Test
@@ -207,6 +203,5 @@ public class TopReportPluginIT {
         Mockito.when(m_resourceLocator.slurpOutput("/usr/bin/top -b -d 1", false)).thenReturn(topOutput);
         assertEquals(1, m_reportPlugin.getEntries().size());
         assertEquals("Output", m_reportPlugin.getEntries().keySet().iterator().next());
-        assertEquals(FileSystemResource.class, m_reportPlugin.getEntries().entrySet().iterator().next().getValue().getClass());
     }
 }
