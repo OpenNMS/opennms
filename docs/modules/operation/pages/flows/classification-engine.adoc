@@ -1,126 +1,73 @@
 
 [[ga-flow-support-classification-engine]]
-= Application Classification
+= Flows Classification
 
-The Classification Engine applies a set of user- and/or system-defined rules to each flow to classify it.
-This lets users group flows by applications, for example, if all flows to port 80 are marked as `http`.
+For improved flows management, OpenNMS uses a classification engine that applies user- and/or pre-defined rules to filter and classify flows. (Predefined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].)
+
+Group flows by a combination of parameters: source/destination port, source/destination address, IP protocol, and exporter filter, and view classifications by group on the home page.
+Use classification to help you determine how the flows associated with a particular appliance, service, and so on affect your network (for example, all YouTube traffic or all flows to port 80 marked as `http`).
 
 To classify a flow, you must define a rule.
-A rule defines at least a name, which the flow is classified with, and additional parameters that must match for a successful classification.
+A rule includes at least a name for the flow and additional parameters that must match for successful classification.
 
-== Rule definition
-A rule has the following fields:
+Use the Classification UI to define new rules:
+menu:Gears icon[Flow Management > Manage Flow Classification].
 
-[options="header, autowidth"]
+== Flows classification example
+
+Assume that you define the following rules:
+
+[options="header"]
+[cols="1,1,1,1,1,1,1"]
 |===
-| Name            | Description
-2+| *Required*
-
-| group
-| The group in which this rule was placed.
-See also <<rule-groups,Rule Groups>>.
-
-| position
-| The position at which it is placed within its group, relevant for the <<evaluation-order, order of evaluation>>.
-
 | name
-| The name the flow is classified with; for example, `http`.
-
-2+| *Optional*
-
-| dstPort
-| The destination port of the flow to match.
-May be a range or list of ports; for example, 80,8080,8980, or 8000-9000.
-
-| dstAddress
-| The destination IP address of the flow to match.
-May contain wildcards.
-
-| srcPort
-| The source port of the flow to match.
-See `dstPort` for more details.
-
 | srcAddress
-| The source IP address of the flow to match.
-See `dstAddress` for more details.
-
-| exporterFilter
-| The exporter of the flow must match this criteria.
-This parameter supports all capabilities of the {page-component-title} xref:reference:configuration/filters/filters.adoc[Filters API].
-
+| srcPort
+| dstAddress
+| dstPort
 | protocol
-| The IP protocol of the flow to match.
+| exporterFilter
+
+| OpenNMS
+|
+|
+| 10.0.0.1
+| 8980
+| tcp
+|
+
+| http
+|
+|
+|
+| 80,8980,8080,9000
+| tcp
+|
+
+| https
+|
+|
+|
+| 443
+|
+|
+
+| Exporters
+|
+|
+|
+|
+|
+| categoryName == 'Exporters'
 |===
 
-Even if all fields (besides `group`, `position`, and `name`) are optional, at least one of them must be defined to be considered a valid rule.
-
-A list of predefined rules already exist in the group `pre-defined`.
-The predefined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].
-Define new rules using the Classification UI, under the gears icon in the web UI: menu:Gear icon[Flow Management > Manage Flow Classification].
-
-== Omnidirectional Rules
-You can mark rules as omnidirectional, which additionally evaluates the rules with interchanged endpoint addresses and ports.
-This is helpful if traffic related to a matching classification should be classified the same way.
-
-[[rule-groups]]
-== Rule Groups
-Rules live within a rule group.
-New groups can be added, edited, and deleted via the Classification UI.
-The `pre-defined` group is read only.
-You cannot alter it or its rules.
-
-[[evaluation-order]]
-== Order of Evaluation
-Rules and groups have a position.
-Lower positions are evaluated first.
-The position of a rules group is more important than the rule's position within its group.
-The system-defined group is always evaluated last.
-
-An example of an evaluation:
+{page-component-title} receives the following flows, classified according to the rules defined above:
 
 [options="header"]
+[cols="1,3"]
 |===
-| Group Position | Group   | Rule Position | Rule
-| 1              | group 1 | 1             | rule 1.1
-| 1              | group 1 | 2             | rule 1.2
-| 1              | group 1 | 3             | rule 1.3
-| 1              | group 1 | 4             | rule 1.4
-| 2              | group 2 | 1             | rule 2.1
-| 2              | group 2 | 2             | rule 2.2
-| 2              | group 2 | 3             | rule 2.3
-| 2              | group 2 | 4             | rule 2.4
-| 3              | group 3 | 1             | rule 3.1
-| 3              | group 3 | 2             | rule 3.2
-|===
-
-Change the positions of rules and groups by drag and drop or by editing the position field in the edit dialogs.
-
-== Verification
-
-With a more complex set of rules, it is not always easy to verify if everything is configured correctly.
-To make things easier, the Classification UI lets you test/verify a classification.
-To do so, navigate to the Classification UI:
-menu:Gear icon[Flow Management > Manage Flow Classification] and select the Test classification icon in the top right.
-This simulates sending a flow to the Classification Engine with certain fields.
-
-== Example
-
-Let's assume the following rules are defined:
-
-[options="header"]
-|===
-| name       |  srcAddress | srcPort | dstAddress | dstPort           | protocol | exporterFilter
-| OpenNMS    |             |         | 10.0.0.1   | 8980              | tcp,udp  |
-| http       |             |         |            | 80,8980,8080,9000 | udp,tcp  |
-| https      |             |         |            | 443               |          |
-| Exporters  |             |         |            |                   |          | categoryName == 'Exporters'
-|===
-
-The following flows are sent to {page-component-title} and with the rules defined above classified accordingly.
-
-[options="header, autowidth"]
-|===
-| Flow    | Classification
+| Flow
+| Classification
 
 | protocol: tcp, +
   srcAddress: 10.0.0.5, srcPort: 60123, +
@@ -140,4 +87,155 @@ The following flows are sent to {page-component-title} and with the rules define
   exporterAddress: 10.0.0.55
 | OpenNMS
 
+|===
+
+== Create a flows classification rule
+A flows classification rule must include at least a name and one definition for source/destination port, source/destination address, IP protocol, or exporter filter.
+
+By default, rules that a user creates appear in the "user-defined rules" group.
+You can <<rule-groups, create other groups>> as needed and assign rules to those groups.
+
+. Click the gears icon, and click *Manage Flow Classification*.
+. In the *User-defined Rules* tab, click the plus sign.
+. In the *Application Name* field, type a name for the rule.
+. Specify a value in at least one of the following fields:
++
+
+[cols="1,3"]
+|===
+
+| Source IP Address
+| The source IP address of the flow to match.
+May contain wildcards.
+
+| Source Port
+| The source port of the flow to match.
+May be a range or list of ports; for example, 80,8080,8980, or 8000-9000.
+
+| Destination IP Address
+| The destination IP address of the flow to match.
+May contain wildcards.
+
+| Destination Port
+| The destination port of the flow to match.
+May be a range or list of ports; for example, 80,8080,8980, or 8000-9000.
+
+| Exporter Filter
+| The exporter of the flow (device/observation point) must match this criteria.
+This parameter supports all capabilities of the {page-component-title} xref:reference:configuration/filters/filters.adoc[Filters API].
+
+| IP Protocol
+| The IP protocol of the flow to match.
+|===
+
+. Mark the rule as omnidirectional to evaluate it with interchanged endpoint addresses and ports.
++
+This classifies related traffic that matches the classification in the same way.
+. Click *Create*.
+
+Note that when you have more than one user-defined rule, in the *Position* field, specify the order you want the classification engine to evaluate the rule within its group.
+Lower numbers are evaluated first (0>1>2).
+By default, the *Position* field increments the number with each new rule.
+(The classification engine would evaluate the rules based on the order in which you create them.)
+See <<evaluation-order, order of evaluation>>.
+
+[[rule-groups]]
+== Rule groups
+Each rule is associated with a rule group.
+The default user groups are "user-defined rules" and "pre-defined rules".
+You can add, edit, and delete groups.
+Note that the "pre-defined" group is read only and you cannot edit or delete it or its rules.
+
+To add a rule group, follow these steps:
+
+. Click the gears icon and click *Manage Flow Classification*.
+. In the *Settings* tab, click the plus sign.
+. In the *Position* field, choose a number for the order you want the group to be evaluated.
++
+Evaluation order goes from lowest number to highest (0>1>2).
+. Type a name and description for the group in the appropriate fields and click *Create*.
+
+If you originally created a rule in the user-defined rules group, you can edit that rule to assign it to a different group.
+
+== Verify rule configuration
+
+To verify that a complex set of rules is configured correctly, navigate to the classification UI (menu:Gears icon[Flow Management > Manage Flow Classification]) and select the test classification icon (magic wand) in the top right.
+
+Define values in the screen and click *Classify*.
+(You are basically crafting an IP packet by hand.)
+
+This simulates sending a flow to the Classification Engine.
+
+If the configuration is correct, the name of the associated rule appears in the bottom left of the *Test Classification* dialog:
+
+image::flows/test-classification.png[classify,300]
+
+[[evaluation-order]]
+== Order of evaluation
+Rules and groups have a position.
+The classification engine evaluates lower positions first.
+The position of a rules group is more important than the rule's position within its group.
+The pre-defined group is always evaluated last.
+
+Drag and drop or edit the *Position* field in the group/rules dialogs to change the positions of rules.
+
+An example of an evaluation:
+
+[options="header"]
+[cols="1,2,1,2"]
+|===
+| Group Position
+| Group
+| Rule Position
+| Rule
+
+| 1
+| group 1
+| 1
+| rule 1.1
+
+| 1
+| group 1
+| 2
+| rule 1.2
+
+| 1
+| group 1
+| 3
+| rule 1.3
+
+| 1
+| group 1
+| 4
+| rule 1.4
+
+| 2
+| group 2
+| 1
+| rule 2.1
+
+| 2
+| group 2
+| 2
+| rule 2.2
+
+| 2
+| group 2
+| 3
+| rule 2.3
+
+| 2
+| group 2
+| 4
+| rule 2.4
+
+| 3
+| group 3
+| 1
+| rule 3.1
+
+| 3
+| group 3
+| 2
+| rule 3.2
 |===
