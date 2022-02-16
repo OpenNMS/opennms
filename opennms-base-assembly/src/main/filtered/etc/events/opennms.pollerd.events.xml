@@ -554,4 +554,27 @@
         </logmsg>
       <severity>Normal</severity>
    </event>
+    <event>
+        <uei>uei.opennms.org/deviceconfig/configRetrievalFailed</uei>
+        <event-label>OpenNMS-defined node event: configRetrievalFailed</event-label>
+        <descr>&lt;p>Failed to retrieve config associated with %service%
+            during the last poll on interface %interface%.&lt;/p></descr>
+        <logmsg dest="logndisplay">
+            %service% config retrieval failed on interface %interface%.
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/deviceconfig/configRetrievalSucceeded</uei>
+        <event-label>OpenNMS-defined node event: configRetrievalSucceeded</event-label>
+        <descr>&lt;p>Config retrieval succeeded on %service%
+            during the last poll on interface %interface%.&lt;/p></descr>
+        <logmsg dest="logndisplay">
+            %service% config retrieval succeeded on interface %interface%.
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2"
+                    clear-key="uei.opennms.org/deviceconfig/configRetrievalFailed:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+    </event>
 </events>
