@@ -28,7 +28,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@GrabResolver(name='opennms-repo', root='http://maven.opennms.org/content/groups/opennms.org-release')
+@GrabResolver(name='opennms-repo', root='https://maven.opennms.org/content/groups/opennms.org-release')
 
 @Grab(group='org.slf4j', module='slf4j-simple', version='1.7.5')
 
