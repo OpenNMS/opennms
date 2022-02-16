@@ -41,6 +41,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
+import org.hibernate.type.StringType;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.HeatMapElement;
@@ -249,8 +250,10 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
             @Override
             @SuppressWarnings("unchecked")
             public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
-                Query query = session.createSQLQuery(
-                    "select coalesce(?,'Uncategorized'), ?, " +
+                Query query = null;
+                boolean concatentate = false;
+                if (concatentate) {
+                    String queryStr = "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
                             "count(distinct case when outages.outageid is not null and ifservices.status <> 'D' then ifservices.id else null end) as servicesDown, " +
                             "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
                             "count(distinct case when outages.outageid is null and ifservices.status <> 'D' then node.nodeid else null end) as nodesUp, " +
@@ -261,12 +264,41 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                             "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
                             "left outer join service on (ifservices.serviceid = service.serviceid) " +
                             "left outer join outages on (outages.ifserviceid = ifservices.id and outages.perspective is null and outages.ifregainedservice is null) " +
-                            "where nodeType <> 'D' ?" +
-                            "group by ? having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0");
-                query.setString(1, entityNameColumn);
-                query.setString(2, entityIdColumn);
-                query.setString(3, (restrictionColumn != null ? String.format("and coalesce(%s, 'Uncategorized')='%s' ", restrictionColumn, restrictionValue) : ""));
-                query.setString(4, groupByClause);
+                            "where nodeType <> 'D' " +
+                            (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')='" + restrictionValue + "' " : "") +
+                            "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
+
+                    query = session.createSQLQuery(queryStr);
+                }
+                else {
+                    String queryStr = "select coalesce(:entityNameColumn,'Uncategorized'), :entityIdColumn, " +
+                            "count(distinct case when outages.outageid is not null and ifservices.status <> 'D' then ifservices.id else null end) as servicesDown, " +
+                            "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
+                            "count(distinct case when outages.outageid is null and ifservices.status <> 'D' then node.nodeid else null end) as nodesUp, " +
+                            "count(distinct node.nodeid) as nodeTotalCount " +
+                            "from node left " +
+                            "join category_node using (nodeid) left join categories using (categoryid) " +
+                            "left outer join ipinterface using (nodeid) " +
+                            "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
+                            "left outer join service on (ifservices.serviceid = service.serviceid) " +
+                            "left outer join outages on (outages.ifserviceid = ifservices.id and outages.perspective is null and outages.ifregainedservice is null) " +
+                            "where nodeType <> 'D' ";
+                    // 'Dynamic' query construction
+                    if (restrictionColumn != null) {
+                        queryStr += "and coalesce(:restrictionColumn, 'Uncategorized')=':restrictionValue' ";
+                    }
+                    queryStr += "group by :groupByClause having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
+
+                    query = session.createSQLQuery(queryStr);
+                    query.setParameter("entityNameColumn", entityNameColumn, StringType.INSTANCE);
+                    query.setParameter("entityIdColumn", entityIdColumn, StringType.INSTANCE);
+                    if (restrictionColumn != null) {
+                        query.setParameter("restrictionColumn", restrictionColumn, StringType.INSTANCE);
+                        query.setParameter("restrictionValue", restrictionValue, StringType.INSTANCE);
+                    }
+                    query.setParameter("groupByClause", groupByClause, StringType.INSTANCE);
+                }
+
                 query.setResultTransformer(
                     new ResultTransformer() {
                         private static final long serialVersionUID = 5152094813503430377L;
