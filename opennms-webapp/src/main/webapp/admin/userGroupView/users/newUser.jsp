@@ -92,13 +92,18 @@
         <label for="userID" class="">User ID</label>
         <input id="userID" type="text" name="userID" class="form-control">
       </div>
+
       <div class="form-group">
         <label for="pass1" class="">Password</label>
-        <input id="pass1" type="password" name="pass1" class="form-control">
+        <%-- Management of another user's password, so prevent autocomplete with `autocomplete="new-password"`.
+         See MDN: https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion#preventing_autofilling_with_autocompletenew-password --%>
+        <input id="pass1" type="password" name="pass1" class="form-control" autocomplete="new-password">
       </div>
       <div class="form-group">
         <label for="pass2" class="">Confirm Password</label>
-        <input id="pass2" type="password" name="pass2" class="form-control">
+        <%-- Management of another user's password, so prevent autocomplete with `autocomplete="new-password"`.
+         See MDN: https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion#preventing_autofilling_with_autocompletenew-password --%>
+        <input id="pass2" type="password" name="pass2" class="form-control" autocomplete="new-password">
       </div>
       <button type="submit" class="btn btn-secondary">OK</button>
       <button type="button" class="btn btn-secondary" onclick="cancelUser()">Cancel</button>
