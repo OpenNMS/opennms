@@ -320,12 +320,7 @@ public class CollectdTest {
         // Mock Thresholding
         ThresholdingService mockThresholdingService = mock(ThresholdingService.class);
         ThresholdingSession mockThresholdingSession = mock(ThresholdingSession.class);
-        when(mockThresholdingService.createSession(
-                                                   anyInt(),
-                                                   anyString(), 
-                                                   anyString(),
-                                                   isA(org.opennms.netmgt.rrd.RrdRepository.class),
-                                                   isA(ServiceParameters.class))
+        when(mockThresholdingService.createSession(anyInt(), anyString(), anyString(), isA(ServiceParameters.class))
              ).thenReturn(mockThresholdingSession);
         mockThresholdingSession.accept(isA(CollectionSet.class));
 

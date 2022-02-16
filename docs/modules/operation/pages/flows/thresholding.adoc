@@ -1,0 +1,95 @@
+[[ga-flow-support-thresholding]]
+= Thresholding flow applications
+
+Flows are categorized in applications using the <<flows/classification-engine.adoc#ga-flow-support-classification-engine, Classification Engine>>.
+OpenNMS supports summing up the bytesIn/bytesOut data of flow records based on these flow applications.
+Users can define thresholds on this data to generate alarms when the amount of traffic violates these thresholds.
+
+== Configure thresholding for flow applications
+
+To enable thresholding for flows you need to enable the `applicationThresholding` flag in the adapter's definition.
+Note that thresholding on flow applications also works without enabling data collection on flow applications.
+
+.Example of enabling thresholding for the NetFlow v9 adapter in telemetryd-configuration.xml
+[source, xml]
+----
+...
+    <queue name="Netflow-9">
+        <adapter name="Netflow-9-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter" enabled="true">
+            <parameter key="applicationDataCollection" value="false"/>
+            <parameter key="applicationThresholding" value="true"/>
+            <package name="Netflow-9-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
+    </queue>
+...
+----
+
+Next, you need an additional package definition in your `threshd-configuration.xml` file.
+
+.Example of a package definition in the threshd-configuration.xml
+[source, xml]
+----
+<?xml version="1.0"?>
+<threshd-configuration threads="5">
+...
+    <package name="flow-thresholding">
+        <filter>IPADDR != '0.0.0.0'</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+        <service name="Flow-Threshold" interval="300000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="flow-thresholding-group"/>
+        </service>
+    </package>
+...
+</threshd-configuration>
+----
+
+Finally, define the thresholds in the `thresholds.xml` file.
+Use `flowApp` for the `ds-type`.
+The following example defines thresholds for HTTPS traffic exceeding 4096000 bytes/second.
+
+.Example of thresholds for https traffic in thresholds.xml
+[source, xml]
+----
+<?xml version="1.0"?>
+<thresholding-config>
+...
+    <group name="flow-thresholding-group" rrdRepository = "/opt/opennms/share/rrd/snmp/">
+        <threshold type="high" description="Flow-Threshold" ds-type="flowApp" ds-name="bytesIn" value="4096000" rearm="2048000" trigger="1" filterOperator="OR" ds-label="application">
+            <resource-filter field="application">https</resource-filter>
+        </threshold>
+        <threshold type="high" description="Flow-Threshold" ds-type="flowApp" ds-name="bytesOut" value="4096000" rearm="2048000" trigger="1" filterOperator="OR" ds-label="application">
+            <resource-filter field="application">https</resource-filter>
+        </threshold>
+    </group>
+...
+</thresholding-config>
+----
+
+[[ga-flow-support-thresholding-properties]]
+The properties for the step-size and the idle timeout can be specified in the file `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+You can set the following properties:
+
+[options="header, autowidth" cols="1,3,2"]
+|===
+| Property
+| Description
+| Default
+
+| flowThreshold.stepSizeMs
+| Interval for checking thresholds and doing data collection in milliseconds.
+| 300000
+
+| flowThreshold.idleTimeoutMs
+| Timeout for cleaning up idle sessions.
+| 900000
+
+|===

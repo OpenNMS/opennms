@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,12 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd.api;
+package org.opennms.netmgt.flows.elastic.thresholding;
 
-public interface ThresholdingSessionKey {
-    String getLocation();
+import java.util.Objects;
 
-    int getNodeId();
+public class ExporterKey {
+    public final int interfaceId;
 
-    String getServiceName();
+    public ExporterKey(final int interfaceId) {
+        this.interfaceId = interfaceId;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ExporterKey)) {
+            return false;
+        }
+        final ExporterKey that = (ExporterKey) o;
+        return Objects.equals(this.interfaceId, that.interfaceId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.interfaceId);
+    }
+
+    @Override
+    public String toString() {
+        return "ExporterKey{" +
+                "interfaceId=" + interfaceId +
+                '}';
+    }
 }

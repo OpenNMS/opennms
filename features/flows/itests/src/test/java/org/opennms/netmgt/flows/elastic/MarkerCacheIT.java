@@ -58,16 +58,19 @@ import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
+import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +109,9 @@ public class MarkerCacheIT {
 
     @Autowired
     private NodeDao nodeDao;
+
+    @Autowired
+    private IpInterfaceDao ipInterfaceDao;
 
     @Autowired
     private SnmpInterfaceDao snmpInterfaceDao;
@@ -159,7 +165,9 @@ public class MarkerCacheIT {
         ), FilterService.NOOP);
 
         final DocumentEnricher documentEnricher = new DocumentEnricher(
-                new MetricRegistry(), nodeDao, interfaceToNodeCache, sessionUtils, classificationEngine,
+                new MetricRegistry(),
+                nodeDao, ipInterfaceDao,
+                interfaceToNodeCache, sessionUtils, classificationEngine,
                 new CacheConfigBuilder()
                         .withName("flows.node")
                         .withMaximumSize(1000)
@@ -174,12 +182,12 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings());
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class));
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
 
-            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.INGRESS)), getMockFlowSource());
+            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.INGRESS)), getMockFlowSource(), ProcessingOptions.builder().build());
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), contains(hasProperty("id", is(1))));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), contains(
@@ -202,7 +210,9 @@ public class MarkerCacheIT {
         ), FilterService.NOOP);
 
         final DocumentEnricher documentEnricher = new DocumentEnricher(
-                new MetricRegistry(), nodeDao, interfaceToNodeCache, sessionUtils, classificationEngine,
+                new MetricRegistry(),
+                nodeDao, ipInterfaceDao,
+                interfaceToNodeCache, sessionUtils, classificationEngine,
                 new CacheConfigBuilder()
                         .withName("flows.node")
                         .withMaximumSize(1000)
@@ -216,12 +226,12 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings());
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class));
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
 
-            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.EGRESS)), getMockFlowSource());
+            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.EGRESS)), getMockFlowSource(), ProcessingOptions.builder().build());
 
             assertEquals(0, snmpInterfaceDao.findAllHavingIngressFlows(2).size());
             assertEquals(0, snmpInterfaceDao.findAllHavingEgressFlows(2).size());
@@ -246,7 +256,9 @@ public class MarkerCacheIT {
         ), FilterService.NOOP);
 
         final DocumentEnricher documentEnricher = new DocumentEnricher(
-                new MetricRegistry(), nodeDao, interfaceToNodeCache, sessionUtils, classificationEngine,
+                new MetricRegistry(),
+                nodeDao, ipInterfaceDao,
+                interfaceToNodeCache, sessionUtils, classificationEngine,
                 new CacheConfigBuilder()
                         .withName("flows.node")
                         .withMaximumSize(1000)
@@ -260,7 +272,7 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings());
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class));
 
             final int ingress = 2;
             final int egress = 3;
@@ -271,13 +283,13 @@ public class MarkerCacheIT {
             expectEgressInterfaces();
 
             // persist ingress flow
-            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.INGRESS)), getMockFlowSource());
+            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.INGRESS)), getMockFlowSource(), ProcessingOptions.builder().build());
             expectAllInterfaces(ingress);
             expectIngressInterfaces(ingress);
             expectEgressInterfaces();
 
             // persist egress flow
-            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.EGRESS)), getMockFlowSource());
+            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.EGRESS)), getMockFlowSource(), ProcessingOptions.builder().build());
             expectAllInterfaces(ingress, egress);
             expectEgressInterfaces(egress);
             expectIngressInterfaces(ingress);
