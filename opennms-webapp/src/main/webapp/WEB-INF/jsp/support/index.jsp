@@ -167,7 +167,7 @@
                             <div class="form-group">
                                 <label for="password" class="col-form-label">Password</label>
                                 <input type="password" name="password" class="form-control" id="password"
-                                       placeholder="Password">
+                                       placeholder="Password" autocomplete="new-password">
                             </div>
                             <div class="form-group">
                                 <button type="reset" class="btn btn-secondary">Clear</button>
