@@ -166,6 +166,11 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         Files.createDirectories(bootD);
         writeFeaturesBoot(bootD.resolve("stest.boot"), getFeaturesOnBoot());
 
+        writeProps(etc.resolve("org.ops4j.pax.web.cfg"),
+                ImmutableMap.<String,String>builder()
+                        .put("org.osgi.service.http.port", "8191")
+                        .build());
+
         writeProps(etc.resolve("org.opennms.core.ipc.sink.kafka.consumer.cfg"),
                 ImmutableMap.<String,String>builder()
                         .put("bootstrap.servers", OpenNMSContainer.KAFKA_ALIAS + ":9092")
