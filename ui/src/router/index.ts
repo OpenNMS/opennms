@@ -20,6 +20,17 @@ const router = createRouter({
       component: NodeDetails
     },
     {
+      path: '/plugin-management',
+      name: 'Plugin Management',
+      component: () => import('@/containers/PluginManagement.vue')
+    },
+    {
+      path: '/plugins/:extensionId/:resourceRootPath/:moduleFileName',
+      name: 'Plugin',
+      props: true,
+      component: () => import('@/containers/Plugin.vue')
+    },
+    {
       path: '/file-editor',
       name: 'FileEditor',
       component: FileEditor

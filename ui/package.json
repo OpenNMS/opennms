@@ -35,7 +35,7 @@
     "@featherds/table": "0.9.4",
     "@featherds/tabs": "0.9.4",
     "@featherds/utils": "0.9.4",
-    "@vueuse/core": "^7.5.3",
+    "@vueuse/core": "^7.6.2",
     "axios": "^0.25.0",
     "chart.js": "^3.7.0",
     "chartjs-plugin-zoom": "^1.2.0",
@@ -62,11 +62,11 @@
     "@types/leaflet.markercluster": "^1.4.6",
     "@types/lodash": "^4.14.172",
     "@types/marked": "^4.0.2",
-    "@types/node": "^17.0.13",
+    "@types/node": "^17.0.18",
     "@types/splitpanes": "^2.2.1",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
-    "@typescript-eslint/parser": "^5.10.1",
-    "@vitejs/plugin-vue": "^2.1.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "@vitejs/plugin-vue": "^2.2.0",
     "@vue-leaflet/vue-leaflet": "^0.6.1",
     "eslint": "^8.8.0",
     "eslint-config-prettier": "^8.3.0",
@@ -77,6 +77,6 @@
     "uvu": "^0.5.3",
     "vite": "^2.7.13",
     "vue-eslint-parser": "^8.0.1",
-    "vue-tsc": "^0.31.1"
+    "vue-tsc": "^0.31.4"
   }
 }
