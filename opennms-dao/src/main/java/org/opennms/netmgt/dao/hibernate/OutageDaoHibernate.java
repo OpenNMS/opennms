@@ -30,24 +30,19 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.persister.entity.AbstractEntityPersister;
 import org.hibernate.transform.ResultTransformer;
 import org.hibernate.type.StringType;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.filter.api.FilterDao;
-import org.opennms.netmgt.model.HeatMapElement;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.*;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
@@ -250,53 +245,49 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
             @Override
             @SuppressWarnings("unchecked")
             public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
-                Query query = null;
-                boolean concatentate = false;
-                if (concatentate) {
-                    String queryStr = "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
-                            "count(distinct case when outages.outageid is not null and ifservices.status <> 'D' then ifservices.id else null end) as servicesDown, " +
-                            "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
-                            "count(distinct case when outages.outageid is null and ifservices.status <> 'D' then node.nodeid else null end) as nodesUp, " +
-                            "count(distinct node.nodeid) as nodeTotalCount " +
-                            "from node left " +
-                            "join category_node using (nodeid) left join categories using (categoryid) " +
-                            "left outer join ipinterface using (nodeid) " +
-                            "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
-                            "left outer join service on (ifservices.serviceid = service.serviceid) " +
-                            "left outer join outages on (outages.ifserviceid = ifservices.id and outages.perspective is null and outages.ifregainedservice is null) " +
-                            "where nodeType <> 'D' " +
-                            (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')='" + restrictionValue + "' " : "") +
-                            "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
 
-                    query = session.createSQLQuery(queryStr);
+                // We can't use a prepared statement here as the variables are column names, and postgres
+                // does not allow for parameter binding of column names.
+                // Instead, we compare the values against all valid column names to validate.
+                List<String> validColumnNames = HibernateUtils.getHibernateTableColumnNames(session, OnmsCategory.class, true);
+
+                if (!validColumnNames.contains(entityIdColumn.toLowerCase())) {
+                    throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", entityIdColumn));
                 }
-                else {
-                    String queryStr = "select coalesce(:entityNameColumn,'Uncategorized'), :entityIdColumn, " +
-                            "count(distinct case when outages.outageid is not null and ifservices.status <> 'D' then ifservices.id else null end) as servicesDown, " +
-                            "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
-                            "count(distinct case when outages.outageid is null and ifservices.status <> 'D' then node.nodeid else null end) as nodesUp, " +
-                            "count(distinct node.nodeid) as nodeTotalCount " +
-                            "from node left " +
-                            "join category_node using (nodeid) left join categories using (categoryid) " +
-                            "left outer join ipinterface using (nodeid) " +
-                            "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
-                            "left outer join service on (ifservices.serviceid = service.serviceid) " +
-                            "left outer join outages on (outages.ifserviceid = ifservices.id and outages.perspective is null and outages.ifregainedservice is null) " +
-                            "where nodeType <> 'D' ";
-                    // 'Dynamic' query construction
-                    if (restrictionColumn != null) {
-                        queryStr += "and coalesce(:restrictionColumn, 'Uncategorized')=':restrictionValue' ";
-                    }
-                    queryStr += "group by :groupByClause having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
+                else if (!validColumnNames.contains(entityNameColumn.toLowerCase())) {
+                    throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", entityNameColumn));
 
-                    query = session.createSQLQuery(queryStr);
-                    query.setParameter("entityNameColumn", entityNameColumn, StringType.INSTANCE);
-                    query.setParameter("entityIdColumn", entityIdColumn, StringType.INSTANCE);
-                    if (restrictionColumn != null) {
-                        query.setParameter("restrictionColumn", restrictionColumn, StringType.INSTANCE);
-                        query.setParameter("restrictionValue", restrictionValue, StringType.INSTANCE);
+                }
+                else if (restrictionColumn != null && !validColumnNames.contains(restrictionColumn.toLowerCase())) {
+                    throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", restrictionColumn));
+                }
+                else if (groupByColumns != null && groupByColumns.length > 0) {
+                    for (String groupByColumn : groupByColumns) {
+                        if (!validColumnNames.contains(groupByColumn.toLowerCase())) {
+                            throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", groupByColumn));
+                        }
                     }
-                    query.setParameter("groupByClause", groupByClause, StringType.INSTANCE);
+                }
+                // NOW, this is safe
+                String queryStr = "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
+                        "count(distinct case when outages.outageid is not null and ifservices.status <> 'D' then ifservices.id else null end) as servicesDown, " +
+                        "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
+                        "count(distinct case when outages.outageid is null and ifservices.status <> 'D' then node.nodeid else null end) as nodesUp, " +
+                        "count(distinct node.nodeid) as nodeTotalCount " +
+                        "from node left " +
+                        "join category_node using (nodeid) left join categories using (categoryid) " +
+                        "left outer join ipinterface using (nodeid) " +
+                        "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
+                        "left outer join service on (ifservices.serviceid = service.serviceid) " +
+                        "left outer join outages on (outages.ifserviceid = ifservices.id and outages.perspective is null and outages.ifregainedservice is null) " +
+                        "where nodeType <> 'D' " +
+                        (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')=':restrictionValue' " : "") +
+                        "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
+
+
+                Query query = session.createSQLQuery(queryStr);
+                if (restrictionColumn != null) {
+                    query.setParameter("restrictionValue", restrictionValue, StringType.INSTANCE);
                 }
 
                 query.setResultTransformer(
