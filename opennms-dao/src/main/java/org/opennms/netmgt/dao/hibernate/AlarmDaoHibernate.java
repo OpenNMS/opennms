@@ -42,10 +42,7 @@ import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
 import org.hibernate.type.StringType;
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.model.HeatMapElement;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.*;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.SituationSummary;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -172,10 +169,34 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
             @Override
             public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
+
+                // We can't use a prepared statement here as the variables are column names, and postgres
+                // does not allow for parameter binding of column names.
+                // Instead, we compare the values against all valid column names to validate.
+                List<String> validColumnNames = HibernateUtils.getHibernateTableColumnNames(session, OnmsCategory.class, true);
+                if (!validColumnNames.contains(entityIdColumn.toLowerCase())) {
+                    throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", entityIdColumn));
+                }
+                else if (!validColumnNames.contains(entityNameColumn.toLowerCase())) {
+                    throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", entityNameColumn));
+                }
+                else if (restrictionColumn != null && !validColumnNames.contains(restrictionColumn.toLowerCase())) {
+                    throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", restrictionColumn));
+                }
+                else if (groupByColumns != null && groupByColumns.length > 0) {
+                    for (String groupByColumn : groupByColumns) {
+                        if (!validColumnNames.contains(groupByColumn.toLowerCase())) {
+                            throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", groupByColumn));
+                        }
+                    }
+                }
+
+
                 String queryStr =
-                        "select coalesce(:entityNameColumn,'Uncategorized'), :entityIdColumn, " +
+                        "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
                                 "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
-                                "count(distinct node.nodeid) as nodeTotalCount, :maximumSeverityQuery" +
+                                "count(distinct node.nodeid) as nodeTotalCount, " +
+                                maximumSeverityQuery +
                                 "from node " +
                                 "left join category_node using (nodeid) " +
                                 "left join categories using (categoryid) " +
@@ -183,22 +204,15 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                                 "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
                                 "left outer join service on (ifservices.serviceid = service.serviceid) " +
                                 "left outer join alarms on (alarms.nodeid = node.nodeid and alarms.alarmtype in (1,3)) " +
-                                "where nodeType <> 'D' ";
-                if (restrictionColumn != null) {
-                    queryStr += "and coalesce(:restrictionColumn, 'Uncategorized')=':restrictionValue' ";
-                }
-                queryStr += "group by :groupByClause having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
+                                "where nodeType <> 'D' " +
+                                (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')=':restrictionValue' " : "") +
+                                "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
+                
                 Query query = session.createSQLQuery(queryStr);
 
-                query.setParameter("entityNameColumn",      entityNameColumn,     StringType.INSTANCE);
-                query.setParameter("entityIdColumn",        entityIdColumn,       StringType.INSTANCE);
-                query.setParameter("maximumSeverityQuery",  maximumSeverityQuery, StringType.INSTANCE);
-                // 'Dynamic' query construction
                 if (restrictionColumn != null) {
-                    query.setParameter("restrictionColumn", restrictionColumn,    StringType.INSTANCE);
-                    query.setParameter("restrictionValue",  restrictionValue,     StringType.INSTANCE);
+                    query.setParameter("restrictionValue",  restrictionValue, StringType.INSTANCE);
                 }
-                query.setParameter("groupByClause",         groupByClause,        StringType.INSTANCE);
 
                 query.setResultTransformer(new ResultTransformer() {
                         private static final long serialVersionUID = 5152094813503430377L;
