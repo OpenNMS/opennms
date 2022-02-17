@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,7 +53,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.util.concurrent.Future;
 import io.netty.util.internal.SocketUtils;
 
 public class TcpListener implements Listener {
@@ -146,41 +145,13 @@ public class TcpListener implements Listener {
     }
 
     public void stop() throws InterruptedException {
-        LOG.info("Shutting down boss group...");
-
-        Future<?> bossShutdown = null;
-        if (this.bossGroup != null) {
-            bossShutdown = this.bossGroup.shutdownGracefully();
-        }
-
-        Future<?> workerShutdown = null;
-        LOG.info("Shutting down worker group...");
-        if (this.workerGroup != null) {
-            workerShutdown = this.workerGroup.shutdownGracefully();
-        }
-
-        ChannelFuture socketChannelClose = null;
         LOG.info("Closing channel...");
-        if (this.socketFuture != null) {
-            socketChannelClose = this.socketFuture.channel().close();
-        }
+        this.socketFuture.channel().close().sync();
 
-        if (socketChannelClose != null) {
-            socketChannelClose.sync();
-        }
+        this.parser.stop();
 
-        if (workerShutdown != null) {
-            workerShutdown.sync();
-        }
-
-        if (bossShutdown != null) {
-            bossShutdown.sync();
-        }
-
-        LOG.info("Stopping parser...");
-        if (this.parser != null) {
-            this.parser.stop();
-        }
+        LOG.info("Closing boss group...");
+        this.bossGroup.shutdownGracefully().sync();
     }
 
     @Override
