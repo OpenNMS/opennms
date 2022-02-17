@@ -160,7 +160,7 @@
           </div>
 
           <div class="form-group">
-            <input type="password" id="input_j_password" name="j_password" placeholder="Password" autocomplete="current-password" required>
+            <input type="password" id="input_j_password" name="j_password" placeholder="Password" autocomplete="off" required>
           </div>
 
           <c:if test="${not empty param.session_expired}">

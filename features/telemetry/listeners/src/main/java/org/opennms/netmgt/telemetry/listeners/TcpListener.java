@@ -160,18 +160,12 @@ public class TcpListener implements Listener {
 
     public void stop() throws InterruptedException {
         LOG.info("Closing channel...");
-        if (this.socketFuture != null) {
-            this.socketFuture.channel().close().sync();
-        }
+        this.socketFuture.channel().close().sync();
 
-        if (this.parser != null) {
-            this.parser.stop();
-        }
+        this.parser.stop();
 
         LOG.info("Closing boss group...");
-        if (this.bossGroup != null) {
-            this.bossGroup.shutdownGracefully().sync();
-        }
+        this.bossGroup.shutdownGracefully().sync();
     }
 
     @Override
