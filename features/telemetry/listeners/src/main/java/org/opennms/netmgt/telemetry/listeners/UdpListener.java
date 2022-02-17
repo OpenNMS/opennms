@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -56,7 +56,6 @@ import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.ReferenceCountUtil;
-import io.netty.util.concurrent.Future;
 import io.netty.util.internal.SocketUtils;
 
 public class UdpListener implements Listener {
@@ -115,36 +114,13 @@ public class UdpListener implements Listener {
     }
 
     public void stop() throws InterruptedException {
-        LOG.info("Closing boss group...");
-        if (this.bossGroup != null) {
-            this.bossGroup.shutdownGracefully().sync();
-        }
-
-        LOG.info("Shutting down boss group...");
-
-        Future<?> bossShutdown = null;
-        if (this.bossGroup != null) {
-            bossShutdown = this.bossGroup.shutdownGracefully();
-        }
-
-        ChannelFuture socketChannelClose = null;
         LOG.info("Closing channel...");
-        if (this.socketFuture != null) {
-            socketChannelClose = this.socketFuture.channel().close();
-        }
+        this.socketFuture.channel().close().sync();
 
-        if (socketChannelClose != null) {
-            socketChannelClose.sync();
-        }
+        this.parsers.forEach(Parser::stop);
 
-        if (bossShutdown != null) {
-            bossShutdown.sync();
-        }
-
-        LOG.info("Stopping parsers...");
-        if (this.parsers != null) {
-            this.parsers.forEach(Parser::stop);
-        }
+        LOG.info("Closing boss group...");
+        this.bossGroup.shutdownGracefully().sync();
     }
 
     public String getHost() {
