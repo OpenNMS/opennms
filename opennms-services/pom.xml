@@ -480,7 +480,7 @@
       <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+      <url>https://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
 
