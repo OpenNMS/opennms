@@ -258,18 +258,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         // on an update, leave categories alone, let the NodeScan handle applying requisitioned categories
         node.setCategories(dbNode.getCategories());
 
-        // also set meta-data of node and its interfaces here, see NMS-12990
-        node.setMetaData(dbNode.getMetaData());
-        for(final OnmsIpInterface onmsIpInterface : dbNode.getIpInterfaces()) {
-            final InetAddress inetAddress = onmsIpInterface.getIpAddress();
-            if (inetAddress != null) {
-                final OnmsIpInterface theIpInterface = node.getIpInterfaceByIpAddress(inetAddress);
-                if (theIpInterface != null) {
-                    theIpInterface.setMetaData(onmsIpInterface.getMetaData());
-                }
-            }
-        }
-
         final EventAccumulator accumulator = new EventAccumulator(m_eventForwarder);
         dbNode.mergeNode(node, accumulator, false);
 
