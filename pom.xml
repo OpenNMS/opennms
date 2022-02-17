@@ -163,6 +163,268 @@
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>2.0.0</version>
+        <inherited>true</inherited>
+        <executions>
+          <execution>
+            <id>module-third-party</id>
+            <goals>
+              <goal>add-third-party</goal>
+            </goals>
+            <phase>generate-resources</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <acceptPomPackaging>true</acceptPomPackaging>
+          <errorRemedy>xmlOutput</errorRemedy>
+          <excludedArtifacts>^.*opennms.*$</excludedArtifacts>
+          <excludedScopes>system,test</excludedScopes>
+          <deployMissingFile>true</deployMissingFile>
+          <failOnBlacklist>true</failOnBlacklist>
+          <failOnMissing>true</failOnMissing>
+          <sortArtifactByName>true</sortArtifactByName>
+          <sortByGroupIdAndArtifactId>true</sortByGroupIdAndArtifactId>
+          <useDefaultContentSanitizers>true</useDefaultContentSanitizers>
+          <useDefaultUrlReplacements>true</useDefaultUrlReplacements>
+          <useMissingFile>true</useMissingFile>
+          <!-- normalize license names for sanity -->
+          <licenseMerges>
+            <licenseMerge>
+              agpl_v3
+                | AGPL-3.0
+                | GNU Affero General Public License
+            </licenseMerge>
+            <!-- the "similar to apache" one is JDOM -->
+            <licenseMerge>
+              apache
+                | Apache
+                | Apache License
+                | Apache Software Licenses
+                | Similar to Apache License but with the acknowledgment clause removed
+            </licenseMerge>
+            <licenseMerge>
+              apache_v1_1
+                | Apache-1.1
+                | Apache Software License, version 1.1
+            </licenseMerge>
+            <!-- Atomikos artifacts downloaded from Maven are available as Apache 2.0 -->
+            <licenseMerge>
+              apache_v2
+                | ALv2
+                | Apache 2
+                | Apache-2.0
+                | Apache 2.0
+                | Apache 2.0 License
+                | Apache License 2.0
+                | Apache License, Version 2.0
+                | Apache License, version 2.0
+                | Apache License V2.0
+                | Apache License v2.0
+                | Apache License Version 2.0
+                | Apache License version 2.0
+                | Apache Software License 2.0
+                | Apache Software License - Version 2.0
+                | Apache Software License, version 2.0
+                | ASF 2.0
+                | ASL, version 2
+                | Atomikos Multiple Licensing Scheme
+                | GWT Terms
+                | The Apache License, Version 2.0
+                | The Apache Software License, Version 2.0
+                | This material is licensed under the Apache Software License, Version 2.0
+            </licenseMerge>
+            <licenseMerge>
+              bsd
+                | BSD
+                | BSD License
+                | BSD licence
+                | BSD license
+                | BSD style
+                | ISC/BSD License
+                | The BSD License
+            </licenseMerge>
+            <licenseMerge>
+              bsd_2
+                | BSD-2-Clause
+                | BSD 2-Clause
+                | BSD 2-Clause License
+                | The BSD 2-Clause License
+            </licenseMerge>
+            <!-- license.txt is here because Hibernate JPA (Eclipse Distribution 1.0) has their license metadata set to a URL that's a link to local file (that doesn't exist) -->
+            <licenseMerge>
+              bsd_3
+                | 3-Clause BSD License
+                | BSD 3-Clause
+                | BSD-3-Clause
+                | DOM4J
+                | DOM4J License (BSD-like)
+                | Eclipse Distribution License - v 1.0
+                | Eclipse Distribution License v. 1.0
+                | EDL 1.0
+                | license.txt
+                | New BSD License
+                | Revised BSD
+                | The BSD 3-Clause License
+                | The New BSD License
+                | The OpenLDAP Public License
+            </licenseMerge>
+            <licenseMerge>
+              cddl_v1
+                | CDDL 1.0
+                | CDDL license
+                | CDDL-1.0
+                | COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
+                | Common Development And Distribution License (CDDL) Version 1.0
+            </licenseMerge>
+            <licenseMerge>
+              cddl_v1_1
+                | CDDL 1.1
+                | CDDL-1.1
+                | COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1
+                | Common Development And Distribution License (CDDL) Version 1.1
+            </licenseMerge>
+            <licenseMerge>
+              cddl_v1 + gpl_v2_cpe
+                | CDDL+GPL License
+                | CDDL/GPLv2+CE
+                | CDDL-1.0 + GPL-2.0+CPE
+                | CDDL + GPLv2 with classpath exception
+            </licenseMerge>
+            <licenseMerge>
+              cpl_v1
+                | Common Public License - v 1.0
+                | CPL
+                | CPL-1.0
+            </licenseMerge>
+            <licenseMerge>
+              epl_v1
+                | EPL 1.0
+                | EPL-1.0
+                | Eclipse Public License - Version 1.0
+                | Eclipse Public License - v 1.0
+                | Eclipse Public License, Version 1.0
+                | Eclipse Public License 1.0
+                | Eclipse Public License v1.0
+            </licenseMerge>
+            <licenseMerge>
+              epl_v2
+                | EPL 2.0
+                | EPL-2.0
+                | Eclipse Public License - v 2.0
+            </licenseMerge>
+            <licenseMerge>
+              gpl_v2
+                | GPL-2
+                | GNU GENERAL PUBLIC LICENSE Version 2, June 1991
+                | GNU General Public Library
+                | GNU General Public License Version 2
+                | GNU General Public License, Version 2
+                | GNU General Public License, version 2
+            </licenseMerge>
+            <licenseMerge>
+              gpl_v2_cpe
+                | GNU General Public License (GPL), version 2, with the Classpath exception
+                | GPL-2.0+CPE
+                | GPL2 w/ CPE
+                | GPLv2 with classpath exception
+            </licenseMerge>
+            <licenseMerge>
+              gpl_v3
+                | GPL-3.0
+                | GNU Public License, Version 3.0
+            </licenseMerge>
+            <licenseMerge>
+              indiana_extreme_v1_1_1
+                | Indiana Extreme 1.1.1
+                | Indiana University Extreme! Lab Software License, vesion 1.1.1
+            </licenseMerge>
+            <licenseMerge>
+              lgpl_v2_1
+                | GNU LESSER GENERAL PUBLIC LICENSE
+                | GNU Lesser General Public License
+                | GNU Lesser General Public Licence
+                | GNU Lesser General Public License (LGPL), Version 2.1
+                | GNU Lesser General Public License Version 2.1
+                | GNU Lesser General Public License, Version 2.1
+                | GNU Lesser General Public License, version 2.1
+                | GNU Lesser General Public License, Version 2
+                | GNU Lesser Public License
+                | GNU Library General Public License v2.1 or later
+                | LGPL
+                | LGPL 2.1
+                | LGPL license
+                | LGPL, version 2.1
+                | LGPL-2
+                | LGPL-2.1
+            </licenseMerge>
+            <licenseMerge>
+              lgpl_v3
+                | GNU Lesser/Library Public License, Version 3.0
+                | GNU Lessor/Library Public License, Version 3.0
+                | GNU LGPLv3
+                | LGPL-3.0
+                | LGPL-3.0-or-later
+                | Lesser General Public License, version 3 or greater
+            </licenseMerge>
+            <licenseMerge>
+              mit
+                | Bouncy Castle Licence
+                | ICU License
+                | MIT
+                | MIT License
+                | MIT license
+                | The JSON License
+                | The MIT License
+                | provided without support or warranty
+            </licenseMerge>
+            <licenseMerge>
+              mpl
+                | Mozilla Public License
+                | MPL
+            </licenseMerge>
+            <licenseMerge>
+              mpl_1_1
+                | MPL 1.1
+                | MPL-1.1
+                | Mozilla Public License 1.1
+                | Mozilla Public License version 1.1
+            </licenseMerge>
+            <licenseMerge>
+              mpl_2_0
+                | Mozilla Public License 2.0
+                | Mozilla Public License version 2.0
+            </licenseMerge>
+            <licenseMerge>
+              public_domain
+                | Public Domain
+                | Public Domain, per Creative Commons CC0
+                | Public domain, Sun Microsoystems
+                | WTFPL
+            </licenseMerge>
+            <licenseMerge>
+              spl_v1_0
+                | SPL-1.0
+            </licenseMerge>
+            <licenseMerge>
+              sun_entitlement
+                | Sun Entitlement
+                | Sun Microsystems, Inc. ("Sun") ENTITLEMENT for SOFTWARE
+            </licenseMerge>
+            <licenseMerge>
+              w3c
+                | The W3C Software License
+                | W3C Software Copyright Notice and License
+                | W3C Software License
+            </licenseMerge>
+          </licenseMerges>
+          <licenseUrlFileNames>
+            <spdx/>
+          </licenseUrlFileNames>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
         <artifactId>keytool-maven-plugin</artifactId>
         <version>1.5</version>
         <executions>
@@ -1546,6 +1808,20 @@
   </properties>
 
   <profiles>
+    <profile>
+      <id>enable.license</id>
+      <activation>
+        <property><name>enable.license</name><value>true</value></property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>enable.snapshots</id>
       <activation>
