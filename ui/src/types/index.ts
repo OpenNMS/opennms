@@ -453,5 +453,4 @@ export interface Plugin {
   menuEntry: string
   moduleFileName: string
   resourceRootPath: string
-  enabled: boolean
 }

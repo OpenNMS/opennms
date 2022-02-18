@@ -26,7 +26,7 @@ import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
 import { getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
-import { getPlugins, togglePlugin, getEnabledPlugins } from './pluginService'
+import { getPlugins } from './pluginService'
 
 export default {
   search,
@@ -58,7 +58,5 @@ export default {
   getDefinitionData,
   getResourceForNode,
   getGraphDefinitionsByResourceId,
-  getPlugins,
-  togglePlugin,
-  getEnabledPlugins
+  getPlugins
 }

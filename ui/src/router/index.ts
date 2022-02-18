@@ -20,11 +20,6 @@ const router = createRouter({
       component: NodeDetails
     },
     {
-      path: '/plugin-management',
-      name: 'Plugin Management',
-      component: () => import('@/containers/PluginManagement.vue')
-    },
-    {
       path: '/plugins/:extensionId/:resourceRootPath/:moduleFileName',
       name: 'Plugin',
       props: true,
