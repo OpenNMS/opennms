@@ -10,7 +10,6 @@ import {
 import { getAlarms, modifyAlarm } from './alarmService'
 
 import {
-  getGraphNodesNodes,
   getGraphDefinitionsByResourceId,
   getDefinitionData,
   getGraphMetrics,
@@ -26,6 +25,7 @@ import { search } from './searchService'
 import { getInfo } from './infoService'
 import { getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
+import { getVerticesAndEdges } from './topologyService'
 
 export default {
   search,
@@ -37,7 +37,7 @@ export default {
   getNodeById,
   getNodeOutages,
   getNodeIfServices,
-  getGraphNodesNodes,
+  getVerticesAndEdges,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage,

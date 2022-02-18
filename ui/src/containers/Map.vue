@@ -11,7 +11,9 @@
         @resize="resize"
       >
         <pane min-size="1" max-size="100" :size="72">
-          <LeafletMap v-if="nodesReady" ref="leafletComponent" />
+          <ViewSelect />
+          <Topology v-if="isTopologyView" />
+          <LeafletMap v-if="nodesReady" v-show="!isTopologyView" ref="leafletComponent" />
         </pane>
         <pane min-size="1" max-size="100" :size="28" class="bottom-pane">
           <GridTabs />
@@ -27,28 +29,38 @@ export default { name: 'MapKeepAlive' }
 </script>
 
 <script setup lang="ts">
-import { onMounted, onActivated, onDeactivated, ref } from 'vue'
+import { onMounted, onActivated, onDeactivated, ref, computed } from 'vue'
 import { useStore } from 'vuex'
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import LeafletMap from '../components/Map/LeafletMap.vue'
+import Topology from './Topology.vue'
 import GridTabs from '@/components/Map/GridTabs.vue'
 import { debounce } from 'lodash'
+import ViewSelect from '@/components/Topology/ViewSelect.vue'
 
 const store = useStore()
 const split = ref()
 const nodesReady = ref(false)
 const leafletComponent = ref()
 
+const isTopologyView = computed<boolean>(() => store.state.topologyModule.isTopologyView)
+
 const minimizeBottomPane = () => {
   // override splitpane event
   split.value.panes[0].size = 96
   split.value.panes[1].size = 4
-  setTimeout(() => leafletComponent.value.invalidateSizeFn(), 200)
+  if (!isTopologyView.value) {
+    setTimeout(() => leafletComponent.value.invalidateSizeFn(), 200)
+  }
 }
 
 // resize the map when splitter dragged
-const resize = debounce(() => leafletComponent.value.invalidateSizeFn(), 200)
+const resize = debounce(() => {
+  if (!isTopologyView.value) {
+    leafletComponent.value.invalidateSizeFn(), 200
+  }
+})
 
 onMounted(async () => {
   store.dispatch('spinnerModule/setSpinnerState', true)
@@ -56,8 +68,7 @@ onMounted(async () => {
   await store.dispatch('mapModule/getAlarms')
   store.dispatch('spinnerModule/setSpinnerState', false)
   nodesReady.value = true
-  // commented out until we do topology
-  // store.dispatch('mapModule/getNodesGraphEdges')
+  store.dispatch('topologyModule/getVerticesAndEdges')
 })
 
 onActivated(() => store.dispatch('appModule/setNavRailOpen', false))

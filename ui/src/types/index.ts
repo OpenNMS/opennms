@@ -40,10 +40,6 @@ export interface EventApiResponse extends ApiResponse {
 export interface AlarmApiResponse extends ApiResponse {
   alarm: Alarm[]
 }
-export interface GraphNodesApiResponse {
-  vertices: Vertice[]
-  edges: Edge[]
-}
 
 export interface SnmpInterfaceApiResponse extends ApiResponse {
   snmpInterface: SnmpInterface[]

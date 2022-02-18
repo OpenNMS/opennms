@@ -244,6 +244,7 @@ defineExpose({ invalidateSizeFn })
   margin-left: 10px;
   margin-bottom: 23px;
   margin-top: -5px;
+  left: 215px;
 }
 .geo-map {
   height: 100%;
