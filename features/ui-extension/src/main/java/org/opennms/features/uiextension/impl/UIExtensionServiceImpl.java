@@ -55,18 +55,6 @@ public class UIExtensionServiceImpl implements UIExtensionService {
     }
 
     @Override
-    public List<UIExtension> listEnabledPlugins() {
-        return extensionRegistry.listExtensions().stream().filter(UIExtension::isEnabled).collect(Collectors.toList());
-    }
-
-    @Override
-    public UIExtension togglePlugin(String id) {
-        UIExtension extension = extensionRegistry.getExtensionByID(id);
-        extension.setEnabled(!extension.isEnabled());
-        return extension;
-    }
-
-    @Override
     public String getExtensionJSFile(String id, String resourcePath) throws IOException {
         return readExtensionFile(id, resourcePath);
     }

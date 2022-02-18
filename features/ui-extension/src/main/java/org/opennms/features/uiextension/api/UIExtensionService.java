@@ -48,16 +48,6 @@ public interface UIExtensionService {
     List<UIExtension> listPlugins();
 
     @GET
-    @Path("/enabled")
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    List<UIExtension> listEnabledPlugins();
-
-    @PUT
-    @Path("/toggle/{id}")
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    UIExtension togglePlugin(@PathParam("id") String id);
-
-    @GET
     @Path("/ui-extension/module/{id}")
     @Produces(value = {"application/javascript"})
     String getExtensionJSFile(@PathParam("id") String id, @QueryParam("path") String resourcePath) throws IOException;
