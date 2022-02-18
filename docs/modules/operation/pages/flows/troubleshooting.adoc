@@ -46,7 +46,9 @@ You must enable Netflow listeners.
 
 == Persisted flows do not appear in Helm
 
-If you have persisted flows but they do not appear in Helm, in `etc/org.opennms.features.flows.persistence.elastic.cfg`, check that either the `alwaysUseRawForQueries` or `alwaysUseAggForQueries` property is set to `true`.
+If you have persisted flows but they do not appear in Helm, check the configuration in `etc/org.opennms.features.flows.persistence.elastic.cfg`, in particular, the `elasticUrl` property.
+If you are using aggregated flows, make sure your `aggregate.elasticIndexStrategy` matches the index strategy you configured in Nephron.
+To persist only raw flows or only aggregated flows in Elasticsearch, you must set `alwaysUseRawForQueries` or `alwaysUseAggForQueries` appropriately.
 
 (For more information on troubleshooting Elasticsearch, refer to the https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html[Elasticsearch documentation].)
 
@@ -54,16 +56,3 @@ If you have persisted flows but they do not appear in Helm, in `etc/org.opennms.
 In the UI, use the Nodes page to determine flows performance for specific devices.
 (Choose *Info>Nodes* to view nodes.)
 The flows indicator icon shows flows data for each device, with SNMP details and flows direction.
-
-== Grafana template missing
-
-A "template is missing" error message in Grafana can occur if, the first time you set up flows, you start OpenNMS before you start Elasticsearch.
-If you start OpenNMS before Elasticsearch, the required template will not be available, and Elasticsearch does not know what to do with the flows documents.
-This template is installed once, the first time you connect to Elasticsearch.
-
-To fix this issue, follow these steps:
-
-. Stop OpenNMS.
-. Stop Elasticseach and Elasticsearch data.
-. Start Elasticsearch.
-. Start OpenNMS.
