@@ -25,7 +25,7 @@ import { search } from './searchService'
 import { getInfo } from './infoService'
 import { getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
-import { getVerticesAndEdges } from './topologyService'
+import { getVerticesAndEdges, getTopologyDataByLevelAndFocus } from './topologyService'
 
 export default {
   search,
@@ -56,5 +56,6 @@ export default {
   getPreFabGraphs,
   getDefinitionData,
   getResourceForNode,
-  getGraphDefinitionsByResourceId
+  getGraphDefinitionsByResourceId,
+  getTopologyDataByLevelAndFocus
 }

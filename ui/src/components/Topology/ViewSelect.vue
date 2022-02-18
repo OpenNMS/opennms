@@ -6,7 +6,7 @@
     text-prop="option"
     @update:modelValue="onViewSelect"
     label="View"
-    :background="true"
+    :background="false"
   />
 </template>
 
@@ -28,9 +28,6 @@ const onViewSelect = () => store.dispatch('topologyModule/setSelectedView', sele
 
 <style scoped lang="scss">
 .view-select {
-  position: absolute;
-  z-index: 1000;
-  width: 200px;
-  padding: 0px;
+  width: 100%;
 }
 </style>

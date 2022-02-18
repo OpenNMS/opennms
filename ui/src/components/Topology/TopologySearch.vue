@@ -3,7 +3,7 @@
     v-model="searchStr"
     type="multi"
     :results="results"
-    label="Search"
+    label="Focused Nodes"
     @search="resetLabelsAndSearch"
     :loading="loading"
     text-prop="label"
@@ -18,26 +18,15 @@ import { debounce } from 'lodash'
 import { useStore } from 'vuex'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 
-const emit = defineEmits(['fly-to-node', 'set-bounding-box'])
-
 const store = useStore()
 const searchStr = ref()
 const loading = ref(false)
 const defaultLabels = { noResults: 'Searching...' }
 const labels = ref(defaultLabels)
 
-const selectItem = (items: { label: string }[]) => {
-  const nodeLabels = items.map((item) => item.label)
-  store.dispatch('mapModule/setSearchedNodeLabels', nodeLabels)
-  if (nodeLabels.length) {
-    if (nodeLabels.length === 1) {
-      // fly to last selected node
-      emit('fly-to-node', nodeLabels[0])
-    } else {
-      // set bounding box for all searched nodes
-      emit('set-bounding-box', nodeLabels)
-    }
-  }
+const selectItem = (items: { url: string }[]) => {
+  const ids = items.map((item) => item.url.split('=')[1])
+  store.dispatch('topologyModule/addFocusedNodeIds', ids)
 }
 
 const resetLabelsAndSearch = (value: string) => {

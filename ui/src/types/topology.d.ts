@@ -38,3 +38,8 @@ export interface NetworkGraphEdge {
 export interface NetworkGraphVertex {
   name: string
 }
+
+export interface SZLRequest {
+  semanticZoomLevel: number
+  verticesInFocus: string[]
+}

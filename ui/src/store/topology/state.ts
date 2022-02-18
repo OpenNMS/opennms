@@ -6,6 +6,8 @@ export interface State {
   edges: Record<string, NetworkGraphEdge>
   verticies: Record<string, NetworkGraphVertex>
   semanticZoomLevel: number
+  isLeftDrawerOpen: boolean
+  focusedNodeIds: string[]
 }
 
 const state: State = {
@@ -13,7 +15,9 @@ const state: State = {
   selectedView: 'map',
   edges: {},
   verticies: {},
-  semanticZoomLevel: 1
+  semanticZoomLevel: 1,
+  isLeftDrawerOpen: true,
+  focusedNodeIds: []
 }
 
 export default state

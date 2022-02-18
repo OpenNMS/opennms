@@ -1,6 +1,5 @@
 <template>
   <div class="geo-map">
-    <MapSearch class="search-bar" @fly-to-node="flyToNode" @set-bounding-box="setBoundingBox" />
     <SeverityFilter />
     <LMap
       ref="map"
@@ -77,7 +76,6 @@ import MinorIcon from '@/assets/Minor-icon.png'
 import MajorIcon from '@/assets/Major-icon.png'
 import CriticalIcon from '@/assets/Critical-icon.png'
 import { Map as LeafletMap, divIcon, MarkerCluster as Cluster } from 'leaflet'
-import MapSearch from './MapSearch.vue'
 import { numericSeverityLevel } from './utils'
 import SeverityFilter from './SeverityFilter.vue'
 
@@ -235,17 +233,10 @@ const tileProviders = [
   },
 ]
 
-defineExpose({ invalidateSizeFn })
+defineExpose({ invalidateSizeFn, setBoundingBox, flyToNode })
 </script>
 
 <style scoped>
-.search-bar {
-  position: absolute;
-  margin-left: 10px;
-  margin-bottom: 23px;
-  margin-top: -5px;
-  left: 215px;
-}
 .geo-map {
   height: 100%;
 }

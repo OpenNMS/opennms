@@ -65,7 +65,10 @@ const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRail
 const isSelected = (path: string) => path === route.fullPath
 </script>
 
-<style scopes lang="scss">
+<style lang="scss">
+.nav-rail {
+  z-index: 999;
+}
 .nav-header {
   display: none !important;
 }

@@ -18,9 +18,19 @@ const SET_SELECTED_VIEW = (state: State, view: string) => {
   state.selectedView = view
 }
 
+const SET_LEFT_DRAWER_OPEN = (state: State, bool: boolean) => {
+  state.isLeftDrawerOpen = bool
+}
+
+const ADD_FOCUSED_NODE_IDS = (state: State, ids: string[]) => {
+  state.focusedNodeIds = ids
+}
+
 export default {
   SAVE_NODE_EDGES,
   SAVE_NODE_VERTICIES,
   SET_SEMANTIC_ZOOM_LEVEL,
-  SET_SELECTED_VIEW
+  SET_SELECTED_VIEW,
+  SET_LEFT_DRAWER_OPEN,
+  ADD_FOCUSED_NODE_IDS
 }

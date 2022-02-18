@@ -11,7 +11,21 @@
         @resize="resize"
       >
         <pane min-size="1" max-size="100" :size="72">
-          <ViewSelect />
+          <DrawerBtn />
+          <LeftDrawer>
+            <template v-slot:search>
+              <TopologySearch v-if="isTopologyView" />
+              <MapSearch
+                class="search-bar"
+                @fly-to-node="flyToNode"
+                @set-bounding-box="setBoundingBox"
+                v-else
+              />
+            </template>
+            <template v-slot:view>
+              <ViewSelect />
+            </template>
+          </LeftDrawer>
           <Topology v-if="isTopologyView" />
           <LeafletMap v-if="nodesReady" v-show="!isTopologyView" ref="leafletComponent" />
         </pane>
@@ -37,7 +51,11 @@ import LeafletMap from '../components/Map/LeafletMap.vue'
 import Topology from './Topology.vue'
 import GridTabs from '@/components/Map/GridTabs.vue'
 import { debounce } from 'lodash'
+import LeftDrawer from '@/components/Topology/LeftDrawer.vue'
 import ViewSelect from '@/components/Topology/ViewSelect.vue'
+import TopologySearch from '@/components/Topology/TopologySearch.vue'
+import MapSearch from '@/components/Map/MapSearch.vue'
+import DrawerBtn from '@/components/Topology/DrawerBtn.vue'
 
 const store = useStore()
 const split = ref()
@@ -61,6 +79,9 @@ const resize = debounce(() => {
     leafletComponent.value.invalidateSizeFn(), 200
   }
 })
+
+const flyToNode = (node: string) => leafletComponent.value.flyToNode(node)
+const setBoundingBox = (nodeLabels: string[]) => leafletComponent.value.setBoundingBox(nodeLabels)
 
 onMounted(async () => {
   store.dispatch('spinnerModule/setSpinnerState', true)

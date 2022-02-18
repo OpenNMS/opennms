@@ -1,5 +1,5 @@
 import { QueryParameters } from '@/types'
-import { VerticesAndEdges } from '@/types/topology'
+import { SZLRequest, VerticesAndEdges } from '@/types/topology'
 import { queryParametersHandler } from './serviceHelpers'
 import { v2 } from './axiosInstances'
 
@@ -26,16 +26,18 @@ const getVerticesAndEdges = async (queryParameters?: QueryParameters): Promise<V
   }
 }
 
-const getTopologyDataByLevelAndFocus = async (semanticZoomLevel: number, focusIds: string[]): Promise<any> => {
-  const payload = {
-    semanticZoomLevel: semanticZoomLevel,
-    verticesInFocus: focusIds
-  }
+const getTopologyDataByLevelAndFocus = async (payload: SZLRequest): Promise<VerticesAndEdges | false> => {
   try {
-    const response = await v2.post(endpoint, payload)
-    return response.data
+    const resp = await v2.post(endpoint, payload)
+
+    // no content from server
+    if (resp.status === 204) {
+      return { vertices: [], edges: [] }
+    }
+
+    return resp.data
   } catch (error) {
-    return []
+    return false
   }
 }
 
