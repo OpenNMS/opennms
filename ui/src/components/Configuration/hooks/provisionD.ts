@@ -33,8 +33,13 @@ export const useProvisionD = () => {
       selectedProvisionDItem.config.advancedOptions = []
     }
     if (selectedProvisionDItem?.config?.advancedOptions) {
-      selectedProvisionDItem.config.advancedOptions.push({ key: { name: '', _text: '' }, value: '' })
+      selectedProvisionDItem.config.advancedOptions.push({ key: { name: '', _text: '' }, value: '',hint:'' })
     }
+  }
+
+  const advancedKeyUpdate = (key:{hint:string},index:number) => {
+    selectedProvisionDItem.config.advancedOptions[index].hint = key.hint
+    selectedProvisionDItem.config.advancedOptions[index].value = ''
   }
 
   /**
@@ -80,11 +85,29 @@ export const useProvisionD = () => {
   }
 
   /**
+   * Updates our local crontab values.
+   * @param key the key being updated
+   * @param value the value for the key being updated
+   */
+  const updateCronTab = (key:string,value:string) => {
+    if (key === 'advancedCrontab' && value){
+      selectedProvisionDItem.config.occuranceAdvanced = ConfigurationHelper.convertLocalToCronTab(selectedProvisionDItem.config)
+    }else if (key === 'advancedCrontab' && !value){
+      const localTime = selectedProvisionDItem.config.time
+      if (localTime.includes(',') || localTime.length > 5){
+        selectedProvisionDItem.config.time = '00:00'
+      }
+      selectedProvisionDItem.config.occuranceAdvanced = ConfigurationHelper.convertLocalToCronTab(selectedProvisionDItem.config)
+    }
+  }
+
+  /**
    * 
    * @param key Key in the LocalConfiguration we want to update
    * @param value New value associated to the key
    */
   const updateFormValue = (key: string, value: string) => {
+    updateCronTab(key,value);
     (selectedProvisionDItem.config as Record<string, unknown>)[key] = value
     updateValidation(selectedProvisionDItem.config)
     if (key === 'type' || key === 'subType') {
@@ -97,7 +120,7 @@ export const useProvisionD = () => {
    * @param localConfig Full Local Configuration Item
    */
   const updateValidation = (localConfig: LocalConfiguration) => {
-    selectedProvisionDItem.errors = ConfigurationHelper.validateLocalItem(localConfig, true)
+    selectedProvisionDItem.errors = ConfigurationHelper.validateLocalItem(localConfig, provisionDList.value,activeIndex.index,true)
   }
 
   return {
@@ -107,6 +130,7 @@ export const useProvisionD = () => {
     provisionDList,
     selectedProvisionDItem,
 
+    advancedKeyUpdate,
     addAdvancedOption,
     createNewRequisition,
     deleteAdvancedOption,

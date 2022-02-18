@@ -42,7 +42,9 @@
           <td>
             <ConfigurationCopyPasteDisplay :text="item[RequisitionData.ImportURL]" />
           </td>
-          <td>{{ cronToEnglish(item[RequisitionData.CronSchedule]) }}</td>
+          <td>
+            <ConfigurationCopyPasteDisplay :text="ConfigurationHelper.cronToEnglish(item[RequisitionData.CronSchedule])" />
+            </td>
           <td>{{ rescanToEnglish(item[RequisitionData.RescanExisting]) }}</td>
           <td>
             <div class="flex">
@@ -81,6 +83,7 @@ import { RequisitionData } from './copy/requisitionTypes'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationCopyPasteDisplay from './ConfigurationCopyPasteDisplay.vue'
 import { ConfigurationPageVals, ConfigurationTableSort, ProvisionDServerConfiguration } from './configuration.types'
+import { rescanCopy } from './copy/rescanItems'
 
 /**
  * Props
@@ -170,31 +173,14 @@ const pageSizeUpdate = (newPageSize: number) => {
   pageVals.value.pageSize = newPageSize
 }
 
-/**
- * Convert our Cron Schedules to Human Readable String.
- */
-const cronToEnglish = (cronFormatted: string) => {
-  const converted = ConfigurationHelper.convertCronTabToLocal(cronFormatted)
-  let occurance = 'Every day at '
-  if (converted.occurance === 'Monthly') {
-    occurance = 'Monthly at '
-  } else if (converted.occurance === 'Weekly') {
-    occurance = 'Weekly at '
-  }
-  return `${occurance}${converted.time}`
-}
+
+
 
 /**
  * Convert our Rescan Existing value to something more understandable by Humans.
  */
 const rescanToEnglish = (rescanVal: string) => {
-  if (rescanVal === 'true') {
-    return 'Scan New Nodes'
-  } else if (rescanVal === 'dbonly') {
-    return 'Database Steps Only'
-  } else {
-    return 'No Scanning'
-  }
+  return rescanCopy[rescanVal]
 }
 
 </script>
@@ -217,11 +203,16 @@ const rescanToEnglish = (rescanVal: string) => {
   display: flex;
 }
 .tr {
-  background-color: #e6e8f9;
+  background-color: var(--feather-background);
+  .th {
+    color: var(--feather-primary);
+  }
 }
-.edit-icon,
+.edit-icon {
+  color: var(--feather-primary);
+}
 .delete-icon {
-  color: #3a4bd3;
+  color: var(--feather-error);
 }
 .condensed {
   @include table();
@@ -229,5 +220,8 @@ const rescanToEnglish = (rescanVal: string) => {
 }
 .main-wrapper {
   padding: 16px 24px;
+}
+.cron {
+  max-width:260px;
 }
 </style>

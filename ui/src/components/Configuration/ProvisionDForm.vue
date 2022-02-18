@@ -4,7 +4,7 @@
             ref="firstInput"
             class="side-input"
             label="Name"
-            hint="Hint Text"
+            hint="Human-friendly name for this definition. Must be unique."
             :error="errors.name"
             :modelValue="config.name"
             @update:modelValue="(val: string) => updateFormValue('name', val)"
@@ -13,12 +13,27 @@
             <FeatherSelect
                 class="side-input full-width"
                 textProp="name"
-                hint="Hint Text"
+                hint="Type of URL to use for this definition"
                 label="Type"
                 :options="requisitionTypeList"
                 :error="errors.type"
                 :modelValue="config.type"
-                @update:modelValue="(val: string) => updateFormValue('type', val)"
+                @update:modelValue="(val: {name:string}) => {
+                    /**
+                     * The following two lines are related to the hacks to get the Hint Text
+                     * to update properly in the FeatherInput component. Currently if you update the Hint Text
+                     * after the initial render, FeatherInput does not react to the untracked attribute.
+                     * We could forcibly mount + unmount the component as an alternative which would also render
+                     * the correct text, but I felt like these easily removable two lines of code is preferable
+                     * than a forced re-render.
+                     * 
+                     * In the case that FeatherInput properly updates when the Hint Text is updated, just remove
+                     * the two proceeding lines of code (getHostHint and forceSetHint)
+                     */
+                    const hint = ConfigurationHelper.getHostHint(val.name);
+                    ConfigurationHelper.forceSetHint({hint}, 0,'.host-update');
+                    updateFormValue('type', val)
+                }"
             />
             <div class="icon">
                 <FeatherButton icon="Help" @click="() => props.toggleHelp()">
@@ -29,18 +44,28 @@
         <div v-if="RequsitionTypesUsingHost.includes(config.type.name)">
             <FeatherInput
                 label="Host"
-                class="side-input"
+                class="side-input host-update"
                 :error="errors.host"
                 :modelValue="config.host"
                 @update:modelValue="(val: string) => updateFormValue('host', val)"
-                hint="Hint Text"
+                :hint="hostHint || ' '"
+            />
+        </div>
+        <div v-if="RequisitionHTTPTypes.includes(config.type.name)">
+            <FeatherInput
+                label="Path"
+                class="side-input"
+                :error="errors.urlPath"
+                :modelValue="config.urlPath"
+                @update:modelValue="(val: string) => updateFormValue('urlPath', val)"
+                hint="URL path starting with a /"
             />
         </div>
         <div v-if="[RequisitionTypes.RequisitionPlugin].includes(config.type.name)">
             <FeatherSelect
                 class="side-input"
                 textProp="name"
-                hint="Hint Text"
+                hint
                 label="Requisition Plugin"
                 :options="requisitionSubTypes"
                 @update:modelValue="(val: string) => updateFormValue('subType', val)"
@@ -54,7 +79,7 @@
                 :error="errors.zone"
                 :modelValue="config.zone"
                 @update:modelValue="(val: string) => updateFormValue('zone', val)"
-                hint="Hint Text"
+                hint="DNS zone to use as basis for this definition"
             />
             <FeatherInput
                 label="Foreign Source"
@@ -62,7 +87,7 @@
                 :error="errors.foreignSource"
                 :modelValue="config.foreignSource"
                 @update:modelValue="(val: string) => updateFormValue('foreignSource', val)"
-                hint="Hint Text"
+                hint="Foreign-source name to use for resulting requisition"
             />
         </div>
         <div v-if="[RequisitionTypes.VMWare].includes(config.type.name)">
@@ -73,7 +98,7 @@
                     :error="errors.username"
                     :modelValue="config.username"
                     @update:modelValue="(val: string) => updateFormValue('username', val)"
-                    hint="Hint Text"
+                    hint="vSphere authentication username"
                 />
                 <FeatherInput
                     type="password"
@@ -82,7 +107,7 @@
                     :error="errors.password"
                     :modelValue="config.password"
                     @update:modelValue="(val: string) => updateFormValue('password', val)"
-                    hint="Hint Text"
+                    hint="vSphere authentication password"
                 />
             </div>
         </div>
@@ -93,21 +118,14 @@
                 :error="errors.path"
                 :modelValue="config.path"
                 @update:modelValue="(val: string) => updateFormValue('path', val)"
-                hint="Hint Text"
+                hint="File path starting with a /"
             />
         </div>
-        <div class="flex-center side-input">
-            <FeatherSelect
-                textProp="name"
-                label="Monthly"
-                :options="scheduleTypes"
-                :error="errors.occurance"
-                @update:modelValue="(val: string) => updateFormValue('occurance', val)"
-                :modelValue="config.occurance"
-                class="occurance"
+            <ConfigurationCronSelector
+                :config="config"
+                :errors="errors"
+                :updateValue="updateCronValue"
             />
-            <FeatherInput type="time" class="time" label="Schedule Time" :modelValue="config.time" />
-        </div>
         <div>
             <FeatherRadioGroup
                 class="side-label"
@@ -126,17 +144,17 @@
 </template>
 <script lang="ts" setup>
 import { FeatherSelect } from '@featherds/select'
-import { requisitionSubTypes, RequsitionTypesUsingHost, RequisitionTypes, requisitionTypeList } from './copy/requisitionTypes'
-import { scheduleTypes } from './copy/scheduleTypes'
+import { requisitionSubTypes, RequsitionTypesUsingHost, RequisitionTypes, requisitionTypeList, RequisitionHTTPTypes } from './copy/requisitionTypes'
 import { rescanItems } from './copy/rescanItems'
 import { FeatherInput } from '@featherds/input'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import { FeatherRadioGroup, FeatherRadio } from '@featherds/radio'
-import { PropType, computed,watch, ref } from 'vue'
+import { PropType, computed, watch, ref } from 'vue'
 import Help from '@featherds/icon/action/Help'
 import { LocalConfigurationWrapper } from './configuration.types'
-
+import { ConfigurationHelper } from './ConfigurationHelper'
+import ConfigurationCronSelector from './ConfigurationCronSelector.vue'
 const firstInput = ref<HTMLInputElement | null>(null)
 
 const props = defineProps({
@@ -144,12 +162,16 @@ const props = defineProps({
   helpState: { type: Boolean, required: true },
   toggleHelp: { type: Function, required: true },
   updateFormValue: { type: Function, required: true },
-  formActive: {type: Boolean, required:true}
+  formActive: { type: Boolean, required: true }
 })
 
 const config = computed(() => props.item.config)
 const errors = computed(() => props.item.errors)
 const formActive = computed(() => props.formActive)
+const hostHint = computed(() => {
+  return ConfigurationHelper.getHostHint(props.item.config.type.name)
+})
+
 /**
  * Focus the first field in the drawer when opened.
  */
@@ -160,6 +182,10 @@ watch(formActive, () => {
     }
   }
 })
+
+const updateCronValue = (type:string,val:string) => {
+  props.updateFormValue(type,val)
+}
 </script>
 <style lang="scss" scoped>
 .side-input {

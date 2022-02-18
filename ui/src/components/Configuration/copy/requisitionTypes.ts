@@ -18,7 +18,10 @@ export const RequisitionPluginSubTypes = {
   PRIS: 'PRIS',
   AzureIot: 'Azure IoT'
 }
-
+export const RequisitionHTTPTypes = [
+  RequisitionTypes.HTTP,
+  RequisitionTypes.HTTPS
+]
 export const RequsitionTypesUsingHost = [
   RequisitionTypes.DNS,
   RequisitionTypes.VMWare,
@@ -52,8 +55,11 @@ export const SplitTypes = {
 }
 
 export const ErrorStrings = {
+  DuplicateName: 'Name must be unique',
   TypeError: 'Must select a type',
   OccuranceTime: 'Must schedule a time',
+  OccuranceWeekTime: 'Must select a day of the week',
+  OccuranceDayTime: 'Must select a day of the month',
   InvalidHostname: 'Invalid hostname',
   FilePath: 'Must include a file path',
   FilePathStart: 'Path must start with a /',

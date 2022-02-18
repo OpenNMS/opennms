@@ -1,0 +1,122 @@
+<template>
+    <div>
+        <div class="flex" v-if="!props.config.advancedCrontab">
+            <FeatherSelect
+                textProp="name"
+                label="Schedule Type"
+                :options="scheduleTypes"
+                :error="props.errors.occurance"
+                @update:modelValue="(val: string) => updateFormValue('occurance', val)"
+                :modelValue="props.config.occurance"
+                class="occurance"
+            />
+            <FeatherSelect
+                v-if="props.config.occurance.name === 'Monthly'"
+                textProp="name"
+                label="Day of Month"
+                :options="dayTypes"
+                :error="props.errors.occuranceDay"
+                @update:modelValue="(val: string) => updateFormValue('occuranceDay', val)"
+                :modelValue="props.config.occuranceDay"
+                class="occurance-day"
+            />
+            <FeatherSelect
+                v-if="props.config.occurance.name === 'Weekly'"
+                textProp="name"
+                label="Day of Week"
+                :options="weekTypes"
+                :error="props.errors.occuranceWeek"
+                @update:modelValue="(val: string) => updateFormValue('occuranceWeek', val)"
+                :modelValue="props.config.occuranceWeek"
+                class="occurance-week"
+            />
+            <FeatherInput
+                type="time"
+                class="time"
+                label="Schedule Time"
+                @update:modelValue="(val: string) => updateFormValue('time', val)"
+                :modelValue="props.config.time"
+            />
+        </div>
+
+        <div class="flex" v-if="props.config.advancedCrontab">
+            <FeatherInput
+                class="advanced-entry"
+                :error="props.errors.occuranceAdvanced"
+                label="Advanced Schedule"
+                @update:modelValue="(val: string) => updateFormValue('occuranceAdvanced', val)"
+                :modelValue="props.config.occuranceAdvanced"
+            />
+        </div>
+        <div class="flex">
+            <div>
+                <FeatherCheckbox
+                    :modelValue="props.config.advancedCrontab"
+                    @update:modelValue="(val: string) => updateFormValue('advancedCrontab', val)"
+                >Advanced Schedule</FeatherCheckbox>
+            </div>
+            <div class="pull-up">{{ scheduledTime }}</div>
+        </div>
+        <div v-if="props.config.advancedCrontab">
+            <a target="_blank" class="link" href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html">Quartz Scheduler Documentation</a>
+        </div>
+    </div>
+</template>
+<script lang="ts" setup>
+import { FeatherSelect } from '@featherds/select'
+import { FeatherInput } from '@featherds/input'
+import { FeatherCheckbox } from '@featherds/checkbox'
+import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
+import { PropType, computed } from 'vue'
+import { LocalConfiguration, LocalErrors } from './configuration.types'
+import { ConfigurationHelper } from './ConfigurationHelper'
+import cronstrue from 'cronstrue'
+
+const updateFormValue = (type: string, value: string) => {
+  props.updateValue(type, value)
+}
+
+const props = defineProps({
+  config: { type: Object as PropType<LocalConfiguration>, required: true },
+  errors: { type: Object as PropType<LocalErrors>, required: true },
+  updateValue: { type: Function, required: true }
+})
+const scheduledTime = computed(() => {
+  let ret = ''
+  if (props.config.advancedCrontab) {
+    ret = ConfigurationHelper.cronToEnglish(props.config.occuranceAdvanced)
+  } else {
+    try {
+      ret = cronstrue.toString(ConfigurationHelper.convertLocalToCronTab(props.config))
+    }catch(e){
+      ret = ''
+    }
+  }
+  return ret
+})
+
+</script>
+<style lang="scss" scoped>
+div a.link {
+    color:var(--feather-clickable);
+}
+.flex {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    > div {
+        margin-right: 16px;
+        width: calc(33.33% - 16px);
+        flex-grow: 1;
+        &:last-child {
+            width: calc(33.33%);
+            margin-right: 0;
+        }
+    }
+}
+.pull-up {
+    width:50%;
+    transform:translateY(-12px);
+    text-align:right;
+}
+</style>

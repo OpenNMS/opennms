@@ -154,7 +154,6 @@ const updateThreadpools = async () => {
         hasErrors: false
       }
     } catch (e) {
-      console.log('HI!', e)
       toastMessage = {
         basic: 'Error!',
         detail: 'Thread Pool data not saved.',

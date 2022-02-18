@@ -14,9 +14,23 @@
           textProp="name"
           @search="(query: string) => search(query, props.type, props.subType, index)"
           v-model="item.key"
+          @update:modelValue="(key: { hint: string }) => {
+            ConfigurationHelper.forceSetHint(key, index);
+            props.advancedKeyUpdate(key, index)
+          }"
           :results="results.list[index]"
         ></FeatherAutocomplete>
-        <FeatherInput label="Value" hint="Hint Text" v-model="item.value" />
+        <!-- Blank space ' ' below is part of forceSetHint() workaround for FeatherInput.
+            If item.hint is blank on initial load, it will not render the internal element we need
+            for forced update. So when item.hint is empty, we supply an empty space which is enough
+            to force FeatherInput to render the help label.
+        -->
+        <FeatherInput
+          class="hint-label"
+          label="Value"
+          :hint="item.hint || ' '"
+          v-model="item.value"
+        />
         <FeatherButton icon="Delete" @click="() => deleteAdvancedOption(index)">
           <FeatherIcon class="delete-icon" :icon="Delete"></FeatherIcon>
         </FeatherButton>
@@ -38,13 +52,13 @@ import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import { FeatherInput } from '@featherds/input'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
-
 import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
 
 import { advancedKeys, dnsKeys, openDaylightKeys, aciKeys, zabbixKeys, prisKeys } from './copy/advancedKeys'
 import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'
 import { AdvancedKey, AdvancedOption } from './configuration.types'
+import { ConfigurationHelper } from './ConfigurationHelper'
 
 /**
  * Props
@@ -54,6 +68,7 @@ const props = defineProps({
   type: { type: String, required: true },
   subType: { type: String, required: true },
   addAdvancedOption: { type: Function, required: true },
+  advancedKeyUpdate: { type: Function, required: true },
   deleteAdvancedOption: { type: Function, required: true },
   active: { type: Boolean, required: true },
   activeUpdate: Function,
@@ -123,6 +138,7 @@ const search = (searchVal: string, type: string, subType: string, index: number)
   })
   results.list[index] = [...newResu]
 }
+
 
 /**
  * Fills in the <textarea> within the FeatherAutocomplete.
