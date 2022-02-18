@@ -168,7 +168,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
 
         writeProps(etc.resolve("org.ops4j.pax.web.cfg"),
                 ImmutableMap.<String,String>builder()
-                        .put("org.osgi.service.http.port", SENTINEL_JETTY_PORT)
+                        .put("org.osgi.service.http.port", Integer.toString(SENTINEL_JETTY_PORT))
                         .build());
 
         writeProps(etc.resolve("org.opennms.core.ipc.sink.kafka.consumer.cfg"),
