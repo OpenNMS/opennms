@@ -48,7 +48,7 @@
     "marked": "^4.0.12",
     "rapidoc": "^9.1.4",
     "sass": "^1.49.0",
-    "sass-loader": "^12.3.0",
+    "sass-loader": "^12.6.0",
     "splitpanes": "^3.0.6",
     "vite-svg-loader": "^3.1.2",
     "vue": "^3.2.29",
