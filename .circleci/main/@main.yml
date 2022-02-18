@@ -36,7 +36,7 @@ aliases:
       # the key that is used by Notary to sign the multi-arch minion image
       echo "$DCT_REPO_MINION_KEY" | base64 -d > $KEY_FOLDER/$DCT_REPO_MINION_KEY_NAME.key
       # Azure
-      echo "$AZURE_DCT_CI_KEY" | base64 -d > $KEY_FOLDER/$AZURE_DCT_CI_KEY_NAME.key
+      echo "$AZURE_DCT_CI_KEY" | base64 -d > $KEY_FOLDER/$AZURE_DCT_CI_KEY_ID.key
       chmod 600 $KEY_FOLDER/*
       # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
       # that is required for loading the
@@ -1025,7 +1025,7 @@ jobs:
             echo "pushed to DK"
             docker tag ${MINION_DK_REPO}:${TAG} ${MINION_AZ_REPO}:${TAG}
             export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${AZURE_DCT_CI_PASSPHRASE}
-            docker trust key load $KEY_FOLDER/$AZURE_DCT_CI_KEY_NAME.key
+            docker trust key load $KEY_FOLDER/$AZURE_DCT_CI_KEY_ID.key
             docker push ${MINION_AZ_REPO}:${TAG}
             echo "pushed to AZ"
 
@@ -1092,7 +1092,7 @@ jobs:
             # Notary sign on Azure
             NOTARY_AZ_SERVER="https://opennmspubacr.azurecr.io"
             export NOTARY_AUTH="$(printf "${AZURE_SP}:${AZURE_SP_PASSWORD}" | base64 -w0)"
-            export NOTARY_TARGETS_PASSPHRASE="${AZURE_DCT_CI_PASSPHRASE}"
+            export NOTARY_DELEGATION_PASSPHRASE="${AZURE_DCT_CI_PASSPHRASE}"
             echo "Sign ${SHA_256_AZ} with Azure notary"
             notary -d ~/.docker/trust/ -s "${NOTARY_AZ_SERVER}" addhash "${MINION_AZ_REPO}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE_AZ}" --sha256 "${SHA_256_AZ}" --publish --verbose
             echo "ACR Done!"
