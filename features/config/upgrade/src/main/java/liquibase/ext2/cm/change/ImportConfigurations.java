@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.util.Substring;
 import org.springframework.core.io.Resource;
 
 import liquibase.change.ChangeMetaData;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -18,35 +18,28 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- *     http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ ******************************************************************************/
 
-package org.opennms.features.config.service.impl;
+package org.opennms.features.config.util.json;
 
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 
-import javax.annotation.PostConstruct;
+import java.io.IOException;
 
-public class ProvisiondCmJaxbConfigTestDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> {
-    public static final String CONFIG_NAME = "provisiond";
-
-    public ProvisiondCmJaxbConfigTestDao() {
-        super(ProvisiondConfiguration.class, "Provisiond Configuration");
-    }
-
+public class YesNoDeserializer extends JsonDeserializer<Boolean> {
     @Override
-    protected String getConfigName() {
-        return CONFIG_NAME;
-    }
-
-    @Override
-    @PostConstruct
-    public void postConstruct() {
-        this.addOnReloadedCallback(getDefaultConfigId(), getUpdateCallback());
+    public Boolean deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+        String valStr = jsonParser.getValueAsString();
+        if ("yes".equalsIgnoreCase(valStr)) return true;
+        if ("no".equalsIgnoreCase(valStr)) return false;
+        return Boolean.valueOf(valStr);
     }
 }

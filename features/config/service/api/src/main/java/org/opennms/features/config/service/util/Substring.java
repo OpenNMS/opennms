@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext2.cm.change;
+package org.opennms.features.config.service.util;
 
 import java.util.Objects;
 
@@ -40,7 +40,7 @@ public class Substring {
 
     public Substring getBeforeLast(String delimiter) {
         int index = this.value.lastIndexOf(delimiter);
-        if(index > -1) {
+        if (index > -1) {
             this.value = this.value.substring(0, this.value.lastIndexOf(delimiter));
         } else {
             // we keep the current string
@@ -50,8 +50,18 @@ public class Substring {
 
     public Substring getAfterLast(String delimiter) {
         int index = this.value.lastIndexOf(delimiter);
-        if(index > -1) {
+        if (index > -1) {
             this.value = this.value.substring(this.value.lastIndexOf(delimiter) + delimiter.length());
+        } else {
+            this.value = "";
+        }
+        return this;
+    }
+
+    public Substring getAfter(String delimiter) {
+        int index = this.value.indexOf(delimiter);
+        if (index > -1) {
+            this.value = this.value.substring(this.value.indexOf(delimiter) + delimiter.length());
         } else {
             this.value = "";
         }

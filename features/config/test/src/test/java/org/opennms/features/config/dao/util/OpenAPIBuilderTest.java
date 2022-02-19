@@ -127,8 +127,6 @@ public class OpenAPIBuilderTest {
         String json = converter.convertOpenAPIToString(openapi, "application/json");
         String newJson = converter.convertOpenAPIToString(newOpenapi, "application/json");
 
-        System.out.println(json);
-        System.out.println(newJson);
         JSONAssert.assertEquals(new JSONObject(json), new JSONObject(newJson), true);
     }
 

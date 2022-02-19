@@ -28,17 +28,18 @@
 
 package org.opennms.features.config.service.impl;
 
+import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.exception.ConfigNotFoundException;
 import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.EventType;
 import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.BeanFieldCopyUtil;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.features.config.service.util.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -85,7 +86,9 @@ public abstract class AbstractCmJaxbConfigDao<E> {
      *
      * @return configId
      */
-    protected abstract String getDefaultConfigId();
+    protected String getDefaultConfigId() {
+        return ConfigDefinition.DEFAULT_CONFIG_ID;
+    }
 
     /**
      * <p>Constructor for AbstractJaxbConfigDao.</p>
@@ -140,7 +143,7 @@ public abstract class AbstractCmJaxbConfigDao<E> {
 
         return lastKnownEntityMap.compute(configId, (k, v) -> {
             if (v != null) {
-                BeanUtils.copyProperties(config, v);
+                BeanFieldCopyUtil.copyFields(config, v);
                 return v;
             } else {
                 return config;
