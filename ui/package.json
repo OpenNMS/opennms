@@ -12,7 +12,7 @@
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.+(ts)\""
   },
   "dependencies": {
-    "@featherds/app-bar": "0.9.4",
+    "@featherds/app-bar": "0.9.6",
     "@featherds/app-layout": "0.9.4",
     "@featherds/autocomplete": "0.9.4",
     "@featherds/button": "0.9.4",

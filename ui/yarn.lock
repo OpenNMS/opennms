@@ -69,15 +69,15 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@featherds/app-bar@0.9.4":
-  version "0.9.4"
-  resolved "https://registry.yarnpkg.com/@featherds/app-bar/-/app-bar-0.9.4.tgz#e98d49365a22fc09b59b584c034e10454754bbb6"
-  integrity sha512-wtjeaO25TuPkBLrzgHGUS1tCseDT0SulxXerJVs6WoshfX8zzPm5/krw6R93mSbuYhFNAkiMgWcObCb3vEqkgg==
+"@featherds/app-bar@0.9.6":
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/@featherds/app-bar/-/app-bar-0.9.6.tgz#e08e395c7cfa8c6d95111ffa52b9007fc14c6e0d"
+  integrity sha512-yNLRDUbqDTfjfUGwmhY4g4DXDLsWc9j2tLT2aZpjluvMqSxa5A79UMp9k0nStahwQrCYu/1kzXpgdBqcLupA+w==
   dependencies:
-    "@featherds/composables" "^0.9.4"
-    "@featherds/icon" "^0.9.4"
-    "@featherds/ripple" "^0.9.4"
-    "@featherds/styles" "^0.9.4"
+    "@featherds/composables" "^0.9.6"
+    "@featherds/icon" "^0.9.6"
+    "@featherds/ripple" "^0.9.6"
+    "@featherds/styles" "^0.9.6"
     vue "^3.1.0-0"
 
 "@featherds/app-layout@0.9.4":
@@ -134,12 +134,12 @@
     "@featherds/styles" "^0.9.4"
     vue "^3.1.0-0"
 
-"@featherds/composables@^0.9.4":
-  version "0.9.4"
-  resolved "https://registry.yarnpkg.com/@featherds/composables/-/composables-0.9.4.tgz#c43c67b74ee57d9a3d694b1fde798191daac0c87"
-  integrity sha512-xGuai8rmARig4pectXLCkFGcYrf1H/r6znri+Ggj5QKHTnzdFSnwIbNMR4imXQeTAWFTrCIke014eZH0y2D7oQ==
+"@featherds/composables@^0.9.4", "@featherds/composables@^0.9.6":
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/@featherds/composables/-/composables-0.9.6.tgz#abea2c51647d34c539ad760da605837f361cd256"
+  integrity sha512-DUnoWRnFMVyYuEivKY1Fj2STxIXPr6GHZH1t+tWDFTTWqK487Zl5/VlgB2/fEZq7QcXLQLf5NktbOdPp8skdWg==
   dependencies:
-    "@featherds/utils" "^0.9.4"
+    "@featherds/utils" "^0.9.6"
     vue "^3.1.0-0"
 
 "@featherds/date-input@0.9.4":
@@ -191,10 +191,17 @@
     "@featherds/styles" "^0.9.4"
     vue "^3.1.0-0"
 
-"@featherds/icon@0.9.4", "@featherds/icon@^0.9.4":
+"@featherds/icon@0.9.4":
   version "0.9.4"
   resolved "https://registry.yarnpkg.com/@featherds/icon/-/icon-0.9.4.tgz#157457ecf742735e949451babd6bd6f7e02988f0"
   integrity sha512-GFKLdsmXNNe3ZVDrQ9zT3w3Dl1FzY8UlD2/c5002qJlCTPaVPac8RQ9n/on9BaU2s+7q62JHC1BC2mf0AIwDCg==
+  dependencies:
+    vue "^3.1.0-0"
+
+"@featherds/icon@^0.9.4", "@featherds/icon@^0.9.6":
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/@featherds/icon/-/icon-0.9.6.tgz#1f25e23230e5b8a5cbd9714b870ec72a33c425b8"
+  integrity sha512-1RJxonfshCEriI5PWWM2oCmU6WSgksapo5Z39dF+JpGjMiq3W5Ib6Xek31xM8z0KzqjhnF0rdJN50nB3IU2FBg==
   dependencies:
     vue "^3.1.0-0"
 
@@ -303,10 +310,10 @@
     "@featherds/styles" "^0.9.4"
     vue "^3.1.0-0"
 
-"@featherds/ripple@^0.9.4":
-  version "0.9.4"
-  resolved "https://registry.yarnpkg.com/@featherds/ripple/-/ripple-0.9.4.tgz#ee4e5d7d5015b2a5f956995e3108f1d22923d58b"
-  integrity sha512-rbf7j88DM7U1uWfRQqUmJssSzjiWNECyTwGxKkhf7QEdp0kDyQQ+uYBS7EVxn7WGKtXfaQpPtWk5zwSveaf3qQ==
+"@featherds/ripple@^0.9.4", "@featherds/ripple@^0.9.6":
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/@featherds/ripple/-/ripple-0.9.6.tgz#0ac6d3bb01b9eb24b78a0642e8eae64b6eade763"
+  integrity sha512-eh+C3dveB5Hg9ZywDf8dmtOtyfvROzt56YsvO9tJADVEtW60awqEmW4dZas1VplMjfmKpALQV7zbbpILxI+9ZQ==
   dependencies:
     vue "^3.1.0-0"
 
@@ -323,10 +330,15 @@
     "@featherds/utils" "^0.9.4"
     vue "^3.1.0-0"
 
-"@featherds/styles@0.9.4", "@featherds/styles@^0.9.4":
+"@featherds/styles@0.9.4":
   version "0.9.4"
   resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.9.4.tgz#d0b9b8662604d9a0f3f13bb01d26e726b6c2d10d"
   integrity sha512-uGUm/TwnktfVHleJEaEwcVLubDxrGhIVFymICUiy+XJ1/H3w3HzvBtJZxn1Uq4ynA8n3WPBHxfYD88mvk8cS3A==
+
+"@featherds/styles@^0.9.4", "@featherds/styles@^0.9.6":
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.9.6.tgz#188752447c8263a81f70c194f41092b0036f6117"
+  integrity sha512-IDNYMdN1LdL+dbNc8Z2kCfvbz8t/w81GDtNUpwKavo2oBNqJ5YAkhheigyHGG8p+AW+i+897yZZRKO1ZoSlECw==
 
 "@featherds/switch@^0.9.4":
   version "0.9.4"
@@ -361,6 +373,11 @@
   version "0.9.4"
   resolved "https://registry.yarnpkg.com/@featherds/utils/-/utils-0.9.4.tgz#52d889413224a059157d661264d4e85ff52810c5"
   integrity sha512-h0WASYyzMG1u0GH18E7W9+Qboxlvqlb5LqtrVqyJQim1CtwEOCvgMJie1+4ue0qLh2vc8udnlQRR7nLx1AXNIA==
+
+"@featherds/utils@^0.9.6":
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/@featherds/utils/-/utils-0.9.6.tgz#1d40f8d2b0f89a3cdf23ac71bc2f1c8ae1887c4f"
+  integrity sha512-1h0ofSqMrvNGnhgn8TrTe/s6JDkmxOTFUZXDCJ2A6IVP6sxEIFdtKhr0qkg6fyYpDfGsJBXMQwtApILMYkFfyA==
 
 "@humanwhocodes/config-array@^0.9.2":
   version "0.9.3"
