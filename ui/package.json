@@ -18,7 +18,7 @@
     "@featherds/button": "0.9.4",
     "@featherds/checkbox": "0.9.4",
     "@featherds/chips": "0.9.4",
-    "@featherds/date-input": "0.9.4",
+    "@featherds/date-input": "0.9.6",
     "@featherds/dialog": "0.9.4",
     "@featherds/drawer": "0.9.4",
     "@featherds/dropdown": "0.9.4",
