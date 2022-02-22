@@ -713,7 +713,6 @@ workflows:
           filters:
             branches:
               ignore:
-                - jbuliga/CLOUD-475
                 - develop
                 - /^master-.*/
                 - /^release-.*/
