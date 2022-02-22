@@ -28,117 +28,129 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-import java.util.List;
-
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
+
 public class NoOpProvisionMonitor implements ProvisionMonitor {
-	/** {@inheritDoc} */
-        @Override
-	public void beginProcessingOps(int deleteCount, int updateCount, int insertCount) {
-	}
+    @Override
+    public void start() {
 
-	/**
-	 * <p>finishProcessingOps</p>
-	 */
-        @Override
-	public void finishProcessingOps() {
-	}
+    }
 
-	/**
-	 * <p>beginPreprocessingOps</p>
-	 */
-        @Override
-	public void beginPreprocessingOps() {
-	}
+    @Override
+    public void end() {
 
-	/**
-	 * <p>finishPreprocessingOps</p>
-	 */
-        @Override
-	public void finishPreprocessingOps() {
-	}
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginPreprocessing(ImportOperation oper) {
-	}
+    @Override
+    public int getNodeCount() {
+        return 0;
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishPreprocessing(ImportOperation oper) {
-	}
+    /**
+     * <p>beginPreprocessingOps</p>
+     */
+    @Override
+    public void beginPreprocessingOps() {
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginPersisting(ImportOperation oper) {
-	}
+    /**
+     * <p>finishPreprocessingOps</p>
+     */
+    @Override
+    public void finishPreprocessingOps() {
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishPersisting(ImportOperation oper) {
-	}
+    @Override
+    public void beginScanning(ImportOperation oper) {
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginSendingEvents(ImportOperation oper, List<Event> events) {
-	}
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishSendingEvents(ImportOperation oper, List<Event> events) {
-	}
+    @Override
+    public void finishScanning(ImportOperation oper) {
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginLoadingResource(Resource resource) {
-	}
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishLoadingResource(Resource resource) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginPersisting(ImportOperation oper) {
+    }
 
-	/**
-	 * <p>beginImporting</p>
-	 */
-        @Override
-	public void beginImporting() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finishPersisting(ImportOperation oper) {
+    }
 
-	/**
-	 * <p>finishImporting</p>
-	 */
-        @Override
-	public void finishImporting() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginSendingEvent(Event event) {
+    }
 
-	/**
-	 * <p>beginAuditNodes</p>
-	 */
-        @Override
-	public void beginAuditNodes() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finishSendingEvent(Event event) {
+    }
 
-	/**
-	 * <p>finishAuditNodes</p>
-	 */
-        @Override
-	public void finishAuditNodes() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginLoadingResource(Resource resource) {
+    }
 
-	/**
-	 * <p>beginRelateNodes</p>
-	 */
-        @Override
-	public void beginRelateNodes() {
-	}
+    @Override
+    public void finishLoadingResource(Resource resource, int nodeCount) {
 
-	/**
-	 * <p>finishRelateNodes</p>
-	 */
-        @Override
-	public void finishRelateNodes() {
-	}
+    }
+
+    /**
+     * <p>beginImporting</p>
+     */
+    @Override
+    public void beginImporting() {
+    }
+
+    /**
+     * <p>finishImporting</p>
+     */
+    @Override
+    public void finishImporting() {
+    }
+
+    /**
+     * <p>beginAuditNodes</p>
+     */
+    @Override
+    public void beginAuditNodes() {
+    }
+
+    /**
+     * <p>finishAuditNodes</p>
+     */
+    @Override
+    public void finishAuditNodes() {
+    }
+
+    /**
+     * <p>beginRelateNodes</p>
+     */
+    @Override
+    public void beginRelateNodes() {
+    }
+
+    /**
+     * <p>finishRelateNodes</p>
+     */
+    @Override
+    public void finishRelateNodes() {
+    }
 
 }

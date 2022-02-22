@@ -29,14 +29,12 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.netmgt.provision.service.lifecycle.Lifecycles.RESOURCE;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -111,8 +109,6 @@ public class Provisioner implements SpringServiceDaemon {
     private final Map<Integer, ScheduledFuture<?>> m_scheduledNodes = new ConcurrentHashMap<Integer, ScheduledFuture<?>>();
     private volatile EventForwarder m_eventForwarder;
     private SnmpAgentConfigFactory m_agentConfigFactory;
-    
-    private volatile TimeTrackingMonitor m_stats;
 
     private final ThreadFactory newSuspectThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("newSuspectExecutor")
@@ -454,14 +450,19 @@ public class Provisioner implements SpringServiceDaemon {
      */
     protected RequisitionImport importModelFromResource(final Resource resource, final String rescanExisting, final ProvisionMonitor monitor) throws Exception {
         final LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_importActivities);
-        doImport.setAttribute("resource", resource);
-        doImport.setAttribute("rescanExisting", rescanExisting);
+        doImport.setAttribute(RESOURCE, resource);
+        doImport.setAttribute(ImportJob.RESCAN_EXISTING, rescanExisting);
+        doImport.setAttribute(ImportJob.MONITOR, monitor);
+
+        monitor.start();
         doImport.trigger();
         doImport.waitFor();
+
         final RequisitionImport ri = doImport.findAttributeByType(RequisitionImport.class);
         if (ri.isAborted()) {
             throw new ModelImportException("Import failed for resource " + resource.toString(), ri.getError());
         }
+        monitor.end();
         return ri;
     }
 
@@ -495,13 +496,14 @@ public class Provisioner implements SpringServiceDaemon {
     public void doImport(final IEvent event) {
         final String url = getEventUrl(event);
         final String rescanExistingOnImport = getEventRescanExistingOnImport(event);
-
+        // FIXME: Use proper monitor 
+        ProvisionMonitor monitor = new NoOpProvisionMonitor();
         if (url != null) {
-            doImport(url, rescanExistingOnImport);
+            doImport(url, rescanExistingOnImport, monitor);
         } else {
             final String msg = "reloadImport event requires 'url' parameter";
             LOG.error("doImport: {}", msg);
-            send(importFailedEvent(msg, url, rescanExistingOnImport));
+            send(importFailedEvent(msg, url, rescanExistingOnImport), monitor);
         }
         
     }
@@ -511,12 +513,11 @@ public class Provisioner implements SpringServiceDaemon {
      *
      * @param url a {@link java.lang.String} object.
      */
-    public void doImport(final String url, final String rescanExisting) {
-        
+    public void doImport(final String url, final String rescanExisting, ProvisionMonitor monitor) {
         try {
             
             LOG.info("doImport: importing from url: {}, rescanExisting ? {}", url, rescanExisting);
-
+            monitor.beginImporting();
             final Resource resource;
 
             final URL u = new URL(url);
@@ -537,24 +538,22 @@ public class Provisioner implements SpringServiceDaemon {
                 resource = new UrlResource(url);
             }
 
-            m_stats = new TimeTrackingMonitor();
-            
-            send(importStartedEvent(resource, rescanExisting));
+            send(importStartedEvent(resource, rescanExisting), monitor);
     
-            final RequisitionImport ri = importModelFromResource(resource, rescanExisting, m_stats);
+            final RequisitionImport ri = importModelFromResource(resource, rescanExisting, monitor);
             String foreignSource = null;
             if (ri != null && ri.getRequisition() != null) {
                 foreignSource = ri.getRequisition().getForeignSource();
             }
-
-            LOG.info("Finished Importing: {}", m_stats);
+            monitor.finishImporting();
+            LOG.info("Finished Importing: {}", monitor);
     
-            send(importSuccessEvent(m_stats, url, rescanExisting, foreignSource));
+            send(importSuccessEvent(monitor, url, rescanExisting, foreignSource), monitor);
     
         } catch (final Throwable t) {
             final String msg = "Exception importing "+url;
             LOG.error("Exception importing {} using rescanExisting={}", url, rescanExisting, t);
-            send(importFailedEvent((msg+": "+t.getMessage()), url, rescanExisting));
+            send(importFailedEvent((msg+": "+t.getMessage()), url, rescanExisting), monitor);
         }
     }
 
@@ -895,15 +894,8 @@ public class Provisioner implements SpringServiceDaemon {
                          .replaceAll("(password=)[^;&]*(;&)?", "$1***$2");
         }
     }
-    
-    /**
-     * <p>getStats</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getStats() { return (m_stats == null ? "No Stats Availabile" : m_stats.toString()); }
 
-    private Event importSuccessEvent(final TimeTrackingMonitor stats, final String url, final String rescanExisting, final String foreignSource) {
+    private Event importSuccessEvent(final ProvisionMonitor stats, final String url, final String rescanExisting, final String foreignSource) {
     
         return new EventBuilder( EventConstants.IMPORT_SUCCESSFUL_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, stripCredentials(url) )
@@ -913,8 +905,10 @@ public class Provisioner implements SpringServiceDaemon {
             .getEvent();
     }
 
-    private void send(final Event event) {
+    private void send(final Event event, ProvisionMonitor monitor) {
+        monitor.beginSendingEvent(event);
         m_eventForwarder.sendNow(event);
+        monitor.finishSendingEvent(event);
     }
 
     private Event importFailedEvent(final String msg, final String url, final String rescanExisting) {

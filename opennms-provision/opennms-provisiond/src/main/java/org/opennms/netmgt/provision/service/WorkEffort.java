@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,63 +36,70 @@ package org.opennms.netmgt.provision.service;
  * @version $Id: $
  */
 public class WorkEffort {
-	
-	private String m_name;
-	private long m_totalTime;
-	private long m_sectionCount;
-	private ThreadLocal<WorkDuration> m_pendingSection = new ThreadLocal<>();
-	
-	/**
-	 * <p>Constructor for WorkEffort.</p>
-	 *
-	 * @param name a {@link java.lang.String} object.
-	 */
-	public WorkEffort(String name) {
-		m_name = name;
-	}
 
-	/**
-	 * <p>begin</p>
-	 */
-	public void begin() {
-		WorkDuration pending = new WorkDuration();
-		pending.start();
-		m_pendingSection.set(pending);
-	}
+    private String name;
+    private long totalTime;
+    private long sectionCount;
+    private ThreadLocal<WorkDuration> pendingSection = new ThreadLocal<>();
 
-	/**
-	 * <p>end</p>
-	 */
-	public void end() {
-		WorkDuration pending = m_pendingSection.get();
-		m_sectionCount++;
-		m_totalTime += pending.getLength();
-	}
-	
-	/**
-	 * <p>getTotalTime</p>
-	 *
-	 * @return a long.
-	 */
-	public long getTotalTime() {
-		return m_totalTime;
-	}
-	
-	/**
-	 * <p>toString</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	@Override
-	public String toString() {
-		final StringBuilder buf = new StringBuilder();
-		buf.append("Total ").append(m_name).append(": ");
-		buf.append((double)m_totalTime/(double)1000L).append(" thread-seconds");
-		if (m_sectionCount > 0) {
-			buf.append(" Avg ").append(m_name).append(": ");
-			buf.append((double)m_totalTime/(double)m_sectionCount).append(" ms per node");
-		}
-		return buf.toString();
-	}
+    /**
+     * <p>Constructor for WorkEffort.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
+    public WorkEffort(String name) {
+        this.name = name;
+    }
 
+    /**
+     * <p>begin</p>
+     */
+    public void begin() {
+        WorkDuration pending = new WorkDuration();
+        pending.start();
+        pendingSection.set(pending);
+    }
+
+    /**
+     * <p>end</p>
+     */
+    public void end() {
+        WorkDuration pending = pendingSection.get();
+        sectionCount++;
+        totalTime += pending.getLength();
+    }
+
+    /**
+     * <p>getTotalTime</p>
+     *
+     * @return a long.
+     */
+    public long getTotalTime() {
+        return totalTime;
+    }
+
+    public long getSectionCount() {
+        return sectionCount;
+    }
+
+    public double getAverage() {
+        return sectionCount > 0 ? (double) totalTime / (double) sectionCount : 0;
+    }
+
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Override
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+        buf.append("Total ").append(name).append(": ");
+        buf.append((double) totalTime / (double) 1000L).append(" thread-seconds");
+        if (sectionCount > 0) {
+            buf.append(" Avg ").append(name).append(": ");
+            buf.append(getAverage() / (double) 1000L).append(" ms per node");
+        }
+        return buf.toString();
+    }
 }

@@ -29,19 +29,14 @@
 package org.opennms.netmgt.provision.service;
 
 import java.text.ParseException;
-import java.util.Iterator;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
-import org.quartz.CronTrigger;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.TriggerKey;
+import org.quartz.*;
 import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.triggers.CronTriggerImpl;
@@ -52,6 +47,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.StringUtils;
+
+import static org.opennms.netmgt.provision.service.ImportJob.MONITOR;
 
 /**
  * Maintains the Provisioner's import schedule defined in provisiond-configuration.xml
@@ -93,7 +90,7 @@ public class ImportScheduler implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
-        
+
         try {
             getScheduler().setJobFactory(getImportJobFactory());
         } catch (SchedulerException e) {
@@ -103,6 +100,21 @@ public class ImportScheduler implements InitializingBean {
         GenericURLFactory.initialize();
 
         buildImportSchedule();
+    }
+
+    public Map<String, TimeTrackingMonitor> getMonitors() throws SchedulerException {
+        Map<String, TimeTrackingMonitor> monitors = new HashMap<>();
+        for (String groupName : m_scheduler.getJobGroupNames()) {
+
+            for (JobKey jobKey : m_scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
+
+                JobDetail detail = m_scheduler.getJobDetail(jobKey);
+                TimeTrackingMonitor monitor = (TimeTrackingMonitor) detail.getJobDataMap().get(MONITOR);
+
+                monitors.put(jobKey.getName(), monitor);
+            }
+        }
+        return monitors;
     }
     
     /**
@@ -230,7 +242,8 @@ public class ImportScheduler implements InitializingBean {
                     detail = new JobDetailImpl(def.getImportName().orElse(null), JOB_GROUP, ImportJob.class, false, false);
                     detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource().orElse(null));
                     detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, def.getRescanExisting());
-                    
+                    detail.getJobDataMap().put(ImportJob.MONITOR, new TimeTrackingMonitor());
+
                     trigger = new CronTriggerImpl(def.getImportName().orElse(null), JOB_GROUP, def.getCronSchedule().orElse(null));
                     trigger.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING);
                     getScheduler().scheduleJob(detail, trigger);

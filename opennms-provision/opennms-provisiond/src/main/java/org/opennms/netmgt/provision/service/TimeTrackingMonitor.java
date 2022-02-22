@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.provision.service;
 
-import java.util.List;
-
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * <p>TimeTrackingMonitor class.</p>
@@ -43,182 +46,272 @@ import org.springframework.core.io.Resource;
  * @version $Id: $
  */
 public class TimeTrackingMonitor implements ProvisionMonitor {
+    private final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
-	private WorkDuration m_importDuration = new WorkDuration("Importing");
-	private WorkDuration m_auditDuration = new WorkDuration("Auditing");
-	private WorkDuration m_loadingDuration = new WorkDuration("Loading");
-	private WorkDuration m_processingDuration = new WorkDuration("Processing");
-	private WorkDuration m_preprocessingDuration = new WorkDuration("Scanning");
-	private WorkDuration m_relateDuration = new WorkDuration("Relating");
-	private WorkEffort m_preprocessingEffort = new WorkEffort("Scan Effort");
-	private WorkEffort m_processingEffort = new WorkEffort("Write Effort");
-	private WorkEffort m_eventEffort = new WorkEffort("Event Sending Effort");
-	private int m_deleteCount;
-	private int m_insertCount;
-	private int m_updateCount;
-	private int m_eventCount;
+    private WorkDuration importDuration;
+    private WorkDuration auditDuration;
+    private WorkDuration loadingDuration;
+    private WorkDuration processingDuration;
+    private WorkDuration preprocessingDuration;
+    private WorkDuration relateDuration;
+    private WorkEffort scanningEffort;
+    private WorkEffort processingEffort;
+    private WorkEffort eventEffort;
+    private int eventCount;
+    private int nodeCount;
+    private Map<String, Date> currentNodes;
+    private Date startTime;
+    private Date endTime;
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginProcessingOps(int deleteCount, int updateCount, int insertCount) {
-	    m_deleteCount = deleteCount;
-	    m_updateCount = updateCount;
-	    m_insertCount = insertCount;
-		m_processingDuration.start();
-	}
 
-	/**
-	 * <p>finishProcessingOps</p>
-	 */
-        @Override
-	public void finishProcessingOps() {
-		m_processingDuration.end();
-	}
 
-	/**
-	 * <p>beginPreprocessingOps</p>
-	 */
-        @Override
-	public void beginPreprocessingOps() {
-		m_preprocessingDuration.start();
-	}
+    public TimeTrackingMonitor() {
+        reset();
+    }
 
-	/**
-	 * <p>finishPreprocessingOps</p>
-	 */
-        @Override
-	public void finishPreprocessingOps() {
-		m_preprocessingDuration.end();
-	}
+    public Date getStartTime() {
+        return startTime;
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginPreprocessing(ImportOperation oper) {
-		if (oper instanceof SaveOrUpdateOperation) {
-			m_preprocessingEffort.begin();
-		}
-	}
+    public Date getEndTime() {
+        return endTime;
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishPreprocessing(ImportOperation oper) {
-		if (oper instanceof SaveOrUpdateOperation) {
-			m_preprocessingEffort.end();
-		}
-	}
+    @Override
+    public void start() {
+        // make sure all old data is removed
+        reset();
+        startTime = new Date();
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginPersisting(ImportOperation oper) {
-		m_processingEffort.begin();
-		
-	}
+    @Override
+    public void end() {
+        endTime = new Date();
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishPersisting(ImportOperation oper) {
-		m_processingEffort.end();
-	}
+    public void reset() {
+        importDuration = new WorkDuration("Importing");
+        auditDuration = new WorkDuration("Auditing");
+        loadingDuration = new WorkDuration("Loading");
+        processingDuration = new WorkDuration("Processing");
+        preprocessingDuration = new WorkDuration("Scanning");
+        relateDuration = new WorkDuration("Relating");
+        scanningEffort = new WorkEffort("Scan Effort");
+        processingEffort = new WorkEffort("Write Effort");
+        eventEffort = new WorkEffort("Event Sending Effort");
+        eventCount = 0;
+        nodeCount = 0;
+        currentNodes = new HashMap<>();
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginSendingEvents(ImportOperation oper, List<Event> events) {
-		if (events != null) m_eventCount += events.size();
-		m_eventEffort.begin();
-	}
+    public Map<String, Date> getCurrentNodes() {
+        return currentNodes;
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishSendingEvents(ImportOperation oper, List<Event> events) {
-		m_eventEffort.end();
-	}
+    public WorkDuration getImportDuration() {
+        return importDuration;
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginLoadingResource(Resource resource) {
-		m_loadingDuration.setName("Loading Resource: "+resource);
-		m_loadingDuration.start();
-	}
+    public WorkDuration getAuditDuration() {
+        return auditDuration;
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishLoadingResource(Resource resource) {
-		m_loadingDuration.end();
-	}
+    public WorkDuration getLoadingDuration() {
+        return loadingDuration;
+    }
 
-	/**
-	 * <p>beginImporting</p>
-	 */
-        @Override
-	public void beginImporting() {
-		m_importDuration.start();
-	}
+    public WorkDuration getProcessingDuration() {
+        return processingDuration;
+    }
 
-	/**
-	 * <p>finishImporting</p>
-	 */
-        @Override
-	public void finishImporting() {
-		m_importDuration.end();
-	}
+    public WorkDuration getPreprocessingDuration() {
+        return preprocessingDuration;
+    }
 
-	/**
-	 * <p>beginAuditNodes</p>
-	 */
-        @Override
-	public void beginAuditNodes() {
-		m_auditDuration.start();
-	}
+    public WorkDuration getRelateDuration() {
+        return relateDuration;
+    }
 
-	/**
-	 * <p>finishAuditNodes</p>
-	 */
-        @Override
-	public void finishAuditNodes() {
-		m_auditDuration.end();
-	}
-	
-	/**
-	 * <p>beginRelateNodes</p>
-	 */
-        @Override
-	public void beginRelateNodes() {
-		m_relateDuration.start();
-	}
+    public WorkEffort getScanningEffort() {
+        return scanningEffort;
+    }
 
-	/**
-	 * <p>finishRelateNodes</p>
-	 */
-        @Override
-	public void finishRelateNodes() {
-		m_relateDuration.end();
-	}
-	
-	/**
-	 * <p>toString</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-        @Override
-	public String toString() {
-		final StringBuilder stats = new StringBuilder();
-		stats.append("Deletes: ").append(m_deleteCount).append(", ");
-		stats.append("Updates: ").append(m_updateCount).append(", ");
-		stats.append("Inserts: ").append(m_insertCount).append("\n");
-		stats.append(m_importDuration).append(", ");
-		stats.append(m_loadingDuration).append(", ");
-		stats.append(m_auditDuration).append('\n');
-		stats.append(m_preprocessingDuration).append(", ");
-		stats.append(m_processingDuration).append(", ");
-		stats.append(m_relateDuration).append("\n");
-		stats.append(m_preprocessingEffort).append(", ");
-		stats.append(m_processingEffort).append(", ");
-		stats.append(m_eventEffort);
-		if (m_eventCount > 0) {
-			stats.append(", Avg ").append((double)m_eventEffort.getTotalTime()/(double)m_eventCount).append(" ms per event");
-		}
-		
-		return stats.toString();
-	}
+    public WorkEffort getProcessingEffort() {
+        return processingEffort;
+    }
+
+    public WorkEffort getEventEffort() {
+        return eventEffort;
+    }
+
+    public int getEventCount() {
+        return eventCount;
+    }
+
+    @Override
+    public int getNodeCount() {
+        return nodeCount;
+    }
+
+    /**
+     * <p>beginPreprocessingOps</p>
+     */
+    @Override
+    public void beginPreprocessingOps() {
+        preprocessingDuration.start();
+    }
+
+    /**
+     * <p>finishPreprocessingOps</p>
+     */
+    @Override
+    public void finishPreprocessingOps() {
+        preprocessingDuration.end();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginScanning(ImportOperation oper) {
+        if (oper instanceof SaveOrUpdateOperation) {
+            currentNodes.put(oper.toString(), new Date());
+        }
+        scanningEffort.begin();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finishScanning(ImportOperation oper) {
+        scanningEffort.end();
+        if (oper instanceof SaveOrUpdateOperation) {
+            currentNodes.remove(oper.toString());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginPersisting(ImportOperation oper) {
+        processingEffort.begin();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finishPersisting(ImportOperation oper) {
+        processingEffort.end();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginSendingEvent(Event event) {
+        if (event != null) {
+            eventCount++;
+        }
+        eventEffort.begin();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finishSendingEvent(Event event) {
+        eventEffort.end();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginLoadingResource(Resource resource) {
+        loadingDuration.setName("Loading Resource: " + resource);
+        loadingDuration.start();
+    }
+
+    @Override
+    public void finishLoadingResource(Resource resource, int nodeCount) {
+        loadingDuration.end();
+        this.nodeCount = nodeCount;
+    }
+
+    /**
+     * <p>beginImporting</p>
+     */
+    @Override
+    public void beginImporting() {
+        importDuration.start();
+    }
+
+    /**
+     * <p>finishImporting</p>
+     */
+    @Override
+    public void finishImporting() {
+        importDuration.end();
+    }
+
+    /**
+     * <p>beginAuditNodes</p>
+     */
+    @Override
+    public void beginAuditNodes() {
+        auditDuration.start();
+    }
+
+    /**
+     * <p>finishAuditNodes</p>
+     */
+    @Override
+    public void finishAuditNodes() {
+        auditDuration.end();
+    }
+
+    /**
+     * <p>beginRelateNodes</p>
+     */
+    @Override
+    public void beginRelateNodes() {
+        relateDuration.start();
+    }
+
+    /**
+     * <p>finishRelateNodes</p>
+     */
+    @Override
+    public void finishRelateNodes() {
+        relateDuration.end();
+    }
+
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Override
+    public String toString() {
+        final StringBuilder stats = new StringBuilder();
+        stats.append("NodeCount: ").append(nodeCount).append("\n");
+        stats.append(importDuration).append(", ");
+        stats.append(loadingDuration).append(", ");
+        stats.append(auditDuration).append('\n');
+        stats.append(preprocessingDuration).append(", ");
+        stats.append(processingDuration).append(", ");
+        stats.append(relateDuration).append("\n");
+        stats.append(scanningEffort).append(", ");
+        stats.append(processingEffort).append(", ");
+        stats.append(eventEffort);
+        if (eventCount > 0) {
+            stats.append(", Avg ").append((double) eventEffort.getTotalTime() / (double) eventCount).append(" ms per event");
+        }
+
+        return stats.toString();
+    }
 
 }

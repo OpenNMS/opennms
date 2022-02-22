@@ -35,20 +35,11 @@ import org.springframework.core.io.Resource;
 
 public interface ProvisionMonitor {
 
-	/**
-	 * <p>beginProcessingOps</p>
-	 *
-	 * @param deleteCount a int.
-	 * @param updateCount a int.
-	 * @param insertCount a int.
-	 */
-	void beginProcessingOps(int deleteCount, int updateCount, int insertCount);
+	void start();
 
-	/**
-	 * <p>finishProcessingOps</p>
-	 */
-	void finishProcessingOps();
+	void end();
 
+	int getNodeCount();
 	/**
 	 * <p>beginPreprocessingOps</p>
 	 */
@@ -64,14 +55,14 @@ public interface ProvisionMonitor {
 	 *
 	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
 	 */
-	void beginPreprocessing(ImportOperation oper);
+	void beginScanning(ImportOperation oper);
 
 	/**
 	 * <p>finishPreprocessing</p>
 	 *
 	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
 	 */
-	void finishPreprocessing(ImportOperation oper);
+	void finishScanning(ImportOperation oper);
 
 	/**
 	 * <p>beginPersisting</p>
@@ -90,18 +81,16 @@ public interface ProvisionMonitor {
 	/**
 	 * <p>beginSendingEvents</p>
 	 *
-	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
-	 * @param events a {@link java.util.List} object.
+	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
 	 */
-	void beginSendingEvents(ImportOperation oper, List<Event> events);
+	void beginSendingEvent(Event event);
 
 	/**
 	 * <p>finishSendingEvents</p>
 	 *
-	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
-	 * @param events a {@link java.util.List} object.
+	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
 	 */
-	void finishSendingEvents(ImportOperation oper, List<Event> events);
+	void finishSendingEvent(Event event);
 
 	/**
 	 * <p>beginLoadingResource</p>
@@ -115,7 +104,7 @@ public interface ProvisionMonitor {
 	 *
 	 * @param resource a {@link org.springframework.core.io.Resource} object.
 	 */
-	void finishLoadingResource(Resource resource);
+	void finishLoadingResource(Resource resource, int nodeCount);
 
 	/**
 	 * <p>beginImporting</p>
@@ -146,5 +135,4 @@ public interface ProvisionMonitor {
 	 * <p>finishRelateNodes</p>
 	 */
 	void finishRelateNodes();
-
 }
