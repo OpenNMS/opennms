@@ -45,14 +45,14 @@ public class UIExtensionRegistryImpl implements UIExtensionRegistry {
     public synchronized void onBind(UIExtension  extension, Map properties) {
         LOG.debug("Extension registry bind called with {}: {}", extension, properties);
         if(extension != null) {
-            extensionMap.put(extension.getExtensionID(), extension);
+            extensionMap.put(extension.getExtensionId(), extension);
         }
     }
 
     public synchronized void onUnbind(UIExtension extension, Map properties) {
         LOG.debug("Extension registry unBind called with {}: {}", extension, properties);
         if(extension != null) {
-            extensionMap.remove(extension.getExtensionID());
+            extensionMap.remove(extension.getExtensionId());
         }
     }
 

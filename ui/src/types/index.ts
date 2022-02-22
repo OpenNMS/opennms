@@ -449,7 +449,7 @@ export interface Expression {
 }
 
 export interface Plugin {
-  extensionID: string
+  extensionId: string
   menuEntry: string
   moduleFileName: string
   resourceRootPath: string

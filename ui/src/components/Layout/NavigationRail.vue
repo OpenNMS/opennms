@@ -43,9 +43,9 @@
       <!-- loop plugin menu items -->
       <FeatherRailItem
         v-for="plugin of plugins"
-        :key="plugin.extensionID"
-        :class="{ selected: isSelected(`/plugins/${plugin.extensionID}/${plugin.resourceRootPath}/${plugin.moduleFileName}`) }"
-        :href="`#/plugins/${plugin.extensionID}/${plugin.resourceRootPath}/${plugin.moduleFileName}`"
+        :key="plugin.extensionId"
+        :class="{ selected: isSelected(`/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`) }"
+        :href="`#/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`"
         :title="plugin.menuEntry"
         :icon="UpdateUtilities"
       />
