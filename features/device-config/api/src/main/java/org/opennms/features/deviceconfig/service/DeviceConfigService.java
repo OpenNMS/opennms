@@ -29,6 +29,7 @@
 package org.opennms.features.deviceconfig.service;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 public interface DeviceConfigService {
 
@@ -41,4 +42,16 @@ public interface DeviceConfigService {
      * @throws IOException
      */
     public void triggerConfigBackup(String ipAddress, String location, String configType) throws IOException;
+
+    /**
+     * Get device config for the given ipAddress at given location.
+     *
+     * @param ipAddress  specific IpAddress for which we need to fetch device config.
+     * @param location   specific minion location at which we need to fetch device config.
+     * @param configType configType whether it is Default or Running.
+     * @param timeout    timeout in milliseconds for retrieving device config
+     * @throws IOException
+     * @return
+     */
+    public CompletableFuture<byte[]> getDeviceConfig(String ipAddress, String location, String configType, int timeout) throws IOException;
 }

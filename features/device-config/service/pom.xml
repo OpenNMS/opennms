@@ -31,6 +31,11 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>org.opennms.features.device-config</groupId>
+            <artifactId>org.opennms.features.device-config.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.poller</groupId>
             <artifactId>org.opennms.features.poller.api</artifactId>
             <version>${project.version}</version>

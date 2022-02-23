@@ -698,6 +698,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.api</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
       <artifactId>org.opennms.features.device-config.rest</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
