@@ -174,6 +174,7 @@ const hostHint = computed(() => {
 
 /**
  * Focus the first field in the drawer when opened.
+ * 
  */
 watch(formActive, () => {
   if (formActive.value) {
