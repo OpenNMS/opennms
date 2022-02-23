@@ -257,11 +257,11 @@ const convertURLToLocal = (urlIn: string) => {
       localConfig = findDNS(localConfig, urlIn)
       break
     case RequisitionTypes.HTTP:
-      localConfig.host = url[2]
+      localConfig.host = findHost(url)
       localConfig.urlPath = urlPath
       break
     case RequisitionTypes.HTTPS:
-      localConfig.host = url[2]
+      localConfig.host = findHost(url)
       localConfig.urlPath = urlPath
       break
   }
