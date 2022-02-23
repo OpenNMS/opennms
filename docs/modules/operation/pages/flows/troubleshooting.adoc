@@ -29,7 +29,7 @@ You must know your endpoint address and API key.
 
 Run the following curl command:
 
-[source, curl]
+[source, console]
 ----
 curl "https://Your Endpoint-es.logit.io/_cat/indices?v&apikey=Your-API-Key"
 ----
