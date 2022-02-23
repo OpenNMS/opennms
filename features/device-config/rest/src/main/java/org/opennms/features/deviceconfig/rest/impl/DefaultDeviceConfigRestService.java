@@ -63,7 +63,12 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private static final String REQUISITION_CONTEXT = "requisition";
     private static final String SCHEDULE_METADATA_KEY = "schedule";
 
-    private static final Set<String> VALID_ORDER_BY_KEYS = Set.of("lastupdated", "devicename", "createdtime", "ipaddress");
+    private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
+        "lastupdated", "lastUpdated",
+        "devicename", "ipInterface.node.label",
+        "createdtime", "createdTime",
+        "ipaddress", "ipInterface.ipAddr"
+    );
 
     private final DeviceConfigDao deviceConfigDao;
     private final MonitoredServiceDao monitoredServiceDao;
@@ -245,18 +250,8 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         // Sorting
         orderBy = orderBy != null ? orderBy.toLowerCase(Locale.ROOT) : null;
 
-        if (!Strings.isNullOrEmpty(orderBy) && VALID_ORDER_BY_KEYS.contains(orderBy)) {
-            String orderByToUse = orderBy;
-
-            if (orderBy.equals("devicename")) {
-                orderByToUse = "ipInterface.node.label";
-            } else if (orderBy.equals("ipaddress")) {
-                orderByToUse = "ipInterface.ipAddr";
-            } else if (orderBy.equals("lastupdated")) {
-                orderByToUse = "lastUpdated";
-            } else if (orderBy.equals("createdtime")) {
-                orderByToUse = "createdTime";
-            }
+        if (!Strings.isNullOrEmpty(orderBy) && ORDERBY_QUERY_PROPERTY_MAP.containsKey(orderBy)) {
+            String orderByToUse = ORDERBY_QUERY_PROPERTY_MAP.get(orderBy);
 
             boolean isOrderAscending = Strings.isNullOrEmpty(order) || !"desc".equals(order);
             criteriaBuilder.orderBy(orderByToUse, isOrderAscending);
