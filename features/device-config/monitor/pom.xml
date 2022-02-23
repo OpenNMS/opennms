@@ -37,17 +37,13 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.device-config</groupId>
-            <artifactId>org.opennms.features.device-config.tftp</artifactId>
+            <artifactId>org.opennms.features.device-config.retrieval</artifactId>
             <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.spring</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.device-config</groupId>
-            <artifactId>org.opennms.features.device-config.ssh-scripting</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -73,11 +69,5 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
-      <dependency>
-        <groupId>org.opennms.features.device-config</groupId>
-        <artifactId>org.opennms.features.device-config.retrieval</artifactId>
-        <version>${project.version}</version>
-        <scope>compile</scope>
-      </dependency>
     </dependencies>
 </project>
