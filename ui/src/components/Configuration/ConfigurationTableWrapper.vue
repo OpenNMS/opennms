@@ -28,6 +28,7 @@
       :addAdvancedOption="addAdvancedOption"
       :deleteAdvancedOption="deleteAdvancedOption"
       :saveCurrentState="saveCurrentState"
+      :advancedKeyUpdate="advancedKeyUpdate"
       :helpState="helpState"
     />
     <ConfigurationDoubleCheckModal
@@ -81,6 +82,7 @@ const doubleCheck = reactive({ active: false, index: -1, title: '' })
 const {
   activeIndex,
   addAdvancedOption,
+  advancedKeyUpdate,
   deleteAdvancedOption,
   selectedProvisionDItem,
   setEditingStateTo,
@@ -171,7 +173,7 @@ const saveCurrentState = async () => {
   selectedProvisionDItem.errors = ConfigurationHelper.createBlankErrors()
 
   // Validate the local state.
-  const validatedItem = ConfigurationHelper.validateLocalItem(selectedProvisionDItem?.config)
+  const validatedItem = ConfigurationHelper.validateLocalItem(selectedProvisionDItem?.config, provisionDList.value,activeIndex.index)
 
   // If we're valid.
   if (!validatedItem.hasErrors) {

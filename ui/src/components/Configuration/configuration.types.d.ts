@@ -26,6 +26,7 @@ export type ConfigurationPageVals = {
 export type AdvancedOption = {
   key: { _text: string; name: string }
   value: string
+  hint: string | undefined
 }
 
 export type AdvancedKey = {
@@ -37,6 +38,10 @@ export type AdvancedKey = {
 export interface LocalConfiguration extends LocalSubConfiguration {
   name: string
   occurance: { name: string; id: number }
+  occuranceWeek: { name: string; id: number }
+  occuranceDay: { name: string; id: number }
+  occuranceAdvanced: string
+  advancedCrontab: boolean
   time: string
   rescanBehavior: number
   advancedOptions: Array<AdvancedOption>
@@ -53,6 +58,10 @@ export type LocalErrors = {
   zone: string
   foreignSource: string
   occurance: string
+  occuranceWeek: string
+  occuranceAdvanced: string
+  occuranceDay: string
+  urlPath: string
 }
 
 export type LocalConfigurationWrapper = {
@@ -69,4 +78,5 @@ export type LocalSubConfiguration = {
   foreignSource: string
   subType: { id: number, name: string, value: string },
   type: { name: string, id: number }
+  urlPath: string
 }

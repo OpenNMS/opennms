@@ -38,6 +38,7 @@
     "@featherds/utils": "0.9.4",
     "@vueuse/core": "^7.5.3",
     "axios": "^0.25.0",
+    "cronstrue":"1.125.0",
     "chart.js": "^3.7.0",
     "chartjs-plugin-zoom": "^1.2.0",
     "d3": "^7.3.0",
@@ -78,6 +79,6 @@
     "uvu": "^0.5.3",
     "vite": "^2.7.13",
     "vue-eslint-parser": "^8.0.1",
-    "vue-tsc": "^0.31.1"
+    "vue-tsc": "0.31.4"
   }
 }

@@ -43,6 +43,7 @@
           :subType="props.item.config.subType.name"
           :addAdvancedOption="props.addAdvancedOption"
           :deleteAdvancedOption="props.deleteAdvancedOption"
+          :advancedKeyUpdate="props.advancedKeyUpdate"
         />
         <ConfigurationGeneratedUrl :item="props.item.config" />
         <div class="spinner-button">
@@ -81,6 +82,7 @@ const props = defineProps({
   item: { type: Object as PropType<LocalConfigurationWrapper>, required: true },
   advancedActive: Boolean,
   addAdvancedOption: { type: Function, required: true },
+  advancedKeyUpdate: { type: Function, required: true },
   deleteAdvancedOption: { type: Function, required: true },
   saveCurrentState: Function,
   edit: Boolean,
