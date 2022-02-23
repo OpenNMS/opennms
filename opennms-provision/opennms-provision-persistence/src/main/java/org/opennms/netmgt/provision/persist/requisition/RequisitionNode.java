@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -543,11 +543,7 @@ public class RequisitionNode {
         }
         if (m_interfaces != null) {
             for (final RequisitionInterface iface : m_interfaces) {
-                iface.validate();
-            }
-            // there can be only one primary interface per node
-            if(m_interfaces.stream().filter(iface -> PrimaryType.PRIMARY == iface.m_snmpPrimary).count() > 1) {
-                throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains multiple primary interfaces. Maximum one is allowed.");
+                iface.validate(this);
             }
         }
         if (m_categories != null) {
