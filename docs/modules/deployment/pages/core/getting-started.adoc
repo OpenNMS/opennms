@@ -68,6 +68,8 @@ endif::[]
 
 [[install-core-instance]]
 == Install the Core instance
+For security reasons, {page-component-title} is designed to run within an organization's protected intranet.
+Do not expose the web console and login pages directly to the Internet without appropriate isolation controls (for example, a VPN with multi-factor authentication).
 
 [{tabs}]
 ====
