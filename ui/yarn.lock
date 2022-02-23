@@ -2988,10 +2988,10 @@ uvu@^0.5.3:
     kleur "^4.0.3"
     sade "^1.7.3"
 
-v-network-graph@^0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/v-network-graph/-/v-network-graph-0.4.2.tgz#47708f923f3c1b8bee7cb08b12a24aecb973e4c8"
-  integrity sha512-/UL9nq6C2QtYrmteY4vH48Rd4L6t8uiO4hLyUzHHrs2zy8DvQ7kyeyK2RDjeBYlvusyPZX9Wz1W8vXU6POEPQA==
+v-network-graph@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/v-network-graph/-/v-network-graph-0.5.0.tgz#f82ed75dce0d22e8f05e3def1768be6b8dfbaafc"
+  integrity sha512-kRonTwXnejtozRbyeCrm9BLWvv++2IOxqg0OTjDjTW65qPRpVEzSu/K0+e5BPqNN0WY49sc/zDTunBd3V0uueQ==
   dependencies:
     "@dash14/svg-pan-zoom" "^3.6.5"
     mitt "^3.0.0"

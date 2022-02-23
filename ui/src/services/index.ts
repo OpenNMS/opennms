@@ -9,12 +9,7 @@ import {
 
 import { getAlarms, modifyAlarm } from './alarmService'
 
-import {
-  getGraphDefinitionsByResourceId,
-  getDefinitionData,
-  getGraphMetrics,
-  getPreFabGraphs
-} from './graphService'
+import { getGraphDefinitionsByResourceId, getDefinitionData, getGraphMetrics, getPreFabGraphs } from './graphService'
 
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
 import { getLogs, getLog } from './logsService'

@@ -50,7 +50,7 @@
     "sass": "^1.49.0",
     "sass-loader": "^12.3.0",
     "splitpanes": "^3.0.6",
-    "v-network-graph": "^0.4.2",
+    "v-network-graph": "^0.5.0",
     "vite-svg-loader": "^3.1.2",
     "vue": "^3.2.29",
     "vue-router": "4",

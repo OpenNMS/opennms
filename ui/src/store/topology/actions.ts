@@ -1,6 +1,7 @@
 import API from '@/services'
 import { QueryParameters, VuexContext } from '@/types'
-import { NetworkGraphEdge, NetworkGraphVertex, SZLRequest, VerticesAndEdges } from '@/types/topology'
+import { SZLRequest, VerticesAndEdges } from '@/types/topology'
+import { Edges, Nodes } from 'v-network-graph'
 import { State } from './state'
 
 interface ContextWithState extends VuexContext {
@@ -8,15 +9,15 @@ interface ContextWithState extends VuexContext {
 }
 
 const parseVerticesAndEdges = (resp: VerticesAndEdges, context: VuexContext) => {
-  const edges: Record<string, NetworkGraphEdge> = {}
-  const vertices: Record<string, NetworkGraphVertex> = {}
+  const edges: Edges = {}
+  const vertices: Nodes = {}
 
   for (const edge of resp.edges) {
     edges[edge.label] = { source: edge.source.id, target: edge.target.id }
   }
 
   for (const vertex of resp.vertices) {
-    vertices[vertex.nodeID] = { name: vertex.label }
+    vertices[vertex.id] = { name: vertex.label }
   }
 
   context.commit('SAVE_NODE_EDGES', edges)

@@ -30,13 +30,9 @@ export interface ResponseVertex {
 }
 
 // For graph component
-export interface NetworkGraphEdge {
-  source: string,
-  target: string
-}
-
-export interface NetworkGraphVertex {
-  name: string
+export interface NodePoint {
+  x: number
+  y: number
 }
 
 export interface SZLRequest {

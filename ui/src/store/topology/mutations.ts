@@ -1,11 +1,11 @@
-import { NetworkGraphEdge, NetworkGraphVertex } from '@/types/topology'
+import { Edges, Nodes } from 'v-network-graph'
 import { State } from './state'
 
-const SAVE_NODE_EDGES = (state: State, edges: Record<string, NetworkGraphEdge>) => {
+const SAVE_NODE_EDGES = (state: State, edges: Edges) => {
   state.edges = edges
 }
 
-const SAVE_NODE_VERTICIES = (state: State, verticies: Record<string, NetworkGraphVertex>) => {
+const SAVE_NODE_VERTICIES = (state: State, verticies: Nodes) => {
   state.verticies = verticies
 }
 

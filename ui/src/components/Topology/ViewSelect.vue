@@ -20,6 +20,7 @@ const store = useStore()
 const options = [
   { id: 'map', option: 'Map Layout' },
   { id: 'd3', option: 'D3 Layout' },
+  { id: 'circle', option: 'Circle Layout' },
 ]
 const selectedView = ref(options[0])
 

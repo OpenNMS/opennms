@@ -1,10 +1,5 @@
 import { rest } from './axiosInstances'
-import {
-  ResourceDefinitionsApiResponse,
-  PreFabGraph,
-  GraphMetricsPayload,
-  GraphMetricsResponse
-} from '@/types'
+import { ResourceDefinitionsApiResponse, PreFabGraph, GraphMetricsPayload, GraphMetricsResponse } from '@/types'
 
 const endpoint = '/graphs'
 
