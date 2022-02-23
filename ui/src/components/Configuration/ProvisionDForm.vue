@@ -20,7 +20,7 @@
                 :modelValue="config.type"
                 @update:modelValue="(val: {name:string}) => {
                     /**
-                     * The following two lines are related to the hacks to get the Hint Text
+                     * The following two lines are related to getting the Hint Text
                      * to update properly in the FeatherInput component. Currently if you update the Hint Text
                      * after the initial render, FeatherInput does not react to the untracked attribute.
                      * We could forcibly mount + unmount the component as an alternative which would also render

@@ -473,7 +473,7 @@ const findSubType = (url: Array<string>) => {
 }
 
 /**
- * This is a hack to workaround a shortcoming in FeatherInput
+ * This is a workaround to a shortcoming in FeatherInput
  * Attributes are not tracked reactively and 
  * therefore do not update after the initial render.
  */
