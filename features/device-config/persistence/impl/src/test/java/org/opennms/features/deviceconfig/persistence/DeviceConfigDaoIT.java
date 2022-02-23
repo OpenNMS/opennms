@@ -51,6 +51,7 @@ import javax.sql.DataSource;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -70,7 +71,6 @@ import static java.time.temporal.ChronoUnit.HOURS;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
 public class DeviceConfigDaoIT {
-
     @Autowired
     private DataSource dataSource;
 
@@ -90,66 +90,68 @@ public class DeviceConfigDaoIT {
     @Test
     @Transactional
     public void testPersistenceOfDeviceConfig() {
+        Date currentDate = new Date();
+
         DeviceConfig deviceConfig = new DeviceConfig();
         deviceConfig.setIpInterface(ipInterface);
         deviceConfig.setConfig(UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8));
         deviceConfig.setEncoding("ASCII");
-        deviceConfig.setCreatedTime(new Date());
+        deviceConfig.setLastUpdated(currentDate);
+        deviceConfig.setCreatedTime(currentDate);
+        deviceConfig.setLastSucceeded(currentDate);
         deviceConfig.setConfigType(ConfigType.Default);
-        deviceConfig.setLastUpdated(new Date());
         deviceConfigDao.saveOrUpdate(deviceConfig);
+
         List<DeviceConfig> configs = deviceConfigDao.findAll();
         Assert.assertThat(configs, Matchers.not(Matchers.empty()));
+
         DeviceConfig retrieved = configs.get(0);
         Assert.assertNotNull(retrieved);
         Assert.assertEquals(ipInterface, retrieved.getIpInterface());
         Assert.assertEquals(deviceConfig.getConfig(), retrieved.getConfig());
-    }
-
-    private OnmsIpInterface populateIpInterfaceAndGet() {
-        NetworkBuilder builder = new NetworkBuilder();
-        builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType(OnmsNode.NodeType.ACTIVE);
-        builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P");
-        nodeDao.saveOrUpdate(builder.getCurrentNode());
-        Assert.assertThat(builder.getCurrentNode().getIpInterfaces(), Matchers.hasSize(1));
-        Set<OnmsIpInterface> ipInterfaces = builder.getCurrentNode().getIpInterfaces();
-        OnmsIpInterface ipInterface = ipInterfaces.iterator().next();
-        Assert.assertNotNull(ipInterface);
-        return ipInterface;
+        Assert.assertEquals(currentDate, deviceConfig.getCreatedTime());
+        Assert.assertEquals(currentDate, deviceConfig.getLastUpdated());
+        Assert.assertEquals(currentDate, deviceConfig.getLastSucceeded());
+        Assert.assertNull(deviceConfig.getLastFailed());
     }
 
     @Test
     public void testFetchDeviceConfigSortedByDate() {
-        int count = 10;
+        final int count = 10;
         populateDeviceConfigs(count);
+
         List<DeviceConfig> deviceConfigList = deviceConfigDao.findAll();
         Assert.assertEquals(count, deviceConfigList.size());
         deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, ConfigType.Default);
         Assert.assertEquals(count, deviceConfigList.size());
         DeviceConfig deviceConfig = deviceConfigList.get(0);
         Assert.assertNotNull(deviceConfig);
-        // Take middle element and update it's created time.
+
+        // Take middle element and update its created time.
         // This is not the way we should update versions of the latest. This is just for the test.
         DeviceConfig middleElement = deviceConfigList.get((count / 2) - 1);
         middleElement.setLastUpdated(Date.from(Instant.now().plus(1, HOURS)));
         deviceConfigDao.saveOrUpdate(middleElement);
         deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, ConfigType.Default);
+
         DeviceConfig retrievedMiddleElement = deviceConfigList.get(0);
         Optional<DeviceConfig> latestElementOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+
         Assert.assertTrue(latestElementOptional.isPresent());
         DeviceConfig latestConfig = latestElementOptional.get();
         Assert.assertArrayEquals(retrievedMiddleElement.getConfig(), latestConfig.getConfig());
+
         // Populate failed retrieval.
         populateFailedRetrievalDeviceConfig();
         Optional<DeviceConfig> elementWithFailedConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
         Assert.assertTrue(elementWithFailedConfig.isPresent());
-        DeviceConfig retrievedConfig = elementWithFailedConfig.get();
+
         // Verify that last failed got updated and it is same as last updated.
+        DeviceConfig retrievedConfig = elementWithFailedConfig.get();
         Assert.assertEquals(retrievedConfig.getLastUpdated(), retrievedConfig.getLastFailed());
     }
 
     private void populateDeviceConfigs(int count) {
-
         for (int i = 0; i < count; i++) {
             DeviceConfig deviceConfig = new DeviceConfig();
             deviceConfig.setIpInterface(ipInterface);
@@ -163,7 +165,6 @@ public class DeviceConfigDaoIT {
     }
 
     private void populateFailedRetrievalDeviceConfig() {
-
         DeviceConfig deviceConfig = new DeviceConfig();
         deviceConfig.setIpInterface(ipInterface);
         deviceConfig.setEncoding(Charset.defaultCharset().name());
@@ -174,4 +175,18 @@ public class DeviceConfigDaoIT {
         deviceConfigDao.saveOrUpdate(deviceConfig);
     }
 
+    private OnmsIpInterface populateIpInterfaceAndGet() {
+        NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType(OnmsNode.NodeType.ACTIVE);
+        builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P");
+
+        nodeDao.saveOrUpdate(builder.getCurrentNode());
+
+        Assert.assertThat(builder.getCurrentNode().getIpInterfaces(), Matchers.hasSize(1));
+        Set<OnmsIpInterface> ipInterfaces = builder.getCurrentNode().getIpInterfaces();
+        OnmsIpInterface ipInterface = ipInterfaces.iterator().next();
+        Assert.assertNotNull(ipInterface);
+
+        return ipInterface;
+    }
 }

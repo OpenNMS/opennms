@@ -61,6 +61,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
                 findObjects(DeviceConfig.class,
                         "from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? " +
                                 "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), configType);
+
         if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
             return Optional.of(deviceConfigs.get(0));
         }
@@ -135,6 +136,4 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         saveOrUpdate(deviceConfig);
         LOG.warn("Persisted device config backup failure - ipInterface: {}; type: {}; reason: {}", ipInterface, configType, reason);
     }
-
-
 }

@@ -35,8 +35,6 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -76,6 +74,9 @@ public class DeviceConfig implements Serializable {
 
     @Column(name = "config_type", nullable = false)
     private String configType;
+
+    @Column(name = "filename")
+    private String fileName;
 
     @Column(name = "failure_reason")
     private String failureReason;
@@ -140,9 +141,13 @@ public class DeviceConfig implements Serializable {
         return configType;
     }
 
+    public String getFileName() { return fileName; }
+
     public void setConfigType(String configType) {
         this.configType = configType;
     }
+
+    public void setFileName(String fileName) { this.fileName = fileName; }
 
     public String getFailureReason() {
         return failureReason;
@@ -179,14 +184,14 @@ public class DeviceConfig implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DeviceConfig)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         DeviceConfig that = (DeviceConfig) o;
-        return ipInterface.equals(that.ipInterface) && Arrays.equals(config, that.config) && encoding.equals(that.encoding) && configType == that.configType && Objects.equals(failureReason, that.failureReason) && Objects.equals(createdTime, that.createdTime) && lastUpdated.equals(that.lastUpdated) && Objects.equals(lastFailed, that.lastFailed) && Objects.equals(lastSucceeded, that.lastSucceeded);
+        return Objects.equals(createdTime, that.createdTime) && Objects.equals(lastUpdated, that.lastUpdated) && Objects.equals(lastFailed, that.lastFailed) && Objects.equals(lastSucceeded, that.lastSucceeded) && Objects.equals(encoding, that.encoding) && Objects.equals(configType, that.configType) && Objects.equals(fileName, that.fileName) && Objects.equals(failureReason, that.failureReason) && Objects.equals(ipInterface, that.ipInterface) && Arrays.equals(config, that.config);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(ipInterface, encoding, configType, failureReason, createdTime, lastUpdated, lastFailed, lastSucceeded);
+        int result = Objects.hash(ipInterface, encoding, configType, fileName, failureReason, createdTime, lastUpdated, lastFailed, lastSucceeded);
         result = 31 * result + Arrays.hashCode(config);
         return result;
     }

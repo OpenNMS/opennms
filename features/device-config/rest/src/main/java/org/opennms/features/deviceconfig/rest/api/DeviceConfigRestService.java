@@ -31,6 +31,7 @@ package org.opennms.features.deviceconfig.rest.api;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -40,32 +41,39 @@ import javax.ws.rs.core.Response;
 
 @Path("/device-config")
 public interface DeviceConfigRestService {
+    public static final String DEVICE_CONFIG_SERVICE_PREFIX = "DeviceConfig";
 
-    // paging, filter by ipaddressId, created time, device type
-    // order by created time (asc, desc)
+    // paging, filter by ipaddressId, last updated time, config created time, last succeeded, last failed, config type
+    // order by last updated time (asc, desc)
 
     /**
-     * Gets a list of device configs.
+     * Gets a list of device configs along with backup schedule information.
      * @param limit used for paging; defaults to 10
      * @param offset used for paging; defaults to 0
-     * @param orderBy used for paging; defaults to "version"
+     * @param orderBy used for paging; defaults to "lastUpdated"
      * @param order used for paging; defaults to "desc"
+     * @param deviceName filter results by device name
+     * @param ipAddress filter results by device IP address
      * @param ipInterfaceId database id of OnmsIpInterface instance
-     * @param createdAfter epoche millis
-     * @param createdBefore epoche millis
-     * @return
+     * @param configType Configuration type, 'default' or 'running'
+     * @param createdAfter If set, only return items with saved backup after this date in epoch millis
+     * @param createdBefore If set, only return items with saved backup before this date in epoch millis
+     * @return Json response containing a list of device configs in the
+     *      shape of {@link org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO }
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     Response getDeviceConfigs(
-            @QueryParam("limit") @DefaultValue("10") Integer limit,
-            @QueryParam("offset") @DefaultValue("0") Integer offset,
-            @QueryParam("orderBy") @DefaultValue("lastUpdated") String orderBy,
-            @QueryParam("order") @DefaultValue("desc") String order,
-
-            @QueryParam("ipInterfaceId") Integer ipInterfaceId,
-            @QueryParam("createdAfter") Long createdAfter,
-            @QueryParam("createdBefore") Long createdBefore
+        @QueryParam("limit") @DefaultValue("10") Integer limit,
+        @QueryParam("offset") @DefaultValue("0") Integer offset,
+        @QueryParam("orderBy") @DefaultValue("lastUpdated") String orderBy,
+        @QueryParam("order") @DefaultValue("desc") String order,
+        @QueryParam("deviceName") String deviceName,
+        @QueryParam("ipAddress") String ipAddress,
+        @QueryParam("ipInterfaceId") Integer ipInterfaceId,
+        @QueryParam("configType") String configType,
+        @QueryParam("createdAfter") Long createdAfter,
+        @QueryParam("createdBefore") Long createdBefore
     );
 
     @GET
@@ -76,4 +84,18 @@ public interface DeviceConfigRestService {
     @Path("{id}")
     void deleteDeviceConfig(@PathParam("id") long id);
 
+    /**
+     * Download the most recent backup configuration for a single device.
+     */
+    @GET
+    @Path("/download/{id}")
+    Response downloadDeviceConfig(@PathParam("id") long id);
+
+    /**
+     * Download a zip file containing the most recent backup configurations for multiple devices.
+     * POST will be Json
+     */
+    @POST
+    @Path("/download")
+    Response downloadDeviceConfigs();
 }
