@@ -36,7 +36,7 @@
         "babel-plugin-module-resolver": "^4.1.0",
         "babel-preset-es2015-nostrict": "^6.6.2",
         "cache-loader": "^4.1.0",
-        "copy-webpack-plugin": "^5.1.1",
+        "copy-webpack-plugin": "^6.4.1",
         "css-loader": "^3.2.0",
         "cssnano": "^4.1.10",
         "eslint": "^6.8.0",
