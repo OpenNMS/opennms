@@ -71,7 +71,7 @@
         "webpack": "^4.46.0",
         "webpack-bundle-analyzer": "^3.9.0",
         "webpack-cli": "^3.3.12",
-        "yargs": "^14.2.3"
+        "yargs": "^17.3.1"
     },
     "dependencies": {
         "@babel/runtime-corejs3": "^7.16.5",
