@@ -31,7 +31,7 @@ Run the following curl command:
 
 [source, console]
 ----
-curl "https://Your Endpoint-es.logit.io/_cat/indices?v&apikey=Your-API-Key"
+curl "https://your-es-server.hostname:9200/_cat/indices?v&apikey=Your-API-Key"
 ----
 
 The query returns a list of indices.
