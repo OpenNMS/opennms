@@ -29,7 +29,12 @@
 package org.opennms.features.deviceconfig.rest.impl;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;

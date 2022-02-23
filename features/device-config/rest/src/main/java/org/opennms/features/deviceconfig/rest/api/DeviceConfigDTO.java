@@ -55,17 +55,17 @@ public class DeviceConfigDTO {
     /**
      * Date backup last succeeded, or null if no backups succeeded.
      * If the backup process succeeded but the configuration did not change, this date could be
-     * more recent than 'configStoredDate'.
+     * more recent than 'createdTime'.
      */
     private final Date lastSucceededDate;
 
     /** Date backup last failed, or null if no backups failed. */
     private final Date lastFailedDate;
 
-    /** Encoding of the config, either 'text' or 'binary'. Other values may include 'json' or 'xml'. */
+    /** Encoding of the config, possible values include 'text', 'binary', 'ascii', 'json', 'xml'. */
     private final String encoding;
 
-    /** The config type as a String, either 'Default' or 'Running'. */
+    /** The device configuration type, either 'default' or 'running'. */
     private final String configType;
 
     /** Filename of the configuration data as received from the device. */
