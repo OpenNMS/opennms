@@ -16,6 +16,7 @@ import helpModule from './help'
 import notificationModule from './notification'
 import resourceModule from './resource'
 import graphModule from './graph'
+import pluginModule from './plugin'
 
 export default createStore({
   modules: {
@@ -33,6 +34,7 @@ export default createStore({
     helpModule,
     notificationModule,
     resourceModule,
-    graphModule
+    graphModule,
+    pluginModule
   }
 })
