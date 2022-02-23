@@ -1151,6 +1151,7 @@
         <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.dao-common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.core/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features/ui-extension/${project.version}</bundle>
     </feature>
     <feature name="opennms-enlinkd-shell" version="${project.version}" description="OpenNMS :: Features :: Enlinkd :: Shell">
         <feature>opennms-dao</feature>
@@ -1882,8 +1883,5 @@
         <feature version="${cxfVersion}">cxf-core</feature>
         <feature version="${cxfVersion}">cxf-jaxrs</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.rest-cxf/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-ui-extension" version="${project.version}" description="OpenNMS :: Features :: UI Extension">
-        <bundle>mvn:org.opennms.features/ui-extension/${project.version}</bundle>
     </feature>
 </features>
