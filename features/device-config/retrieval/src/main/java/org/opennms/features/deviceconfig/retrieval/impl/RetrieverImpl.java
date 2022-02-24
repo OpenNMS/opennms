@@ -217,7 +217,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                 // -> just to be sure check that the future is set
                 if (future != null) {
                     LOG.debug("received config - host: " + host + "; port: " + port + "; address: " + address.getHostAddress());
-                    future.complete(Either.right(new Success(content)));
+                    future.complete(Either.right(new Success(content, fileName)));
                 }
             }
         }

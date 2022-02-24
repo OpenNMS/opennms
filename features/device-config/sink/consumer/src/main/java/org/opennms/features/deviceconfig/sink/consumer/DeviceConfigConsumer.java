@@ -78,9 +78,10 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigDTO, De
             if (ipInterface != null) {
                 deviceConfigDao.updateDeviceConfigContent(
                         ipInterface,
-                        message.fileName,
+                        message.fileName, // use filename as config type
                         null,
-                        message.config
+                        message.config,
+                        message.fileName
                 );
             } else {
                 LOG.warn("can not persist device config; did not find interface - location: "+ message.location + "; " + address.getHostAddress());

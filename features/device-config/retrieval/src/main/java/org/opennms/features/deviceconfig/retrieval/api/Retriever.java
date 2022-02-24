@@ -63,9 +63,11 @@ public interface Retriever {
     class Success {
 
         public final byte[] config;
+        public final String filename;
 
-        public Success(byte[] config) {
+        public Success(byte[] config, String filename) {
             this.config = config;
+            this.filename = filename;
         }
     }
 

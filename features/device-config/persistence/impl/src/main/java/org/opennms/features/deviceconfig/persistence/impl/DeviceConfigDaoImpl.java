@@ -31,6 +31,7 @@ package org.opennms.features.deviceconfig.persistence.impl;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
@@ -73,7 +74,8 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             OnmsIpInterface ipInterface,
             String configType,
             String encoding,
-            byte[] deviceConfigBytes
+            byte[] deviceConfigBytes,
+            String fileName
     ) {
         Date currentTime = new Date();
         Optional<DeviceConfig> configOptional = getLatestConfigForInterface(ipInterface, configType);
@@ -81,7 +83,8 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         // Config retrieval succeeded
         if (lastDeviceConfig != null &&
             // Config didn't change, just update last updated field.
-            Arrays.equals(lastDeviceConfig.getConfig(), deviceConfigBytes)) {
+            Arrays.equals(lastDeviceConfig.getConfig(), deviceConfigBytes) &&
+            Objects.equals(lastDeviceConfig.getFileName(), fileName)) {
             lastDeviceConfig.setLastUpdated(currentTime);
             lastDeviceConfig.setLastSucceeded(currentTime);
             saveOrUpdate(lastDeviceConfig);
@@ -90,6 +93,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
                    // last config was failure, update config now.
                    && lastDeviceConfig.getConfig() == null) {
             lastDeviceConfig.setConfig(deviceConfigBytes);
+            lastDeviceConfig.setFileName(fileName);
             lastDeviceConfig.setCreatedTime(currentTime);
             lastDeviceConfig.setLastUpdated(currentTime);
             lastDeviceConfig.setLastSucceeded(currentTime);
@@ -99,6 +103,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             // Config changed, or there is no config for the device yet, create new entry.
             DeviceConfig deviceConfig = new DeviceConfig();
             deviceConfig.setConfig(deviceConfigBytes);
+            deviceConfig.setFileName(fileName);
             deviceConfig.setCreatedTime(currentTime);
             deviceConfig.setIpInterface(ipInterface);
             deviceConfig.setEncoding(encoding);

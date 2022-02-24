@@ -43,7 +43,8 @@ public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
             OnmsIpInterface ipInterface,
             String configType,
             String encoding,
-            byte[] deviceConfigBytes
+            byte[] deviceConfigBytes,
+            String filename
     );
 
     void updateDeviceConfigFailure(
