@@ -84,7 +84,8 @@ public class DeviceConfigMonitorTest {
         var pollStatus = deviceConfigMonitor.poll(svc, params);
 
         assertThat(pollStatus.getStatusCode(), is(PollStatus.SERVICE_AVAILABLE));
-        assertThat(pollStatus.getDeviceConfig(), is(config));
+        assertThat(pollStatus.getDeviceConfig().content, is(config));
+        assertThat(pollStatus.getDeviceConfig().filename, is(filename));
     }
 
     @Test
