@@ -14,14 +14,16 @@ export interface SearchResultResponse {
   }
   empty: boolean
   more: boolean
-  results: {
-    identifier: string
-    label: string
-    matches: any
-    properties: any
-    url: string
-    weight: number
-  }[]
+  results: SearchResult[]
+}
+
+export interface SearchResult {
+  identifier: string
+  label: string
+  matches: any
+  properties: any
+  url: string
+  weight: number
 }
 
 export interface ApiResponse {

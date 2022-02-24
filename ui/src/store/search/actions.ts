@@ -11,6 +11,7 @@ const search = async (context: VuexContext, searchStr: string) => {
       if (resp.label !== 'Action') return resp
     })
     context.commit('SAVE_SEARCH_RESULTS', results)
+    return results
   }
 
   return

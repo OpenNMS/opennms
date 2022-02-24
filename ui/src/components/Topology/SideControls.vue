@@ -13,8 +13,13 @@ import SemanticZoomLevelControl from './SemanticZoomLevelControl.vue'
 
 .topology-side-controls {
   @include elevation(2);
-  height: calc(100vh - 120px);
+  height: calc(100vh - 100px);
   width: 75px;
+  position: absolute;
+  display: block;
+  z-index: 0;
+  top: 0;
+  right: 0;
 }
 </style>
 

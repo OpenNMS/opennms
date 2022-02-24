@@ -1,6 +1,6 @@
 <template>
   <FeatherAutocomplete
-    v-model="searchStr"
+    :modelValue="focusedSearchBarNodes"
     type="multi"
     :results="results"
     label="Focused Nodes"
@@ -19,7 +19,6 @@ import { useStore } from 'vuex'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 
 const store = useStore()
-const searchStr = ref()
 const loading = ref(false)
 const defaultLabels = { noResults: 'Searching...' }
 const labels = ref(defaultLabels)
@@ -27,6 +26,7 @@ const labels = ref(defaultLabels)
 const selectItem = (items: { url: string }[]) => {
   const ids = items.map((item) => item.url.split('=')[1])
   store.dispatch('topologyModule/addFocusedNodeIds', ids)
+  store.dispatch('topologyModule/setFocusedSearchBarNodes', items)
 }
 
 const resetLabelsAndSearch = (value: string) => {
@@ -48,4 +48,6 @@ const results = computed(() => {
   }
   return []
 })
+
+const focusedSearchBarNodes = computed(() => store.state.topologyModule.focusedSearchBarNodes)
 </script>

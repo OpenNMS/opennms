@@ -1,3 +1,4 @@
+import { SearchResult } from '@/types'
 import { NodePoint } from '@/types/topology'
 import { Edges, Nodes } from 'v-network-graph'
 
@@ -10,6 +11,7 @@ export interface State {
   isLeftDrawerOpen: boolean
   focusedNodeIds: string[]
   layout: Record<string, NodePoint>
+  focusedSearchBarNodes: SearchResult[]
 }
 
 const state: State = {
@@ -20,7 +22,8 @@ const state: State = {
   semanticZoomLevel: 1,
   isLeftDrawerOpen: true,
   focusedNodeIds: [],
-  layout: {}
+  layout: {},
+  focusedSearchBarNodes: []
 }
 
 export default state
