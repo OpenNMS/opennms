@@ -71,7 +71,7 @@ public class SentinelRestIT {
 
         LOG.info("testing /sentinel/rest/health .........");
         given().get("/sentinel/rest/health")
-                .then().log().ifStatusCodeIsEqualTo(200)
+                .then().log().ifValidationFails()
                 .statusCode(200);
 
         LOG.info("testing /sentinel/rest/health?tag=local .........");
