@@ -555,11 +555,13 @@ function createConfig(options) {
   myconf.output.filename = getFile('[name]', options);
   myconf.output.chunkFilename = getFile('[name]', options);
 
-  myconf.plugins.push(new CopyWebpackPlugin([
-    {
-      from: staticroot
-    }
-  ]));
+  myconf.plugins.push(new CopyWebpackPlugin({
+    patterns: [
+      {
+        from: staticroot
+      }
+    ]
+  }));
 
   console.log('Building variant: production=' + options.production);
   //console.log(myconf);
@@ -567,7 +569,7 @@ function createConfig(options) {
   const smp = new SpeedMeasurePlugin({
     outputTarget: 'target/smp-' + (options.production === 'vaadin' ? 'vaadin' : myconf.mode) + '.log'
   });
-  
+
   return smp.wrap( myconf );
 }
 
