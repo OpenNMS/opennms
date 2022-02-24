@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,16 +28,18 @@
 
 package org.opennms.netmgt.provision.service;
 
-import org.opennms.netmgt.model.OnmsNode;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>TimeTrackingMonitor class.</p>
@@ -46,27 +48,42 @@ import java.util.*;
  * @version $Id: $
  */
 public class TimeTrackingMonitor implements ProvisionMonitor {
-    private final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    private MetricRegistry metricRegistry;
 
-    private WorkDuration importDuration;
-    private WorkDuration auditDuration;
-    private WorkDuration loadingDuration;
-    private WorkDuration processingDuration;
-    private WorkDuration preprocessingDuration;
-    private WorkDuration relateDuration;
-    private WorkEffort scanningEffort;
-    private WorkEffort processingEffort;
-    private WorkEffort eventEffort;
-    private int eventCount;
+    private Timer loadingTimer;
+    private Timer auditTimer;
+    private Timer importTimer;
+    private Timer schedulingTimer;
+    private Timer relateTimer;
+
+    private Context importDuration;
+    private Context auditDuration;
+    private Context loadingDuration;
+    private Context schedulingDuration;
+    private Context relateDuration;
+
+    private ThreadTimer scanningTimer;
+    private ThreadTimer persistingTimer;
+    private ThreadTimer eventTimer;
+
+    // total node count in resources
     private int nodeCount;
-    private Map<String, Date> currentNodes;
+
+    // name of the monitor
+    private String name;
+
     private Date startTime;
     private Date endTime;
 
+    // current scanning node
+    private Map<String, Date> currentNodes = new HashMap<>();
 
-
-    public TimeTrackingMonitor() {
-        reset();
+    public TimeTrackingMonitor(String name, MetricRegistry metricRegistry) {
+        this.name = name;
+        this.metricRegistry = metricRegistry;
+        this.scanningTimer = new ThreadTimer(metricRegistry.timer(MetricRegistry.name(name, "scanning")));
+        this.persistingTimer = new ThreadTimer(metricRegistry.timer(MetricRegistry.name(name, "persisting")));
+        this.eventTimer = new ThreadTimer(metricRegistry.timer(MetricRegistry.name(name, "Event")));
     }
 
     public Date getStartTime() {
@@ -78,9 +95,12 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
     }
 
     @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
     public void start() {
-        // make sure all old data is removed
-        reset();
         startTime = new Date();
     }
 
@@ -89,63 +109,40 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
         endTime = new Date();
     }
 
-    public void reset() {
-        importDuration = new WorkDuration("Importing");
-        auditDuration = new WorkDuration("Auditing");
-        loadingDuration = new WorkDuration("Loading");
-        processingDuration = new WorkDuration("Processing");
-        preprocessingDuration = new WorkDuration("Scanning");
-        relateDuration = new WorkDuration("Relating");
-        scanningEffort = new WorkEffort("Scan Effort");
-        processingEffort = new WorkEffort("Write Effort");
-        eventEffort = new WorkEffort("Event Sending Effort");
-        eventCount = 0;
-        nodeCount = 0;
-        currentNodes = new HashMap<>();
-    }
-
     public Map<String, Date> getCurrentNodes() {
         return currentNodes;
     }
 
-    public WorkDuration getImportDuration() {
-        return importDuration;
+    public Timer getLoadingTimer() {
+        return loadingTimer;
     }
 
-    public WorkDuration getAuditDuration() {
-        return auditDuration;
+    public Timer getAuditTimer() {
+        return auditTimer;
     }
 
-    public WorkDuration getLoadingDuration() {
-        return loadingDuration;
+    public Timer getImportTimer() {
+        return importTimer;
     }
 
-    public WorkDuration getProcessingDuration() {
-        return processingDuration;
+    public Timer getSchedulingTimer() {
+        return schedulingTimer;
     }
 
-    public WorkDuration getPreprocessingDuration() {
-        return preprocessingDuration;
+    public Timer getRelateTimer() {
+        return relateTimer;
     }
 
-    public WorkDuration getRelateDuration() {
-        return relateDuration;
+    public Timer getScanningTimer() {
+        return scanningTimer.getTimer();
     }
 
-    public WorkEffort getScanningEffort() {
-        return scanningEffort;
+    public Timer getPersistingTimer() {
+        return persistingTimer.getTimer();
     }
 
-    public WorkEffort getProcessingEffort() {
-        return processingEffort;
-    }
-
-    public WorkEffort getEventEffort() {
-        return eventEffort;
-    }
-
-    public int getEventCount() {
-        return eventCount;
+    public Timer getEventTimer() {
+        return eventTimer.getTimer();
     }
 
     @Override
@@ -154,19 +151,22 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
     }
 
     /**
-     * <p>beginPreprocessingOps</p>
+     * <p>beginScheduling</p>
      */
     @Override
-    public void beginPreprocessingOps() {
-        preprocessingDuration.start();
+    public void beginScheduling() {
+        schedulingTimer = metricRegistry.timer(MetricRegistry.name(name, "Scheduling"));
+        schedulingDuration = schedulingTimer.time();
     }
 
     /**
-     * <p>finishPreprocessingOps</p>
+     * <p>finishScheduling</p>
      */
     @Override
-    public void finishPreprocessingOps() {
-        preprocessingDuration.end();
+    public void finishScheduling() {
+        if (schedulingDuration!=null) {
+            schedulingDuration.stop();
+        }
     }
 
     /**
@@ -177,7 +177,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
         if (oper instanceof SaveOrUpdateOperation) {
             currentNodes.put(oper.toString(), new Date());
         }
-        scanningEffort.begin();
+        scanningTimer.begin();
     }
 
     /**
@@ -185,7 +185,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void finishScanning(ImportOperation oper) {
-        scanningEffort.end();
+        scanningTimer.end();
         if (oper instanceof SaveOrUpdateOperation) {
             currentNodes.remove(oper.toString());
         }
@@ -196,7 +196,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void beginPersisting(ImportOperation oper) {
-        processingEffort.begin();
+        persistingTimer.begin();
     }
 
     /**
@@ -204,7 +204,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void finishPersisting(ImportOperation oper) {
-        processingEffort.end();
+        persistingTimer.end();
     }
 
     /**
@@ -212,10 +212,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void beginSendingEvent(Event event) {
-        if (event != null) {
-            eventCount++;
-        }
-        eventEffort.begin();
+        eventTimer.begin();
     }
 
     /**
@@ -223,7 +220,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void finishSendingEvent(Event event) {
-        eventEffort.end();
+        eventTimer.end();
     }
 
     /**
@@ -231,13 +228,15 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void beginLoadingResource(Resource resource) {
-        loadingDuration.setName("Loading Resource: " + resource);
-        loadingDuration.start();
+        loadingTimer = metricRegistry.timer(MetricRegistry.name(name, "Loading", resource.getFilename()));
+        loadingDuration = loadingTimer.time();
     }
 
     @Override
     public void finishLoadingResource(Resource resource, int nodeCount) {
-        loadingDuration.end();
+        if (loadingDuration != null) {
+            loadingDuration.stop();
+        }
         this.nodeCount = nodeCount;
     }
 
@@ -246,7 +245,8 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void beginImporting() {
-        importDuration.start();
+        importTimer = metricRegistry.timer(MetricRegistry.name(name, "Importing"));
+        importDuration = importTimer.time();
     }
 
     /**
@@ -254,7 +254,9 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void finishImporting() {
-        importDuration.end();
+        if (importDuration != null) {
+            importDuration.stop();
+        }
     }
 
     /**
@@ -262,7 +264,8 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void beginAuditNodes() {
-        auditDuration.start();
+        auditTimer = metricRegistry.timer(MetricRegistry.name(name, "Auditing"));
+        auditDuration = auditTimer.time();
     }
 
     /**
@@ -270,7 +273,9 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void finishAuditNodes() {
-        auditDuration.end();
+        if (auditDuration != null) {
+            auditDuration.stop();
+        }
     }
 
     /**
@@ -278,7 +283,8 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void beginRelateNodes() {
-        relateDuration.start();
+        relateTimer = metricRegistry.timer(MetricRegistry.name(name, "Relating"));
+        relateDuration = relateTimer.time();
     }
 
     /**
@@ -286,7 +292,9 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void finishRelateNodes() {
-        relateDuration.end();
+        if (relateDuration != null) {
+            relateDuration.stop();
+        }
     }
 
     /**
@@ -301,17 +309,12 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
         stats.append(importDuration).append(", ");
         stats.append(loadingDuration).append(", ");
         stats.append(auditDuration).append('\n');
-        stats.append(preprocessingDuration).append(", ");
-        stats.append(processingDuration).append(", ");
+        stats.append(schedulingDuration).append(", ");
         stats.append(relateDuration).append("\n");
-        stats.append(scanningEffort).append(", ");
-        stats.append(processingEffort).append(", ");
-        stats.append(eventEffort);
-        if (eventCount > 0) {
-            stats.append(", Avg ").append((double) eventEffort.getTotalTime() / (double) eventCount).append(" ms per event");
-        }
+        stats.append(scanningTimer.getTimer().getMeanRate()).append(", ");
+        stats.append(persistingTimer.getTimer().getMeanRate()).append(", ");
+        stats.append(eventTimer.getTimer().getMeanRate());
 
         return stats.toString();
     }
-
 }

@@ -28,17 +28,14 @@
 
 package org.opennms.web.rest.v2;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.provision.service.ImportScheduler;
+import org.opennms.netmgt.provision.service.MonitorHolder;
 import org.opennms.web.rest.model.v2.EnlinkdDTO;
-import org.quartz.SchedulerException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,13 +61,7 @@ public class ProvisionStatusRestService {
                     content = @Content)
     })
     public Response applicationStatus() {
-        ImportScheduler importScheduler = BeanUtils.getBean("provisiondContext", "provisiondImportSchedule", ImportScheduler.class);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(importScheduler.getMonitors());
-            return Response.ok(json).build();
-        } catch (SchedulerException | JsonProcessingException e) {
-            return Response.serverError().build();
-        }
+        MonitorHolder monitorHolder = BeanUtils.getBean("provisiondContext", "monitorHolder", MonitorHolder.class);
+        return Response.ok(monitorHolder.getMonitors()).build();
     }
 }

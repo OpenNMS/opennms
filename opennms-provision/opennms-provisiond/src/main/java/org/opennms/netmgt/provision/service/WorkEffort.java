@@ -65,8 +65,11 @@ public class WorkEffort {
      */
     public void end() {
         WorkDuration pending = pendingSection.get();
-        sectionCount++;
-        totalTime += pending.getLength();
+        synchronized (this) {
+            sectionCount++;
+            totalTime += pending.getLength();
+        }
+        pendingSection.remove();
     }
 
     /**
@@ -95,10 +98,10 @@ public class WorkEffort {
     public String toString() {
         final StringBuilder buf = new StringBuilder();
         buf.append("Total ").append(name).append(": ");
-        buf.append((double) totalTime / (double) 1000L).append(" thread-seconds");
+        buf.append((double) totalTime / 1000L).append(" thread-seconds");
         if (sectionCount > 0) {
             buf.append(" Avg ").append(name).append(": ");
-            buf.append(getAverage() / (double) 1000L).append(" ms per node");
+            buf.append(getAverage() / 1000L).append(" ms per node");
         }
         return buf.toString();
     }

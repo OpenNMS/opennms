@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.provision.service;
 
+import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <p>ImportJobFactory class.</p>
@@ -44,6 +46,9 @@ import org.quartz.spi.TriggerFiredBundle;
 public class ImportJobFactory implements JobFactory {
 
     private Provisioner m_provisioner;
+
+    @Autowired
+    private MonitorHolder monitorHolder;
 
     /** {@inheritDoc} */
     @Override
@@ -57,6 +62,8 @@ public class ImportJobFactory implements JobFactory {
         try {
             job = jobClass.newInstance();
             job.setProvisioner(getProvisioner());
+            job.setMonitor(monitorHolder.getMonitor(jobDetail.getKey().getName(), job));
+
             return job;
         } catch (Throwable e) {
             SchedulerException se = new SchedulerException("failed to create job class: "+jobDetail.getJobClass().getName()+"; "+

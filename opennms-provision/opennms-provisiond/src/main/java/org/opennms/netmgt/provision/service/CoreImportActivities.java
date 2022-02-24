@@ -117,8 +117,7 @@ public class CoreImportActivities {
             return;
         }
         info("Scheduling nodes for phase {}", currentPhase);
-        monitor.beginPreprocessingOps();
-
+        monitor.beginScheduling();
         final Collection<ImportOperation> operations = opsMgr.getOperations();
         
         for(final ImportOperation op : operations) {
@@ -132,8 +131,7 @@ public class CoreImportActivities {
             nodeScan.setAttribute(MONITOR, monitor);
             nodeScan.trigger();
         }
-
-        monitor.finishPreprocessingOps();
+        monitor.finishScheduling();
     }
     
     

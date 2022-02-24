@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,20 +35,22 @@ import org.springframework.core.io.Resource;
 
 public interface ProvisionMonitor {
 
+	String getName();
+
 	void start();
 
 	void end();
 
 	int getNodeCount();
 	/**
-	 * <p>beginPreprocessingOps</p>
+	 * <p>beginScheduling</p>
 	 */
-	void beginPreprocessingOps();
+	void beginScheduling();
 
 	/**
-	 * <p>finishPreprocessingOps</p>
+	 * <p>finishScheduling</p>
 	 */
-	void finishPreprocessingOps();
+	void finishScheduling();
 
 	/**
 	 * <p>beginPreprocessing</p>

@@ -45,6 +45,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.tasks.TaskCoordinator;
@@ -126,6 +129,8 @@ public class Provisioner implements SpringServiceDaemon {
     @Autowired
     private TracerRegistry m_tracerRegistry;
 
+    @Autowired
+    private MonitorHolder monitorHolder;
 
     /**
      * <p>setProvisionService</p>
@@ -242,6 +247,7 @@ public class Provisioner implements SpringServiceDaemon {
         m_provisionService.setTracer(tracer);
     }
 
+
     /**
      * <p>destroy</p>
      *
@@ -252,6 +258,7 @@ public class Provisioner implements SpringServiceDaemon {
         m_importSchedule.stop();
         m_scheduledExecutor.shutdown();
         m_newSuspectExecutor.shutdown();
+        monitorHolder.shutdown();
     }
 
     /**
@@ -454,15 +461,20 @@ public class Provisioner implements SpringServiceDaemon {
         doImport.setAttribute(ImportJob.RESCAN_EXISTING, rescanExisting);
         doImport.setAttribute(ImportJob.MONITOR, monitor);
 
+        LOG.warn("SETTING MONITOR START !!! " + monitor.getName());
         monitor.start();
         doImport.trigger();
         doImport.waitFor();
 
+        LOG.warn("SETTING MONITOR END !!!" + monitor.getName());
+        monitor.end();
+        LOG.warn(monitor.toString());
+
         final RequisitionImport ri = doImport.findAttributeByType(RequisitionImport.class);
         if (ri.isAborted()) {
+            LOG.warn("SETTING MONITOR FAIL !!!");
             throw new ModelImportException("Import failed for resource " + resource.toString(), ri.getError());
         }
-        monitor.end();
         return ri;
     }
 
@@ -493,11 +505,11 @@ public class Provisioner implements SpringServiceDaemon {
      * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.RELOAD_IMPORT_UEI)
-    public void doImport(final IEvent event) {
+    public void doImport(final IEvent event) throws ExecutionException {
         final String url = getEventUrl(event);
         final String rescanExistingOnImport = getEventRescanExistingOnImport(event);
-        // FIXME: Use proper monitor 
-        ProvisionMonitor monitor = new NoOpProvisionMonitor();
+
+        ProvisionMonitor monitor = monitorHolder.getMonitor(url);
         if (url != null) {
             doImport(url, rescanExistingOnImport, monitor);
         } else {
@@ -514,6 +526,7 @@ public class Provisioner implements SpringServiceDaemon {
      * @param url a {@link java.lang.String} object.
      */
     public void doImport(final String url, final String rescanExisting, ProvisionMonitor monitor) {
+        Objects.requireNonNull(monitor);
         try {
             
             LOG.info("doImport: importing from url: {}, rescanExisting ? {}", url, rescanExisting);
@@ -539,7 +552,7 @@ public class Provisioner implements SpringServiceDaemon {
             }
 
             send(importStartedEvent(resource, rescanExisting), monitor);
-    
+
             final RequisitionImport ri = importModelFromResource(resource, rescanExisting, monitor);
             String foreignSource = null;
             if (ri != null && ri.getRequisition() != null) {
