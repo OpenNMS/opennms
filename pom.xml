@@ -1642,6 +1642,7 @@
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsCodecVersion>1.10</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
+    <commonsCompressVersion>1.21</commonsCompressVersion>
     <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
