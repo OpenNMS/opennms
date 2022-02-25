@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -79,13 +79,12 @@ final public class JDBCStoredProcedureMonitor extends JDBCMonitor
 
          String schemaName = ParameterMap.getKeyedString(parameters, "schema", "test");
 
-         cs = con.prepareCall("{ ? = call ?.?()}");
+         String procedureCall = "{ ? = call " + schemaName + "." + storedProcedure + "()}";
+         cs = con.prepareCall( procedureCall );
+         
+         LOG.debug("Calling stored procedure: {}", procedureCall);
+         
          cs.registerOutParameter(1, java.sql.Types.BIT );
-         cs.setString(2, schemaName);
-         cs.setString(3, storedProcedure);
-         
-         LOG.debug("Calling stored procedure: {}", cs.toString());
-         
          cs.executeUpdate();
          bPass = cs.getBoolean( 1 );
 
