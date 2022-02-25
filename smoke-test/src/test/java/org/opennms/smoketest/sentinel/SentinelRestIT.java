@@ -71,7 +71,7 @@ public class SentinelRestIT {
 
         LOG.info("testing /sentinel/rest/health .........");
         given().get("/sentinel/rest/health")
-                .then().log().ifStatusCodeIsEqualTo(200).log().all()
+                .then().log().ifStatusCodeIsEqualTo(200)
                 .statusCode(200);
 
         LOG.info("testing /sentinel/rest/health?tag=local .........");
@@ -79,7 +79,7 @@ public class SentinelRestIT {
         List<String> descriptions = given().get("/sentinel/rest/health?tag=local")
                 .then()
                 .log().ifStatusCodeIsEqualTo(200)
-                .statusCode(200).log().all()
+                .statusCode(200)
                 .body("healthy", Matchers.notNullValue())
                 .extract()
                 .body()
