@@ -40,7 +40,7 @@ import io.vavr.control.Either;
 class Statement {
 
     static Either<List<String>, List<Statement>> parseScript(String script) {
-        var l = Stream.of(script.split("\\n"))
+        var l = Stream.of(script.split("\\\\n|\\n"))
                 .map(String::trim)
                 .filter(StringUtils::isNoneBlank)
                 .map(line -> Pair.of(line, parseStatement(line)))
@@ -66,8 +66,8 @@ class Statement {
     // Statement implementations
     //
 
-    private final StatementType statementType;
-    private final String string;
+    final StatementType statementType;
+    final String string;
 
     Statement(StatementType statementType, String string) {
         this.statementType = statementType;
@@ -84,7 +84,7 @@ class Statement {
         return statementType.name() + ": " + string;
     }
 
-    private enum StatementType {
+    enum StatementType {
 
         send {
             @Override
