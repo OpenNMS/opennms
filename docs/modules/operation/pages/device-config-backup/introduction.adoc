@@ -1,0 +1,62 @@
+= Device Configuation Backup
+
+OpenNMS allows to backup the configuration of devices like routers or firewalls. OpenNMS and Minions provide a TFTP server. Devices send their configuration to that TFTP server. The backup can happen either pull or push based.
+
+* Pull based backup: OpenNMS uses its poller infrastructure to schedule tasks that connect via SSH into devices and execute configurable scripts that do the TFTP uploads.
+* Push based backup: Devices may upload their configuration by themselves. This may happen for example either by administrator interactions or by scheduled jobs running on the devices theirselves.
+
+== Overview
+
+OpenNMS stores device config backups for IP addresses in the default location or at remote locations. Different kinds of _configuration types_ can be distinguished. For example, some devices may distinguish between their _default_ configuration and their _running_ configuration. OpenNMS considers configuration types as arbitrary strings. If no configuration type is specified then _default_ is used.
+
+OpenNMS archives received backups and records when changes happened. It also records if backups fail and raises according alarms.
+
+== SSH scripting
+
+An SSH scripting engine executes the commands that are necessary to upload device configurations. The scripting engine supports two commands:
+
+* `send: ...`: Sends the given string to the device
+* `await: ...`: Awaits some response from the device
+
+Scripts can reference the following variables by using `${varname}` notation:
+
+.Scripting variables
+[options="header" cols="1,2"]
+|===
+| Name
+| Description
+
+| `tftpServerIp`
+| ip address of the TFTP server
+
+| `tftpServerPort`
+| port number of the TFTP server
+
+| `filename`
+| filename that must be used for uploading
+
+| `configType`
+| config type as described above
+|===
+
+Example script:
+
+```
+await: >
+send: configure
+await: Entering configuration mode
+await: #
+send: save config to ${filename}
+await: Config saved to ${filename}
+await: #
+send: quit
+await: Exiting configuration mode
+await: >
+send: tftp export configuration from ${filename} to ${tftpServerIp}:${tftpServerPort}
+await: >
+send: delete config saved ${filename}
+await: Successfully removed ${filename}
+await: >
+```
+
+== Poller configuration
