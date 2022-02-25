@@ -619,6 +619,7 @@
                 <feature>opennms-deviceconfig-rest</feature>
                 <feature>opennms-deviceconfig-sink</feature>
                 <feature>opennms-deviceconfig-sink-consumer</feature>
+                <feature>opennms-deviceconfig-service</feature>
 
               </features>
               <repository>${project.build.directory}/opennms-repo</repository>

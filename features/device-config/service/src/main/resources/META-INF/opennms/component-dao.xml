@@ -14,7 +14,7 @@
     <context:annotation-config/>
     <tx:annotation-driven/>
 
-    <bean id="deviceConfigService" class="org.opennms.features.deviceconfig.service.DeviceConfigServiceImpl"/>
+    <bean id="deviceConfigService" class="org.opennms.features.deviceconfig.service.impl.DeviceConfigServiceImpl"/>
     <onmsgi:service interface="org.opennms.features.deviceconfig.service.DeviceConfigService" ref="deviceConfigService">
         <onmsgi:service-properties>
             <entry key="registration.export" value="true"/>
