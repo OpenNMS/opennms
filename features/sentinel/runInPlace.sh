@@ -54,8 +54,8 @@ set_instance_specific_configuration() {
   #tcp6       0      0 :::38287                :::*                    LISTEN      23306/java
   #### RMI Registry - Set in 'etc/org.apache.karaf.management.cfg' via rmiRegistryPort=1299 and the serviceUrl
   #tcp6       0      0 127.0.0.1:1399          :::*                    LISTEN      23306/java
-  #### Jetty - Set in 'etc/org.ops4j.pax.web.cfg' via :org.osgi.service.http.port=8191
-  #tcp6       0      0 :::8191                 :::*                    LISTEN      23306/java
+  #### Jetty - Set in 'etc/org.ops4j.pax.web.cfg' via :org.osgi.service.http.port=8181
+  #tcp6       0      0 :::8181                 :::*                    LISTEN      23306/java
   #### Random port use for Karaf management - Stored in 'data/port'
   #tcp6       0      0 127.0.0.1:34947         :::*                    LISTEN      23306/java
   #### RMI Server - Set in 'etc/org.apache.karaf.management.cfg' via rmiServerPort=45444 and the serviceUrl
@@ -66,7 +66,7 @@ set_instance_specific_configuration() {
   #udp6       0      0 :::1514                 :::*                                23306/java
 
   JAVA_DEBUG_PORT=$((6005 + offset))
-  JETTY_PORT=$((8191 + offset))
+  JETTY_PORT=$((8181 + offset))
   RMI_REGISTRY_PORT=$((1399 + offset))
   RMI_SERVER_PORT=$((46444 + offset))
   SNMP_TRAP_PORT=$((1162 + offset))
