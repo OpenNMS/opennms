@@ -37,8 +37,10 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.net.io.FromNetASCIIOutputStream;
@@ -224,11 +226,13 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
 
                             statistics.incFilesReceived();
 
+                            List<TftpFileReceiver> rs;
                             synchronized (receivers) {
-                                receivers.forEach(r -> {
-                                    r.onFileReceived(twrp.getAddress(), fileName, content);
-                                });
+                                rs = new ArrayList(receivers);
                             }
+                            rs.forEach(r -> {
+                                r.onFileReceived(twrp.getAddress(), fileName, content);
+                            });
 
                             // But my ack may be lost - so listen to see if I
                             // need to resend the ack.
