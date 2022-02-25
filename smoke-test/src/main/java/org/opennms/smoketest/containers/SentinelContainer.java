@@ -197,8 +197,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     public List<String> getFeaturesOnBoot() {
         final List<String> featuresOnBoot = new ArrayList<>();
         featuresOnBoot.add("sentinel-persistence");
-        featuresOnBoot.add("sentinel-core");
-        featuresOnBoot.add("opennms-health-rest-service");
+
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             featuresOnBoot.add("sentinel-kafka");
         } else if (IpcStrategy.JMS.equals(model.getIpcStrategy())) {
