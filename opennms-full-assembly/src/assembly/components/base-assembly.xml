@@ -64,6 +64,15 @@
         <exclude>bin/stop</exclude>
       </excludes>
     </fileSet>
+    <!-- Add the third party license list -->
+    <fileSet>
+	    <directory>${project.build.directory}/generated-sources/license</directory>
+      <filtered>false</filtered>
+      <outputDirectory>etc</outputDirectory>
+      <includes>
+        <include>THIRD-PARTY.txt</include>
+      </includes>
+    </fileSet>
     <!-- Put the Karaf 4 boot classpath files into /lib so that they are available in the OpenNMS classpath -->
     <fileSet>
       <directory>${project.build.directory}/dependency/org.opennms.container.karaf-${project.version}/lib/boot</directory>
