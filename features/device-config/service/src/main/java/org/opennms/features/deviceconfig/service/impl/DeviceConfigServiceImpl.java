@@ -85,18 +85,14 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     @Override
     public CompletableFuture<byte[]> getDeviceConfig(String ipAddress, String location, String configType, int timeout) throws IOException {
-        CompletableFuture<byte[]> deviceConfigFuture = new CompletableFuture<>();
-        CompletableFuture<PollerResponse> future = pollDeviceConfig(ipAddress, location, configType);
-        try {
-            PollerResponse response = future.get(timeout, TimeUnit.MILLISECONDS);
-            if (response != null && response.getPollStatus() != null && response.getPollStatus().getDeviceConfig() != null) {
-                deviceConfigFuture.complete(response.getPollStatus().getDeviceConfig());
-            }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.error("Error while getting device config for IpAddress {} at location {}", ipAddress, location, e);
-            deviceConfigFuture.completeExceptionally(e);
-        }
-        return deviceConfigFuture;
+        return pollDeviceConfig(ipAddress, location, configType)
+                .orTimeout(timeout, TimeUnit.MILLISECONDS)
+                .thenApply(resp -> resp.getPollStatus().getDeviceConfig())
+                .whenComplete((bytes, throwable) -> {
+                    if (throwable != null) {
+                        LOG.error("Error while getting device config for IpAddress {} at location {}", ipAddress, location, throwable);
+                    }
+                });
     }
 
     private CompletableFuture<PollerResponse> pollDeviceConfig(String ipAddress, String location, String configType) {
@@ -106,12 +102,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         String serviceName = DEVICE_CONFIG_SERVICE_NAME_PREFIX + configType;
         MonitoredService service = sessionUtils.withReadOnlyTransaction(() -> {
 
-            Optional<OnmsIpInterface> ipInterfaceOptional = ipInterfaceDao.findByIpAddress(ipAddress).stream().filter(ipInterface ->
-                    ipInterface.getNode().getLocation().getLocationName().equals(location)).findFirst();
-            if (ipInterfaceOptional.isEmpty()) {
+            OnmsIpInterface ipInterface = ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
+            if (ipInterface == null) {
                 return null;
             }
-            OnmsIpInterface ipInterface = ipInterfaceOptional.get();
             OnmsNode node = ipInterface.getNode();
 
             return new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), serviceName, location);

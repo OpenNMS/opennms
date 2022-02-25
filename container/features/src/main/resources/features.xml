@@ -1922,9 +1922,10 @@
     </feature>
 
     <feature name="opennms-deviceconfig-service" description="OpenNMS :: Features :: Device Config :: Service" version="${project.version}">
+        <feature>opennms-deviceconfig-tftp</feature>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.monitor-adaptor/${project.version}</bundle>
-        <feature>opennms-deviceconfig-tftp</feature>
+        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.service/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-health-rest-service" description="OpenNMS :: Feature :: Health :: ReST Service" version="${project.version}">

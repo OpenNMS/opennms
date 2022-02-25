@@ -32,7 +32,7 @@ import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
 
-public class DeviceConfigSinkModuleImpl extends AbstractXmlSinkModule<DeviceConfigDTO, DeviceConfigDTO> implements DeviceConfigSinkModule, AsyncPolicy {
+public class DeviceConfigSinkModuleImpl extends AbstractXmlSinkModule<DeviceConfigSinkDTO, DeviceConfigSinkDTO> implements DeviceConfigSinkModule, AsyncPolicy {
 
     public static final String MODULE_ID = "DeviceConfig";
 
@@ -42,7 +42,7 @@ public class DeviceConfigSinkModuleImpl extends AbstractXmlSinkModule<DeviceConf
     private boolean blockWhenFull = true;
 
     public DeviceConfigSinkModuleImpl() {
-        super(DeviceConfigDTO.class);
+        super(DeviceConfigSinkDTO.class);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class DeviceConfigSinkModuleImpl extends AbstractXmlSinkModule<DeviceConf
     }
 
     @Override
-    public AggregationPolicy<DeviceConfigDTO, DeviceConfigDTO, ?> getAggregationPolicy() {
+    public AggregationPolicy<DeviceConfigSinkDTO, DeviceConfigSinkDTO, ?> getAggregationPolicy() {
         // no aggregation
         return null;
     }

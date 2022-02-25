@@ -79,9 +79,9 @@ public class GetDeviceConfig implements Action {
             System.out.printf("Not a valid host %s \n", host);
             return null;
         }
+        CompletableFuture<byte[]> future = deviceConfigService.getDeviceConfig(host, location, configType, timeout);
         while (true) {
             try {
-                CompletableFuture<byte[]> future = deviceConfigService.getDeviceConfig(host, location, configType, timeout);
                 try {
                     byte[] dc = future.get(1, TimeUnit.SECONDS);
                     return new String(dc, Charset.forName(encoding));

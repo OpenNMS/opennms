@@ -41,7 +41,7 @@ public interface DeviceConfigService {
      * @param configType  configType whether it is Default or Running.
      * @throws IOException
      */
-    public void triggerConfigBackup(String ipAddress, String location, String configType) throws IOException;
+    void triggerConfigBackup(String ipAddress, String location, String configType) throws IOException;
 
     /**
      * Get device config for the given ipAddress at given location.
@@ -53,5 +53,5 @@ public interface DeviceConfigService {
      * @throws IOException
      * @return
      */
-    public CompletableFuture<byte[]> getDeviceConfig(String ipAddress, String location, String configType, int timeout) throws IOException;
+    CompletableFuture<byte[]> getDeviceConfig(String ipAddress, String location, String configType, int timeout) throws IOException;
 }

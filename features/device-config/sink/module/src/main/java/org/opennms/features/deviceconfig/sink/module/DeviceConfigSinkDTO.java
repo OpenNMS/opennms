@@ -30,17 +30,20 @@ package org.opennms.features.deviceconfig.sink.module;
 
 import org.opennms.core.ipc.sink.api.Message;
 
-public class DeviceConfigDTO implements Message {
-    public final String location;
+public class DeviceConfigSinkDTO implements Message {
+    public String location;
     // the source address of the device config upload (as returned by InetAddress.getAddress())
-    public final byte[] address;
-    public final String fileName;
-    public final byte[] config;
+    public byte[] address;
+    public String fileName;
+    public byte[] config;
 
-    public DeviceConfigDTO(String location, byte[] address, String fileName, byte[] config) {
+    public DeviceConfigSinkDTO(String location, byte[] address, String fileName, byte[] config) {
         this.location = location;
         this.address = address;
         this.fileName = fileName;
         this.config = config;
+    }
+
+    public DeviceConfigSinkDTO() {
     }
 }

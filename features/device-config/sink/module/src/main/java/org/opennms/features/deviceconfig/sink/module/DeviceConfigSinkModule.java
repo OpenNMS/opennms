@@ -30,5 +30,5 @@ package org.opennms.features.deviceconfig.sink.module;
 
 import org.opennms.core.ipc.sink.api.SinkModule;
 
-public interface DeviceConfigSinkModule extends SinkModule<DeviceConfigDTO, DeviceConfigDTO> {
+public interface DeviceConfigSinkModule extends SinkModule<DeviceConfigSinkDTO, DeviceConfigSinkDTO> {
 }

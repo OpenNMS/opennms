@@ -37,8 +37,10 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
-@Command(scope = "opennms", name = "device-config-trigger", description = "Trigger device config  backu[ from a specific Interface")
+@Command(scope = "opennms", name = "device-config-trigger-backup", description = "Trigger device config  backup from a specific Interface")
 @Service
 public class DeviceConfigTrigger implements Action {
 
@@ -60,7 +62,12 @@ public class DeviceConfigTrigger implements Action {
 
     @Override
     public Object execute() throws Exception {
-
+        try {
+            InetAddress.getByName(host);
+        } catch (UnknownHostException e) {
+            System.out.printf("Not a valid host %s \n", host);
+            return null;
+        }
         try {
             deviceConfigService.triggerConfigBackup(host, location, configType);
             System.out.printf("Triggered config backup for %s at location %s", host, location);
