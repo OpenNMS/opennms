@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -71,10 +71,9 @@ public class JDBCRequest {
     public JDBCResponse send(Connection conn) throws SQLException {
         if(getStoredProcedure() != null){
             
-            String procedureCall = "{ ? = call ?()}";
+            String procedureCall = "{ ? = call " + getStoredProcedure() + "()}";
             CallableStatement cs = conn.prepareCall(procedureCall);
             cs.registerOutParameter(1, java.sql.Types.BIT);
-            cs.setString(2, getStoredProcedure());
             cs.executeUpdate();
 
             JDBCResponse response = new JDBCResponse();
