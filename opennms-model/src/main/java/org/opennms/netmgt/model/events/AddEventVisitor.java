@@ -44,6 +44,7 @@ public class AddEventVisitor extends AbstractEntityVisitor {
 
     private static final String m_eventSource = "Provisiond";
     private final EventForwarder m_eventForwarder;
+    private String monitorKey;
 
     /**
      * <p>Constructor for AddEventVisitor.</p>
@@ -51,7 +52,11 @@ public class AddEventVisitor extends AbstractEntityVisitor {
      * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
      */
     public AddEventVisitor(EventForwarder eventForwarder) {
+        this(eventForwarder, null);
+    }
+    public AddEventVisitor(EventForwarder eventForwarder, String monitorKey) {
         m_eventForwarder = eventForwarder;
+        this.monitorKey = monitorKey;
     }
 
     /** {@inheritDoc} */
@@ -87,7 +92,7 @@ public class AddEventVisitor extends AbstractEntityVisitor {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     protected Event createNodeAddedEvent(OnmsNode node) {
-        return EventUtils.createNodeAddedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabelSource());
+        return EventUtils.createNodeAddedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabelSource(), monitorKey);
     }
 
     private Event createNodeCategoryMembershipChangedEvent(final OnmsNode node, String[] categoriesAdded, String[] categoriesDeleted) {

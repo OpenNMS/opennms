@@ -143,7 +143,7 @@ public class PolicyIT {
             int nodeId = getNodeId();
             eventRecieved.await();
 
-            final NodeScan scan = m_provisioner.createNodeScan(nodeId, getForeignSource(nodeId), getForeignId(nodeId), new OnmsMonitoringLocation());
+            final NodeScan scan = m_provisioner.createNodeScan(nodeId, getForeignSource(nodeId), getForeignId(nodeId), new OnmsMonitoringLocation(), null);
             runScan(scan);
 
 

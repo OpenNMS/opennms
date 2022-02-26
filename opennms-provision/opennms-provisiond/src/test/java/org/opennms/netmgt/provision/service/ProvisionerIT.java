@@ -1096,7 +1096,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
         assertTrue(m_provisionService.isDiscoveryEnabled());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null, null);
         runScan(scan);
 
         assertEquals(2, m_ipInterfaceDao.findAll().size());
@@ -1126,7 +1126,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
         assertTrue(m_provisionService.isDiscoveryEnabled());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null, null);
         runScan(scan);
 
         assertEquals(1, m_ipInterfaceDao.findAll().size());
@@ -1286,8 +1286,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     @Test(timeout=300000)
     public void testProvisionServiceGetScheduleForNodesCount() throws Exception {
         getScanExecutor().pause();
-        m_provisioner.scheduleRescanForExistingNodes();
-        final List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
+        final List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes(null);
         final int nodeCount = getNodeDao().countAll();
         LOG.debug("NodeCount: {}", nodeCount);
 
@@ -1300,8 +1300,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
-        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
+        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes(null);
 
         assertEquals(10, schedulesForNode.size());
 
@@ -1309,8 +1309,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest.delete", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
-        schedulesForNode = m_provisionService.getScheduleForNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
+        schedulesForNode = m_provisionService.getScheduleForNodes(null);
 
         assertEquals(9, schedulesForNode.size());
         assertEquals(9, m_provisioner.getScheduleLength());
@@ -1318,8 +1318,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         // Check that re-scheduling won't trigger duplicate scheduling for a given node.
         getScanExecutor().resume();
         m_provisioner.addToScheduleQueue(schedulesForNode.get(0));
-        m_provisioner.scheduleRescanForExistingNodes();
-        schedulesForNode = m_provisionService.getScheduleForNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
+        schedulesForNode = m_provisionService.getScheduleForNodes(null);
 
         assertEquals(9, schedulesForNode.size());
         assertEquals(9, m_provisioner.getScheduleLength());
@@ -1329,7 +1329,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     public void testProvisionerAddNodeToSchedule() throws Exception{
         final int nextNodeId = m_nodeDao.getNextNodeId();
 
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
         assertEquals(0, m_provisioner.getScheduleLength());
 
         final OnmsNode node = createNode("empty");
@@ -1350,7 +1350,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
         assertEquals(10, m_provisioner.getScheduleLength());
     }
 
@@ -1361,7 +1361,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         try {
             m_populator.populateDatabase();
 
-            m_provisioner.scheduleRescanForExistingNodes();
+            m_provisioner.scheduleRescanForExistingNodes(null);
 
             // make sure just the provisioned nodes are scheduled
             assertEquals(4, m_provisioner.getScheduleLength());
@@ -1377,7 +1377,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         try {
             m_populator.populateDatabase();
 
-            m_provisioner.scheduleRescanForExistingNodes();
+            m_provisioner.scheduleRescanForExistingNodes(null);
 
             // make sure all the nodes are scheduled (even the discovered ones)
             assertEquals(6, m_provisioner.getScheduleLength());
@@ -1391,7 +1391,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
         assertEquals(10, m_provisioner.getScheduleLength());
 
         final List<OnmsNode> nodes = m_nodeDao.findAll();
@@ -1422,11 +1422,11 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
-        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
+        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes(null);
 
         assertEquals(10, schedulesForNode.size());
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
         assertEquals(10, m_provisioner.getScheduleLength());
     }
 
@@ -1435,9 +1435,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes(null);
         assertEquals(10, schedulesForNode.size());
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
         assertEquals(10, m_provisioner.getScheduleLength());
 
         //reimport with one missing node
@@ -1445,10 +1445,10 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest.delete", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
-        schedulesForNode = m_provisionService.getScheduleForNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
+        schedulesForNode = m_provisionService.getScheduleForNodes(null);
 
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
 
         //check the schedule to make sure that it deletes the node
         assertEquals(schedulesForNode.size(), m_provisioner.getScheduleLength());
@@ -1467,7 +1467,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
 
         final Collection<OnmsNode> nodes = m_nodeDao.findByLabel(OLD_LABEL);
         assertNotNull(nodes);
@@ -1522,7 +1522,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test(timeout=300000)
     public void testCreateUndiscoveredNode() throws Exception {
-        m_provisionService.createUndiscoveredNode("127.0.0.1", "discovered", null);
+        m_provisionService.createUndiscoveredNode("127.0.0.1", "discovered", null, null);
     }
 
     /**
@@ -1790,7 +1790,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         m_eventAnticipator.anticipateEvent(nodeScanAborted(node.getId()));
         m_eventAnticipator.setDiscardUnanticipated(true);
 
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "should_not_exist", "1", node.getLocation());
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "should_not_exist", "1", node.getLocation(), null);
         runScan(scan);
 
         m_eventAnticipator.verifyAnticipated();

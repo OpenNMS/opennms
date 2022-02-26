@@ -33,7 +33,6 @@ import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
-import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
 
@@ -62,9 +61,11 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
     private Context schedulingDuration;
     private Context relateDuration;
 
-    private ThreadTimer scanningTimer;
-    private ThreadTimer persistingTimer;
-    private ThreadTimer eventTimer;
+    private ObjectKeyTimer scanEventTimer;
+    private ObjectKeyTimer scanningTimer;
+
+    private ObjectKeyTimer persistingTimer;
+    private ObjectKeyTimer eventTimer;
 
     // total node count in resources
     private int nodeCount;
@@ -76,14 +77,15 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
     private Date endTime;
 
     // current scanning node
-    private Map<String, Date> currentNodes = new HashMap<>();
+    private Map<NodeScan, Date> currentNodes = new HashMap<>();
 
     public TimeTrackingMonitor(String name, MetricRegistry metricRegistry) {
         this.name = name;
         this.metricRegistry = metricRegistry;
-        this.scanningTimer = new ThreadTimer(metricRegistry.timer(MetricRegistry.name(name, "scanning")));
-        this.persistingTimer = new ThreadTimer(metricRegistry.timer(MetricRegistry.name(name, "persisting")));
-        this.eventTimer = new ThreadTimer(metricRegistry.timer(MetricRegistry.name(name, "Event")));
+        this.scanEventTimer = new ObjectKeyTimer(metricRegistry.timer(MetricRegistry.name(name, "Scan Event")));
+        this.persistingTimer = new ObjectKeyTimer(metricRegistry.timer(MetricRegistry.name(name, "Persisting")));
+        this.eventTimer = new ObjectKeyTimer(metricRegistry.timer(MetricRegistry.name(name, "Event")));
+        this.scanningTimer = new ObjectKeyTimer(metricRegistry.timer(MetricRegistry.name(name, "Scanning")));
     }
 
     public Date getStartTime() {
@@ -109,7 +111,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
         endTime = new Date();
     }
 
-    public Map<String, Date> getCurrentNodes() {
+    public Map<NodeScan, Date> getCurrentNodes() {
         return currentNodes;
     }
 
@@ -131,6 +133,10 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
 
     public Timer getRelateTimer() {
         return relateTimer;
+    }
+
+    public Timer getScanEventTimer() {
+        return scanEventTimer.getTimer();
     }
 
     public Timer getScanningTimer() {
@@ -173,21 +179,32 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      * {@inheritDoc}
      */
     @Override
-    public void beginScanning(ImportOperation oper) {
-        if (oper instanceof SaveOrUpdateOperation) {
-            currentNodes.put(oper.toString(), new Date());
-        }
-        scanningTimer.begin();
+    public void beginScanEvent(ImportOperation oper) {
+        scanEventTimer.begin(oper);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void finishScanning(ImportOperation oper) {
-        scanningTimer.end();
-        if (oper instanceof SaveOrUpdateOperation) {
-            currentNodes.remove(oper.toString());
+    public void finishScanEvent(ImportOperation oper) {
+        scanEventTimer.end(oper);
+
+    }
+
+    @Override
+    public void beginScanning(NodeScan nodeScan) {
+        synchronized (currentNodes) {
+            currentNodes.put(nodeScan, new Date());
+        }
+        scanningTimer.begin(nodeScan);
+    }
+
+    @Override
+    public void finishScanning(NodeScan nodeScan) {
+        scanningTimer.end(nodeScan);
+        synchronized (currentNodes) {
+            currentNodes.remove(nodeScan);
         }
     }
 
@@ -196,7 +213,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void beginPersisting(ImportOperation oper) {
-        persistingTimer.begin();
+        persistingTimer.begin(oper);
     }
 
     /**
@@ -204,7 +221,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void finishPersisting(ImportOperation oper) {
-        persistingTimer.end();
+        persistingTimer.end(oper);
     }
 
     /**
@@ -212,7 +229,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void beginSendingEvent(Event event) {
-        eventTimer.begin();
+        eventTimer.begin(event);
     }
 
     /**
@@ -220,7 +237,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void finishSendingEvent(Event event) {
-        eventTimer.end();
+        eventTimer.end(event);
     }
 
     /**
@@ -311,7 +328,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
         stats.append(auditDuration).append('\n');
         stats.append(schedulingDuration).append(", ");
         stats.append(relateDuration).append("\n");
-        stats.append(scanningTimer.getTimer().getMeanRate()).append(", ");
+        stats.append(scanEventTimer.getTimer().getMeanRate()).append(", ");
         stats.append(persistingTimer.getTimer().getMeanRate()).append(", ");
         stats.append(eventTimer.getTimer().getMeanRate());
 

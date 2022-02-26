@@ -43,20 +43,22 @@ import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;
 public class RequisitionAccountant extends AbstractRequisitionVisitor {
 	private final ImportOperationsManager m_opsMgr;
     private SaveOrUpdateOperation m_currentOp;
+    private String monitorKey;
         
     /**
      * <p>Constructor for RequisitionAccountant.</p>
      *
      * @param opsMgr a {@link org.opennms.netmgt.provision.service.operations.ImportOperationsManager} object.
      */
-    public RequisitionAccountant(ImportOperationsManager opsMgr) {
+    public RequisitionAccountant(ImportOperationsManager opsMgr, String monitorKey) {
         m_opsMgr = opsMgr;
+        this.monitorKey = monitorKey;
     }
     
     /** {@inheritDoc} */
     @Override
     public void visitNode(OnmsNodeRequisition nodeReq) {
-        m_currentOp = m_opsMgr.foundNode(nodeReq.getForeignId(), nodeReq.getNodeLabel(), nodeReq.getLocation(), nodeReq.getBuilding(), nodeReq.getCity());
+        m_currentOp = m_opsMgr.foundNode(nodeReq.getForeignId(), nodeReq.getNodeLabel(), nodeReq.getLocation(), nodeReq.getBuilding(), nodeReq.getCity(), monitorKey);
     }
 
     /** {@inheritDoc} */

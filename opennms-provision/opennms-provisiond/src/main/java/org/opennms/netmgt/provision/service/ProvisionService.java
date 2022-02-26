@@ -48,6 +48,7 @@ import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.snmp.SnmpProfileMapper;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.springframework.core.io.Resource;
@@ -119,7 +120,7 @@ public interface ProvisionService {
      *            dbonly, if the node should not be rescanned (perform all DB operations)
      */
     @Transactional
-    void updateNode(OnmsNode node, String rescanExisting);
+    void updateNode(OnmsNode node, String rescanExisting, String monitorKey);
     
     @Transactional
     OnmsNode updateNodeAttributes(OnmsNode node);
@@ -128,16 +129,16 @@ public interface ProvisionService {
     OnmsNode getDbNodeInitCat(Integer nodeId);
     
     @Transactional
-    OnmsIpInterface updateIpInterfaceAttributes(Integer nodeId, OnmsIpInterface ipInterface);
+    OnmsIpInterface updateIpInterfaceAttributes(Integer nodeId, OnmsIpInterface ipInterface, String monitorKey);
     
     @Transactional
     OnmsSnmpInterface updateSnmpInterfaceAttributes(Integer nodeId, OnmsSnmpInterface snmpInterface);
 
     @Transactional
-    OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName);
+    OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName, String monitorKey);
 
     @Transactional
-    OnmsMonitoredService addMonitoredService(Integer nodeId, String ipAddress, String serviceName);
+    OnmsMonitoredService addMonitoredService(Integer nodeId, String ipAddress, String serviceName, String monitorKey);
 
     @Transactional
     OnmsMonitoredService updateMonitoredServiceState(Integer nodeId, String ipAddress, String serviceName);
@@ -172,7 +173,7 @@ public interface ProvisionService {
      * Insert the provided node into the database
      */
     @Transactional
-    void insertNode(OnmsNode node);
+    void insertNode(OnmsNode node, String monitorKey);
 
     /**
      * Look up the OnmsServiceType with the given name, creating one if it
@@ -232,9 +233,9 @@ public interface ProvisionService {
     /**
      * Returns a list of scheduled nodes.
      */
-    List<NodeScanSchedule> getScheduleForNodes();
+    List<NodeScanSchedule> getScheduleForNodes(String monitorKey);
 
-    NodeScanSchedule getScheduleForNode(int nodeId, boolean force);
+    NodeScanSchedule getScheduleForNode(int nodeId, boolean force, String monitorKey);
     
     void setForeignSourceRepository(ForeignSourceRepository foriengSourceRepository);
 
@@ -261,7 +262,7 @@ public interface ProvisionService {
     OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node);
 
     @Transactional
-    OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource, String location);
+    OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource, String location, ProvisionMonitor monitor);
 
     @Transactional
     OnmsNode getNode(Integer nodeId);

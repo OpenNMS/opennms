@@ -133,7 +133,7 @@ public class Nms5414IT extends ProvisioningITCase {
         
         eventRecieved.await();
         
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation());
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), null);
         runScan(scan);
         
         for (final OnmsIpInterface iface : getInterfaceDao().findAll()) {

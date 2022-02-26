@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
+import org.opennms.netmgt.provision.service.NodeScan;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
 
@@ -63,14 +64,25 @@ public class NoOpProvisionMonitor implements ProvisionMonitor {
     }
 
     @Override
-    public void beginScanning(ImportOperation oper) {
+    public void beginScanEvent(ImportOperation oper) {
 
     }
 
     @Override
-    public void finishScanning(ImportOperation oper) {
+    public void finishScanEvent(ImportOperation oper) {
 
     }
+
+    @Override
+    public void beginScanning(NodeScan nodeScan) {
+
+    }
+
+    @Override
+    public void finishScanning(NodeScan nodeScan) {
+
+    }
+
 
     /**
      * {@inheritDoc}

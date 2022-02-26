@@ -1575,7 +1575,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
             if (iface.getIfIndex() != null) {
                 iface.setSnmpInterface(getSnmpInterfaceWithIfIndex(iface.getIfIndex()));
             }
-            iface.visit(new AddEventVisitor(eventForwarder));
+            iface.visit(new AddEventVisitor(eventForwarder, null));
         }
 
         if(oldPrimaryInterface != null && scannedPrimaryIf != null){

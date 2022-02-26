@@ -224,7 +224,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), "imported", "my-custom-location");
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), "imported", "my-custom-location", null);
         runScan(scan);
 
         anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
@@ -285,7 +285,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
         final String foreignSource = "imported";
-        NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+        NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, null);
         runScan(scan);
 
         anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
@@ -318,7 +318,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         assertEquals(6, getSnmpInterfaceDao().countAll());
 
         // NMS-8835: Now send another new suspect event for the same IP address and foreignSource
-        scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+        scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, null);
         runScan(scan);
 
         // The node count should not increase
@@ -344,7 +344,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
         final String foreignSource = "imported";
         final String locationName = "!" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource, locationName);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource, locationName, null);
         runScan(scan);
 
         anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
@@ -393,7 +393,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, null);
         runScan(scan);
 
         anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
@@ -442,7 +442,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).getEvent());
             anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-            final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
+            final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null, null);
             runScan(scan);
 
             anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
@@ -479,7 +479,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
                 }
             });
 
-            final ForceRescanScan rescan = m_provisioner.createForceRescanScan(nextNodeId);
+            final ForceRescanScan rescan = m_provisioner.createForceRescanScan(nextNodeId, null);
             runScan(rescan);
 
             final OnmsNode afterNode = getNodeDao().findAll().iterator().next();
@@ -516,7 +516,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).getEvent());
             anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-            final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
+            final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null, null);
             runScan(scan);
 
             anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
@@ -552,7 +552,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
                 }
             });
 
-            final ForceRescanScan rescan = m_provisioner.createForceRescanScan(nextNodeId);
+            final ForceRescanScan rescan = m_provisioner.createForceRescanScan(nextNodeId, null);
             runScan(rescan);
 
             final OnmsNode afterNode = getNodeDao().findAll().iterator().next();
@@ -589,7 +589,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new NodeLabelChangedEventBuilder("Provisiond").setOldNodeLabel("oldNodeLabel").setNewNodeLabel("newNodeLabel").setNodeid(nextNodeId).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(ip, "imported", null);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(ip, "imported", null, null);
         runScan(scan);
 
         anticipator.verifyAnticipated(20000, 0, 2000, 0, 0);
@@ -662,7 +662,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(ip).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-        NewSuspectScan scan = m_provisioner.createNewSuspectScan(ip, firstForeignSource, firstLocation);
+        NewSuspectScan scan = m_provisioner.createNewSuspectScan(ip, firstForeignSource, firstLocation, null);
         runScan(scan);
 
         anticipator.verifyAnticipated(20000, 0, 2000, 0, 0);
@@ -684,7 +684,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(ip).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-        scan = m_provisioner.createNewSuspectScan(ip, secondForeignSource, secondLocation);
+        scan = m_provisioner.createNewSuspectScan(ip, secondForeignSource, secondLocation, null);
         runScan(scan);
 
         anticipator.verifyAnticipated(20000, 0, 2000, 0, 0);

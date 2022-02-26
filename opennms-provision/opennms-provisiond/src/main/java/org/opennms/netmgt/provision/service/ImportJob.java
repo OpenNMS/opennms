@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.service;
 
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
-import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -43,7 +42,7 @@ import org.springframework.util.Assert;
  */
 public class ImportJob implements Job {
     
-    private Provisioner m_provisioner;
+    private Provisioner provisioner;
 
     /** Constant <code>URL="url"</code> */
     protected static final String URL = "url";
@@ -54,7 +53,7 @@ public class ImportJob implements Job {
     /** Constant <code>MONITOR="monitor"</code> */
     protected static final String MONITOR = "monitor";
 
-    private ProvisionMonitor monitor;
+    private ProvisionMonitor provisionMonitor;
 
     /** {@inheritDoc} */
     @Override
@@ -62,10 +61,10 @@ public class ImportJob implements Job {
         try {
             String url = context.getJobDetail().getJobDataMap().getString(URL);
             Assert.notNull(url);
-            Assert.notNull(monitor);
+            Assert.notNull(provisionMonitor);
             String rescanExisting = context.getJobDetail().getJobDataMap().getString(RESCAN_EXISTING);
-            getProvisioner().doImport(url, rescanExisting == null ? Boolean.TRUE.toString() : rescanExisting, monitor);
-        } catch (Throwable t) {
+            getProvisioner().doImport(url, rescanExisting == null ? Boolean.TRUE.toString() : rescanExisting, provisionMonitor);
+        } catch (Exception t) {
             throw new JobExecutionException(t);
         }
     }
@@ -76,14 +75,14 @@ public class ImportJob implements Job {
      * @param provisioner a {@link org.opennms.netmgt.provision.service.Provisioner} object.
      */
     public void setProvisioner(Provisioner provisioner) {
-        m_provisioner = provisioner;
+        this.provisioner = provisioner;
     }
 
     Provisioner getProvisioner() {
-        return m_provisioner;
+        return provisioner;
     }
 
-    public void setMonitor(ProvisionMonitor monitor) {
-        this.monitor = monitor;
+    public void setMonitor(ProvisionMonitor provisionMonitor) {
+        this.provisionMonitor = provisionMonitor;
     }
 }

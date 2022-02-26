@@ -45,6 +45,7 @@ import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +67,7 @@ public class NewSuspectScan implements Scan {
     private TaskCoordinator m_taskCoordinator;
 	private String m_foreignSource;
     private Span m_span;
+    private ProvisionMonitor monitor;
 	
     /**
      * <p>Constructor for NewSuspectScan.</p>
@@ -76,7 +78,7 @@ public class NewSuspectScan implements Scan {
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public NewSuspectScan(final InetAddress ipAddress, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, String foreignSource, final String location) {
+    public NewSuspectScan(final InetAddress ipAddress, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, String foreignSource, final String location, final ProvisionMonitor monitor) {
         m_ipAddress = ipAddress;
         m_provisionService = provisionService;
         m_eventForwarder = eventForwarder;
@@ -84,6 +86,7 @@ public class NewSuspectScan implements Scan {
         m_taskCoordinator = taskCoordinator;
         m_foreignSource = foreignSource;
         m_location = location;
+        this.monitor = monitor;
     }
     
     @Override
@@ -95,7 +98,7 @@ public class NewSuspectScan implements Scan {
     @Override
     public void run(final BatchTask phase) {
         m_span = m_provisionService.buildAndStartSpan("NewSuspectScan", null);
-        scanUndiscoveredNode(phase);
+        scanUndiscoveredNode(phase, monitor);
     }
 
     /**
@@ -103,11 +106,11 @@ public class NewSuspectScan implements Scan {
      *
      * @param phase a {@link org.opennms.core.tasks.BatchTask} object.
      */
-    protected void scanUndiscoveredNode(final BatchTask phase) {
+    protected void scanUndiscoveredNode(final BatchTask phase, final ProvisionMonitor monitor) {
     	final String addrString = str(m_ipAddress);
 		LOG.info("Attempting to scan new suspect address {} for foreign source {}", addrString, m_foreignSource);
 		
-        final OnmsNode node = m_provisionService.createUndiscoveredNode(addrString, m_foreignSource, m_location);
+        final OnmsNode node = m_provisionService.createUndiscoveredNode(addrString, m_foreignSource, m_location, monitor);
         if (node != null) {
             if(node.getId() != null && node.getId() > 0) {
                 m_span.setTag(NODE_ID, node.getId());
@@ -116,7 +119,7 @@ public class NewSuspectScan implements Scan {
         	phase.getBuilder().addSequence(
         			new NodeInfoScan(node, m_ipAddress, null, node.getLocation(), createScanProgress(), m_agentConfigFactory, m_provisionService, null, m_span),
         			new IpInterfaceScan(node.getId(), m_ipAddress, m_foreignSource, node.getLocation(), m_provisionService, m_span),
-				new NodeScan(node.getId(), m_foreignSource, node.getForeignId(), node.getLocation(), m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, m_span),
+				new NodeScan(node.getId(), m_foreignSource, node.getForeignId(), node.getLocation(), m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, m_span, monitor),
 				new RunInBatch() {
 					@Override
 					public void run(BatchTask batch) {

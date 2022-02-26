@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.service;
 
-import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -45,7 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ImportJobFactory implements JobFactory {
 
-    private Provisioner m_provisioner;
+    private Provisioner provisioner;
 
     @Autowired
     private MonitorHolder monitorHolder;
@@ -60,15 +59,14 @@ public class ImportJobFactory implements JobFactory {
         ImportJob job = null;
         
         try {
-            job = jobClass.newInstance();
+            job = jobClass.getDeclaredConstructor().newInstance();
             job.setProvisioner(getProvisioner());
             job.setMonitor(monitorHolder.getMonitor(jobDetail.getKey().getName(), job));
 
             return job;
-        } catch (Throwable e) {
-            SchedulerException se = new SchedulerException("failed to create job class: "+jobDetail.getJobClass().getName()+"; "+
+        } catch (Exception e) {
+            throw new SchedulerException("failed to create job class: "+jobDetail.getJobClass().getName()+"; "+
                                                            e.getLocalizedMessage(), e);
-            throw se;
         }
     }
 
@@ -83,11 +81,11 @@ public class ImportJobFactory implements JobFactory {
      * @param provisioner a {@link org.opennms.netmgt.provision.service.Provisioner} object.
      */
     public void setProvisioner(Provisioner provisioner) {
-        m_provisioner = provisioner;
+        this.provisioner = provisioner;
     }
     
     private Provisioner getProvisioner() {
-        return m_provisioner;
+        return provisioner;
     }
 }
 

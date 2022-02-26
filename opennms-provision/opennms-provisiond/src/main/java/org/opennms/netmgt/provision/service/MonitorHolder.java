@@ -30,6 +30,8 @@ package org.opennms.netmgt.provision.service;
 
 import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -46,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MonitorHolder {
     private static final Logger LOG = LoggerFactory.getLogger(MonitorHolder.class);
+    private static final ObjectMapper mapper = new ObjectMapper();
     private final DateTimeFormatter datetimeFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     private MetricRegistry metricRegistry = new MetricRegistry();
     private JmxReporter jmxReporter;
@@ -56,12 +59,17 @@ public class MonitorHolder {
     }
 
     private final LoadingCache<String, ProvisionMonitor> monitors = CacheBuilder.newBuilder()
-            .expireAfterWrite(3, TimeUnit.MINUTES)
+            .expireAfterWrite(10, TimeUnit.MINUTES)
             .removalListener((RemovalListener<String, ProvisionMonitor>) removalNotification -> {
                 LOG.warn("!!!!!!!!!!!!!!!! TTTTTTTT key: {} value: {} ", removalNotification.getKey(), removalNotification.getValue());
                 LOG.warn("BEFORE {}", metricRegistry.getNames());
                 metricRegistry.removeMatching((s, metric) -> s.indexOf(removalNotification.getKey()) == 0);
                 LOG.warn("AFTER {}", metricRegistry.getNames());
+                try {
+                    LOG.info("Summary job name: {}\nOutput:\n{}", removalNotification.getKey(), mapper.writeValueAsString(removalNotification.getValue()));
+                } catch (JsonProcessingException e) {
+                    LOG.warn("Fail to write summary for {} error: {}.", removalNotification.getKey(), e.getMessage());
+                }
             }).build(new CacheLoader<>() {
                 @Override
                 public ProvisionMonitor load(String key) {
@@ -69,14 +77,41 @@ public class MonitorHolder {
                 }
             });
 
+    /**
+     * It will return existing monitor or create new one
+     * @param name
+     * @param job
+     * @return
+     * @throws ExecutionException
+     */
     public ProvisionMonitor getMonitor(String name, ImportJob job) throws ExecutionException {
         monitors.cleanUp();
         return monitors.get(MetricRegistry.name(name, LocalDateTime.now().format(datetimeFormat), String.valueOf(job.hashCode())));
     }
 
+    /**
+     * It will return existing monitor or create new one
+     * @param url
+     * @return
+     * @throws ExecutionException
+     */
     public ProvisionMonitor getMonitor(String url) throws ExecutionException {
         monitors.cleanUp();
         return monitors.get(MetricRegistry.name(url, LocalDateTime.now().format(datetimeFormat)));
+    }
+
+    /**
+     * It will only return existing monitor
+     * @param key
+     * @return monitor (nullable)
+     * @throws ExecutionException
+     */
+    public ProvisionMonitor getMonitorByKey(String key) {
+        monitors.cleanUp();
+        if (key == null) {
+            return null;
+        }
+        return monitors.getIfPresent(key);
     }
 
     public Map<String, ProvisionMonitor> getMonitors() {

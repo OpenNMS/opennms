@@ -30,35 +30,56 @@ package org.opennms.netmgt.provision.service;
 
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-public class ThreadTimer {
-    private Timer timer;
-    private ThreadLocal<Context> context = new ThreadLocal<>();
+/**
+ * It is a timer class which will keep tracking by Timer.Context by key.
+ */
+public class ObjectKeyTimer {
+    private static final Logger LOG = LoggerFactory.getLogger(ObjectKeyTimer.class);
+
+    private final Timer timer;
+
+    // by the nature of provisiond, thread will be shared between scanExecutor & importExecutor which make ThreadLocal not working
+    private final Map<Object, Context> contextMap = new HashMap<>();
 
     /**
      * <p>Constructor for ThreadTimer.</p>
      *
      * @param timer a {@link Timer} object.
      */
-    public ThreadTimer(Timer timer) {
+    public ObjectKeyTimer(Timer timer) {
         this.timer = Objects.requireNonNull(timer);
     }
 
     /**
      * <p>begin</p>
      */
-    public void begin() {
-        context.set(timer.time());
+    public void begin(Object key) {
+        Objects.requireNonNull(key);
+        synchronized (contextMap) {
+            contextMap.put(key, timer.time());
+            LOG.warn("TIME TAKEN START {} thread: {} context hash: {} ", key, Thread.currentThread().getId(), contextMap.get(key).hashCode());
+        }
     }
 
     /**
      * <p>end</p>
      */
-    public void end() {
-        context.get().stop();
-        context.remove();
+    public void end(Object key) {
+        Objects.requireNonNull(key);
+        synchronized (contextMap) {
+            Context c = contextMap.remove(key);
+            if ( c != null ){
+                long tmp = c.stop();
+                LOG.warn("TIME TAKEN END {}, thread: {} hash {} timer: {}", key, Thread.currentThread().getId(), c.hashCode(), tmp);
+            }
+        }
     }
 
     public Timer getTimer() {

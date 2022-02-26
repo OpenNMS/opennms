@@ -103,7 +103,7 @@ public class CoreImportActivities {
         final ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, m_provisionService, rescanExisting);
         
         opsMgr.setForeignSource(foreignSource);
-        opsMgr.auditNodes(specFile);
+        opsMgr.auditNodes(specFile, monitor.getName());
 
         monitor.finishAuditNodes();
         debug("Finished auditing nodes.");
@@ -145,9 +145,11 @@ public class CoreImportActivities {
                 // scan at import should always be performed for new nodes irrespective of rescanExisting flag.
                 operation.getOperationType().equals(ImportOperation.OperationType.INSERT)) {
             info("Running scan phase of {}", operation);
-            monitor.beginScanning(operation);
+            monitor.beginScanEvent(operation);
+            long start = System.currentTimeMillis();
             operation.scan();
-            monitor.finishScanning(operation);
+            LOG.warn("operation {}: time: {}", operation, System.currentTimeMillis() - start);
+            monitor.finishScanEvent(operation);
             info("Finished Running scan phase of {}", operation);
         } else {
             info("Skipping scan phase of {}, because the parameter {} was set to {} during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);

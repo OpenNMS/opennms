@@ -34,17 +34,17 @@ public class InsertOperation extends SaveOrUpdateOperation {
     
     /**
      * <p>Constructor for InsertOperation.</p>
-     *
-     * @param foreignSource a {@link java.lang.String} object.
-     * @param foreignId a {@link java.lang.String} object.
-     * @param nodeLabel a {@link java.lang.String} object.
-     * @param location a {@link java.lang.String} object.
-     * @param building a {@link java.lang.String} object.
-     * @param city a {@link java.lang.String} object.
-     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+     * @param foreignSource a {@link String} object.
+     * @param foreignId a {@link String} object.
+     * @param nodeLabel a {@link String} object.
+     * @param location a {@link String} object.
+     * @param building a {@link String} object.
+     * @param city a {@link String} object.
+     * @param provisionService a {@link ProvisionService} object.
+     * @param monitorKey a {@link String} object. (nullable)
      */
-    public InsertOperation(String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService) {
-        super(null, foreignSource, foreignId, nodeLabel, location, building, city, provisionService, Boolean.TRUE.toString());
+    public InsertOperation(String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService, String monitorKey) {
+        super(null, foreignSource, foreignId, nodeLabel, location, building, city, provisionService, Boolean.TRUE.toString(), monitorKey);
     }
 
 	/**
@@ -60,7 +60,7 @@ public class InsertOperation extends SaveOrUpdateOperation {
     /** {@inheritDoc} */
     @Override
     protected void doPersist() {
-        getProvisionService().insertNode(getNode());
+        getProvisionService().insertNode(getNode(), getMonitorKey());
     }
 
     @Override

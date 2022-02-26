@@ -28,8 +28,7 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-import java.util.List;
-
+import org.opennms.netmgt.provision.service.NodeScan;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
 
@@ -57,14 +56,28 @@ public interface ProvisionMonitor {
 	 *
 	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
 	 */
-	void beginScanning(ImportOperation oper);
+	void beginScanEvent(ImportOperation oper);
 
 	/**
 	 * <p>finishPreprocessing</p>
 	 *
 	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
 	 */
-	void finishScanning(ImportOperation oper);
+	void finishScanEvent(ImportOperation oper);
+
+	/**
+	 * <p>beginPreprocessing</p>
+	 *
+	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
+	 */
+	void beginScanning(NodeScan nodeScan);
+
+	/**
+	 * <p>finishPreprocessing</p>
+	 *
+	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
+	 */
+	void finishScanning(NodeScan nodeScan);
 
 	/**
 	 * <p>beginPersisting</p>
