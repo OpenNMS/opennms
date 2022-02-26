@@ -1,9 +1,9 @@
 <template>
-  <FeatherButton icon="ExpandLess" @click="increaseSemanticZoomLevel">
+  <FeatherButton icon="Increase SZL" @click="increaseSemanticZoomLevel">
     <FeatherIcon :icon="ExpandLess"></FeatherIcon>
   </FeatherButton>
   <FeatherChip>{{ semanticZoomlevel }}</FeatherChip>
-  <FeatherButton icon="ExpandMore" @click="decreaseSemanticZoomLevel">
+  <FeatherButton icon="Decrease SZL" @click="decreaseSemanticZoomLevel">
     <FeatherIcon :icon="ExpandMore"></FeatherIcon>
   </FeatherButton>
 </template>

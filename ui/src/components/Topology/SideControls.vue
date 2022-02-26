@@ -1,11 +1,26 @@
 <template>
   <div class="topology-side-controls">
     <SemanticZoomLevelControl />
+
+    <FeatherButton class="refresh-btn" icon="Refresh" @click="refreshGraph">
+      <FeatherIcon :icon="RefreshIcon" />
+    </FeatherButton>
   </div>
 </template>
 
 <script setup lang="ts">
 import SemanticZoomLevelControl from './SemanticZoomLevelControl.vue'
+import { FeatherButton } from '@featherds/button'
+import { FeatherIcon } from '@featherds/icon'
+import RefreshIcon from '@featherds/icon/navigation/Refresh'
+
+defineProps({
+  refreshGraph: {
+    required: true,
+    type: Function
+  }
+})
+
 </script>
 
 <style scoped lang="scss">
@@ -30,6 +45,9 @@ import SemanticZoomLevelControl from './SemanticZoomLevelControl.vue'
   }
   .chip {
     margin: 0px 0px 0px 12px !important;
+  }
+  .refresh-btn {
+    margin-top: 5px !important;
   }
 }
 </style>

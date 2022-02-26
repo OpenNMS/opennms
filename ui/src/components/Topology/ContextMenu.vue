@@ -3,10 +3,8 @@
     <div class="menu-btn" @click="addContextNodeToFocus" v-if="!nodeIsFocused">Add To Focus</div>
     <div class="menu-btn" @click="removeContextNodeFromFocus" v-else>Remove From Focus</div>
     <div class="menu-btn" @click="setContextNodeAsFocus">Set As Focal Point</div>
-    <div class="menu-btn">Node Info</div>
-    <div class="menu-btn">Resource Graphs</div>
-    <div class="menu-btn">Change Icon</div>
-    <div class="menu-btn">Reset Icon</div>
+    <div class="menu-btn" @click="openNodeInfoPage">Node Info</div>
+    <div class="menu-btn" @click="openNodeResourcePage">Resource Graphs</div>
   </div>
 </template>
 
@@ -14,8 +12,10 @@
 import { SearchResultResponse } from '@/types'
 import { toRefs, computed } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
 const store = useStore()
+const router = useRouter()
 
 const props = defineProps({
   nodeId: {
@@ -60,11 +60,26 @@ const removeContextNodeFromFocus = async () => {
   props.closeContextMenu()
 }
 
-const setContextNodeAsFocus = async () => { 
+const setContextNodeAsFocus = async () => {
   const results: SearchResultResponse[] = await store.dispatch('searchModule/search', props.nodeId)
   if (results) {
-    store.dispatch('topologyModule/setFocusedSearchBarNodes', [results[0].results[0]]) 
-    store.dispatch('topologyModule/addFocusedNodeIds', [props.nodeId]) 
+    store.dispatch('topologyModule/setFocusedSearchBarNodes', [results[0].results[0]])
+    store.dispatch('topologyModule/addFocusedNodeIds', [props.nodeId])
+  }
+  props.closeContextMenu()
+}
+
+const openNodeInfoPage = () => {
+  const route = router.resolve(`/node/${props.nodeId}`)
+  window.open(route.href, '_blank')
+  props.closeContextMenu()
+}
+
+const openNodeResourcePage = async () => {
+  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', props.nodeId)
+  if (results) {
+    const route = router.resolve(`/resource-graphs/${results[0].results[0].identifier}`)
+    window.open(route.href, '_blank')
   }
   props.closeContextMenu()
 }

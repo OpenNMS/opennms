@@ -42,7 +42,10 @@ const addFocusedNodeIds = (context: ContextWithState, nodeIds: string[]) => {
 }
 
 const getTopologyDataByLevelAndFocus = async (context: ContextWithState) => {
-  const SZLRequest: SZLRequest = { semanticZoomLevel: context.state.semanticZoomLevel, verticesInFocus: context.state.focusedNodeIds }
+  const SZLRequest: SZLRequest = {
+    semanticZoomLevel: context.state.semanticZoomLevel,
+    verticesInFocus: context.state.focusedNodeIds
+  }
   const resp = await API.getTopologyDataByLevelAndFocus(SZLRequest)
   if (resp) {
     parseVerticesAndEdges(resp, context)

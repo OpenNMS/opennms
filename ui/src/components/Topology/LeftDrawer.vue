@@ -28,7 +28,7 @@ onMounted(() => {
   const focusTrap = document.querySelector('#map-left-drawer > .content > .focus-trap-content')
   if (focusTrap) {
 
-    var fragment = document.createDocumentFragment()
+    const fragment = document.createDocumentFragment()
     while (focusTrap.firstChild) {
       fragment.appendChild(focusTrap.firstChild)
     }

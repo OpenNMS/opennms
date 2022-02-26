@@ -41,14 +41,12 @@
             </LPopup>
             <LIcon :icon-url="setIcon(node)" :icon-size="iconSize" />
           </LMarker>
-          <!-- Disable polylines until they work -->
-          <!-- <LPolyline
-              v-if="zoom > 5"
-              v-for="coordinatePair of edges"
-              :key="coordinatePair[0].toString()"
-              :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
-              color="green"
-          />-->
+          <LPolyline
+            v-for="coordinatePair of edges"
+            :key="coordinatePair[0].toString()"
+            :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
+            color="green"
+          />
         </MarkerCluster>
       </template>
     </LMap>
@@ -64,7 +62,7 @@ import {
   LIcon,
   LPopup,
   LControlLayers,
-  // LPolyline,
+  LPolyline,
 } from '@vue-leaflet/vue-leaflet'
 import MarkerCluster from './MarkerCluster.vue'
 import { useStore } from 'vuex'
@@ -78,6 +76,7 @@ import CriticalIcon from '@/assets/Critical-icon.png'
 import { Map as LeafletMap, divIcon, MarkerCluster as Cluster } from 'leaflet'
 import { numericSeverityLevel } from './utils'
 import SeverityFilter from './SeverityFilter.vue'
+import { Edges } from 'v-network-graph'
 
 const store = useStore()
 const map = ref()
@@ -144,17 +143,21 @@ const setMarkerColor = (severity: string | undefined) => {
   return NormalIcon
 }
 
-// const edges = computed(() => {
-//   const ids: string[] = nodes.value.map((node: Node) => node.id)
-//   const interestedNodesCoordinateMap = getNodeCoordinateMap.value
-//   return store.state.mapModule.edges.filter((edge: [number, number]) => ids.includes(edge[0].toString()) && ids.includes(edge[1].toString()))
-//     .map((edge: [number, number]) => {
-//       let edgeCoordinatesPair = []
-//       edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[0]))
-//       edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[1]))
-//       return edgeCoordinatesPair
-//     })
-// })
+const edges = computed(() => {
+  const interestedNodesCoordinateMap = getNodeCoordinateMap.value
+  const edges: Edges = store.state.topologyModule.edges
+
+  const edgeCoordinatesPairs = []
+
+  for (const edge of Object.values(edges)) {
+    const edgeCoordinatesPair = []
+    edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge.source))
+    edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge.target))
+    edgeCoordinatesPairs.push(edgeCoordinatesPair)
+  }
+
+  return edgeCoordinatesPairs
+})
 
 const getNodeCoordinateMap = computed(() => {
   const map = new Map()
