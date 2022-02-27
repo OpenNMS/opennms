@@ -198,6 +198,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         final List<String> featuresOnBoot = new ArrayList<>();
         featuresOnBoot.add("sentinel-persistence");
         featuresOnBoot.add("sentinel-core");
+        featuresOnBoot.add("sentinel-health-rest-service");
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             featuresOnBoot.add("sentinel-kafka");
         } else if (IpcStrategy.JMS.equals(model.getIpcStrategy())) {
@@ -263,12 +264,12 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
             LOG.info("Waiting for Sentinel health check...");
             try {
                 RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
-                await().atMost(5, MINUTES)
+                await().atMost(3, MINUTES)
                         .pollInterval(10, SECONDS)
                         .ignoreExceptions()
                         .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             } catch(ConditionTimeoutException e) {
-                LOG.error("{} rest health check did not finish after {} minutes.", ALIAS, 5);
+                LOG.error("{} rest health check did not finish after 3 minutes.", ALIAS);
                 throw new RuntimeException(e);
             }
             LOG.info("Health check passed.");

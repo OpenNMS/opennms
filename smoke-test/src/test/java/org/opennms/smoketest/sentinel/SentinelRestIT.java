@@ -32,6 +32,9 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD;
 import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME;
+import static org.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
@@ -70,9 +73,11 @@ public class SentinelRestIT {
     public void testRestHealthServiceOnSentinel() throws Exception {
 
         LOG.info("testing /sentinel/rest/health .........");
-        given().get("/sentinel/rest/health")
-                .then().log().ifStatusCodeIsEqualTo(200)
-                .statusCode(200);
+        await()
+                .atMost(6, MINUTES)
+                .pollInterval(30, SECONDS)
+                .until(SentinelRestIT::isServiceOk, Matchers.equalTo(true));
+
 
         LOG.info("testing /sentinel/rest/health?tag=local .........");
         List<String> localDescriptions = Arrays.asList("Verifying installed bundles", "Retrieving NodeDao", "DNS Lookups (Netty)");
@@ -96,4 +101,11 @@ public class SentinelRestIT {
                 .contentType(ContentType.TEXT)
                 .body(Matchers.anyOf(Matchers.equalTo("Everything is awesome"), Matchers.equalTo("Oh no, something is wrong")));
     }
+
+    private static boolean isServiceOk(){
+        return given().get("/sentinel/rest/health")
+                .then().log().ifValidationFails().log().ifStatusCodeIsEqualTo(200)
+                .extract().statusCode() == 200;
+        }
+
 }
