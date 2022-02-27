@@ -82,7 +82,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     private static final Logger LOG = LoggerFactory.getLogger(SentinelContainer.class);
     private static final int SENTINEL_DEBUG_PORT = 5005;
     private static final int SENTINEL_SSH_PORT = 8301;
-    private static final int SENTINEL_JETTY_PORT = 8181;
+    private static final int SENTINEL_JETTY_PORT = 8191;
     static final String ALIAS = "sentinel";
 
     private final StackModel model;
