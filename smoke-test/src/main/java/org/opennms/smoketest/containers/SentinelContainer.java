@@ -82,7 +82,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     private static final Logger LOG = LoggerFactory.getLogger(SentinelContainer.class);
     private static final int SENTINEL_DEBUG_PORT = 5005;
     private static final int SENTINEL_SSH_PORT = 8301;
-    private static final int SENTINEL_JETTY_PORT = 8191;
+    private static final int SENTINEL_JETTY_PORT = 8181;
     static final String ALIAS = "sentinel";
 
     private final StackModel model;
@@ -198,7 +198,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         final List<String> featuresOnBoot = new ArrayList<>();
         featuresOnBoot.add("sentinel-persistence");
         featuresOnBoot.add("sentinel-core");
-        featuresOnBoot.add("sentinel-health-rest-service");
+        featuresOnBoot.add("opennms-health-rest-service");
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             featuresOnBoot.add("sentinel-kafka");
         } else if (IpcStrategy.JMS.equals(model.getIpcStrategy())) {
