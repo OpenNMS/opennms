@@ -47,7 +47,7 @@ You must enable Netflow listeners.
 == Persisted flows do not appear in Helm
 
 If you have persisted flows but they do not appear in Helm, check the configuration in `etc/org.opennms.features.flows.persistence.elastic.cfg`, in particular, the `elasticUrl` property.
-If you are using aggregated flows, make sure your `aggregate.elasticIndexStrategy` matches the index strategy you configured in Nephron.
+If you are using aggregated flows, make sure your `aggregate.elasticIndexStrategy` matches the index strategy you configured in the streaming analytics tool.
 To persist only raw flows or only aggregated flows in Elasticsearch, you must set `alwaysUseRawForQueries` or `alwaysUseAggForQueries` appropriately.
 
 (For more information on troubleshooting Elasticsearch, refer to the https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html[Elasticsearch documentation].)
