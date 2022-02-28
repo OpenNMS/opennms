@@ -15,7 +15,8 @@ For example, some devices may distinguish between their default configuration an
 OpenNMS considers configuration types as arbitrary strings. 
 If no configuration type is specified, then _default_ is used.
 
-OpenNMS archives received backups and records when changes happened. It also records if backups fail and raises according alarms.
+OpenNMS archives received backups and records when changes happened. 
+It also records if backups fail and raises corresponding alarms.
 
 == SSH scripting
 
