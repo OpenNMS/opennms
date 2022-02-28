@@ -32,12 +32,14 @@ Scripts can reference the following variables by using `${varname}` notation:
 | `tftpServerPort`
 | port number of the TFTP server
 
-| `filename`
-| filename that must be used for uploading
+| `filenameSuffix`
+| suffix that must be appended to the filename for uploading
 
 | `configType`
 | config type as described above
 |===
+
+Note: Uploaded configuration files should specify their file type by including the corresponding filename extension like `.zip` or `.gz`. In addition, a `.` and the script variable `filenameSuffix` has to be appended to the filename that is used for upload. That additional suffix is used on the server side to identify incoming uploads.
 
 Example script:
 
@@ -46,16 +48,16 @@ await: >
 send: configure
 await: Entering configuration mode
 await: #
-send: save config to ${filename}
-await: Config saved to ${filename}
+send: save config to config.gz.${filenameSuffix}
+await: Config saved to config.gz.${filenameSuffix}
 await: #
 send: quit
 await: Exiting configuration mode
 await: >
-send: tftp export configuration from ${filename} to ${tftpServerIp}:${tftpServerPort}
+send: tftp export configuration from config.gz.${filenameSuffix} to ${tftpServerIp}:${tftpServerPort}
 await: >
-send: delete config saved ${filename}
-await: Successfully removed ${filename}
+send: delete config saved config.gz.${filenameSuffix}
+await: Successfully removed config.gz.${filenameSuffix}
 await: >
 ```
 
