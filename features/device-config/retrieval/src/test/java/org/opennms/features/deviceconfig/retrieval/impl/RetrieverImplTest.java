@@ -30,6 +30,7 @@ package org.opennms.features.deviceconfig.retrieval.impl;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -86,15 +87,15 @@ public class RetrieverImplTest {
         var vars = waitFor(varsCaptor);
         var receiver = waitFor(receiverCaptor);
 
-        var filename = (String)vars.get("filename");
+        var filenameSuffix = (String)vars.get("filenameSuffix");
 
-        assertThat(filename, containsString(configType));
-        assertThat(configType, is(RetrieverImpl.uploadFileNameToConfigType(filename)));
+        assertThat(filenameSuffix, notNullValue());
 
         var bytes = new byte[]{1, 2, 3};
+        var filename = "config.gz";
 
         // signal the receiver of some incoming file with the expected filename
-        receiver.onFileReceived(InetAddress.getLocalHost(), filename, bytes);
+        receiver.onFileReceived(InetAddress.getLocalHost(), filename + "." + filenameSuffix, bytes);
 
         await().until(future::isDone);
 
@@ -104,6 +105,7 @@ public class RetrieverImplTest {
         var success = either.get();
 
         assertThat(success.config, is(bytes));
+        assertThat(success.filename, is(filename));
 
         verify(tftpServer, times(1)).unregister(receiver);
     }
@@ -221,10 +223,10 @@ public class RetrieverImplTest {
         var vars = waitFor(varsCaptor);
         var receiver = waitFor(receiverCaptor);
 
-        var filename = (String)vars.get("filename");
+        var filenameSuffix = (String)vars.get("filenameSuffix");
 
         // signal the receiver of some incoming file that has a different name
-        receiver.onFileReceived(InetAddress.getLocalHost(), filename + ".other", new byte[] { 1, 2, 3 });
+        receiver.onFileReceived(InetAddress.getLocalHost(), "config.gz." + filenameSuffix + ".other", new byte[] { 1, 2, 3 });
 
         await().until(future::isDone);
 

@@ -64,7 +64,8 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
     private static Logger LOG = LoggerFactory.getLogger(RetrieverImpl.class);
 
-    private static String SCRIPT_VAR_FILENAME = "filename";
+    // when a
+    private static String SCRIPT_VAR_FILENAME_SUFFIX = "filenameSuffix";
     private static String SCRIPT_VAR_TFTP_SERVER_IP = "tftpServerIp";
     private static String SCRIPT_VAR_TFTP_SERVER_PORT = "tftpServerPort";
     private static String SCRIPT_VAR_CONFIG_TYPE = "configType";
@@ -103,11 +104,12 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         LOG.debug("retrieve config - host: " + host + "; port: " + port);
         var vs = new HashMap<String, String>();
         vs.putAll(vars);
-        // generate a unique filename
+        // generate a unique filename suffix
         // -> the filename is used to distinguish incoming files
-        // -> scripts must use "tftp put <localfile> ${filename}" (or similar) to upload the device config
-        var filename = configTypeToUploadFileName(configType);
-        vs.put(SCRIPT_VAR_FILENAME, filename);
+        // -> scripts must use "tftp put <localfile> <removefile>.${filenameSuffix}" (or similar) to upload the device config
+        // -> the appended ".${filenameSuffix}" is stripped from the incoming file
+        var filenameSuffix = uniqueFilenameSuffix();
+        vs.put(SCRIPT_VAR_FILENAME_SUFFIX, filenameSuffix);
 
         // set the ip address and port of the tftp server
         vs.put(SCRIPT_VAR_TFTP_SERVER_IP, tftpServerIp);
@@ -122,7 +124,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             var tftpFileReceiver = new TftpFileReceiverImpl(
                     host,
                     port,
-                    filename,
+                    filenameSuffix,
                     () -> sshScriptingService.execute(script, user, password, host, port, vs, timeout)
             );
 
@@ -164,7 +166,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
         private final String host;
         private final int port;
-        private final String uploadFileName;
+        private final String fileNameSuffix;
         private final Supplier<Optional<SshScriptingService.Failure>> uploadTrigger;
 
         private volatile CompletableFuture<Either<Failure, Success>> future;
@@ -172,12 +174,12 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         public TftpFileReceiverImpl(
                 String host,
                 int port,
-                String uploadFileName,
+                String filenameSuffix,
                 Supplier<Optional<SshScriptingService.Failure>> uploadTrigger
         ) {
             this.host = host;
             this.port = port;
-            this.uploadFileName = Objects.requireNonNull(uploadFileName);
+            this.fileNameSuffix = Objects.requireNonNull(filenameSuffix);
             this.uploadTrigger = uploadTrigger;
         }
 
@@ -211,13 +213,14 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
         @Override
         public void onFileReceived(InetAddress address, String fileName, byte[] content) {
-            if (uploadFileName.equals(fileName)) {
+            if (fileName.endsWith("." + fileNameSuffix)) {
                 // it is unlikely, that the file receiver receives a file (with matching filename!) before the file
                 // upload was triggered
                 // -> just to be sure check that the future is set
                 if (future != null) {
                     LOG.debug("received config - host: " + host + "; port: " + port + "; address: " + address.getHostAddress());
-                    future.complete(Either.right(new Success(content, fileName)));
+                    // strip the '.' and filenameSuffix from the filename
+                    future.complete(Either.right(new Success(content, fileName.substring(0, fileName.length() - fileNameSuffix.length() - 1))));
                 }
             }
         }
@@ -230,12 +233,8 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         return "device config was not received in time. host: " + host + "; port: " + port;
     }
 
-    static String configTypeToUploadFileName(String configType) {
-        return configType + "." + uploadCounter.incrementAndGet();
-    }
-
-    static String uploadFileNameToConfigType(String filename) {
-        return filename.substring(0, filename.lastIndexOf('.'));
+    private static String uniqueFilenameSuffix() {
+        return String.valueOf(uploadCounter.incrementAndGet());
     }
 
     private static AtomicLong uploadCounter = new AtomicLong();

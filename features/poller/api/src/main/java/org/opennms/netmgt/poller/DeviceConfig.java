@@ -29,11 +29,15 @@
 package org.opennms.netmgt.poller;
 
 public class DeviceConfig {
-    public final byte[] content;
-    public final String filename;
+    public byte[] content;
+    public String filename;
 
     public DeviceConfig(byte[] content, String fileName) {
         this.content = content;
         this.filename = fileName;
+    }
+
+    // for JAXB
+    public DeviceConfig() {
     }
 }

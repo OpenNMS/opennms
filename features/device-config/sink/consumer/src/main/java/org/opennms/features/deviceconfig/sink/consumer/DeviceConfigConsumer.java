@@ -33,7 +33,7 @@ import java.net.InetAddress;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
+import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.sink.module.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.sink.module.DeviceConfigSinkModule;
@@ -78,7 +78,9 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigDTO, De
             if (ipInterface != null) {
                 deviceConfigDao.updateDeviceConfigContent(
                         ipInterface,
-                        message.fileName, // use filename as config type
+                        // use default ConfigType for now
+                        // -> later on the config type may be derived from the filename somehow...
+                        ConfigType.Default,
                         null,
                         message.config,
                         message.fileName
