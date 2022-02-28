@@ -74,7 +74,7 @@ public class SentinelRestIT {
 
         LOG.info("testing /sentinel/rest/health .........");
         await()
-                .atMost(8, MINUTES)
+                .atMost(6, MINUTES)
                 .pollInterval(30, SECONDS)
                 .until(SentinelRestIT::isServiceOk, Matchers.equalTo(true));
 
