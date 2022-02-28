@@ -35,7 +35,7 @@ Scripts can reference the following variables by using `${varname}` notation:
 | Description
 
 | `tftpServerIp`
-| ip address of the TFTP server
+| IP address of the TFTP server
 
 | `tftpServerPort`
 | port number of the TFTP server
