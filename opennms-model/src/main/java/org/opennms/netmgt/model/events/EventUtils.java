@@ -92,9 +92,7 @@ public abstract class EventUtils {
             bldr.addParam(PARM_MONITOR_KEY, monitorKey);
         }
         return bldr.getEvent();
-
     }
-
 
     /**
      * <p>createNodeGainedInterfaceEvent</p>

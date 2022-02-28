@@ -28,9 +28,25 @@
 
 package org.opennms.netmgt.provision.service;
 
+import java.io.File;
+import java.net.InetAddress;
+import java.net.URL;
+import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import io.opentracing.Tracer;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.tasks.TaskCoordinator;
@@ -66,14 +82,12 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.net.URL;
-import java.util.*;
-import java.util.concurrent.*;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import io.opentracing.Tracer;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.netmgt.provision.service.lifecycle.Lifecycles.RESOURCE;
+
 
 /**
  * Massively Parallel Java Provisioning <code>ServiceDaemon</code> for OpenNMS.
@@ -235,7 +249,6 @@ public class Provisioner implements SpringServiceDaemon {
         m_provisionService.setTracer(tracer);
     }
 
-
     /**
      * <p>destroy</p>
      *
@@ -302,7 +315,7 @@ public class Provisioner implements SpringServiceDaemon {
      * @return a {@link org.opennms.netmgt.provision.service.NewSuspectScan} object.
      */
     public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource, String location, String monitorKey) {
-        LOG.info("createNewSuspectScan called with IP: "+ipAddress+ "and foreignSource"+foreignSource == null ? "null" : foreignSource);
+        LOG.info("createNewSuspectScan called with IP: {}, foreignSource {} and monitorKey {}", ipAddress, foreignSource == null ? "null" : foreignSource, monitorKey);
         return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource, location, monitorHolder.getMonitor(monitorKey));
     }
 
@@ -593,7 +606,6 @@ public class Provisioner implements SpringServiceDaemon {
     public void handleForceRescan(IEvent e) {
         final Integer nodeId = e.getNodeid().intValue();
         final String monitorKey = getMonitorKey(e);
-
         removeNodeFromScheduleQueue(nodeId);
         Runnable r = new Runnable() {
             @Override

@@ -146,9 +146,7 @@ public class CoreImportActivities {
                 operation.getOperationType().equals(ImportOperation.OperationType.INSERT)) {
             info("Running scan phase of {}", operation);
             monitor.beginScanEvent(operation);
-            long start = System.currentTimeMillis();
             operation.scan();
-            LOG.warn("operation {}: time: {}", operation, System.currentTimeMillis() - start);
             monitor.finishScanEvent(operation);
             info("Finished Running scan phase of {}", operation);
         } else {

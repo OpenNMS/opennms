@@ -535,7 +535,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     }
 
-    private OnmsMonitoredService addMonitoredService(final OnmsIpInterface iface, final String svcName, String monitorKey) {
+    private OnmsMonitoredService addMonitoredService(final OnmsIpInterface iface, final String svcName, final String monitorKey) {
         final OnmsServiceType svcType = createServiceTypeIfNecessary(svcName);
 
         return new CreateIfNecessaryTemplate<OnmsMonitoredService, MonitoredServiceDao>(m_transactionManager, m_monitoredServiceDao) {
@@ -881,7 +881,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional(readOnly=true)
     @Override
-    public NodeScanSchedule getScheduleForNode(final int nodeId, final boolean force, String monitorKey) {
+    public NodeScanSchedule getScheduleForNode(final int nodeId, final boolean force, final String monitorKey) {
         return createScheduleForNode(m_nodeDao.get(nodeId), force, monitorKey);
     }
 
@@ -891,6 +891,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
      * @return a {@link java.util.List} object.
      */
     @Transactional(readOnly=true)
+    @Override
     public List<NodeScanSchedule> getScheduleForNodes(String monitorKey) {
         Assert.notNull(m_nodeDao, "Node DAO is null and is not supposed to be");
         final List<OnmsNode> nodes = isDiscoveryEnabled() ? m_nodeDao.findAll() : m_nodeDao.findAllProvisionedNodes();
@@ -906,7 +907,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         return scheduledNodes;
     }
 
-    private NodeScanSchedule createScheduleForNode(final OnmsNode node, final boolean force, String monitorKey) {
+    private NodeScanSchedule createScheduleForNode(final OnmsNode node, final boolean force, final String monitorKey) {
         Assert.notNull(node, "Node may not be null");
         final String actualForeignSource = node.getForeignSource();
         if (actualForeignSource == null && !isDiscoveryEnabled()) {
@@ -1344,7 +1345,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             // we do this here rather than in the doInsert method because
             // the doInsert may abort
-            node.visit(new AddEventVisitor(m_eventForwarder, monitor.getName()));
+            node.visit(new AddEventVisitor(m_eventForwarder, monitor != null ? monitor.getName() : null));
         }
 
         return node;

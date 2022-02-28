@@ -51,18 +51,17 @@ import java.util.Map;
 @Component
 @Path("provisiond")
 @Transactional
-public class ProvisionStatusRestService {
-    private MonitorHolder getMonitorHolder(){
+public class ProvisiondStatusRestService {
+    private MonitorHolder getMonitorHolder() {
         return BeanUtils.getBean("provisiondContext", "monitorHolder", MonitorHolder.class);
     }
 
     @GET
     @Path("status")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Get all jobs status", description = "Get all jobs status")
+    @Operation(summary = "Get all jobs status", description = "Get all recent provisiond jobs status.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation",
-                    content = @Content(schema = @Schema(implementation = Map.class))),
+            @ApiResponse(responseCode = "200", description = "all jobs current monitor object.", content = @Content(schema = @Schema(type = "Map<String, TimeTrackingMonitor>")))
     })
     public Response getAllJobStatus() {
         MonitorHolder monitorHolder = getMonitorHolder();
@@ -72,9 +71,9 @@ public class ProvisionStatusRestService {
     @GET
     @Path("status/{jobId}")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Get single job status", description = "Get single job status")
+    @Operation(summary = "Get single job status", description = "Get single provisiond job status by jobId")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation",
+            @ApiResponse(responseCode = "200", description = "The current job status.",
                     content = @Content(schema = @Schema(implementation = TimeTrackingMonitor.class))),
             @ApiResponse(responseCode = "404", description = "jobId not exist.",
                     content = @Content)

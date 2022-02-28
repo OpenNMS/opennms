@@ -176,7 +176,7 @@ public class IpInterfaceScan implements RunInBatch {
                             new RunInBatch() {
                                 @Override
                                 public void run(final BatchTask batch) {
-                                    service.addMonitoredService(nodeId, hostAddress, serviceName);
+                                    service.addMonitoredService(nodeId, hostAddress, serviceName, null);
                                 }
                             },
                             new RunInBatch() {

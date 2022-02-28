@@ -46,14 +46,16 @@ public class AddEventVisitor extends AbstractEntityVisitor {
     private final EventForwarder m_eventForwarder;
     private String monitorKey;
 
+    public AddEventVisitor(EventForwarder eventForwarder) {
+        this(eventForwarder, null);
+    }
+
     /**
      * <p>Constructor for AddEventVisitor.</p>
      *
      * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param monitorKey a {@link java.lang.String} object.
      */
-    public AddEventVisitor(EventForwarder eventForwarder) {
-        this(eventForwarder, null);
-    }
     public AddEventVisitor(EventForwarder eventForwarder, String monitorKey) {
         m_eventForwarder = eventForwarder;
         this.monitorKey = monitorKey;
