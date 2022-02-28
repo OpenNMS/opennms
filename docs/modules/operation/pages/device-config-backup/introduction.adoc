@@ -20,7 +20,8 @@ It also records if backups fail and raises corresponding alarms.
 
 == SSH scripting
 
-An SSH scripting engine executes the commands that are necessary to upload device configurations. The scripting engine supports two commands:
+An SSH scripting engine executes the commands that are necessary to upload device configurations. 
+The scripting engine supports two commands:
 
 * `send: ...`: Sends the given string to the device
 * `await: ...`: Awaits some response from the device
