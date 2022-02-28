@@ -28,8 +28,19 @@
 
 package org.opennms.netmgt.poller;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name="device-config")
+@XmlAccessorType(XmlAccessType.NONE)
 public class DeviceConfig {
+
+    @XmlAttribute(name="content")
     public byte[] content;
+
+    @XmlAttribute(name="filename")
     public String filename;
 
     public DeviceConfig(byte[] content, String fileName) {
@@ -39,5 +50,21 @@ public class DeviceConfig {
 
     // for JAXB
     public DeviceConfig() {
+    }
+
+    public byte[] getContent() {
+        return content;
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 }

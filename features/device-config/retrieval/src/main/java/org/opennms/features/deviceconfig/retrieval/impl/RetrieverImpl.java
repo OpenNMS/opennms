@@ -85,7 +85,11 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
     private String determineIp() throws Exception {
         try(final DatagramSocket socket = new DatagramSocket()) {
             socket.connect(InetAddressUtils.UNPINGABLE_ADDRESS, 10002);
-            return socket.getLocalAddress().getHostAddress();
+            String ipAddress = socket.getLocalAddress().getHostAddress();
+            if (ipAddress.equals("0.0.0.0")) {
+                return InetAddress.getLocalHost().getHostAddress();
+            }
+            return ipAddress;
         }
     }
 
@@ -234,7 +238,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
     }
 
     private static String uniqueFilenameSuffix() {
-        return String.valueOf(uploadCounter.incrementAndGet());
+        return "monitor" + String.valueOf(uploadCounter.incrementAndGet());
     }
 
     private static AtomicLong uploadCounter = new AtomicLong();

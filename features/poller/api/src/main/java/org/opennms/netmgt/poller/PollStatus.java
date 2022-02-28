@@ -551,6 +551,7 @@ public class PollStatus implements Serializable {
         return s_statusNames[m_statusCode];
     }
 
+    @XmlElement(name = "device-config")
     public DeviceConfig getDeviceConfig() {
         return deviceConfig;
     }

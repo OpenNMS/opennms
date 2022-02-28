@@ -30,11 +30,27 @@ package org.opennms.features.deviceconfig.sink.module;
 
 import org.opennms.core.ipc.sink.api.Message;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Arrays;
+import java.util.Objects;
+
+@XmlRootElement(name = "device-config-dto")
+@XmlAccessorType(XmlAccessType.NONE)
 public class DeviceConfigSinkDTO implements Message {
+
+    @XmlElement(name = "location")
     public String location;
     // the source address of the device config upload (as returned by InetAddress.getAddress())
+    @XmlElement(name = "address")
     public byte[] address;
+
+    @XmlElement(name = "fileName")
     public String fileName;
+
+    @XmlElement(name = "config")
     public byte[] config;
 
     public DeviceConfigSinkDTO(String location, byte[] address, String fileName, byte[] config) {
@@ -45,5 +61,54 @@ public class DeviceConfigSinkDTO implements Message {
     }
 
     public DeviceConfigSinkDTO() {
+
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public byte[] getAddress() {
+        return address;
+    }
+
+    public void setAddress(byte[] address) {
+        this.address = address;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public byte[] getConfig() {
+        return config;
+    }
+
+    public void setConfig(byte[] config) {
+        this.config = config;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DeviceConfigSinkDTO)) return false;
+        DeviceConfigSinkDTO that = (DeviceConfigSinkDTO) o;
+        return Objects.equals(location, that.location) && Arrays.equals(address, that.address) && Objects.equals(fileName, that.fileName) && Arrays.equals(config, that.config);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(location, fileName);
+        result = 31 * result + Arrays.hashCode(address);
+        result = 31 * result + Arrays.hashCode(config);
+        return result;
     }
 }
