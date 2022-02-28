@@ -35,14 +35,14 @@ import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
-import org.opennms.features.deviceconfig.sink.module.DeviceConfigDTO;
+import org.opennms.features.deviceconfig.sink.module.DeviceConfigSinkDTO;
 import org.opennms.features.deviceconfig.sink.module.DeviceConfigSinkModule;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigDTO, DeviceConfigDTO>, AutoCloseable {
+public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigSinkDTO, DeviceConfigSinkDTO>, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigConsumer.class);
 
@@ -65,12 +65,12 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigDTO, De
     }
 
     @Override
-    public SinkModule<DeviceConfigDTO, DeviceConfigDTO> getModule() {
+    public SinkModule<DeviceConfigSinkDTO, DeviceConfigSinkDTO> getModule() {
         return module;
     }
 
     @Override
-    public void handleMessage(DeviceConfigDTO message) {
+    public void handleMessage(DeviceConfigSinkDTO message) {
         try {
             var address = InetAddress.getByAddress(message.address);
             LOG.debug("handle message - location: " + message.location + "; address: " + address.getHostAddress() + "; fileName: " + message.fileName);

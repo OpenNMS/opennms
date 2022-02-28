@@ -606,6 +606,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                 launch();
             }
             receivers.add(receiver);
+            LOG.info("Registered new TFTP receiver, current receiver count {}", receivers.size());
         }
     }
 
@@ -613,7 +614,9 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
     public void unregister(TftpFileReceiver receiver) {
         synchronized (receivers) {
             receivers.remove(receiver);
+            LOG.info("Unregistered TFTP receiver, current receiver count {}", receivers.size());
             if(receivers.isEmpty()) {
+                LOG.info("No receivers exist currently, closing the tftp server");
                 close();
                 serverTftp_ = null;
             }

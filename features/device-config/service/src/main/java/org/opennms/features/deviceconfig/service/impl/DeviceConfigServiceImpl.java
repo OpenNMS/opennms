@@ -26,10 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.deviceconfig.service;
+package org.opennms.features.deviceconfig.service.impl;
 
 import com.google.common.base.Strings;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
+import org.opennms.features.deviceconfig.service.DeviceConfigService;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -45,14 +46,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     private static final String DEVICE_CONFIG_SERVICE_NAME_PREFIX = "DeviceConfig-";
     private static final String DEVICE_CONFIG_MONITOR_CLASS_NAME = "org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor";
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigServiceImpl.class);
+
     @Autowired
     private LocationAwarePollerClient locationAwarePollerClient;
 
@@ -69,18 +71,43 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Override
     public void triggerConfigBackup(String ipAddress, String location, String configType) throws IOException {
 
+        CompletableFuture<PollerResponse> future = pollDeviceConfig(ipAddress, location, configType);
+        future.whenComplete(((pollerResponse, throwable) -> {
+            if (throwable != null) {
+                LOG.info("Error while manually triggering config backup for IpAddress {} at location {} for config-type {}",
+                        ipAddress, location, configType, throwable);
+            }
+        }));
+    }
+
+    @Override
+    public CompletableFuture<byte[]> getDeviceConfig(String ipAddress, String location, String configType, int timeout) throws IOException {
+        return pollDeviceConfig(ipAddress, location, configType)
+                .orTimeout(timeout, TimeUnit.MILLISECONDS)
+                .thenApply(resp -> {
+                        if(resp.getPollStatus().getDeviceConfig() != null) {
+                            return resp.getPollStatus().getDeviceConfig().content;
+                        }
+                        return null;
+                })
+                .whenComplete((config, throwable) -> {
+                    if (throwable != null) {
+                        LOG.error("Error while getting device config for IpAddress {} at location {}", ipAddress, location, throwable);
+                    }
+                });
+    }
+
+    private CompletableFuture<PollerResponse> pollDeviceConfig(String ipAddress, String location, String configType) {
         if (Strings.isNullOrEmpty(configType)) {
             configType = ConfigType.Default;
         }
         String serviceName = DEVICE_CONFIG_SERVICE_NAME_PREFIX + configType;
         MonitoredService service = sessionUtils.withReadOnlyTransaction(() -> {
 
-            Optional<OnmsIpInterface> ipInterfaceOptional = ipInterfaceDao.findByIpAddress(ipAddress).stream().filter(ipInterface ->
-                    ipInterface.getNode().getLocation().getLocationName().equals(location)).findFirst();
-            if (ipInterfaceOptional.isEmpty()) {
+            OnmsIpInterface ipInterface = ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
+            if (ipInterface == null) {
                 return null;
             }
-            OnmsIpInterface ipInterface = ipInterfaceOptional.get();
             OnmsNode node = ipInterface.getNode();
 
             return new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), serviceName, location);
@@ -91,16 +118,26 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         }
         // All the service parameters should be loaded from metadata in PollerRequestBuilderImpl
         // Persistence will be performed in DeviceConfigMonitorAdaptor.
-        final CompletableFuture<PollerResponse> future = locationAwarePollerClient.poll()
+        return locationAwarePollerClient.poll()
                 .withService(service)
                 .withAdaptor(serviceMonitorAdaptor)
                 .withMonitorClassName(DEVICE_CONFIG_MONITOR_CLASS_NAME)
                 .execute();
-        future.whenComplete(((pollerResponse, throwable) -> {
-            if (throwable != null) {
-                LOG.info("Error while manually triggering config backup for IpAddress {} at location {} for service {}",
-                        ipAddress, location, service, throwable);
-            }
-        }));
+    }
+
+    public void setLocationAwarePollerClient(LocationAwarePollerClient locationAwarePollerClient) {
+        this.locationAwarePollerClient = locationAwarePollerClient;
+    }
+
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        this.ipInterfaceDao = ipInterfaceDao;
+    }
+
+    public void setServiceMonitorAdaptor(ServiceMonitorAdaptor serviceMonitorAdaptor) {
+        this.serviceMonitorAdaptor = serviceMonitorAdaptor;
     }
 }
