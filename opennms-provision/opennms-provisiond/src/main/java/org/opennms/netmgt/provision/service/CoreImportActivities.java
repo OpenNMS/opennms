@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.service;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
@@ -70,6 +71,7 @@ public class CoreImportActivities {
 
     @Activity( lifecycle = "import", phase = "validate", schedulingHint="import")
     public RequisitionImport loadSpecFile(final Resource resource, final ProvisionMonitor monitor) {
+        Objects.requireNonNull(monitor);
         final RequisitionImport ri = new RequisitionImport();
 
         info("Loading requisition from resource {}", resource);
@@ -91,6 +93,7 @@ public class CoreImportActivities {
             info("The import has been aborted, skipping audit phase import.");
             return null;
         }
+        Objects.requireNonNull(monitor);
 
         final Requisition specFile = ri.getRequisition();
 
@@ -116,6 +119,8 @@ public class CoreImportActivities {
             info("The import has been aborted, skipping scan phase import.");
             return;
         }
+        Objects.requireNonNull(monitor);
+
         info("Scheduling nodes for phase {}", currentPhase);
         monitor.beginScheduling();
         final Collection<ImportOperation> operations = opsMgr.getOperations();
@@ -141,6 +146,8 @@ public class CoreImportActivities {
             info("The import has been aborted, skipping scan phase nodeImport.");
             return;
         }
+        Objects.requireNonNull(monitor);
+
         if (rescanExisting == null || Boolean.valueOf(rescanExisting) ||
                 // scan at import should always be performed for new nodes irrespective of rescanExisting flag.
                 operation.getOperationType().equals(ImportOperation.OperationType.INSERT)) {
@@ -160,13 +167,13 @@ public class CoreImportActivities {
             info("The import has been aborted, skipping persist phase.");
             return;
         }
+        Objects.requireNonNull(monitor);
 
         info("Running persist phase of {}", operation);
         monitor.beginPersisting(operation);
         operation.persist();
         monitor.finishPersisting(operation);
         info("Finished Running persist phase of {}", operation);
-
     }
     
     @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "import" )
@@ -175,6 +182,7 @@ public class CoreImportActivities {
             info("The import has been aborted, skipping relate phase.");
             return;
         }
+        Objects.requireNonNull(monitor);
 
         info("Running relate phase");
         monitor.beginRelateNodes();

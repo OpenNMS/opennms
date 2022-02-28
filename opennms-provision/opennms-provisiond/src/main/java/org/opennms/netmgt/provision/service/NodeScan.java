@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -112,6 +112,7 @@ public class NodeScan implements Scan {
      * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
+     * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object. (optional)
      */
     public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final OnmsMonitoringLocation location, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, final Span span, final ProvisionMonitor monitor) {
         m_nodeId = nodeId;
@@ -903,7 +904,7 @@ public class NodeScan implements Scan {
         }
 
         void updateIpInterface(final BatchTask currentPhase, final OnmsIpInterface iface) {
-            getProvisionService().updateIpInterfaceAttributes(getNodeId(), iface, null);
+            getProvisionService().updateIpInterfaceAttributes(getNodeId(), iface, monitor != null ? monitor.getName() : null);
             if (iface.isManaged()) {
                 currentPhase.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getLocation(), getProvisionService(), m_baseAgentSpan));
             }

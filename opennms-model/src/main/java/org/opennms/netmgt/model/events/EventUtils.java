@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,8 +30,31 @@ package org.opennms.netmgt.model.events;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
-import static org.opennms.netmgt.events.api.EventConstants.*;
-
+import static org.opennms.netmgt.events.api.EventConstants.APPLICATION_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.INTERFACE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_ADDED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_GAINED_SERVICE_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_UPDATED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_ID;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_FOREIGN_ID;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_FOREIGN_SOURCE;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_INTERFACE;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_IP_HOSTNAME;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_LOCATION;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_CURRENT_LOCATION;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_LABEL;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_LABEL_SOURCE;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_PREV_LOCATION;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSDESCRIPTION;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSNAME;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_RESCAN_EXISTING;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_MONITOR_KEY;
+import static org.opennms.netmgt.events.api.EventConstants.SERVICE_DELETED_EVENT_UEI;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
@@ -77,6 +100,7 @@ public abstract class EventUtils {
      * @param nodeId a int.
      * @param nodeLabel a {@link java.lang.String} object.
      * @param labelSource a {@link java.lang.String} object.
+     * @param monitorKey a {@link java.lang.String} object. (optional)
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static Event createNodeAddedEvent(String source, int nodeId, String nodeLabel, NodeLabelSource labelSource, String monitorKey) {
@@ -377,6 +401,7 @@ public abstract class EventUtils {
      * @param nodeLabel a {@link java.lang.String} object.
      * @param labelSource a {@link java.lang.String} object.
      * @param rescanExisting a {@link java.lang.String} object.
+     * @param monitorKey a {@link java.lang.String} object. (optional)
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, NodeLabelSource labelSource, String rescanExisting, String monitorKey) {

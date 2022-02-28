@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -480,7 +480,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test(timeout=300000)
     public void testFindQuery() throws Exception {
-        TimeTrackingMonitor monitor = (TimeTrackingMonitor) monitorHolder.createMonitor("smalltest");
+        TimeTrackingMonitor monitor = monitorHolder.createMonitor("smalltest");
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString(), monitor);
 
         for (final OnmsAssetRecord assetRecord : getAssetRecordDao().findAll()) {
@@ -540,7 +540,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:/snmpTestData3.properties")
     })
     public void testPopulateWithSnmpAndNodeScan() throws Exception {
-        importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString());
+        TimeTrackingMonitor monitor = monitorHolder.createMonitor("classpath:/requisition_then_scan2.xml");
+
+        importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString(), monitor);
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -580,11 +582,19 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
 
+        assertEquals(1, monitor.getNodeCount());
+        assertEquals(1, monitor.getScanningTimer().getCount());
+
+        TimeTrackingMonitor monitor2 = monitorHolder.createMonitor("classpath:/nonodes-snmp.xml");
+
         // Node Delete
-        importFromResource("classpath:/nonodes-snmp.xml", Boolean.TRUE.toString());
+        importFromResource("classpath:/nonodes-snmp.xml", Boolean.TRUE.toString(), monitor2);
 
         //Verify node count
         assertEquals(0, getNodeDao().countAll());
+
+        assertEquals(0, monitor2.getNodeCount());
+        assertEquals(0, monitor2.getScanningTimer().getCount());
     }
 
     @Test(timeout=300000)

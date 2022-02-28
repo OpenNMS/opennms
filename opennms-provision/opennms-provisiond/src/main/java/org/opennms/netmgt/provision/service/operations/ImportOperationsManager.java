@@ -123,7 +123,7 @@ public class ImportOperationsManager {
         if (Boolean.valueOf(m_rescanExisting) || m_rescanExisting.equalsIgnoreCase("dbonly")) {
             updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting, monitorKey);
         } else {
-            updateOperation = new NullUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting);
+            updateOperation = new NullUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting, monitorKey);
         }
         m_updates.add(updateOperation);
         return updateOperation;

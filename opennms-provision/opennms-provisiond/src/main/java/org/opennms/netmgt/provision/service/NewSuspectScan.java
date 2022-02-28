@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -77,6 +77,7 @@ public class NewSuspectScan implements Scan {
      * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
+     * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object. (optional)
      */
     public NewSuspectScan(final InetAddress ipAddress, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, String foreignSource, final String location, final ProvisionMonitor monitor) {
         m_ipAddress = ipAddress;
@@ -105,12 +106,13 @@ public class NewSuspectScan implements Scan {
      * <p>scanUndiscoveredNode</p>
      *
      * @param phase a {@link org.opennms.core.tasks.BatchTask} object.
+     * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object. (optional)
      */
     protected void scanUndiscoveredNode(final BatchTask phase, final ProvisionMonitor monitor) {
     	final String addrString = str(m_ipAddress);
 		LOG.info("Attempting to scan new suspect address {} for foreign source {}", addrString, m_foreignSource);
-		
-        final OnmsNode node = m_provisionService.createUndiscoveredNode(addrString, m_foreignSource, m_location, monitor);
+
+        final OnmsNode node = m_provisionService.createUndiscoveredNode(addrString, m_foreignSource, m_location, monitor != null ? monitor.getName() : null);
         if (node != null) {
             if(node.getId() != null && node.getId() > 0) {
                 m_span.setTag(NODE_ID, node.getId());
@@ -161,7 +163,4 @@ public class NewSuspectScan implements Scan {
     protected void reparentNodes(final BatchTask batch, final Integer nodeId) {
         LOG.debug("reparenting node ID {} not supported", nodeId);
     }
-    
-
-
 }

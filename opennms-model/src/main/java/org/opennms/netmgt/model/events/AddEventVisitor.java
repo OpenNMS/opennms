@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,7 +54,7 @@ public class AddEventVisitor extends AbstractEntityVisitor {
      * <p>Constructor for AddEventVisitor.</p>
      *
      * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
-     * @param monitorKey a {@link java.lang.String} object.
+     * @param monitorKey a {@link java.lang.String} object. (optional)
      */
     public AddEventVisitor(EventForwarder eventForwarder, String monitorKey) {
         m_eventForwarder = eventForwarder;

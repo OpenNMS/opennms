@@ -56,6 +56,7 @@ public class NodeScanSchedule {
      * @param foreignId a {@link java.lang.String} object.
      * @param initialDelay a {@link org.joda.time.Duration} object.
      * @param scanInterval a {@link org.joda.time.Duration} object.
+     * @param monitorKey a {@link java.lang.String} object. (optional)
      */
     public NodeScanSchedule(int nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location, Duration initialDelay, Duration scanInterval, String monitorKey) {
         m_nodeId = nodeId;

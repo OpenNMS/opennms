@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>TimeTrackingMonitor class.</p>
+ * <p>TimeTrackingMonitor class. It will append all data into MetricRegistry.</p>
  *
  * @author ranger
  * @version $Id: $

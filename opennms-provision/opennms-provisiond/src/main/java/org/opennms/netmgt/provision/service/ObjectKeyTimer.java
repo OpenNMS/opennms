@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * It is a timer class which will keep tracking by Timer.Context by key.
+ * It is a timer class which will keep tracking controlled by key of begin & finish.
  */
 public class ObjectKeyTimer {
     private final Timer timer;

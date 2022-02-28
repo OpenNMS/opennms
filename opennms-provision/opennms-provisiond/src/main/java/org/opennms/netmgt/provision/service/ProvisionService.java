@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,7 +48,6 @@ import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.snmp.SnmpProfileMapper;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.springframework.core.io.Resource;
@@ -262,7 +261,7 @@ public interface ProvisionService {
     OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node);
 
     @Transactional
-    OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource, String location, ProvisionMonitor monitor);
+    OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource, String location, String monitorKey);
 
     @Transactional
     OnmsNode getNode(Integer nodeId);

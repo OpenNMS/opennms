@@ -1282,7 +1282,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource, final String locationString, final ProvisionMonitor monitor) {
+    public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource, final String locationString, final String monitorKey) {
         final String effectiveForeignSource = foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource;
         final String effectiveLocationName = MonitoringLocationUtils.isDefaultLocationName(locationString) ? null : locationString;
 
@@ -1345,7 +1345,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             // we do this here rather than in the doInsert method because
             // the doInsert may abort
-            node.visit(new AddEventVisitor(m_eventForwarder, monitor != null ? monitor.getName() : null));
+            node.visit(new AddEventVisitor(m_eventForwarder, monitorKey));
         }
 
         return node;

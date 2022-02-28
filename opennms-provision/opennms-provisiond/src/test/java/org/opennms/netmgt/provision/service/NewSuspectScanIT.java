@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.Duration;
 import org.junit.After;
 import org.junit.Before;
@@ -77,6 +78,7 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -144,6 +146,9 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
     @Autowired
     private LocationAwareDnsLookupClient m_locationAwareDnsLookupClient;
+
+    @Autowired
+    private MonitorHolder monitorHolder;
 
     private ForeignSourceRepository m_foreignSourceRepository;
 
@@ -224,7 +229,8 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), "imported", "my-custom-location", null);
+        TimeTrackingMonitor monitor = monitorHolder.createMonitor("NewSuspectScan");
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), "imported", "my-custom-location", monitor.getName());
         runScan(scan);
 
         anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
@@ -256,6 +262,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
 
+        assertEquals(1, monitor.getScanningTimer().getCount());
     }
 
     @Test(timeout=300000)

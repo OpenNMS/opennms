@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -57,6 +57,8 @@ public class UpdateEventVisitor extends AbstractEntityVisitor {
      * <p>Constructor for UpdateEventVisitor.</p>
      *
      * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
+     * @param rescanExisting a {@link String} object.
+     * @param monitorKey a {@link String} object. (optional)
      */
     public UpdateEventVisitor(EventForwarder eventForwarder, String rescanExisting, String monitorKey) {
         m_eventForwarder = eventForwarder;

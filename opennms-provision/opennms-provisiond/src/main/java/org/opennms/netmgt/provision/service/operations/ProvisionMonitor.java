@@ -34,12 +34,24 @@ import org.springframework.core.io.Resource;
 
 public interface ProvisionMonitor {
 
+	/**
+	 * @return name of the monitor (also act as key in MonitorHolder)
+	 */
 	String getName();
 
+	/**
+	 * capture start time of the monitor
+	 */
 	void start();
 
+	/**
+	 * capture finish time of the monitor
+	 */
 	void finish();
 
+	/**
+	 * @return total number of nodes in resources
+	 */
 	int getNodeCount();
 	/**
 	 * <p>beginScheduling</p>
@@ -68,14 +80,14 @@ public interface ProvisionMonitor {
 	/**
 	 * <p>beginPreprocessing</p>
 	 *
-	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
+	 * @param nodeScan a {@link org.opennms.netmgt.provision.service.NodeScan} object.
 	 */
 	void beginScanning(NodeScan nodeScan);
 
 	/**
 	 * <p>finishPreprocessing</p>
 	 *
-	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
+	 * @param nodeScan a {@link org.opennms.netmgt.provision.service.NodeScan} object.
 	 */
 	void finishScanning(NodeScan nodeScan);
 

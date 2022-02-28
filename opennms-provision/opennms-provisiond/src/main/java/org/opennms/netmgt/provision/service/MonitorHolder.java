@@ -47,17 +47,20 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * It is the holder class for all provisiond performance monitors
+ * It is the holder class for all provisiond performance monitors. It also creates a JmxReporter.
  */
 public class MonitorHolder {
     private static final Logger LOG = LoggerFactory.getLogger(MonitorHolder.class);
     private static final ObjectMapper mapper = new ObjectMapper();
     private final DateTimeFormatter datetimeFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-    private LoadingCache<String, ProvisionMonitor> monitors;
+    private LoadingCache<String, TimeTrackingMonitor> monitors;
     private MetricRegistry metricRegistry = new MetricRegistry();
     private JmxReporter jmxReporter;
 
+    /**
+     * For spring use. Default is 3 days.
+     */
     public MonitorHolder() {
         this(3L *24L * 3600L);
     }
@@ -74,7 +77,6 @@ public class MonitorHolder {
      */
     public void createCacheWithExpireTime(long seconds) {
         LOG.info("Create cache with expire time {} seconds.", seconds);
-        Map<String, ProvisionMonitor> existingData = null;
         var oldMonitors = monitors;
         monitors = CacheBuilder.newBuilder()
                 .expireAfterAccess(seconds, TimeUnit.SECONDS)
@@ -87,7 +89,7 @@ public class MonitorHolder {
                     }
                 }).build(new CacheLoader<>() {
                     @Override
-                    public ProvisionMonitor load(String key) {
+                    public TimeTrackingMonitor load(String key) {
                         return new TimeTrackingMonitor(key, metricRegistry);
                     }
                 });
@@ -99,12 +101,12 @@ public class MonitorHolder {
     /**
      * It will return existing monitor or create new one
      *
-     * @param name
+     * @param name (For key. It will append with start time)
      * @param job
-     * @return
+     * @return TimeTrackingMonitor
      * @throws ExecutionException
      */
-    public ProvisionMonitor createMonitor(String name, ImportJob job) throws ExecutionException {
+    public TimeTrackingMonitor createMonitor(String name, ImportJob job) throws ExecutionException {
         monitors.cleanUp();
         return monitors.get(MetricRegistry.name(name, LocalDateTime.now().format(datetimeFormat), String.valueOf(job.hashCode())));
     }
@@ -112,13 +114,13 @@ public class MonitorHolder {
     /**
      * It will return existing monitor or create new one
      *
-     * @param url
-     * @return
+     * @param name (For key. It will append with start time)
+     * @return TimeTrackingMonitor
      * @throws ExecutionException
      */
-    public ProvisionMonitor createMonitor(String url) throws ExecutionException {
+    public TimeTrackingMonitor createMonitor(String name) throws ExecutionException {
         monitors.cleanUp();
-        return monitors.get(MetricRegistry.name(url, LocalDateTime.now().format(datetimeFormat)));
+        return monitors.get(MetricRegistry.name(name, LocalDateTime.now().format(datetimeFormat)));
     }
 
     /**
@@ -136,7 +138,7 @@ public class MonitorHolder {
         return monitors.getIfPresent(key);
     }
 
-    public Map<String, ProvisionMonitor> getMonitors() {
+    public Map<String, TimeTrackingMonitor> getMonitors() {
         monitors.cleanUp();
         return monitors.asMap();
     }

@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.provision.service;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.netmgt.provision.service.lifecycle.Lifecycles.RESOURCE;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.net.URL;
@@ -46,7 +49,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.collect.Maps;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.tasks.TaskCoordinator;
@@ -82,12 +84,10 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import io.opentracing.Tracer;
-import static org.opennms.core.utils.InetAddressUtils.addr;
-import static org.opennms.netmgt.provision.service.lifecycle.Lifecycles.RESOURCE;
-
 
 /**
  * Massively Parallel Java Provisioning <code>ServiceDaemon</code> for OpenNMS.
@@ -519,7 +519,6 @@ public class Provisioner implements SpringServiceDaemon {
             LOG.error("doImport: {}", msg);
             send(importFailedEvent(msg, url, rescanExistingOnImport), monitor);
         }
-        
     }
 
     /**

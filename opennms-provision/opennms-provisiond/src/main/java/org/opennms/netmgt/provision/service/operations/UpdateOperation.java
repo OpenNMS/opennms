@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,6 +44,7 @@ public class UpdateOperation extends SaveOrUpdateOperation {
      * @param city a {@link java.lang.String} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      * @param rescanExisting a {@link java.lang.String} object
+     * @param monitorKey a {@link java.lang.String} object (optional)
      */
     public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService, String rescanExisting, String monitorKey) {
         super(nodeId, foreignSource, foreignId, nodeLabel, location, building, city, provisionService, rescanExisting, monitorKey);
