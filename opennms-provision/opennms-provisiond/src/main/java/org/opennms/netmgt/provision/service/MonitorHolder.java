@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,67 +46,89 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * It is the holder class for all provisiond performance monitors
+ */
 public class MonitorHolder {
     private static final Logger LOG = LoggerFactory.getLogger(MonitorHolder.class);
     private static final ObjectMapper mapper = new ObjectMapper();
     private final DateTimeFormatter datetimeFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+    private LoadingCache<String, ProvisionMonitor> monitors;
     private MetricRegistry metricRegistry = new MetricRegistry();
     private JmxReporter jmxReporter;
 
     public MonitorHolder() {
-        jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain("org.opennms.netmgt.provision.status").build();
-        jmxReporter.start();
+        this(3L *24L * 3600L);
     }
 
-    private final LoadingCache<String, ProvisionMonitor> monitors = CacheBuilder.newBuilder()
-            .expireAfterWrite(10, TimeUnit.MINUTES)
-            .removalListener((RemovalListener<String, ProvisionMonitor>) removalNotification -> {
-                LOG.warn("!!!!!!!!!!!!!!!! TTTTTTTT key: {} value: {} ", removalNotification.getKey(), removalNotification.getValue());
-                LOG.warn("BEFORE {}", metricRegistry.getNames());
-                metricRegistry.removeMatching((s, metric) -> s.indexOf(removalNotification.getKey()) == 0);
-                LOG.warn("AFTER {}", metricRegistry.getNames());
-                try {
-                    LOG.info("Summary job name: {}\nOutput:\n{}", removalNotification.getKey(), mapper.writeValueAsString(removalNotification.getValue()));
-                } catch (JsonProcessingException e) {
-                    LOG.warn("Fail to write summary for {} error: {}.", removalNotification.getKey(), e.getMessage());
-                }
-            }).build(new CacheLoader<>() {
-                @Override
-                public ProvisionMonitor load(String key) {
-                    return new TimeTrackingMonitor(key, metricRegistry);
-                }
-            });
+    public MonitorHolder(long seconds) {
+        jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain("org.opennms.netmgt.provision.status").build();
+        jmxReporter.start();
+        this.createCacheWithExpireTime(seconds);
+    }
+
+    /**
+     * It will create a new local cache with specific access expire hours. If existing cache is not empty, it will also copy exising data to new cache.
+     * @param seconds
+     */
+    public void createCacheWithExpireTime(long seconds) {
+        LOG.info("Create cache with expire time {} seconds.", seconds);
+        Map<String, ProvisionMonitor> existingData = null;
+        var oldMonitors = monitors;
+        monitors = CacheBuilder.newBuilder()
+                .expireAfterAccess(seconds, TimeUnit.SECONDS)
+                .removalListener((RemovalListener<String, ProvisionMonitor>) removalNotification -> {
+                    metricRegistry.removeMatching((s, metric) -> s.indexOf(removalNotification.getKey()) == 0);
+                    try {
+                        LOG.info("{} Summary job name: {}\nOutput:\n{}", LocalDateTime.now().format(DateTimeFormatter.ISO_TIME),  removalNotification.getKey(), mapper.writeValueAsString(removalNotification.getValue()));
+                    } catch (JsonProcessingException e) {
+                        LOG.warn("Fail to write summary for {} error: {}.", removalNotification.getKey(), e.getMessage());
+                    }
+                }).build(new CacheLoader<>() {
+                    @Override
+                    public ProvisionMonitor load(String key) {
+                        return new TimeTrackingMonitor(key, metricRegistry);
+                    }
+                });
+        if (oldMonitors != null) {
+            monitors.putAll(oldMonitors.asMap());
+        }
+    }
 
     /**
      * It will return existing monitor or create new one
+     *
      * @param name
      * @param job
      * @return
      * @throws ExecutionException
      */
-    public ProvisionMonitor getMonitor(String name, ImportJob job) throws ExecutionException {
+    public ProvisionMonitor createMonitor(String name, ImportJob job) throws ExecutionException {
         monitors.cleanUp();
         return monitors.get(MetricRegistry.name(name, LocalDateTime.now().format(datetimeFormat), String.valueOf(job.hashCode())));
     }
 
     /**
      * It will return existing monitor or create new one
+     *
      * @param url
      * @return
      * @throws ExecutionException
      */
-    public ProvisionMonitor getMonitor(String url) throws ExecutionException {
+    public ProvisionMonitor createMonitor(String url) throws ExecutionException {
         monitors.cleanUp();
         return monitors.get(MetricRegistry.name(url, LocalDateTime.now().format(datetimeFormat)));
     }
 
     /**
      * It will only return existing monitor
+     *
      * @param key
      * @return monitor (nullable)
      * @throws ExecutionException
      */
-    public ProvisionMonitor getMonitorByKey(String key) {
+    public ProvisionMonitor getMonitor(String key) {
         monitors.cleanUp();
         if (key == null) {
             return null;

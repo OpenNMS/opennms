@@ -118,6 +118,8 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
+import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -202,6 +204,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Autowired
     private DatabasePopulator m_populator;
+
+    @Autowired
+    private MonitorHolder monitorHolder;
 
     private EventAnticipator m_eventAnticipator;
 
@@ -442,7 +447,11 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     }
 
     private void importFromResource(final String path, final String rescanExisting) throws Exception {
-        m_provisioner.importModelFromResource(m_resourceLoader.getResource(path), rescanExisting);
+        importFromResource(path, rescanExisting, new NoOpProvisionMonitor());
+    }
+
+    private void importFromResource(final String path, final String rescanExisting, ProvisionMonitor monitor) throws Exception {
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource(path), rescanExisting, monitor);
         waitForImport();
     }
 
@@ -471,11 +480,18 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test(timeout=300000)
     public void testFindQuery() throws Exception {
-        importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
+        TimeTrackingMonitor monitor = (TimeTrackingMonitor) monitorHolder.createMonitor("smalltest");
+        importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString(), monitor);
 
         for (final OnmsAssetRecord assetRecord : getAssetRecordDao().findAll()) {
             LOG.debug("Building = {}", assetRecord.getBuilding());
         }
+        assertEquals(1, monitor.getLoadingTimer().getCount());
+        assertEquals(1, monitor.getRelateTimer().getCount());
+        assertEquals(1, monitor.getAuditTimer().getCount());
+        assertEquals(10, monitor.getNodeCount());
+        assertEquals(10, monitor.getScanEventTimer().getCount());
+        assertEquals(10, monitor.getPersistingTimer().getCount());
     }
 
     @Test(timeout=300000)
@@ -494,7 +510,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     @Test(timeout=300000)
     @JUnitSnmpAgent(host="192.0.2.201", resource="classpath:/snmpTestData1.properties")
     public void testPopulateWithSnmp() throws Exception {
-
         importFromResource("classpath:/tec_dump.xml", Boolean.TRUE.toString());
 
         //Verify distpoller count

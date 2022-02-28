@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -30,8 +30,6 @@ package org.opennms.netmgt.provision.service;
 
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,8 +39,6 @@ import java.util.Objects;
  * It is a timer class which will keep tracking by Timer.Context by key.
  */
 public class ObjectKeyTimer {
-    private static final Logger LOG = LoggerFactory.getLogger(ObjectKeyTimer.class);
-
     private final Timer timer;
 
     // by the nature of provisiond, thread will be shared between scanExecutor & importExecutor which make ThreadLocal not working
@@ -64,7 +60,6 @@ public class ObjectKeyTimer {
         Objects.requireNonNull(key);
         synchronized (contextMap) {
             contextMap.put(key, timer.time());
-            LOG.warn("TIME TAKEN START {} thread: {} context hash: {} ", key, Thread.currentThread().getId(), contextMap.get(key).hashCode());
         }
     }
 
@@ -75,9 +70,8 @@ public class ObjectKeyTimer {
         Objects.requireNonNull(key);
         synchronized (contextMap) {
             Context c = contextMap.remove(key);
-            if ( c != null ){
+            if (c != null) {
                 long tmp = c.stop();
-                LOG.warn("TIME TAKEN END {}, thread: {} hash {} timer: {}", key, Thread.currentThread().getId(), c.hashCode(), tmp);
             }
         }
     }

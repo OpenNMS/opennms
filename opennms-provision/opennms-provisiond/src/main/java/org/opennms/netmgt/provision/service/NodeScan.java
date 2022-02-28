@@ -262,16 +262,13 @@ public class NodeScan implements Scan {
     public Task createTask() {
         return getTaskCoordinator().createBatch().add(NodeScan.this).get();
     }
-    private long start;
 
     /** {@inheritDoc} */
     @Override
     public void run(final BatchTask parent) {
         LOG.info("Scanning node {}/{}/{}", m_nodeId, m_foreignSource, m_foreignId);
         if (monitor != null) {
-            start = System.currentTimeMillis();
             monitor.beginScanning(this);
-            LOG.warn("NODESCAN START: thread {} node: {}", Thread.currentThread().getId(), this.getNode().getLabel());
         }
         if (m_parentSpan != null) {
             m_span = getProvisionService().buildAndStartSpan("NodeScan", m_parentSpan.context());
@@ -325,11 +322,7 @@ public class NodeScan implements Scan {
                                             }
                                         }
                 );
-
-
-
     }
-
 
     ScheduledFuture<?> schedule(ScheduledExecutorService executor, NodeScanSchedule schedule) {
 
@@ -1044,9 +1037,8 @@ public class NodeScan implements Scan {
             bldr.addParam(EventConstants.PARM_FOREIGN_ID, getForeignId());
             getEventForwarder().sendNow(bldr.getEvent());
         }
-        if( monitor != null ) {
+        if (monitor != null) {
             monitor.finishScanning(this);
-            LOG.warn("NODESCAN STOP {} {} time:\t{} simple: \t{}", Thread.currentThread().getId(), this.getNode().getLabel(), System.currentTimeMillis() - start);
         }
     }
 }

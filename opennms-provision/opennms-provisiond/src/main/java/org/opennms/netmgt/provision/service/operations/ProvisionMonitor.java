@@ -38,7 +38,7 @@ public interface ProvisionMonitor {
 
 	void start();
 
-	void end();
+	void finish();
 
 	int getNodeCount();
 	/**

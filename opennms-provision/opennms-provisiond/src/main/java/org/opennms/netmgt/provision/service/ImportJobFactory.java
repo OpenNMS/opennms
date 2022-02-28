@@ -61,7 +61,7 @@ public class ImportJobFactory implements JobFactory {
         try {
             job = jobClass.getDeclaredConstructor().newInstance();
             job.setProvisioner(getProvisioner());
-            job.setMonitor(monitorHolder.getMonitor(jobDetail.getKey().getName(), job));
+            job.setMonitor(monitorHolder.createMonitor(jobDetail.getKey().getName(), job));
 
             return job;
         } catch (Exception e) {

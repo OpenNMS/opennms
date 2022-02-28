@@ -107,7 +107,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
     }
 
     @Override
-    public void end() {
+    public void finish() {
         endTime = new Date();
     }
 
@@ -170,7 +170,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
      */
     @Override
     public void finishScheduling() {
-        if (schedulingDuration!=null) {
+        if (schedulingDuration != null) {
             schedulingDuration.stop();
         }
     }

@@ -35,33 +35,57 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.provision.service.MonitorHolder;
-import org.opennms.web.rest.model.v2.EnlinkdDTO;
+import org.opennms.netmgt.provision.service.TimeTrackingMonitor;
+import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Map;
 
 @Component
 @Path("provisiond")
 @Transactional
 public class ProvisionStatusRestService {
+    private MonitorHolder getMonitorHolder(){
+        return BeanUtils.getBean("provisiondContext", "monitorHolder", MonitorHolder.class);
+    }
 
     @GET
     @Path("status")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Get a node's all types of links", description = "Get all types of links for a specific node")
+    @Operation(summary = "Get all jobs status", description = "Get all jobs status")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
-                    content = @Content(schema = @Schema(implementation = EnlinkdDTO.class))),
-            @ApiResponse(responseCode = "500", description = "Fail to get info.",
+                    content = @Content(schema = @Schema(implementation = Map.class))),
+    })
+    public Response getAllJobStatus() {
+        MonitorHolder monitorHolder = getMonitorHolder();
+        return Response.ok(monitorHolder.getMonitors()).build();
+    }
+
+    @GET
+    @Path("status/{jobId}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Get single job status", description = "Get single job status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation",
+                    content = @Content(schema = @Schema(implementation = TimeTrackingMonitor.class))),
+            @ApiResponse(responseCode = "404", description = "jobId not exist.",
                     content = @Content)
     })
-    public Response applicationStatus() {
-        MonitorHolder monitorHolder = BeanUtils.getBean("provisiondContext", "monitorHolder", MonitorHolder.class);
-        return Response.ok(monitorHolder.getMonitors()).build();
+    public Response getJobStatus(@PathParam("jobId") String jobId) {
+        MonitorHolder monitorHolder = getMonitorHolder();
+        ProvisionMonitor monitor = monitorHolder.getMonitors().get(jobId);
+        if (monitor != null) {
+            return Response.ok(monitor).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 }

@@ -292,7 +292,7 @@ public class Provisioner implements SpringServiceDaemon {
      */
     public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location, String monitorKey) {
         LOG.info("createNodeScan called");
-        return new NodeScan(nodeId, foreignSource, foreignId, location, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, null, monitorHolder.getMonitorByKey(monitorKey));
+        return new NodeScan(nodeId, foreignSource, foreignId, location, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, null, monitorHolder.getMonitor(monitorKey));
     }
 
     /**
@@ -303,7 +303,7 @@ public class Provisioner implements SpringServiceDaemon {
      */
     public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource, String location, String monitorKey) {
         LOG.info("createNewSuspectScan called with IP: "+ipAddress+ "and foreignSource"+foreignSource == null ? "null" : foreignSource);
-        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource, location, monitorHolder.getMonitorByKey(monitorKey));
+        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource, location, monitorHolder.getMonitor(monitorKey));
     }
 
     /**
@@ -314,7 +314,7 @@ public class Provisioner implements SpringServiceDaemon {
      */
     public ForceRescanScan createForceRescanScan(Integer nodeId, String monitorKey) {
         LOG.info("createForceRescanScan called with nodeId: "+nodeId);
-        return new ForceRescanScan(nodeId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, monitorHolder.getMonitorByKey(monitorKey));
+        return new ForceRescanScan(nodeId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, monitorHolder.getMonitor(monitorKey));
     }
 
     //Helper functions for the schedule
@@ -449,18 +449,18 @@ public class Provisioner implements SpringServiceDaemon {
         doImport.setAttribute(ImportJob.RESCAN_EXISTING, rescanExisting);
         doImport.setAttribute(ImportJob.MONITOR, monitor);
 
-        LOG.warn("SETTING MONITOR START !!! " + monitor.getName());
-        monitor.start();
+        if (monitor != null) {
+            monitor.start();
+        }
         doImport.trigger();
         doImport.waitFor();
-
-        LOG.warn("SETTING MONITOR END !!!" + monitor.getName());
-        monitor.end();
-        LOG.warn(monitor.toString());
+        if (monitor != null) {
+            // this stop time is only mean for all scheduling works are done. It didn't mean for scanning done.
+            monitor.finish();
+        }
 
         final RequisitionImport ri = doImport.findAttributeByType(RequisitionImport.class);
         if (ri.isAborted()) {
-            LOG.warn("SETTING MONITOR FAIL !!!");
             throw new ModelImportException("Import failed for resource " + resource.toString(), ri.getError());
         }
         return ri;
@@ -497,7 +497,8 @@ public class Provisioner implements SpringServiceDaemon {
         final String url = getEventUrl(event);
         final String rescanExistingOnImport = getEventRescanExistingOnImport(event);
 
-        ProvisionMonitor monitor = monitorHolder.getMonitor(url);
+        ProvisionMonitor monitor = monitorHolder.createMonitor(url);
+        monitor.start();
         if (url != null) {
             doImport(url, rescanExistingOnImport, monitor);
         } else {
