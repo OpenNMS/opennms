@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -110,20 +110,20 @@
           <c:forEach items="${notifications}" var="notification">
           <tr>
             <td>
-              <input type="button" class="btn btn-secondary" value="Edit" onclick="javascript:editNotice('${e:forJavaScript(notification.escapedName)}')"/>
+              <input type="button" class="btn btn-secondary" value="Edit" onclick="javascript:editNotice('${e:forJavaScript(notification.name)}')"/>
             </td>
             <td>
-              <input type="button" class="btn btn-secondary" value="Delete"  onclick="javascript:deleteNotice('${e:forJavaScript(notification.escapedName)}')"/>
+              <input type="button" class="btn btn-secondary" value="Delete"  onclick="javascript:deleteNotice('${e:forJavaScript(notification.name)}')"/>
             </td>
             <td>
             <c:choose>
               <c:when test="${notification.isOn}">
-                <input type="radio" value="Off" onclick="javascript:setStatus('${e:forJavaScript(notification.escapedName)}','off')"/>Off
-                <input type="radio" value="On" CHECKED onclick="javascript:setStatus('${e:forJavaScript(notification.escapedName)}','on')"/>On
+                <input type="radio" value="Off" onclick="javascript:setStatus('${e:forJavaScript(notification.name)}','off')"/>Off
+                <input type="radio" value="On" CHECKED onclick="javascript:setStatus('${e:forJavaScript(notification.name)}','on')"/>On
               </c:when>
               <c:otherwise>
-                <input type="radio" value="Off" CHECKED onclick="javascript:setStatus('${e:forJavaScript(notification.escapedName)}','off')"/>Off
-                <input type="radio" value="On" onclick="javascript:setStatus('${e:forJavaScript(notification.escapedName)}','on')"/>On
+                <input type="radio" value="Off" CHECKED onclick="javascript:setStatus('${e:forJavaScript(notification.name)}','off')"/>Off
+                <input type="radio" value="On" onclick="javascript:setStatus('${e:forJavaScript(notification.name)}','on')"/>On
               </c:otherwise>
             </c:choose>
             </td>
