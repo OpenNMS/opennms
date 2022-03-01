@@ -41,6 +41,7 @@ import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,7 @@ public class ForceRescanScan implements Scan {
     private SnmpAgentConfigFactory m_agentConfigFactory;
     private TaskCoordinator m_taskCoordinator;
     private Span m_span;
+    private ProvisionMonitor monitor;
 
     /**
      * <p>Constructor for NewSuspectScan.</p>
@@ -70,12 +72,13 @@ public class ForceRescanScan implements Scan {
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public ForceRescanScan(final Integer nodeId, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator) {
+    public ForceRescanScan(final Integer nodeId, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, final ProvisionMonitor monitor) {
         m_nodeId = nodeId;
         m_provisionService = provisionService;
         m_eventForwarder = eventForwarder;
         m_agentConfigFactory = agentConfigFactory;
         m_taskCoordinator = taskCoordinator;
+        this.monitor = monitor;
     }
 
     @Override
@@ -114,7 +117,7 @@ public class ForceRescanScan implements Scan {
                 phase.getBuilder().addSequence(
                     new NodeInfoScan(node, iface.getIpAddress(), node.getForeignSource(), node.getLocation(), createScanProgress(), m_agentConfigFactory, m_provisionService, node.getId(), m_span),
                     new IpInterfaceScan(node.getId(), iface.getIpAddress(), node.getForeignSource(), node.getLocation(), m_provisionService, m_span),
-                    new NodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, m_span),
+                    new NodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, m_span, monitor),
                         new RunInBatch() {
                             @Override
                             public void run(BatchTask batch) {

@@ -221,7 +221,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             object.getAssetRecord().setNode(object);
         }
         final Integer id = getDao().save(object);
-        final Event e = EventUtils.createNodeAddedEvent("Rest", id, object.getLabel(), object.getLabelSource());
+        final Event e = EventUtils.createNodeAddedEvent("Rest", id, object.getLabel(), object.getLabelSource(), null);
         sendEvent(e);
 
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
