@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.flows.elastic;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -46,6 +48,8 @@ import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.ProcessingOptions;
+import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
@@ -81,7 +85,7 @@ public class ElasticFlowRepositoryRetryIT {
         // try persisting data
         apply((repository) -> repository.persist(
                 Lists.newArrayList(FlowDocumentTest.getMockFlow()),
-                FlowDocumentTest.getMockFlowSource()));
+                FlowDocumentTest.getMockFlowSource(), ProcessingOptions.builder().build()));
     }
 
     private void apply(FlowRepositoryConsumer consumer) throws Exception {
@@ -98,7 +102,7 @@ public class ElasticFlowRepositoryRetryIT {
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher,
                              new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings()), client);
+                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), mock(FlowThresholding.class)), client);
 
             consumer.accept(elasticFlowRepository);
 

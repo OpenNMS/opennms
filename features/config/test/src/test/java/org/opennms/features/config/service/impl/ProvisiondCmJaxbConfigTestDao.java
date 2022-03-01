@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,6 @@ import javax.annotation.PostConstruct;
 
 public class ProvisiondCmJaxbConfigTestDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> {
     public static final String CONFIG_NAME = "provisiond";
-    public static final String CONFIG_ID = "default";
 
     public ProvisiondCmJaxbConfigTestDao() {
         super(ProvisiondConfiguration.class, "Provisiond Configuration");
@@ -46,13 +45,8 @@ public class ProvisiondCmJaxbConfigTestDao extends AbstractCmJaxbConfigDao<Provi
     }
 
     @Override
-    protected String getDefaultConfigId() {
-        return CONFIG_ID;
-    }
-
-    @Override
     @PostConstruct
     public void postConstruct() {
-        this.addOnReloadedCallback(CONFIG_ID, getUpdateCallback());
+        this.addOnReloadedCallback(getDefaultConfigId(), getUpdateCallback());
     }
 }

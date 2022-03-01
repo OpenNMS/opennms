@@ -31,7 +31,7 @@
         </cm:changeSchema>
         <cm:registerSchema id="org.opennms.features.datachoices"/>
         <cm:changeSchema schemaId="org.opennms.features.datachoices">
-            <cm:put name="enabled" type="boolean"/>
+            <cm:put name="enabled" type="boolean" default="false"/>
             <cm:put name="acknowledged-by" type="string"/>
             <cm:put name="acknowledged-at" type="string"/>
             <cm:put name="url" type="string" default="http://stats.opennms.org/datachoices/"/>
@@ -42,7 +42,7 @@
         <cm:importConfig schemaId="org.opennms.features.datachoices" filePath="org.opennms.features.datachoices.cfg"/>
     </changeSet>
     <changeSet author="pschweizer" id="import-graphml">
-        <cm:registerSchema id="org.opennms.netmgt.graph.provider.graphml"/>
+        <cm:registerSchema id="org.opennms.netmgt.graph.provider.graphml" allowMultiple="true"/>
         <cm:changeSchema schemaId="org.opennms.netmgt.graph.provider.graphml">
             <cm:put name="graphLocation" type="string"/>
         </cm:changeSchema>

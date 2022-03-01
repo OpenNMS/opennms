@@ -29,8 +29,6 @@
 package org.opennms.netmgt.flows.elastic;
 
 import java.net.InetAddress;
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +44,7 @@ import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.rpc.utils.mate.ContextKey;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.flows.api.Flow;
@@ -54,6 +53,7 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +70,8 @@ public class DocumentEnricher {
 
     private final NodeDao nodeDao;
 
+    private final IpInterfaceDao ipInterfaceDao;
+
     private final InterfaceToNodeCache interfaceToNodeCache;
 
     private final SessionUtils sessionUtils;
@@ -77,7 +79,7 @@ public class DocumentEnricher {
     private final ClassificationEngine classificationEngine;
 
     // Caches NodeDocument data for a given node Id.
-    private final Cache<Integer, Optional<NodeDocument>> nodeInfoCache;
+    private final Cache<InterfaceToNodeCache.Entry, Optional<NodeDocument>> nodeInfoCache;
 
     // Caches NodeDocument data for a given node metadata.
     private final Cache<NodeMetadataKey, Optional<NodeDocument>> nodeMetadataCache;
@@ -86,21 +88,26 @@ public class DocumentEnricher {
 
     private final long clockSkewCorrectionThreshold;
 
-    public DocumentEnricher(MetricRegistry metricRegistry, NodeDao nodeDao, InterfaceToNodeCache interfaceToNodeCache,
-                            SessionUtils sessionUtils, ClassificationEngine classificationEngine,
+    public DocumentEnricher(MetricRegistry metricRegistry,
+                            NodeDao nodeDao,
+                            IpInterfaceDao ipInterfaceDao,
+                            InterfaceToNodeCache interfaceToNodeCache,
+                            SessionUtils sessionUtils,
+                            ClassificationEngine classificationEngine,
                             CacheConfig cacheConfig,
                             final long clockSkewCorrectionThreshold) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
         this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
 
         this.nodeInfoCache = new CacheBuilder()
                 .withConfig(cacheConfig)
-                .withCacheLoader(new CacheLoader<Integer, Optional<NodeDocument>>() {
+                .withCacheLoader(new CacheLoader<InterfaceToNodeCache.Entry, Optional<NodeDocument>>() {
                     @Override
-                    public Optional<NodeDocument> load(Integer nodeId) {
-                        return getNodeInfo(nodeId);
+                    public Optional<NodeDocument> load(InterfaceToNodeCache.Entry entry) {
+                        return getNodeInfo(entry);
                     }
                 }).build();
 
@@ -191,7 +198,6 @@ public class DocumentEnricher {
     }
 
     private Optional<NodeDocument> getNodeInfoFromCache(final String location, final String ipAddress, final ContextKey contextKey, final String value) {
-
         Optional<NodeDocument> nodeDocument = Optional.empty();
         if (contextKey != null && !Strings.isNullOrEmpty(value)) {
             final NodeMetadataKey metadataKey = new NodeMetadataKey(contextKey, value);
@@ -206,10 +212,10 @@ public class DocumentEnricher {
             }
         }
 
-        final Optional<Integer> nodeId = interfaceToNodeCache.getFirstNodeId(location, InetAddressUtils.addr(ipAddress));
-        if(nodeId.isPresent()) {
+        final var entry = interfaceToNodeCache.getFirst(location, InetAddressUtils.addr(ipAddress));
+        if(entry.isPresent()) {
             try {
-                return nodeInfoCache.get(nodeId.get());
+                return nodeInfoCache.get(entry.get());
             } catch (ExecutionException e) {
                 LOG.error("Error while retrieving NodeDocument from NodeInfoCache: {}.", e.getMessage(), e);
                 throw new RuntimeException(e);
@@ -247,33 +253,45 @@ public class DocumentEnricher {
     }
 
     private Optional<NodeDocument> getNodeInfoFromMetadataContext(ContextKey contextKey, String value) {
-        List<OnmsNode> nodes = new ArrayList<>();
+        // First, try to find interface
+        final List<OnmsIpInterface> ifaces;
+        try (Timer.Context ctx = nodeLoadTimer.time()) {
+            ifaces = this.ipInterfaceDao.findInterfacesWithMetadata(contextKey.getContext(), contextKey.getKey(), value);
+        }
+        if (!ifaces.isEmpty()) {
+            final var iface = ifaces.get(0);
+            return mapOnmsNodeToNodeDocument(iface.getNode(), iface.getId());
+        }
+
+        // Alternatively, try to find node and chose primary interface
+        final List<OnmsNode> nodes;
         try (Timer.Context ctx = nodeLoadTimer.time()) {
             nodes = nodeDao.findNodeWithMetaData(contextKey.getContext(), contextKey.getKey(), value);
         }
-        if(nodes.isEmpty()) {
-            return Optional.empty();
+        if(!nodes.isEmpty()) {
+            final var node = nodes.get(0);
+            return mapOnmsNodeToNodeDocument(node, node.getPrimaryInterface().getId());
         }
-        return mapOnmsNodeToNodeDocument(nodes.get(0));
+
+        return Optional.empty();
     }
 
-    private Optional<NodeDocument> getNodeInfo(Integer nodeId) {
-        OnmsNode onmsNode = null;
+    private Optional<NodeDocument> getNodeInfo(final InterfaceToNodeCache.Entry entry) {
+        final OnmsNode onmsNode;
         try (Timer.Context ctx = nodeLoadTimer.time()) {
-            onmsNode = nodeDao.get(nodeId);
+            onmsNode = nodeDao.get(entry.nodeId);
         }
 
-        return mapOnmsNodeToNodeDocument(onmsNode);
-
+        return mapOnmsNodeToNodeDocument(onmsNode, entry.interfaceId);
     }
 
-    private Optional<NodeDocument> mapOnmsNodeToNodeDocument(OnmsNode onmsNode) {
-
+    private Optional<NodeDocument> mapOnmsNodeToNodeDocument(final OnmsNode onmsNode, final int interfaceId) {
         if(onmsNode != null) {
             final NodeDocument nodeDocument = new NodeDocument();
             nodeDocument.setForeignSource(onmsNode.getForeignSource());
             nodeDocument.setForeignId(onmsNode.getForeignId());
             nodeDocument.setNodeId(onmsNode.getId());
+            nodeDocument.setInterfaceId(interfaceId);
             nodeDocument.setCategories(onmsNode.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList()));
 
             return Optional.of(nodeDocument);

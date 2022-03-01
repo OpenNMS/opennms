@@ -1,0 +1,41 @@
+[[ga-flow-support-data-collection]]
+= Data collection of flow applications
+
+Flows are categorized in applications using the <<flows/classification-engine.adoc#ga-flow-support-classification-engine, Classification Engine>>.
+OpenNMS supports summing up the bytesIn/bytesOut data of flow records based on these flow applications and the collection of this data.
+It gives you the possibility of profiling the network throughput by an application.
+
+NOTE: The flow classification engine includes a predefined set of rules, which defines over 6200 applications for basic communication protocols. 
+If you don't want to collect this kind of data, in the UI, click the gears icon in the top right and under *Flow Management* click *Manage Flow Classification*.
+In the *Settings* tab, disable predefined rules.
+
+== Configure data collection
+
+To enable data collection for flows you need to enable the `applicationDataCollection` flag in the adapter's definition.
+Furthermore, you have to ensure that a valid package definition exists inside the adapter's definition.
+This may not be necessary when using Newts- or Cortex-based storage.
+Note that data collection on flow applications also works without enabling thresholding on flow applications.
+
+.Example of enabling data collection for the NetFlow v9 adapter in telemetryd-configuration.xml
+[source, xml]
+----
+...
+    <queue name="Netflow-9">
+        <adapter name="Netflow-9-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter" enabled="true">
+            <parameter key="applicationDataCollection" value="true"/>
+            <parameter key="applicationThresholding" value="false"/>
+            <package name="Netflow-9-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
+    </queue>
+...
+----
+
+For step-size and idle timeout refer to the <<flows/thresholding.adoc#ga-flow-support-thresholding-properties, Thresholding flow applications>> section.

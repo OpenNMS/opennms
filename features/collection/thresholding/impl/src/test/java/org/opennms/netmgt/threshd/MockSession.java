@@ -46,7 +46,6 @@ public class MockSession {
             ThresholdingSessionKey mockKey = mock(ThresholdingSessionKey.class);
             when(mockKey.getNodeId()).thenReturn(1);
             when(mockKey.getLocation()).thenReturn("1.1.1.1");
-            when(mockKey.getResource()).thenReturn("resource");
             when(mockKey.getServiceName()).thenReturn("service");
 
             when(mockSession.getKey()).thenReturn(mockKey);

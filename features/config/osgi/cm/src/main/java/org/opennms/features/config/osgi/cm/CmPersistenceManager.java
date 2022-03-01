@@ -137,10 +137,10 @@ public class CmPersistenceManager implements PersistenceManager {
     }
 
     @Override
-    public void store(String pid, Dictionary props) throws IOException {
-        Optional<Dictionary<String, Object>> confFromConfigService = loadInternal(pid);
+    public void store(String osgiPid, Dictionary props) throws IOException {
+        Optional<Dictionary<String, Object>> confFromConfigService = loadInternal(osgiPid);
         if (confFromConfigService.isEmpty() || !equalsWithoutOsgiProperties(props, confFromConfigService.get())) {
-            ConfigUpdateInfo identifier = pidToCmIdentifier(pid);
+            ConfigUpdateInfo identifier = pidToCmIdentifier(getCmPid(osgiPid));
             configService.updateConfiguration(identifier.getConfigName(), identifier.getConfigId(),
                     new JsonAsString(DictionaryUtil.writeToJson(props).toString()), false);
         }

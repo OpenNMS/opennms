@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,7 +39,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
+import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
 import static org.opennms.core.test.OnmsAssert.assertThrowsException;
+import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,7 +103,6 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     private final static String SCHEMA_NAME_EVENTD = "eventd";
     private final static String SCHEMA_NAME_PROPERTIES = "propertiesTest";
     private final static String SCHEMA_NAME_GRAPHML = "org.opennms.netmgt.graph.provider.graphml";
-    private final static String CONFIG_ID = "default";
     private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
 
     private DataSource dataSource;
@@ -138,9 +139,9 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         db.watch(connection);
         cmSpy = spy(cm);
         assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROVISIOND).isEmpty());
-        assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isEmpty());
+        assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, DEFAULT_CONFIG_ID).isEmpty());
         assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_EVENTD).isEmpty());
-        assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isEmpty());
+        assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, DEFAULT_CONFIG_ID).isEmpty());
         assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_GRAPHML).isEmpty());
         assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_GRAPHML, "a").isEmpty());
         assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_GRAPHML, "b").isEmpty());
@@ -179,7 +180,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             verify(cmSpy, times(5)).registerConfigDefinition(anyString(), any());
 
             // check if CM was called for config
-            verify(cmSpy).registerConfiguration(eq(SCHEMA_NAME_PROVISIOND), eq(CONFIG_ID), any());
+            verify(cmSpy).registerConfiguration(eq(SCHEMA_NAME_PROVISIOND), eq(DEFAULT_CONFIG_ID), any());
 
             // check if liquibase table names where set correctly
             checkIfTableExists(TABLE_NAME_DATABASECHANGELOG);
@@ -187,9 +188,9 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
             // check for the data itself
             assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROVISIOND).isPresent());
-            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent());
+            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, DEFAULT_CONFIG_ID).isPresent());
             assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_EVENTD).isPresent());
-            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent());
+            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, DEFAULT_CONFIG_ID).isPresent());
 
             // check if CM was called for schema
             verify(cmSpy, times(6)).changeConfigDefinition(anyString(), any(ConfigDefinition.class));
@@ -215,9 +216,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
             // check for org.opennms.features.datachoices.cfg
             Optional<JSONObject> config = this.cm.getJSONConfiguration("org.opennms.features.datachoices", "default");
-            assertEquals(7, config.get().keySet().size());
-            assertEquals(JSONObject.NULL, config.get().get("enabled"));
-            assertEquals(JSONObject.NULL, config.get().get("acknowledged-by"));
+            // only fields with a default value will auto fill
+            assertEquals(4, config.get().keySet().size());
+            // boolean in openable is impossible to be null
+            assertEquals(false, config.get().get("enabled"));
             assertEquals(BigDecimal.valueOf(86400000), config.get().get("interval"));
             assertEquals("http://stats.opennms.org/datachoices/", config.get().get("url"));
 
@@ -258,7 +260,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class); // will lead to Exception
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
             assertThrowsException(MigrationFailedException.class,
-                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", connection));
+                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog2.xml", connection));
         } finally {
             this.db.cleanUp();
         }

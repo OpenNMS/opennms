@@ -39,7 +39,7 @@ public class HashUtilTest {
 
     @Test
     public void shouldHash() throws IOException {
-        String xsdName = "provisiond-configuration.xsd";
+        String xsdName = "snmp-config.xsd";
         String hash = HashUtil.getHash(xsdName);
         assertNotNull(hash);
         assertEquals(64, hash.length());

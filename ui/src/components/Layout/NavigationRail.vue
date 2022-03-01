@@ -39,6 +39,16 @@
         :icon="Reporting"
         title="Resource Graphs"
       />
+
+      <!-- loop plugin menu items -->
+      <FeatherRailItem
+        v-for="plugin of plugins"
+        :key="plugin.extensionId"
+        :class="{ selected: isSelected(`/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`) }"
+        :href="`#/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`"
+        :title="plugin.menuEntry"
+        :icon="UpdateUtilities"
+      />
     </template>
   </FeatherNavigationRail>
 </template>
@@ -52,13 +62,16 @@ import Location from '@featherds/icon/action/Location'
 import MarkComplete from '@featherds/icon/action/MarkComplete'
 import Cloud from '@featherds/icon/action/Cloud'
 import Reporting from '@featherds/icon/action/Reporting'
+import UpdateUtilities from '@featherds/icon/action/UpdateUtilities'
 import {
   FeatherNavigationRail,
   FeatherRailItem,
 } from '@featherds/navigation-rail'
+import { Plugin } from '@/types'
 
 const store = useStore()
 const route = useRoute()
+const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
 const isAdmin = computed(() => store.getters['authModule/isAdmin'])
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRailOpen.value)

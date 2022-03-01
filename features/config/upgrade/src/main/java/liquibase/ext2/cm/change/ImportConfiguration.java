@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
 
+import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
@@ -59,10 +60,10 @@ import liquibase.statement.SqlStatement;
 public class ImportConfiguration extends AbstractCmChange {
 
     private static final Logger LOG = LoggerFactory.getLogger(ImportConfiguration.class);
-    private final static String CONFIG_ID = "default";
     private final static Set<String> ALLOWED_EXTENSIONS = Set.of("xml", "cfg");
 
     private String schemaId;
+    private String configId;
     private String filePath;
     private Path archivePath;
     private Resource configResource;
@@ -87,13 +88,13 @@ public class ImportConfiguration extends AbstractCmChange {
 
     @Override
     public String getConfirmationMessage() {
-        return String.format("Imported configuration from %s with id=default for schema=%s", this.filePath, this.schemaId);
+        return String.format("Imported configuration from %s with id=%s for schema=%s", this.filePath, getConfigId(), this.schemaId);
     }
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
         return new SqlStatement[] {
-                new GenericCmStatement((ConfigurationManagerService cm) -> importConfig(cm, this.configResource, new ConfigUpdateInfo(schemaId, CONFIG_ID), archivePath))
+                new GenericCmStatement((ConfigurationManagerService cm) -> importConfig(cm, this.configResource, new ConfigUpdateInfo(schemaId, getConfigId()), archivePath))
         };
     }
 
@@ -103,6 +104,14 @@ public class ImportConfiguration extends AbstractCmChange {
 
     public void setSchemaId(String schemaId) {
         this.schemaId = schemaId;
+    }
+
+    public String getConfigId() {
+        return configId == null ? ConfigDefinition.DEFAULT_CONFIG_ID : configId;
+    }
+
+    public void setConfigId(String configId) {
+        this.configId = configId;
     }
 
     public String getFilePath() {
