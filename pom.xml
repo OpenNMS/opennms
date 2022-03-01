@@ -286,7 +286,7 @@
                 | Common Development And Distribution License (CDDL) Version 1.1
             </licenseMerge>
             <licenseMerge>
-              cddl_v1 + gpl_v2_cpe
+              cddl_v1 or gpl_v2_cpe
                 | CDDL+GPL License
                 | CDDL/GPLv2+CE
                 | CDDL-1.0 + GPL-2.0+CPE
@@ -302,6 +302,7 @@
               epl_v1
                 | EPL 1.0
                 | EPL-1.0
+                | Eclipse Public License
                 | Eclipse Public License - Version 1.0
                 | Eclipse Public License - v 1.0
                 | Eclipse Public License, Version 1.0
@@ -396,6 +397,10 @@
               mpl_2_0
                 | Mozilla Public License 2.0
                 | Mozilla Public License version 2.0
+            </licenseMerge>
+            <licenseMerge>
+              mpl_2_0 or epl_1_0
+                | MPL 2.0 or EPL 1.0
             </licenseMerge>
             <licenseMerge>
               public_domain
