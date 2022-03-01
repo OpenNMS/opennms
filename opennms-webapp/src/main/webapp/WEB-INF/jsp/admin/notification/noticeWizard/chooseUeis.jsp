@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,8 @@
 	session="true"
 	import="org.opennms.web.admin.notification.noticeWizard.*"
 %>
+
+<%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Choose Event" />
@@ -158,7 +160,7 @@ $(document).ready(function() {
   </div>
 </div>
 
-<h2>${model.title}</h2>
+<h2>${e:forHtml(model.title)}</h2>
 
 <form method="post" name="events"
       action="admin/notification/noticeWizard/notificationWizard" >
@@ -182,7 +184,7 @@ $(document).ready(function() {
             </div>
             <div class="form-group">
               <label for="regexp" class="col-form-label">Regular Expression Field</label>
-              <input id="regexp" name="regexp" type="text" class="form-control" size="96" value="${model.noticeUei}" />
+              <input id="regexp" name="regexp" type="text" class="form-control" size="96" value="${e:forHtmlAttribute(model.noticeUei)}" />
             </div>
           </td>
         </tr>
