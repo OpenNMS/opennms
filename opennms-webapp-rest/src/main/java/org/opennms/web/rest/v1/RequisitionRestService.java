@@ -493,7 +493,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Transactional
     public Response addOrReplaceInterface(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionInterface iface) {
         try {
-            iface.validate();
+            final RequisitionNode node = m_accessService.getNode(foreignSource, foreignId);
+            iface.validate(node);
         } catch (final ValidationException e) {
             LOG.debug("error validating incoming interface '{}'", iface, e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
