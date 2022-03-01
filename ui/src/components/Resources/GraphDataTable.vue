@@ -95,7 +95,7 @@ const highlightTableText = () => {
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 @import "@featherds/table/scss/table";
 #wrap {
   height: calc(100% - 29px);

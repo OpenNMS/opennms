@@ -21,7 +21,3 @@ onMounted(() => {
   store.dispatch('resourceModule/getResources')
 })
 </script>
-  
-<style scoped lang="scss">
-</style>
-  

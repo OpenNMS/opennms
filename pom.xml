@@ -1229,7 +1229,7 @@
       Set java.security.egd so that entropy exhaustion doesn't cause
       problematic pauses when starting MockSnmpAgent in unit tests.
     -->
-    <argLineMemory>-Xmx1536m</argLineMemory>
+    <argLineMemory>-Xmx2g</argLineMemory>
     <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom</argLine>
     <skipITs>true</skipITs>
 
@@ -1315,7 +1315,7 @@
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
 
     <runMailTests>true</runMailTests>
-  
+
     <!-- rpm specific -->
     <rpm.install.dir>/opt/opennms</rpm.install.dir>
     <rpm.build.executable>rpmbuild</rpm.build.executable>
