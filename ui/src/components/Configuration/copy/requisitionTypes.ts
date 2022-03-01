@@ -18,10 +18,7 @@ export const RequisitionPluginSubTypes = {
   PRIS: 'PRIS',
   AzureIot: 'Azure IoT'
 }
-export const RequisitionHTTPTypes = [
-  RequisitionTypes.HTTP,
-  RequisitionTypes.HTTPS
-]
+export const RequisitionHTTPTypes = [RequisitionTypes.HTTP, RequisitionTypes.HTTPS]
 export const RequsitionTypesUsingHost = [
   RequisitionTypes.DNS,
   RequisitionTypes.VMWare,

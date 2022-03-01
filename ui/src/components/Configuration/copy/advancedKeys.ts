@@ -3,127 +3,127 @@ export const advancedKeys = [
     id: 22,
     name: 'cimTimeout',
     _text: 'cimTimeout',
-    hint:'',
+    hint: ''
   },
   {
     id: 18,
     name: 'hostSystemServices',
     _text: 'hostSystemServices',
-    hint:'',
+    hint: ''
   },
   {
     id: 1,
     name: 'importIPv4Only',
     _text: 'importIPv4Only',
-    hint:'',
+    hint: ''
   },
   {
     id: 2,
     name: 'importIPv6Only',
     _text: 'importIPv6Only',
-    hint:'',
+    hint: ''
   },
   {
     id: 3,
     name: 'topologyNetworks',
     _text: 'topologyNetworks',
-    hint:'',
+    hint: ''
   },
   {
     id: 4,
     name: 'topologyDatastores',
     _text: 'topologyDatastores',
-    hint:'',
+    hint: ''
   },
   {
     id: 5,
     name: 'topologyPortGroups',
     _text: 'topologyPortGroups',
-    hint:'',
+    hint: ''
   },
   {
     id: 6,
     name: 'importVMPoweredOn',
     _text: 'importVMPoweredOn',
-    hint:'',
+    hint: ''
   },
   {
     id: 7,
     name: 'importVMPoweredOff',
     _text: 'importVMPoweredOff',
-    hint:'',
+    hint: ''
   },
   {
     id: 8,
     name: 'importVMSuspended',
     _text: 'importVMSuspended',
-    hint:'',
+    hint: ''
   },
   {
     id: 9,
     name: 'importVMAll',
     _text: 'importVMAll',
-    hint:'',
+    hint: ''
   },
   {
     id: 10,
     name: 'importVMOnly',
     _text: 'importVMOnly',
-    hint:'',
+    hint: ''
   },
   {
     id: 11,
     name: 'importHostPoweredOn',
     _text: 'importHostPoweredOn',
-    hint:'',
+    hint: ''
   },
   {
     id: 12,
     name: 'importHostPoweredOff',
     _text: 'importHostPoweredOff',
-    hint:'',
+    hint: ''
   },
   {
     id: 13,
     name: 'importHostStandBy',
     _text: 'importHostStandBy',
-    hint:'',
+    hint: ''
   },
   {
     id: 14,
     name: 'importHostUnknown',
     _text: 'importHostUnknown',
-    hint:'',
+    hint: ''
   },
   {
     id: 15,
     name: 'importHostAll',
     _text: 'importHostAll',
-    hint:'',
+    hint: ''
   },
   {
     id: 16,
     name: 'importHostOnly',
     _text: 'importHostOnly',
-    hint:'',
+    hint: ''
   },
   {
     id: 20,
     name: 'password',
     _text: 'password',
-    hint:'',
+    hint: ''
   },
   {
     id: 21,
     name: 'timeout',
     _text: 'timeout',
-    hint:'',
+    hint: ''
   },
   {
     id: 19,
     name: 'username',
     _text: 'username',
-    hint:'',
+    hint: ''
   },
   {
     id: 17,
@@ -137,9 +137,9 @@ export const dnsKeys = [
     id: 1,
     name: 'expression',
     _text: 'expression',
-    hint:'Filter records by regular expression'
+    hint: 'Filter records by regular expression'
   },
-  { id: 2, name: 'location', _text: 'location', hint:'Monitoring location for all nodes' }
+  { id: 2, name: 'location', _text: 'location', hint: 'Monitoring location for all nodes' }
 ]
 
 export const openDaylightKeys = [
@@ -149,7 +149,7 @@ export const openDaylightKeys = [
     _text: 'host',
     hint: 'ODL Controller Host'
   },
-  { id: 2, name: 'port', _text: 'port',hint:'ODL Controller Port' }
+  { id: 2, name: 'port', _text: 'port', hint: 'ODL Controller Port' }
 ]
 
 export const prisKeys = [
@@ -157,7 +157,7 @@ export const prisKeys = [
     id: 1,
     name: 'source',
     _text: 'source',
-    hint:'Inventory source ID'
+    hint: 'Inventory source ID'
   },
   { id: 2, name: 'mapper', _text: 'mapper', hint: 'Mapper script to apply' }
 ]
@@ -167,37 +167,37 @@ export const aciKeys = [
     id: 1,
     name: 'cluster-name',
     _text: 'cluster-name',
-    hint:'Cluster to import'
+    hint: 'Cluster to import'
   },
   {
     id: 1,
     name: 'hostname',
     _text: 'hostname',
-    hint:'ACI Controller Host'
+    hint: 'ACI Controller Host'
   },
   {
     id: 1,
     name: 'username',
     _text: 'username',
-    hint:'ACI authentication username'
+    hint: 'ACI authentication username'
   },
   {
     id: 1,
     name: 'password',
     _text: 'password',
-    hint:'ACI authentication password'
+    hint: 'ACI authentication password'
   },
   {
     id: 1,
     name: 'apic-url',
     _text: 'apic-url',
-    hint:'ACI APIC URL'
+    hint: 'ACI APIC URL'
   },
   {
     id: 1,
     name: 'location',
     _text: 'location',
-    hint:'Monitoring location for all nodes'
+    hint: 'Monitoring location for all nodes'
   }
 ]
 

@@ -33,11 +33,11 @@ export const useProvisionD = () => {
       selectedProvisionDItem.config.advancedOptions = []
     }
     if (selectedProvisionDItem?.config?.advancedOptions) {
-      selectedProvisionDItem.config.advancedOptions.push({ key: { name: '', _text: '' }, value: '',hint:'' })
+      selectedProvisionDItem.config.advancedOptions.push({ key: { name: '', _text: '' }, value: '', hint: '' })
     }
   }
 
-  const advancedKeyUpdate = (key:{hint:string},index:number) => {
+  const advancedKeyUpdate = (key: { hint: string }, index: number) => {
     selectedProvisionDItem.config.advancedOptions[index].hint = key.hint
     selectedProvisionDItem.config.advancedOptions[index].value = ''
   }
@@ -68,7 +68,7 @@ export const useProvisionD = () => {
   }
 
   /**
-   * 
+   *
    * @param index Index for the item we clicked in the list of ProvisionD items
    */
   const setItemToEdit = (index: number) => {
@@ -89,26 +89,30 @@ export const useProvisionD = () => {
    * @param key the key being updated
    * @param value the value for the key being updated
    */
-  const updateCronTab = (key:string,value:string) => {
-    if (key === 'advancedCrontab' && value){
-      selectedProvisionDItem.config.occuranceAdvanced = ConfigurationHelper.convertLocalToCronTab(selectedProvisionDItem.config)
-    }else if (key === 'advancedCrontab' && !value){
+  const updateCronTab = (key: string, value: string) => {
+    if (key === 'advancedCrontab' && value) {
+      selectedProvisionDItem.config.occuranceAdvanced = ConfigurationHelper.convertLocalToCronTab(
+        selectedProvisionDItem.config
+      )
+    } else if (key === 'advancedCrontab' && !value) {
       const localTime = selectedProvisionDItem.config.time
-      if (localTime.includes(',') || localTime.length > 5){
+      if (localTime.includes(',') || localTime.length > 5) {
         selectedProvisionDItem.config.time = '00:00'
       }
-      selectedProvisionDItem.config.occuranceAdvanced = ConfigurationHelper.convertLocalToCronTab(selectedProvisionDItem.config)
+      selectedProvisionDItem.config.occuranceAdvanced = ConfigurationHelper.convertLocalToCronTab(
+        selectedProvisionDItem.config
+      )
     }
   }
 
   /**
-   * 
+   *
    * @param key Key in the LocalConfiguration we want to update
    * @param value New value associated to the key
    */
   const updateFormValue = (key: string, value: string) => {
-    updateCronTab(key,value);
-    (selectedProvisionDItem.config as Record<string, unknown>)[key] = value
+    updateCronTab(key, value)
+    ;(selectedProvisionDItem.config as Record<string, unknown>)[key] = value
     updateValidation(selectedProvisionDItem.config)
     if (key === 'type' || key === 'subType') {
       createNewRequisition()
@@ -120,7 +124,12 @@ export const useProvisionD = () => {
    * @param localConfig Full Local Configuration Item
    */
   const updateValidation = (localConfig: LocalConfiguration) => {
-    selectedProvisionDItem.errors = ConfigurationHelper.validateLocalItem(localConfig, provisionDList.value,activeIndex.index,true)
+    selectedProvisionDItem.errors = ConfigurationHelper.validateLocalItem(
+      localConfig,
+      provisionDList.value,
+      activeIndex.index,
+      true
+    )
   }
 
   return {
@@ -135,10 +144,10 @@ export const useProvisionD = () => {
     createNewRequisition,
     deleteAdvancedOption,
     setEditingStateTo,
-    setLoading: (val: boolean) => loading.value = val,
+    setLoading: (val: boolean) => (loading.value = val),
     setItemToEdit,
     updateActiveIndex,
     updateFormValue,
-    updateValidation,
+    updateValidation
   }
 }
