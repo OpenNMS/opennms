@@ -170,4 +170,11 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
 
         return findMatching(criteria);
     }
+
+    @Override
+    public List<OnmsMonitoredService> findSimilarServicesOnInterface(Integer nodeId, InetAddress ipAddress, String svcNamePrefix) {
+        return find("from OnmsMonitoredService as svc " +
+                        "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.serviceType.name LIKE ?",
+                nodeId, ipAddress, svcNamePrefix+"%");
+    }
 }

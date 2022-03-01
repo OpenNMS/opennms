@@ -28,6 +28,8 @@
 
 package org.opennms.features.deviceconfig.service;
 
+import org.opennms.netmgt.poller.DeviceConfig;
+
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
@@ -53,5 +55,5 @@ public interface DeviceConfigService {
      * @throws IOException
      * @return
      */
-    CompletableFuture<byte[]> getDeviceConfig(String ipAddress, String location, String configType, int timeout) throws IOException;
+    CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String configType, int timeout) throws IOException;
 }

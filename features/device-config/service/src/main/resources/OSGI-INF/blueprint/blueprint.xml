@@ -9,12 +9,14 @@
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory"/>
     <reference id="deviceConfigMonitorAdaptor" interface="org.opennms.netmgt.poller.ServiceMonitorAdaptor" availability="mandatory"/>
+    <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
 
     <bean id="deviceConfigService" class="org.opennms.features.deviceconfig.service.impl.DeviceConfigServiceImpl" >
         <property name="locationAwarePollerClient" ref="locationAwarePollerClient"/>
         <property name="sessionUtils" ref="sessionUtils"/>
         <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
         <property name="serviceMonitorAdaptor" ref="deviceConfigMonitorAdaptor"/>
+        <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
     </bean>
 
     <service ref="deviceConfigService" interface="org.opennms.features.deviceconfig.service.DeviceConfigService"/>
