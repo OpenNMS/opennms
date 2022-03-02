@@ -1,11 +1,11 @@
 <template>
-  <div class="wrapper" @mouseleave="timeoutOut">
+  <div @mouseleave="timeoutOut">
     <div class="inner-short" @mouseenter="timeoutIn">{{ shortText }}</div>
     <div class="inner-float" :class="hover && 'hovering'">
-      <div class="floating" ref="floating">{{ props.text }}</div>
-      <div class="button">
-        <FeatherButton icon="Edit" @click="copyURLToClipboard">
-          <FeatherIcon :icon="Edit" class="edit-icon"></FeatherIcon>
+      <div ref="floating">{{ text }}</div>
+      <div class="button" v-if="showCopyBtn">
+        <FeatherButton icon="Copy to clipboard" @click="copyURLToClipboard">
+          <FeatherIcon :icon="ContentCopy" class="edit-icon"></FeatherIcon>
         </FeatherButton>
       </div>
     </div>
@@ -14,19 +14,25 @@
 
 <script setup lang="ts">
 import { computed, ref, reactive } from 'vue'
-
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
-
-import Edit from '@featherds/icon/action/Edit'
-
+import ContentCopy from '@featherds/icon/action/ContentCopy'
 import { useConfigurationToast } from './hooks/configurationToast'
+import { ConfigurationHelper } from './ConfigurationHelper'
 
 /**
  * Props
  */
 const props = defineProps({
-  text: String
+  text: {
+    type: String,
+    required: true
+  },
+  showCopyBtn: {
+    type: Boolean,
+    required: false,
+    default: true
+  }
 })
 
 /**
@@ -51,10 +57,16 @@ const shortText = computed(() => {
  */
 const copyURLToClipboard = () => {
   if (floating.value && props.text) {
-    navigator.clipboard.writeText(props.text)
-    updateToast({
-      basic: `Copied: ${props.text.length > 70 ? props.text.substring(0, 70) + '...' : props.text}`,
-      hasErrors: false
+    ConfigurationHelper.copyToClipboard(props.text).then(() => {
+      updateToast({
+        basic: `Copied: ${props.text.length > 70 ? props.text.substring(0, 70) + '...' : props.text}`,
+        hasErrors: false
+      })
+    }).catch(() => {
+      updateToast({
+        basic: 'Could not copy to clipboard. Your environment may be insecure.',
+        hasErrors: true
+      })
     })
   }
 }
@@ -100,6 +112,7 @@ const timeoutIn = () => {
   pointer-events: none;
   align-items: center;
   max-width: 25vw;
+  line-break: anywhere;
 }
 
 .inner-float.hovering {

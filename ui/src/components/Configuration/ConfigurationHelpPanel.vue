@@ -15,12 +15,13 @@
     </div>
     <div class="config-help-hr"></div>
     <div class="config-help-footer">
-      <div class="footer-title">HELP US IMPROVE</div>
+      <!-- TODO: What do we want to do with this info? -->
+      <!-- <div class="footer-title">HELP US IMPROVE</div>
       <div class="footer-subtitle">Was this information helpful?</div>
       <div class="footer-button" :class="getFooterClickClass()">
         <div class="footer-yes" @click="footerYes">YES</div>
         <div class="footer-no" @click="footerNo">NO</div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -62,10 +63,10 @@ const helpText = computed(() => {
 
   let helpVals = {
     title: 'Requisition Definition',
-    subTitle: 'A little default text...',
+    subTitle: 'Requisition definitions enable periodic inventory synchronization from external sources. Each definition consists of a URL, a schedule, and a setting determining which nodes to rescan.',
     help: 'Detailed information on the options it supports is available in the online documentation:',
     linkCopy: 'READ FULL ARTICLE',
-    link: 'https://docs.opennms.com/horizon/29/reference/provisioning'
+    link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
   }
 
   if (typeName === RequisitionTypes.File) {
@@ -80,50 +81,50 @@ const helpText = computed(() => {
     if (subType === '') {
       helpVals = {
         title: RequisitionTypes.RequisitionPlugin,
-        subTitle: 'Some information about Requisition...',
+        subTitle: '',
         help: 'Detailed information on the options it supports is available in the online documentation:',
         linkCopy: 'READ FULL ARTICLE',
-        link: ''
+        link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
       }
     } else if (subType === RequisitionPluginSubTypes.OpenDaylight) {
       helpVals = {
         title: 'Open Daylight',
-        subTitle: 'Open Daylight...',
+        subTitle: '',
         help: 'Detailed information on the options it supports is available in the online documentation:',
         linkCopy: 'READ FULL ARTICLE',
-        link: ''
+        link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
       }
     } else if (subType === RequisitionPluginSubTypes.ACI) {
       helpVals = {
         title: 'ACI',
-        subTitle: 'ACI...',
+        subTitle: '',
         help: 'Detailed information on the options it supports is available in the online documentation:',
         linkCopy: 'READ FULL ARTICLE',
-        link: ''
+        link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
       }
     } else if (subType === RequisitionPluginSubTypes.Zabbix) {
       helpVals = {
         title: 'Zabbix',
-        subTitle: 'Zabbix...',
+        subTitle: '',
         help: 'Detailed information on the options it supports is available in the online documentation:',
         linkCopy: 'READ FULL ARTICLE',
-        link: ''
+        link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
       }
     } else if (subType === RequisitionPluginSubTypes.AzureIot) {
       helpVals = {
         title: 'Azure IoT',
-        subTitle: 'Azure IoT...',
+        subTitle: '',
         help: 'Detailed information on the options it supports is available in the online documentation:',
         linkCopy: 'READ FULL ARTICLE',
-        link: ''
+        link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
       }
     } else if (subType === RequisitionPluginSubTypes.PRIS) {
       helpVals = {
         title: 'PRIS',
-        subTitle: 'PRIS...',
+        subTitle: '',
         help: 'Detailed information on the options it supports is available in the online documentation:',
         linkCopy: 'READ FULL ARTICLE',
-        link: ''
+        link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
       }
     }
   } else if (typeName === RequisitionTypes.VMWare) {
@@ -137,10 +138,10 @@ const helpText = computed(() => {
   } else if (typeName === RequisitionTypes.HTTP || typeName === RequisitionTypes.HTTPS) {
     helpVals = {
       title: 'HTTP(S)',
-      subTitle: 'The HTTP ...',
+      subTitle: '',
       help: 'Detailed information on the options it supports is available in the online documentation:',
       linkCopy: 'READ FULL ARTICLE',
-      link: ''
+      link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/http.html'
     }
   } else if (typeName === RequisitionTypes.DNS) {
     helpVals = {

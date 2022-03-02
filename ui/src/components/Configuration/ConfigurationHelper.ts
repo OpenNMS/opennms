@@ -815,6 +815,34 @@ const withTwoZeros = (numZero: string | number) => {
   return minute < 10 ? '0' + numZero : numZero
 }
 
+/**
+ * Allows for copying to clipboard in both HTTPS & HTTP
+ * @param text text to copy
+ * @returns promise
+ */
+const copyToClipboard = (text: string) => {
+  // navigator clipboard api needs a secure context (https)
+  if (navigator.clipboard && window.isSecureContext) {
+    // navigator clipboard api method'
+    return navigator.clipboard.writeText(text)
+  } else {
+    // text area method
+    const textArea = document.createElement('textarea')
+    textArea.value = text
+    // make the textarea out of viewport
+    textArea.style.position = 'fixed'
+    textArea.style.left = '-999999px'
+    textArea.style.top = '-999999px'
+    document.body.appendChild(textArea)
+    textArea.focus()
+    textArea.select()
+    return new Promise<void>((res, rej) => {
+      document.execCommand('copy') ? res() : rej()
+      textArea.remove()
+    })
+  }
+}
+
 export const ConfigurationHelper = {
   checkForDuplicateName,
   convertCronTabToLocal,
@@ -835,5 +863,6 @@ export const ConfigurationHelper = {
   validateName,
   validateOccurance,
   validatePath,
-  validateType
+  validateType,
+  copyToClipboard
 }
