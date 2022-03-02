@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,6 +49,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import com.codahale.metrics.Timer;
+import com.google.common.base.MoreObjects;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
@@ -67,6 +69,7 @@ import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
+import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.TableTracker;
 import org.slf4j.Logger;
@@ -96,6 +99,7 @@ public class NodeScan implements Scan {
     private boolean m_agentFound = false;
     private Span m_span;
     private final Span m_parentSpan;
+    private ProvisionMonitor monitor;
 
     /**
      * <p>Constructor for NodeScan.</p>
@@ -108,8 +112,9 @@ public class NodeScan implements Scan {
      * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
+     * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object. (optional)
      */
-    public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final OnmsMonitoringLocation location, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, final Span span) {
+    public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final OnmsMonitoringLocation location, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, final Span span, final ProvisionMonitor monitor) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
@@ -120,6 +125,7 @@ public class NodeScan implements Scan {
         m_agentConfigFactory = agentConfigFactory;
         m_taskCoordinator = taskCoordinator;
         m_parentSpan = span;
+        this.monitor = monitor;
     }
 
     /**
@@ -262,6 +268,9 @@ public class NodeScan implements Scan {
     @Override
     public void run(final BatchTask parent) {
         LOG.info("Scanning node {}/{}/{}", m_nodeId, m_foreignSource, m_foreignId);
+        if (monitor != null) {
+            monitor.beginScanning(this);
+        }
         if (m_parentSpan != null) {
             m_span = getProvisionService().buildAndStartSpan("NodeScan", m_parentSpan.context());
         } else {
@@ -314,11 +323,7 @@ public class NodeScan implements Scan {
                                             }
                                         }
                 );
-
-
-
     }
-
 
     ScheduledFuture<?> schedule(ScheduledExecutorService executor, NodeScanSchedule schedule) {
 
@@ -899,7 +904,7 @@ public class NodeScan implements Scan {
         }
 
         void updateIpInterface(final BatchTask currentPhase, final OnmsIpInterface iface) {
-            getProvisionService().updateIpInterfaceAttributes(getNodeId(), iface);
+            getProvisionService().updateIpInterfaceAttributes(getNodeId(), iface, monitor != null ? monitor.getName() : null);
             if (iface.isManaged()) {
                 currentPhase.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getLocation(), getProvisionService(), m_baseAgentSpan));
             }
@@ -937,7 +942,6 @@ public class NodeScan implements Scan {
         .append("provision service", m_provisionService)
         .toString();
     }
-
 
     /**
      * <p>detectAgents</p>
@@ -1034,8 +1038,8 @@ public class NodeScan implements Scan {
             bldr.addParam(EventConstants.PARM_FOREIGN_ID, getForeignId());
             getEventForwarder().sendNow(bldr.getEvent());
         }
-
+        if (monitor != null) {
+            monitor.finishScanning(this);
+        }
     }
-
-
 }
