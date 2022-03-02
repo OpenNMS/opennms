@@ -67,5 +67,10 @@
   <reference-list interface="org.opennms.integration.api.v1.health.HealthCheck" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="healthCheckManager" />
   </reference-list>
-
+  <!--Key-value store -->
+  <bean id="keyValueStoreMapper" class="org.opennms.features.apilayer.common.distributed.KeyValueStoreMapperImpl" />
+  <reference-list interface="org.opennms.features.distributed.kvstore.api.KeyValueStore" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="keyValueStoreMapper"/>
+  </reference-list>
+  <service ref="keyValueStoreMapper" interface="org.opennms.features.apilayer.common.distributed.KeyValueStoreMapper" />
 </blueprint>

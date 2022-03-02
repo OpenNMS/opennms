@@ -387,9 +387,16 @@
     <argument ref="graphContainerCache" />
   </bean>
   <service ref="graphContainerCacheImpl" interface="org.opennms.integration.api.v1.graph.GraphContainerCache" />
+  <!-- UI extension-->
   <bean id="uiExtensionRegistry" class="org.opennms.features.apilayer.uiextension.UIExtensionRegistryImpl"/>
   <reference-list interface="org.opennms.integration.api.v1.ui.UIExtension" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="uiExtensionRegistry"/>
   </reference-list>
   <service ref="uiExtensionRegistry" interface="org.opennms.features.apilayer.uiextension.UIExtensionRegistry" />
+  <!--Key-value store -->
+  <bean id="keyValueStoreMapper" class="org.opennms.features.apilayer.common.distributed.KeyValueStoreMapperImpl" />
+  <reference-list interface="org.opennms.features.distributed.kvstore.api.KeyValueStore" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="keyValueStoreMapper"/>
+  </reference-list>
+  <service ref="keyValueStoreMapper" interface="org.opennms.integration.api.v1.distributed.KeyValueStoreMapper" />
 </blueprint>
