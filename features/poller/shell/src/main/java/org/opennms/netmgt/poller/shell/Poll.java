@@ -28,7 +28,11 @@
 
 package org.opennms.netmgt.poller.shell;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +43,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
@@ -58,6 +63,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -195,6 +201,16 @@ public class Poll implements Action {
                         } else {
                             System.out.printf("(No properties were returned by the monitor.\n");
                         }
+                        if (pollStatus.getDeviceConfig() != null) {
+                            DeviceConfig deviceConfig = pollStatus.getDeviceConfig();
+                            System.out.printf("Received file %s with content .. \n\n", deviceConfig.getFilename());
+                            if (deviceConfig.getFilename().contains(".gz")) {
+                                // Decompress if this is compressed file
+                                byte[] dcBytes = decompressGzipToBytes(deviceConfig.getContent());
+                                String config =  new String(dcBytes, Charset.forName(Charset.defaultCharset().name()));
+                                System.out.println(config);
+                            }
+                        }
                     } else {
                         System.out.printf("\nService is %s on %s using %s\n", pollStatus.getStatusName(), host, className);
                         System.out.printf("\tReason: %s\n", pollStatus.getReason());
@@ -301,6 +317,24 @@ public class Poll implements Action {
             }
         }
         return properties;
+    }
+
+    public static byte[] decompressGzipToBytes(byte[] source) throws IOException {
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+        try (GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(source))) {
+
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = gis.read(buffer)) > 0) {
+                output.write(buffer, 0, len);
+            }
+
+        }
+
+        return output.toByteArray();
+
     }
 
 }
