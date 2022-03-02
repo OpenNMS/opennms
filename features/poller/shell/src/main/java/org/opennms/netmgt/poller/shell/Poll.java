@@ -54,6 +54,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.ReadOnlyPollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
@@ -206,7 +207,7 @@ public class Poll implements Action {
                             System.out.printf("Received file %s with content .. \n\n", deviceConfig.getFilename());
                             if (deviceConfig.getFilename().contains(".gz")) {
                                 // Decompress if this is compressed file
-                                byte[] dcBytes = decompressGzipToBytes(deviceConfig.getContent());
+                                byte[] dcBytes = DeviceConfigUtil.decompressGzipToBytes(deviceConfig.getContent());
                                 String config =  new String(dcBytes, Charset.forName(Charset.defaultCharset().name()));
                                 System.out.println(config);
                             }
@@ -318,23 +319,6 @@ public class Poll implements Action {
         }
         return properties;
     }
-
-    public static byte[] decompressGzipToBytes(byte[] source) throws IOException {
-
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-
-        try (GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(source))) {
-
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = gis.read(buffer)) > 0) {
-                output.write(buffer, 0, len);
-            }
-
-        }
-
-        return output.toByteArray();
-
-    }
+    
 
 }
