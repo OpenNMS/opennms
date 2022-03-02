@@ -348,9 +348,7 @@
          <rra>RRA:MAX:0.5:288:366</rra>
          <rra>RRA:MIN:0.5:288:366</rra>
       </rrd>
-      <service name="DeviceConfig-default" interval="30000" user-defined="false" status="on">
-         <parameter key="retry" value="3"/>
-         <parameter key="timeout" value="300000"/>
+      <service name="DeviceConfig-default" interval="300000" user-defined="false" status="on">
          <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
          <parameter key="rrd-base-name" value="device-config"/>
          <!-- match service name suffix with config-type -->
