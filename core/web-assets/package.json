@@ -94,7 +94,7 @@
         "c3": "^0.4.24",
         "core-js": "^3.19.3",
         "cron-parser": "^3.5.0",
-        "cross-env": "^6.0.3",
+        "cross-env": "^7.0.3",
         "d3": "^3.5.17",
         "flot": "https://github.com/flot/flot.git#v0.8.3",
         "flot-datatable": "https://github.com/RangerRick/flot-datatable.git#master",
