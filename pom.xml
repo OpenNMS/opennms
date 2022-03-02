@@ -1473,7 +1473,7 @@
     <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>5.18.3</rocksdbjniVersion>
-    <scalaLibraryVersion>2.12.8</scalaLibraryVersion>
+    <scalaLibraryVersion>2.13.8</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.0</scalaLoggingVersion>
     <scalaVersion>2.12</scalaVersion>
     <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
