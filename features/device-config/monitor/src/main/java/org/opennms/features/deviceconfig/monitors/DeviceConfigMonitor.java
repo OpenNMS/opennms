@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
@@ -59,9 +60,10 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     public static final String PORT = "port";
     public static final String TIMEOUT = "timeout";
     public static final String PASSWORD = "password";
-    public static final String CRON_SCHEDULE = "cronSchedule";
-    public static final String DEFAULT_CRON_SCHEDULE = "0 0 0 ? * *";
+    public static final String SCHEDULE = "schedule";
+    public static final String DEFAULT_CRON_SCHEDULE = "0 0 0 * * ?";
     public static final String LAST_RETRIEVAL = "lastRetrieval";
+    public static final String CONFIG_TYPE = "config-type";
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitor.class);
     private Retriever retriever;
@@ -72,7 +74,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     private DeviceConfigDao deviceConfigDao;
 
     @Override
-    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+    public Map<String, Object> getRuntimeAttributes(final MonitoredService svc, final Map<String, Object> parameters) {
         if (ipInterfaceDao == null) {
             ipInterfaceDao = BeanUtils.getBean("daoContext", "ipInterfaceDao", IpInterfaceDao.class);
         }
@@ -82,7 +84,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         }
 
         final Map<String, Object> params = super.getRuntimeAttributes(svc, parameters);
-        final String configType = getKeyedString(parameters, "config-type", "default");
+        final String configType = getKeyedString(parameters, "config-type", ConfigType.Default);
         final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
         final Optional<DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
 
@@ -100,7 +102,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         }
 
         final Date lastRun = new Date(getKeyedLong(parameters, LAST_RETRIEVAL, 0L));
-        final String cronSchedule = getKeyedString(parameters, CRON_SCHEDULE, DEFAULT_CRON_SCHEDULE);
+        final String cronSchedule = getKeyedString(parameters, SCHEDULE, DEFAULT_CRON_SCHEDULE);
 
         final Trigger trigger = TriggerBuilder.newTrigger()
                 .withSchedule(CronScheduleBuilder.cronSchedule(cronSchedule))
@@ -117,7 +119,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         String user = getObjectAsStringFromParams(parameters, USERNAME);
         String password = getObjectAsStringFromParams(parameters, PASSWORD);
         Integer port = getKeyedInteger(parameters, PORT, DEFAULT_SSH_PORT);
-        String configType = getKeyedString(parameters, "config-type", "default");
+        String configType = getKeyedString(parameters, CONFIG_TYPE, ConfigType.Default);
         Long timeout = getKeyedLong(parameters, TIMEOUT, DEFAULT_DURATION.toMillis());
         var host = svc.getIpAddr();
         var stringParameters = parameters.entrySet().stream().collect(toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue())));
@@ -168,5 +170,4 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         }
         throw new IllegalArgumentException(key + " is not an instance of String");
     }
-
 }

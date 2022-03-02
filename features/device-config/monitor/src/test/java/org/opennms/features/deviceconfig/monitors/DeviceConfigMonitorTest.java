@@ -117,7 +117,7 @@ public class DeviceConfigMonitorTest {
         int hour = schedule.atZone(TimeZone.getDefault().toZoneId()).getHour();
 
         final Map<String, Object> params = new HashMap<>(this.params);
-        params.put(DeviceConfigMonitor.CRON_SCHEDULE, "0 " + minute + " " + hour + " ? * *");
+        params.put(DeviceConfigMonitor.SCHEDULE, "0 " + minute + " " + hour + " * * ?");
 
         params.put(DeviceConfigMonitor.LAST_RETRIEVAL, String.valueOf(Instant.now().minus(6, ChronoUnit.MINUTES).toEpochMilli()));
         assertThat(doesItRun(params), is(true));
