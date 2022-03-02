@@ -1353,7 +1353,7 @@
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
     <args4jVersion>2.32</args4jVersion>
-    <asmVersion>5.0.4</asmVersion>
+    <asmVersion>6.0_BETA</asmVersion>
     <asciidoctorVersion>1.5.6</asciidoctorVersion>
     <asciidoctorjVersion>1.6.2</asciidoctorjVersion>
     <asciidoctorjPdfVersion>1.5.3</asciidoctorjPdfVersion>
