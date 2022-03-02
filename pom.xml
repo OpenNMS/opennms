@@ -271,6 +271,7 @@
             </licenseMerge>
             <licenseMerge>
               cddl_v1
+                | CDDL
                 | CDDL 1.0
                 | CDDL license
                 | CDDL-1.0
@@ -285,7 +286,7 @@
                 | Common Development And Distribution License (CDDL) Version 1.1
             </licenseMerge>
             <licenseMerge>
-              cddl_v1 + gpl_v2_cpe
+              cddl_v1 or gpl_v2_cpe
                 | CDDL+GPL License
                 | CDDL/GPLv2+CE
                 | CDDL-1.0 + GPL-2.0+CPE
@@ -301,6 +302,7 @@
               epl_v1
                 | EPL 1.0
                 | EPL-1.0
+                | Eclipse Public License
                 | Eclipse Public License - Version 1.0
                 | Eclipse Public License - v 1.0
                 | Eclipse Public License, Version 1.0
@@ -328,6 +330,7 @@
                 | GPL-2.0+CPE
                 | GPL2 w/ CPE
                 | GPLv2 with classpath exception
+                | GPLv2+CE
             </licenseMerge>
             <licenseMerge>
               gpl_v3
@@ -396,10 +399,15 @@
                 | Mozilla Public License version 2.0
             </licenseMerge>
             <licenseMerge>
+              mpl_2_0 or epl_1_0
+                | MPL 2.0 or EPL 1.0
+            </licenseMerge>
+            <licenseMerge>
               public_domain
                 | Public Domain
                 | Public Domain, per Creative Commons CC0
                 | Public domain, Sun Microsoystems
+                | The SAX License
                 | WTFPL
             </licenseMerge>
             <licenseMerge>
@@ -413,6 +421,7 @@
             </licenseMerge>
             <licenseMerge>
               w3c
+                | The W3C License
                 | The W3C Software License
                 | W3C Software Copyright Notice and License
                 | W3C Software License
