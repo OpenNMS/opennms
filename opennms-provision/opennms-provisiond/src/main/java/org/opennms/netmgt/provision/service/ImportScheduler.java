@@ -42,6 +42,9 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
+import org.quartz.JobBuilder;
+import org.quartz.TriggerBuilder;
+import org.quartz.CronScheduleBuilder;
 import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.triggers.CronTriggerImpl;
@@ -224,19 +227,28 @@ public class ImportScheduler implements InitializingBean {
             while (it.hasNext()) {
                 RequisitionDef def = it.next();
                 JobDetail detail = null;
-                CronTriggerImpl trigger = null;
+                CronTrigger trigger = null;
                 
                 try {
-                    detail = new JobDetailImpl(def.getImportName().orElse(null), JOB_GROUP, ImportJob.class, false, false);
-                    detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource().orElse(null));
-                    detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, def.getRescanExisting());
-                    
-                    trigger = new CronTriggerImpl(def.getImportName().orElse(null), JOB_GROUP, def.getCronSchedule().orElse(null));
-                    trigger.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING);
+                    detail = JobBuilder.newJob(ImportJob.class)
+                            .withIdentity(def.getImportName().orElse(null), JOB_GROUP)
+                            .requestRecovery(false)
+                            .storeDurably(false)
+                            .usingJobData(ImportJob.URL, def.getImportUrlResource().orElse(null))
+                            .usingJobData(ImportJob.RESCAN_EXISTING, def.getRescanExisting())
+                            .build();
+
+                    trigger = TriggerBuilder.newTrigger()
+                            .withIdentity(def.getImportName().orElse(null), JOB_GROUP)
+                            .forJob(detail)
+                            .usingJobData(ImportJob.URL, def.getImportUrlResource().orElse(null))
+                            .usingJobData(ImportJob.RESCAN_EXISTING, def.getRescanExisting())
+                            .withSchedule(CronScheduleBuilder
+                                    .cronSchedule(def.getCronSchedule().orElse(null))
+                                    .withMisfireHandlingInstructionDoNothing())
+                            .build();
                     getScheduler().scheduleJob(detail, trigger);
                     
-                } catch (ParseException e) {
-                    LOG.error("buildImportSchedule: {}", e.getLocalizedMessage(), e);
                 } catch (SchedulerException e) {
                     LOG.error("buildImportSchedule: {}", e.getLocalizedMessage(), e);
                 }                
