@@ -38,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
-import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
 import org.opennms.netmgt.poller.DeviceConfig;
@@ -84,9 +83,9 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         }
 
         final Map<String, Object> params = super.getRuntimeAttributes(svc, parameters);
-        final String configType = getKeyedString(parameters, "config-type", ConfigType.Default);
+        final String configType = getKeyedString(parameters, CONFIG_TYPE, ConfigType.Default);
         final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
-        final Optional<DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
+        final Optional<org.opennms.features.deviceconfig.persistence.api.DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
 
         if (deviceConfigOptional.isPresent()) {
             params.put(LAST_RETRIEVAL, deviceConfigOptional.get().getLastUpdated().getTime());
