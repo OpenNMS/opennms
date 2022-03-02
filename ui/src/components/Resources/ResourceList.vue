@@ -41,7 +41,3 @@ const selectResource = (name: string) => {
   store.dispatch('graphModule/getPreFabGraphs', name)
 }
 </script>
-  
-<style scoped lang="scss">
-</style>
-  

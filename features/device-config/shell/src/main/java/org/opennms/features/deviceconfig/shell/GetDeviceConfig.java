@@ -35,11 +35,11 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
+import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
 import org.opennms.netmgt.poller.DeviceConfig;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -93,10 +93,11 @@ public class GetDeviceConfig implements Action {
                         System.out.printf("Received file %s with content .. \n\n", deviceConfig.getFilename());
                         if (deviceConfig.getFilename().contains(".gz")) {
                             // Decompress if this is compressed file
-                            byte[] dcBytes = decompressGzipToBytes(deviceConfig.getContent());
+                            byte[] dcBytes = DeviceConfigUtil.decompressGzipToBytes(deviceConfig.getContent());
                             String config =  new String(dcBytes, Charset.forName(encoding));
                             System.out.println(config);
                         }
+
                     } else {
                         System.out.println("Failed to fetch device config");
                     }
@@ -115,21 +116,4 @@ public class GetDeviceConfig implements Action {
         return null;
     }
 
-    public static byte[] decompressGzipToBytes(byte[] source) throws IOException {
-
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-
-        try (GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(source))) {
-
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = gis.read(buffer)) > 0) {
-                output.write(buffer, 0, len);
-            }
-
-        }
-
-        return output.toByteArray();
-
-    }
 }

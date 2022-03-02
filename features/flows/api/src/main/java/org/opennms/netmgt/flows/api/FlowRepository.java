@@ -35,5 +35,5 @@ import java.util.Collection;
  */
 public interface FlowRepository {
 
-    void persist(Collection<Flow> packets, FlowSource source) throws FlowException;
+    void persist(Collection<Flow> packets, FlowSource source, ProcessingOptions options) throws FlowException;
 }

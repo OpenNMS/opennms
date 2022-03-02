@@ -53,5 +53,4 @@ public abstract class AbstractInterfaceToNodeCache implements InterfaceToNodeCac
     public static InterfaceToNodeCache getInstance() {
         return s_instance.get(); 
     }
-
 }

@@ -174,7 +174,7 @@ class CollectableService implements ReadyRunnable {
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
         try {
-            m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository, m_params);
+            m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_params);
         } catch (ThresholdInitializationException e) {
             LOG.error("Error when initializing Thresholding. No Thresholding will be performed on this service.", e);
         }

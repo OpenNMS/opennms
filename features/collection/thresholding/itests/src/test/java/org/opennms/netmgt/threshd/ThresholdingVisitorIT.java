@@ -56,6 +56,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -90,10 +91,12 @@ import org.opennms.netmgt.collectd.SnmpAttributeType;
 import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collectd.SnmpIfData;
+import org.opennms.netmgt.collectd.StringAttributeType;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.dto.CollectionSetDTO;
 import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
@@ -170,7 +173,6 @@ public class ThresholdingVisitorIT {
     FileAnticipator m_fileAnticipator;
     Map<Integer, File> m_hrStorageProperties;
     List<Event> m_anticipatedEvents;
-    private FilesystemResourceStorageDao m_resourceStorageDao;
     private LocationAwareSnmpClient m_locationAwareSnmpClient = new LocationAwareSnmpClientRpcImpl(new MockRpcClientFactory());
 
     private MockEventIpcManager eventMgr;
@@ -284,9 +286,6 @@ public class ThresholdingVisitorIT {
         m_fileAnticipator = new FileAnticipator();
         m_hrStorageProperties = new HashMap<Integer, File>();
 
-        m_resourceStorageDao = new FilesystemResourceStorageDao();
-        m_resourceStorageDao.setRrdDirectory(new File(m_fileAnticipator.getTempDir(), "snmp"));
-
         m_filterDao = mock(FilterDao.class);
         when(m_filterDao.getActiveIPAddressList(anyString())).thenReturn(Collections.singletonList(addr("127.0.0.1")));
         FilterDaoFactory.setInstance(m_filterDao);
@@ -298,7 +297,7 @@ public class ThresholdingVisitorIT {
         EventIpcManager eventdIpcMgr = (EventIpcManager)eventMgr;
         EventIpcManagerFactory.setIpcManager(eventdIpcMgr);
         
-        DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+        DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss", Locale.US);
         final StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<outages>");
         sb.append("<outage name=\"junit outage\" type=\"specific\">");
@@ -546,10 +545,6 @@ public class ThresholdingVisitorIT {
         String ifName = "sis0";
         addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
         addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
-
-        // Creating strings.properties file
-        ResourcePath path = ResourcePath.get("snmp", "1", ifName);
-        m_resourceStorageDao.setStringAttribute(path, "myMockParam", "myMockValue");
 
         ThresholdingVisitor visitor = createVisitor();
         visitor.visitCollectionSet(createAnonymousCollectionSet(new Date().getTime()));
@@ -1551,20 +1546,17 @@ public class ThresholdingVisitorIT {
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig, m_locationAwareSnmpClient);
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
 
-        // Creating strings.properties file
-        ResourcePath path = ResourcePath.get("snmp", "1");
-        m_resourceStorageDao.setStringAttribute(path, "hda1_hrStorageDescr", "/home");
-        m_resourceStorageDao.setStringAttribute(path, "hda2_hrStorageDescr", "/opt");
-        m_resourceStorageDao.setStringAttribute(path, "hda3_hrStorageDescr", "/usr");
-
         // Creating Resource
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
         addAttributeToCollectionResource(resource, resourceType, "hda1_hrStorageUsed", "gauge", "node", 50);
         addAttributeToCollectionResource(resource, resourceType, "hda1_hrStorageSize", "gauge", "node", 100);
+        addAttributeToCollectionResource(resource, resourceType, "hda1_hrStorageDescr", "string", "node", "/home");
         addAttributeToCollectionResource(resource, resourceType, "hda2_hrStorageUsed", "gauge", "node", 60);
         addAttributeToCollectionResource(resource, resourceType, "hda2_hrStorageSize", "gauge", "node", 100);
+        addAttributeToCollectionResource(resource, resourceType, "hda2_hrStorageDescr", "string", "node", "/opt");
         addAttributeToCollectionResource(resource, resourceType, "hda3_hrStorageUsed", "gauge", "node", 70);
         addAttributeToCollectionResource(resource, resourceType, "hda3_hrStorageSize", "gauge", "node", 100);
+        addAttributeToCollectionResource(resource, resourceType, "hda3_hrStorageDescr", "string", "node", "/usr");
 
         // Run Visitor and Verify Events
         resource.visit(visitor);
@@ -1586,32 +1578,17 @@ public class ThresholdingVisitorIT {
         // Creating Node ResourceType
         SnmpCollectionAgent agent = createCollectionAgent();
         NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
-        CollectionSet collectionSet = new CollectionSetBuilder(agent).withNumericAttribute(nodeResource, "hd-usage", "hda1_hrStorageUsed", 50,
-                                                                                           AttributeType.GAUGE).withNumericAttribute(nodeResource, "hd-usage", "hda1_hrStorageSize",
-                                                                                                                                     100, AttributeType.GAUGE).withNumericAttribute(
-                                                                                                                                                                                    nodeResource,
-                                                                                                                                                                                    "hd-usage",
-                                                                                                                                                                                    "hda2_hrStorageUsed",
-                                                                                                                                                                                    60,
-                                                                                                                                                                                    AttributeType.GAUGE).withNumericAttribute(nodeResource,
-                                                                                                                                                                                                                              "hd-usage",
-                                                                                                                                                                                                                              "hda2_hrStorageSize",
-                                                                                                                                                                                                                              100,
-                                                                                                                                                                                                                              AttributeType.GAUGE).withNumericAttribute(nodeResource,
-                                                                                                                                                                                                                                                                        "hd-usage",
-                                                                                                                                                                                                                                                                        "hda3_hrStorageUsed",
-                                                                                                                                                                                                                                                                        70,
-                                                                                                                                                                                                                                                                        AttributeType.GAUGE).withNumericAttribute(nodeResource,
-                                                                                                                                                                                                                                                                                                                  "hd-usage",
-                                                                                                                                                                                                                                                                                                                  "hda3_hrStorageSize",
-                                                                                                                                                                                                                                                                                                                  100,
-                                                                                                                                                                                                                                                                                                                  AttributeType.GAUGE).build();
-
-        // Creating strings.properties file
-        ResourcePath path = ResourcePath.get("snmp", "1");
-        m_resourceStorageDao.setStringAttribute(path, "hda1_hrStorageDescr", "/home");
-        m_resourceStorageDao.setStringAttribute(path, "hda2_hrStorageDescr", "/opt");
-        m_resourceStorageDao.setStringAttribute(path, "hda3_hrStorageDescr", "/usr");
+        CollectionSet collectionSet = new CollectionSetBuilder(agent)
+                .withNumericAttribute(nodeResource, "hd-usage", "hda1_hrStorageUsed", 50, AttributeType.GAUGE)
+                .withNumericAttribute(nodeResource, "hd-usage", "hda1_hrStorageSize", 100, AttributeType.GAUGE)
+                .withNumericAttribute(nodeResource, "hd-usage", "hda2_hrStorageUsed", 60, AttributeType.GAUGE)
+                .withNumericAttribute(nodeResource, "hd-usage", "hda2_hrStorageSize", 100, AttributeType.GAUGE)
+                .withNumericAttribute(nodeResource, "hd-usage", "hda3_hrStorageUsed", 70, AttributeType.GAUGE)
+                .withNumericAttribute(nodeResource, "hd-usage", "hda3_hrStorageSize", 100, AttributeType.GAUGE)
+                .withStringAttribute(nodeResource, "hd-usage", "hda1_hrStorageDescr", "/home")
+                .withStringAttribute(nodeResource, "hd-usage", "hda2_hrStorageDescr", "/opt")
+                .withStringAttribute(nodeResource, "hd-usage", "hda3_hrStorageDescr", "/usr")
+                .build();
 
         // Run Visitor and Verify Events
         collectionSet.visit(visitor);
@@ -1672,12 +1649,6 @@ public class ThresholdingVisitorIT {
             // A resource for each drive, with a unique instance on each iteration
             GenericTypeResource volume16 = new GenericTypeResource(nodeResource, wmiLogicalDisk, "volume16-" + i);
             GenericTypeResource iDrive = new GenericTypeResource(nodeResource, wmiLogicalDisk, "iDrive" + i);
-
-            // Create the entries in strings.properties
-            ResourcePath path = ResourcePath.get("snmp", "1", "wmiLogicalDisk", "HarddiskVolume16");
-            m_resourceStorageDao.setStringAttribute(path, "wmiLDName", "HarddiskVolume16");
-            path = ResourcePath.get("snmp", "1", "wmiLogicalDisk", "I");
-            m_resourceStorageDao.setStringAttribute(path, "wmiLDName", "I");
 
             // Build a collection set containing attributes for both resources
             CollectionSet collectionSet = new CollectionSetBuilder(agent)
@@ -1781,10 +1752,10 @@ public class ThresholdingVisitorIT {
 
     private ThresholdingVisitor createVisitor(int node, String location, String serviceName, ServiceParameters svcParams) throws ThresholdInitializationException {
         ThresholdingEventProxyImpl eventProxy = new ThresholdingEventProxyImpl(eventMgr);
-        ThresholdingSetImpl thresholdingSet = new ThresholdingSetImpl(node, location, serviceName, getRepository(),
-                svcParams, m_resourceStorageDao, eventProxy, MockSession.getSession(), m_threshdDao, m_thresholdingDao,
+        ThresholdingSetImpl thresholdingSet = new ThresholdingSetImpl(node, location, serviceName,
+                svcParams, eventProxy, MockSession.getSession(), m_threshdDao, m_thresholdingDao,
                 m_pollOutagesDao, m_ifLabelDao, m_entityScopeProvider);
-        ThresholdingVisitor visitor = new ThresholdingVisitorImpl(thresholdingSet, m_resourceStorageDao, eventProxy, null);
+        ThresholdingVisitor visitor = new ThresholdingVisitorImpl(thresholdingSet, eventProxy, null);
         assertNotNull(visitor);
         return visitor;
     }
@@ -1807,6 +1778,7 @@ public class ThresholdingVisitorIT {
         SnmpCollectionResource resource = new IfInfo(resourceType, agent, ifData);
         addAttributeToCollectionResource(resource, resourceType, "ifInOctets", "counter", "ifIndex", v1);
         addAttributeToCollectionResource(resource, resourceType, "ifOutOctets", "counter", "ifIndex", v1);
+        addAttributeToCollectionResource(resource, resourceType, "myMockParam", "string", "ifIndex", "myMockValue");
         resource.visit(visitor);
 
         // Step 2 - Increment Counters
@@ -1814,6 +1786,7 @@ public class ThresholdingVisitorIT {
         resource = new IfInfo(resourceType, agent, ifData);
         addAttributeToCollectionResource(resource, resourceType, "ifInOctets", "counter", "ifIndex", v2);
         addAttributeToCollectionResource(resource, resourceType, "ifOutOctets", "counter", "ifIndex", v2);
+        addAttributeToCollectionResource(resource, resourceType, "myMockParam", "string", "ifIndex", "myMockValue");
         resource.visit(visitor);
     }
 
@@ -1821,16 +1794,14 @@ public class ThresholdingVisitorIT {
         SnmpCollectionAgent agent = createCollectionAgent();
         // Creating Generic ResourceType
         GenericIndexResourceType resourceType = createGenericIndexResourceType(agent, "hrStorageIndex");
-        // Creating strings.properties file
-        ResourcePath path = ResourcePath.get("snmp", "1", "hrStorageIndex", Integer.toString(resourceId));
-        m_resourceStorageDao.setStringAttribute(path, "hrStorageType", ".1.3.6.1.2.1.25.2.1.4");
-        m_resourceStorageDao.setStringAttribute(path, "hrStorageDescr", fs);
         // Creating Resource
         SnmpInstId inst = new SnmpInstId(resourceId);
         SnmpCollectionResource resource = new GenericIndexResource(resourceType, "hrStorageIndex", inst);
         addAttributeToCollectionResource(resource, resourceType, "hrStorageUsed", "gauge", "hrStorageIndex", value);
         addAttributeToCollectionResource(resource, resourceType, "hrStorageSize", "gauge", "hrStorageIndex", max);
         addAttributeToCollectionResource(resource, resourceType, "hrStorageAllocUnits", "gauge", "hrStorageIndex", 1);
+        addAttributeToCollectionResource(resource, resourceType, "hrStorageType", "string", "hrStorageIndex", ".1.3.6.1.2.1.25.2.1.4");
+        addAttributeToCollectionResource(resource, resourceType, "hrStorageDescr", "string", "hrStorageIndex", fs);
         // Run Visitor
         resource.visit(visitor);
     }
@@ -1841,19 +1812,14 @@ public class ThresholdingVisitorIT {
         // Creating Generic ResourceType
         org.opennms.netmgt.config.datacollection.ResourceType indexResourceType = createIndexResourceType(agent, "hrStorageIndex");
         GenericTypeResource genericResource = new GenericTypeResource(nodeResource, indexResourceType, Integer.toString(resourceId));
-        // Creating strings.properties file
-        ResourcePath path = ResourcePath.get("snmp", "1", "hrStorageIndex", Integer.toString(resourceId));
-        m_resourceStorageDao.setStringAttribute(path, "hrStorageType", ".1.3.6.1.2.1.25.2.1.4");
-        m_resourceStorageDao.setStringAttribute(path, "hrStorageDescr", fs);
-        // Build the collection set
-        CollectionSet collectionSet = new CollectionSetBuilder(agent).withNumericAttribute(genericResource, "hd-usage", "hrStorageUsed", value,
-                                                                                           AttributeType.GAUGE).withNumericAttribute(genericResource, "hd-usage", "hrStorageSize",
-                                                                                                                                     max, AttributeType.GAUGE).withNumericAttribute(
-                                                                                                                                                                                    genericResource,
-                                                                                                                                                                                    "hd-usage",
-                                                                                                                                                                                    "hrStorageAllocUnits",
-                                                                                                                                                                                    1,
-                                                                                                                                                                                    AttributeType.GAUGE).build();
+
+        CollectionSet collectionSet = new CollectionSetBuilder(agent)
+                .withNumericAttribute(genericResource, "hd-usage", "hrStorageUsed", value, AttributeType.GAUGE)
+                .withNumericAttribute(genericResource, "hd-usage", "hrStorageSize", max, AttributeType.GAUGE)
+                .withNumericAttribute(genericResource, "hd-usage", "hrStorageAllocUnits", 1, AttributeType.GAUGE)
+                .withStringAttribute(genericResource, "hd-usage", "hrStorageType", ".1.3.6.1.2.1.25.2.1.4")
+                .withStringAttribute(genericResource, "hd-usage", "hrStorageDescr", fs)
+                .build();
         // Run Visitor
         collectionSet.visit(visitor);
     }
@@ -1972,11 +1938,21 @@ public class ThresholdingVisitorIT {
         return wmiLogicalDisk;
     }
 
-    private static void addAttributeToCollectionResource(SnmpCollectionResource resource, ResourceType type, String attributeName, String attributeType, String attributeInstance,
-            long value) {
+    private static void addAttributeToCollectionResource(SnmpCollectionResource resource, ResourceType type, String attributeName, String attributeType, String attributeInstance, Object value) {
         MibObject object = createMibObject(attributeType, attributeName, attributeInstance);
-        SnmpAttributeType objectType = new NumericAttributeType(type, "default", object, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
-        SnmpValue snmpValue = attributeType.equals("counter") ? SnmpUtils.getValueFactory().getCounter32(value) : SnmpUtils.getValueFactory().getGauge32(value);
+
+        final var mibGroup = new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE);
+
+        final SnmpAttributeType objectType;
+        final SnmpValue snmpValue;
+        if ("string".equals(attributeType)) {
+            objectType = new StringAttributeType(type, "default", object, mibGroup);
+            snmpValue = SnmpUtils.getValueFactory().getOctetString(((String) value).getBytes());
+        } else {
+            objectType = new NumericAttributeType(type, "default", object, mibGroup);
+            snmpValue = attributeType.equals("counter") ? SnmpUtils.getValueFactory().getCounter32(((Number) value).longValue()) : SnmpUtils.getValueFactory().getGauge32(((Number) value).longValue());
+        }
+
         resource.setAttributeValue(objectType, snmpValue);
     }
 
@@ -1989,12 +1965,6 @@ public class ThresholdingVisitorIT {
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
         return mibObject;
-    }
-
-    private RrdRepository getRepository() {
-        RrdRepository repo = new RrdRepository();
-        repo.setRrdBaseDir(new File(m_fileAnticipator.getTempDir(), "snmp"));
-        return repo;
     }
 
     private void addHighThresholdEvent(int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
@@ -2114,7 +2084,7 @@ public class ThresholdingVisitorIT {
         return new SnmpIfData(snmpIface);
     }
 
-    private static CollectionSet createAnonymousCollectionSet(long timestamp) {
+    private static CollectionSetDTO createAnonymousCollectionSet(long timestamp) {
         final MockCollectionAgent agent = new MockCollectionAgent(1, "node", "fs", "fid", InetAddressUtils.ONE_TWENTY_SEVEN);
         return new CollectionSetBuilder(agent).withTimestamp(new Date(timestamp)).build();
     }

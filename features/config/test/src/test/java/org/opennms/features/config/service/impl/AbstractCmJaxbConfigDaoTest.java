@@ -72,7 +72,7 @@ public class AbstractCmJaxbConfigDaoTest {
     public void init() throws Exception {
         ConfigDefinition def = XsdHelper.buildConfigDefinition(provisiondCmJaxbConfigTestDao.getConfigName(),
                 "provisiond-configuration.xsd", "provisiond-configuration",
-                ConfigurationManagerService.BASE_PATH);
+                ConfigurationManagerService.BASE_PATH, false);
 
         configurationManagerService.registerConfigDefinition(provisiondCmJaxbConfigTestDao.getConfigName(), def);
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");

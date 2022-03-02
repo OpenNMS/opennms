@@ -186,8 +186,7 @@ public class CollectdIntegrationTest {
 
         ThresholdingService mockThresholdingService = mock(ThresholdingService.class);
         ThresholdingSession mockThresholdingSession = mock(ThresholdingSession.class);
-        when(mockThresholdingService.createSession(anyInt(), anyString(), anyString(), any(RrdRepository.class),
-                                                              any(ServiceParameters.class))).thenReturn(mockThresholdingSession);
+        when(mockThresholdingService.createSession(anyInt(), anyString(), anyString(), any(ServiceParameters.class))).thenReturn(mockThresholdingSession);
         m_collectd.setThresholdingService(mockThresholdingService);
 
         mockThresholdingSession.accept(any(CollectionSet.class));

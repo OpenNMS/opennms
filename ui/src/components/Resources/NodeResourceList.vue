@@ -74,7 +74,3 @@ const graphAll = async () => {
   router.push('/resource-graphs/graphs')
 }
 </script>
-  
-<style scoped>
-</style>
-  

@@ -69,7 +69,7 @@ onMounted(async () => {
 @import "@featherds/styles/themes/variables";
 .return-btn {
   background: var($secondary-variant);
-  color: var($primary-text-on-color);
+  color: var($primary-text-on-color) !important;
   margin-right: 20px;
 }
 </style>
