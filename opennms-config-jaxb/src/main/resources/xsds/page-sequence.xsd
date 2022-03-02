@@ -40,6 +40,7 @@
       <sequence>
         <element ref="this:parameter" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:session-variable" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:header" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="method" type="this:allowed-methods" use="optional" default="GET" />
       <attribute name="http-version" type="this:allowed-versions" use="optional" default="1.1" />
@@ -57,14 +58,7 @@
           </documentation>
         </annotation>
       </attribute>
-      <attribute name="port" use="optional" default="80">
-        <simpleType>
-          <restriction base="int">
-            <minInclusive value="1"/>
-            <maxInclusive value="65535"/>
-          </restriction>
-        </simpleType>
-      </attribute>
+      <attribute name="port" type="string" use="optional" default="80"/>
       <attribute name="path" type="string" use="required" />
       <attribute name="query" type="string" use="optional" />
       <attribute name="fragment" type="string" use="optional" />
@@ -86,7 +80,17 @@
       <attribute name="value" type="string" use="required"/>
     </complexType>
   </element>
-  
+
+  <element name="header">
+    <annotation>
+      <documentation>Used for HTTP headers.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="name" type="string" use="required"/>
+      <attribute name="value" type="string" use="required"/>
+    </complexType>
+  </element>
+
   <element name="session-variable">
     <annotation>
       <documentation>Assign the value of a regex match group to a

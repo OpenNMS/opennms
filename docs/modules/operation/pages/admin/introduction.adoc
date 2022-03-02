@@ -1,0 +1,13 @@
+
+= {page-component-title} Administration
+
+This section describes additional administrative tasks you may want to perform or configure:
+
+* xref:admin/webui/introduction.adoc[admin UI customization]
+* xref:admin/system-properties/introduction.adoc[system properties]
+* xref:admin/config-tester.adoc[configuration tester]
+* xref:admin/rmi.adoc[enable RMI]
+* xref:admin/geocoder.adoc[geolocation resolution]
+* xref:admin/http-ssl.adoc[HTTPS/SSL configuration]
+* xref:admin/request-logging.adoc[request logging]
+* xref:admin/restart.adoc[shutdown and restart]

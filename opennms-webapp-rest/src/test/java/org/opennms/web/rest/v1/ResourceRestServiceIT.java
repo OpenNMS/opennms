@@ -28,14 +28,19 @@
 
 package org.opennms.web.rest.v1;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.ServletContext;
@@ -43,6 +48,9 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpHeaders;
+import org.eclipse.jetty.util.URIUtil;
+import org.hamcrest.Matchers;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
@@ -66,6 +74,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -152,6 +162,50 @@ public class ResourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // 404 on invalid Node ID
         url = "/resources/fornode/99";
         xml = sendRequest(GET, url, 404);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void selectResources() throws Exception {
+        {
+            var value = select("1,2", null);
+            assertThat(value, hasSize(2));
+            assertThat(value.get(0).get("id"), is("node[imported::1]"));
+            assertThat(value.get(1).get("id"), is("node[imported::2]"));
+            var resources = (ArrayList<Map<String, String>>) ((Map) value.get(0).get("children")).get("resource");
+            assertThat(resources, hasSize(1));
+            assertThat(resources.get(0).get("id"), is("node[imported::1].nodeSnmp[]"));
+        }
+
+        {
+            var value = select("1", "nodeSnmp[]");
+            assertThat(value, hasSize(1));
+            assertThat(value.get(0).get("id"), is("node[imported::1]"));
+            var resources = (ArrayList<Map<String, String>>) ((Map) value.get(0).get("children")).get("resource");
+            assertThat(resources, hasSize(1));
+            assertThat(resources.get(0).get("id"), is("node[imported::1].nodeSnmp[]"));
+        }
+
+        {
+            var value = select("1", "unknown");
+            assertThat(value, hasSize(1));
+            assertThat(value.get(0).get("id"), is("node[imported::1]"));
+            var resources = (ArrayList<Map<String, String>>) ((Map) value.get(0).get("children")).get("resource");
+            assertThat(resources, hasSize(0));
+        }
+
+    }
+
+    private ArrayList<Map<String, Object>> select(String nodes, String subresources) throws Exception {
+        var url = "/resources/select?nodes=" + nodes;
+        if (subresources != null) {
+            url += "&nodeSubresources=" + URLEncoder.encode(subresources, StandardCharsets.UTF_8);
+        }
+        var req = createRequest(GET, url);
+        req.addHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
+        var json = sendRequest(req, 200);
+        var mapper = new ObjectMapper();
+        return mapper.readValue(json, new TypeReference<ArrayList<Map<String, Object>>>() {});
     }
 
     @Test

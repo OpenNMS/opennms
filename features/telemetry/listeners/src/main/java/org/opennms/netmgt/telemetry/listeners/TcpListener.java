@@ -29,11 +29,14 @@
 package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
+import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,10 +52,13 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.util.internal.SocketUtils;
 
 public class TcpListener implements Listener {
@@ -70,6 +76,8 @@ public class TcpListener implements Listener {
     private EventLoopGroup workerGroup;
 
     private ChannelFuture socketFuture;
+
+    private ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     public TcpListener(final String name,
                        final TcpParser parser,
@@ -116,6 +124,18 @@ public class TcpListener implements Listener {
                                         session.parse(in)
                                                .ifPresent(out::add);
                                     }
+
+                                    @Override
+                                    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                                        super.channelActive(ctx);
+                                        session.active();
+                                    }
+
+                                    @Override
+                                    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+                                        super.channelInactive(ctx);
+                                        session.inactive();
+                                    }
                                 })
                                 .addLast(new SimpleChannelInboundHandler<CompletableFuture<?>>() {
                                     @Override
@@ -135,9 +155,23 @@ public class TcpListener implements Listener {
                                         LOG.warn("Invalid packet: {}", cause.getMessage());
                                         LOG.debug("", cause);
 
+                                        session.inactive();
+
                                         ctx.close();
                                     }
                                 });
+                    }
+
+                    @Override
+                    public void channelActive(final ChannelHandlerContext ctx) throws Exception {
+                        TcpListener.this.channels.add(ctx.channel());
+                        super.channelActive(ctx);
+                    }
+
+                    @Override
+                    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+                        TcpListener.this.channels.remove(ctx.channel());
+                        super.channelInactive(ctx);
                     }
                 })
                 .bind(address)
@@ -146,17 +180,37 @@ public class TcpListener implements Listener {
 
     public void stop() throws InterruptedException {
         LOG.info("Closing channel...");
-        this.socketFuture.channel().close().sync();
+        if (this.socketFuture != null) {
+            this.socketFuture.channel().close().sync();
+        }
 
-        this.parser.stop();
+        LOG.info("Disconnecting clients...");
+        this.channels.close().awaitUninterruptibly();
+
+        LOG.info("Stopping parser...");
+        if (this.parser != null) {
+            this.parser.stop();
+        }
 
         LOG.info("Closing boss group...");
-        this.bossGroup.shutdownGracefully().sync();
+        if (this.bossGroup != null) {
+            this.bossGroup.shutdownGracefully().sync();
+        }
     }
 
     @Override
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public String getDescription() {
+        return String.format("TCP %s:%s",  this.host != null ? this.host : "*", this.port);
+    }
+
+    @Override
+    public Collection<? extends Parser> getParsers() {
+        return Collections.singleton(this.parser);
     }
 
     public String getHost() {

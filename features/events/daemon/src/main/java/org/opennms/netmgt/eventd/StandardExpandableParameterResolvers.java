@@ -93,7 +93,6 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
     },
 
     DPNAME {
-
         @Override
         public boolean matches(String parm) {
             return AbstractEventUtil.TAG_DPNAME.equals(parm);
@@ -101,7 +100,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
 
         @Override
         public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
-            return event.getDistPoller();
+            return "";
         }
     },
 
@@ -343,6 +342,23 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
             Snmp info = event.getSnmp();
             if (info != null) {
                 return info.getId();
+            }
+            return null;
+        }
+    },
+
+    SNMP_TRAP_OID {
+
+        @Override
+        public boolean matches(String parm) {
+            return AbstractEventUtil.TAG_SNMP_TRAP_OID.equals(parm);
+        }
+
+        @Override
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
+            Snmp info = event.getSnmp();
+            if (info != null) {
+                return info.getTrapOID();
             }
             return null;
         }

@@ -49,6 +49,7 @@
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
+  <jsp:param name="ngapp" value="onms-resources" />
   <jsp:param name="title" value="Choose Resource" />
   <jsp:param name="headTitle" value="Choose" />
   <jsp:param name="headTitle" value="Resource Graphs" />
@@ -58,7 +59,7 @@
   <jsp:param name="breadcrumb" value="Choose" />
 </jsp:include>
 
-<div class="" ng-app="onms-resources" ng-controller="NodeResourcesCtrl" ng-init="init('${e:forJavaScript(node)}','${e:forJavaScript(reports)}','${e:forJavaScript(endUrl)}')">
+<div class="" ng-controller="NodeResourcesCtrl" ng-init="init('${e:forJavaScript(node)}','${e:forJavaScript(reports)}','${e:forJavaScript(endUrl)}')">
 
   <div growl></div>
 
@@ -120,7 +121,9 @@
           </uib-accordion-heading>
             <div class="checkbox" ng-repeat="resource in group | orderBy:'label'">
               <label><input type="checkbox" class="mr-1" ng-model="resource.selected"/>{{ resource.label }}</label>
-              <a ng-if="resource.hasFlows===true" ng-href="{{resource.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: flow data available"><i class="fa fa-exchange"></i>&nbsp;flow data</span></a>
+              <a ng-if="resource.hasIngressFlows===true && resource.hasEgressFlows===true" ng-href="{{resource.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: ingress/egress flow data available"><i class="fa fa-exchange"></i>&nbsp;flow data</span></a>
+              <a ng-if="resource.hasIngressFlows===true && resource.hasEgressFlows===false" ng-href="{{resource.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: ingress low data available"><i class="fa fa-long-arrow-left"></i>&nbsp;flow data</span></a>
+              <a ng-if="resource.hasIngressFlows===false && resource.hasEgressFlows===true" ng-href="{{resource.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: egress flow data available"><i class="fa fa-long-arrow-right"></i>&nbsp;flow data</span></a>
             </div>
         </div>
       </uib-accordion>

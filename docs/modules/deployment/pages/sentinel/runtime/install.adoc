@@ -1,0 +1,89 @@
+[[install-sentinel]]
+= Installing Sentinel Runtime
+
+[[objectives]]
+== Objectives
+
+* Setting up a {page-component-title} Sentinel running on one of the following <<minion/system-requirements.adoc#operating-systems-Core, Operating Systems>>
+* Secure access with encrypted passwords to the Karaf shell
+* Sentinel can be configured with the Karaf Shell from the server via `ssh admin@localhost -p 8301`
+* Sentinel is running as user `sentinel` without root permissions
+
+== Requirements
+
+* Linux physical server or a virtual machine running a supported Linux operating system
+* Internet access to download the installation packages
+* Ensure DNS is configured, localhost and your servers host name is resolved properly
+* {page-component-title} Core instance runs on latest stable release
+* Java installed {compatible-javajdk}
+* System user with administrative permissions (sudo) to perform the installation tasks
+ifeval::["{page-component-title}" == "Horizon"]
+NOTE: If you run Debian, you have to install and configure `sudo` yourself.
+         A guide can be found in the link:https://wiki.debian.org/sudo/[Debian Wiki].
+endif::[]
+
+include::../../time-sync.adoc[]
+
+== Installing the Sentinel package
+
+[{tabs}]
+====
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/install-sentinel.adoc[]
+--
+
+CentOS/RHEL 7::
++
+--
+include::centos-rhel7/install-sentinel.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Ubuntu::
++
+--
+include::ubuntu/install-sentinel.adoc[]
+--
+
+Debian::
++
+--
+include::debian/install-sentinel.adoc[]
+--
+endif::[]
+====
+
+== Secure Access to Karaf Shell
+
+IMPORTANT: Change the default user/password _admin/admin_ for the Karaf shell and encrypt it.
+
+[{tabs}]
+====
+CentOS/RHEL 7/8::
++
+--
+include::centos-rhel/secure-karaf.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Debian/Ubuntu::
++
+--
+include::debian-ubuntu/secure-karaf.adoc[]
+--
+endif::[]
+====
+
+TIP: Password or encryption algorithm changes happen immediately.
+     It is not required to restart the Sentinel
+
+TIP: By default the Karaf Shell is restricted to 127.0.0.1.
+     If you want enable remote access, set `sshHost=0.0.0.0` in `org.apache.karaf.shell.cfg`.
+     The change is applied immediately and a Sentinel restart is not required.
+     If you have a firewall running on your host, allow `8301/tcp` to grant access to the Karaf Shell.
+
+== Set up flow processing
+
+To set up flow processing with Sentinel, see xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[scale flows data].

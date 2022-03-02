@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.features.distributed</groupId>
         <artifactId>coordination-parent</artifactId>
-        <version>25.0.0-SNAPSHOT</version>
+        <version>29.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>coordination-api</artifactId>

@@ -1,0 +1,5 @@
+{{- /* Upon updating this file please ensure that the schema minion-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+{{if (and (exists "/ipc/rpc/kafka/bootstrap.servers") (exists "/ipc/sink/kafka/bootstrap.servers")) -}}
+!minion-jms
+{{end -}}

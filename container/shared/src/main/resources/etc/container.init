@@ -67,7 +67,7 @@ EXTRA_JAVA_OPTS="$JAVA_OPTS $EXTRA_JAVA_OPTS"
 unset JAVA_OPTS
 
 # always dump heap if we OOM
-EXTRA_JAVA_OPTS="$EXTRA_JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
+EXTRA_JAVA_OPTS="$EXTRA_JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow"
 
 # export any default configurable variables from sysconf
 export RUNAS JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA_HOME JAVA JAVA_DEBUG_OPTS JAVA_DEBUG_PORT EXTRA_JAVA_OPTS CLASSPATH KARAF_DEBUG LD_LIBRARY_PATH

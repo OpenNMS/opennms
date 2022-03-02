@@ -31,99 +31,105 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.bson.BsonDocument;
-import org.bson.BsonDocumentWriter;
+import java.time.Instant;
+import java.util.Optional;
+
 import org.junit.Test;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.IllegalFlowException;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.DateTimeValue;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.IpFixMessageBuilder;
+import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
+
+import com.google.common.collect.ImmutableList;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 public class FlowTimeoutTest {
+
     @Test
-    public void testWithoutTimeout() {
-        final BsonDocument bsonDocument = new BsonDocument();
-        final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        bsonDocumentWriter.writeStartDocument();
+    public void testWithoutTimeout() throws InvalidProtocolBufferException, IllegalFlowException {
 
-        bsonDocumentWriter.writeStartDocument("flowStartSeconds");
-        bsonDocumentWriter.writeInt64("epoch", 123);
-        bsonDocumentWriter.writeEndDocument();
+        Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
+                .add(new DateTimeValue("flowStartSeconds", Instant.ofEpochSecond(123)))
+                .add(new DateTimeValue("flowEndSeconds", Instant.ofEpochSecond(987)))
+                .build();
 
-        bsonDocumentWriter.writeStartDocument("flowEndSeconds");
-        bsonDocumentWriter.writeInt64("epoch", 987);
-        bsonDocumentWriter.writeEndDocument();
+        final IpFixMessageBuilder ipFixMessageBuilder = new IpFixMessageBuilder();
+        FlowMessage flowMessage = ipFixMessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
 
-        bsonDocumentWriter.writeEndDocument();
-
-        final IpfixFlow flow = new IpfixFlow(bsonDocument);
-
-        assertThat(flow.getTimeout().isPresent(), is(false));
-
-        assertThat(flow.getFirstSwitched(), is(123000L));
-        assertThat(flow.getDeltaSwitched(), is(123000L)); // Timeout is same as first
-        assertThat(flow.getLastSwitched(), is(987000L));
+        assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
+        assertThat(flowMessage.getDeltaSwitched().getValue(), is(123000L)); // Timeout is same as first
+        assertThat(flowMessage.getLastSwitched().getValue(), is(987000L));
     }
 
     @Test
-    public void testWithActiveTimeout() {
-        final BsonDocument bsonDocument = new BsonDocument();
-        final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        bsonDocumentWriter.writeStartDocument();
+    public void testWithActiveTimeout() throws InvalidProtocolBufferException, IllegalFlowException {
 
-        bsonDocumentWriter.writeStartDocument("flowStartSeconds");
-        bsonDocumentWriter.writeInt64("epoch", 123);
-        bsonDocumentWriter.writeEndDocument();
+        Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
+                .add(new DateTimeValue("flowStartSeconds", Instant.ofEpochSecond(123)))
+                .add(new DateTimeValue("flowEndSeconds", Instant.ofEpochSecond(987)))
+                .add(new UnsignedValue("octetDeltaCount", 10))
+                .add(new UnsignedValue("packetDeltaCount", 10))
+                .add(new UnsignedValue("flowActiveTimeout", 10))
+                .add(new UnsignedValue("flowInactiveTimeout", 300))
+                .build();
 
-        bsonDocumentWriter.writeStartDocument("flowEndSeconds");
-        bsonDocumentWriter.writeInt64("epoch", 987);
-        bsonDocumentWriter.writeEndDocument();
 
-        bsonDocumentWriter.writeInt64("octetDeltaCount", 10);
-        bsonDocumentWriter.writeInt64("packetDeltaCount", 10);
+        final IpFixMessageBuilder ipFixMessageBuilder = new IpFixMessageBuilder();
+        FlowMessage flowMessage = ipFixMessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
 
-        bsonDocumentWriter.writeInt64("flowActiveTimeout", 10);
-        bsonDocumentWriter.writeInt64("flowInactiveTimeout", 300);
-
-        bsonDocumentWriter.writeEndDocument();
-
-        final IpfixFlow flow = new IpfixFlow(bsonDocument);
-
-        assertThat(flow.getTimeout().isPresent(), is(true));
-        assertThat(flow.getTimeout().get().getActive(), is(10000L));
-        assertThat(flow.getTimeout().get().getInactive(), is(300000L));
-
-        assertThat(flow.getFirstSwitched(), is(123000L));
-        assertThat(flow.getDeltaSwitched(), is(987000L - 10000L));
-        assertThat(flow.getLastSwitched(), is(987000L));
+        assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
+        assertThat(flowMessage.getDeltaSwitched().getValue(), is(987000L - 10000L));
+        assertThat(flowMessage.getLastSwitched().getValue(), is(987000L));
     }
 
     @Test
-    public void testWithInactiveTimeout() {
-        final BsonDocument bsonDocument = new BsonDocument();
-        final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        bsonDocumentWriter.writeStartDocument();
+    public void testWithInactiveTimeout() throws InvalidProtocolBufferException, IllegalFlowException {
 
-        bsonDocumentWriter.writeStartDocument("flowStartSeconds");
-        bsonDocumentWriter.writeInt64("epoch", 123);
-        bsonDocumentWriter.writeEndDocument();
+        Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
+                .add(new DateTimeValue("flowStartSeconds", Instant.ofEpochSecond(123)))
+                .add(new DateTimeValue("flowEndSeconds", Instant.ofEpochSecond(987)))
+                .add(new UnsignedValue("octetDeltaCount", 0))
+                .add(new UnsignedValue("packetDeltaCount", 0))
+                .add(new UnsignedValue("flowActiveTimeout", 10))
+                .add(new UnsignedValue("flowInactiveTimeout", 300))
+                .build();
+        final IpFixMessageBuilder ipFixMessageBuilder = new IpFixMessageBuilder();
+        FlowMessage flowMessage = ipFixMessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
 
-        bsonDocumentWriter.writeStartDocument("flowEndSeconds");
-        bsonDocumentWriter.writeInt64("epoch", 987);
-        bsonDocumentWriter.writeEndDocument();
 
-        bsonDocumentWriter.writeInt64("octetDeltaCount", 0);
-        bsonDocumentWriter.writeInt64("packetDeltaCount", 0);
+        assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
+        assertThat(flowMessage.getDeltaSwitched().getValue(), is(987000L - 300000L));
+        assertThat(flowMessage.getLastSwitched().getValue(), is(987000L));
+    }
 
-        bsonDocumentWriter.writeInt64("flowActiveTimeout", 10);
-        bsonDocumentWriter.writeInt64("flowInactiveTimeout", 300);
 
-        bsonDocumentWriter.writeEndDocument();
+    @Test
+    public void testFirstLastSwitchedValues() throws InvalidProtocolBufferException, IllegalFlowException {
 
-        final IpfixFlow flow = new IpfixFlow(bsonDocument);
+        Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
+                .add(new DateTimeValue("flowStartSeconds", Instant.ofEpochSecond(123)))
+                .add(new DateTimeValue("flowEndSeconds", Instant.ofEpochSecond(987)))
+                .build();
 
-        assertThat(flow.getTimeout().isPresent(), is(true));
-        assertThat(flow.getTimeout().get().getActive(), is(10000L));
-        assertThat(flow.getTimeout().get().getInactive(), is(300000L));
+        IpFixMessageBuilder ipFixMessageBuilder = new IpFixMessageBuilder();
+        FlowMessage flowMessage = ipFixMessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
 
-        assertThat(flow.getFirstSwitched(), is(123000L));
-        assertThat(flow.getDeltaSwitched(), is(987000L - 300000L));
-        assertThat(flow.getLastSwitched(), is(987000L));
+        assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
+        assertThat(flowMessage.getDeltaSwitched().getValue(), is(123000L));
+        assertThat(flowMessage.getLastSwitched().getValue(), is(987000L));
+
+        values = ImmutableList.<Value<?>>builder()
+                .add(new DateTimeValue("systemInitTimeMilliseconds", Instant.ofEpochMilli(100000)))
+                .add(new UnsignedValue("flowStartSysUpTime", 2000000))
+                .add(new UnsignedValue("flowEndSysUpTime", 4000000))
+                .build();
+        ipFixMessageBuilder = new IpFixMessageBuilder();
+        flowMessage = ipFixMessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
+
+        assertThat(flowMessage.getFirstSwitched().getValue(), is(2000000L + 100000L));
+        assertThat(flowMessage.getDeltaSwitched().getValue(), is(2000000L + 100000L));
+        assertThat(flowMessage.getLastSwitched().getValue(), is(4100000L));
     }
 }

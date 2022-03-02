@@ -1,0 +1,69 @@
+
+= Daemon Configuration Files
+
+Configuration changes can require a restart of OpenNMS and some daemons are able to reload configuration changes by a running CLI command or by sending a daemon reload event.
+
+NOTE: Check the xref:reference:daemons/introduction#ga-daemons[daemon reference section] for an overview of all daemons, their related configuration files, and which ones you can reload without restarting OpenNMS.
+
+[[daemon-reload]]
+== Reload daemons by CLI
+
+To use the reload commands in the CLI, log into the Karaf Shell on your system using:
+
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+To reload a daemon use the `reload-daemon` command:
+[source, karaf]
+----
+opennms:reload-daemon NAME
+----
+
+NOTE: To see a list of reloadable daemons, press `tab` after the command.
+
+== Reload daemons by reload event
+
+.Running reload command in a shell
+[source, console]
+----
+cd ${OPENNMS_HOME}/bin
+./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName NAME'
+----
+
+.Running the reload command in Docker
+[source, console]
+----
+docker exec -it horizon /opt/opennms/bin/send-event.pl  uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName NAME'
+----
+
+== Reload daemons by REST event
+[source, console]
+----
+curl -u admin:admin \ <1>
+-X POST 'http://HOSTNAME:8980/opennms/rest/events' \ <2>
+--header 'Content-Type: application/xml' \
+--data-raw '<event>
+    <parms>
+        <parm>
+            <parmName>daemonName</parmName>
+            <value>trapd</value> <3>
+        </parm>
+    </parms>
+    <uei>uei.opennms.org/internal/reloadDaemonConfig</uei>
+</event>'
+----
+<1> Replace with credentials for accessing the {page-component-title} instance.
+<2> Replace with the hostname of the {page-component-title} instance.
+<3> Replace with the daemon name to reload.
+
+
+== Check daemon reload results
+
+A daemon reload generates the following events:
+
+- `uei.opennms.org/internal/reloadDaemonConfig` (to indicate that the reload process was triggered)
+- `uei.opennms.org/internal/reloadDaemonConfigSuccessful` (a positive feedback) +
+or
+- `uei.opennms.org/internal/reloadDaemonConfigFailed` (negative feedback, like when OpenNMS could not load the daemon. In this case, the event description also includes an event reason.)

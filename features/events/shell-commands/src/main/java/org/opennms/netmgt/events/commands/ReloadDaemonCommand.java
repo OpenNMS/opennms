@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,18 +32,24 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Completion;
+import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 
-@Command(scope = "reload", name = "daemon", description = "Reload a specific daemon")
+import com.google.common.base.Strings;
+
+@Command(scope = "opennms", name = "reload-daemon", description = "Reload a specific daemon")
 @Service
 public class ReloadDaemonCommand implements Action {
 
     @Reference
     public EventForwarder eventForwarder;
+    
+    @Option(name = "-f", aliases = "--config-file", description = "Optional config-file to target for reload", required = false, multiValued = false)
+    private String configFile;
 
     @Argument(index = 0, name = "daemonName", description = "deamon to reload", required = true, multiValued = false)
     @Completion(DaemonNameCompleter.class)
@@ -54,6 +60,9 @@ public class ReloadDaemonCommand implements Action {
 
         EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "reload-daemon-command");
         eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
+        if (! Strings.isNullOrEmpty(configFile)) {
+            eventBuilder.addParam(EventConstants.PARM_CONFIG_FILE_NAME, configFile);
+        }
         eventForwarder.sendNow(eventBuilder.getEvent());
         return null;
     }

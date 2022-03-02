@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.core</artifactId>
@@ -30,6 +30,7 @@
     <module>cache</module>
     <module>camel</module>
     <module>cli</module>
+    <module>commands</module>
     <module>config</module>
     <module>criteria</module>
     <module>daemon</module>
@@ -57,5 +58,6 @@
     <module>web-assets</module>
     <module>xml</module>
     <module>tracing</module>
+    <module>grpc</module>
   </modules>
 </project>

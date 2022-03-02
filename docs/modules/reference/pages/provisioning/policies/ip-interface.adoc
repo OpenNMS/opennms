@@ -1,0 +1,42 @@
+= IP Interface Policy
+
+The `Matching IP Interface` policy controls whether discovered interfaces are persisted and if they are persisted, whether they will be forced to be managed or unmanaged.
+
+The two required parameters for this policy are action and matchBehavior.
+
+[options="header"]
+[cols="1,3"]
+|===
+| Action
+| Description
+
+| DISABLE_COLLECTION
+| Disallow collecting performance metrics on the interface.
+
+| DISABLE_SNMP_POLL
+| Disallow SNMP polling on the interface.
+
+| DO_NOT_PERSIST
+| Prevent the IP interface from being added to the node.
+
+| ENABLE_COLLECTION
+| Allow collecting performance metrics on the interface.
+
+| ENABLE_SNMP_POLL
+| Allow SNMP polling on the interface.
+
+| MANAGE
+| Default setting. Add interface to node and allow polling and collection.
+
+| UNMANAGE
+| Add interface to node but do not process pollerd and collectd tasks for the interface.
+|===
+
+Any subsequent scan of the node or reimports of the requisition force this policy to be applied.
+IP Interface entities that already exist and match a policy will not be deleted, unless the `UNMANAGE` action is specified.
+Delete existing interfaces by recreating the node in the Requisition UI (simply change the foreign ID and reimport the group) or by using the REST API:
+
+[source, console]
+----
+> curl -X DELETE -H "Content-Type: application/xml" -u admin:admin http://localhost:8980/opennms/rest/nodes/6/ipinterfaces/10.1.1.1
+----

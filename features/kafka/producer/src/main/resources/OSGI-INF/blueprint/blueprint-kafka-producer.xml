@@ -78,6 +78,7 @@
     <property name="suppressIncrementalAlarms" value="${suppressIncrementalAlarms}"/>
     <property name="kafkaSendQueueCapacity" value="${kafkaSendQueueCapacity}"/>
     <property name="encoding" value="${encoding}"/>
+    <property name="numEventListenerThreads" value="${numEventListenerThreads}"/>
   </bean>
 
   <service ref="kafkaProducer" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer">

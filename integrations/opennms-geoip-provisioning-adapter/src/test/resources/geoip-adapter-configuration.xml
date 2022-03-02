@@ -1,0 +1,54 @@
+<geoip-config enabled="true" overwrite="true" database="/path/to/GeoLite2-City.mmdb" resolve="public-ipv4">
+
+    <location name="Default">
+        <subnet cidr="192.168.0.0/16">
+            <asset name="longitude" value="-79.1625700509753"/>
+            <asset name="latitude" value="35.71572416796933"/>
+            <asset name="city" value="Pittsboro"/>
+            <asset name="country" value="USA"/>
+            <asset name="building" value="A"/>
+        </subnet>
+        <subnet cidr="10.0.0.0/8">
+            <asset name="longitude" value="-79.1625700509753"/>
+            <asset name="latitude" value="35.71572416796933"/>
+            <asset name="city" value="Pittsboro"/>
+            <asset name="country" value="USA"/>
+            <asset name="building" value="B"/>
+        </subnet>
+    </location>
+
+    <location name="Fulda">
+        <subnet cidr="192.168.3.0/24">
+            <asset name="longitude" value="9.67484665470827"/>
+            <asset name="latitude" value="50.553159563701065"/>
+            <asset name="city" value="Fulda"/>
+            <asset name="country" value="Germany"/>
+            <asset name="building" value="C"/>
+        </subnet>
+        <subnet cidr="192.168.4.0/24">
+            <asset name="longitude" value="9.67484665470827"/>
+            <asset name="latitude" value="50.553159563701065"/>
+            <asset name="city" value="Fulda"/>
+            <asset name="country" value="Germany"/>
+            <asset name="building" value="D"/>
+        </subnet>
+    </location>
+
+    <location name="RDU">,
+        <subnet cidr="192.168.0.0/16">
+            <asset name="longitude" value="-78.86788904568587"/>
+            <asset name="latitude" value="35.89503031832238"/>
+            <asset name="city" value="Raleigh"/>
+            <asset name="country" value="USA"/>
+            <asset name="building" value="E"/>
+        </subnet>
+        <subnet cidr="10.0.0.0/8">
+            <asset name="longitude" value="-78.86788904568587"/>
+            <asset name="latitude" value="35.89503031832238"/>
+            <asset name="city" value="Raleigh"/>
+            <asset name="country" value="USA"/>
+            <asset name="building" value="F"/>
+        </subnet>
+    </location>
+
+</geoip-config>

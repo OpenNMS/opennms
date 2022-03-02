@@ -1,0 +1,42 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0" xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+           xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+        http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+    <cm:property-placeholder id="legacyConfiguration" persistent-id="org.opennms.features.graph.provider.legacy" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="vmware.cacheInvalidateInterval" value="300" /> <!-- Seconds -->
+            <cm:property name="linkd.cacheInvalidateInterval" value="300" /> <!-- Seconds -->
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <reference id="vmwareMetaTopologyProvider" interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" availability="mandatory" filter="(label=VMware)"/>
+    <reference id="enlinkdMetaTopologyProvider" interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" availability="mandatory" filter="(label=Enhanced Linkd)"/>
+
+    <!-- Vmware Adapter -->
+    <bean id="vmwareGraphProvider" class="org.opennms.netmgt.graph.provider.legacy.LegacyGraphProvider">
+        <argument ref="vmwareMetaTopologyProvider"/>
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="vmwareGraphProvider">
+        <service-properties>
+            <entry key="cacheInvalidateInterval" value="${vmware.cacheInvalidateInterval}" />
+        </service-properties>
+    </service>
+
+    <!-- Enhanced Linkd Adapter -->
+    <bean id="enlinkdGraphProvider" class="org.opennms.netmgt.graph.provider.legacy.LegacyGraphProvider">
+        <argument ref="enlinkdMetaTopologyProvider"/>
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="enlinkdGraphProvider">
+        <service-properties>
+            <entry key="cacheInvalidateInterval" value="${linkd.cacheInvalidateInterval}" />
+        </service-properties>
+    </service>
+    
+</blueprint>

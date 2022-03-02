@@ -29,7 +29,7 @@
 package org.opennms.core.rpc.utils.mate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 import java.util.Optional;
 
@@ -39,11 +39,12 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.opennms.netmgt.dao.DatabasePopulator;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -57,6 +58,9 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class EntityScopeProviderIT {
+
+    @Autowired
+    private SessionUtils sessionUtils;
 
     @Autowired
     private DatabasePopulator populator;
@@ -73,10 +77,10 @@ public class EntityScopeProviderIT {
     public final void testNode() throws Exception {
         final Scope scope = this.provider.getScopeForNode(this.populator.getNode1().getId());
 
-        assertThat(scope.get(new ContextKey("node", "label")), is(Optional.of("node1")));
+        assertThat(scope.get(new ContextKey("node", "label")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "node1"))));
 
-        assertThat(scope.get(new ContextKey("node", "foreign-source")), is(Optional.of("imported:")));
-        assertThat(scope.get(new ContextKey("node", "foreign-id")), is(Optional.of("1")));
+        assertThat(scope.get(new ContextKey("node", "foreign-source")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE,"imported:"))));
+        assertThat(scope.get(new ContextKey("node", "foreign-id")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE,"1"))));
 
         assertThat(scope.get(new ContextKey("node", "netbios-domain")), is(Optional.empty()));
         assertThat(scope.get(new ContextKey("node", "netbios-name")), is(Optional.empty()));
@@ -88,27 +92,49 @@ public class EntityScopeProviderIT {
         assertThat(scope.get(new ContextKey("node", "sys-contact")), is(Optional.empty()));
         assertThat(scope.get(new ContextKey("node", "sys-description")), is(Optional.empty()));
 
-        assertThat(scope.get(new ContextKey("node", "location")), is(Optional.of("Default")));
-        assertThat(scope.get(new ContextKey("node", "area")), is(Optional.of("Default")));
+        assertThat(scope.get(new ContextKey("node", "location")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE,"Default"))));
+        assertThat(scope.get(new ContextKey("node", "area")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE,"Default"))));
     }
+
+    @Test
+    public final void testNodeGeohash() throws Exception {
+        final Scope scope = this.provider.getScopeForNode(this.populator.getNode1().getId());
+
+        assertThat(scope.get(new ContextKey("node", "label")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE,"node1"))));
+        // Geohash should be empty since the database populater does not set lat/lon by default
+        assertThat(scope.get(new ContextKey("node", "geohash")), is(Optional.empty()));
+
+        // Set a lat/lon
+        sessionUtils.withTransaction(() -> {
+            OnmsGeolocation geolocation = new OnmsGeolocation();
+            geolocation.setLatitude(45.484107d);
+            geolocation.setLongitude(-73.629706d);
+            populator.getNode1().getAssetRecord().setGeolocation(geolocation);
+            populator.getNodeDao().saveOrUpdate(populator.getNode1());
+        });
+
+        // Verify
+        assertThat(scope.get(new ContextKey("node", "geohash")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "f25du80kpkpf"))));
+    }
+
 
     @Test
     public final void testInterface() throws Exception {
         final Scope scope = this.provider.getScopeForInterface(this.populator.getNode1().getId(), "192.168.1.1");
 
         assertThat(scope.get(new ContextKey("interface", "hostname")), is(Optional.empty()));
-        assertThat(scope.get(new ContextKey("interface", "address")), is(Optional.of("192.168.1.1")));
+        assertThat(scope.get(new ContextKey("interface", "address")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE,"192.168.1.1"))));
         assertThat(scope.get(new ContextKey("interface", "netmask")), is(Optional.empty()));
-        assertThat(scope.get(new ContextKey("interface", "if-index")), is(Optional.of("1")));
-        assertThat(scope.get(new ContextKey("interface", "if-alias")), is(Optional.of("Initial ifAlias value")));
-        assertThat(scope.get(new ContextKey("interface", "if-description")), is(Optional.of("ATM0")));
-        assertThat(scope.get(new ContextKey("interface", "phy-addr")), is(Optional.of("34E45604BB69")));
+        assertThat(scope.get(new ContextKey("interface", "if-index")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE,"1"))));
+        assertThat(scope.get(new ContextKey("interface", "if-alias")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE,"Initial ifAlias value"))));
+        assertThat(scope.get(new ContextKey("interface", "if-description")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE,"ATM0"))));
+        assertThat(scope.get(new ContextKey("interface", "phy-addr")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE,"34E45604BB69"))));
     }
 
     @Test
     public final void testService() throws Exception {
         final Scope scope = this.provider.getScopeForService(this.populator.getNode1().getId(), InetAddressUtils.getInetAddress("192.168.1.1"), "ICMP");
 
-        assertThat(scope.get(new ContextKey("service", "name")), is(Optional.of("ICMP")));
+        assertThat(scope.get(new ContextKey("service", "name")), is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.SERVICE, "ICMP"))));
     }
 }

@@ -48,12 +48,12 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Strings;
 
-@Command(scope = "rpc", name = "stress", description="Generates RPC requests against the Echo module")
+@Command(scope = "opennms", name = "stress-rpc", description="Generates RPC requests against the Echo module")
 @Service
 public class StressCommand implements Action {
 
     @Reference
-    public RpcClientFactory rpcClientFactory;
+    private RpcClientFactory rpcClientFactory;
 
     @Option(name = "-l", aliases = "--location", description = "Location")
     String location = null;
@@ -61,10 +61,10 @@ public class StressCommand implements Action {
     @Option(name = "-s", aliases = "--system-id", description = "System ID")
     String systemId = null;
 
-    @Option(name = "-t", aliases = "--ttl", description = "Time to live (miliseconds)")
+    @Option(name = "-t", aliases = "--ttl", description = "Time to live (milliseconds)")
     Long ttlInMs;
 
-    @Option(name = "-d", aliases = "--delay", description = "Response delay (miliseconds)")
+    @Option(name = "-d", aliases = "--delay", description = "Response delay (milliseconds)")
     Long delay;
 
     @Option (name="-ms", aliases = "--message-size", description="Message size (number of charaters)")
@@ -130,9 +130,9 @@ public class StressCommand implements Action {
                 .build();
         reporter.report();
         reporter.close();
-        System.out.printf("Total miliseconds elapsed: %d\n", afterResponse - beforeExec);
-        System.out.printf("Miliseconds spent generating requests: %d\n", afterExec - beforeExec);
-        System.out.printf("Miliseconds spent waiting for responses: %d\n", afterResponse - afterExec);
+        System.out.printf("Total milliseconds elapsed: %d\n", afterResponse - beforeExec);
+        System.out.printf("Milliseconds spent generating requests: %d\n", afterExec - beforeExec);
+        System.out.printf("Milliseconds spent waiting for responses: %d\n", afterResponse - afterExec);
 
         return null;
     }

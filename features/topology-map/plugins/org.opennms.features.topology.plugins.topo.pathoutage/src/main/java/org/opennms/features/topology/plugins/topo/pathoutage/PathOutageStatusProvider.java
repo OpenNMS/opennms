@@ -42,8 +42,8 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultStatus;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.model.OnmsSeverity;
 
@@ -61,7 +61,7 @@ public class PathOutageStatusProvider implements StatusProvider {
 	}
 
 	@Override
-	public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
+	public Map<VertexRef, Status> getStatusForVertices(BackendGraph graph, Collection<VertexRef> vertices, Criteria[] criteria) {
 		final List<Integer> nodeIds = vertices.stream().filter(v -> v.getNamespace().equals(getNamespace()))
 													   .map(v -> (PathOutageVertex)v)
 													   .map(v -> v.getNodeID())
@@ -79,6 +79,7 @@ public class PathOutageStatusProvider implements StatusProvider {
 		hql.append("LEFT JOIN ipinterface.node as node ");
 		hql.append("LEFT JOIN outage.serviceLostEvent as event ");
 		hql.append("WHERE node.id in (:nodeIds) ");
+		hql.append("AND outage.perspective is null ");
 		hql.append("AND outage.serviceRegainedEvent is null ");
 		hql.append("GROUP BY node.id");
 

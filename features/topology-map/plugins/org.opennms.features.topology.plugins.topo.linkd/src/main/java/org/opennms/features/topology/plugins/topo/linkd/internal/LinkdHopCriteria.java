@@ -31,7 +31,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.VertexRef;

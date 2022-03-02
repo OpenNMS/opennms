@@ -45,6 +45,7 @@
         <entry key="eventd-configuration.xml" value="eventdConfigFactory"/>
         <entry key="exclude-ueis.properties" value="excludeUeisProperties"/>
         <entry key="email-northbounder-configuration.xml" value="emailNorthbounderConfigDao"/>
+        <entry key="geoip-adapter-configuration.xml" value="geoIpConfigDao"/>
         <entry key="groups.xml" value="groupFactory"/>
         <entry key="http-datacollection-config.xml" value="httpCollectionConfigFactory"/>
         <entry key="jasper-reports.xml" value="legacyLocalJasperReportsDao"/>
@@ -67,6 +68,7 @@
         <!-- <entry key="otrs.properties" value="otrsConfigDaoCheck"/> --> <!-- Not part of standard build -->
         <entry key="poll-outages.xml" value="pollOutagesDao"/>
         <entry key="poller-configuration.xml" value="pollerConfigFactory"/>
+        <entry key="prometheus-datacollection-config.xml" value="prometheusDataCollectionConfigDao"/>
         <entry key="provisiond-configuration.xml" value="provisiondConfigurationDao"/>
         <!-- <entry key="rancid-configuration.xml" value="rancidAdapterConfigFactory"/> --><!-- Not part of standard build -->
         <entry key="reportd-configuration.xml" value="reportdConfigurationDao"/>
@@ -84,6 +86,7 @@
         <entry key="snmp-config.xml" value="snmpPeerFactory"/>
         <entry key="snmp-graph.properties" value="snmpPrefabGraph"/>
         <!-- <entry key="snmp-interface-poller-configuration.xml" value="snmpInterfacePollerConfigFactory"/> --><!-- database access -->
+        <entry key="snmp-metadata-adapter-configuration.xml" value="snmpMetadataConfigDao"/>
         <entry key="snmptrap-northbounder-configuration.xml" value="snmpTrapNorthbounderConfigDao"/>
         <entry key="statsd-configuration.xml" value="statisticsDaemonConfigDao"/>
         <entry key="surveillance-views.xml" value="surveillanceViewConfigDao"/>
@@ -203,6 +206,10 @@
   
   <bean id="groupFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
+  </bean>
+
+  <bean id="geoIpConfigDao" class="org.opennms.netmgt.config.geoip.GeoIpConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/geoip-adapter-configuration.xml" />
   </bean>
 
   <bean id="groupFactory" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupFactory-init" factory-method="getInstance"/>
@@ -346,6 +353,8 @@
 
   <bean id="pollerConfigFactory" class="org.opennms.netmgt.config.PollerConfigFactory" depends-on="pollerConfigFactory-init" factory-method="getInstance"/>
   
+  <bean id="prometheusDataCollectionConfigDao" class="org.opennms.netmgt.dao.prometheus.PrometheusDataCollectionConfigDaoJaxb" />
+
   <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/provisiond-configuration.xml"/>
   </bean>
@@ -545,6 +554,10 @@
 
   <bean id="wsManConfigDao" class="org.opennms.netmgt.dao.jaxb.WSManConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/wsman-config.xml" />
+  </bean>
+
+  <bean id="snmpMetadataConfigDao" class="org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/snmp-metadata-adapter-configuration.xml" />
   </bean>
 
   <!--

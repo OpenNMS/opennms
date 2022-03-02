@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,9 @@ import java.io.Reader;
 import java.net.InetAddress;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -61,11 +64,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.opennms.bootstrap.Bootstrap;
+import org.opennms.bootstrap.FilesystemPermissionException;
+import org.opennms.bootstrap.FilesystemPermissionValidator;
 import org.opennms.core.db.DataSourceConfigurationFactory;
-import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.logging.Logging;
-import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
@@ -75,7 +78,6 @@ import org.opennms.netmgt.icmp.best.BestMatchPingerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
 /*
@@ -90,25 +92,23 @@ import org.springframework.util.StringUtils;
  * <p>Installer class.</p>
  */
 public class Installer {
+    private static final Logger LOG = LoggerFactory.getLogger(Installer.class);
 
-	private static final Logger LOG = LoggerFactory.getLogger(Installer.class);
-	
+    private static final Pattern SHELL_VAR_PATTERN = Pattern.compile("^(?:\\s*export\\s+)?\\s*(\\p{Alnum}+)\\s*=\\s*(.*?)\\s*$", Pattern.MULTILINE);
+    private static final Pattern QUOTE_PATTERN = Pattern.compile("^\"(.*)\"");
+
+
     static final String LIBRARY_PROPERTY_FILE = "libraries.properties";
 
     String m_opennms_home = null;
     boolean m_update_database = false;
-    boolean m_do_inserts = false;
-    boolean m_skip_constraints = false;
     boolean m_update_iplike = false;
-    boolean m_update_unicode = false;
     boolean m_do_full_vacuum = false;
     boolean m_do_vacuum = false;
     boolean m_install_webapp = false;
     boolean m_fix_constraint = false;
-    boolean m_force = false;
-    boolean m_ignore_not_null = false;
+    boolean m_validate_ownership = true;
     boolean m_ignore_database_version = false;
-    boolean m_do_not_revert = false;
     boolean m_remove_database = false;
     boolean m_skip_upgrade_tools = false;
 
@@ -120,21 +120,21 @@ public class Installer {
     String m_library_search_path = null;
     String m_fix_constraint_name = null;
     boolean m_fix_constraint_remove_rows = false;
+    boolean m_timescaleDB = false;
 
     protected Options options = new Options();
     protected CommandLine m_commandLine;
-    private Migration m_migration = new Migration();
     private Migrator m_migrator = new Migrator();
 
     Properties m_properties = null;
 
     String m_required_options = "At least one of -d, -i, -s, -y, -C, or -T is required.";
 
-    private InstallerDb m_installerDb = new InstallerDb();
-
     private static final String OPENNMS_DATA_SOURCE_NAME = "opennms";
 
     private static final String ADMIN_DATA_SOURCE_NAME = "opennms-admin";
+
+    private String RUNAS_USER = null;
 
     /**
      * <p>Constructor for Installer.</p>
@@ -153,16 +153,12 @@ public class Installer {
         loadProperties();
         parseArguments(argv);
 
-        final boolean doDatabase = (m_update_database || m_do_inserts || m_update_iplike || m_update_unicode || m_fix_constraint);
+        final boolean doDatabase = (m_update_database || m_update_iplike);
 
-        if (!doDatabase && m_tomcat_conf == null && !m_install_webapp && m_library_search_path == null) {
-            usage(options, m_commandLine, "Nothing to do.  Use -h for help.", null);
-            System.exit(1);
-        }
-
+        GenericApplicationContext context = null;
         if (doDatabase) {
-        	final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
-            
+            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
+
             InputStream is = new FileInputStream(cfgFile);
             final JdbcDataSource adminDsConfig = new DataSourceConfigurationFactory(is).getJdbcDataSource(ADMIN_DATA_SOURCE_NAME);
             final DataSource adminDs = new SimpleDataSource(adminDsConfig);
@@ -173,25 +169,22 @@ public class Installer {
             final DataSource ds = new SimpleDataSource(dsConfig);
             is.close();
 
-            m_installerDb.setForce(m_force);
-            m_installerDb.setIgnoreNotNull(m_ignore_not_null);
-            m_installerDb.setNoRevert(m_do_not_revert);
-            m_installerDb.setAdminDataSource(adminDs);
-            m_installerDb.setPostgresOpennmsUser(dsConfig.getUserName());
-            m_installerDb.setDataSource(ds);
-            m_installerDb.setDatabaseName(dsConfig.getDatabaseName());
+            context = new GenericApplicationContext();
+            context.setClassLoader(Bootstrap.loadClasses(new File(m_opennms_home), true));
+
+            m_migrator.setApplicationContext(context);
+            m_migrator.getLiquibaseChangelogs(true);
 
             m_migrator.setDataSource(ds);
             m_migrator.setAdminDataSource(adminDs);
             m_migrator.setValidateDatabaseVersion(!m_ignore_database_version);
 
-            m_migration.setDatabaseName(dsConfig.getDatabaseName());
-            m_migration.setSchemaName(dsConfig.getSchemaName());
-            m_migration.setAdminUser(adminDsConfig.getUserName());
-            m_migration.setAdminPassword(adminDsConfig.getPassword());
-            m_migration.setDatabaseUser(dsConfig.getUserName());
-            m_migration.setDatabasePassword(dsConfig.getPassword());
-            m_migration.setChangeLog("classpath*:/changelog.xml");
+            m_migrator.setDatabaseName(dsConfig.getDatabaseName());
+            m_migrator.setSchemaName(dsConfig.getSchemaName());
+            m_migrator.setAdminUser(adminDsConfig.getUserName());
+            m_migrator.setAdminPassword(adminDsConfig.getPassword());
+            m_migrator.setDatabaseUser(dsConfig.getUserName());
+            m_migrator.setDatabasePassword(dsConfig.getPassword());
         }
 
         checkIPv6();
@@ -208,7 +201,7 @@ public class Installer {
             File rrd_binary = new File(System.getProperty("rrd.binary"));
             if (!rrd_binary.canExecute()) {
                 throw new Exception("Cannot execute the rrdtool binary '" + rrd_binary.getAbsolutePath()
-                        + "' required by the current RRD strategy. Update the rrd.binary field in opennms.properties appropriately.");
+                + "' required by the current RRD strategy. Update the rrd.binary field in opennms.properties appropriately.");
             }
         }
 
@@ -230,60 +223,45 @@ public class Installer {
          * create it if it doesn't already exist).
          */
 
-        verifyFilesAndDirectories();
+        try {
+            verifyFilesAndDirectories();
+        } catch (final FilesystemPermissionException e) {
+            LOG.error("OpenNMS is configured to run as '{}' but '{}' is not writable by that account.", getRunas(), e.path);
+            LOG.error("To fix permissions, run '{}/bin/fix-permissions' as root", m_opennms_home);
+            System.out.println();
+
+            if (m_validate_ownership) {
+                throw e;
+            }
+        }
 
         if (m_install_webapp) {
             checkWebappOldOpennmsDir();
             checkServerXmlOldOpennmsContext();
         }
 
-        if (m_update_database || m_fix_constraint) {
-            // OLDINSTALL m_installerDb.readTables();
-        }
-
-        m_installerDb.disconnect();
         if (doDatabase) {
-            m_migrator.validateDatabaseVersion();
-
-            System.out.println(String.format("* using '%s' as the PostgreSQL user for OpenNMS", m_migration.getAdminUser()));
-            System.out.println(String.format("* using '%s' as the PostgreSQL database name for OpenNMS", m_migration.getDatabaseName()));
-            if (m_migration.getSchemaName() != null) {
-            	System.out.println(String.format("* using '%s' as the PostgreSQL schema name for OpenNMS", m_migration.getSchemaName()));
+            LOG.info(String.format("* using '%s' as the PostgreSQL user for OpenNMS", m_migrator.getAdminUser()));
+            LOG.info(String.format("* using '%s' as the PostgreSQL database name for OpenNMS", m_migrator.getDatabaseName()));
+            if (m_migrator.getSchemaName() != null) {
+                LOG.info(String.format("* using '%s' as the PostgreSQL schema name for OpenNMS", m_migrator.getSchemaName()));
             }
+
+            m_migrator.setupDatabase(m_update_database, m_do_vacuum, m_do_vacuum, m_update_iplike, m_timescaleDB);
+
+            // XXX why do both options need to be set to remove the database?
+            if (m_update_database && m_remove_database) {
+                m_migrator.dropDatabase();
+            }
+
+            if (m_update_database) {
+                createConfiguredFile();
+            }
+
+            context.close();
         }
 
-        if (m_update_database) {
-            m_migrator.prepareDatabase(m_migration);
-        }
-
-        if (doDatabase) {
-            m_installerDb.checkUnicode();
-            m_installerDb.checkTime();
-        }
-        
         handleConfigurationChanges();
-
-        final GenericApplicationContext context = new GenericApplicationContext();
-        context.setClassLoader(Bootstrap.loadClasses(new File(m_opennms_home), true));
-
-        if (m_update_database) {
-            m_installerDb.databaseSetUser();
-            m_installerDb.disconnect();
-
-            for (final Resource resource : context.getResources("classpath*:/changelog.xml")) {
-                System.out.println("- Running migration for changelog: " + resource.getDescription());
-                m_migration.setChangeLog(resource);
-                m_migrator.migrate(m_migration);
-            }
-        }
-
-        if (m_update_unicode) {
-            System.out.println("WARNING: the -U option is deprecated, it does nothing now");
-        }
-
-        if (m_do_vacuum) {
-            m_installerDb.vacuumDatabase(m_do_full_vacuum);
-        }
 
         if (m_install_webapp) {
             installWebApp();
@@ -293,23 +271,6 @@ public class Installer {
             updateTomcatConf();
         }
 
-        if (m_update_iplike) {
-            m_installerDb.updateIplike();
-        }
-
-        if (m_update_database && m_remove_database) {
-            m_installerDb.disconnect();
-            m_installerDb.databaseRemoveDB();
-        }
-
-        if (doDatabase) {
-            m_installerDb.disconnect();
-        }
-        
-        if (m_update_database) {
-            createConfiguredFile();
-        }
-
         System.out.println();
         System.out.println("Installer completed successfully!");
 
@@ -317,16 +278,14 @@ public class Installer {
             System.setProperty("opennms.manager.class", "org.opennms.upgrade.support.Upgrade");
             Bootstrap.main(new String[] {});
         }
-
-        context.close();
     }
 
-	private void checkIPv6() {
-		final IPv6Validator v6Validator = new IPv6Validator();
+    private void checkIPv6() {
+        final IPv6Validator v6Validator = new IPv6Validator();
         if (!v6Validator.isPlatformIPv6Ready()) {
-        	System.out.println("Your OS does not support IPv6.");
+            System.out.println("Your OS does not support IPv6.");
         }
-	}
+    }
 
     private void handleConfigurationChanges() {
         File etcDir = new File(m_opennms_home + File.separator + "etc");
@@ -366,7 +325,7 @@ public class Installer {
             public boolean accept(File dir, String name) {
                 return name.matches("imports-.*\\.xml");
             }
-            
+
         };
     }
 
@@ -378,7 +337,7 @@ public class Installer {
     public void createConfiguredFile() throws IOException {
         File f = new File(m_opennms_home + File.separator + "etc" + File.separator + "configured");
         if (!f.createNewFile()) {
-        	LOG.warn("Could not create file: {}", f.getPath());
+            LOG.warn("Could not create file: {}", f.getPath());
         }
     }
 
@@ -396,10 +355,11 @@ public class Installer {
 
     /**
      * <p>loadProperties</p>
+     * @throws IOException
      *
      * @throws java.lang.Exception if any.
      */
-    public void loadProperties() throws Exception {
+    public void loadProperties() throws IOException {
         m_properties = new Properties();
         m_properties.load(Installer.class.getResourceAsStream("/installer.properties"));
 
@@ -412,11 +372,11 @@ public class Installer {
 
         m_opennms_home = fetchProperty("install.dir");
         m_etc_dir = fetchProperty("install.etc.dir");
-        
+
         loadEtcPropertiesFile("opennms.properties");
         // Used to retrieve 'org.opennms.rrd.strategyClass'
         loadEtcPropertiesFile("rrd-configuration.properties");
-        
+
         m_install_servletdir = fetchProperty("install.servlet.dir");
         try {
             m_import_dir = fetchProperty("importer.requisition.dir");
@@ -424,21 +384,21 @@ public class Installer {
             m_import_dir = m_opennms_home + File.separator + "etc" + File.separator + "imports";
         }
 
-        final String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
-
-        if (pg_lib_dir != null) {
-            m_installerDb.setPostgresPlPgsqlLocation(pg_lib_dir + File.separator + "plpgsql");
-            m_installerDb.setPostgresIpLikeLocation(pg_lib_dir + File.separator + "iplike");
-        }
-
-        m_installerDb.setStoredProcedureDirectory(m_etc_dir);
-        m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator + "create.sql");
+        //        final String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
+        //
+        //        if (pg_lib_dir != null) {
+        //            m_installerDb.setPostgresPlPgsqlLocation(pg_lib_dir + File.separator + "plpgsql");
+        //            m_installerDb.setPostgresIpLikeLocation(pg_lib_dir + File.separator + "iplike");
+        //        }
+        //
+        //        m_installerDb.setStoredProcedureDirectory(m_etc_dir);
+        //        m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator + "create.sql");
     }
 
     private void loadEtcPropertiesFile(final String propertiesFile) throws IOException {
         try {
-        	final Properties opennmsProperties = new Properties();
-        	final InputStream ois = new FileInputStream(m_etc_dir + File.separator + propertiesFile);
+            final Properties opennmsProperties = new Properties();
+            final InputStream ois = new FileInputStream(m_etc_dir + File.separator + propertiesFile);
             opennmsProperties.load(ois);
             // We only want to put() things that weren't already overridden in installer.properties
             for (final Entry<Object,Object> p : opennmsProperties.entrySet()) {
@@ -458,11 +418,11 @@ public class Installer {
      * @return a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
-    public String fetchProperty(String property) throws Exception {
+    public String fetchProperty(String property) throws IllegalStateException {
         String value;
 
         if ((value = m_properties.getProperty(property)) == null) {
-            throw new Exception("property \"" + property + "\" not set "
+            throw new IllegalStateException("property \"" + property + "\" not set "
                     + "from bundled installer.properties file");
         }
 
@@ -481,52 +441,41 @@ public class Installer {
 
         // database-related options
         options.addOption("d", "do-database", false,
-                          "perform database actions");
+                "perform database actions");
 
         options.addOption("Z", "remove-database", false,
-                          "remove the OpenNMS database");
+                "remove the OpenNMS database");
 
         options.addOption("u", "username", true,
-                          "username of the database account (default: 'opennms')");
+                "username of the database account (default: 'opennms')");
         options.addOption("p", "password", true,
-                          "password of the database account (default: 'opennms')");
+                "password of the database account (default: 'opennms')");
         options.addOption("a", "admin-username", true,
-                          "username of the database administrator (default: 'postgres')");
+                "username of the database administrator (default: 'postgres')");
         options.addOption("A", "admin-password", true,
-                          "password of the database administrator (default: '')");
+                "password of the database administrator (default: '')");
         options.addOption("D", "database-url", true,
-                          "JDBC database URL (default: jdbc:postgresql://localhost:5432/");
+                "JDBC database URL (default: jdbc:postgresql://localhost:5432/");
         options.addOption("P", "database-name", true,
-                          "name of the PostgreSQL database (default: opennms)");
+                "name of the PostgreSQL database (default: opennms)");
 
         options.addOption("c", "clean-database", false,
-                          "this option does nothing");
+                "this option does nothing");
         options.addOption("i", "insert-data", false,
-                          "insert (or upgrade) default data including database and XML configuration");
+                "(obsolete)");
         options.addOption("s", "stored-procedure", false,
-                          "add the IPLIKE stored procedure if it's missing");
-        options.addOption("U", "unicode", false,
-                          "upgrade the database to Unicode (deprecated, does nothing)");
+                "add the IPLIKE stored procedure if it's missing");
         options.addOption("v", "vacuum", false,
-                          "vacuum (optimize) the database");
+                "vacuum (optimize) the database");
         options.addOption("f", "vacuum-full", false,
-                          "vacuum full the database (recovers unused disk space)");
-        options.addOption("N", "ignore-not-null", false,
-                          "ignore NOT NULL constraint when transforming data");
+                "vacuum full the database (recovers unused disk space)");
         options.addOption("Q", "ignore-database-version", false,
-                          "disable the database version check");
+                "disable the database version check");
 
         options.addOption("x", "database-debug", false,
-                          "turn on debugging for the database data transformation");
-        options.addOption("R", "do-not-revert", false,
-                          "do not revert a table to the original if an error occurs");
-        options.addOption("n", "skip-constraint", false, "");
-        options.addOption("C", "repair-constraint", true,
-                          "fix rows that violate the specified constraint (sets key column to NULL)");
-        options.addOption("X", "drop-constraint", false,
-                          "drop rows that match the constraint specified in -C, instead of fixing them");
+                "turn on debugging for the database data transformation");
         options.addOption("e", "extended-repairs", false,
-                          "enable extended repairs of old schemas");
+                "enable extended repairs of old schemas");
         // tomcat-related options
         options.addOption("y", "do-webapp", false,
                           "install web application (see '-w')");
@@ -540,10 +489,14 @@ public class Installer {
                                   + File.pathSeparator + "')");
         options.addOption("r", "rpm-install", false,
                           "RPM install (deprecated)");
+        options.addOption("o", "skip-ownership-validation", false,
+                          "whether to skip validating file ownership in OpenNMS home");
 
         // upgrade tools options
         options.addOption("S", "skip-upgrade-tools", false,
                 "Skip the execution of the upgrade tools (post-processing tasks)");
+        options.addOption("t", "timescaledb", false,
+                "Installs TimescaleDB extension");
 
         CommandLineParser parser = new PosixParser();
         m_commandLine = parser.parse(options, argv);
@@ -554,17 +507,17 @@ public class Installer {
         }
 
         options.addOption("u", "username", true,
-                          "replaced by opennms-datasources.xml");
+                "replaced by opennms-datasources.xml");
         options.addOption("p", "password", true,
-                          "replaced by opennms-datasources.xml");
+                "replaced by opennms-datasources.xml");
         options.addOption("a", "admin-username", true,
-                          "replaced by opennms-datasources.xml");
+                "replaced by opennms-datasources.xml");
         options.addOption("A", "admin-password", true,
-                          "replaced by opennms-datasources.xml");
+                "replaced by opennms-datasources.xml");
         options.addOption("D", "database-url", true,
-                          "replaced by opennms-datasources.xml");
+                "replaced by opennms-datasources.xml");
         options.addOption("P", "database-name", true,
-                          "replaced by opennms-datasources.xml");
+                "replaced by opennms-datasources.xml");
 
         if (m_commandLine.hasOption("c")) {
             usage(options, m_commandLine, "The 'c' option was deprecated in 1.6, and disabled in 1.8.  You should backup and then drop the database before running install to reset your data.", null);
@@ -578,35 +531,31 @@ public class Installer {
                 || m_commandLine.hasOption("D")
                 || m_commandLine.hasOption("P")) {
             usage(
-                  options,
-                  m_commandLine,
-                  "The 'u', 'p', 'a', 'A', 'D', and 'P' options have all been superceded.\nPlease edit $OPENNMS_HOME/etc/opennms-datasources.xml instead.", null);
+                    options,
+                    m_commandLine,
+                    "The 'u', 'p', 'a', 'A', 'D', and 'P' options have all been superseded.\nPlease edit $OPENNMS_HOME/etc/opennms-datasources.xml instead.", null);
             System.exit(1);
         }
 
-//        m_force = m_commandLine.hasOption("c");
         m_fix_constraint = m_commandLine.hasOption("C");
         m_fix_constraint_name = m_commandLine.getOptionValue("C");
         if (m_commandLine.hasOption("e")) {
-        	System.setProperty("opennms.contexts", "production,repair");
+            System.setProperty("opennms.contexts", "production,repair");
         }
         m_update_database = m_commandLine.hasOption("d");
         m_remove_database = m_commandLine.hasOption("Z");
         m_do_full_vacuum = m_commandLine.hasOption("f");
-        m_do_inserts = m_commandLine.hasOption("i");
         m_library_search_path = m_commandLine.getOptionValue("l", m_library_search_path);
-        m_skip_constraints = m_commandLine.hasOption("n");
-        m_ignore_not_null = m_commandLine.hasOption("N");
         m_ignore_database_version = m_commandLine.hasOption("Q");
-        m_do_not_revert = m_commandLine.hasOption("R");
         m_update_iplike = m_commandLine.hasOption("s");
         m_tomcat_conf = m_commandLine.getOptionValue("T", m_tomcat_conf);
-        m_update_unicode = m_commandLine.hasOption("U");
         m_do_vacuum = m_commandLine.hasOption("v");
         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
+        m_timescaleDB = m_commandLine.hasOption("t");
 
-        m_installerDb.setDebug(m_commandLine.hasOption("x"));
-        Configurator.setRootLevel(Level.WARN);
+        m_validate_ownership = !m_commandLine.hasOption("o");
+
+        Configurator.setRootLevel(Level.INFO);
         if (m_commandLine.hasOption("x")) {
             Configurator.setRootLevel(Level.DEBUG);
         }
@@ -620,6 +569,12 @@ public class Installer {
                     + Arrays.toString(m_commandLine.getArgs()), null);
             System.exit(1);
         }
+
+        // XXX this probably needs to reflect the webapp options
+        if (!m_update_database && !m_update_iplike && m_library_search_path == null) {
+            usage(options, m_commandLine, "Nothing to do.  Use -h for help.", null);
+            System.exit(1);
+        }
     }
 
     /**
@@ -627,15 +582,7 @@ public class Installer {
      *
      * @throws java.io.FileNotFoundException if any.
      */
-    public void verifyFilesAndDirectories() throws FileNotFoundException {
-        if (m_update_database) {
-            verifyFileExists(true,  m_installerDb.getStoredProcedureDirectory(),
-                             "SQL directory", "install.etc.dir property");
-
-            verifyFileExists(false, m_installerDb.getCreateSqlLocation(),
-                             "create.sql", "install.etc.dir property");
-        }
-
+    public void verifyFilesAndDirectories() throws IOException, FilesystemPermissionException {
         if (m_tomcat_conf != null) {
             verifyFileExists(false, m_tomcat_conf, "Tomcat startup configuration file tomcat4.conf", "-T option");
         }
@@ -646,6 +593,50 @@ public class Installer {
             verifyFileExists(true, m_install_servletdir, "OpenNMS servlet directory",
                              "install.servlet.dir property");
         }
+
+        final var validator = new FilesystemPermissionValidator();
+        final var user = getRunas();
+
+        final Path opennmsHome = Paths.get(m_opennms_home);
+        validator.validate(user, opennmsHome);
+    }
+
+    protected String getRunas() throws IOException {
+        if (RUNAS_USER == null) {
+            final var opennmsConf = readOpennmsConf();
+            // use RUNAS from opennms.conf if found, fall back to -Dopennms.runas, fall back to "opennms" if nothing is found
+            RUNAS_USER = opennmsConf.getProperty("RUNAS", System.getProperty("opennms.runas", "opennms"));
+        }
+
+        return RUNAS_USER;
+    }
+
+    protected Properties readOpennmsConf() throws IOException {
+        if (m_opennms_home == null) {
+            this.loadProperties();
+        }
+
+        final var opennmsConf = Paths.get(m_opennms_home, "etc", "opennms.conf");
+        final var props = new Properties();
+
+        if (opennmsConf.toFile().exists()) {
+            final var lines = Files.readAllLines(opennmsConf);
+            lines.forEach(line -> {
+                final var shell = SHELL_VAR_PATTERN.matcher(line);
+                if (shell.matches()) {
+                    final var key = shell.group(1);
+                    var value = shell.group(2);
+                    var quotes = QUOTE_PATTERN.matcher(value);
+                    if (quotes.matches()) {
+                        value = quotes.group(1);
+                    }
+                    LOG.debug("opennms.conf: {}={}", key, value);
+                    props.put(key, value);
+                }
+            });
+        }
+
+        return props;
     }
 
     /**
@@ -780,6 +771,7 @@ public class Installer {
      * @param recursive a boolean.
      * @throws java.lang.Exception if any.
      */
+    @SuppressWarnings("deprecation")
     public void copyFile(String source, String destination,
             String description, boolean recursive) throws Exception {
         File sourceFile = new File(source);
@@ -1198,7 +1190,7 @@ public class Installer {
         try {
             f = new File(m_opennms_home + File.separator + "etc" + File.separator + LIBRARY_PROPERTY_FILE);
             if(!f.createNewFile()) {
-            	LOG.warn("Could not create file: {}", f.getPath());
+                LOG.warn("Could not create file: {}", f.getPath());
             }
             FileOutputStream os = new FileOutputStream(f);
             libraryProps.store(os, null);
@@ -1215,7 +1207,7 @@ public class Installer {
      */
     public void pingLocalhost() throws Exception {
         String host = "127.0.0.1";
-        
+
         java.net.InetAddress addr = null;
         try {
             addr = InetAddress.getByName(host);
@@ -1228,9 +1220,9 @@ public class Installer {
 
         Pinger pinger;
         try {
-       
+
             pinger = new BestMatchPingerFactory().getInstance();
-        
+
         } catch (UnsatisfiedLinkError e) {
             System.out.println("UnsatisfiedLinkError while creating an ICMP Pinger.  Most likely failed to load "
                     + "libjicmp.so.  Try setting the property 'opennms.library.jicmp' to point at the "
@@ -1241,24 +1233,24 @@ public class Installer {
             throw e;
         } catch (NoClassDefFoundError e) {
             System.out.println("NoClassDefFoundError while creating an IcmpSocket.  Most likely failed to load libjicmp.so" +
-            		"or libjicmp6.so.");
+                    "or libjicmp6.so.");
             throw e;
         } catch (Exception e) {
             System.out.println("Exception while creating Pinger.");
             throw e;
         }
-        
-        
+
+
         // using regular InetAddress toString here since is just printed for the users benefit
         System.out.print("Pinging " + host + " (" + addr + ")...");
 
         Number rtt = pinger.ping(addr);
-        
+
         if (rtt == null) {
             System.out.println("failed.!");
         } else {
             System.out.printf("successful.. round trip time: %.3f ms%n", rtt.doubleValue() / 1000.0);
         }
-        
+
     }
 }

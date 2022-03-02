@@ -1,0 +1,21 @@
+
+[[xml-sample-provision]]
+= XML Samples
+
+This section provides sample XML configuration for many of the tasks described in the Provisioning chapter.
+
+[[SNMP-community-xml]]
+== Configuring SNMP community names
+
+[source, xml]
+.Sample snmp-config.xml
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<snmp-config
+    xmlns="http://xmlns.opennms.org/xsd/config/snmp[http://xmlns.opennms.org/xsd/config/snmp]"
+    port="161" retry="3" timeout="800" read-community="public" version="v1" max-vars-per-pdu="10">
+    <definition retry="1" timeout="2000" read-community="public" version="v2c">
+        <specific>10.12.23.32</specific>
+    </definition>
+</snmp-config>
+----

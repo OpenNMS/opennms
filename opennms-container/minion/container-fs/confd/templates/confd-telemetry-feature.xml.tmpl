@@ -1,0 +1,67 @@
+{{- /* Upon updating this file please ensure that the schema minion-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="my-features" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
+
+    <feature name="confd-telemetry-auto" version="1.0" install="auto">
+{{$flowsPath := "/telemetry/flows" -}}
+{{$singlePortPath := (print $flowsPath "/single-port-listener") -}}
+{{if eq (getv (print $singlePortPath "/enabled") "false") "true" -}}
+        <config name="org.opennms.features.telemetry.listeners-single-port-flows">
+            name={{getv (print $singlePortPath "/name") "Single-Port-Flow-Listener"}}
+            class-name=org.opennms.netmgt.telemetry.listeners.UdpListener
+{{if not (exists (print $singlePortPath "/parameters/port")) -}}
+            parameters.port=50000
+{{end -}}
+{{range gets (print $singlePortPath "/parameters/*") -}}
+            parameters.{{base .Key}}={{.Value}}
+{{end -}}
+            parsers.1.name=Netflow-5
+            parsers.1.class-name=org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser
+            parsers.1.parameters.maxClockSkew=300
+{{range gets (print $singlePortPath "/parser-parameters/*") -}}
+            parsers.1.parameters.{{base .Key}}={{.Value}}
+{{end -}}
+            parsers.2.name=Netflow-9
+            parsers.2.class-name=org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser
+            parsers.2.parameters.maxClockSkew=300
+{{range gets (print $singlePortPath "/parser-parameters/*") -}}
+            parsers.2.parameters.{{base .Key}}={{.Value}}
+{{end -}}
+            parsers.3.name=IPFIX
+            parsers.3.class-name=org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser
+            parsers.3.parameters.maxClockSkew=300
+{{range gets (print $singlePortPath "/parser-parameters/*") -}}
+            parsers.3.parameters.{{base .Key}}={{.Value}}
+{{end -}}
+            parsers.4.name=SFlow
+            parsers.4.class-name=org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser
+{{range gets (print $singlePortPath "/parser-parameters/*") -}}
+            parsers.4.parameters.{{base .Key}}={{.Value}}
+{{end -}}
+        </config>
+{{end -}}
+{{range lsdir (print $flowsPath "/listeners") -}}
+{{$listenerPath := (print $flowsPath "/listeners/" .) -}}
+{{$listenerName := base $listenerPath -}}
+        <config name="org.opennms.features.telemetry.listeners-{{$listenerName}}">
+            name={{$listenerName}}
+            class-name={{getv (print $listenerPath "/class-name")}}
+{{range gets (print $listenerPath "/parameters/*") -}}
+            parameters.{{base .Key}}={{.Value}}
+{{end -}}
+{{range $parserIndex, $element := lsdir (print $listenerPath "/parsers") -}}
+{{$parserPath := (print $listenerPath "/parsers/" .) -}}
+{{$parserName := base $parserPath -}}
+            parsers.{{$parserIndex}}.name={{$parserName}}
+            parsers.{{$parserIndex}}.class-name={{getv (print $parserPath "/class-name")}}
+{{range gets (print $parserPath "/parameters/*") -}}
+            parsers.{{$parserIndex}}.parameters.{{base .Key}}={{.Value}}
+{{end -}}
+{{end -}}
+        </config>
+{{end -}}
+    </feature>
+
+</features>

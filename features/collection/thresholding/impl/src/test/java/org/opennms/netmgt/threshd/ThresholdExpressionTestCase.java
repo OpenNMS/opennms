@@ -62,9 +62,9 @@ public class ThresholdExpressionTestCase extends TestCase {
         expression=new Expression();
         expression.setType(ThresholdType.HIGH);
         expression.setDsType("node");
-        expression.setValue(99.0);
-        expression.setRearm(0.5);
-        expression.setTrigger(1);
+        expression.setDoubleValue(99.0);
+        expression.setRearmValue(0.5);
+        expression.setTriggerValue(1);
    }
     
     public void testEvaluateEvaluateSingleItemWithDivision() throws Exception {

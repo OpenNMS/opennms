@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
@@ -61,6 +62,7 @@ import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.support.TcpEventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
@@ -276,6 +278,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         assertEquals(1, m_eventCounter.getCount());
     }
 
+    @Ignore("can be used/disabled to perform adhoc load tests")
     @Test(timeout=120000)
     @Transactional
     public void testEventd() throws Exception {
@@ -361,7 +364,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         }
 
         @Override
-        public void onEvent(final Event e) {
+        public void onEvent(final IEvent e) {
             final int current = m_eventCount.incrementAndGet();
             if (current % 100 == 0) {
                 System.err.println(current + " < " + m_expectedCount);

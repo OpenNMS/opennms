@@ -83,6 +83,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
         "classpath:/META-INF/opennms/applicationContext-snmp-profile-mapper.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-dns.xml",
         "classpath*:/META-INF/opennms/detectors.xml",

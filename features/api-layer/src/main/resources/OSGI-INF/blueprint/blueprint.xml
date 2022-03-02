@@ -34,6 +34,7 @@
   <reference id="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao" availability="mandatory"/>
   <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" availability="optional"/>
   <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory"/>
+  <reference id="graphContainerCache" interface="org.opennms.netmgt.graph.api.service.GraphContainerCache" availability="mandatory"/>
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
@@ -338,5 +339,43 @@
       <entry key="registration.export" value="true"/>
     </service-properties>
   </service>
+
+  <!-- Graph API -->
+  <bean id="graphProviderManager" class="org.opennms.features.apilayer.graph.GraphProviderManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.graph.GraphProvider" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="graphProviderManager" />
+  </reference-list>
+
+  <bean id="graphContainerProviderManager" class="org.opennms.features.apilayer.graph.GraphContainerProviderManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.graph.GraphContainerProvider" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="graphContainerProviderManager" />
+  </reference-list>
+  <bean id="statusProviderManager" class="org.opennms.features.apilayer.graph.status.StatusProviderManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.graph.status.StatusProvider" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="statusProviderManager" />
+  </reference-list>
+  <bean id="legacyVertexStatusProviderManager" class="org.opennms.features.apilayer.graph.status.LegacyVertexStatusProviderManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.graph.status.LegacyStatusProvider" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="legacyVertexStatusProviderManager" />
+  </reference-list>
+  <bean id="legacyEdgeStatusProviderManager" class="org.opennms.features.apilayer.graph.status.LegacyEdgeStatusProviderManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.graph.status.LegacyStatusProvider" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="legacyEdgeStatusProviderManager" />
+  </reference-list>
+
+  <bean id="graphContainerCacheImpl" class="org.opennms.features.apilayer.graph.GraphContainerCacheImpl">
+    <argument ref="graphContainerCache" />
+  </bean>
+  <service ref="graphContainerCacheImpl" interface="org.opennms.integration.api.v1.graph.GraphContainerCache" />
 
 </blueprint>

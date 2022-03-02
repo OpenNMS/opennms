@@ -1,0 +1,62 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+= Develop Documentation
+
+This section provides guidelines for people who want to write documentation for the OpenNMS project.
+The OpenNMS software is free and open source, we welcome any kind of contribution.
+Please observe the rules and guidelines outlined here to maintain consistency across the project.
+
+Each (sub)project is represented as a section of the documentation.
+Each section will produce a HTML output in the file system that is generated in the `target/generated` sources folder.
+
+We use Antora to build our documentation.
+The file format for documentation is AsciiDoc, with the `.adoc` file extension.
+For information on syntax, see Antora's https://docs.antora.org/antora/2.3/asciidoc/asciidoc/[AsciiDoc Primer] or look at how the existing `.adoc` files work.
+
+Note that there are different ways to contribute documentation, each suitable for different use cases:
+
+* Publish tutorials and how to's in our https://opennms.discourse.group/c/knowledgebase[knowledge base].
+For example, you want to describe how to use the Net-SNMP agent and the OpenNMS SNMP monitor to solve a special use case with OpenNMS.
+This is a great way to help other OpenNMS users who might have similar questions.
+
+* Contribute formal technical documentation related to the source code on https://github.com/OpenNMS/opennms[GitHub].
+
+* Pick up "quickwin-docs" issues from our Jira documentation backlog.
+These are issues that should require only a short amount of time to address.
+
+== Technical documentation tips
+
+Technical documentation should be accurate and concise, but still explain concepts in detail.
+
+A good way to structure your contribution is as follows:
+
+* Descriptive heading (for example, “Create a Minion” or “SnmpCollector”)
+* Brief description of what you are documenting.
+If this is a new feature, include why it is important to users (for example, “This feature lets users validate and tune their business service hierarchies until they achieve the desired status propagation.”)
+* Steps to complete the procedure, or technical content such as parameters, configuration, and examples
+
+Minimize the use of screenshots.
+Include them only to illustrate a concept that may be difficult to understand or something that is not easy to locate in the UI.
+
+[[gd-docs-file-structure]]
+== File structure in the opennms repository
+
+Documentation is in the `docs` directory.
+Within this directory, you will find the `./modules` directory, which contains all the technical documentation associated with the source code in this repository.
+The `./modules` directory may have more nested directories to create a hierarchy for the content (component, subcomponents).
+
+You will find `.adoc` files in the `./pages` directory or one of the subdirectories within the `./pages` directory.
+
+[options="header", cols="e,d"]
+|===
+| Directory            | Contents
+| `docs/modules/operation`       | Documentation for administrators to configure, optimize, and run OpenNMS
+| `docs/modules/development/` | Documentation for those who want to develop OpenNMS
+| `docs/modules/deployment/`    | Documentation on how to install and configure OpenNMS on different operating systems
+| `docs/modules/reference/`      | Glossary and miscellaneous configuration topics
+| `docs/modules/releasenotes/`      | Changelog and release notes
+|===
+
+NOTE: Documentation for other OpenNMS projects (for example, opennms-helm) follows a similar hierarchy, as appropriate to that project.

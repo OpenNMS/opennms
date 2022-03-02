@@ -1,0 +1,6 @@
+[template]
+src = "instance-id.properties.tmpl"
+dest = "/opt/minion/etc/opennms.properties.d/instance-id.properties"
+keys = [
+    "/org.opennms.instance.id"
+]

@@ -39,7 +39,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.flows.classification.ClassificationService;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 
-@Command(scope="opennms-classification", name="list-groups", description = "Lists all classification groups stored in the database")
+@Command(scope="opennms", name="list-classification-groups", description = "Lists all classification groups stored in the database")
 @Service
 public class ClassificationListGroupCommand implements Action {
 

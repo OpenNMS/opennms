@@ -35,7 +35,7 @@ import java.io.IOException;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
-import org.opennms.netmgt.flows.elastic.ElasticFlowRepositoryInitializer;
+import org.opennms.netmgt.flows.elastic.RawIndexInitializer;
 import org.opennms.features.jest.client.template.DefaultTemplateLoader;
 import org.opennms.features.jest.client.template.Version;
 
@@ -43,7 +43,7 @@ public class DefaultTemplateLoaderTest {
 
     @Test
     public void verifyTemplateLoading() throws IOException {
-        final String template = new DefaultTemplateLoader().load(new Version(6,2,3), ElasticFlowRepositoryInitializer.TEMPLATE_RESOURCE);
+        final String template = new DefaultTemplateLoader().load(new Version(6,2,3), RawIndexInitializer.TEMPLATE_RESOURCE);
         assertNotNull(template);
         assertThat(template.length(), Matchers.greaterThan(0));
     }

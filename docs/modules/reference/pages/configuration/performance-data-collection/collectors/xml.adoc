@@ -1,0 +1,128 @@
+
+= XmlCollector
+
+The XmlCollector collects and extracts metrics from XML and JSON documents.
+
+== Configuration and use
+
+[options="autowidth"]
+|===
+| Class Name            | `org.opennms.protocols.xml.collector.XmlCollector`
+| Package               | core
+| Supported on Minion   | Yes (see limitations)
+| Configuration Files   | $OPENNMS_HOME/etc/xml-datacollection-config.xml +
+                          $OPENNMS_HOME/etc/xml-datacollection.d/*.xml
+|===
+
+=== Limitations on Minion
+
+The following handlers are not currently supported on Minion:
+
+* DefaultJsonCollectionHandler
+* Sftp3gppXmlCollectionHandler
+* Sftp3gppVTDXmlCollectionHandler
+
+== Configuration and use
+
+.Collector-specific parameters for the XmlCollector
+[options="header"]
+[cols="1,2,3"]
+|===
+| Parameter
+| Description
+| Default
+
+3+|  *Required*
+
+| collection
+| The name of the XML Collection to use.
+| n/a
+
+3+| *Optional*
+
+| handler-class
+| Class that performs the collection.
+| org.opennms.protocols.xml.collector.DefaultXmlCollectionHandler
+|===
+
+The available handlers include:
+
+* org.opennms.protocols.xml.collector.DefaultXmlCollectionHandler
+* org.opennms.protocols.xml.collector.Sftp3gppXmlCollectionHandler
+* org.opennms.protocols.xml.vtdxml.DefaultVTDXmlCollectionHandler
+* org.opennms.protocols.xml.vtdxml.Sftp3gppVTDXmlCollectionHandler
+* org.opennms.protocols.json.collector.DefaultJsonCollectionHandler
+* org.opennms.protocols.http.collector.HttpCollectionHandler
+
+== XML collection configuration
+
+Understanding xref:operation:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+
+XML Collections are defined in `etc/xml-datacollection-config.xml` and `etc/xml-datacollection/`.
+
+This snippet provides a collection definition named `xml-opennms-nodes`:
+
+[source, xml]
+----
+<xml-collection name="xml-opennms-nodes">
+  <rrd step="300">
+    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+    <rra>RRA:AVERAGE:0.5:288:366</rra>
+    <rra>RRA:MAX:0.5:288:366</rra>
+    <rra>RRA:MIN:0.5:288:366</rra>
+  </rrd>
+  <xml-source url="http://admin:admin@{ipaddr}:8980/opennms/rest/nodes">
+    <request method="GET">
+      <parameter name="use-system-proxy" value="true"/>
+    </request>
+    <import-groups>xml-datacollection/opennms-nodes.xml</import-groups>
+  </xml-source>
+</xml-collection>
+----
+
+The request element can have the following optional child elements:
+
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| timeout
+| The connection and socket timeout in milliseconds.
+| n/a
+
+| retries
+| How often to repeat the request in case of an error.
+| 0
+
+| use-system-proxy
+| Should the system-wide proxy settings be used?
+Configure the system proxy settings via <<operation:admin/system-properties/introduction.adoc#system-properties, system properties>>.
+| false
+|===
+
+The referenced `opennms-nodes.xml` file contains:
+
+[source, xml]
+----
+<xml-groups>
+    <xml-group name="nodes" resource-type="node" resource-xpath="/nodes">
+        <xml-object name="totalCount" type="GAUGE" xpath="@totalCount"/>
+    </xml-group>
+</xml-groups>
+----
+
+With the configuration in place, you can test it using the `collect` command available in the Karaf Shell:
+
+[source, console]
+----
+opennms:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
+----
+
+== Caveats
+
+The `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler` requires the fetched document to be a single element of type `object` to make xpath query work.
+If the root element is an array, it will be wrapped in an object, whereas the original array is accessible as `/elements`.

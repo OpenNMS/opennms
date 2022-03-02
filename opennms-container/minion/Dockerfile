@@ -1,94 +1,76 @@
 ##
-# Use Java base image and setup required RPMS as cacheable image.
+# Pre-stage image to extract and manipulate Minion directory structure
+# Normally we install to /opt/minion and not /opt/minion-XX.X.X-SNAPSHOT
+# To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
+# as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/openjdk"
-ARG BASE_IMAGE_VERSION="11.0.14.0.9-b8239"
+ARG BASE_IMAGE="opennms/deploy-base:jre-1.2.0.b105"
 
-FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as minion-base
+FROM ${BASE_IMAGE} as minion-base
 
-ARG REQUIRED_RPMS="wget gettext jicmp jicmp6 openssh-clients"
+ADD ./tarball/minion.tar.gz /opt/
 
-ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
-ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
+# Organize files based on the build home dir /opt/minion
+RUN mv /opt/minion-* /opt/minion
+RUN rm /opt/minion/etc/org.opennms.features.telemetry.listeners-single-port-flows.cfg
 
-SHELL ["/bin/bash", "-c"]
+# We set the correct permissions in this stage, so we don't have this as an additional
+# layer in our deploy image.
+RUN groupadd --gid 10001 minion && \
+    useradd --system --uid 10001 --gid minion minion --home-dir /opt/minion && \
+    chown 10001 /opt/minion -R && \
+    chgrp -R 0 /opt/minion && \
+    chmod -R g=u /opt/minion
 
-# Collect generic steps in a layer for caching
-RUN rpm --import "${REPO_KEY_URL}" && \
-    dnf -y install epel-release && \
-    dnf -y install "${REPO_RPM}" && \
-    dnf -y install ${REQUIRED_RPMS} && \
-    dnf clean all && \
-    rm -rf /var/cache/yum
+##
+# Prod image with minimal image size
+##
+FROM ${BASE_IMAGE}
 
-# Allow to send ICMP messages as non-root user
-RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
-    echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
-    ldconfig
+# Create user to be able to run as non root with a known user and group id.
+RUN groupadd --gid 10001 minion && \
+    useradd --system --uid 10001 --gid minion minion --home-dir /opt/minion
 
-# Create Minion user with a specific group ID
-RUN groupadd -g 10001 minion && \
-    adduser -u 10001 -g 10001 -d /opt/minion -s /usr/bin/bash minion
+# https://issues.opennms.org/browse/NMS-12635
+# It is possible to set sysctls: net.ipv4.ping_group_range=0 10001 which allows the container using sockets. If we run on
+# infrastructure which doesn't allow whitelisting net.ipv4.ping_group_range as a safe sysctl (Kubernetes < 1.18) the
+# minimal solution is giving the Java binary the cap_net_raw+ep capabilities.
+RUN setcap cap_net_raw+ep $(readlink -f /usr/bin/java)
+
+# Install entrypoint wrapper and health check script
+COPY container-fs/entrypoint.sh /
+COPY container-fs/health.sh /
+
+# If you copy from /opt/minion to /opt/minion the permissions are not preserved
+# We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
+COPY --chown=10001:0 --from=minion-base /opt /opt
+
+# Copy Prometheus JMX Exporter
+COPY --chown=10001:0 --from=minion-base /opt/prom-jmx-exporter /opt/prom-jmx-exporter
+
+# Install confd.io configuration files and scripts and ensure they are executable
+COPY ./container-fs/confd/ /opt/minion/confd/
+RUN chmod +x /opt/minion/confd/scripts/*
+COPY ./minion-config-schema.yml /opt/minion/confd/
+
+# Create the directory for server certificates
+RUN mkdir /opt/minion/server-certs
 
 # Create SSH Key-Pair to use with the Karaf Shell
+# This is a workaround to be able to use our health:check which does not work with the karaf/bin/client command
 RUN mkdir /opt/minion/.ssh && \
+    ssh-keygen -t rsa -f /opt/minion/.ssh/id_rsa -q -N "" && \
     chmod 700 /opt/minion/.ssh && \
-    ssh-keygen -t rsa -f /opt/minion/.ssh/id_rsa -q -N ""
-
-##
-# Install and setup OpenNMS Minion RPMS
-##
-FROM minion-base
-
-ARG USER="minion"
-
-# A default which installs the minimum required Minion packages
-ARG MINION_PACKAGES="opennms-minion"
-
-# Allow to install optional packages via YUM
-ARG ADD_YUM_PACKAGES
-
-COPY ./rpms /tmp/rpms
-
-SHELL ["/bin/bash", "-c"]
-
-# we want these to break the caching so yum will re-install now that
-# we're not copying RPMs into /tmp/rpms by default
-ARG BUILD_DATE="1970-01-01T00:00:00+0000"
-ARG REVISION
-
-# Install repositories, system and OpenNMS packages and do some cleanup
-RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
-    if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
-        echo "installing local RPMs from filesystem" && \
-        dnf -y install /tmp/rpms/*.rpm; \
-    elif [[ -e /tmp/rpms/opennms-docker.repo ]]; then \
-        echo "installing local RPMs over HTTP" && \
-        dnf -y install 'dnf-command(config-manager)' && \
-        dnf -y config-manager --add-repo /tmp/rpms/*.repo && \
-        dnf -y config-manager --set-enabled opennms-repo-docker-common && \
-        dnf -y --disablerepo=opennms-repo-stable-common install ${MINION_PACKAGES}; \
-    else \
-        echo "installing remote RPMs from stable" && \
-        dnf -y install ${MINION_PACKAGES}; \
-    fi && \
-    if [[ -n ${ADD_YUM_PACKAGES} ]]; then dnf -y install ${ADD_YUM_PACKAGES}; fi && \
-    rm -rf /tmp/rpms && \
-    dnf clean all && \
-    rm -rf /var/cache/yum && \
-    sed -r -i '/RUNAS/s/.*/export RUNAS=${USER}/' /etc/sysconfig/minion && \
+    chmod 600 /opt/minion/.ssh/id_rsa && \
+    chown 10001 /opt/minion/.ssh -R && \
     echo minion=$(cat /opt/minion/.ssh/id_rsa.pub | awk '{print $2}'),viewer > /opt/minion/etc/keys.properties && \
-    echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /opt/minion/etc/keys.properties && \
-    chown 10001:10001 -R /opt/minion && \
-    chgrp -R 0 /opt/minion && \
-    chmod -R g=u /opt/minion && \
-    chmod 600 /opt/minion/.ssh/id_rsa
-
-COPY ./assets/* /
+    echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /opt/minion/etc/keys.properties
 
 # Arguments for labels should not invalidate caches
+ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG VERSION
 ARG SOURCE
+ARG REVISION
 ARG BUILD_JOB_ID
 ARG BUILD_NUMBER
 ARG BUILD_URL
@@ -102,7 +84,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.vendor="The OpenNMS Group, Inc." \
       org.opencontainers.image.authors="OpenNMS Community" \
       org.opencontainers.image.licenses="AGPL-3.0" \
-      org.opennms.image.base="${BASE_IMAGE}:${BASE_IMAGE_VERSION}" \
+      org.opennms.image.base="${BASE_IMAGE}" \
       org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
       org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
@@ -110,7 +92,6 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
 
 WORKDIR /opt/minion
 
-### Containers should NOT run as root as a good practice
 USER 10001
 
 ENTRYPOINT [ "/entrypoint.sh" ]
@@ -133,7 +114,6 @@ ENV MINION_ID="00000000-0000-0000-0000-deadbeef0001" \
 ## EXPOSED PORTS
 ##------------------------------------------------------------------------------
 ## -- OpenNMS KARAF SSH    8201/TCP
-## -- OpenNMS JMX         18980/TCP
 ## -- SNMP Trapd           1162/UDP
 ## -- Syslog               1514/UDP
 EXPOSE 8201/tcp 1162/udp 1514/udp

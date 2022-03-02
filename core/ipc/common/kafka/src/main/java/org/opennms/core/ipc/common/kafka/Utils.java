@@ -41,6 +41,9 @@ import org.opennms.distributed.core.api.Identity;
 import org.opennms.distributed.core.api.SystemType;
 import org.osgi.service.cm.ConfigurationAdmin;
 
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.KAFKA_IPC_CONFIG_PID;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.KAFKA_IPC_CONFIG_SYS_PROP_PREFIX;
+
 public class Utils {
     // HACK: When defining key.deserializer/value.deserializer classes, the kafka client library
     // tries to instantiate them by using the ClassLoader returned by Thread.currentThread().getContextClassLoader() if defined.
@@ -73,20 +76,20 @@ public class Utils {
     public static Properties getKafkaConfig(Identity identity, ConfigurationAdmin configAdmin, String type) {
         if(identity.getType().equals(SystemType.OpenNMS.name())) {
             String sysPropPrefix = type.equals(KafkaSinkConstants.KAFKA_TOPIC_PREFIX) ?
-                    KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX : KafkaRpcConstants.KAFKA_CONFIG_SYS_PROP_PREFIX;
-            OnmsKafkaConfigProvider kafkaConfigProvider = new OnmsKafkaConfigProvider(sysPropPrefix);
+                    KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX : KafkaRpcConstants.KAFKA_RPC_CONFIG_SYS_PROP_PREFIX;
+            OnmsKafkaConfigProvider kafkaConfigProvider = new OnmsKafkaConfigProvider(sysPropPrefix, KAFKA_IPC_CONFIG_SYS_PROP_PREFIX);
             return kafkaConfigProvider.getProperties();
         } else {
             String pid = null;
             if(identity.getType().equals(SystemType.Minion.name())) {
                 pid = type.equals(KafkaSinkConstants.KAFKA_TOPIC_PREFIX) ?
-                        KafkaSinkConstants.KAFKA_CONFIG_PID : KafkaRpcConstants.KAFKA_CONFIG_PID;
+                        KafkaSinkConstants.KAFKA_CONFIG_PID : KafkaRpcConstants.KAFKA_RPC_CONFIG_PID;
             } else {
                 //For sentinel, connect with consumer pid.
                 pid = type.equals(KafkaSinkConstants.KAFKA_TOPIC_PREFIX) ?
-                        KafkaSinkConstants.KAFKA_CONFIG_CONSUMER_PID : KafkaRpcConstants.KAFKA_CONFIG_PID;
+                        KafkaSinkConstants.KAFKA_CONFIG_CONSUMER_PID : KafkaRpcConstants.KAFKA_RPC_CONFIG_PID;
             }
-            OsgiKafkaConfigProvider kafkaConfigProvider = new OsgiKafkaConfigProvider(pid, configAdmin);
+            OsgiKafkaConfigProvider kafkaConfigProvider = new OsgiKafkaConfigProvider(pid, configAdmin, KAFKA_IPC_CONFIG_PID);
             return kafkaConfigProvider.getProperties();
         }
     }

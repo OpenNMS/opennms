@@ -147,7 +147,17 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         if (bean != null) {
             debug("Found bean {} with name {} of type {}", bean, beanName, pluginClass);
         } else {
-            debug("Failed to find bean {} with name {} of type {}", bean, beanName, pluginClass);
+            // At this point we know, that the bean isn't found or the bean does not match the given super class.
+            // So we now check whether the bean could be found for the base class...
+            final OnmsPolicy onmsPolicy = beansOfType(OnmsPolicy.class).get(beanName);
+
+            if (onmsPolicy == null) {
+                // if not, the policy definition seems to be broken
+                error(null,"Policy class not found or not a policy class: '{}' of type {}", beanName, pluginClass);
+            } else {
+                // log only for debug
+                debug("Failed to find bean {} with name {} of type {}", bean, beanName, pluginClass);
+            }
         }
         return bean;
     }

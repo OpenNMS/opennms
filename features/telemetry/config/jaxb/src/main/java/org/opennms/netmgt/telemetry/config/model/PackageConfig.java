@@ -38,7 +38,9 @@ import javax.xml.bind.annotation.XmlValue;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
 import org.opennms.netmgt.telemetry.config.api.RrdDefinition;
@@ -182,6 +184,9 @@ public class PackageConfig implements PackageDefinition {
     @XmlElement(name="rrd")
     private Rrd rrd;
 
+    @XmlElement(name="parameter")
+    private List<Parameter> parameters = new ArrayList<>();
+
     public String getName() {
         return this.name;
     }
@@ -215,6 +220,20 @@ public class PackageConfig implements PackageDefinition {
         this.rrd = rrd;
     }
 
+    public List<Parameter> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<Parameter> parameters) {
+        this.parameters = parameters;
+    }
+
+    @Override
+    public Map<String, String> getParameterMap() {
+        return parameters.stream()
+                .collect(Collectors.toMap(Parameter::getKey, Parameter::getValue));
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -222,12 +241,13 @@ public class PackageConfig implements PackageDefinition {
         final PackageConfig that = (PackageConfig) o;
         return Objects.equals(this.name, that.name) &&
                 Objects.equals(this.filter, that.filter) &&
-                Objects.equals(this.rrd, that.rrd);
+                Objects.equals(this.rrd, that.rrd) &&
+                Objects.equals(this.parameters, that.parameters);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.name, this.filter, this.rrd);
+        return Objects.hash(this.name, this.filter, this.rrd, this.parameters);
     }
 
     @Override
@@ -236,6 +256,7 @@ public class PackageConfig implements PackageDefinition {
                 .add("name", this.name)
                 .add("filter", this.filter)
                 .add("rrd", this.rrd)
+                .add("parameters", this.parameters)
                 .toString();
     }
 

@@ -59,7 +59,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name="page")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder={"m_method","m_httpVersion","m_userAgent","m_virtualHost","m_scheme","m_userInfo","m_host","m_requireIPv6","m_requireIPv4","m_disableSslVerification","m_port","m_path","m_query","m_fragment","m_failureMatch","m_failureMessage","m_successMatch","m_locationMatch","m_responseRange","m_dsName", "m_parameters","m_sessionVariables"})
+@XmlType(propOrder={"m_method","m_httpVersion","m_userAgent","m_virtualHost","m_scheme","m_userInfo","m_host","m_requireIPv6","m_requireIPv4","m_disableSslVerification","m_port","m_path","m_query","m_fragment","m_failureMatch","m_failureMessage","m_successMatch","m_locationMatch","m_responseRange","m_dsName", "m_parameters", "m_headers", "m_sessionVariables"})
 public class Page implements Serializable {
     private static final long serialVersionUID = -8690979689322573975L;
 
@@ -98,7 +98,7 @@ public class Page implements Serializable {
     private String m_disableSslVerification = "true";
 
     @XmlAttribute(name="port")
-    private Integer m_port = 80;
+    private String m_port = "80";
 
     @XmlAttribute(name="path")
     private String m_path;
@@ -132,6 +132,9 @@ public class Page implements Serializable {
      */
     @XmlElement(name="parameter")
     private List<Parameter> m_parameters = new ArrayList<>();
+
+    @XmlElement(name="header")
+    private List<Header> m_headers = new ArrayList<>();
 
     /**
      * Assign the value of a regex match group to a session variable with a
@@ -238,12 +241,16 @@ public class Page implements Serializable {
         m_disableSslVerification = disableSslVerification;
     }
 
-    public Integer getPort() {
-        return m_port == null? 80 : m_port;
+    public String getPort() {
+        return m_port == null? "80" : m_port;
     }
 
-    public void setPort(final Integer port) {
+    public void setPort(final String port) {
         m_port = port;
+    }
+
+    public void setPort(final int port) {
+        m_port = String.valueOf(port);
     }
 
     public String getPath() {
@@ -336,6 +343,22 @@ public class Page implements Serializable {
 
     public boolean removeParameter(final Parameter parameter) {
         return m_parameters.remove(parameter);
+    }
+
+    public List<Header> getHeaders() {
+        return Collections.unmodifiableList(m_headers);
+    }
+
+    public void setHeaders(final List<Header> headers) {
+        m_headers = new ArrayList<Header>(headers);
+    }
+
+    public void addHeader(final Header header) {
+        m_headers.add(header);
+    }
+
+    public boolean removeHeader(final Header header) {
+        return m_headers.remove(header);
     }
 
     public List<SessionVariable> getSessionVariables() {

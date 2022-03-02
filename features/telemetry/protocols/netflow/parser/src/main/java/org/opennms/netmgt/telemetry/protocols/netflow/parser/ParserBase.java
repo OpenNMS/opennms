@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -45,10 +46,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.bson.BsonBinary;
-import org.bson.BsonBinaryWriter;
-import org.bson.BsonWriter;
-import org.bson.io.BasicOutputBuffer;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
@@ -58,39 +55,41 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.BooleanValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.DateTimeValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.FloatValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.IPv4AddressValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.IPv6AddressValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.ListValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.MacAddressValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.NullValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.OctetArrayValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.SignedValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.StringValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UndeclaredValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
+import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
-public class ParserBase implements Parser {
+public abstract class ParserBase implements Parser {
     private static final Logger LOG = LoggerFactory.getLogger(ParserBase.class);
+
+    private final RateLimitedLog SEQUENCE_ERRORS_LOGGER = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.ofSeconds(30))
+            .build();
 
     private static final int DEFAULT_NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 
     private static final long DEFAULT_CLOCK_SKEW_EVENT_RATE_SECONDS = TimeUnit.HOURS.toSeconds(1);
 
+    private static final long DEFAULT_ILLEGAL_FLOW_EVENT_RATE_SECONDS = TimeUnit.HOURS.toSeconds(1);
+
     public static final String CLOCK_SKEW_EVENT_UEI = "uei.opennms.org/internal/telemetry/clockSkewDetected";
+
+    public static final String ILLEGAL_FLOW_EVENT_UEI = "uei.opennms.org/internal/telemetry/illegalFlowDetected";
 
     private final ThreadLocal<Boolean> isParserThread = new ThreadLocal<>();
 
@@ -106,9 +105,23 @@ public class ParserBase implements Parser {
 
     private final DnsResolver dnsResolver;
 
+    private final Meter recordsReceived;
+
+    private final Meter recordsScheduled;
+
     private final Meter recordsDispatched;
 
+    private final Meter recordsCompleted;
+
+    private final Counter recordEnrichmentErrors;
+
+    private final Counter recordDispatchErrors;
+
+    private final Meter invalidFlows;
+
     private final Timer recordEnrichmentTimer;
+
+    private final Counter sequenceErrors;
 
     private final ThreadFactory threadFactory;
 
@@ -118,9 +131,15 @@ public class ParserBase implements Parser {
 
     private long clockSkewEventRate = 0;
 
+    private long illegalFlowEventRate = 0;
+
+    private int sequenceNumberPatience = 32;
+
     private boolean dnsLookupsEnabled = true;
 
-    private LoadingCache<InetAddress, Optional<Instant>> eventCache;
+    private LoadingCache<InetAddress, Optional<Instant>> clockSkewEventCache;
+
+    private LoadingCache<InetAddress, Optional<Instant>> illegalFlowEventCache;
 
     private ExecutorService executor;
 
@@ -152,13 +171,23 @@ public class ParserBase implements Parser {
             }
         };
 
+        recordsReceived = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsReceived"));
         recordsDispatched = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsDispatched"));
         recordEnrichmentTimer = metricRegistry.timer(MetricRegistry.name("parsers",  name, "recordEnrichment"));
+        recordEnrichmentErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "recordEnrichmentErrors"));
+        invalidFlows = metricRegistry.meter(MetricRegistry.name("parsers",  name, "invalidFlows"));
+        recordsScheduled = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsScheduled"));
+        recordsCompleted = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsCompleted"));
+        recordDispatchErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "recordDispatchErrors"));
+        sequenceErrors = metricRegistry.counter(MetricRegistry.name("parsers", name, "sequenceErrors"));
 
         // Call setters since these also perform additional handling
         setClockSkewEventRate(DEFAULT_CLOCK_SKEW_EVENT_RATE_SECONDS);
+        setIllegalFlowEventRate(DEFAULT_ILLEGAL_FLOW_EVENT_RATE_SECONDS);
         setThreads(DEFAULT_NUM_THREADS);
     }
+
+    protected abstract MessageBuilder getMessageBuilder();
 
     @Override
     public void start(ScheduledExecutorService executorService) {
@@ -166,7 +195,7 @@ public class ParserBase implements Parser {
                 // corePoolSize must be > 0 since we use the RejectedExecutionHandler to block when the queue is full
                 1, threads,
                 60L, TimeUnit.SECONDS,
-                new SynchronousQueue<>(true),
+                new SynchronousQueue<>(),
                 threadFactory,
                 (r, executor) -> {
                     // We enter this block when the queue is full and the caller is attempting to submit additional tasks
@@ -192,6 +221,11 @@ public class ParserBase implements Parser {
         return this.name;
     }
 
+    @Override
+    public String getDescription() {
+        return this.protocol.description;
+    }
+
     public void setMaxClockSkew(final long maxClockSkew) {
         this.maxClockSkew = maxClockSkew;
     }
@@ -207,12 +241,35 @@ public class ParserBase implements Parser {
     public void setClockSkewEventRate(final long clockSkewEventRate) {
         this.clockSkewEventRate = clockSkewEventRate;
 
-        this.eventCache = CacheBuilder.newBuilder().expireAfterWrite(this.clockSkewEventRate, TimeUnit.SECONDS).build(new CacheLoader<InetAddress, Optional<Instant>>() {
+        this.clockSkewEventCache = CacheBuilder.newBuilder().expireAfterWrite(this.clockSkewEventRate, TimeUnit.SECONDS).build(new CacheLoader<InetAddress, Optional<Instant>>() {
             @Override
             public Optional<Instant> load(InetAddress key) throws Exception {
                 return Optional.empty();
             }
         });
+    }
+
+    public void setIllegalFlowEventRate(final long illegalFlowEventRate) {
+        this.illegalFlowEventRate = illegalFlowEventRate;
+
+        this.illegalFlowEventCache = CacheBuilder.newBuilder().expireAfterWrite(this.illegalFlowEventRate, TimeUnit.SECONDS).build(new CacheLoader<InetAddress, Optional<Instant>>() {
+            @Override
+            public Optional<Instant> load(InetAddress key) throws Exception {
+                return Optional.empty();
+            }
+        });
+    }
+
+    public long getIllegalFlowEventRate() {
+        return illegalFlowEventRate;
+    }
+
+    public int getSequenceNumberPatience() {
+        return this.sequenceNumberPatience;
+    }
+
+    public void setSequenceNumberPatience(final int sequenceNumberPatience) {
+        this.sequenceNumberPatience = sequenceNumberPatience;
     }
 
     public boolean getDnsLookupsEnabled() {
@@ -234,19 +291,29 @@ public class ParserBase implements Parser {
         this.threads = threads;
     }
 
-    protected CompletableFuture<?> transmit(final RecordProvider packet, final InetSocketAddress remoteAddress) {
-        LOG.trace("Got packet: {}", packet);
+    protected CompletableFuture<?> transmit(final RecordProvider packet, final Session session, final InetSocketAddress remoteAddress) {
+        // Verify that flows sequences are in order
+        if (!session.verifySequenceNumber(packet.getObservationDomainId(), packet.getSequenceNumber())) {
+            SEQUENCE_ERRORS_LOGGER.warn("Error in flow sequence detected: from {}", session.getRemoteAddress());
+            this.sequenceErrors.inc();
+        }
 
+        // The packets are coming in hot - performance here is critical
+        //   LOG.trace("Got packet: {}", packet);
         // Perform the record enrichment and serialization in a thread pool allowing these to be parallelized
-        final CompletableFuture<CompletableFuture[]> futureOfFutures = CompletableFuture.supplyAsync(()-> {
+        final CompletableFuture<CompletableFuture[]> futureOfFutures = CompletableFuture.supplyAsync(() -> {
             return packet.getRecords().map(record -> {
-                final CompletableFuture<TelemetryMessage> future = new CompletableFuture<>();
+                this.recordsReceived.mark();
+
+                final CompletableFuture<Void> future = new CompletableFuture<>();
                 final Timer.Context timerContext = recordEnrichmentTimer.time();
                 // Trigger record enrichment (performing DNS reverse lookups for example)
                 final RecordEnricher recordEnricher = new RecordEnricher(dnsResolver, getDnsLookupsEnabled());
                 recordEnricher.enrich(record).whenComplete((enrichment, ex) -> {
                     timerContext.close();
                     if (ex != null) {
+                        this.recordEnrichmentErrors.inc();
+
                         // Enrichment failed
                         future.completeExceptionally(ex);
                         return;
@@ -259,18 +326,54 @@ public class ParserBase implements Parser {
                     // if we can't keep up
                     final Runnable dispatch = () -> {
                         // Let's serialize
-                        final ByteBuffer buffer = serializeRecords(this.protocol, record, enrichment);
+                        final FlowMessage.Builder flowMessage;
+                        try {
+                            flowMessage = this.getMessageBuilder().buildMessage(record, enrichment);
+                        } catch (final  Exception e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        // Check if the flow is valid (and maybe correct it)
+                        final List<String> corrections = this.correctFlow(flowMessage);
+                        if (!corrections.isEmpty()) {
+                            this.invalidFlows.mark();
+
+                            final Optional<Instant> instant = illegalFlowEventCache.getUnchecked(session.getRemoteAddress());
+
+                            if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getIllegalFlowEventRate()) {
+                                illegalFlowEventCache.put(session.getRemoteAddress(), Optional.of(Instant.now()));
+
+                                eventForwarder.sendNow(new EventBuilder()
+                                        .setUei(ILLEGAL_FLOW_EVENT_UEI)
+                                        .setTime(new Date())
+                                        .setSource(getName())
+                                        .setInterface(session.getRemoteAddress())
+                                        .setDistPoller(identity.getId())
+                                        .addParam("monitoringSystemId", identity.getId())
+                                        .addParam("monitoringSystemLocation", identity.getLocation())
+                                        .setParam("cause", Joiner.on('\n').join(corrections))
+                                        .setParam("protocol", protocol.name())
+                                        .setParam("illegalFlowEventRate", (int) getIllegalFlowEventRate())
+                                        .getEvent());
+
+                                for (final String correction : corrections) {
+                                    LOG.warn("Illegal flow detected from exporter {}: \n{}", session.getRemoteAddress().getAddress(), correction);
+                                }
+                            }
+                        }
 
                         // Build the message to dispatch
-                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer);
+                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, ByteBuffer.wrap(flowMessage.build().toByteArray()));
 
                         // Dispatch
-                        dispatcher.send(msg).whenComplete((b,exx) -> {
+                        dispatcher.send(msg).whenComplete((b, exx) -> {
                             if (exx != null) {
+                                this.recordDispatchErrors.inc();
                                 future.completeExceptionally(exx);
-                                return;
+                            } else {
+                                this.recordsCompleted.mark();
+                                future.complete(null);
                             }
-                            future.complete(b);
                         });
 
                         recordsDispatched.mark();
@@ -284,6 +387,8 @@ public class ParserBase implements Parser {
                         // We're not in one of the parsers threads, execute the dispatch in the pool
                         executor.execute(dispatch);
                     }
+
+                    this.recordsScheduled.mark();
                 });
                 return future;
             }).toArray(CompletableFuture[]::new);
@@ -311,46 +416,14 @@ public class ParserBase implements Parser {
         return future;
     }
 
-    @VisibleForTesting
-    public static ByteBuffer serialize(final Protocol protocol, final Iterable<Value<?>> record) {
-        return serialize(protocol, record, new RecordEnrichment() {
-            @Override
-            public Optional<String> getHostnameFor(InetAddress srcAddress) {
-                return Optional.empty();
-            }
-        });
-    }
-
-    private static ByteBuffer serialize(final Protocol protocol, final Iterable<Value<?>> record, final RecordEnrichment enrichment) {
-        // Build BSON document from flow
-        final BasicOutputBuffer output = new BasicOutputBuffer();
-        try (final BsonBinaryWriter writer = new BsonBinaryWriter(output)) {
-            writer.writeStartDocument();
-            writer.writeInt32("@version", protocol.version);
-
-            final FlowBuilderVisitor visitor = new FlowBuilderVisitor(writer, enrichment);
-            for (final Value<?> value : record) {
-                value.visit(visitor);
-            }
-
-            writer.writeEndDocument();
-        }
-
-        return output.getByteBuffers().get(0).asNIO();
-    }
-
-    private ByteBuffer serializeRecords(final Protocol protocol, final Iterable<Value<?>> record, final RecordEnrichment enrichment) {
-        return serialize(protocol, record, enrichment);
-    }
-
     protected void detectClockSkew(final long packetTimestampMs, final InetAddress remoteAddress) {
         if (getMaxClockSkew() > 0) {
             long deltaMs = Math.abs(packetTimestampMs - System.currentTimeMillis());
             if (deltaMs > getMaxClockSkew() * 1000L) {
-                final Optional<Instant> instant = eventCache.getUnchecked(remoteAddress);
+                final Optional<Instant> instant = clockSkewEventCache.getUnchecked(remoteAddress);
 
                 if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getClockSkewEventRate()) {
-                    eventCache.put(remoteAddress, Optional.of(Instant.now()));
+                    clockSkewEventCache.put(remoteAddress, Optional.of(Instant.now()));
 
                     eventForwarder.sendNow(new EventBuilder()
                             .setUei(CLOCK_SKEW_EVENT_UEI)
@@ -370,108 +443,31 @@ public class ParserBase implements Parser {
         }
     }
 
-    private static class FlowBuilderVisitor implements Value.Visitor {
-        // TODO: Really use ordinal for enums?
+    private List<String> correctFlow(final FlowMessage.Builder flow) {
+        final List<String> corrections = Lists.newArrayList();
 
-        private final BsonWriter writer;
-        private final RecordEnrichment enrichment;
+        if (flow.getFirstSwitched().getValue() > flow.getLastSwitched().getValue()) {
+            corrections.add(String.format("Malformed flow: lastSwitched must be greater than firstSwitched: srcAddress=%s, dstAddress=%s, firstSwitched=%d, lastSwitched=%d, duration=%d",
+                                  flow.getSrcAddress(),
+                                  flow.getDstAddress(),
+                                  flow.getFirstSwitched().getValue(),
+                                  flow.getLastSwitched().getValue(),
+                                  flow.getLastSwitched().getValue() - flow.getFirstSwitched().getValue()));
 
-        public FlowBuilderVisitor(final BsonWriter writer, final RecordEnrichment enrichment) {
-            this.writer = writer;
-            this.enrichment = enrichment;
+            // Re-calculate a (somewhat) valid timout from the flow timestamps
+            final long timeout = (flow.hasDeltaSwitched() && flow.getDeltaSwitched().getValue() != flow.getFirstSwitched().getValue())
+                    ? (flow.getLastSwitched().getValue() - flow.getDeltaSwitched().getValue())
+                    : 0L;
+
+            flow.getLastSwitchedBuilder().setValue(flow.getTimestamp());
+            flow.getFirstSwitchedBuilder().setValue(flow.getTimestamp() - timeout);
+            flow.getDeltaSwitchedBuilder().setValue(flow.getTimestamp() - timeout);
         }
 
-        @Override
-        public void accept(final NullValue value) {
-            this.writer.writeNull(value.getName());
-        }
+        return corrections;
+    }
 
-        @Override
-        public void accept(final BooleanValue value) {
-            this.writer.writeBoolean(value.getName(), value.getValue());
-        }
-
-        @Override
-        public void accept(final DateTimeValue value) {
-            this.writer.writeStartDocument(value.getName());
-            this.writer.writeInt64("epoch", value.getValue().getEpochSecond());
-            if (value.getValue().getNano() != 0) {
-                this.writer.writeInt64("nanos", value.getValue().getNano());
-            }
-            this.writer.writeEndDocument();
-        }
-
-        @Override
-        public void accept(final FloatValue value) {
-            this.writer.writeDouble(value.getName(), value.getValue());
-        }
-
-        @Override
-        public void accept(final IPv4AddressValue value) {
-            this.writer.writeStartDocument(value.getName());
-            this.writer.writeString("address", value.getValue().getHostAddress());
-            enrichment.getHostnameFor(value.getValue()).ifPresent((hostname) -> this.writer.writeString("hostname", hostname));
-            this.writer.writeEndDocument();
-        }
-
-        @Override
-        public void accept(final IPv6AddressValue value) {
-            this.writer.writeStartDocument(value.getName());
-            this.writer.writeString("address", value.getValue().getHostAddress());
-            enrichment.getHostnameFor(value.getValue()).ifPresent((hostname) -> this.writer.writeString("hostname", hostname));
-            this.writer.writeEndDocument();
-        }
-
-        @Override
-        public void accept(final MacAddressValue value) {
-            this.writer.writeStartDocument(value.getName());
-            value.getSemantics().ifPresent(semantics -> {
-                this.writer.writeInt32("s", semantics.ordinal());
-            });
-            this.writer.writeBinaryData("v", new BsonBinary(value.getValue()));
-            this.writer.writeEndDocument();
-        }
-
-        @Override
-        public void accept(final OctetArrayValue value) {
-            this.writer.writeBinaryData(value.getName(), new BsonBinary(value.getValue()));
-        }
-
-        @Override
-        public void accept(final SignedValue value) {
-            this.writer.writeInt64(value.getName(), value.getValue());
-        }
-
-        @Override
-        public void accept(final StringValue value) {
-            this.writer.writeString(value.getName(), value.getValue());
-        }
-
-        @Override
-        public void accept(final ListValue value) {
-            this.writer.writeStartDocument(value.getName());
-            this.writer.writeInt32("semantic", value.getSemantic().ordinal());
-            this.writer.writeStartArray("values");
-            for (int i = 0; i < value.getValue().size(); i++) {
-                this.writer.writeStartDocument();
-                for (int j = 0; j < value.getValue().get(i).size(); j++) {
-                    value.getValue().get(i).get(j).visit(this);
-                }
-                this.writer.writeEndDocument();
-            }
-            this.writer.writeEndArray();
-            this.writer.writeEndDocument();
-        }
-
-        @Override
-        public void accept(final UnsignedValue value) {
-            // TODO: Mark this as unsigned?
-            this.writer.writeInt64(value.getName(), value.getValue().longValue());
-        }
-
-        @Override
-        public void accept(final UndeclaredValue value) {
-            this.writer.writeBinaryData(value.getName(), new BsonBinary(value.getValue()));
-        }
+    protected SequenceNumberTracker sequenceNumberTracker() {
+        return new SequenceNumberTracker(this.sequenceNumberPatience);
     }
 }

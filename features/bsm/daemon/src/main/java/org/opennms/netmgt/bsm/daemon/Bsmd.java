@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,6 +58,7 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -207,7 +208,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     }
 
     @EventHandler(ueis = {EventConstants.SERVICE_DELETED_EVENT_UEI, EventConstants.INTERFACE_DELETED_EVENT_UEI, EventConstants.NODE_DELETED_EVENT_UEI, EventConstants.APPLICATION_DELETED_EVENT_UEI})
-    public void serviceInterfaceOrNodeDeleted(Event e) {
+    public void serviceInterfaceOrNodeDeleted(IEvent e) {
         final Set<String> reductionKeys = m_stateMachine.getGraph().getReductionKeys();
 
         if (EventConstants.NODE_DELETED_EVENT_UEI.equals(e.getUei()) && reductionKeys.contains(String.format("uei.opennms.org/nodes/nodeDown::%d", e.getNodeid()))
@@ -362,7 +363,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     }
 
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadEvent(Event e) {
+    public void handleReloadEvent(IEvent e) {
         DaemonTools.handleReloadEvent(e, Bsmd.NAME, (event) -> handleConfigurationChanged());
     }
 

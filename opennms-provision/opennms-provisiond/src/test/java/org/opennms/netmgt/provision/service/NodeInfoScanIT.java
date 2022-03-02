@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,8 @@ package org.opennms.netmgt.provision.service;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -67,6 +69,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -113,10 +119,9 @@ public class NodeInfoScanIT {
             snmpPeerFactory = new ProxySnmpAgentConfigFactory(configStream);
             // This is to not override snmp-config from etc
             SnmpPeerFactory.setFile(new File(url.getFile()));
-            provisionService = Mockito.mock(ProvisionService.class);
-            when(provisionService.getLocationAwareSnmpClient()).thenReturn(locationAwareSnmpClient);
+            initializeProvisionService();
             nodeInfoScan = new NodeInfoScan(node, InetAddressUtils.getInetAddress("192.0.1.206"),
-                    "fs", monitoringLocation, scanProgress, snmpPeerFactory, provisionService, 1);
+                    "fs", monitoringLocation, scanProgress, snmpPeerFactory, provisionService, 1, null);
             TaskCoordinator taskCoordinator = new DefaultTaskCoordinator("TaskTest");
             BatchTask batchTask = new BatchTask(taskCoordinator, null);
             nodeInfoScan.run(batchTask);
@@ -134,14 +139,14 @@ public class NodeInfoScanIT {
             // Make default scan fail by setting wrong read community.
             snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(configStream);
             SnmpPeerFactory.setFile(new File(url.getFile()));
-            provisionService = Mockito.mock(ProvisionService.class);
+            initializeProvisionService();
             FilterDao filterDao = Mockito.mock(FilterDao.class);
             when(filterDao.isValid(Mockito.anyString(), Mockito.contains("IPLIKE"))).thenReturn(true);
             SnmpProfileMapper profileMapper = new SnmpProfileMapperImpl(filterDao, snmpPeerFactory, locationAwareSnmpClient);
             when(provisionService.getSnmpProfileMapper()).thenReturn(profileMapper);
-            when(provisionService.getLocationAwareSnmpClient()).thenReturn(locationAwareSnmpClient);
+
             nodeInfoScan = new NodeInfoScan(node, InetAddressUtils.getInetAddress("192.0.1.206"),
-                    "fs", monitoringLocation, scanProgress, snmpPeerFactory, provisionService, 1);
+                    "fs", monitoringLocation, scanProgress, snmpPeerFactory, provisionService, 1, null);
             TaskCoordinator taskCoordinator = new DefaultTaskCoordinator("TaskTest");
             BatchTask batchTask = new BatchTask(taskCoordinator, null);
             nodeInfoScan.run(batchTask);
@@ -159,14 +164,13 @@ public class NodeInfoScanIT {
             // Make default scan fail by setting wrong read community.
             snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension2(configStream);
             SnmpPeerFactory.setFile(new File(url.getFile()));
-            provisionService = Mockito.mock(ProvisionService.class);
+            initializeProvisionService();
             FilterDao filterDao = Mockito.mock(FilterDao.class);
             when(filterDao.isValid(Mockito.anyString(), Mockito.contains("IPLIKE"))).thenReturn(true);
             SnmpProfileMapper profileMapper = new SnmpProfileMapperImpl(filterDao, snmpPeerFactory, locationAwareSnmpClient);
             when(provisionService.getSnmpProfileMapper()).thenReturn(profileMapper);
-            when(provisionService.getLocationAwareSnmpClient()).thenReturn(locationAwareSnmpClient);
             nodeInfoScan = new NodeInfoScan(node, InetAddressUtils.getInetAddress("192.0.1.206"),
-                    "fs", monitoringLocation, scanProgress, snmpPeerFactory, provisionService, 1);
+                    "fs", monitoringLocation, scanProgress, snmpPeerFactory, provisionService, 1, null);
             TaskCoordinator taskCoordinator = new DefaultTaskCoordinator("TaskTest");
             BatchTask batchTask = new BatchTask(taskCoordinator, null);
             nodeInfoScan.run(batchTask);
@@ -175,6 +179,14 @@ public class NodeInfoScanIT {
         } catch (IOException e) {
             fail();
         }
+    }
+
+    private void initializeProvisionService() {
+        provisionService = Mockito.mock(ProvisionService.class);
+        Tracer tracer = GlobalTracer.get();
+        Span mockSpan = tracer.buildSpan("Mock").start();
+        when(provisionService.getLocationAwareSnmpClient()).thenReturn(locationAwareSnmpClient);
+        when(provisionService.buildAndStartSpan(anyString(), anyObject())).thenReturn(mockSpan);
     }
 
 

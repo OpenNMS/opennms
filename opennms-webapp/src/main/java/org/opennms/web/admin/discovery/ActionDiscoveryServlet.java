@@ -31,10 +31,12 @@ package org.opennms.web.admin.discovery;
 import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addExcludeRangeAction;
 import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addIncludeRangeAction;
 import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addIncludeUrlAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addExcludeUrlAction;
 import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addSpecificAction;
 import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeExcludeRangeAction;
 import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeIncludeRangeAction;
 import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeIncludeUrlAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeExcludeUrlAction;
 import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeSpecificAction;
 import static org.opennms.web.admin.discovery.DiscoveryServletConstants.saveAndRestartAction;
 
@@ -56,6 +58,7 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
+import org.opennms.netmgt.config.discovery.ExcludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -241,6 +244,39 @@ public class ActionDiscoveryServlet extends HttpServlet {
             boolean result = config.removeIncludeUrl(iu);
             LOG.debug("Removing Include URL result = {}", result);
         } 
+
+        //add an 'Exclude URL'
+        if(action.equals(addExcludeUrlAction)){
+            LOG.debug("Adding Exclude URL");
+            String url = request.getParameter("euurl");
+            String foreignSource = request.getParameter("euforeignsource");
+            String location = request.getParameter("eulocation");
+
+            ExcludeUrl eu = new ExcludeUrl();
+            eu.setUrl(url);
+
+            if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource().orElse(null))){
+                eu.setForeignSource(foreignSource);
+            }
+
+            if (!LocationUtils.doesLocationsMatch(location,
+                    config.getLocation().orElse(LocationUtils.DEFAULT_LOCATION_NAME))) {
+                eu.setLocation(location);
+            }
+
+            config.addExcludeUrl(eu);
+        }
+
+        //remove 'Exclude URL' from configuration
+        if(action.equals(removeExcludeUrlAction)){
+            LOG.debug("Removing Exclude URL");
+            String specificIndex = request.getParameter("index");
+            int index = WebSecurityUtils.safeParseInt(specificIndex);
+            final int index1 = index;
+            ExcludeUrl eu = config.getExcludeUrls().get(index1);
+            boolean result = config.removeExcludeUrl(eu);
+            LOG.debug("Removing Exclude URL result = {}", result);
+        }
 
         //add an 'Exclude Range'
         if(action.equals(addExcludeRangeAction)){

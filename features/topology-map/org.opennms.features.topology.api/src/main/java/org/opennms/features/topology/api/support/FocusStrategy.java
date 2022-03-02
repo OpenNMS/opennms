@@ -33,9 +33,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.BackendGraph;
 
 import com.google.common.collect.Lists;
 
@@ -49,19 +50,19 @@ public enum FocusStrategy {
     /**
      * Empty focus
      */
-    EMPTY((FocusStrategyImplementation) (topologyProvider, arguments) -> Lists.newArrayList()),
+    EMPTY((FocusStrategyImplementation) (graph, arguments) -> Lists.newArrayList()),
 
     /**
      * Adds all Vertices to focus.
      */
-    ALL((FocusStrategyImplementation) (topologyProvider, arguments) -> topologyProvider.getVertices().stream().map(VertexHopGraphProvider.DefaultVertexHopCriteria::new).collect(Collectors.toList())),
+    ALL((FocusStrategyImplementation) (graph, arguments) -> graph.getVertices().stream().map(DefaultVertexHopCriteria::new).collect(Collectors.toList())),
 
     /**
      * First element is added to focus.
      */
     FIRST((FocusStrategyImplementation) (topologyProvider, arguments) -> {
         List<VertexHopCriteria> collected = topologyProvider.getVertices().stream()
-                .map(VertexHopGraphProvider.DefaultVertexHopCriteria::new)
+                .map(DefaultVertexHopCriteria::new)
                 .collect(Collectors.toList());
         if (!collected.isEmpty()) {
             return collected.subList(0, 1);
@@ -72,14 +73,14 @@ public enum FocusStrategy {
     /**
      * The provided list of IDs is added to focus.
      */
-    SPECIFIC((FocusStrategyImplementation) (topologyProvider, arguments) -> {
+    SPECIFIC((FocusStrategyImplementation) (graph, arguments) -> {
         Objects.requireNonNull(arguments);
 
         List<VertexHopCriteria> collected = Arrays.stream(arguments)
-                .map(eachArgument -> new DefaultVertexRef(topologyProvider.getNamespace(), eachArgument))
-                .map(eachVertexRef -> topologyProvider.getVertex(eachVertexRef))
+                .map(eachArgument -> new DefaultVertexRef(graph.getNamespace(), eachArgument))
+                .map(eachVertexRef -> graph.getVertex(eachVertexRef))
                 .filter(Objects::nonNull)
-                .map(VertexHopGraphProvider.DefaultVertexHopCriteria::new)
+                .map(DefaultVertexHopCriteria::new)
                 .collect(Collectors.toList());
         return collected;
     });
@@ -90,8 +91,8 @@ public enum FocusStrategy {
         this.implementation = implementation;
     }
 
-    public List<VertexHopCriteria> getFocusCriteria(GraphProvider topologyProvider, String... arguments) {
-        return implementation.determine(topologyProvider, arguments);
+    public List<VertexHopCriteria> getFocusCriteria(BackendGraph graph, String... arguments) {
+        return implementation.determine(graph, arguments);
     }
 
     public static FocusStrategy getStrategy(String input, FocusStrategy defaultValue) {

@@ -1,0 +1,119 @@
+
+= MemcachedMonitor
+
+Monitors link:http://memcached.org[Memcached], a distributed memory object caching system.
+To monitor the service availability, the monitor tests if it can request the Memcached statistics.
+The statistics are processed and stored in RRD files.
+The following metrics are collected:
+
+.Collected metrics using the MemcachedMonitor
+[options="header"]
+[cols="1,3"]
+|===
+| Metric
+| Description
+
+| uptime
+| Seconds the Memcached server has been running since last restart.
+
+| rusageuser
+| User time seconds for the server process.
+
+| rusagesystem
+| System time seconds for the server process.
+
+| curritems
+| Number of items in this server's cache.
+
+| totalitems
+| Number of items stored on this server.
+
+| bytes
+| Number of bytes currently used for caching items.
+
+| limitmaxbytes
+| Maximum configured cache size.
+
+| currconnections
+| Number of open connections to this Memcached.
+
+| totalconnections
+| Number of successful connect attempts to this server since start.
+
+| connectionstructure
+| Number of internal connection handles currently held by the server.
+
+| cmdget
+| Number of GET commands received since server startup.
+
+| cmdset
+| Number of SET commands received since server startup.
+
+| gethits
+| Number of successful GET commands (cache hits) since startup.
+
+| getmisses
+| Number of failed GET requests, because nothing was cached.
+
+| evictions
+| Number of objects removed from the cache to free up memory.
+
+| bytesread
+| Number of bytes received from the network.
+
+| byteswritten
+| Number of bytes sent to the network.
+
+| threads
+| Number of threads this server used.
+|===
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.MemcachedMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the MemcachedMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| retry
+| Number of attempts to establish the Memcached connection.
+| 0
+
+| port
+| TCP port connecting to Memcached.
+| 11211
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+The following example shows a configuration in `poller-configuration.xml`.
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[source, xml]
+----
+<service name="Memcached" interval="300000" user-defined="false" status="on">
+  <parameter key="port" value="11211" />
+  <parameter key="retry" value="2" />
+  <parameter key="timeout" value="3000" />
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="ds-name" value="memcached" />
+  <parameter key="rrd-base-name" value="memcached" />
+</service>
+
+<monitor service="Memcached" class-name="org.opennms.netmgt.poller.monitors.MemcachedMonitor" />
+----

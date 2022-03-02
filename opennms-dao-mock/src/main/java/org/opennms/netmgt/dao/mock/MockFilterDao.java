@@ -68,12 +68,18 @@ public class MockFilterDao implements FilterDao, InitializingBean {
     }
 
     @Override
+    public Map<Integer, Map<InetAddress, Set<String>>> getNodeIPAddressServiceMap(String rule) throws FilterParseException {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
     public void flushActiveIpAddressListCache() {}
 
     @Override
     public List<InetAddress> getActiveIPAddressList(final String rule) throws FilterParseException {
         LOG.debug("rule = {}", rule);
         final List<InetAddress> addrs = new ArrayList<>();
+
         if (rule.equals("IPADDR != '0.0.0.0'")) {
             Assert.notNull(m_ipInterfaceDao);
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);
@@ -86,6 +92,21 @@ public class MockFilterDao implements FilterDao, InitializingBean {
             }
             return addrs;
         }
+
+        if (rule.equals("foreignSource == 'Minions' AND IPADDR != '0.0.0.0'")) {
+            Assert.notNull(m_ipInterfaceDao);
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);
+            builder.ne("ipAddress", "0.0.0.0");
+            builder.ne("isManaged", "D");
+            builder.eq("node.location.locationName", "Minions");
+            builder.distinct();
+            final Criteria criteria = builder.toCriteria();
+            for (final OnmsIpInterface iface : m_ipInterfaceDao.findMatching(criteria)) {
+                addrs.add(iface.getIpAddress());
+            }
+            return addrs;
+        }
+
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
@@ -106,8 +127,10 @@ public class MockFilterDao implements FilterDao, InitializingBean {
 
     @Override
     public void validateRule(final String rule) throws FilterParseException {
+        if ("IPADDR != '0.0.0.0'".equals(rule) || "foreignSource == 'Minions' AND IPADDR != '0.0.0.0'".equals(rule))
+            return ;
+
         throw new UnsupportedOperationException("Not yet implemented!");
-        
     }
 
     public IpInterfaceDao getIpInterfaceDao() {

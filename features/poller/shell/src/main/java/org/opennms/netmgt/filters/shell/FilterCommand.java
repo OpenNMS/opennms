@@ -40,12 +40,11 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsNode;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionOperations;
 
-@Command(scope = "filters", name = "filter", description = "Enumerates nodes/interfaces that match a give filter")
+@Command(scope = "opennms", name = "filter", description = "Enumerates nodes/interfaces that match a given filter")
 @Service
 public class FilterCommand implements Action {
 
@@ -56,14 +55,14 @@ public class FilterCommand implements Action {
     private NodeDao nodeDao;
 
     @Reference
-    private TransactionOperations transactionOperations;
+    private SessionUtils sessionUtils;
 
     @Argument(description = "A filter Rule", required = true, multiValued = false)
     private String filterRule;
 
     @Override
     public Object execute() throws Exception {
-        transactionOperations.execute((TransactionCallback<Void>) status -> {
+        sessionUtils.withReadOnlyTransaction(() -> {
             boolean matching = false;
             SortedMap<Integer, String> nodeMap = null;
             List<InetAddress> matchingInetAddressList = null;

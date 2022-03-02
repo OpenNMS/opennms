@@ -13,19 +13,6 @@
 
   <context:annotation-config />
 
-  <bean id="kafkaSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
-  <onmsgi:service ref="kafkaSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
-    <onmsgi:service-properties>
-      <entry>
-        <key><value>name</value></key>
-        <value>Kafka Sink</value>
-      </entry>
-      <entry>
-        <key><value>description</value></key>
-        <value>Metrics related to Sink messages between OpenNMS and Minion</value>
-      </entry>
-    </onmsgi:service-properties>
-  </onmsgi:service>
 
   <bean id="kafkaMessageConsumerManager" class="org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager"
         destroy-method="shutdown">
@@ -33,6 +20,27 @@
   </bean>
   <onmsgi:service ref="kafkaMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
 
+
+  <bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider" init-method="start" destroy-method="stop" >
+    <property name="metricRegistry" ref="kafkaLagMetricRegistry"/>
+  </bean>
+
+  <!-- Sink Metrics -->
+  <bean id="kafkaSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+  <onmsgi:service ref="kafkaSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+    <onmsgi:service-properties>
+      <entry>
+        <key><value>name</value></key>
+        <value>Kafka Sink Consumer</value>
+      </entry>
+      <entry>
+        <key><value>description</value></key>
+        <value>Sink Consumer Metrics</value>
+      </entry>
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <!-- Kafka Lag Metrics -->
   <bean id="kafkaLagMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
   <onmsgi:service ref="kafkaLagMetricRegistry" interface="com.codahale.metrics.MetricSet" >
     <onmsgi:service-properties>
@@ -46,9 +54,5 @@
       </entry>
     </onmsgi:service-properties>
   </onmsgi:service>
-
-  <bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider" init-method="start" destroy-method="stop" >
-    <property name="metricRegistry" ref="kafkaLagMetricRegistry"/>
-  </bean>
 
 </beans>

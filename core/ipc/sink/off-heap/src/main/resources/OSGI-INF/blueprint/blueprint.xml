@@ -11,13 +11,25 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-    <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
+    <!-- Configuration properties -->
+    <cm:property-placeholder id="offHeapConfiguration" persistent-id="org.opennms.core.ipc.sink.offheap"
+                             update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="entriesAllowedOnHeap" value="10000" /> <!-- Must be a multiple of the batch size -->
+            <cm:property name="batchSize" value="100" /> <!-- How many entries to batch in memory before writing to
+                                                         disk -->
+            <cm:property name="offHeapSize" value="1GB" /> <!-- Must be a power of 2 -->
+            <cm:property name="offHeapFilePath" value="" /> <!-- Empty path defaults to value specified by system
+                                                            property karaf.data -->
+        </cm:default-properties>
+    </cm:property-placeholder>
     
-    <bean id="offHeapQueue" class="org.opennms.core.ipc.sink.offheap.H2OffHeapStore" 
-      init-method="init" destroy-method="destroy">
-          <argument ref="configAdmin"/>
+    <bean id="offHeapQueueFactory" class="org.opennms.core.ipc.sink.offheap.QueueFileOffHeapDispatchQueueFactory">
+        <argument value="${entriesAllowedOnHeap}"/>
+        <argument value="${batchSize}"/>
+        <argument value="${offHeapSize}"/>
+        <argument value="${offHeapFilePath}"/>
     </bean>
-
-    <service ref="offHeapQueue" interface="org.opennms.core.ipc.sink.api.OffHeapQueue" />
+    <service ref="offHeapQueueFactory" interface="org.opennms.core.ipc.sink.api.DispatchQueueFactory" />
 
 </blueprint>

@@ -29,6 +29,7 @@
 package org.opennms.web.rest.support;
 
 import static org.opennms.web.rest.support.CriteriaValueConverters.BOOLEAN_CONVERTER;
+import static org.opennms.web.rest.support.CriteriaValueConverters.CHARACTER_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.DATE_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.FLOAT_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.INET_ADDRESS_CONVERTER;
@@ -296,6 +297,7 @@ public abstract class CriteriaBehaviors {
         IP_INTERFACE_BEHAVIORS.put("ipLastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
         IP_INTERFACE_BEHAVIORS.put("ipAddress", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
         IP_INTERFACE_BEHAVIORS.put("netMask", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
+        IP_INTERFACE_BEHAVIORS.put("snmpPrimary", new CriteriaBehavior<Character>(CHARACTER_CONVERTER));
 
         MONITORED_SERVICE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         MONITORED_SERVICE_BEHAVIORS.put("lastFail", new CriteriaBehavior<Date>(DATE_CONVERTER));
@@ -309,7 +311,8 @@ public abstract class CriteriaBehaviors {
         NODE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         NODE_BEHAVIORS.put("createTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
         NODE_BEHAVIORS.put("lastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
-        NODE_BEHAVIORS.put("hasFlows", new CriteriaBehavior<Boolean>(BOOLEAN_CONVERTER));
+        NODE_BEHAVIORS.put("lastEgressFlow", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        NODE_BEHAVIORS.put("lastIngressFlow", new CriteriaBehavior<Date>(DATE_CONVERTER));
 
         // Add aliases with join conditions when joining in the many-to-many node-to-category relationship
         CriteriaBehavior<Integer> categoryId = new CriteriaBehavior<Integer>(Aliases.category.prop("id"), INT_CONVERTER, (b,v,c,w) -> {
@@ -396,6 +399,8 @@ public abstract class CriteriaBehaviors {
         SNMP_INTERFACE_BEHAVIORS.put("ifSpeed", new CriteriaBehavior<Long>(LONG_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("ifType", new CriteriaBehavior<Integer>(INT_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("lastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("lastEgressFlow", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("lastIngressFlow", new CriteriaBehavior<Date>(DATE_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("lastSnmpPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
     }
 

@@ -1,0 +1,17 @@
+
+= Map
+
+This dashlet displays the link:https://opennms.discourse.group/t/geographical-maps/2212[geographical map] in the xref:admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
+
+.Map dashlet configuration options
+[options="header,autowidth", cols="1,2"]
+|===
+|Field
+|Description
+
+| Boost support
+| not available
+
+| search
+| Predefined link:https://opennms.discourse.group/t/geographical-maps/2212#searching-3[search] for a subset of nodes shown in the geographical map in this dashlet.
+|===

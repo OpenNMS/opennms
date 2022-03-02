@@ -34,7 +34,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
 
-@Command(scope = "opennms-threshold-states", name = "clear", description = "Clears a specific threshold state")
+@Command(scope = "opennms", name = "threshold-clear", description = "Clears a specific threshold state")
 @Service
 public class Clear extends AbstractKeyOrIndexCommand {
     @Reference

@@ -45,10 +45,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
@@ -65,7 +64,6 @@ import com.vmware.vim25.mo.HostSystem;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-@Distributable(DistributionContext.DAEMON)
 public class VmwareCimMonitor extends AbstractVmwareMonitor {
 
     /**
@@ -113,20 +111,75 @@ public class VmwareCimMonitor extends AbstractVmwareMonitor {
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         final boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
-        final String vmwareManagementServer = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_KEY, null);
-        final String vmwareManagedObjectId = getKeyedString(parameters, VMWARE_MANAGED_OBJECT_ID_KEY, null);
-        final String vmwareMangementServerUsername = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
-        final String vmwareMangementServerPassword = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
-
-        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+        final String vmwareManagementServer = getKeyedString(parameters, VmwareImporter.METADATA_MANAGEMENT_SERVER, null);
+        final String vmwareManagedObjectId = getKeyedString(parameters, VmwareImporter.METADATA_MANAGED_OBJECT_ID, null);
+        final String vmwareMangementServerUsername = getKeyedString(parameters, VmwareImporter.VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
+        final String vmwareMangementServerPassword = getKeyedString(parameters, VmwareImporter.VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
+        final TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         PollStatus serviceStatus = PollStatus.unknown();
 
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
-
-            final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer, vmwareMangementServerUsername, vmwareMangementServerPassword);
-            try {
+            try (final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer, vmwareMangementServerUsername, vmwareMangementServerPassword)) {
                 vmwareViJavaAccess.connect(tracker.getConnectionTimeout());
+                final HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
+                String powerState = null;
+                if (hostSystem == null) {
+                    return PollStatus.unknown("hostSystem=null");
+                } else {
+                    final HostRuntimeInfo hostRuntimeInfo = hostSystem.getRuntime();
+                    if (hostRuntimeInfo == null) {
+                        return PollStatus.unknown("hostRuntimeInfo=null");
+                    } else {
+                        final HostSystemPowerState hostSystemPowerState = hostRuntimeInfo.getPowerState();
+                        if (hostSystemPowerState == null) {
+                            return PollStatus.unknown("hostSystemPowerState=null");
+                        } else {
+                            powerState = hostSystemPowerState.toString();
+                        }
+                    }
+                }
+                if ("poweredOn".equals(powerState)) {
+                    List<CIMObject> cimObjects = null;
+                    try {
+                        cimObjects = vmwareViJavaAccess.queryCimObjects(hostSystem, "CIM_NumericSensor", svc.getIpAddr());
+                    } catch (Exception e) {
+                        logger.warn("Error retrieving CIM values from host system '{}'", vmwareManagedObjectId, e.getMessage());
+                        return PollStatus.unavailable("Error retrieving cim values from host system '" + vmwareManagedObjectId + "'");
+                    }
+                    boolean success = true;
+                    final StringBuilder reason = new StringBuilder("VMware CIM query returned: ");
+                    for (final CIMObject cimObject : cimObjects) {
+                        final String healthState = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, "HealthState");
+                        final String cimObjectName = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, "Name");
+                        if (healthState != null) {
+                            final int healthStateInt = Integer.valueOf(healthState).intValue();
+                            if (healthStateInt != 5) {
+                                if (!success) {
+                                    reason.append(", ");
+                                }
+                                success = false;
+                                reason.append(cimObjectName + " ");
+                                if (m_healthStates.containsKey(healthStateInt)) {
+                                    reason.append("(" + m_healthStates.get(healthStateInt) + ")");
+                                } else {
+                                    reason.append("(" + healthStateInt + ")");
+                                }
+                            }
+                        }
+                    }
+                    if (success) {
+                        serviceStatus = PollStatus.available();
+                    } else {
+                        serviceStatus = PollStatus.unavailable(reason.toString());
+                    }
+                } else {
+                    if (ignoreStandBy && "standBy".equals(powerState)) {
+                        serviceStatus = PollStatus.up();
+                    } else {
+                        serviceStatus = PollStatus.unresponsive("Host system's power state is '" + powerState + "'");
+                    }
+                }
             } catch (MalformedURLException e) {
                 logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
                 return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
@@ -134,85 +187,7 @@ public class VmwareCimMonitor extends AbstractVmwareMonitor {
                 logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
                 return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
             }
-
-            HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
-
-            String powerState = null;
-
-            if (hostSystem == null) {
-                return PollStatus.unknown("hostSystem=null");
-            } else {
-                HostRuntimeInfo hostRuntimeInfo = hostSystem.getRuntime();
-
-                if (hostRuntimeInfo == null) {
-                    return PollStatus.unknown("hostRuntimeInfo=null");
-                } else {
-                    HostSystemPowerState hostSystemPowerState = hostRuntimeInfo.getPowerState();
-                    if (hostSystemPowerState == null) {
-                        return PollStatus.unknown("hostSystemPowerState=null");
-                    } else {
-                        powerState = hostSystemPowerState.toString();
-                    }
-                }
-            }
-
-            if ("poweredOn".equals(powerState)) {
-                List<CIMObject> cimObjects = null;
-                try {
-                    cimObjects = vmwareViJavaAccess.queryCimObjects(hostSystem, "CIM_NumericSensor", svc.getIpAddr());
-                } catch (Exception e) {
-                    logger.warn("Error retrieving CIM values from host system '{}'", vmwareManagedObjectId, e.getMessage());
-
-                    vmwareViJavaAccess.disconnect();
-
-                    return PollStatus.unavailable("Error retrieving cim values from host system '" + vmwareManagedObjectId + "'");
-                }
-
-                boolean success = true;
-                final StringBuilder reason = new StringBuilder("VMware CIM query returned: ");
-
-                for (CIMObject cimObject : cimObjects) {
-                    String healthState = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, "HealthState");
-                    String cimObjectName = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, "Name");
-
-                    if (healthState != null) {
-                        int healthStateInt = Integer.valueOf(healthState).intValue();
-
-                        if (healthStateInt != 5) {
-
-                            if (!success) {
-                                reason.append(", ");
-                            }
-
-                            success = false;
-                            reason.append(cimObjectName + " ");
-
-                            if (m_healthStates.containsKey(healthStateInt)) {
-                                reason.append("(" + m_healthStates.get(healthStateInt) + ")");
-                            } else {
-                                reason.append("(" + healthStateInt + ")");
-                            }
-                        }
-                    }
-
-                }
-                if (success) {
-                    serviceStatus = PollStatus.available();
-                } else {
-                    serviceStatus = PollStatus.unavailable(reason.toString());
-                }
-            } else {
-                if (ignoreStandBy && "standBy".equals(powerState)) {
-                    serviceStatus = PollStatus.up();
-                } else {
-                    serviceStatus = PollStatus.unresponsive("Host system's power state is '" + powerState + "'");
-                }
-            }
-
-            vmwareViJavaAccess.disconnect();
         }
-
-
         return serviceStatus;
     }
 }

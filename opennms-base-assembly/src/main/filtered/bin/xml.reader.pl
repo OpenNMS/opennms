@@ -1,4 +1,4 @@
-#!${install.perl.bin} -w
+#!/usr/bin/env perl
 use strict;
 
 my $BF_XML;

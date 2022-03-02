@@ -1,0 +1,11 @@
+
+[[webui-opsboard-dashlet-boosting]]
+= Boosting Dashlet
+
+There are two options to increase how often dashlets that show critical monitoring information (alarms, summaries of alarms) appear in the ops board rotation:
+
+* Boost Priority: Absolute priority of the dashlet with critical monitoring information.
+* Boost Duration: Absolute duration in seconds of the dashlet with critical monitoring information.
+
+With the "boost priority" option, the lower the number, the higher the priority, and the more often the dashlet appears in the rotation.
+One (1) is the highest priority, so a dashlet with this number appears most frequently.

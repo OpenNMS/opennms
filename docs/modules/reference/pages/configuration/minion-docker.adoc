@@ -1,0 +1,67 @@
+[[minion-docker]]
+= Minion Docker
+
+== Startup arguments
+
+[options="header, autowidth"]
+|===
+| Argument | Description
+| `-h`     | Display help with available arguments.
+| `-c`     | Start Minion and use environment credentials to register Minion on {page-component-title}.
+| `-s`     | One-time command to initialize an encrypted keystore file with credentials in `/keystore/scv.jce`.
+| `-f`     | Initialize and start Minion in foreground.
+|===
+
+== Environment variables
+
+.Generic Minion settings
+[options="header, autowidth"]
+|===
+| Environment variable | Description                                     | Required | Default value
+| `MINION_ID`          | Unique Minion identifier                      | optional | generated UUID
+| `MINION_LOCATION`    | Name of the location associated with the Minion | required | –
+|===
+
+.Settings when using ActiveMQ
+[options="header, autowidth"]
+|===
+| Environment variable  | Description                              | Required | Default value
+| `OPENNMS_HTTP_URL`    | Web user interface base URL for REST | required | –
+| `OPENNMS_HTTP_USER`   | User name for the REST API             | optional | `admin`
+| `OPENNMS_HTTP_PASS`   | Password for the REST API              | optional | `admin`
+| `OPENNMS_BROKER_URL`  | ActiveMQ broker URL                    | required | –
+| `OPENNMS_BROKER_USER` | Username for ActiveMQ authentication   | optional | `admin`
+| `OPENNMS_BROKER_PASS` | Password for ActiveMQ authentication   | optional | `admin`
+|===
+
+.Settings when using Apache Kafka
+
+If you want to use Apache Kafka the environment variable names are converted with a prefix convention:
+
+* Prefix `KAFKA_RPC_` will be written to `org.opennms.core.ipc.rpc.kafka.cfg`
+* Prefix `KAFKA_SINK_` will be written to `org.opennms.core.ipc.sink.kafka.cfg`
+* Everything behind will be converted to lower case and `_` is replaced with `.`
+
+As an example:
+
+[source, shell]
+----
+environment:
+  - KAFKA_RPC_BOOTSTRAP_SERVERS=192.168.1.1,192.168.1.2
+----
+
+This creates the file `org.opennms.core.ipc.rpc.kafka.cfg` with the content:
+
+[source, shell]
+----
+bootstrap.servers=192.168.1.1,192.168.1.2
+----
+
+== Directory conventions
+
+[options="header, autowidth"]
+|===
+| Mountpoint                | Description
+| `/opt/minion-etc-overlay` | Lets you overwrite files relative to `/opt/minion/etc`
+| `/keystore`               | Directory with credentials for encrypted keystore file
+|===

@@ -226,6 +226,7 @@ public class WmiClient implements IWmiClient {
         try {
 
             m_Session = JISession.createSession(domain, username, password);
+            m_Session.useNTLMv2(true);
             m_Session.useSessionSecurity(true);
             m_Session.setGlobalSocketTimeout(5000);
 

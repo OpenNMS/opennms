@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.ipc</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc</groupId>
@@ -12,7 +12,6 @@
   <name>OpenNMS :: Core :: IPC :: RPC</name>
   <modules>
     <module>api</module>
-    <module>aws-sqs-impl</module>
     <module>camel</module>
     <module>common</module>
     <module>jms-impl</module>

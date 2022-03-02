@@ -5,7 +5,7 @@
     <parent>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-integrations</artifactId>
-      <version>25.0.0-SNAPSHOT</version>
+      <version>29.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>opennms-vmware</artifactId>
@@ -127,13 +127,11 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermockVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-easymock</artifactId>
-            <version>${powermockVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -170,6 +168,11 @@
             <groupId>com.jayway.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <version>1.7.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-dao-mock</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

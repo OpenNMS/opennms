@@ -1,0 +1,7 @@
+
+= RTC
+
+This dashlet shows the configured SLA categories from the {page-component-title} start page in the xref:admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
+
+There are no unique configuration properties associated with this dashlet.
+Boost support is not available.

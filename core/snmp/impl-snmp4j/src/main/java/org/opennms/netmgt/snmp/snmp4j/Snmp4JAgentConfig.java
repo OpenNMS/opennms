@@ -46,6 +46,9 @@ import org.snmp4j.mp.MPv1;
 import org.snmp4j.mp.MPv2c;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.security.AuthHMAC128SHA224;
+import org.snmp4j.security.AuthHMAC192SHA256;
+import org.snmp4j.security.AuthHMAC384SHA512;
 import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.AuthSHA;
 import org.snmp4j.security.PrivAES128;
@@ -244,14 +247,22 @@ public class Snmp4JAgentConfig {
         if (StringUtils.isBlank(authProtocol)) {
             return null;
         }
-        
-        if (authProtocol.equals("MD5")) {
-            return AuthMD5.ID;
-        } else if (authProtocol.equals("SHA")) {
-            return AuthSHA.ID;
-        } else {
-            throw new IllegalArgumentException("Authentication protocol unsupported: " + authProtocol);
-        }            
+
+        switch (authProtocol) {
+            case "MD5":
+                return AuthMD5.ID;
+            case "SHA":
+                return AuthSHA.ID;
+            case "SHA-224":
+                return AuthHMAC128SHA224.ID;
+            case "SHA-256":
+                return AuthHMAC192SHA256.ID;
+            case "SHA-512":
+                return AuthHMAC384SHA512.ID;
+            default:
+                throw new IllegalArgumentException("Authentication protocol unsupported: " + authProtocol);
+        }
+
     }
 
     @VisibleForTesting

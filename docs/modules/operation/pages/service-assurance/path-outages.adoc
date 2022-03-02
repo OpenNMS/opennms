@@ -1,0 +1,64 @@
+
+[[ga-service-assurance-path-outage]]
+= Path Outages
+
+An outage of a central network component can cause a lot of node outages.
+Path Outages can be used to suppress notifications based on how nodes depend on each other in the network which are defined in a Critical Path.
+The Critical Path needs to be configured from the network perspective of the monitoring system.
+By default, the Path Outage feature is disabled and has to be enabled in the `poller-configuration.xml`.
+
+The following image shows an example network topology.
+
+[[path-outage-example]]
+.Path Outage example
+image::service-assurance/02_path-outage.png[width=600]
+
+From the perspective of the monitoring system, a Router named `default-gw-01` is on the critical path to reach two networks.
+If router `default-gw-01` is down, it is not possible to reach any node in the two networks behind and they will be all unreachable as well.
+In this case, an administrator would like to have just one notification for `default-gw-01` and not for all the other nodes behind it.
+Building this configuration in {page-component-title} requires the following information:
+
+* **Parent Foreign Source**: The Foreign Source where the parent node is defined.
+* **Parent Foreign ID**: The Foreign ID of the parent node where this node depends on.
+* The **IP Interface** selected as Primary is used as Critical IP.
+
+In this example we have created all nodes in a requisition named `Network-ACME` and we use the node label value as the Foreign ID.
+
+In the Web UI go to menu:Gear Menu[Manage Provisioning Requisitions > Edit the Requisition > Edit the Node > Path Outage] to configure the network path by setting the Parent Foreign Source, Parent Foreign ID and Provisioned Node.
+
+.Provisioning for Topology Example
+[options="header, autowidth"]
+[cols="1,1,1"]
+|===
+| Parent Foreign Source
+| Parent Foreign ID
+| Provisioned Node
+
+| not defined
+| not defined
+| default-gw-01
+
+| Network-ACME
+| default-gw-01
+| node-01
+
+| Network-ACME
+| default-gw-01
+| node-02
+
+| Network-ACME
+| default-gw-01
+| default-gw02
+
+| Network-ACME
+| default-gw-02
+| node-03
+
+| Network-ACME
+| default-gw-02
+| node-04
+|===
+
+IMPORTANT: The IP Interface which is set to Primary is selected as the Critical IP.
+           In this example, it is important that the IP interface on default-gw-01 in the network 192.168.1.0/24 is set as Primary interface.
+           The IP interface in the network 172.23.42.0/24 on default-gw-02 is set as Primary interface.

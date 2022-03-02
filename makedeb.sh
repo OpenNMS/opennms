@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
 
 MYDIR=`dirname $0`
 TOPDIR=`cd $MYDIR; pwd`
@@ -139,7 +140,7 @@ for BIN in $BINARIES; do
     EXECUTABLE=`which $BIN 2>/dev/null || :`
     if [ -z "$EXECUTABLE" ] || [ ! -x "$EXECUTABLE" ]; then
         echo "ERROR: $BIN not found"
-        echo "       try 'sudo apt install debhelper devscripts dh-systemd dpkg-dev dpkg-sig expect nsis po-debconf'"
+        echo "       try 'sudo apt install debhelper devscripts dh-systemd dpkg-dev dpkg-sig expect po-debconf'"
         exit 1
     fi
 done

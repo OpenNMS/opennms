@@ -1,0 +1,69 @@
+
+= Shell Commands
+
+The Kafka Producer also provides a series of shell commands to help administer and debug the service.
+
+== opennms:kafka-list-alarms
+
+Use the `list-alarms` command to enumerate the reduction keys and show the associated event labels for the alarms that are present in the topic.
+This command leverages functionality used by the alarm synchronization process, and as a result this must be enabled for this command to function.
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms> opennms:kafka-list-alarms
+uei.opennms.org/alarms/trigger:n33:0.0.0.0:HTTPS_POOLs
+        Alarm: Generic Trigger
+----
+
+== kafka-producer:sync-alarms
+
+Use the `sync-alarms` command to manually trigger the alarm synchronization process.
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms> opennms:kafka-sync-alarms
+Performing synchronization of alarms from the database with those in the ktable.
+Executed 1 updates in 47ms.
+
+Number of reduction keys in ktable: 4
+Number of reduction keys in the db: 4 (4 alarms total)
+Reduction keys added to the ktable: (None)
+Reduction keys deleted from the ktable: (None)
+Reduction keys updated in the ktable:
+        uei.opennms.org/nodes/nodeLostService::1:127.0.0.1:Minion-RPC
+----
+
+== opennms:kafka-evaluate-filter
+
+Use the `evaluate-filter` command to test arbitrary SpEL filtering expressions against alarms or events.
+
+=== Evaluating Filters against Alarms
+
+To test a filter against an alarm, specify the alarm's database ID and the expression to test:
+
+[source, console]
+----
+admin@opennms> opennms:kafka-evaluate-filter --alarm-id 57 "getReductionKey().contains('n33')"
+SPEL Expression: getReductionKey().contains('n33')
+Alarm with ID 57 has reduction key: uei.opennms.org/alarms/trigger:n33:0.0.0.0:HTTPSPOOLs
+Result: true
+----
+
+=== Evaluating Filters against Events
+
+To test a filter against an event, specify the event's UEI and the expression to test:
+
+[source, console]
+----
+admin@opennms> opennms:kafka-evaluate-filter --event-uei uei.opennms.org/alarms/trigger "getUei().contains('alarm')"
+SPEL Expression: getUei().contains('alarm')
+Event has UEI: uei.opennms.org/alarms/trigger
+Result: true
+----
+
+In this case, a new event will be created with the given UEI, and the filter will be evaluated against this new event object.
+At this time, existing events cannot be referenced by this tool, so this functionality only serves to help make sure the expressions are syntactically valid.

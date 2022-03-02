@@ -36,7 +36,7 @@ import org.testcontainers.containers.Network;
 public class ElasticsearchContainer extends org.testcontainers.elasticsearch.ElasticsearchContainer {
 
     public ElasticsearchContainer() {
-        super("docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0");
+        super("docker.elastic.co/elasticsearch/elasticsearch-oss:7.6.1");
         withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(OpenNMSContainer.ELASTIC_ALIAS)

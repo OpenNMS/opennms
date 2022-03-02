@@ -1,0 +1,31 @@
+= Off-heap storage
+
+If a Minion loses connectivity with the broker (Kafka or ActiveMQ), then any received messages (syslog, flows, SNMP traps) are queued until connectivity is restored.
+This queue is limited by a fixed (and configurable) number of messages queued in the JVM heap and can optionally queue additional messages by persisting directly to the file system, avoiding heap memory use. 
+Once the queue is full, additional messages are dropped.
+
+The off-heap storage feature lets you extend the storage capacity by queuing messages outside of the JVM heap.
+
+.Connect to the Karaf shell with user `admin` and password `admin`
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Configure off-heap storage 
+[source, karaf]
+----
+config:edit org.opennms.core.ipc.sink.offheap<1>
+config:property-set offHeapSize 1GB<2>
+config:property-set entriesAllowedOnHeap 100000<3>
+config:property-set offHeapFilePath /opt/minion/data <4>
+config:update<5>
+----
+<1> Edit the Minion configuration for the off-heap feature.
+<2> Set a maximum off heap size in KB, MB, or GB, for example, 128MB or 65536KB. The size must be a power of 2.
+<3> Set a maximum number of entries queued on the heap.
+<4> Path storing the queue files. If not set, it defaults to the Karaf data directory.
+<5> Save and update the configuration.
+
+You can also leave the `offHeapSize` empty or set to 0 to disable queueing off heap. 
+In this case, only heap memory is used for queueing.

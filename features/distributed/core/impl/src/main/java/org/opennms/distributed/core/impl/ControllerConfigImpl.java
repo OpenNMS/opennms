@@ -35,6 +35,7 @@ public class ControllerConfigImpl implements ControllerConfig {
     private int brokerMaxConnections;
     private int brokerConcurrentConsumers;
     private int brokerIdleTimeout;
+    private String httpUrl;
 
     public void setBrokerUrl(String brokerUrl) {
         this.brokerUrl = brokerUrl;
@@ -50,6 +51,10 @@ public class ControllerConfigImpl implements ControllerConfig {
 
     public void setBrokerIdleTimeout(int brokerIdleTimeout) {
         this.brokerIdleTimeout = brokerIdleTimeout;
+    }
+
+    public void setHttpUrl(String httpUrl) {
+        this.httpUrl = httpUrl;
     }
 
     @Override
@@ -73,12 +78,18 @@ public class ControllerConfigImpl implements ControllerConfig {
     }
 
     @Override
+    public String getHttpUrl() {
+        return httpUrl;
+    }
+
+    @Override
     public String toString() {
         return "ControllerConfigImpl{" +
                 "brokerUrl='" + brokerUrl + '\'' +
                 ", brokerMaxConnections=" + brokerMaxConnections +
                 ", brokerConcurrentConsumers=" + brokerConcurrentConsumers +
                 ", brokerIdleTimeout=" + brokerIdleTimeout +
+                ", httpUrl=" + httpUrl +
                 '}';
     }
 }

@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
@@ -52,6 +53,9 @@ public class TemporaryDatabaseHsqldb implements TemporaryDatabase, InitializingB
     private boolean m_populateSchema = false;
     private JdbcTemplate m_jdbcTemplate;
     private Set<String> m_initializedUsers = new HashSet<>();
+
+    @SuppressWarnings("unused")
+    private JUnitTemporaryDatabase m_jtd;
 
     public TemporaryDatabaseHsqldb() {
         this(TEST_DB_NAME_PREFIX + System.currentTimeMillis());
@@ -213,5 +217,10 @@ public class TemporaryDatabaseHsqldb implements TemporaryDatabase, InitializingB
     @Override
     public void setTestDetails(String string) {
         // Do nothing; doesn't support blame yet
+    }
+
+    @Override
+    public void setPlpgsqlIplike(final boolean iplike) {
+        // Do nothing, hsqldb doesn't have iplike?
     }
 }

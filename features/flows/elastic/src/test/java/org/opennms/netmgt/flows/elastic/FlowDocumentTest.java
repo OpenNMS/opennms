@@ -66,7 +66,7 @@ public class FlowDocumentTest {
     private DocumentEnricher enricher;
 
     @Before
-    public void setUp() {
+    public void setUp() throws InterruptedException {
         final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
         enricher = factory.getEnricher();
 

@@ -49,7 +49,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
-@Command(scope = "kafka-producer", name = "push-topology-edges", description = "Pushes all of the related topology edges to the configured topic.")
+@Command(scope = "opennms", name = "kafka-push-topology-edges", description = "Pushes all of the related topology edges to the configured topic.")
 @Service
 public class PushTopologyEdges implements Action {
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,9 +33,9 @@ import java.util.function.Consumer;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +43,8 @@ public class DaemonTools {
 
     public static final Logger LOG = LoggerFactory.getLogger(DaemonTools.class);
 
-    public static void handleReloadEvent(Event e, String daemonName, Consumer<Event> handleConfigurationChanged) {
-        final Parm daemonNameParm = e.getParm(EventConstants.PARM_DAEMON_NAME);
+    public static void handleReloadEvent(IEvent e, String daemonName, Consumer<IEvent> handleConfigurationChanged) {
+        final IParm daemonNameParm = e.getParm(EventConstants.PARM_DAEMON_NAME);
         if (daemonNameParm == null || daemonNameParm.getValue() == null) {
             LOG.warn("The {} parameter has no value. Ignoring.", EventConstants.PARM_DAEMON_NAME);
             return;

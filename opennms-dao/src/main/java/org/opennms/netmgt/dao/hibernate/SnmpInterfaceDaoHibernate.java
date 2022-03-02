@@ -28,20 +28,14 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.Assert;
 
 public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInterface, Integer> implements SnmpInterfaceDao {
-
     /**
      * <p>Constructor for SnmpInterfaceDaoHibernate.</p>
      */
@@ -83,15 +77,35 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
     }
 
     @Override
-    public void markHavingFlows(final Integer nodeId, final Collection<Integer> snmpIfIndexes) {
-        getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update snmpinterface set hasFlows = true where nodeid = :nodeid and snmpifindex in (:snmpIfIndexes)")
+    public void markHavingIngressFlows(final Integer nodeId, final Collection<Integer> ingressSnmpIfIndexes) {
+        getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update snmpinterface set last_ingress_flow = NOW() where nodeid = :nodeid and snmpifindex in (:snmpIfIndexes)")
                 .setParameter("nodeid", nodeId)
-                .setParameterList("snmpIfIndexes", snmpIfIndexes)
+                .setParameterList("snmpIfIndexes", ingressSnmpIfIndexes)
                 .executeUpdate());
     }
 
     @Override
+    public void markHavingEgressFlows(final Integer nodeId, final Collection<Integer> egressSnmpIfIndexes) {
+        getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update snmpinterface set last_egress_flow = NOW() where nodeid = :nodeid and snmpifindex in (:snmpIfIndexes)")
+                .setParameter("nodeid", nodeId)
+                    .setParameterList("snmpIfIndexes", egressSnmpIfIndexes)
+                    .executeUpdate());
+    }
+
+    @Override
     public List<OnmsSnmpInterface> findAllHavingFlows(final Integer nodeId) {
-        return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ? and iface.hasFlows = true", nodeId);
+        if (OnmsSnmpInterface.INGRESS_AND_EGRESS_REQUIRED) {
+            return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ? and (EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" AND EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE + ")", nodeId);
+        } else {
+            return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ? and (EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" OR EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE + ")", nodeId);
+        }
+    }
+
+    public List<OnmsSnmpInterface> findAllHavingIngressFlows(final Integer nodeId) {
+        return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ? and EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE, nodeId);
+    }
+
+    public List<OnmsSnmpInterface> findAllHavingEgressFlows(final Integer nodeId) {
+        return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ? and EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE, nodeId);
     }
 }

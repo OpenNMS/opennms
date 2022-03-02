@@ -1,0 +1,180 @@
+= RRDtool
+
+Many open source applications use link:http://oss.oetiker.ch/rrdtool[RRDtool], which is the de-facto open standard for time series data.
+This section describes how to install RRDtool and how to configure your {page-component-title} Core instance to use it.
+
+WARNING: This guide does not cover data migration from JRobin to RRDTool.
+
+Configurations must in the `etc` directory relative to the {page-component-title} Core home directory.
+Depending on your operating system, the home directory is `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
+
+[{tabs}]
+====
+CentOS/RHEL 8::
++
+--
+.Enable the OpenNMS repository and install rrdtool and jrrd2
+[source, console]
+----
+sudo dnf config-manager --enable opennms-repo-stable-*
+sudo dnf -y install rrdtool jrrd2
+----
+
+.Create a configuration file with the time series storage settings
+[source, console]
+----
+sudo vi etc/opennms.properties.d/timeseries.properties
+----
+
+[source, properties]
+----
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy<1>
+org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar<2>
+opennms.library.jrrd2=/usr/lib64/libjrrd2.so<3>
+org.opennms.web.graphs.engine=rrdtool<4>
+rrd.binary=/usr/bin/rrdtool<5>
+----
+
+<1> Set JNI RRD strategy class instead of JRobin.
+<2> Use the internal JRRD library.
+<3> Use the JRRD library to interface with RRDTool.
+<4> This is optional; use RRDTool to render graphs.
+If unset, keep Backshift as default.
+<5> Path to the RRDTool binary file.
+
+TIP: If your RRDTool binary is not in `/usr/bin/rrdtool`, adjust the path in the following files: +
+     `response-adhoc-graph.properties`, +
+     `response-graph.properties`, +
+     `snmp-adhoc-graph.properties`, +
+     `snmp-graph.properties`.
+
+.Restart the {page-component-title} Core instance to apply the configuration
+[source, console]
+----
+sudo systemctl restart opennms
+----
+
+.Verify that RRD files get created instead of JRobin files
+[source, console]
+----
+find /opt/opennms/share/rrd -iname "*.rrd"
+----
+
+NOTE: The first data collection creates RRDTool files with extension `.rrd`.
+      JRobin files with extension `.jrb` are not updated.
+      JRobin files are not deleted automatically.
+      You must delete them manually.
+--
+
+CentOS/RHEL 7::
++
+--
+.Enable the OpenNMS repository and install rrdtool and jrrd2
+[source, console]
+----
+sudo yum-config-manager --enable opennms-repo-stable-*
+sudo yum -y install rrdtool jrrd2
+----
+
+.Create a configuration file with the time series storage settings
+[source, console]
+----
+sudo vi etc/opennms.properties.d/timeseries.properties
+----
+
+[source, properties]
+----
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy<1>
+org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar<2>
+opennms.library.jrrd2=/usr/lib64/libjrrd2.so<3>
+org.opennms.web.graphs.engine=rrdtool<4>
+rrd.binary=/usr/bin/rrdtool<5>
+----
+
+<1> Set JNI RRD strategy class instead of JRobin.
+<2> Use the internal JRRD library.
+<3> Use the JRRD library to interface with RRDTool.
+<4> This is optional; use RRDTool to render graphs.
+If unset, keep Backshift as default.
+<5> Path to the RRDTool binary file.
+
+TIP: If your RRDTool binary is not in `/usr/bin/rrdtool`, adjust the path in the following files: +
+     `response-adhoc-graph.properties`, +
+     `response-graph.properties`, +
+     `snmp-adhoc-graph.properties`, +
+     `snmp-graph.properties`.
+
+.Restart the {page-component-title} Core instance to apply the configuration
+[source, console]
+----
+sudo systemctl restart opennms
+----
+
+.Verify that RRD files get created instead of JRobin files
+[source, console]
+----
+find /opt/opennms/share/rrd -iname "*.rrd"
+----
+
+NOTE: The first data collection creates RRDTool files with extension `.rrd`.
+      JRobin files with extension `.jrb` are not updated.
+      JRobin files are not deleted automatically.
+      You must delete them manually.
+--
+
+Debian/Ubuntu::
++
+--
+.Install rrdtool and jrrd2
+[source, console]
+----
+apt -y install rrdtool jrrd2
+----
+
+.Create a configuration file with the time series storage settings
+[source, console]
+----
+sudo vi etc/opennms.properties.d/timeseries.properties
+----
+
+[source, properties]
+----
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy<1>
+org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar<2>
+opennms.library.jrrd2=/usr/lib/jni/libjrrd2.so<3>
+org.opennms.web.graphs.engine=rrdtool<4>
+rrd.binary=/usr/bin/rrdtool<5>
+----
+
+<1> Set JNI RRD strategy class instead of JRobin.
+<2> Use the internal JRRD library.
+<3> Use the JRRD library to interface with RRDTool.
+<4> This is optional; use RRDTool to render graphs.
+If unset, keep Backshift as default
+<5> Path to the RRDTool binary file.
+
+TIP: If your RRDTool binary is not in `/usr/bin/rrdtool`, adjust the path in the following files: +
+     `response-adhoc-graph.properties`, +
+     `response-graph.properties`, +
+     `snmp-adhoc-graph.properties`, +
+     `snmp-graph.properties`.
+
+.Restart the {page-component-title} Core instance to apply the configuration
+[source, console]
+----
+sudo systemctl restart opennms
+----
+
+.Verify RRD files get created instead of JRobin files
+[source, console]
+----
+find /usr/share/opennms/share/rrd -iname "*.rrd"
+----
+
+NOTE: The first data collection creates RRDTool files with extension `.rrd`.
+      JRobin files with extension `.jrb` are not updated.
+      JRobin files are not deleted automatically.
+      You must delete them manually.
+--
+
+====

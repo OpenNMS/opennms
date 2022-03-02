@@ -107,7 +107,8 @@ public class ModelMappers {
                 .setLogMessage(alarm.getLogMsg())
                 .setDescription(alarm.getDescription())
                 .setLastEventTime(alarm.getLastEventTime())
-                .setFirstEventTime(alarm.getFirstEventTime());
+                .setFirstEventTime(alarm.getFirstEventTime())
+                .setAcknowledged(alarm.isAcknowledged());
 
         try {
             if (alarm.getNode() != null) {
@@ -205,6 +206,11 @@ public class ModelMappers {
                 .withSituationKey(feedback.getSituationKey())
                 .withUser(feedback.getUser())
                 .build();
+    }
+
+    public static OnmsSeverity fromSeverity(Severity severity) {
+        Objects.requireNonNull(severity);
+        return OnmsSeverity.get(severity.getId());
     }
     
     public static OnmsTopologyProtocol toOnmsTopologyProtocol(TopologyProtocol protocol) {

@@ -44,7 +44,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
-import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.CIFSContext;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFilenameFilter;
@@ -82,33 +82,33 @@ public class JCifsMonitorTest {
     public void setUp() throws Exception {
         mockSmbFileValidPath = createNiceMock(SmbFile.class);
         expect(mockSmbFileValidPath.exists()).andReturn(true).anyTimes();
-        expectNew(SmbFile.class, new Class<?>[]{String.class, NtlmPasswordAuthentication.class}, eq("smb://10.123.123.123/validPath"), isA(NtlmPasswordAuthentication.class)).andReturn(mockSmbFileValidPath).anyTimes();
+        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://10.123.123.123/validPath"), isA(CIFSContext.class)).andReturn(mockSmbFileValidPath).anyTimes();
 
         mockSmbFileInvalidPath = createNiceMock(SmbFile.class);
         expect(mockSmbFileInvalidPath.exists()).andReturn(false).anyTimes();
-        expectNew(SmbFile.class, new Class<?>[]{String.class, NtlmPasswordAuthentication.class}, eq("smb://10.123.123.123/invalidPath"), isA(NtlmPasswordAuthentication.class)).andReturn(mockSmbFileInvalidPath).anyTimes();
+        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://10.123.123.123/invalidPath"), isA(CIFSContext.class)).andReturn(mockSmbFileInvalidPath).anyTimes();
 
         mockSmbFolderEmpty = createNiceMock(SmbFile.class);
         expect(mockSmbFolderEmpty.exists()).andReturn(true).anyTimes();
         expect(mockSmbFolderEmpty.list((SmbFilenameFilter) anyObject())).andReturn(new String[]{}).anyTimes();
-        expectNew(SmbFile.class, new Class<?>[]{String.class, NtlmPasswordAuthentication.class}, eq("smb://10.123.123.123/folderEmpty"), isA(NtlmPasswordAuthentication.class)).andReturn(mockSmbFolderEmpty).anyTimes();
+        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://10.123.123.123/folderEmpty"), isA(CIFSContext.class)).andReturn(mockSmbFolderEmpty).anyTimes();
 
         mockSmbFolderNotEmpty = createNiceMock(SmbFile.class);
         expect(mockSmbFolderNotEmpty.exists()).andReturn(true).anyTimes();
         expect(mockSmbFolderNotEmpty.list((SmbFilenameFilter) anyObject())).andReturn(new String[]{"ABCD", "ACBD", "DCBA", "DABC"}).anyTimes();
-        expectNew(SmbFile.class, new Class<?>[]{String.class, NtlmPasswordAuthentication.class}, eq("smb://10.123.123.123/folderNotEmpty"), isA(NtlmPasswordAuthentication.class)).andReturn(mockSmbFolderNotEmpty).anyTimes();
+        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://10.123.123.123/folderNotEmpty"), isA(CIFSContext.class)).andReturn(mockSmbFolderNotEmpty).anyTimes();
 
         mockSmbFileSmbException = createNiceMock(SmbFile.class);
         expect(mockSmbFileSmbException.exists()).andThrow(new SmbException(SmbException.ERROR_ACCESS_DENIED, true));
-        expectNew(SmbFile.class, new Class<?>[]{String.class, NtlmPasswordAuthentication.class}, eq("smb://10.123.123.123/smbException"), isA(NtlmPasswordAuthentication.class)).andReturn(mockSmbFileSmbException).anyTimes();
+        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://10.123.123.123/smbException"), isA(CIFSContext.class)).andReturn(mockSmbFileSmbException).anyTimes();
 
         mockSmbFileMalformedUrlException = createNiceMock(SmbFile.class);
         expect(mockSmbFileMalformedUrlException.exists()).andThrow(new SmbException(SmbException.ERROR_ACCESS_DENIED, true));
-        expectNew(SmbFile.class, new Class<?>[]{String.class, NtlmPasswordAuthentication.class}, eq("smb://10.123.123.123/malformedUrlException"), isA(NtlmPasswordAuthentication.class)).andReturn(mockSmbFileMalformedUrlException).anyTimes();
+        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://10.123.123.123/malformedUrlException"), isA(CIFSContext.class)).andReturn(mockSmbFileMalformedUrlException).anyTimes();
 
         mockSmbFileSmbHost = createNiceMock(SmbFile.class);
         expect(mockSmbFileSmbHost.exists()).andThrow(new SmbException(SmbException.ERROR_ACCESS_DENIED, true));
-        expectNew(SmbFile.class, new Class<?>[]{String.class, NtlmPasswordAuthentication.class}, eq("smb://192.168.0.123/smbException"), isA(NtlmPasswordAuthentication.class)).andReturn(mockSmbFileSmbHost).anyTimes();
+        expectNew(SmbFile.class, new Class<?>[]{String.class, CIFSContext.class}, eq("smb://192.168.0.123/smbException"), isA(CIFSContext.class)).andReturn(mockSmbFileSmbHost).anyTimes();
     }
 
     @Test

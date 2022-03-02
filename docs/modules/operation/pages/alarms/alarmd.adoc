@@ -1,0 +1,12 @@
+
+[[alarmd]]
+= Alarm Service Daemon
+Alarmd, the Alarm Service Daemon, processes events representing problems in the Network.
+It either instantiates a new alarm for tracking a problem's state or reducing a reoccurring Event of an existing problem into the same Alarm.
+(Also known as alarm de-duplication.)
+
+https://www.drools.org/[Drools] in Alarmd provide a more robust infrastructure for the effective management of workflow and problem states in the network.
+Find these business rules in the `etc/alarmd/drools-rules.d/` folder.
+
+.$OPENNMS_HOME/etc/.drools-rules.d/
+ alarmd.drl

@@ -1,0 +1,77 @@
+
+= TcpMonitor
+
+This monitor uses TCP to test OSI Layer 4 connectivity.
+The monitor establishes a TCP connection to a specific port.
+The greetings banner of the application is evaluated to check the availability of the service.
+The behavior is similar to a simple test using the telnet command as shown in the example.
+
+.Simulating monitor behavior with telnet
+[source, bash]
+----
+root@vagrant:~# telnet 127.0.0.1 22
+Trying 127.0.0.1...
+Connected to 127.0.0.1.
+Escape character is '^]'.
+SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2 <1>
+----
+<1> Service greeting banner
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.TcpMonitor`
+|===
+
+== Configuration and Use
+
+.Monitor specific parameters for the TcpMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+3+|*Required*
+
+| port
+| TCP port of the application.
+| -1
+
+3+|*Optional*
+
+| retry
+| Number of retries before the service is marked as down.
+| 0
+| banner
+| Evaluation of the service connection banner with regular expression.
+By default any banner result is valid.
+| *
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+This example shows how to test if the Independent Computing Architecture (ICA) service is available on TCP port 1494.
+The test evaluates the connection banner starting with `ICA`.
+
+The example uses a CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[source, xml]
+----
+<service name="TCP-Citrix-ICA" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="0" />
+  <parameter key="banner" value="ICA" />
+  <parameter key="port" value="1494" />
+  <parameter key="timeout" value="3000" />
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="rrd-base-name" value="tcpCitrixIca" />
+  <parameter key="ds-name" value="tcpCitrixIca" />
+</service>
+
+<monitor service="TCP-Citrix-ICA" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+----

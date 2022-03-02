@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.flows</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.flows</groupId>
@@ -32,9 +32,15 @@
       <artifactId>guava</artifactId>
       <version>${guavaVersion}</version>
     </dependency>
-      <dependency>
-          <groupId>org.opennms.core.ipc.rpc</groupId>
-          <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.searchbox</groupId>
+      <artifactId>jest-common</artifactId>
+      <version>5.3.3</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>

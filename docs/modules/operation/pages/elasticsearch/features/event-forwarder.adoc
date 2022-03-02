@@ -1,0 +1,115 @@
+
+= Event Forwarder
+
+The Event Forwarder (formerly known as the Elasticsearch REST plugin) forwards events to https://github.com/elastic/elasticsearch[Elasticsearch].
+The events in Elasticsearch can then be used for indexing, long time archival, plotting with Grafana, and browsing with Kibana.
+
+NOTE: If you use Kibana, make sure you are using the version that is compatible with your version of Elasticsearch.
+
+== Configuration
+
+The configuration is held in `$\{OPENNMS_HOME}/etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg`.
+Please refer to <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, Configuring Elasticsearch>> for information on how to configure Elasticsearch connection settings.
+
+Besides the general Elasticsearch connection settings, the following properties are supported to configure the Event Forwarder:
+
+.Optional parameters for the Elasticsearch event forwarder
+[options="header"]
+[cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| logEventDescription
+| Whether to forward the event description field to Elasticsearch.
+It can be disabled as it contains a long text field that can be redundant with the rest of the metadata included in the event.
+| true
+
+| archiveAssetData
+| If `true`, the following attributes representing useful node asset fields from the node asset table are included in archived events and alarms.
+These are included only where the values are not null or empty strings in the table.+
+asset-latitude, asset-longitude, asset-region, asset-building, asset-floor, asset-room, asset-rack, asset-slot, asset-port, asset-category, asset-displaycategory, asset-notifycategory, asset-pollercategory, asset-thresholdcategory asset-managedobjecttype, asset-managedobjectinstance, asset-manufacturer, asset-vendor, asset-modelnumber, parent-nodelabel, parent-nodeid, parent-foreignsource, parent-foreignid.
+| true
+
+| groupOidParameters
+| If `true`, all OIDs from the event parameters are stored in a single array `p_oids` instead of a flattened structure.
+| false
+
+| logAllEvents
+| If changed to `true`, then archive all events even if they have not been persisted in the {page-component-title} database.
+| false
+
+| batchSize
+| Increase this value to enable batch inserts into Elasticsearch.
+This is the maximum size of a batch of events that is sent to Elasticsearch in a single connection.
+| 200
+
+| batchInterval
+| The maximum time interval in milliseconds between batch events (recommended: 500ms) when using a `batchSize` value greater than.
+| 500
+
+|===
+
+Once you are sure everything is correctly configured, you can activate the Event Forwarder by logging into the OSGi console and installing the feature: `opennms-es-rest`.
+
+.OSGi login and installation of the Elasticsearch forwarder
+[source, console]
+----
+ssh admin@localhost -p 8101
+karaf> feature:install opennms-es-rest
+----
+
+== Loading historical events
+
+It is possible to load historical {page-component-title} events into Elasticsearch from the {page-component-title} database using a Karaf Console command.
+The command uses the {page-component-title} Events REST interface to retrieve a set number of historical events and forward them to Elasticsearch.
+Because we are using the REST interface, it is also possible to contact a remote {page-component-title} and download its events into Elasticsearch by using the correct remote URL and credentials.
+
+.Example sending historic events to Elasticsearch using the Karaf Console:
+[source, console]
+----
+# open karaf command prompt using
+# ssh -p 8101 admin@localhost
+karaf> opennms:send-events-to-elasticsearch --username admin --password admin --url http://localhost:8980 --limit 10 --offset 0
+----
+
+TIP: For more details, consolidate the `--help` option of the command.
+
+== Index definition
+
+The index names used to store the events use the following form: `opennms-raw-events-<index-strategy>/type/id`
+
+.Sample index name using a monthly index strategy
+[source]
+----
+opennms-events-raw-2017-01/eventdata/11549
+----
+
+== Viewing events using Kibana Sense
+
+https://www.elastic.co/guide/en/sense/current/installing.html[Kibana Sense] is a Kibana app that lets you run queries directly against Elasticsearch.
+
+If you install Kibana Sense, you can use the following commands to view the events sent to Elasticsearch.
+You should review the https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html)
+[Elasticsearch REST API documentation] to understand how to specify searches.
+
+.Example searches to use in Kibana Sense
+[source]
+----
+# Search all the events indexes
+
+GET /opennms-events-*/_search
+
+# Search all the raw events indexes
+
+GET /opennms-events-raw*/_search
+
+# Delete all the events indexes
+
+DELETE /opennms-events-*/
+
+# Get all the raw events indexes
+
+GET /opennms-events-raw*/
+----

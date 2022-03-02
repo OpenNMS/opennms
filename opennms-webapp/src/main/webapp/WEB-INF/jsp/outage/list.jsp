@@ -57,6 +57,8 @@
 <%@page import="org.opennms.web.outage.filter.LocationFilter" %>
 <%@page import="org.opennms.web.outage.filter.NegativeLocationFilter" %>
 <%@page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.opennms.web.outage.filter.PerspectiveLocationFilter" %>
+<%@ page import="org.opennms.web.outage.filter.NegativePerspectiveLocationFilter" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -126,6 +128,7 @@
         <th><%=this.makeSortLink(request, parms, SortStyle.SERVICE,           SortStyle.REVERSE_SERVICE,           "service",                   "Service")%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.IFLOSTSERVICE,     SortStyle.REVERSE_IFLOSTSERVICE,     "time service was lost",     "Down")%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.IFREGAINEDSERVICE, SortStyle.REVERSE_IFREGAINEDSERVICE, "time service was regained", "Up")%></th>
+        <th><%=this.makeSortLink(request, parms, SortStyle.PERSPECTIVE,       SortStyle.REVERSE_PERSPECTIVE,       "location from where the outage was detected", "Perspective")%></th>
       </tr>      
       
       <%
@@ -246,6 +249,19 @@
           <% } else { %>
             <td class="bright"><%=OutageUtil.getStatusLabel(outages[i])%></td>
           <% } %>
+
+          <!-- perspective -->
+          <td class="noWrap">
+            <% String perspectiveLocation = outages[i].getPerspectiveLocation(); %>
+            <%=OutageUtil.getPerspectiveLabel(perspectiveLocation)%>
+            <% Filter filter = new PerspectiveLocationFilter(perspectiveLocation); %>
+            <% if( !parms.filters.contains(filter) ) { %>
+            <a href="<%=OutageUtil.makeLink( request, parms, filter, true)%>" title="Show only outages for this perspective"><%=ZOOM_IN_ICON%></a>
+            <a href="<%=OutageUtil.makeLink( request, parms, new NegativePerspectiveLocationFilter(perspectiveLocation), true)%>" title="Do not show outages for this perspective"><%=DISCARD_ICON%></a>
+            <% } %>
+          </td>
+
+
         </tr>
       <% } %>
     </table>

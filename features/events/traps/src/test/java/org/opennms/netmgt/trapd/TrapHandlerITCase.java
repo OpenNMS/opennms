@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -60,11 +61,13 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
+import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.xml.event.Event;
@@ -88,7 +91,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-trapDaemon.xml",
         // Start this context after Eventd is available
         "classpath:/META-INF/opennms/applicationContext-daoEvents.xml",
-        "classpath:/org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml"}
+        "classpath:/org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml",
+        "classpath:/META-INF/opennms/applicationContext-twin-memory.xml"}
 )
 @JUnitTemporaryDatabase
 @JUnitConfigurationEnvironment
@@ -104,14 +108,14 @@ public class TrapHandlerITCase implements InitializingBean {
     private MockEventIpcManager m_eventMgr;
 
     @Autowired
-    private InterfaceToNodeCache m_cache;
+    protected InterfaceToNodeCache m_cache;
 
     @Autowired
-    private TrapdConfig m_trapdConfig;
+    protected TrapdConfig m_trapdConfig;
 
     private boolean m_doStop = false;
 
-    private static final InetAddress m_ip = InetAddressUtils.ONE_TWENTY_SEVEN;
+    protected static final InetAddress m_ip = InetAddressUtils.ONE_TWENTY_SEVEN;
     
     private static int m_nodeId;
 
@@ -142,6 +146,14 @@ public class TrapHandlerITCase implements InitializingBean {
         m_nodeId = m_dbPopulator.getNodeDao().save(node);
 
         m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, m_ip, m_nodeId);
+
+        final SnmpV3User user = new SnmpV3User();
+        user.setSecurityName("noAuthUser");
+        user.setSecurityLevel(SnmpConfiguration.NOAUTH_NOPRIV);
+
+        final TrapdConfigBean newConfig = new TrapdConfigBean(m_trapdConfig);
+        newConfig.setSnmpV3Users(Lists.newArrayList(user));
+        m_trapdConfig.update(newConfig);
 
         m_trapd.start();
         m_doStop = true;
@@ -569,7 +581,7 @@ public class TrapHandlerITCase implements InitializingBean {
         }
     }
 
-    private void sendTrap(String version, String enterprise, int generic, 
+    public void sendTrap(String version, String enterprise, int generic,
             int specific, LinkedHashMap<String, SnmpValue> varbinds) throws Exception {
         if (enterprise == null) {
             enterprise = ".0.0";

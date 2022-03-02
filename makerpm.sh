@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
 
 MYDIR=`dirname $0`
 TOPDIR=`cd $MYDIR; pwd`
@@ -13,7 +14,7 @@ export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
 
 cd "$TOPDIR"
 
-BINARIES="expect rpmbuild rsync makensis"
+BINARIES="expect rpmbuild rsync"
 
 function exists() {
     which "$1" >/dev/null 2>&1

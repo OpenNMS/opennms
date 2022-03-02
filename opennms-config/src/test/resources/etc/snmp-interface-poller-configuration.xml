@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<snmp-interface-poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/snmpinterfacepoller" threads="30" service="SNMP" useCriteriaFilters="true" interval="300000" up-values="1,5" down-values="2,3,4,6,7">
+    <node-outage>
+        <critical-service name="ICMP"/>
+        <critical-service name="SNMP"/>
+    </node-outage>
+    <package name="example1">
+        <filter>IPADDR != '0.0.0.0'</filter>
+        <specific>127.0.0.1</specific>
+        <include-range begin="1.1.1.1" end="1.1.1.2"/>
+        <include-range begin="::1" end="::1"/>
+        <exclude-range begin="2.2.2.2" end="2.2.2.3"/>
+        <include-url>file:///dev/null</include-url>
+        <interface criteria="snmpiftype = 6" name="Ethernet" interval="300000" user-defined="false" status="on" timeout="5" retry="6" port="616" max-vars-per-pdu="11" max-interface-per-pdu="1" up-values="1" down-values="2,3"/>
+        <interface criteria="snmpiftype = 7" name="Sevenet" interval="300001" />
+    </package>
+    <package name="example2">
+        <filter>IPADDR = '2.2.2.2'</filter>
+        <interface name="deuce" interval="222222" />
+    </package>
+</snmp-interface-poller-configuration>

@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.web.controller.RedirectRestricter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.Notification;
 import org.opennms.web.notification.WebNotificationRepository;
@@ -60,6 +61,10 @@ public class AcknowledgeNotificationController extends AbstractController implem
     private WebNotificationRepository m_webNotificationRepository;
     
     private String m_redirectView;
+
+    private RedirectRestricter redirectRestricter = RedirectRestricter.builder()
+            .allowRedirect("notification/detail.jsp")
+            .build();
     
     /**
      * <p>setRedirectView</p>
@@ -123,12 +128,12 @@ public class AcknowledgeNotificationController extends AbstractController implem
         request.setAttribute("notices", notices);
 
         String redirectParms = request.getParameter("redirectParms");
-        String redirect = request.getParameter("redirect");
+        String redirect = redirectRestricter.getRedirectOrNull(request.getParameter("redirect"));
         String viewName;
         if (redirect != null) {
             viewName = redirect;
         } else {
-            viewName = (redirectParms == null || redirectParms=="" || redirectParms=="null" ? m_redirectView : m_redirectView + "?" + redirectParms);
+            viewName = (redirectParms == null || "".equals(redirectParms) || "null".equals(redirectParms) ? m_redirectView : m_redirectView + "?" + redirectParms);
         }
         RedirectView view = new RedirectView(viewName, true);
         return new ModelAndView(view);

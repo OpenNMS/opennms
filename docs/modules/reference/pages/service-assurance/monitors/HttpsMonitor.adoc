@@ -1,0 +1,46 @@
+
+= HttpsMonitor
+
+The HTTPS monitor tests the response of an SSL-enabled HTTP server.
+It is an SSL-enabled extension of the HTTP monitor with a default TCP port value of 443.
+All HttpMonitor parameters apply; refer to <<service-assurance/monitors/HttpMonitor.adoc#poller-http-monitor, HttpMonitor>> for more information.
+
+This monitor implements <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.HttpsMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameter for the HttpsMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| A list of TCP ports to which to try to connect.
+| 443
+|===
+
+== Example
+
+[source, xml]
+----
+<!-- Test HTTPS service on port 8443 -->
+<service name="HTTPS" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="port" value="8443"/>
+  <parameter key="url" value="/"/>
+</service>
+
+<monitor service="HTTPS" class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
+----

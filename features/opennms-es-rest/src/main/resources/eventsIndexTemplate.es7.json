@@ -1,5 +1,5 @@
 {
-   "template":"opennms-events-*",
+   "index_patterns": ["opennms-events-*"],
    "settings":{
       "index.refresh_interval":"5s"
    },

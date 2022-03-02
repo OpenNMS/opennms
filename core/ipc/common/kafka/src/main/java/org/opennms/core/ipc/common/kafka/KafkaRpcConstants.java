@@ -31,26 +31,33 @@ package org.opennms.core.ipc.common.kafka;
 import java.util.Properties;
 
 import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.core.utils.PropertiesUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This handles all the configuration specific to RPC and some utils common to OpenNMS/Minion.
  */
 public interface KafkaRpcConstants {
-    
-    public static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka";
-    public static final String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
-    public static final String RPC_TOPIC_PREFIX = "rpc";
-    public static final String RPC_REQUEST_TOPIC_NAME = "rpc-request";
-    public static final String RPC_RESPONSE_TOPIC_NAME = "rpc-response";
+
+    static final Logger LOG = LoggerFactory.getLogger(KafkaRpcConstants.class);
+    String KAFKA_RPC_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka";
+    String KAFKA_IPC_CONFIG_PID = "org.opennms.core.ipc.kafka";
+    String KAFKA_RPC_CONFIG_SYS_PROP_PREFIX = KAFKA_RPC_CONFIG_PID + ".";
+    String KAFKA_IPC_CONFIG_SYS_PROP_PREFIX = KAFKA_IPC_CONFIG_PID + ".";
+    String RPC_TOPIC_PREFIX = "rpc";
+    String RPC_REQUEST_TOPIC_NAME = "rpc-request";
+    String RPC_RESPONSE_TOPIC_NAME = "rpc-response";
+    String SINGLE_TOPIC_FOR_ALL_MODULES = "single-topic";
     //By default, kafka allows 1MB buffer sizes, here rpcContent (refer to proto/rpc.proto) is limited to 900KB to allow space for other parameters in proto file.
-    public static final int MAX_BUFFER_SIZE_CONFIGURED = 921600;
-    public static final String MAX_BUFFER_SIZE_PROPERTY = "max.buffer.size";
-    //Configurable buffer size in system properties but it should always be less than MAX_BUFFER_SIZE_CONFIGURED
-    public static final Integer MAX_BUFFER_SIZE = Math.min(MAX_BUFFER_SIZE_CONFIGURED, SystemProperties.getInteger(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE_CONFIGURED));
-    public static final long DEFAULT_TTL_CONFIGURED = 20000;
-    public static final String DEFAULT_TTL_PROPERTY = "ttl";
-    public static final long DEFAULT_TTL = SystemProperties.getLong(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, DEFAULT_TTL_PROPERTY),
-            DEFAULT_TTL_CONFIGURED);
+    int MAX_BUFFER_SIZE_CONFIGURED = 921600;
+    String MAX_BUFFER_SIZE_PROPERTY = "max.buffer.size";
+    String MAX_CONCURRENT_CALLS_PROPERTY = "max.concurrent.calls";
+    String MAX_DURATION_BULK_HEAD = "max.wait.time";
+    long DEFAULT_TTL_CONFIGURED = 20000;
+    String DEFAULT_TTL_PROPERTY = "ttl";
+    int MAX_CONCURRENT_CALLS = 1000;
+    int MAX_WAIT_DURATION_BULK_HEAD = 100; // 100msec.
 
 
     // Calculate remaining buffer size for each chunk.
@@ -67,10 +74,12 @@ public interface KafkaRpcConstants {
     static int getMaxBufferSize(Properties properties) {
         int maxBufferSize = MAX_BUFFER_SIZE_CONFIGURED;
         try {
-            maxBufferSize = Math.min(MAX_BUFFER_SIZE_CONFIGURED, Integer.parseInt(properties.getProperty(MAX_BUFFER_SIZE_PROPERTY)));
+            maxBufferSize = Math.min(MAX_BUFFER_SIZE_CONFIGURED, PropertiesUtils.getProperty(properties, MAX_BUFFER_SIZE_PROPERTY, MAX_BUFFER_SIZE_CONFIGURED));
         } catch (NumberFormatException e) {
             // pass
+            LOG.warn("Configured max buffered size at {} is invalid", MAX_BUFFER_SIZE_PROPERTY);
         }
         return maxBufferSize;
     }
+
 }

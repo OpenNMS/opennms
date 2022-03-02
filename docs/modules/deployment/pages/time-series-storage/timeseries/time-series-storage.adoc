@@ -1,0 +1,32 @@
+= Time Series Storage
+
+{page-component-title} stores performance data in a time series storage, JRobin by default.
+For different scenarios you may want to use a different time series storage.
+The following implementations are installed by default:
+
+.Supported time series databases
+[width="100%", cols="1,4"]
+|===
+| JRobin
+| JRobin is a clone of RRDTool written in Java.
+It does not fully cover the latest feature set of RRDTool and is the default when you install {page-component-title}.
+Data is stored on the local file system of the{page-component-title} node.
+Depending on I/O capabilities it works well for small- to medium-size installations.
+
+| RRDTool
+| RRDTool is actively maintained and the de-facto standard for time series data.
+Data is stored on the local file system of the {page-component-title} node.
+Depending on I/O capabilities it works well for small- to medium-size installations.
+
+| Newts
+| link:http://opennms.github.io/newts/[Newts] is a database schema for link:http://cassandra.apache.org[Cassandra].
+The time series is stored on a dedicated Cassandra cluster, which gives growth flexibility and lets time series data persist in a large scale.
+|===
+
+You can use time series storage integrations with plugins based on our OpenNMS Integration API (OIA).
+Several plugins are available as a replacement for the ones shipped with OpenNMS {page-component-title} (see xref:time-series-storage/timeseries/ts-integration-layer.adoc#ts-integration-layer[time series integration layer]).
+
+This section describes how to configure {page-component-title} to use RRDTool and Newts.
+
+CAUTION: The way data is stored in different time series databases makes it extremely hard to migrate from one technology to another.
+You cannot prevent data loss when you switch from one to another.

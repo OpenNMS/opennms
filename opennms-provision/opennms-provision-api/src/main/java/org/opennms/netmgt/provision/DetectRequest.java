@@ -44,7 +44,7 @@ import java.util.Map;
  *
  * @author jwhite
  */
-public interface DetectRequest {
+public interface DetectRequest extends  PreDetectCallback {
 
     /**
      * @return the address of the host against with the detector should be invoked.
@@ -56,4 +56,6 @@ public interface DetectRequest {
      * may be required when running the detector.
      */
     Map<String, String> getRuntimeAttributes();
+
+
 }

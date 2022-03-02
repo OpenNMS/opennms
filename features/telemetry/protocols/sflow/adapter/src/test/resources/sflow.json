@@ -263,10 +263,11 @@
         }
       },
       {
-        "format": "0:1",
+        "format": "0:3",
         "data": {
           "sequence_number": {
-            "$numberLong": "28"
+            "source_id_type": { "$numberLong": "0" },
+            "source_id_index": { "$numberLong": "28" }
           },
           "source_id": {
             "$numberLong": "33555432"
@@ -281,10 +282,12 @@
             "$numberLong": "0"
           },
           "input": {
-            "$numberLong": "4"
+            "format": { "$numberLong": "0" },
+            "value": { "$numberLong": "4" }
           },
           "output": {
-            "$numberLong": "17"
+            "format": { "$numberLong": "0" },
+            "value": { "$numberLong": "42" }
           },
           "flows": {
             "0:1001": {
@@ -366,7 +369,8 @@
         "format": "0:1",
         "data": {
           "sequence_number": {
-            "$numberLong": "28"
+            "source_id_type": { "$numberLong": "0" },
+            "source_id_index": { "$numberLong": "28" }
           },
           "source_id": {
             "$numberLong": "33555432"

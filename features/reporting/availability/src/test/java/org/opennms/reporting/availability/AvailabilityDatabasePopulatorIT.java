@@ -36,6 +36,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -46,6 +47,7 @@ import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,7 +124,7 @@ public class AvailabilityDatabasePopulatorIT implements InitializingBean {
 		Assert.assertEquals("node DB count", 2, m_nodeDao.countAll());
 		Assert.assertEquals("service DB count", 3, m_serviceTypeDao.countAll());
 		Assert.assertEquals("IP interface DB count", 3, m_ipInterfaceDao.countAll());
-		Assert.assertEquals("outages DB Count",6 ,m_outageDao.countAll());
+		Assert.assertEquals("outages DB Count",6 ,m_outageDao.countMatching(new CriteriaBuilder(OnmsOutage.class).isNull("perspective").toCriteria()));
 
 		final OnmsIpInterface oneHundredDotOne = m_ipInterfaceDao.findByNodeIdAndIpAddress(1, "192.168.100.1");
 

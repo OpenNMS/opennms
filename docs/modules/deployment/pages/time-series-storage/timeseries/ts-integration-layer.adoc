@@ -1,0 +1,21 @@
+
+[[ts-integration-layer]]
+= Time Series Integration Layer
+
+This section describes how to configure {page-component-title} to use the Time Series Integration Layer.
+
+Traditionally, {page-component-title} supports storing time series data in RRD files on disk or via Newts in Cassandra.
+These implementations require a deep knowledge of OpenNMS.
+It is difficult to add another time series database.
+
+The Time Series Integration Layer provides an easy way to support other time series databases with minimal effort.
+It lets users integrate a new time series database via OSGi plugin.
+
+IMPORTANT: These are experimental and not ready for use in a production environment.
+
+Examples of time series plugins:
+
+* https://github.com/opennms-forge/opennms-tss-plugin-inmemory[In Memory]
+* https://github.com/opennms-forge/timeseries-integration-influxdb[InfluxDB]
+* https://github.com/opennms-forge/timeseries-integration-timescale[TimescaleDB]
+* https://github.com/OpenNMS/opennms-cortex-tss-plugin[Cortex]

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.ipc</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc</groupId>
@@ -15,7 +15,6 @@
     <module>common</module>
     <module>camel</module>
     <module>kafka</module>
-    <module>aws-sqs</module>
     <module>mock-impl</module>
     <module>xml</module>
     <module>off-heap</module>

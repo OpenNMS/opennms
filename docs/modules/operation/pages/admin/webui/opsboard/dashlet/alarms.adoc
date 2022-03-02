@@ -1,0 +1,34 @@
+
+= Alarms
+
+This dashlet displays a table with a short alarm description in the xref:admin/webui/opsboard/introduction.adoc#opsboard-config [Ops Board].
+
+.Alarm information displayed in dashlet
+[options="header, autowidth", cols="1,2"]
+|===
+| Field
+| Description
+
+| Time
+| Absolute time since the alarm appeared.
+
+| Node label
+| Node label of the node where the alarm occurred.
+
+| UEI
+| {page-component-title} unique event identifier for this alarm.
+|===
+
+.Alarms dashlet configuration options
+
+[options="autowidth", cols="1,2"]
+|===
+| Boost support
+| Change priority of the dashlet on ops board depending on the alarm level. (See <<admin/webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted Severity>>.)
+
+| Properties: Boosted severity
+| Specify the alarm severity that boosts the dashlet to a higher priority on the ops board.
+
+| Properties: Criteria
+| Specify criteria on which to filter alarms. (See <<admin/webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder, Criteria Builder>>.)
+|===

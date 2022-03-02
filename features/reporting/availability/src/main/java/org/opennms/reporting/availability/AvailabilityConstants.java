@@ -49,7 +49,7 @@ public abstract class AvailabilityConstants {
     /**
      * The SQL statement for getting outage entries for a nodeid/ip/serviceid
      */
-    public static final String DB_GET_OUTAGE_ENTRIES = "SELECT ifLostService, ifRegainedService FROM outages, ifServices, ipInterface, node WHERE outages.ifServiceId = ifServices.id AND ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId AND node.nodeid = ? AND ipInterface.ipaddr = ? AND ifServices.serviceid = ?"; // and
+    public static final String DB_GET_OUTAGE_ENTRIES = "SELECT ifLostService, ifRegainedService FROM outages, ifServices, ipInterface, node WHERE outages.perspective IS NULL AND outages.ifServiceId = ifServices.id AND ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId AND node.nodeid = ? AND ipInterface.ipaddr = ? AND ifServices.serviceid = ?"; // and
                                                                                                                                                                                                         // ((ifRegainedService
                                                                                                                                                                                                         // IS
                                                                                                                                                                                                         // null)

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.xml.event;
 
+import org.opennms.netmgt.events.api.model.IManagedObject;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -44,6 +46,16 @@ public class ManagedObject implements Serializable {
 
     @XmlAttribute(name="type", required=true)
     private String type;
+
+    public static ManagedObject copyFrom(IManagedObject source) {
+        if (source == null) {
+            return null;
+        }
+
+        ManagedObject managedObject = new ManagedObject();
+        managedObject.setType(source.getType());
+        return managedObject;
+    }
 
     public String getType() {
         return type;

@@ -34,8 +34,6 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -56,7 +54,6 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer</A>
  * @version $Id: $
  */
-@Distributable(DistributionContext.DAEMON)
 final public class BgpSessionMonitor extends SnmpMonitorStrategy {
     
     public static final Logger LOG = LoggerFactory.getLogger(BgpSessionMonitor.class);

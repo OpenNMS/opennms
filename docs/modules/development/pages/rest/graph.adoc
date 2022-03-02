@@ -1,0 +1,557 @@
+[[ga-development-rest-graph]]
+= Graph API
+
+Use the Graph API to read existing graph and graph containers in the system and is an `api/v2` endpoint.
+
+NOTE: If not otherwise specified, the `Content-Type` of the request and response is `application/json`.
+
+[options="header, %autowidth"]
+|===
+| Resource
+| Method
+| Description
+
+| `/graphs`
+| GET
+| Retrieves the metadata of all registered graph containers.
+
+| `/graphs/\{containerid}`
+| GET
+| Retrieve the container identified by `\{containerid}`.
+  Returns a 404 if a graph container with `\{containerid}` does not exist.
+
+| `/graphs/\{containerid}/\{namespace}`
+| GET
+| Retrieve the graph with namespace `\{namespace}` from the container `\{containerid}`.
+  Returns a 404 if either the `\{containerid}` does not exist or the container does not contain any graphs with namespace `\{namespace}`.
+
+| `/graphs/\{containerid}/\{namespace}`
+| POST
+| Retrieve the view of the graph with namespace `\{namespace}` from the container `\{containerid}`.
+  The body must contain the query to create the view, e.g., `{ "semanticZoomLevel": 1, "verticesInFocus": []}`
+  If no `semanticZoomLevel` is provided, `1` is assumed.
+  If no `verticesInFocus` is provided, the default focus of the graph is used.
+  Valid values for `verticesInFocus` are vertex references (namespace:id tuple, e.g. `dummy:1`).
+
+|===
+
+At the moment, the context of a search must always be a concrete namespace and can never be over all graphs or containers.
+
+
+[options="header, %autowidth"]
+|===
+| Resource
+| Method
+| Description
+
+| `/graphs/search/suggestions/\{namespace}?s=\{search}`
+| GET
+| Provides suggestions in the context of `\{namespace}` for the input `\{search}`.
+  Each suggestion has the following properties:
+  `context`: The context of the suggestion, e.g., Node for a node,
+  `id`: A unique identifier of the representing element of this suggestion, e.g., `node id`,
+  `label`: A human-readable label, e.g., `node label`,
+  `provider`: The source of the suggestion.
+
+| `/graphs/search/results/\{namespace}?providerId=\{providerid}&criteria=\{criteria}&context=\{context}`
+| GET
+| Resolves a suggestion to actual vertices.
+  The values for `\{providerid}` and `\{context}` are defined in the suggestion.
+  The `\{criteria}` is the `\{id}` property of the suggestion.
+
+|===
+
+
+NOTE: The API lets you query any container and graph via REST, but in most cases you should query only for a graph view.
+
+
+== Examples
+
+
+=== Retrieve all graph container information
+
+.Request
+[source,bash]
+----
+curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs
+----
+
+.Response
+[source,javascript]
+----
+[
+    {
+        "description": "Displays all defined applications and their calculated states.",
+        "graphs": [
+            {
+                "description": "Displays all defined applications and their calculated states.",
+                "label": "Application Graph",
+                "namespace": "application"
+            }
+        ],
+        "id": "application",
+        "label": "Application Graph"
+    },
+    {
+        "description": "Displays the hierarchy of the defined Business Services and their computed operational states.",
+        "graphs": [
+            {
+                "description": "Displays the hierarchy of the defined Business Services and their computed operational states.",
+                "label": "Business Service Graph",
+                "namespace": "bsm"
+            }
+        ],
+        "id": "bsm",
+        "label": "Business Service Graph"
+    },
+    {
+        "description": "This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology.",
+        "graphs": [
+            {
+                "description": "This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology.",
+                "label": "Enhanced Linkd Topology Provider",
+                "namespace": "nodes"
+            }
+        ],
+        "id": "nodes",
+        "label": "Enhanced Linkd Topology Provider"
+    },
+    {
+        "description": "The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process.",
+        "graphs": [
+            {
+                "description": "The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process.",
+                "label": "VMware Topology Provider",
+                "namespace": "vmware"
+            }
+        ],
+        "id": "vmware",
+        "label": "VMware Topology Provider"
+    }
+]
+----
+
+
+=== Retrieve graph container 'bsm'
+.Request
+[source,bash]
+----
+curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/bsm
+----
+
+.Response
+[source,javascript]
+----
+{
+    "description": "Displays the hierarchy of the defined Business Services and their computed operational states.",
+    "graphs": [
+        {
+            "defaultFocus": {
+                "type": "SELECTION",
+                "vertexIds": []
+            },
+            "description": "Displays the hierarchy of the defined Business Services and their computed operational states.",
+            "edges": [],
+            "label": "Business Service Graph",
+            "namespace": "bsm",
+            "vertices": []
+        }
+    ],
+    "id": "bsm",
+    "label": "Business Service Graph"
+}
+----
+
+=== Retrieve graph 'layer3-network' in container 'layer3-topology'
+.Request
+[source,bash]
+----
+curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/layer3-topology/layer3-network
+----
+
+.Response
+[source,javascript]
+----
+{
+    "defaultFocus": {
+        "type": "ALL",
+        "vertexIds": [
+            {
+                "id": "horizon",
+                "namespace": "layer3-network"
+            },
+            {
+                "id": "database",
+                "namespace": "layer3-network"
+            },
+            {
+                "id": "r01",
+                "namespace": "layer3-network"
+            },
+            {
+                "id": "r03",
+                "namespace": "layer3-network"
+            },
+            {
+                "id": "r02",
+                "namespace": "layer3-network"
+            },
+            {
+                "id": "location-r02",
+                "namespace": "layer3-network"
+            },
+            {
+                "id": "net-location",
+                "namespace": "layer3-network"
+            },
+            {
+                "id": "location-r03",
+                "namespace": "layer3-network"
+            },
+            {
+                "id": "net-central",
+                "namespace": "layer3-network"
+            },
+            {
+                "id": "location-r01",
+                "namespace": "layer3-network"
+            },
+            {
+                "id": "minion-01",
+                "namespace": "layer3-network"
+            }
+        ]
+    },
+    "edges": [
+        {
+            "id": "layer3-network:database->layer3-network:net-central",
+            "namespace": "layer3-network",
+            "source": {
+                "id": "database",
+                "namespace": "layer3-network"
+            },
+            "target": {
+                "id": "net-central",
+                "namespace": "layer3-network"
+            }
+        },
+        {
+            "id": "layer3-network:horizon->layer3-network:net-central",
+            "namespace": "layer3-network",
+            "source": {
+                "id": "horizon",
+                "namespace": "layer3-network"
+            },
+            "target": {
+                "id": "net-central",
+                "namespace": "layer3-network"
+            }
+        },
+        {
+            "id": "layer3-network:location-r01->layer3-network:net-location",
+            "namespace": "layer3-network",
+            "source": {
+                "id": "location-r01",
+                "namespace": "layer3-network"
+            },
+            "target": {
+                "id": "net-location",
+                "namespace": "layer3-network"
+            }
+        },
+        {
+            "id": "layer3-network:location-r02->layer3-network:net-location",
+            "namespace": "layer3-network",
+            "source": {
+                "id": "location-r02",
+                "namespace": "layer3-network"
+            },
+            "target": {
+                "id": "net-location",
+                "namespace": "layer3-network"
+            }
+        },
+        {
+            "id": "layer3-network:location-r03->layer3-network:net-location",
+            "namespace": "layer3-network",
+            "source": {
+                "id": "location-r03",
+                "namespace": "layer3-network"
+            },
+            "target": {
+                "id": "net-location",
+                "namespace": "layer3-network"
+            }
+        },
+        {
+            "id": "layer3-network:minion-01->layer3-network:net-central",
+            "namespace": "layer3-network",
+            "source": {
+                "id": "minion-01",
+                "namespace": "layer3-network"
+            },
+            "target": {
+                "id": "net-central",
+                "namespace": "layer3-network"
+            }
+        },
+        {
+            "id": "layer3-network:minion-01->layer3-network:net-location",
+            "namespace": "layer3-network",
+            "source": {
+                "id": "minion-01",
+                "namespace": "layer3-network"
+            },
+            "target": {
+                "id": "net-location",
+                "namespace": "layer3-network"
+            }
+        },
+        {
+            "id": "layer3-network:r01->layer3-network:net-central",
+            "namespace": "layer3-network",
+            "source": {
+                "id": "r01",
+                "namespace": "layer3-network"
+            },
+            "target": {
+                "id": "net-central",
+                "namespace": "layer3-network"
+            }
+        },
+        {
+            "id": "layer3-network:r02->layer3-network:net-central",
+            "namespace": "layer3-network",
+            "source": {
+                "id": "r02",
+                "namespace": "layer3-network"
+            },
+            "target": {
+                "id": "net-central",
+                "namespace": "layer3-network"
+            }
+        },
+        {
+            "id": "layer3-network:r03->layer3-network:net-central",
+            "namespace": "layer3-network",
+            "source": {
+                "id": "r03",
+                "namespace": "layer3-network"
+            },
+            "target": {
+                "id": "net-central",
+                "namespace": "layer3-network"
+            }
+        }
+    ],
+    "enrichment.resolveNodes": "true",
+    "focus-strategy": "ALL",
+    "id": "layer3-topology",
+    "namespace": "layer3-network",
+    "vertex-status-provider": "true",
+    "vertices": [
+        {
+            "foreignID": "database",
+            "foreignSource": "opennms-stack",
+            "iconKey": "database",
+            "id": "database",
+            "label": "database",
+            "namespace": "layer3-network"
+        },
+        {
+            "foreignID": "horizon",
+            "foreignSource": "opennms-stack",
+            "iconKey": "opennms_server",
+            "id": "horizon",
+            "label": "horizon",
+            "namespace": "layer3-network"
+        },
+        {
+            "foreignID": "location-r01",
+            "foreignSource": "bgp-routers",
+            "iconKey": "server",
+            "id": "location-r01",
+            "label": "location-r01",
+            "namespace": "layer3-network"
+        },
+        {
+            "foreignID": "location-r02",
+            "foreignSource": "bgp-routers",
+            "iconKey": "server",
+            "id": "location-r02",
+            "label": "location-r02",
+            "namespace": "layer3-network"
+        },
+        {
+            "foreignID": "location-r03",
+            "foreignSource": "bgp-routers",
+            "iconKey": "server",
+            "id": "location-r03",
+            "label": "location-r03",
+            "namespace": "layer3-network"
+        },
+        {
+            "foreignID": "minion-01",
+            "foreignSource": "Minions",
+            "id": "minion-01",
+            "label": "minion-01",
+            "namespace": "layer3-network"
+        },
+        {
+            "iconKey": "vmware-network",
+            "id": "net-central",
+            "label": "192.168.10.0/24",
+            "namespace": "layer3-network"
+        },
+        {
+            "iconKey": "vmware-network",
+            "id": "net-location",
+            "label": "192.168.50.0/24",
+            "namespace": "layer3-network"
+        },
+        {
+            "foreignID": "r01",
+            "foreignSource": "bgp-routers",
+            "iconKey": "server",
+            "id": "r01",
+            "label": "r01",
+            "namespace": "layer3-network"
+        },
+        {
+            "foreignID": "r02",
+            "foreignSource": "bgp-routers",
+            "iconKey": "server",
+            "id": "r02",
+            "label": "r02",
+            "namespace": "layer3-network"
+        },
+        {
+            "foreignID": "r03",
+            "foreignSource": "bgp-routers",
+            "iconKey": "server",
+            "id": "r03",
+            "label": "r03",
+            "namespace": "layer3-network"
+        }
+    ]
+}
+----
+
+
+=== Get a view of the graph
+
+.Request
+[source,bash]
+----
+curl -X POST -u admin:admin -H "Content-Type: application/json" -d '{ "semanticZoomLevel": 1, "verticesInFocus": ["horizon"] }' http://localhost:8980/opennms/api/v2/graphs/layer3-topology/layer3-network
+----
+
+.Response
+[source,javascript]
+----
+{
+    "edges": [
+        {
+            "id": "layer3-network:horizon->layer3-network:net-central",
+            "namespace": "layer3-network",
+            "source": {
+                "id": "horizon",
+                "namespace": "layer3-network"
+            },
+            "target": {
+                "id": "net-central",
+                "namespace": "layer3-network"
+            }
+        }
+    ],
+    "enrichment.resolveNodes": "true",
+    "focus": {
+        "semanticZoomLevel": 1,
+        "vertices": [
+            "horizon"
+        ]
+    },
+    "focus-strategy": "ALL",
+    "id": "layer3-topology",
+    "namespace": "layer3-network",
+    "vertex-status-provider": "true",
+    "vertices": [
+        {
+            "foreignID": "horizon",
+            "foreignSource": "opennms-stack",
+            "iconKey": "opennms_server",
+            "id": "horizon",
+            "label": "horizon",
+            "namespace": "layer3-network",
+            "nodeInfo": {
+                "categories": [],
+                "foreignId": "horizon",
+                "foreignSource": "opennms-stack",
+                "id": 90,
+                "ipInterfaces": [
+                    {
+                        "address": "/192.168.10.4",
+                        "managed": true,
+                        "primary": false
+                    }
+                ],
+                "label": "horizon",
+                "location": "Default"
+            }
+        },
+        {
+            "iconKey": "vmware-network",
+            "id": "net-central",
+            "label": "192.168.10.0/24",
+            "namespace": "layer3-network"
+        }
+    ]
+}
+----
+
+=== Search Suggestions
+
+.Request
+[source,bash]
+----
+curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/search/suggestions/layer3-network?s=horizon
+----
+
+.Response
+[source,javascript]
+----
+[
+    {
+        "context": "GenericVertex",
+        "id": "horizon",
+        "label": "horizon",
+        "provider": "LabelSearchProvider"
+    },
+    {
+        "context": "Node",
+        "id": "90",
+        "label": "horizon",
+        "provider": "NodeSearchProvider"
+    }
+]
+----
+
+
+=== Search Results
+
+.Request
+[source,bash]
+----
+curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/search/results/layer3-network?providerId=NodeSearchProvider&context=Node&criteria=90
+----
+
+.Response
+[source,javascript]
+----
+[
+    {
+        "id": "horizon",
+        "namespace": "layer3-network"
+    }
+]
+----

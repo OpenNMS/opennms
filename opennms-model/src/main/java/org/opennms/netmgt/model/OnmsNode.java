@@ -146,8 +146,9 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     /** nullable persistent field */
     private String m_label;
 
-    /** boolean flag for a flow exporting node */
-    private boolean m_hasFlows;
+    /** timestamps for a flow exporting node */
+    private Date m_lastIngressFlow;
+    private Date m_lastEgressFlow;
 
     @Transient
     @XmlTransient
@@ -197,6 +198,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private PathElement m_pathElement;
 
     private List<OnmsMetaData> m_metaData = new ArrayList<>();
+
+    private List<OnmsMetaData> m_requisitionedMetaData = new ArrayList<>();
 
     /**
      * <p>
@@ -448,14 +451,51 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         m_sysName = nodesysname;
     }
 
-    @Column(name="hasFlows", nullable=false)
-    @XmlAttribute(name="hasFlows")
+    @Transient
     public boolean getHasFlows() {
-        return m_hasFlows;
+        if (OnmsSnmpInterface.INGRESS_AND_EGRESS_REQUIRED) {
+            return getHasIngressFlows() && getHasEgressFlows();
+        } else {
+            return getHasIngressFlows() || getHasEgressFlows();
+        }
     }
 
-    public void setHasFlows(boolean hasFlows) {
-        this.m_hasFlows = hasFlows;
+    @Transient
+    public boolean getHasIngressFlows() {
+        if (m_lastIngressFlow == null) {
+            return false;
+        }
+        return (System.currentTimeMillis() - m_lastIngressFlow.getTime()) / 1000 < OnmsSnmpInterface.MAX_FLOW_AGE;
+    }
+
+    @Transient
+    public boolean getHasEgressFlows() {
+        if (m_lastEgressFlow == null) {
+            return false;
+        }
+        return (System.currentTimeMillis() - m_lastEgressFlow.getTime()) / 1000 < OnmsSnmpInterface.MAX_FLOW_AGE;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="last_ingress_flow")
+    @XmlAttribute(name="lastIngressFlow")
+    public Date getLastIngressFlow() {
+        return m_lastIngressFlow;
+    }
+
+    public void setLastIngressFlow(Date lastIngressFlow) {
+        this.m_lastIngressFlow = lastIngressFlow;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="last_egress_flow")
+    @XmlAttribute(name="lastEgressFlow")
+    public Date getLastEgressFlow() {
+        return m_lastEgressFlow;
+    }
+
+    public void setLastEgressFlow(Date lastEgressFlow) {
+        this.m_lastEgressFlow = lastEgressFlow;
     }
 
     /**
@@ -976,6 +1016,13 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         return m_metaData;
     }
 
+    public Optional<OnmsMetaData> findMetaDataForContextAndKey(final String context, final String key) {
+        return getMetaData().stream()
+                .filter(m -> m.getContext().equals(context))
+                .filter(m -> m.getKey().equals(key))
+                .findFirst();
+    }
+
     public void setMetaData(final List<OnmsMetaData> metaData) {
         m_metaData = metaData;
     }
@@ -1025,6 +1072,20 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         }
     }
 
+    @Transient
+    @XmlTransient
+    public List<OnmsMetaData> getRequisitionedMetaData() {
+        return m_requisitionedMetaData;
+    }
+
+    public void setRequisionedMetaData(final List<OnmsMetaData> requisitionedMetaData) {
+        m_requisitionedMetaData = requisitionedMetaData;
+    }
+
+    public void addRequisionedMetaData(final OnmsMetaData onmsMetaData) {
+        m_requisitionedMetaData.add(onmsMetaData);
+    }
+
     /**
      * <p>toString</p>
      *
@@ -1048,7 +1109,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         .add("sysContact", m_sysContact)
         .add("type", m_type == null ? null : m_type.toString())
         .add("operatingSystem", m_operatingSystem)
-        .add("hasFlows", getHasFlows())
+        .add("lastIngressFlow", m_lastIngressFlow)
+        .add("lastEgressFlow", m_lastEgressFlow)
         .toString();
     }
 

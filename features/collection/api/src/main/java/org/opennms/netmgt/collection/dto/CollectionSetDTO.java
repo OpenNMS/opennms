@@ -181,7 +181,7 @@ public class CollectionSetDTO implements CollectionSet {
                 collectionResource.addAttribute(new AbstractCollectionAttribute(attributeType, collectionResource) {
                     @Override
                     public String getMetricIdentifier() {
-                        return attribute.getName();
+                        return attribute.getIdentifier() != null ? attribute.getIdentifier() : attribute.getName();
                     }
 
                     @Override

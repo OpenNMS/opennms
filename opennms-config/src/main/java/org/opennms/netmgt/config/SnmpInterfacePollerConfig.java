@@ -59,6 +59,17 @@ public interface SnmpInterfacePollerConfig {
      */
     boolean useCriteriaFilters();
     /**
+     * <p>getUpValues</p>
+     * @return a String
+     */
+    String getUpValues();
+
+    /**
+     * <p>getDownValues</p>
+     * @return a String
+     */
+    String getDownValues();
+    /**
      * <p>getService</p>
      *
      * @return a {@link java.lang.String} object.
@@ -179,6 +190,21 @@ public interface SnmpInterfacePollerConfig {
      * @return a int.
      */
     Integer getMaxVarsPerPdu(String pkgName,String pkgInterfaceName);
+
+    /**
+     * <p>getUpValues</p>
+     * @param pkgName a {@link String} object.
+     * @param pkgInterfaceName a {@link String} object.
+     * @return a String.
+     */
+    String getUpValues(String pkgName, String pkgInterfaceName);
+    /**
+     * <p>getDownValues</p>
+     * @param pkgName a {@link java.lang.String} object.
+     * @param pkgInterfaceName a {@link java.lang.String} object.
+     * @return a String.
+     */
+    String getDownValues(String pkgName,String pkgInterfaceName);
     /**
      * <p>rebuildPackageIpListMap</p>
      */

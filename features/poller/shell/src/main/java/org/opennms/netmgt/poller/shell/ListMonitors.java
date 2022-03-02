@@ -34,7 +34,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 
-@Command(scope = "poller", name = "list-monitors", description = "Lists all of the available monitors ")
+@Command(scope = "opennms", name = "list-monitors", description = "Lists all of the available monitors ")
 @Service
 public class ListMonitors implements Action {
 

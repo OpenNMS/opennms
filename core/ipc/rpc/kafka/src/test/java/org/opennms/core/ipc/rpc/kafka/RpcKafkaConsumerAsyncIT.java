@@ -54,6 +54,8 @@ import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.test.ThreadLocker;
 import org.osgi.service.cm.ConfigurationAdmin;
 
+import com.codahale.metrics.MetricRegistry;
+
 /**
  * This test verifies that the response handling is asynchronous in nature.
  * On opennms side all module responses are retrieved in single thread then the responses are handled in different threads asynchronously.
@@ -91,7 +93,8 @@ public class RpcKafkaConsumerAsyncIT {
         when(configAdmin.getConfiguration(KAFKA_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
-        kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KAFKA_CONFIG_PID, configAdmin), minionIdentity, RpcKafkaIT.tracerRegistry);
+        kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KAFKA_CONFIG_PID, configAdmin), minionIdentity, RpcKafkaIT.tracerRegistry,
+                new MetricRegistry());
         kafkaRpcServer.init();
         kafkaRpcServer.bind(echoRpcModule);
     }

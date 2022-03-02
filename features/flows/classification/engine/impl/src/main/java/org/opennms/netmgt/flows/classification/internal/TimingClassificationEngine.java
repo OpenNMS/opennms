@@ -60,7 +60,7 @@ public class TimingClassificationEngine implements ClassificationEngine {
     }
 
     @Override
-    public void reload() {
+    public void reload() throws InterruptedException {
         try (final Timer.Context ctx = reloadTimer.time()) {
             delegate.reload();
         }

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 PRINTJAVADIR="$(dirname "$0")"
 PRINTJAVADIR="$(cd "$PRINTJAVADIR" || exit 1; pwd)"

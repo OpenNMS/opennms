@@ -33,6 +33,7 @@ import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.Objects;
 
 public interface Sender {
@@ -49,6 +50,15 @@ public interface Sender {
                 serverSocket.send(sendPacket);
             }
         };
+    }
+
+    static Sender tcp(final InetSocketAddress destinationAddress) throws IOException {
+        Objects.requireNonNull(destinationAddress);
+
+        final Socket socket = new Socket();
+        socket.connect(destinationAddress);
+
+        return stream(socket.getOutputStream());
     }
 
     static Sender stream(final OutputStream stream) {

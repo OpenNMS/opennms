@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,9 +40,9 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,7 +121,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
                 "JOIN ipInterface ON ifServices.ipInterfaceId = ipInterface.id " +
                 "JOIN node ON ipInterface.nodeId = node.nodeId " +
                 "JOIN service ON ifServices.serviceId = service.serviceId " +
-                "WHERE outages.ifRegainedService is NULL";
+                "WHERE outages.ifRegainedService is NULL AND outages.perspective is NULL";
         
         Querier querier = new Querier(m_dataSource, sql) {
         
@@ -210,10 +210,9 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
 
     /** {@inheritDoc} */
     @Override
-    public void onEvent(Event e) {
-        
+    public void onEvent(IEvent e) {
         if (isPassiveStatusEvent(e)) {
-            LOG.debug("onEvent: received valid registered passive status event: \n", EventUtils.toString(e));
+            LOG.debug("onEvent: received valid registered passive status event: \n", e);
             PassiveStatusValue statusValue = getPassiveStatusValue(e);
             setStatus(statusValue.getKey(), statusValue.getStatus());
             LOG.debug("onEvent: passive status for: {} is: {}", statusValue.getKey(), m_statusTable.get(statusValue.getKey()));
@@ -221,11 +220,11 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
         
         if (!isPassiveStatusEvent(e))
         {
-            LOG.debug("onEvent: received Invalid registered passive status event: \n", EventUtils.toString(e));
+            LOG.debug("onEvent: received Invalid registered passive status event: \n", e);
         }
     }
 
-    private PassiveStatusValue getPassiveStatusValue(Event e) {
+    private PassiveStatusValue getPassiveStatusValue(IEvent e) {
     		return new PassiveStatusValue(
     				EventUtils.getParm(e, EventConstants.PARM_PASSIVE_NODE_LABEL),
     				EventUtils.getParm(e, EventConstants.PARM_PASSIVE_IPADDR),
@@ -235,7 +234,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     		
 	}
 
-	boolean isPassiveStatusEvent(Event e) {
+	boolean isPassiveStatusEvent(IEvent e) {
 		return PASSIVE_STATUS_UEI.equals(e.getUei()) &&
 			EventUtils.getParm(e, EventConstants.PARM_PASSIVE_NODE_LABEL) != null &&
 			EventUtils.getParm(e, EventConstants.PARM_PASSIVE_IPADDR) != null &&

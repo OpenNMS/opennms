@@ -10,11 +10,8 @@
         <argument ref="pathOutageStatusProvider"></argument>
         <property name="topologyProviderInfo" ref="pathoutageTopologyProviderInfo" />
     </bean>
-    <bean id="pathOutageHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
+    <bean id="pathOutageMetaTopologyProvider" class="org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider">
         <argument ref="pathOutageProvider"/>
-    </bean>
-    <bean id="pathOutageMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
-        <argument ref="pathOutageHopProvider"/>
     </bean>
 
     <service ref="pathOutageMetaTopologyProvider" interface="org.opennms.features.topology.api.topo.MetaTopologyProvider">

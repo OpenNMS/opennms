@@ -1,0 +1,78 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+[[doc-guidelines-images]]
+= Include images
+
+Images may be useful to help explain and visualize complex problems.
+Nevertheless, minimize the use of screenshots. 
+Include screenshots only to illustrate a concept that may be difficult to understand or something that is not easy to locate in the UI.  
+
+Each major component in the documentation (development, deployment, operation) has two folders: `/images` (for graphics) and `/pages` (for text).
+
+The images folder structure mirrors the text structure. 
+For example, `/pages/metadata` amd `/images/metatdata`. 
+This makes is easier to organize and find images associated with an AsciiDoc text file. 
+
+.Example folder structure for image files
+[source]
+----
+.
+└── docs<1>
+    └── modules<2>
+        ├── ROOT <3>
+        ├── deployment <4>
+        ├── development <4>
+        ├── operation <4>
+        |   └── images<5>
+        |       ├── admin <6>
+        |       |   └── login.png <7>
+        |       |   └── restart-process.png <7>
+        |       |   └── restart-process.graphml <8>        
+        |   └── pages<9>
+        |       ├── admin <10>
+        |       |   └── introduction.adoc <11>
+        |       |   └── restart.adoc <11>            
+        └── antora.yml <12>
+----
+
+<1> This folder contains all documentation modules.
+<2> The modules for the documentation.
+<3> Root directory contains `index.adoc` file that Antora uses as the default start page of the component. 
+<4> The folder for components within the documentation.
+<5> Images folder. 
+Images should be *.png or *.jpg if included in the documentation.
+<6> Directory to mirror text directory structure.
+Images in this directory are associated with the text in the same directory in the `/pages` folder.  
+This folder should also include the editable version of images created from tools like yED.
+<7> The image file. 
+Use a unique name with no spaces.
+<8> Editable version of an image source file.
+<9> Pages folder.
+Contains .adoc files with text content. 
+<10> Folder for a specific documentation topic (equivalent to a chapter).
+Text files in this folder may be related. 
+<11> AsciiDoc source file.
+May include references to images stored in a corresponding folder in the `/images` hierarchy.
+<12> Component descriptor file Antora uses to help build the documentation.  
+
+
+IMPORTANT: All images share the same namespace; therefore, best practice is to use unique identifiers for images.
+
+To include an image file, make sure that it resides in the `images/` directory relative to the document you're including it in.
+Then use the following syntax to include it in the document:
+
+.First included image
+[source]
+----
+.This is a caption of the image
+image::docs/02_opennms-logo.png[]
+----
+
+Which is rendered as:
+
+image::docs/02_opennms-logo.png[logo, 350]
+
+
+The image path for the images you include is relative to the *.adoc source file where you use the image.

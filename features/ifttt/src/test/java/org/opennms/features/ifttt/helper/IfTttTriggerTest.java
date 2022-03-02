@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,32 +27,28 @@
  *******************************************************************************/
 package org.opennms.features.ifttt.helper;
 
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
-
-import java.io.IOException;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opennms.core.test.MockLogAppender;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(HttpClients.class)
+import javax.net.ssl.SSLContext;
+import java.io.IOException;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 public class IfTttTriggerTest {
     private static final String TEST_KEY = "abc123def456";
     private static final String TEST_EVENT = "xyz";
@@ -63,7 +59,7 @@ public class IfTttTriggerTest {
     }
 
     @Test
-    public void triggerTest() throws IOException {
+    public void triggerTest() throws IOException, Exception {
         final IfTttTrigger ifTttTrigger = new IfTttTrigger();
         final CloseableHttpResponse closeableHttpResponse = mock(CloseableHttpResponse.class);
 
@@ -71,10 +67,10 @@ public class IfTttTriggerTest {
 
         final CloseableHttpClient closeableHttpClient = mock(CloseableHttpClient.class);
 
-        when(closeableHttpClient.execute(Matchers.anyObject())).thenAnswer(new Answer<Object>() {
+        when(closeableHttpClient.execute(any())).thenAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                HttpPost httpPost = invocationOnMock.getArgumentAt(0, HttpPost.class);
+                HttpPost httpPost = invocationOnMock.getArgument(0);
                 Assert.assertEquals("POST https://maker.ifttt.com/trigger/" + TEST_EVENT + "/with/key/" + TEST_KEY + " HTTP/1.1", httpPost.getRequestLine().toString());
                 Assert.assertEquals("{\"value1\":\"abc1\",\"value2\":\"abc2\",\"value3\":\"abc3\"}", IOUtils.toString(httpPost.getEntity().getContent()));
                 return closeableHttpResponse;
@@ -82,7 +78,11 @@ public class IfTttTriggerTest {
         });
 
         mockStatic(HttpClients.class);
-        when(HttpClients.createDefault()).thenReturn(closeableHttpClient);
+        HttpClientBuilder httpClientBuilder = mock(HttpClientBuilder.class);
+        when(HttpClients.custom()).thenReturn(httpClientBuilder);
+        when(httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)).thenReturn(httpClientBuilder);
+        when(httpClientBuilder.setSSLContext(any())).thenReturn(httpClientBuilder);
+        when(httpClientBuilder.build()).thenReturn(closeableHttpClient);
 
         ifTttTrigger.key(TEST_KEY).event(TEST_EVENT).value1("abc1").value2("will-be-overwritten").value2("abc2").value3("abc3").trigger();
     }

@@ -1,0 +1,5 @@
+
+[[ref-protocol]]
+= Protocol Reference
+
+This section describes the available Telemetryd protocol adapters for parsing flow and/or telemetry data.

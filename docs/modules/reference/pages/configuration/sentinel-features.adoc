@@ -1,0 +1,361 @@
+= Sentinel features
+
+The following list contains some features which may be installed manually:
+
+[options="header"]
+|====
+| Feature                      | Required                                         | Description
+
+| sentinel-core
+| true
+| Base feature, installing all required bundles such as `opennms:health-check` and service requirements for other bundles, e.g. `sentinel-persistence`.
+
+| sentinel-jms
+| false
+| Provides connectivity to the {page-component-title} _ActiveMQ_ Broker.
+
+| sentinel-kafka
+| false
+| Provides connectivity to _Kafka_.
+
+| sentinel-flows
+| false
+| Feature which starts all dependencies to start processing flows.
+
+| sentinel-newts
+| false
+| Provides functionality to persist measurement data to Newts.
+
+| sentinel-telemetry-nxos
+| false
+| Lets you use `NxosGpbAdapter`
+
+| sentinel-telemetry-jti
+| false
+| Lets you use the `JtiGpbAdapter`
+
+| sentinel-telemetry-bmp
+| false
+| Lets you use the `BmpTelemetryAdapter`
+
+|====
+
+== Auto install
+
+In some cases it is desired to automatically configure the _Sentinel_ instance and also start required features/bundles.
+As _Sentinel_ is based on _Apache Karaf_ - which supports auto deployment by simply copying any kind of data
+to the `deploy` folder, _Sentinel_ can make use of that mechanism to enable auto or hot deployment.
+
+In order to do so, in most cases it is sufficient to copy a `features.xml` file to `$\{SENTINEL_HOME}/deploy`.
+This can be done even if the container is running.
+
+The chapter _Configure Flow Processing_ contains an example on how to automatically start them with _Sentinel_
+
+== Auto Start
+
+In some cases it might not be sufficient to auto-deploy/configure the container with a `features.xml` file.
+If more flexibility is required it is suggested to modify/copy `*.cfg` and `*.properties` files directly to the `$\{SENTINEL_HOME}/etc` directory.
+To automatically start features with the container, the file `$\{SENTINEL_HOME}/etc/org.apache.karaf.features.cfg` must be updated:
+
+[source]
+----
+# ...
+featuresBoot = \
+      (aries-blueprint, \
+      deployer), \
+      instance/4.3.2, \
+      package/4.3.2, \
+      log/4.3.2, \
+      scv/{page-component-version}, \
+      ssh/4.3.2, \
+      framework/4.3.2, \
+      system/4.3.2, \
+      eventadmin/4.3.2, \
+      feature/4.3.2, \
+      shell/4.3.2, \
+      management/4.3.2, \
+      service/4.3.2, \
+      system/4.3.2, \
+      eventadmin/4.3.2, \
+      feature/4.3.2, \
+      shell/4.3.2, \
+      management/4.3.2, \
+      service/4.3.2, \
+      jaas/4.3.2, \
+      shell-compat/4.3.2, \
+      diagnostic/4.3.2, \
+      wrap, \
+      bundle/4.3.2, \
+      config/4.3.2, \
+      kar/4.3.2, \
+      sentinel-jms, \ <1>
+      sentinel-flows <2>
+
+# ....
+----
+<1> Install and Start JMS communication feature
+<2> Install and Start Sentinel Flows feature
+
+== Auto configure flow processing for Sentinel
+
+The following examples illustrate a `features.xml` which configures the _Sentinel_ instance and automatically starts
+all required features to either consume messages via JMS (_ActiveMQ_) or _Kafka_.
+
+Simply copy it to `$\{SENTINEL_HOME}/deploy/`.
+
+.JMS
+[source, xml]
+-----
+<?xml version="1.0" encoding="UTF-8"?>
+<features
+        name="opennms-${project.version}"
+        xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
+>
+    <!-- Bootstrap feature to start all flow related features automatically -->
+    <feature name="autostart-sentinel-flows" version="${project.version}" start-level="100" install="auto">
+        <!-- Configure the controller itself -->
+        <config name="org.opennms.sentinel.controller">
+            location = SENTINEL
+            id = 00000000-0000-0000-0000-000000ddba11
+            http-url = http://127.0.0.1:8980/opennms
+            broker-url = failover:tcp://127.0.0.1:61616
+        </config>
+
+        <!-- Configure datasource connection -->
+        <config name="org.opennms.netmgt.distributed.datasource">
+            datasource.url = jdbc:postgresql://localhost:5432/opennms
+            datasource.username = postgres
+            datasource.password = postgres
+            datasource.databaseName = opennms
+        </config>
+        <!--
+            Starts the Netflow5Adapter to process Netflow5 Messages.
+            Be aware, that this requires a Listener with name "Netflow-5" on the Minion-side to have messages
+            processed properly.
+        -->
+        <config name="org.opennms.features.telemetry.adapters-netflow5">
+            name = Netflow-5
+            class-name = org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter
+        </config>
+        <!-- Point sentinel to the correct elastic endpoint -->
+        <config name="org.opennms.features.flows.persistence.elastic">
+            elasticUrl = http://elasticsearch:9200
+        </config>
+        <!-- Install JMS related features -->
+        <feature>sentinel-jms</feature>
+        <!-- Install Flow related features -->
+        <feature>sentinel-flows</feature>
+    </feature>
+</features>
+-----
+
+.Kafka
+[source, xml]
+-----
+<?xml version="1.0" encoding="UTF-8"?>
+<features
+        name="opennms-${project.version}"
+        xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
+>
+    <!-- Bootstrap bootstrap feature to start all flow related features automatically -->
+    <feature name="autostart-sentinel-telemetry-flows" version="${project.version}" start-level="200" install="auto">
+        <!-- Configure the controller itself -->
+        <config name="org.opennms.sentinel.controller">
+            location = SENTINEL
+            id = 00000000-0000-0000-0000-000000ddba11
+            http-url = http://127.0.0.1:8980/opennms
+            broker-url = failover:tcp://127.0.0.1:61616
+        </config>
+
+        <!-- Configure datasource connection -->
+        <config name="org.opennms.netmgt.distributed.datasource">
+            datasource.url = jdbc:postgresql://localhost:5432/opennms
+            datasource.username = postgres
+            datasource.password = postgres
+            datasource.databaseName = opennms
+        </config>
+        <!--
+            Starts the Netflow5Adapter to process Netflow5 Messages.
+            Be aware, that this requires a Listener with name "Netflow-5" on the Minion-side to have messages
+            processed properly.
+        -->
+        <config name="org.opennms.features.telemetry.adapters-netflow5">
+            name = Netflow-5
+            class-name = org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter
+        </config>
+        <!-- Point sentinel to the correct elastic endpoint -->
+        <config name="org.opennms.features.flows.persistence.elastic">
+            elasticUrl = http://elasticsearch:9200
+        </config>
+        <!--
+            Configure as Kafka Consumer.
+            All properties described at https://kafka.apache.org/0100/documentation.html#newconsumerconfigs are supported.
+        -->
+        <config name="org.opennms.core.ipc.sink.kafka.consumer">
+            group.id = OpenNMS
+            bootstrap.servers = localhost:9092
+        </config>
+        <!--
+            Configure as Kafka Producer for sending Events from Sentinel.
+            All properties described at https://kafka.apache.org/0100/documentation.html#producerconfigs are supported.
+        -->
+        <config name="org.opennms.core.ipc.sink.kafka">
+            bootstrap.servers = localhost:9092
+        </config>
+        <!-- Install Kafka related features -->
+        <feature>sentinel-kafka</feature>
+        <!-- Install flow related features -->
+        <feature>sentinel-flows</feature>
+    </feature>
+</features>
+-----
+
+[[ga-kafka-configuration]]
+== Kafka Configuration
+
+Each Minion works as a producer and must be configured beforehand.
+Please refer to section <<ga-minion-kafka-producer-configuration, Minion Kafka Producer Configuration>> on how to configure _Minion_ as a _Kafka Producer_.
+
+Each _Sentinel_ works as a Consumer and can be configured in the file `$\{SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg`.
+Either manually or via the `config:edit org.opennms.core.ipc.sink.kafka.consumer` statement.
+For supported properties, see link:https://kafka.apache.org/10/documentation.html#newconsumerconfigs[here]
+
+By default each _Kafka Consumer_ starts consuming messages immediately after the feature has been started.
+It is possible to set a property `org.opennms.core.ipc.sink.initialSleepTime` to define an initial sleep time in ms before any messages are consumed.
+In order to set this up, please add an entry to the end of the file `$\{SENTINEL_HOME}/etc/system.properties`:
+
+[source]
+----
+# Initial delay of 5 seconds before consuming of messages is started in milliseconds
+org.opennms.core.ipc.sink.initialSleepTime=5000
+----
+
+== Persisting Collection Sets to Newts
+
+In the previous chapter it is described on how to setup _{page-component-title}_, _Minion_ and _Sentinel_ in order to distribute the processing of flows.
+However, it only covered flow processing adapters, but there are more, e.g. the `NxosGpbAdapter`, which can also be run on a _Sentinel_.
+
+The configuration of _Newts_ for _Sentinel_ uses the same properties as for _{page-component-title}_.
+The only difference is, that the properties for _Sentinel_ are stored in `/opt/sentinel/etc/org.opennms.newts.config.cfg` instead of `*.properties` files.
+The name of each property is the same as for _{page-component-title}_ without the `org.opennms.newts.config` prefix.
+The following example shows a custom _Newts_ configuration using the _Sentinel_'s _Karaf Shell_.
+
+----
+$ ssh -p 8301 admin@localhost
+----
+
+----
+admin@sentinel> config:edit org.opennms.newts.config
+admin@sentinel> config:property-set hostname localhost
+admin@sentinel> config:property-set port 9042
+admin@sentinel> config:property-set cache.strategy org.opennms.netmgt.newts.support.GuavaSearchableResourceMetadataCache
+admin@sentinel> config:update
+----
+
+=== Adapters
+
+This chapter describes the various adapters which may contain sample data which may be stored to a Persistence Storage and can also run on a _Sentinel_.
+At the moment only _Newts_ is supported as a Persistence Storage.
+See chapter <<ga-sentinel-configure-newts>> on how to configure _Newts_.
+
+In order to get it to work properly, please note, that an appropriate listener on the _Minion_ must also be configured.
+The name of the listener should share the same name on _Sentinel_.
+
+==== SFlowTelemetryAdapter
+
+In order to use this adapter, the feature `sentinel-flows` and `sentinel-newts` must be installed.
+In addition either `sentinel-jms` or `sentinel-kafka` should be installed and configured properly.
+See the previous _Flow Processing_ chapter for more details.
+
+If only sample data should be persisted, the following commands can be run on the _Sentinel_'s Karaf Shell
+
+----
+$ ssh -p 8301 admin@localhost
+----
+
+----
+admin@sentinel> config:edit --alias sflow --factory org.opennms.features.telemetry.adapters
+admin@sentinel> config:property-set name SFlow-Telemetry
+admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowTelemetryAdapter
+admin@sentinel> config:property-set parameters.script  /opt/sentinel/etc/sflow-host.groovy
+admin@sentinel> config:update
+----
+
+If SFlow flows and the sample data should be processed, multiple adapters can be configured:
+
+----
+config:edit --alias sflow-telemetry --factory org.opennms.features.telemetry.adapters
+config:property-set name SFlow
+config:property-set adapters.1.name SFlow-Adapter
+config:property-set adapters.1.class-name org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapter
+config:property-set adapters.2.name SFlow-Telemetry
+config:property-set adapters.2.class-name org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowTelemetryAdapter
+config:property-set adapters.2.parameters.script /opt/sentinel/etc/sflow-host.groovy
+config:update
+----
+
+Please note, that in both cases the file `/opt/sentinel/etc/sflow-host.groovy` must be provided manually, e.g. by manually copying it over from _{page-component-title}_.
+
+==== NxosGpbAdapter
+
+In order to use this adapter, the feature `sentinel-telemetry-nxos` and `sentinel-newts` must be installed.
+In addition either `sentinel-jms` or `sentinel-kafka` should be installed and configured properly.
+See the previous _Flow Processing_ chapter for more details.
+
+Besides this, configuration files from _{page-component-title}_ must be copied to _Sentinel_ to `/opt/sentinel/etc`.
+The following files and directories are required:
+
+ * `$\{OPENNMS_HOME}/etc/datacollection`
+ * `$\{OPENNMS_HOME}/etc/datacollection-config.xml`
+ * `$\{OPENNMS_HOME}/etc/resource-types.d`
+
+Afterwards the adapter can be set up:
+
+----
+$ ssh -p 8301 admin@localhost
+----
+
+----
+admin@sentinel> config:edit --alias nxos --factory org.opennms.features.telemetry.adapters
+admin@sentinel> config:property-set name NXOS
+admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosGpbAdapter
+admin@sentinel> config:property-set parameters.script /opt/sentinel/etc/cisco-nxos-telemetry-interface.groovy
+admin@sentinel> config:update
+----
+
+Please note, that the file `/opt/sentinel/etc/cisco-nxos-telemetry-interface.groovy` must also be provided manually,
+e.g. by manually copying it over from _{page-component-title}_.
+
+==== JtiGpbAdapter
+
+In order to use this adapter, the feature `sentinel-telemetry-jti` and `sentinel-newts` must be installed.
+In addition either `sentinel-jms` or `sentinel-kafka` should be installed and be configured properly.
+See the previous _Flow Processing_ chapter for more details.
+
+Besides this, configuration files from _{page-component-title}_ must be copied to _Sentinel_ to `/opt/sentinel/etc`.
+The following files and directories are required:
+
+ * `$\{OPENNMS_HOME}/etc/datacollection`
+ * `$\{OPENNMS_HOME}/etc/datacollection-config.xml`
+ * `$\{OPENNMS_HOME}/etc/resource-types.d`
+
+Afterwards the adapter can be set up:
+
+----
+$ ssh -p 8301 admin@localhost
+----
+
+----
+admin@sentinel> config:edit --alias jti --factory org.opennms.features.telemetry.adapters
+admin@sentinel> config:property-set name JTI
+admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter
+admin@sentinel> config:property-set parameters.script /opt/sentinel/etc/junos-telemetry-interface.groovy
+admin@sentinel> config:update
+----
+
+Please note, that the file `/opt/sentinel/etc/junos-telemetry-interface.groovy` must also be provided manually,
+e.g. by manually copying it over from _{page-component-title}_.

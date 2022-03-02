@@ -1,0 +1,29 @@
+site:
+  title: Horizon
+  start_page: horizon::index.adoc
+content:
+  sources:
+  - url: .
+    branches: HEAD
+    start_path: docs
+ui:
+  bundle:
+    url: https://github.com/opennms-forge/antora-ui-opennms/releases/download/v2.0.4/ui-bundle.zip
+asciidoc:
+  attributes:
+    experimental: true
+    stem: latexmath
+    idprefix: ''
+    idseparator: '-'
+    page-pagination: ''
+    source-language: asciidoc@
+    distribution: 'Horizon'
+    tabs: tabs
+  extensions:
+    - ./docs/lib/tabs-block.js
+output:
+  clean: true
+  dir: ./public
+  destinations:
+  - provider: fs
+  - provider: archive

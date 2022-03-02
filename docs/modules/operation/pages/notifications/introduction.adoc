@@ -1,0 +1,21 @@
+
+[[ga-notifications-introduction]]
+= Notifications
+
+{page-component-title} uses notifications to inform users about an event that happened in the network, without the user having to log in and look at the UI.
+
+Common notification methods are email and paging, but notification mechanisms also exist for:
+
+* Browser-based desktop notifications
+* Arbitrary HTTP GET and POST operations
+* Arbitrary external commands
+* Asterisk call origination
+* IRCcat Internet Relay Chat bot
+* SNMP traps
+* Slack, Mattermost, and other API-compatible team chat platforms
+* Twitter, GNU Social, and other API-compatible microblog services
+* User-provided scripts in any JSR-223 compatible language
+* XMPP
+
+The notification daemon Notifd creates and sends notifications according to configured rules when selected events occur in {page-component-title}.
+

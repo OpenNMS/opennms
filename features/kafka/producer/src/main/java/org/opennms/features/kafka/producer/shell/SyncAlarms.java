@@ -44,7 +44,7 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 
-@Command(scope = "kafka-producer", name = "sync-alarms", description = "Triggers a syncrhonization of the alarms topic against the database.")
+@Command(scope = "opennms", name = "kafka-sync-alarms", description = "Triggers a syncrhonization of the alarms topic against the database.")
 @Service
 public class SyncAlarms implements Action {
 
@@ -68,7 +68,7 @@ public class SyncAlarms implements Action {
             alarmDataStore.init();
         }
 
-        if (!waitForAlarmDataStore(alarmDataStore)) {
+        if (!waitForAlarmDataStore(alarmDataStore, 15, TimeUnit.SECONDS)) {
             return null;
         }
 
@@ -97,7 +97,7 @@ public class SyncAlarms implements Action {
         });
     }
 
-    protected static boolean waitForAlarmDataStore(AlarmDataStore alarmDataStore) {
+    protected static boolean waitForAlarmDataStore(AlarmDataStore alarmDataStore, long timeout, TimeUnit unit) {
         if (!alarmDataStore.isEnabled()) {
             System.out.println("The alarm data store is currently disabled and must be enabled for this shell command to function.");
             return false;
@@ -106,8 +106,9 @@ public class SyncAlarms implements Action {
         // Wait for the alarm data store to be ready
         if (!isAlarmDataStoreReady(alarmDataStore)) {
             final long startTime = System.currentTimeMillis();
+            final long endTime = startTime + unit.toMillis(timeout);
             System.out.println("Waiting for alarm data store to be ready..");
-            while (true) {
+            while (System.currentTimeMillis() < endTime) {
                 try {
                     System.out.print(".");
                     Thread.sleep(TimeUnit.SECONDS.toMillis(1));
@@ -120,6 +121,8 @@ public class SyncAlarms implements Action {
                     return false;
                 }
             }
+            System.out.printf("\nAlarm data store was not ready in %d %s. Try again and see logs if issue persists.\n", timeout, unit.name());
+            return false;
         }
         return true;
     }

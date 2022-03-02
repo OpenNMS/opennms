@@ -1,3 +1,24 @@
+<style type="text/css">
+    onms-time-input {
+        display: inline-block;
+    }
+    .iso-datetime {
+        font-family: monospace;
+    }
+    .zone {
+        display: inline;
+        margin: unset;
+        padding: 0.5rem;
+        vertical-align: middle;
+    }
+    .next-scheduled-time {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    td {
+        padding-right: 0.4rem;
+    }
+</style>
 <form class="form" novalidate>
     <div class="">
         <div class="form-check">
@@ -53,6 +74,7 @@
                     ng-model="options.at"
                     options="options.at"
             ></onms-time-input>
+            <span class="zone">{{options.timezone}}</span>
         </div>
 
         <!-- Other options -->
@@ -81,6 +103,7 @@
                     ng-model="options.at"
                     options="options.at"
             ></onms-time-input>
+            <span class="zone">{{options.timezone}}</span>
         </div>
 
         <div class="">
@@ -153,11 +176,53 @@
     <div class="" ng-if="options.type === 'custom'">
         <div class="form-inline">
             <input id="customCronExpressionInput" type="text" class="form-control" ng-class="{'is-invalid': errors.cronExpression}" ng-model="options.cronExpression ">
+            <span class="zone">{{options.timezone}}</span>
             <a href="http://www.quartz-scheduler.org/documentation/quartz-2.2.2/tutorials/crontrigger.html" class="ml-2" target="_blank" title="Help me">
                 <i class="fa fa-question-circle" aria-hidden="true"></i>
             </a>
             <p class="invalid-feedback" ng-if="errors.cronExpression">{{errors.cronExpression}}</p>
         </div>
+    </div>
+
+    <div class="next-scheduled-time">
+        <label>
+            Next scheduled time:
+        </label>
+        <table>
+            <tr>
+                <td>
+                    Report:
+                </td>
+                <td>
+                    <span class="iso-datetime">{{options.getNextExecution(options.timezone).format("llll")}}</span>
+                </td>
+                <td>
+                    ({{options.timezone}})
+                </td>
+            </tr>
+            <tr ng-if="options.getServerZone()">
+                <td>
+                    Server:
+                </td>
+                <td>
+                    <span class="iso-datetime">{{options.getNextExecution(options.getServerZone()).format("llll")}}</span>
+                </td>
+                <td>
+                    ({{options.getServerZone()}})
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Browser:
+                </td>
+                <td>
+                    <span class="iso-datetime">{{options.getNextExecution(options.getBrowserZone()).format("llll")}}</span>
+                </td>
+                <td>
+                    ({{options.getBrowserZone()}})
+                </td>
+            </tr>
+        </table>
     </div>
 
     <div class="text-muted mt-2" ng-if="options.showDebugOptions">

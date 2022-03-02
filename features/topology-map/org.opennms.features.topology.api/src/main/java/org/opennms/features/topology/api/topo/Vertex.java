@@ -48,20 +48,6 @@ public interface Vertex extends VertexRef {
 
 	String getStyleName();
 
-	boolean isGroup();
-
-	/**
-	 * TODO: To support Many-to-Many grouping, this function will need to be
-	 * enhanced add to a list of parents.
-	 */
-	void setParent(VertexRef parent);
-
-	/**
-	 * TODO: To support Many-to-Many grouping, this function will need to be
-	 * enhanced to return an array of vertices.
-	 */
-	VertexRef getParent();
-
 	Integer getX();
 
 	Integer getY();

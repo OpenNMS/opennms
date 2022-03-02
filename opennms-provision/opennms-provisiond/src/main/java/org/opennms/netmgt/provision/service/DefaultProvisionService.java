@@ -67,6 +67,7 @@ import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
@@ -98,6 +99,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.snmp.SnmpProfileMapper;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -112,6 +114,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.google.common.base.Strings;
+
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 /**
  * DefaultProvisionService
@@ -198,6 +205,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Autowired
     private SnmpProfileMapper m_snmpProfileMapper;
 
+    private Tracer m_tracer;
+
     private final ThreadLocal<Map<String, OnmsServiceType>> m_typeCache = new ThreadLocal<Map<String, OnmsServiceType>>();
     private final ThreadLocal<Map<String, OnmsCategory>> m_categoryCache = new ThreadLocal<Map<String, OnmsCategory>>();
 
@@ -229,19 +238,19 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public void insertNode(final OnmsNode node) {
+    public void insertNode(final OnmsNode node, final String monitorKey) {
         updateLocation(node);
         m_nodeDao.save(node);
         m_nodeDao.flush();
 
-        final EntityVisitor visitor = new AddEventVisitor(m_eventForwarder);
+        final EntityVisitor visitor = new AddEventVisitor(m_eventForwarder, monitorKey);
         node.visit(visitor);
     }
 
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public void updateNode(final OnmsNode node, String rescanExisting) {
+    public void updateNode(final OnmsNode node, String rescanExisting, String monitorKey) {
         updateLocation(node);
         final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
         String prevLocation = dbNode.getLocation().getLocationName();
@@ -261,7 +270,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             accumulator.sendNow(EventUtils.createNodeLocationChangedEvent(PROVISIOND, dbNode.getId(), dbNode.getLabel(), prevLocation, currentLocation));
         }
         accumulator.flush();
-        final EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder, rescanExisting);
+        final EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder, rescanExisting, monitorKey);
         dbNode.visit(eventAccumlator);
     }
 
@@ -411,7 +420,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public OnmsIpInterface updateIpInterfaceAttributes(final Integer nodeId, final OnmsIpInterface scannedIface) {
+    public OnmsIpInterface updateIpInterfaceAttributes(final Integer nodeId, final OnmsIpInterface scannedIface, String monitorKey) {
         final OnmsSnmpInterface snmpInterface = scannedIface.getSnmpInterface();
         if (snmpInterface != null && snmpInterface.getIfIndex() != null) {
             scannedIface.setSnmpInterface(updateSnmpInterfaceAttributes(nodeId, snmpInterface));
@@ -441,6 +450,12 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
                 dbIface.updateSnmpInterface(scannedIface);
                 dbIface.mergeInterfaceAttributes(scannedIface);
+
+                // handle metadata that was added using policies
+                for(final OnmsMetaData onmsMetaData : scannedIface.getRequisitionedMetaData()) {
+                    dbIface.addMetaData(onmsMetaData.getContext(), onmsMetaData.getKey(), onmsMetaData.getValue());
+                }
+
                 LOG.info("Updating IpInterface {}", dbIface);
                 m_ipInterfaceDao.update(dbIface);
                 m_ipInterfaceDao.flush();
@@ -460,7 +475,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 saveOrUpdate(scannedIface);
                 m_ipInterfaceDao.flush();
 
-                final AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
+                final AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder, monitorKey);
                 scannedIface.visit(visitor);
 
                 return scannedIface;
@@ -513,14 +528,14 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public OnmsMonitoredService addMonitoredService(final Integer ipInterfaceId, final String svcName) {
+    public OnmsMonitoredService addMonitoredService(final Integer ipInterfaceId, final String svcName, final String monitorKey) {
         final OnmsIpInterface iface = m_ipInterfaceDao.get(ipInterfaceId);
         assertNotNull(iface, "could not find interface with id %d", ipInterfaceId);
-        return addMonitoredService(iface, svcName);
+        return addMonitoredService(iface, svcName, monitorKey);
 
     }
 
-    private OnmsMonitoredService addMonitoredService(final OnmsIpInterface iface, final String svcName) {
+    private OnmsMonitoredService addMonitoredService(final OnmsIpInterface iface, final String svcName, final String monitorKey) {
         final OnmsServiceType svcType = createServiceTypeIfNecessary(svcName);
 
         return new CreateIfNecessaryTemplate<OnmsMonitoredService, MonitoredServiceDao>(m_transactionManager, m_monitoredServiceDao) {
@@ -537,7 +552,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 m_ipInterfaceDao.saveOrUpdate(iface);
                 m_ipInterfaceDao.flush();
 
-                final AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
+                final AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder, monitorKey);
                 svc.visit(visitor);
 
                 return svc;
@@ -549,10 +564,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public OnmsMonitoredService addMonitoredService(final Integer nodeId, final String ipAddress, final String svcName) {
+    public OnmsMonitoredService addMonitoredService(final Integer nodeId, final String ipAddress, final String svcName, final String monitorKey) {
         final OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
         assertNotNull(iface, "could not find interface with nodeid %d and ipAddr %s", nodeId, ipAddress);
-        return addMonitoredService(iface, svcName);
+        return addMonitoredService(iface, svcName, monitorKey);
     }
 
     @Transactional
@@ -866,8 +881,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional(readOnly=true)
     @Override
-    public NodeScanSchedule getScheduleForNode(final int nodeId, final boolean force) {
-        return createScheduleForNode(m_nodeDao.get(nodeId), force);
+    public NodeScanSchedule getScheduleForNode(final int nodeId, final boolean force, final String monitorKey) {
+        return createScheduleForNode(m_nodeDao.get(nodeId), force, monitorKey);
     }
 
     /**
@@ -877,13 +892,13 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
      */
     @Transactional(readOnly=true)
     @Override
-    public List<NodeScanSchedule> getScheduleForNodes() {
+    public List<NodeScanSchedule> getScheduleForNodes(String monitorKey) {
         Assert.notNull(m_nodeDao, "Node DAO is null and is not supposed to be");
         final List<OnmsNode> nodes = isDiscoveryEnabled() ? m_nodeDao.findAll() : m_nodeDao.findAllProvisionedNodes();
 
         final List<NodeScanSchedule> scheduledNodes = new ArrayList<>();
         for(final OnmsNode node : nodes) {
-            final NodeScanSchedule nodeScanSchedule = createScheduleForNode(node, false);
+            final NodeScanSchedule nodeScanSchedule = createScheduleForNode(node, false, monitorKey);
             if (nodeScanSchedule != null) {
                 scheduledNodes.add(nodeScanSchedule);
             }
@@ -892,7 +907,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         return scheduledNodes;
     }
 
-    private NodeScanSchedule createScheduleForNode(final OnmsNode node, final boolean force) {
+    private NodeScanSchedule createScheduleForNode(final OnmsNode node, final boolean force, final String monitorKey) {
         Assert.notNull(node, "Node may not be null");
         final String actualForeignSource = node.getForeignSource();
         if (actualForeignSource == null && !isDiscoveryEnabled()) {
@@ -920,7 +935,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 }
             }
 
-            return new NodeScanSchedule(node.getId(), actualForeignSource, node.getForeignId(), node.getLocation(), initialDelay, scanInterval);
+            return new NodeScanSchedule(node.getId(), actualForeignSource, node.getForeignId(), node.getLocation(), initialDelay, scanInterval, monitorKey);
         } catch (final ForeignSourceRepositoryException e) {
             LOG.warn("unable to get foreign source '{}' from repository", effectiveForeignSource, e);
             return null;
@@ -1041,6 +1056,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 final EventAccumulator accumulator = new EventAccumulator(m_eventForwarder);
 
                 final boolean changed = handleCategoryChanges(dbNode);
+
+                // handle metadata that was added using policies
+                for (final OnmsMetaData onmsMetaData : node.getRequisitionedMetaData()) {
+                    dbNode.addMetaData(onmsMetaData.getContext(), onmsMetaData.getKey(), onmsMetaData.getValue());
+                }
 
                 dbNode.mergeNodeAttributes(node, accumulator);
                 node.getAssetRecord().setId(dbNode.getAssetRecord().getId());
@@ -1262,7 +1282,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource, final String locationString) {
+    public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource, final String locationString, final String monitorKey) {
         final String effectiveForeignSource = foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource;
         final String effectiveLocationName = MonitoringLocationUtils.isDefaultLocationName(locationString) ? null : locationString;
 
@@ -1325,7 +1345,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             // we do this here rather than in the doInsert method because
             // the doInsert may abort
-            node.visit(new AddEventVisitor(m_eventForwarder));
+            node.visit(new AddEventVisitor(m_eventForwarder, monitorKey));
         }
 
         return node;
@@ -1422,6 +1442,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
 
     @Override
+    public void setTracer(Tracer tracer) {
+        m_tracer = tracer;
+    }
+    
+    @Override
     public LocationAwareDnsLookupClient getLocationAwareDnsLookupClient() {
         return m_locationAwareDnsLookuClient;
     }
@@ -1452,5 +1477,23 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     public void setEventForwarder(final EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
+    }
+
+    public Span buildAndStartSpan(String name, SpanContext spanContext) {
+        if(m_tracer == null) {
+            m_tracer = GlobalTracer.get();
+        }
+        if (spanContext == null) {
+            return m_tracer.buildSpan("Provisiond-" + name).start();
+        } else {
+            return m_tracer.buildSpan("Provisiond-" + name).asChildOf(spanContext).start();
+        }
+    }
+
+    public static void setTag(Span span, String name, String value) {
+        if ((!Strings.isNullOrEmpty(name)) && (!Strings.isNullOrEmpty(value))) {
+            span.setTag(name, value);
+        }
+
     }
 }

@@ -49,7 +49,7 @@ public class TableUtils {
      * @param rowKeys list of row keys to match
      * @return a sorted table
      */
-    protected static <C,V> Table<Directional<String>, C, V> sortTableByRowKeys(Table<Directional<String>, C, V> table,
+    public static <C,V> Table<Directional<String>, C, V> sortTableByRowKeys(Table<Directional<String>, C, V> table,
                                                                                 List<String> rowKeys) {
 
         final ImmutableTable.Builder<Directional<String>, C, V> builder = ImmutableTable.builder();

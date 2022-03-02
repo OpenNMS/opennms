@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +65,6 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
     
     public static class ThresholdEvaluatorStateAbsoluteChange extends AbstractThresholdEvaluatorState<ThresholdEvaluatorStateAbsoluteChange.State> {
         private BaseThresholdDefConfigWrapper m_thresholdConfig;
-        private double m_change;
 
         static class State extends AbstractThresholdEvaluatorState.AbstractState {
             private static final long serialVersionUID = 1L;
@@ -108,12 +106,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
 
             Assert.isTrue(TYPE.equals(thresholdConfig.getType()), "threshold for ds-name '" + thresholdConfig.getDatasourceExpression() + "' has type of '" + thresholdConfig.getType() + "', but this evaluator only supports thresholds with a 'type' value of '" + TYPE + "'");
 
-            Assert.isTrue(!Double.isNaN(thresholdConfig.getValue()), "threshold must have a 'value' value that is a number");
-            Assert.isTrue(thresholdConfig.getValue() != Double.POSITIVE_INFINITY && thresholdConfig.getValue() != Double.NEGATIVE_INFINITY, "threshold must have a 'value' value that is not positive or negative infinity");
-            Assert.isTrue(thresholdConfig.getValue() != 0.0, "threshold must not be 0 for absolute change");
-
             m_thresholdConfig = thresholdConfig;
-            setChange(thresholdConfig.getValue());
         }
 
         @Override
@@ -122,11 +115,16 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
         }
 
         @Override
-        public Status evaluateAfterFetch(double dsValue) {
+        public Status evaluateAfterFetch(double dsValue, ThresholdValues thresholdValues) {
             if(!Double.isNaN(getLastSample())) {
-                double threshold = getLastSample()+getChange();
+                Double change = thresholdValues != null && thresholdValues.getThresholdValue() != null ?
+                        thresholdValues.getThresholdValue() : m_thresholdConfig.getValue();
+                if(change == null) {
+                    return Status.NO_CHANGE;
+                }
+                double threshold = getLastSample()+ change;
 
-                if (getChange() < 0.0) {
+                if (change < 0.0) {
                     //Negative change; care if the value is *below* the threshold
                     if (dsValue <= threshold) {
                         setPreviousTriggeringSample(getLastSample());
@@ -160,20 +158,23 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
         }
 
         @Override
-        public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource) {
+        public Event getEventForState(Status status, Date date, double dsValue, ThresholdValues thresholdValues, CollectionResourceWrapper resource) {
             if (status == Status.TRIGGERED) {
                 final String uei=getThresholdConfig().getTriggeredUEI().orElse(EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI);
-                return createBasicEvent(uei, date, dsValue, resource);
+                return createBasicEvent(uei, date, dsValue, thresholdValues, resource);
             } else {
                 return null;
             }
         }
         
-        private Event createBasicEvent(String uei, Date date, double dsValue, CollectionResourceWrapper resource) {
+        private Event createBasicEvent(String uei, Date date, double dsValue, ThresholdValues thresholdValues, CollectionResourceWrapper resource) {
+            if(thresholdValues == null) {
+                thresholdValues = state.getThresholdValues();
+            }
             Map<String,String> params = new HashMap<String,String>();
             params.put("previousValue", formatValue(getPreviousTriggeringSample()));
-            params.put("changeThreshold", Double.toString(getThresholdConfig().getValue()));
-            params.put("trigger", Integer.toString(getThresholdConfig().getTrigger()));
+            params.put("changeThreshold", Double.toString(thresholdValues.getThresholdValue()));
+            params.put("trigger", Integer.toString(thresholdValues.getTrigger()));
             return createBasicEvent(uei, date, dsValue, resource, params);
         }
 
@@ -186,14 +187,6 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
                 state.m_previousTriggeringSample = previousTriggeringSample;
                 markDirty();
             }
-        }
-
-        private double getChange() {
-            return m_change;
-        }
-
-        private void setChange(double change) {
-            m_change = change;
         }
 
         @Override

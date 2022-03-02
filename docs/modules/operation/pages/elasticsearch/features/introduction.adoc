@@ -1,0 +1,13 @@
+
+= Feature Matrix
+
+The following features leverage Elasticsearch and are compatible with version 7.x.
+
+[options="header, autowidth"]
+|===
+| Name                       | Enabled by Default | Feature
+| Event and Alarm Forwarder  | no                 | opennms-es-rest
+| Flow Support               | yes                | opennms-flows
+| Situation Feedback (ALEC)  | no                 | opennms-situation-feedback
+| Alarm History              | yes                | opennms-alarm-history-elastic
+|===

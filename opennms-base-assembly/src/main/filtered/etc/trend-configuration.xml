@@ -25,7 +25,7 @@
         <query>
             <![CDATA[
                 select (
-                    select count(distinct nodeid) from outages o, events e where e.eventid = o.svclosteventid and iflostservice < E and (ifregainedservice is null or ifregainedservice > E)
+                    select count(distinct nodeid) from outages o, events e where o.perspective is null and e.eventid = o.svclosteventid and iflostservice < E and (ifregainedservice is null or ifregainedservice > E)
                 ) from (
                     select now() - interval '1 hour' * (O + 1) AS S, now() - interval '1 hour' * O as E from generate_series(0, 23) as O
                 ) I order by S;
@@ -132,7 +132,7 @@
         <query>
             <![CDATA[
                 select (
-                    select count(*) from outages where iflostservice > S and iflostservice <= E
+                    select count(*) from outages where perspective is null and iflostservice > S and iflostservice <= E
                 ) from (
                     select now() - interval '1 hour' * (O + 1) AS S, now() - interval '1 hour' * O as E from generate_series(0, 23) as O
                 ) I order by S;
@@ -164,7 +164,7 @@
         <query>
             <![CDATA[
                 select (
-                    select count(*) from outages where iflostservice < E and (ifregainedservice is null or ifregainedservice > E)
+                    select count(*) from outages where perspective is null and iflostservice < E and (ifregainedservice is null or ifregainedservice > E)
                 ) from (
                     select now() - interval '1 hour' * (O + 1) AS S, now() - interval '1 hour' * O as E from generate_series(0, 23) as O
                 ) I order by S;

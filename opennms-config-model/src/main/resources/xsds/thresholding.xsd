@@ -376,47 +376,60 @@
       </annotation>
     </attribute>
 
-    <attribute name="value" type="double" use="required">
-      <annotation>
-        <documentation>
-          Threshold value. If the datasource value rises above this
-          value, in the case of a "high" threshold, or drops below this
-          value, in the case of a "low" threshold the threshold is
-          considered to have been exceeded and the exceeded count will
-          be incremented. Any time that the datasource value drops below
-          this value, in the case of a "high" threshold, or rises above
-          this value, in the case of a "low" threshold the exceeded
-          count is reset back to zero. Whenever the exceeded count
-          reaches the trigger value then a threshold event is generated.
-        </documentation>
-      </annotation>
+    <attribute name="value" use="required">
+      <simpleType>
+        <annotation>
+          <documentation>
+            Threshold value. If the datasource value rises above this
+            value, in the case of a "high" threshold, or drops below this
+            value, in the case of a "low" threshold the threshold is
+            considered to have been exceeded and the exceeded count will
+            be incremented. Any time that the datasource value drops below
+            this value, in the case of a "high" threshold, or rises above
+            this value, in the case of a "low" threshold the exceeded
+            count is reset back to zero. Whenever the exceeded count
+            reaches the trigger value then a threshold event is generated.
+          </documentation>
+        </annotation>
+        <restriction base="string">
+          <!-- Combines two patterns, one pattern limits values to float values and other limits to metadata pattern-->
+          <pattern value="[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?|\$\{(.+:.+)\}"/>
+        </restriction>
+      </simpleType>
     </attribute>
 
-    <attribute name="rearm" type="double" use="required">
-      <annotation>
-        <documentation>
-          Rearm value. Identifies the value that the datasource must
-          fall below, in the case of a "high" threshold or rise above,
-          in the case of a "low" threshold, before the threshold will
-          rearm, and once again be eligible to generate an event.
-        </documentation>
-      </annotation>
+    <attribute name="rearm
+" use="required">
+      <simpleType>
+        <annotation>
+          <documentation>
+            Rearm value. Identifies the value that the datasource must
+            fall below, in the case of a "high" threshold or rise above,
+            in the case of a "low" threshold, before the threshold will
+            rearm, and once again be eligible to generate an event.
+          </documentation>
+        </annotation>
+        <restriction base="string">
+          <!-- Combines two patterns, one pattern limits values to float values and other limits to metadata pattern-->
+          <pattern value="[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?|\$\{(.+:.+)\}"/>
+        </restriction>
+      </simpleType>
     </attribute>
 
     <attribute name="trigger" use="required">
-      <annotation>
-        <documentation>
-          Trigger value. Identifies the number of consecutive polls that
-          the datasource value must exceed the defined threshold value
-          before a threshold event is generated.
-        </documentation>
-      </annotation>
-
       <simpleType>
-        <restriction base="int">
-          <minInclusive value="1"/>
+        <annotation>
+          <documentation>
+            Trigger value. Identifies the number of consecutive polls that
+            the datasource value must exceed the defined threshold value
+            before a threshold event is generated.
+          </documentation>
+        </annotation>
+        <restriction base="string">
+          <!--  Combines two patterns, one pattern limits values positive integer and other limits to metadata pattern -->
+          <pattern value="[0-9]*[1-9][0-9]*|\$\{(.+:.+)\}"/>
         </restriction>
-      </simpleType>      
+      </simpleType>
     </attribute>
 
     <attribute name="ds-label" type="string" use="optional">

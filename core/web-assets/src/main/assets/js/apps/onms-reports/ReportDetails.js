@@ -1,6 +1,8 @@
 import Types from '../../lib/onms-schedule-editor/scripts/Types';
 import ScheduleOptions from '../../lib/onms-schedule-editor/scripts/ScheduleOptions';
-import ContextError from "../../lib/onms-http/ContextError";
+import ContextError from '../../lib/onms-http/ContextError';
+import Util from 'lib/util';
+
 import moment from 'moment';
 require('moment-timezone');
 
@@ -23,9 +25,10 @@ export default class ReportDetails {
         this.format = input.deliveryOptions && input.deliveryOptions.format || 'PDF';
         this.id = input.id;
         this.errors = input.errors || {};
+        this.timezoneEditable = true;
 
         // In order to have the ui look the same as before, just order the parameters
-        const order = ['string', 'integer', 'float', 'double', 'date', 'timezone'];
+        const order = ['string', 'integer', 'float', 'double', 'timezone', 'date'];
         this.parameters.sort(function(left, right) {
             return order.indexOf(left.type) - order.indexOf(right.type);
         });
@@ -41,7 +44,9 @@ export default class ReportDetails {
             }
 
             // Hide certain items
-            parameter.hidden = parameter.name === 'GRAFANA_ENDPOINT_UID' || parameter.name === 'GRAFANA_DASHBOARD_UID';
+            parameter.hidden = parameter.name === 'GRAFANA_ENDPOINT_UID'
+                || parameter.name === 'GRAFANA_DASHBOARD_UID'
+                || parameter.name === 'dateFormat';
 
             // index parameters
             this.parametersByName[parameter.name] = parameter;
@@ -54,22 +59,11 @@ export default class ReportDetails {
             // However this format is ISO conform, so we always use it instead
             parameter.internalFormat = 'YYYY-MM-DD HH:mm';
             parameter.internalLocale = 'en'; // Always assume en as locale
-            parameter.internalValue = moment(parameter.date, parameter.internalFormat).hours(parameter.hours).minutes(parameter.minutes).toDate();
+            parameter.internalValue = moment(parameter.date, parameter.internalFormat).hours(parameter.hours).minutes(parameter.minutes).format(parameter.internalFormat);
         });
 
-        // Ensure timezone has a valid value
-        this.parameters.filter(function(parameter) {
-           return parameter.type === 'timezone' && (typeof parameter.value === 'undefined' || parameter.value === '');
-        }).forEach(function(parameter) {
-            // We guess the timezone. If it actually exist, it is used
-            // otherwise the first is selected
-            const guessedTimezone = moment.tz.guess(true);
-            if (this.supportedTimezones.indexOf(guessedTimezone) >= 0) {
-                parameter.value = guessedTimezone;
-            } else {
-                parameter.value = this.supportedTimezones[0];
-            }
-        }, this);
+        this.updateTimezoneEditable();
+        this.validateTimezone();
 
         // Adjust format
         if (this.supportedFormats.indexOf(this.format) === -1) {
@@ -78,6 +72,45 @@ export default class ReportDetails {
         if (this.supportedFormats.indexOf(this.deliveryOptions.format) === -1) {
             this.deliveryOptions.format = this.format;
         }
+
+        if (window._onmsZoneId) {
+            this.scheduleOptions.serverZone = window._onmsZoneId;
+        } else {
+            const xhr = new XMLHttpRequest();
+            const checkResponseText = () => {
+                try {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            const config = JSON.parse(xhr.responseText);
+                            if (config.datetimeformatConfig && config.datetimeformatConfig.zoneId) {
+                                window._onmsZoneId = config.datetimeformatConfig.zoneId;
+                                this.scheduleOptions.serverZone = config.datetimeformatConfig.zoneId;
+                                return;
+                            }
+                        }
+                        // eslint-disable-next-line no-console
+                        console.error('Failed to request server time zone: ' + xhr.status + ' ' + xhr.statusText);
+                        this.scheduleOptions.serverZone = null;
+                    }
+                } catch (e) {
+                    // eslint-disable-next-line no-console
+                    console.error('An error occurred getting the server time zone:', e);
+                    this.scheduleOptions.serverZone = null;
+                }
+            };
+
+            xhr.onreadystatechange = () => {
+                if (input && input.scope) {
+                    input.scope.$evalAsync(checkResponseText);
+                } else {
+                    checkResponseText();
+                }
+            };
+            xhr.open('GET', Util.getBaseHref() + 'rest/info');
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.send();
+        }
+
     }
 
     hasErrors() {
@@ -122,11 +155,84 @@ export default class ReportDetails {
             && typeof this.parametersByName['GRAFANA_DASHBOARD_UID'] !== 'undefined'
     }
 
+    updateTimezoneEditable() {
+        const dashboardZone = this.dashboard && this.dashboard.timezone !== undefined ? this.dashboard.timezone : undefined;
+
+        if (dashboardZone !== undefined) {
+            if (dashboardZone === 'browser' || dashboardZone.trim() === '') {
+                // timezone in grafana dashboard is set to default/browser,
+                // which for our purposes should behave the same
+                this.timezoneEditable = true;
+            } else if (this.supportedTimezones.indexOf(this.parametersByName['timezone'].value) >= 0) {
+                // timezone in grafana dashboard matches an available timezone,
+                // use it (always)
+                this.timezoneEditable = false;
+            } else {
+                // timezone in grafana dashboard isn't default/browser, but
+                // we don't have a matching supported timezone; the timezone
+                // on the other end is one supposedly supported by Jasper
+                // so I guess I'll just add it to the list ¯\_(ツ)_/¯
+                this.supportedTimezones.push(dashboardZone);
+                this.timezoneEditable = false;
+            }
+        } else {
+            // either this isn't a grafana report, or we haven't gotten the dashboard timezone (yet)
+        }
+    }
+
+    validateTimezone() {
+        this.updateTimezoneEditable();
+
+        // Ensure timezone has a valid value
+        this.parameters.filter((parameter) => {
+            return parameter.type === 'timezone';
+         }).forEach((parameter) => {
+            if (this.timezoneEditable) {
+                if (parameter.value && parameter.value.trim().length > 0 && this.supportedTimezones.indexOf(parameter.value) >= 0) {
+                    // we have already selected a valid timezone, carry on
+                } else {
+                    // otherwise, guess the timezone; If it actually exists, it is used;
+                    // if it doesn't exist, the first from the list is selected
+                    const guessedTimezone = moment.tz.guess(true);
+                    if (this.supportedTimezones.indexOf(guessedTimezone) >= 0) {
+                        parameter.value = guessedTimezone;
+                    } else {
+                        parameter.value = this.supportedTimezones[0];
+                    }
+                }
+
+                this.parametersByName['timezone'] = parameter;
+            } else {
+                // if the timezone is not editable, it should already be
+                // set to something in the supported list, so it's safe
+                // to just not do anything
+            }
+        });
+        if (this.parametersByName['timezone']) {
+            this.scheduleOptions.timezone = this.parametersByName['timezone'].value;
+        }
+    }
+
+    updateTimezoneParameter(selected) {
+        this.dashboard = selected.dashboard;
+        let timezone = selected.dashboard ? selected.dashboard.timezone : undefined;
+        if (timezone === 'utc') {
+            // special case: Grafana passes UTC as `utc` (sigh)
+            timezone = 'UTC';
+        }
+        if (timezone) {
+            this.parametersByName['timezone'].value = timezone;
+            this.scheduleOptions.timezone = timezone;
+        }
+        this.validateTimezone();
+    }
+
     // Before sending the report we must replace the values for the Endpoint UID and Dashboard UID
     updateGrafanaParameters(selected) {
         if (this.isGrafanaReport()) {
-            this.parametersByName['GRAFANA_ENDPOINT_UID'].value = selected.endpoint ? selected.endpoint.uid : undefined;
-            this.parametersByName['GRAFANA_DASHBOARD_UID'].value = selected.dashboard ? selected.dashboard.uid : undefined;
+            this.parametersByName['GRAFANA_ENDPOINT_UID'].value = selected.endpoint ? selected.endpoint.uid : this.parametersByName['GRAFANA_ENDPOINT_UID'].value;
+            this.parametersByName['GRAFANA_DASHBOARD_UID'].value = selected.dashboard ? selected.dashboard.uid : this.parametersByName['GRAFANA_DASHBOARD_UID'].value;
+            this.updateTimezoneParameter(selected);
         }
     }
 
@@ -140,6 +246,7 @@ export default class ReportDetails {
             p.date = date.format('YYYY-MM-DD');
             p.hours = date.hours();
             p.minutes = date.minutes();
+            p.internalValue = date.format(p.internalFormat);
         });
     }
 }

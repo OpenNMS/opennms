@@ -1,0 +1,89 @@
+
+= XmpMonitor
+
+The XMP monitor tests for XMP service/agent availability by establishing an XMP session and querying the target agent's sysObjectID variable contained in the Core MIB.
+The service is considered available when the session attempt succeeds and the agent returns its sysObjectID without error.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.XmpMonitor`
+|===
+
+== Configuration and use
+
+You can set these parameters in the XMP service entry in `collectd-configuration.xml` and will override settings from `xmp-config.xml`.
+Don't forget to add an entry in response-graph.properties so that response values will be graphed.
+
+.Optional monitor-specific parameters for the XmpMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| timeout
+| Time in milliseconds to wait for a successful session.
+| 5000
+
+| authenUser
+| The authenUser parameter for use with the XMP session.
+| xmpUser
+
+| port
+| TCP port to connect to for XMP session establishment.
+| 5270
+
+| mib
+| Name of MIB to query.
+| core
+
+| object
+| Name of MIB object to query.
+| sysObjectID
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+.Add entry in poller-configuration.xml
+[source, xml]
+----
+<service name="XMP" interval="300000" user-defined="false" status="on">
+  <parameter key="timeout" value="3000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-base-name" value="xmp"/>
+  <parameter key="ds-name" value="xmp"/>
+</service>
+<monitor service="XMP" class-name="org.opennms.netmgt.poller.monitors.XmpMonitor"/>
+----
+
+.Add entry in response-graph.properties
+[source, plain]
+----
+reports=icmp, \
+xmp, \ . . . .
+
+report.xmp.name=XMP
+report.xmp.columns=xmp
+report.xmp.type=responseTime
+report.xmp.command=--title="XMP Response Time" \
+ --vertical-label="Seconds" \
+ DEF:rtMills={rrd1}:xmp:AVERAGE \
+ DEF:minRtMills={rrd1}:xmp:MIN \
+ DEF:maxRtMills={rrd1}:xmp:MAX \
+ CDEF:rt=rtMills,1000,/ \
+ CDEF:minRt=minRtMills,1000,/ \
+ CDEF:maxRt=maxRtMills,1000,/ \
+ LINE1:rt#0000ff:"Response Time" \
+ GPRINT:rt:AVERAGE:" Avg  \\: %8.2lf %s" \
+ GPRINT:rt:MIN:"Min  \\: %8.2lf %s" \
+ GPRINT:rt:MAX:"Max  \\: %8.2lf %s\\n"
+----

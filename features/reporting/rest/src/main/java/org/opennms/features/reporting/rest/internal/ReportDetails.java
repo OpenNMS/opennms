@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,9 +29,11 @@
 package org.opennms.features.reporting.rest.internal;
 
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,11 +48,14 @@ import org.opennms.api.reporting.parameter.ReportTimezoneParm;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.reporting.core.DeliveryOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class ReportDetails {
+	private static final Logger LOG = LoggerFactory.getLogger(ReportDetails.class);
 
     private String reportId;
     private ReportParameters parameters = new ReportParameters();
@@ -161,7 +166,10 @@ public class ReportDetails {
 
                 // Absolute date values
                 if (dateParm.getDate() != null) {
-                    jsonDateParm.put("date", new SimpleDateFormat("yyyy-MM-dd").format(dateParm.getDate()));
+                    final ZoneId zoneId = getZoneId();
+                    final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    sdf.setTimeZone(TimeZone.getTimeZone(zoneId));
+                    jsonDateParm.put("date", sdf.format(dateParm.getDate()));
                 }
                 jsonParameters.put(jsonDateParm);
             }
@@ -254,5 +262,18 @@ public class ReportDetails {
             jsonObject.put("cronExpression", cronExpression);
         }
         return jsonObject;
+    }
+
+    private ZoneId getZoneId() {
+        ZoneId zoneId = ZoneId.systemDefault();
+        final List<ReportTimezoneParm> zones = parameters.getTimezoneParms();
+        if (zones != null && zones.size() > 0) {
+            try {
+                zoneId = ZoneId.of(zones.get(0).getValue());
+            } catch (final Exception e) {
+                LOG.warn("Failed to determine timezone from: {}", zones.get(0));
+            }
+        }
+        return zoneId;
     }
 }

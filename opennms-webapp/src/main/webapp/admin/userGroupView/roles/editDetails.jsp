@@ -70,6 +70,7 @@
   </div>
   <div class="card-body">
     <form role="form" class="form" action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
+      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
       <input type="hidden" name="operation" value="saveDetails"/>
       <input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
 

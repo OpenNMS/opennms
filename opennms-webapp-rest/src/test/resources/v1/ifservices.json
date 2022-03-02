@@ -10,7 +10,8 @@
             "node": "node1", 
             "serviceName": "ICMP", 
             "status": "Managed", 
-            "statusCode": "A"
+            "statusCode": "A",
+            "ipInterfaceId": 1
         },
         {
             "id": "3",
@@ -20,7 +21,8 @@
             "node": "node1", 
             "serviceName": "SNMP", 
             "status": "Managed", 
-            "statusCode": "A"
+            "statusCode": "A",
+            "ipInterfaceId": 1
         },
         {
             "id": "5",
@@ -30,7 +32,8 @@
             "node": "node1", 
             "serviceName": "ICMP", 
             "status": "Managed", 
-            "statusCode": "A"
+            "statusCode": "A",
+            "ipInterfaceId": 4
         },
         {
             "id": "6",
@@ -40,7 +43,8 @@
             "node": "node1", 
             "serviceName": "HTTP", 
             "status": "Managed", 
-            "statusCode": "A"
+            "statusCode": "A",
+            "ipInterfaceId": 4
         },
         {
             "id": "8",
@@ -50,7 +54,8 @@
             "node": "node1", 
             "serviceName": "ICMP", 
             "status": "Managed", 
-            "statusCode": "A"
+            "statusCode": "A",
+            "ipInterfaceId": 7
         },
         {
             "id": "10",
@@ -60,7 +65,8 @@
             "node": "node1", 
             "serviceName": "ICMP", 
             "status": "Managed", 
-            "statusCode": "A"
+            "statusCode": "A",
+            "ipInterfaceId": 9
         },
         {
             "id": "17",
@@ -70,7 +76,8 @@
             "node": "node2", 
             "serviceName": "ICMP", 
             "status": "Managed", 
-            "statusCode": "A"
+            "statusCode": "A",
+            "ipInterfaceId": 16
         },
         {
             "id": "18",
@@ -80,7 +87,8 @@
             "node": "node2", 
             "serviceName": "SNMP", 
             "status": "Managed", 
-            "statusCode": "A"
+            "statusCode": "A",
+            "ipInterfaceId": 16
         },
         {
             "id": "20",
@@ -90,7 +98,8 @@
             "node": "node2", 
             "serviceName": "ICMP", 
             "status": "Managed", 
-            "statusCode": "A"
+            "statusCode": "A",
+            "ipInterfaceId": 19
         },
         {
             "id": "21",
@@ -100,7 +109,8 @@
             "node": "node2", 
             "serviceName": "HTTP", 
             "status": "Managed", 
-            "statusCode": "A"
+            "statusCode": "A",
+            "ipInterfaceId": 19
         }
     ], 
     "totalCount": 31

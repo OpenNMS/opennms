@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,7 +30,6 @@ package org.opennms.netmgt.jasper.grafana;
 
 import static org.opennms.netmgt.jasper.grafana.ExceptionToPngRenderer.renderExceptionToPng;
 
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +45,6 @@ import java.util.stream.Stream;
 import org.opennms.netmgt.endpoints.grafana.api.Dashboard;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaClient;
 import org.opennms.netmgt.endpoints.grafana.api.Panel;
-import org.opennms.netmgt.jasper.helper.TimezoneHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +102,7 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
     }
 
     @Override
-    public Object getFieldValue(JRField jrField) {
+    public Object getFieldValue(final JRField jrField) {
         final String fieldName = jrField.getName();
         if (Objects.equals(WIDTH_FIELD_NAME, fieldName)) {
             return query.getWidth();
@@ -143,21 +141,12 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
 
         // Issue the requests for all of the panels simultaneously
         LOG.debug("Triggering asynchronous rendering of PNGs for {} panels for dashboard: {}", panels.size(), dashboard.getTitle());
-        final String utcOffset = getUtcOffset(query);
+        // final String utcOffset = getUtcOffset(query);
         for (Panel panel : panels) {
             final CompletableFuture<byte[]> panelImageBytes = client.renderPngForPanel(dashboard, panel, query.getWidth(), query.getHeight(),
-                    query.getFrom().getTime(), query.getTo().getTime(), utcOffset, query.getVariables());
+                    query.getFrom().getTime(), query.getTo().getTime(), query.getTimezone(), query.getVariables());
             panelRenders.put(panel, panelImageBytes);
         }
-    }
-
-    private static String getUtcOffset(GrafanaQuery query) {
-        if (query.getTimezone() != null) {
-            final ZoneId zoneId = ZoneId.of(query.getTimezone());
-            final String utcOffset = TimezoneHelper.getUtcOffset(zoneId, query.getFrom());
-            return utcOffset;
-        }
-        return null;
     }
 
 }

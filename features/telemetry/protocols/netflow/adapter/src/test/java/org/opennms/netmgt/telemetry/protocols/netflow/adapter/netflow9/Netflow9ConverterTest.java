@@ -31,38 +31,40 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.protocols.netflow.adapter.Utils.buildAndSerialize;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.bson.BsonDocument;
-import org.bson.RawBsonDocument;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowConverter;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ParserBase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
+import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 public class Netflow9ConverterTest {
 
-    private Netflow9Converter nf9Converter = new Netflow9Converter();
+    private NetflowConverter nf9Converter = new NetflowConverter();
 
     @Test
     public void canParseNetflow9Flows() {
@@ -71,6 +73,7 @@ public class Netflow9ConverterTest {
         assertThat(flows, hasSize(5));
         // Verify a flow
         Flow flow = flows.get(4);
+        assertThat(flow.getNetflowVersion(), is(Flow.NetflowVersion.V9));
         assertThat(flow.getSrcAddr(), equalTo("10.1.20.85"));
         assertThat(flow.getSrcAddrHostname(), equalTo(Optional.empty()));
         assertThat(flow.getSrcPort(), equalTo(137));
@@ -96,7 +99,7 @@ public class Netflow9ConverterTest {
             URL resourceURL = getClass().getResource(resource);
             try {
                 payloads.add(Files.readAllBytes(Paths.get(resourceURL.toURI())));
-            } catch (IOException|URISyntaxException e) {
+            } catch (IOException | URISyntaxException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -105,7 +108,7 @@ public class Netflow9ConverterTest {
 
     private List<Flow> getFlowsForPayloadsInSession(List<byte[]> payloads) {
         final List<Flow> flows = new ArrayList<>();
-        final Session session = new TcpSession(InetAddress.getLoopbackAddress());
+        final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
         for (byte[] payload : payloads) {
             final ByteBuf buffer = Unpooled.wrappedBuffer(payload);
             final Header header;
@@ -113,9 +116,15 @@ public class Netflow9ConverterTest {
                 header = new Header(slice(buffer, Header.SIZE));
                 final Packet packet = new Packet(session, header, buffer);
                 packet.getRecords().forEach(rec -> {
-                    final ByteBuffer bf = ParserBase.serialize(Protocol.NETFLOW9, rec);
-                    final BsonDocument doc = new RawBsonDocument(bf.array());
-                    flows.addAll(nf9Converter.convert(doc));
+
+                    final FlowMessage flowMessage;
+                    try {
+                        flowMessage = buildAndSerialize(Protocol.NETFLOW9, rec).build();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    flows.addAll(nf9Converter.convert(flowMessage, Instant.now()));
                 });
             } catch (InvalidPacketException e) {
                 throw new RuntimeException(e);
@@ -123,5 +132,6 @@ public class Netflow9ConverterTest {
         }
         return flows;
     }
+
 
 }

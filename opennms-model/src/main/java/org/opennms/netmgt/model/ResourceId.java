@@ -160,4 +160,12 @@ public class ResourceId implements Comparable<ResourceId> {
     private static String unescape(final String escaped) {
         return escaped.replaceAll("\\\\(.)", "$1");
     }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

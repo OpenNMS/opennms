@@ -73,8 +73,6 @@ public class ApplicationController extends AbstractController {
         
         if (removeApplicationIdString != null) {
             m_adminApplicationService.removeApplication(removeApplicationIdString);
-            
-            
             return new ModelAndView(new RedirectView("/admin/applications.htm", true));
         }
         
@@ -90,33 +88,55 @@ public class ApplicationController extends AbstractController {
              */
             return new ModelAndView(new RedirectView("/admin/applications.htm", true));
         }
-        
-        if (applicationIdString != null && editString != null) {
-            String editAction = getNonEmptyParameter(request, "action");
+
+        if (applicationIdString != null && "services".equals(editString)) {
+            final String editAction = getNonEmptyParameter(request, "action");
             if (editAction != null) {
-                String[] toAdd = request.getParameterValues("toAdd");
-                String[] toDelete = request.getParameterValues("toDelete");
+                final String[] serviceAdds = request.getParameterValues("serviceAdds");
+                final String[] serviceDeletes = request.getParameterValues("serviceDeletes");
 
-                m_adminApplicationService.performEdit(applicationIdString,
-                                                      editAction,
-                                                      toAdd,
-                                                      toDelete);
+                m_adminApplicationService.performEditServices(applicationIdString,
+                                                              editAction,
+                                                              serviceAdds,
+                                                              serviceDeletes);
 
-                ModelAndView modelAndView = 
-                    new ModelAndView(new RedirectView("/admin/applications.htm", true));
+                final ModelAndView modelAndView = new ModelAndView(new RedirectView("/admin/applications.htm", true));
                 modelAndView.addObject("applicationid", applicationIdString);
-                modelAndView.addObject("edit", "edit");
+                modelAndView.addObject("edit", "services");
                 return modelAndView;
             }
 
-            EditModel model =
-                m_adminApplicationService.findApplicationAndAllMonitoredServices(applicationIdString);
+            final EditModel model = m_adminApplicationService.findApplicationAndAllMonitoredServices(applicationIdString);
 
             return new ModelAndView("/admin/editApplication",
                                     "model",
                                     model);
         }
-        
+
+        if (applicationIdString != null && "locations".equals(editString)) {
+            final String editAction = getNonEmptyParameter(request, "action");
+            if (editAction != null) {
+                final String[] locationAdds = request.getParameterValues("locationAdds");
+                final String[] locationDeletes = request.getParameterValues("locationDeletes");
+
+                m_adminApplicationService.performEditLocations(applicationIdString,
+                                                               editAction,
+                                                               locationAdds,
+                                                               locationDeletes);
+
+                final ModelAndView modelAndView = new ModelAndView(new RedirectView("/admin/applications.htm", true));
+                modelAndView.addObject("applicationid", applicationIdString);
+                modelAndView.addObject("edit", "locations");
+                return modelAndView;
+            }
+
+            final EditModel model = m_adminApplicationService.findApplicationAndAllMonitoredServices(applicationIdString);
+
+            return new ModelAndView("/admin/editApplication",
+                                    "model",
+                                    model);
+        }
+
         if (applicationIdString != null) {
             return new ModelAndView("/admin/showApplication",
                                     "model",

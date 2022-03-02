@@ -53,12 +53,6 @@ public class GroupsTest extends XmlTestNoCastor<Groupinfo> {
         admin.addDutySchedule("\n    MoTuWeThFrSaSu800-2300\n    "); // make sure duty schedules get trimmed properly
         gi.addGroup(admin);
 
-        final Group remoting = new Group();
-        remoting.setName("Remoting Users");
-        remoting.setComments("Users with access for submitting remote poller management data.");
-        remoting.addUser("remoting");
-        gi.addGroup(remoting);
-
         final Groupinfo gi2 = new Groupinfo();
         gi2.setHeader(gi.getHeader());
         final Group admin2 = new Group("Admin", "admin");
@@ -80,11 +74,6 @@ public class GroupsTest extends XmlTestNoCastor<Groupinfo> {
                 "                        <comments>The administrators</comments>\n" + 
                 "                        <user>admin</user>\n" + 
                 "                        <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" +
-                "                </group>\n" + 
-                "                <group>\n" + 
-                "                        <name>Remoting Users</name>\n" + 
-                "                        <comments>Users with access for submitting remote poller management data.</comments>\n" + 
-                "                        <user>remoting</user>\n" + 
                 "                </group>\n" + 
                 "        </groups>\n" + 
                 "</groupinfo>"

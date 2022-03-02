@@ -15,6 +15,10 @@
     <parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
     <defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/"]]></defaultValueExpression>
   </parameter>
+  <parameter name="timezone" class="java.time.ZoneId">
+    <parameterDescription><![CDATA[Report Timezone]]></parameterDescription>
+    <defaultValueExpression><![CDATA[java.time.ZoneId.systemDefault()]]></defaultValueExpression>
+  </parameter>
   <parameter name="startDate" class="java.util.Date">
     <parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
     <defaultValueExpression><![CDATA[new java.util.Date(
@@ -28,19 +32,18 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 )]]></defaultValueExpression>
   </parameter>
   <parameter name="startDateTime" class="java.lang.Long" isForPrompting="false">
-    <defaultValueExpression><![CDATA[$P{startDate}.getTime()]]></defaultValueExpression>
+    <defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.TimezoneHelper.getRezonedEpoch($P{startDate}, $P{timezone})]]></defaultValueExpression>
   </parameter>
   <parameter name="endDateTime" class="java.lang.Long" isForPrompting="false">
-    <defaultValueExpression><![CDATA[$P{endDate}.getTime()]]></defaultValueExpression>
+    <defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.TimezoneHelper.getRezonedEpoch($P{endDate}, $P{timezone})]]></defaultValueExpression>
+  </parameter>
+  <parameter name="dateFormat" class="java.lang.String">
+    <defaultValueExpression><![CDATA["EEE dd MMM yyyy HH:mm:ss"]]></defaultValueExpression>
   </parameter>
   <parameter name="GRAFANA_DASHBOARD_UID" class="java.lang.String">
     <defaultValueExpression><![CDATA["mjkV0rkZk"]]></defaultValueExpression>
   </parameter>
   <parameter name="GRAFANA_ENDPOINT_UID" class="java.lang.String">
-    <defaultValueExpression><![CDATA[""]]></defaultValueExpression>
-  </parameter>
-  <parameter name="timezone" class="java.time.ZoneId">
-    <parameterDescription><![CDATA[Report Timezone]]></parameterDescription>
     <defaultValueExpression><![CDATA[""]]></defaultValueExpression>
   </parameter>
   <queryString language="grafana"><![CDATA[{
@@ -91,19 +94,19 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
         </textElement>
         <textFieldExpression><![CDATA[$P{reportDescription}]]></textFieldExpression>
       </textField>
-      <textField pattern="EEE dd MMM yyyy HH:mm:ss">
+      <textField>
         <reportElement x="500" y="89" width="210" height="20" forecolor="#000000" uuid="ac9d2b31-2a51-4768-90e9-b5a1f1698b67"/>
         <textElement verticalAlignment="Middle">
           <font size="12" isBold="false"/>
         </textElement>
-        <textFieldExpression><![CDATA[$P{startDate}]]></textFieldExpression>
+        <textFieldExpression><![CDATA[org.opennms.netmgt.jasper.helper.TimezoneHelper.formatDate($P{startDate}, $P{timezone}, $P{dateFormat})]]></textFieldExpression>
       </textField>
-      <textField pattern="EEE dd MMM yyyy HH:mm:ss">
+      <textField>
         <reportElement x="700" y="89" width="219" height="20" forecolor="#000000" uuid="558f5fde-80e7-4515-976e-643bc23ad397"/>
         <textElement verticalAlignment="Middle">
           <font size="12" isBold="false"/>
         </textElement>
-        <textFieldExpression><![CDATA[$P{endDate}]]></textFieldExpression>
+        <textFieldExpression><![CDATA[org.opennms.netmgt.jasper.helper.TimezoneHelper.formatDate($P{endDate}, $P{timezone}, $P{dateFormat})]]></textFieldExpression>
       </textField>
       <textField>
         <reportElement x="870" y="89" width="300" height="20" forecolor="#000000" uuid="d4f139e5-6af9-44fa-bb50-eca765c5b6f3"/>
@@ -178,12 +181,12 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
           </textElement>
           <text><![CDATA[Rendered at:]]></text>
         </staticText>
-        <textField pattern="EEE dd MMM yyyy HH:mm:ss z">
+        <textField>
           <reportElement x="80" y="2" width="200" height="20" uuid="72447933-df4d-4da8-8c10-e8b5f08f41d0"/>
           <textElement verticalAlignment="Middle">
             <font size="10" isBold="false"/>
           </textElement>
-          <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+          <textFieldExpression><![CDATA[org.opennms.netmgt.jasper.helper.TimezoneHelper.now($P{timezone}, "EEE dd MMM yyyy HH:mm:ss z")]]></textFieldExpression>
         </textField>
       </frame>
     </band>

@@ -30,7 +30,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.SimpleConnector;
+import org.opennms.features.topology.api.topo.simple.SimpleConnector;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 

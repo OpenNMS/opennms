@@ -91,4 +91,10 @@ public @interface JUnitTemporaryDatabase {
      * @return
      */
     boolean poolConnections() default true;
+
+    /**
+     * Whether to force using the pl/pgsql version of IPLIKE.
+     * @return
+     */
+    boolean plpgsqlIplike() default false;
 }

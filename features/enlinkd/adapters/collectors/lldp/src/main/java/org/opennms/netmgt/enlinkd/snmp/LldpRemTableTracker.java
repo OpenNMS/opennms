@@ -156,7 +156,7 @@ public class LldpRemTableTracker extends TableTracker {
                 else 
                     return lldpportid.toHexString();
             case LLDP_PORTID_SUBTYPE_MACADDRESS:
-                return lldpportid.toHexString();
+                return LldpLocalGroupTracker.decodeMacAddress(lldpportid);
             case LLDP_PORTID_SUBTYPE_NETWORKADDRESS:
                 LldpUtils.decodeNetworkAddress(lldpportid.toDisplayString());
            }
@@ -177,12 +177,18 @@ public class LldpRemTableTracker extends TableTracker {
 			super(columnCount, instance);
             LOG.debug( "column count = {}, instance = {}", columnCount, instance);
 		}
-    	
+
+        public Integer getLldpRemTimeMark() {
+            return getInstance().getSubIdAt(0);
+        }
 	    public Integer getLldpRemLocalPortNum() {
 	    	return getInstance().getSubIdAt(1);
 	    }
-	    
-	    public Integer getLldpRemChassisidSubtype() {
+        public Integer getLldpRemIndex() {
+            return getInstance().getSubIdAt(2);
+        }
+
+        public Integer getLldpRemChassisidSubtype() {
 	    	return getValue(LLDP_REM_CHASSIS_ID_SUBTYPE).toInt();
 	    }
 	    
@@ -211,7 +217,7 @@ public class LldpRemTableTracker extends TableTracker {
 	    public LldpLink getLldpLink() {
 
             LldpLink lldpLink = new LldpLink();
-            lldpLink.setLldpLocalPortNum(getLldpRemLocalPortNum());
+            lldpLink.setLldpLocalPortNum(getLldpRemIndex());
             lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemSysname(getLldpRemSysname());

@@ -1,0 +1,50 @@
+[[directed-discovery]]
+= Directed Discovery
+
+Directed discovery is the process of manually adding nodes to {page-component-title} through the requisition UI.
+Two other methods for manually adding nodes (quick add node and manually adding an interface) are in the process of being deprecated. We do not recommend using these features.
+
+Make sure you complete the tasks in the <<provisioning/getting-started.adoc#provision-getting-started, Getting Started>> section before adding nodes.
+
+[[requisition-add-nodes]]
+== Add nodes through the Requisition UI
+
+Before adding nodes to a requisition, you must <<provisioning/getting-started.adoc#requisition-create, create a requisition>>.
+
+. In the web UI, click the gear icon in the top right.
+. In the *Provisioning* area, choose *Manage Provisioning Requisition*.
+. Click the edit icon beside the requisition you want to add nodes to.
+. Click *Add Node*.
+.. {page-component-title} auto-generates the foreign ID used to identify this node.
+. Fill out information in each of the tabs and click *Save*.
+
+* basic information (node label, auto-generated foreign ID, location)
+* path outage (configure network path to limit notifications from nodes behind other nodes, see <<service-assurance/path-outages#ga-service-assurance-path-outage, Path Outages>>)
+* interfaces (add interface IP addresses and services)
+* assets (pre-defined metadata types)
+* categories (label/tag for type of node, e.g., routers, production, switches)
+* meta-data (customized asset information)
+
+. Repeat for each node you want to add.
+. Click *Return* to view the list of nodes you have added.
+. Click *Synchronize* to provision them to the {page-component-title} database.
+
+[[requisition-rest]]
+== Add nodes via REST API
+
+You can use the REST API to add nodes to your {page-component-title} database.
+There are endpoints for both xref:development:rest/nodes.adoc[individual nodes] and xref:development:rest/requisitions.adoc[entire requisitions].
+
+[[requisition-new-suspect]]
+== Add nodes via newSuspect events
+
+You can use the `$\{OPENNMS_HOME}/bin/send-event.pl` script to generate newSuspect events to trigger the Provisiond service to check a given IP address.
+Replace `ip-address` in the command below with the address you want to discover.
+
+[source, console]
+----
+# ${OPENNMS_HOME}/bin/send-event.pl --interface ip-address uei.opennms.org/internal/discovery/newSuspect
+----
+
+NOTE: This adds the discovered node directly into the database.
+We strongly recommend that you use <<requisition-add-nodes, requisitions>> when adding individual IP addresses, as it will be easier to manage the nodes over time.

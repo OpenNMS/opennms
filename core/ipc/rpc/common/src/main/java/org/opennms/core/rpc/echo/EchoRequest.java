@@ -40,6 +40,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.rpc.api.RpcRequest;
 
+import io.opentracing.Span;
+
 @XmlRootElement(name="echo-request")
 @XmlAccessorType(XmlAccessType.NONE)
 public class EchoRequest implements RpcRequest {
@@ -133,6 +135,11 @@ public class EchoRequest implements RpcRequest {
     @Override
     public Map<String, String> getTracingInfo() {
         return tracingInfo;
+    }
+
+    @Override
+    public Span getSpan() {
+        return null;
     }
 
     public void addTracingInfo(String key, String value) {

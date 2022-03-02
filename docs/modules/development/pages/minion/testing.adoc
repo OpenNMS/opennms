@@ -1,0 +1,26 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+= Testing
+
+This sections describes how developers can test features on the Minion container.
+
+== Local Testing
+
+You can compile, assemble, and spawn an interactive shell on the Minion container using:
+
+.Assemble and run the container in place
+[source, bash]
+----
+cd features/minion && ./runInPlace.sh
+----
+
+== System Tests
+
+The runtime environment of the Minion container and features differs greatly from that provided by the unit and integration tests.
+For this reason, it is important to perform automated end-to-end testing of the features.
+
+The system tests provide a framework that lets developers instantiate a complete Docker-based Minion system using a single JUnit rule.
+
+For further details, see the https://github.com/OpenNMS/minion-system-tests[minion-system-tests] project on GitHub.

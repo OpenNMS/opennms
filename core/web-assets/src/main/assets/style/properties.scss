@@ -3,6 +3,23 @@ $color_horizon:                     #4c9d29;
 $color_meridian:                    #227cb8;
 $link_color:                        #265A87;
 
+
+$opennms-chromatic-black:           #0A0C1B;
+$opennms-dark-blue:                 #131736;
+$opennms-cool-gray-4:               #494C67;
+$opennms-cool-gray-3:               #7E8198;
+$opennms-cool-gray-2:               #B4B6C8;
+$opennms-cool-gray-1:               #E9EBF9;
+
+// Severities
+$severity-cleared:                  #CDCDD0;
+$severity-indeterminate:            #5DAFDD;
+$severity-normal:                   #438953;
+$severity-warning:                  #FFF000;
+$severity-minor:                    #FFD60A;
+$severity-major:                    #FF9F0A;
+$severity-critical:                 #DF5251;
+
 $font-size-base:  0.875rem;
 //$font-family-base-sans-serif: 'Lucida Grande', Verdana, sans-serif;
 
@@ -12,6 +29,7 @@ $table-border-color: #ddd !default;
 
 // Add custom colors to the theme
 $theme-colors: (
+    // Flavours 
     "horizon":                      $color_horizon,
     "meridian":                     $color_meridian,
 
@@ -21,8 +39,24 @@ $theme-colors: (
     // Here default is defined the same as "light".
     "default":                      #f8f9fa,
 
-    // Additional colors may be added here, e.g. "severity-normal"
-    // to allow alerts, badges, buttons, etc to be colored accordingly
+    // The navbar uses a grey color, which works good for darker backgrounds
+    "grey":                         rgba(255, 255, 255, 0.5),
+
+    // Severities
+    "severity-indeterminate":       $severity-indeterminate,
+    "severity-Indeterminate":       $severity-indeterminate,
+    "severity-cleared":             $severity-cleared,
+    "severity-Cleared":             $severity-cleared,
+    "severity-normal":              $severity-normal,
+    "severity-Normal":              $severity-normal,
+    "severity-warning":             $severity-warning,
+    "severity-Warning":             $severity-warning,
+    "severity-minor":               $severity-minor,
+    "severity-Minor":               $severity-minor,
+    "severity-major":               $severity-major,
+    "severity-Major":               $severity-major,
+    "severity-critical":            $severity-critical,
+    "severity-Critical":            $severity-critical,
 );
 
 // Spacing of cards is a bit too much by default.

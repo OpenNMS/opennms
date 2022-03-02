@@ -46,14 +46,14 @@ import org.junit.runner.RunWith;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
 import org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager;
-import org.opennms.core.ipc.sink.model.SinkMessageProtos;
+import org.opennms.core.ipc.sink.model.SinkMessage;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.XmlHandler;
+import org.opennms.features.events.sink.module.EventSinkModule;
 import org.opennms.netmgt.config.api.EventdConfig;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.features.events.sink.module.EventSinkModule;
 import org.opennms.netmgt.eventd.sink.EventSinkConsumer;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -127,7 +127,7 @@ public class EventSinkConsumerIT {
     }
 
     private byte[] wrapMessageToProto(String messageId, byte[] messageInBytes) {
-        SinkMessageProtos.SinkMessage sinkMessage = SinkMessageProtos.SinkMessage.newBuilder()
+        SinkMessage sinkMessage = SinkMessage.newBuilder()
                 .setMessageId(messageId)
                 .setContent(ByteString.copyFrom(messageInBytes))
                 .build();

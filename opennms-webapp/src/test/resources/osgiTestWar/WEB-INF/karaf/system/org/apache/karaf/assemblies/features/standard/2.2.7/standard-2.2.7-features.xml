@@ -172,7 +172,7 @@
     <feature name="jetty" version="7.5.4.v20111024" resolver="(obr)">
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/1.9.0</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-servlet_2.5_spec/1.1.2</bundle>
-        <bundle dependency="true" start-level="30">mvn:javax.mail/mail/1.4.4</bundle>
+        <bundle dependency="true" start-level="30">mvn:com.sun.mail/jakarta.mail/1.6.7</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-util/7.5.4.v20111024</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-io/7.5.4.v20111024</bundle>

@@ -1,0 +1,65 @@
+
+[[ga-users-intro]]
+= Users
+
+Managing users involves the following tasks:
+
+* <<ga-data-choices, first-time login and data choices>>
+* <<ga-admin-user-setup, admin user setup>>
+* <<user-management/user-config.adoc#ga-user-config, creating and configuring users>>
+* <<user-management/user-groups.adoc#ga-user-groups, creating and configuring groups>>
+* <<user-management/user-oncall.adoc#ga-on-call-role, configuring on-call roles>>
+
+[[ga-data-choices]]
+== First-Time Login and Data Choices
+
+Access the {page-component-title} web application at \http://<ip-or-fqdn-of-your-server>:8980/opennms.
+
+The default user login is `admin` with the password `admin`.
+
+The first time you log in we prompt for permission to allow the `Data Choices` module to collect and publish anonymous usage statistics to https://stats.opennms.org.
+
+The OpenNMS Group uses this information to help determine product usage and to improve the {page-component-title} software. 
+
+image::users/data-sources.png[prompt,300]
+
+Click *Show me what is being sent* to see what xref:ga-data-collection[information we collect]. 
+Statistics collection and publication happen only if an admin user opts in.
+
+NOTE: Admin users can enable or disable usage statistics collection at any time by logging into the UI, clicking the gear icon, selecting *Data Choices* in the *Additional Tools* area, and clicking *Opt-in* or *Opt-out*.
+
+[[ga-data-collection]]
+=== Data Collection
+
+When enabled, the `Data Choices` module collects the following anonymous statistics and publishes them on system startup and every 24 hours after:
+
+* System ID (a randomly generated universally unique identifier (UUID))
+* {page-component-title} Release
+* {page-component-title} Version
+* OS Architecture
+* OS Name
+* OS Version
+* Number of alarms in the `alarms` table
+* Number of events in the `events` table
+* Number of IP interfaces in the `ipinterface` table
+* Number of nodes in the `node` table
+* Number of nodes, grouped by System OID
+
+[[ga-admin-user-setup]]
+=== Admin User Setup
+
+After logging in for the first time, make sure to change the default admin user password to a secure one: 
+
+. Click the gear icon in the top right. 
+. Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users*.
+. Click *Modify* beside the admin user.
+. In the *User Password* area, click *Reset Password*, update the password and click *OK*.
+. Click *Finish* at the bottom of the Modify User screen to save changes. 
+
+WARNING: Please note that angle brackets (<>), single (') and double quotation marks ("), and the ampersand symbol (&) are not allowed to be used in the user ID.
+
+We recommend not using the default `admin` user, but instead <<user-management/user-config.adoc#ga-user-config, creating specific users>> with the admin role and/or other permissions. 
+This helps to keep track of who has performed tasks such as clearing alarms or creating notifications. 
+
+WARNING: Do not delete the default _admin_ and _rtc_ users.
+         The _rtc_ user is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.

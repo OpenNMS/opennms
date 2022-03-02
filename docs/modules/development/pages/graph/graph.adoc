@@ -1,0 +1,185 @@
+// Allow image rendering
+:imagesdir: ../../images
+
+= Graph Service API
+
+This section covers the Graph Service API, which was heavily inspired by the link:http://graphml.graphdrawing.org[GraphML] model and the original Topology API.
+
+
+[[ga-development-graph-service-api-terminology]]
+== Terminology
+
+A *graph* consists of any number of points with any number of connections in between.
+Usually these points are called *nodes*, but as *nodes* have a specific meaning in {page-component-title}, in the context of the graph service they are called *vertices*.
+The connection between two *vertices* is usually called *link*; however, it also has a specific meaning in {page-component-title}, thus it is called *edge*.
+A *graph container* contains any number of *graphs*.
+In general, an *element* can be either a *graph*, *vertex*, or *edge*.
+
+== Graph Model
+
+[[ga-development-graph-service-api-generic-model]]
+=== Generic Graph Model
+
+The generic graph model is very similar to link:http://graphml.graphdrawing.org[GraphML]'s model and consists of the basic elements:
+
+* `GenericGraphContainer`
+* `GenericGraph`
+* `GenericVertex`
+* `GenericEdge`
+
+In addition to their designated functionality described in link:#ga-development-graph-service-api-terminology[Terminology] each of these elements also has properties assigned to it.
+Some properties are mandatory and determined by the element's type.
+Others are optional and totally up to the entity providing a graph to the system.
+
+The following rules apply to the generic graph model:
+
+* Each graph container must be uniquely identified.
+  This identifier is called a `container id`.
+  The `container id` must be unique over all containers and graph namespaces.
+* Each graph must be uniquely identified over all graphs (meaning the namespace must be unique throughout the system).
+  This identifier is called a `namespace`.
+  Each `namespace` must be unique over all container IDs and graph namespaces.
+* Each vertex and edge must be uniquely identified by an identifier.
+  This identifier is called an `id`.
+  The `id` must not be unique in the system, but within the graph.
+* Each vertex and edge has the same `namespace` as the graph it is part of.
+  This lets you to uniquely identify vertices and edges throughout the system.
+* Each graph, vertex, or edge has additional properties to define its nature in more detail.
+  e.g., a vertex may contain a `label`, `node`, or `location` property.
+* Each edge contains the source and target ID of the vertex it connects; therefore, it is ALWAYS directed.
+* Each edge may reference vertices from a different graph (`namespace`).
+  However, at least one side must share the same `namespace` as the edge itself.
+  This is the "owning" side, thus the edge will be a member of that graph.
+
+
+NOTE: A graph may define a property `id` besides the property `namespace`.
+        This is mostly only relevant when importing graphs via GraphML, as each graph element must have an `id` attribute set.
+        When importing such GraphML each imported graph will have a `namespace` and `id` property set.
+        In general, we recommended that the value of the attribute `id` SHOULD be identical to the `namespace` property even if it MUST NOT.
+
+Refer to module `features/graph/api` in package `org.opennms.netmgt.graph.api.generic` for implementation details.
+
+=== Domain Graph Model
+
+A domain graph model is a model that implements a use case in its domain using the generic graph model.
+To achieve this, use the generic graph model and set the corresponding properties.
+For more complex use cases in a more Java-friendly way, basic domain objects are available to act as a "view" on the generic graph model to provide a more convenient implementation.
+These domain objects do not hold information on their own but provide only access to information that can be deducted from the underlying generic model and its properties.
+
+NOTE: For the domain graph model the same rules apply as for the link:#ga-development-graph-service-api-generic-model[Generic Graph Model].
+
+See `features/graph/provider/bsm` for a domain model using the basic domain graph classes (`AbstractDomainGraph`, `AbstractDomainVertex`, etc.).
+
+See `features/graph/provider/graphml` for a domain model using the Generic Graph Model classes.
+
+=== Immutability
+
+The graph container and all its elements are immutable once created.
+To fully create a container various builders are provided.
+
+== Providers
+
+To get a new graph or graph container to the system either a `GraphContainerProvider` or `GraphProvider` must be implemented and exposed via the OSGi-registry.
+The latter is a convenient way to expose a container that consists of only one graph.
+
+=== Meta Information
+
+Loading a graph container or graph may be very expensive, especially if only the metadata is of interest (for example, label, description).
+Therefore, each provider lets you to fetch the metadata only without loading the graph or container.
+
+== Cache
+
+All calls to `GraphContainerProvider.loadGraphContainer()` are cached until {page-component-title} restarts.
+This means it is up to the implementor to invalidate the cache.
+
+To achieve this, manually invoke the `org.opennms.netmgt.graph.api.service.GraphContainerCache.invalidate(String containerId)` method, as the `GraphContainerCache` is exposed as an OSGi-service.
+Alternatively, you can use a service property to invalidate a cache entry after it was first populated to the cache:
+
+```xml
+<service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="applicationGraphProvider">
+    <service-properties>
+        <entry key="cacheInvalidateInterval" value="300" /> <!-- seconds -->
+    </service-properties>
+</service>
+```
+
+== Search
+
+The goal behind searching is usually to bring one or more vertices into the users's focus.
+Usually the user searches for something like a node label or category name.
+Mostly, those things do not directly relate to any element in the graph.
+
+Therefore, a search always consists of the following process:
+
+. Search for a concrete item in the system (e.g., node, vertex, category).
+. Resolve all vertices that match the concrete item.
+
+Internally, `SearchProvider` are used that allow to first make suggestions based on an input.
+A `NodeSearchProvider` might return a list of suggestions representing nodes in the system.
+The `NodeSearchProvider` knows how to "resolve" that selection to a unique set of vertices after the user selected one.
+
+NOTE: Searching is ALWAYS performed in the context of a given namespace.
+        Searching over multiple namespaces is not supported or encouraged.
+
+== Focus/Semantic Zoom Level/View
+
+The focus itself is a list of vertices within the graph.
+The semantic zoom level (or `szl`) indicates the number of hops (= distance) a vertex may be away from any vertex within the focus to be shown.
+If the semantic zoom level is `0` only if the vertices in focus are shown.
+
+The applied semantic zoom level and focus are called a view of the graph.
+
+If the focus contains elements that are not part of the graph, they are not shown.
+
+The Graph Service API lets you create a view on any given graph considering a custom or default focus as well as the semantic zoom level.
+If no focus is provided when requesting the view, the default focus is applied.
+
+== Listening for Changes
+
+It is possible to listen for graph or graph container changes.
+Various listeners can be exposed as an OSGi service.
+
+The calculation of changes must be triggered manually.
+To do so, use the `org.opennms.netmgt.graph.api.updates.GraphNotificationService` service, which is exposed as an OSGi service
+
+Refer to package `org.opennms.netmgt.graph.api.updates` in module `features/graph/api` for available options.
+
+== Persistence
+
+Each graph or graph container can be persisted to the database using the `org.opennms.netmgt.graph.api.persistence.GraphRepository`.
+
+== Enrichment
+
+Enrichment is the process to enrich the view of the graph with additional information, usually used when the enriched data is expensive to load/calculate, e.g., load node data or calculate the status.
+
+Due to performance considerations, enrichment only works on the view of a graph and cannot be performed on the full graph.
+
+=== Built-in Enrichment
+
+==== Node Enrichment
+
+By default, all vertices can be enriched with node information if node enrichment is enabled.
+To enable the enrichment of node information, the property `enrichment.resolveNodes` must be set to `true` on the graph.
+
+Afterwards, each vertex which has either a `nodeID (integer)` or `foreignSource (string)` and `foreignID (string)` property assigned will be enriched if a node with that information is found in the system.
+A shorter version in form of `nodeCriteria=<foreignSource>:<foreignID>` is also available.
+
+== ReST API
+
+The Graph Service API provides a REST API which is documented in detail xref:rest/graph.adoc#ga-development-rest-graph[here].
+
+The Graph Service API ReST endpoints serialize the requested graph container, graph, or view in JSON.
+As the container and each element within that container may contain custom properties, the type of the property is not static.
+This means each `GraphContainerProvider` (or `GraphProvider`) can set properties on any element using a type that is only known by the domain the graph container is created in.
+However, when serializing this object as JSON it is not clear to the REST endpoint how to do that.
+To allow these values to be set as properties anyway, expose a custom `org.opennms.netmgt.graph.rest.api.PropertyConverter` as an OSGi service.
+
+== Limitations
+
+The following limitations are known for the Graph Service API:
+
+* Status of vertices is not exposed
+* Custom images/icons cannot be set
+* Custom edge/vertex status providers are not implemented
+* VMWare Topology Provider not fully migrated
+* EnhancedLinkd Topology Provider not fully migrated

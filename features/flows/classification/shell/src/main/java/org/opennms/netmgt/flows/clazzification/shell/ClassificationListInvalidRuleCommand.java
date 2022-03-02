@@ -40,7 +40,7 @@ import org.opennms.netmgt.flows.classification.ClassificationService;
 import org.opennms.netmgt.flows.classification.exception.InvalidRuleException;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
-@Command(scope="opennms-classification", name="list-invalid-rules", description = "Lists invalid classification rules")
+@Command(scope="opennms", name="list-classification-invalid-rules", description = "Lists invalid classification rules")
 @Service
 public class ClassificationListInvalidRuleCommand implements Action {
 

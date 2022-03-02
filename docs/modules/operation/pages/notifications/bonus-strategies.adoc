@@ -1,0 +1,6 @@
+
+
+[[ga-notifications-bonus-strategies]]
+= Bonus Notification Methods
+
+{page-component-title} includes a handful of newer notification methods that currently require manual steps to activate.

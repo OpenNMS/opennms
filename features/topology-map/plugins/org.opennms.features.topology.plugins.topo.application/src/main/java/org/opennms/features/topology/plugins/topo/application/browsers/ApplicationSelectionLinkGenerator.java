@@ -30,10 +30,10 @@ package org.opennms.features.topology.plugins.topo.application.browsers;
 
 import org.opennms.features.topology.api.browsers.AbstractSelectionLinkGenerator;
 import org.opennms.features.topology.plugins.browsers.ToStringColumnGenerator;
-import org.opennms.features.topology.plugins.topo.application.ApplicationVertex;
+import org.opennms.features.topology.plugins.topo.application.LegacyApplicationVertex;
 
-import com.vaadin.v7.data.Property;
 import com.vaadin.ui.Button;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.Table;
 import com.vaadin.v7.ui.themes.BaseTheme;
 
@@ -53,8 +53,7 @@ public class ApplicationSelectionLinkGenerator extends AbstractSelectionLinkGene
 	public Object generateCell(final Table source, final Object itemId, Object columnId) {
 		final Property<Integer> idProperty = source.getContainerProperty(itemId, idPropertyName);
 		final Property<String> labelProperty = source.getContainerProperty(itemId, labelPropertyName);
-
-		Object cellValue = columnGenerator.generateCell(source, itemId, columnId);
+		final Object cellValue = columnGenerator.generateCell(source, itemId, columnId);
 		if (cellValue == null) {
 			return null;
 		} else {
@@ -67,9 +66,9 @@ public class ApplicationSelectionLinkGenerator extends AbstractSelectionLinkGene
 				button.addClickListener(new Button.ClickListener() {
 					@Override
 					public void buttonClick(Button.ClickEvent event) {
-						Integer applicationId = idProperty.getValue();
-						String applicationName = labelProperty.getValue();
-						ApplicationVertex vertex = new ApplicationVertex(applicationId.toString(), applicationName);
+						final Integer applicationId = idProperty.getValue();
+						final String applicationName = labelProperty.getValue();
+						final LegacyApplicationVertex vertex = new LegacyApplicationVertex(applicationId.toString(), applicationName);
 						fireVertexUpdatedEvent(vertex);
 					}
 				});

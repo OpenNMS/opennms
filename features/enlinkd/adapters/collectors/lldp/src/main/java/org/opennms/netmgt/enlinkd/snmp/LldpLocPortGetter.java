@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -40,6 +37,9 @@ import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class LldpLocPortGetter extends SnmpGetter {
 
     private final static Logger LOG = LoggerFactory.getLogger(LldpLocPortGetter.class);
@@ -48,28 +48,24 @@ public class LldpLocPortGetter extends SnmpGetter {
     public final static SnmpObjId LLDP_LOC_PORTID         = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.3");
     public final static SnmpObjId LLDP_LOC_DESCR          = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.4");
 
-	public LldpLocPortGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location, Integer nodeid) {
-	    super(peer, client, location,nodeid);
+	public LldpLocPortGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location) {
+	    super(peer, client, location);
 	}
 
 	
     public List<SnmpValue> get(Integer lldpRemLocalPortNum) {
-        List<SnmpObjId> oids = new ArrayList<SnmpObjId>(3);
-        oids.add(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE));
-        oids.add(SnmpObjId.get(LLDP_LOC_PORTID));
-        oids.add(SnmpObjId.get(LLDP_LOC_DESCR)) ;
-        return get(oids,lldpRemLocalPortNum);
+        return get(Arrays.asList(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE), SnmpObjId.get(LLDP_LOC_PORTID), SnmpObjId.get(LLDP_LOC_DESCR)), lldpRemLocalPortNum);
     }
 
-    public LldpLink getLldpLink(LldpLink lldplink) {
+    public LldpLink getLldpLink(LldpRemTableTracker.LldpRemRow row) {
 
-        List<SnmpValue> val = get(lldplink.getLldpLocalPortNum());
+        List<SnmpValue> val = get(row.getLldpRemLocalPortNum());
 
-        if (val == null ) {
-            LOG.debug("get: [{}], cannot find local instance for lldp local port number {}",
-                     getNodeId(),
+        LldpLink lldplink = row.getLldpLink();
+        if (val == null) {
+            LOG.debug("getLldpLink: cannot find local instance for lldp local port number {}",
                      lldplink.getLldpLocalPortNum());
-            LOG.debug("get: [{}], setting default not found Values: portidtype \"InterfaceAlias\", portid=\"Not Found On lldpLocPortTable\"",getNodeId());
+            LOG.debug("getLldpLink: setting default not found Values: portidtype \"InterfaceAlias\", portid=\"Not Found On lldpLocPortTable\"");
             lldplink.setLldpPortIdSubType(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
             lldplink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
             lldplink.setLldpPortDescr("");
@@ -77,19 +73,17 @@ public class LldpLocPortGetter extends SnmpGetter {
         }
 
         if (val.get(0) == null || val.get(0).isError() || !val.get(0).isNumeric()) {
-            LOG.debug("get: [{}], port id subtype is null or invalid for lldp local port number {}",
-                     getNodeId(),
+            LOG.debug("getLldpLink: port id subtype is null or invalid for lldp local port number {}",
                      lldplink.getLldpLocalPortNum());
-            LOG.debug("get: [{}], setting default not found Values: portidtype \"InterfaceAlias\"",getNodeId());
+            LOG.debug("getLldpLink: setting default not found Values: portidtype \"InterfaceAlias\"");
             lldplink.setLldpPortIdSubType(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
         } else {
             lldplink.setLldpPortIdSubType(LldpPortIdSubType.get(val.get(0).toInt()));
         }
         if (val.get(1) == null || val.get(1).isError()) {
-            LOG.debug("get: [{}], port id is null for lldp local port number {}",
-                     getNodeId(),
+            LOG.debug("getLldpLink: port id is null for lldp local port number {}",
                      lldplink.getLldpLocalPortNum());
-            LOG.debug("get: [{}], setting default not found Values: portid=\"Not Found On lldpLocPortTable\"",getNodeId());
+            LOG.debug("get: setting default not found Values: portid=\"Not Found On lldpLocPortTable\"");
             lldplink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
         } else {
             lldplink.setLldpPortId(LldpRemTableTracker.decodeLldpPortId(lldplink.getLldpPortIdSubType().getValue(),
@@ -100,12 +94,11 @@ public class LldpLocPortGetter extends SnmpGetter {
         else
             lldplink.setLldpPortDescr("");
         if (val.get(0).isNumeric()
-                && val.get(0).toInt() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL.getValue().intValue()) {
+                && val.get(0).toInt() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL.getValue()) {
             try {
                 lldplink.setLldpPortIfindex((val.get(1).toInt()));
             } catch (Exception e) {
-                LOG.warn("get: [{}], failed to convert to ifindex local port id {}",
-                          getNodeId(),
+                LOG.warn("getLldpLink: failed to convert to ifindex local port id {}",
                           val.get(1));
             }
         }

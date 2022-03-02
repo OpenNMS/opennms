@@ -40,6 +40,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.MetricRegistry;
+
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 
@@ -55,6 +57,8 @@ public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatche
 
     @Autowired
     private TracerRegistry tracerRegistry;
+
+    private MetricRegistry metrics;
 
     @Override
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
@@ -95,5 +99,17 @@ public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatche
     @Override
     public void destroy() {
         onDestroy();
+    }
+
+    @Override
+    public MetricRegistry getMetrics() {
+        if(metrics == null) {
+            metrics = new MetricRegistry();
+        }
+        return metrics;
+    }
+
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
     }
 }

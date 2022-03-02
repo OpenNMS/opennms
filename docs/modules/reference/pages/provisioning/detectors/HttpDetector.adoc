@@ -1,0 +1,64 @@
+= HTTP Detector
+
+Use this detector to find and assign services based on HTTP.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.simple.HttpDetector`
+|===
+
+== Configuration and use
+
+.Optional parameters for the HTTP service detector
+[options="header, autowidth"]
+[cols="1,3,1"]
+|===
+
+| Parameter
+| Description
+| Default
+
+| checkRetCode
+| If set to `true`, only HTTP status codes that are the same or lower than the value of `maxRetCode` pass.
+| false
+
+| maxRetCode
+| Highest HTTP response code that passes.
+Evaluated only if `checkRetCode` is set to `true`.
+| 399
+
+| port
+| Port to query.
+| 80
+
+| url
+| URL to query.
+| /
+
+| timeout
+| Timeout in milliseconds to wait for a response.
+| 2000
+|===
+
+NOTE: The HTTP detector makes only one HTTP request and does not follow redirects.
+
+== Example configuration
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<foreign-source date-stamp="2010-06-29T13:15:30.494+02:00" name="test" xmlns="http://xmlns.opennms.org/xsd/config/foreign-source">
+  <scan-interval>1d</scan-interval>
+  <detectors>
+    <detector class="org.opennms.netmgt.provision.detector.simple.HttpDetector" name="http8080">
+      <parameter key="port" value="8080"/>
+      <parameter key="url" value="index2.html" />
+      <parameter key="maxRetCode" value="200"/>
+      <parameter key="checkRetCode" value="true"/>
+    </detector>
+  </detectors>
+  <policies/>
+</foreign-source>
+----

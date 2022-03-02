@@ -28,15 +28,19 @@
 
 package org.opennms.core.rpc.utils.mate;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
+import org.opennms.core.xml.JaxbUtils;
+
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.Maps;
-
 public class Interpolator {
-    private static final String OUTER_REGEXP = "\\$\\{(.+?:.+?)\\}";
+    private static final String OUTER_REGEXP = "\\$\\{([^\\}]+?:[^\\}]+?)\\}";
     private static final String INNER_REGEXP = "(?:([^\\|]+?:[^\\|]+)|([^\\|]+))";
     private static final Pattern OUTER_PATTERN = Pattern.compile(OUTER_REGEXP);
     private static final Pattern INNER_PATTERN = Pattern.compile(INNER_REGEXP);
@@ -48,19 +52,32 @@ public class Interpolator {
     }
 
     public static Map<String, String> interpolateStrings(final Map<String, String> attributes, final Scope scope) {
-        return Maps.transformValues(attributes, (raw) -> interpolate(raw, scope));
+        return Maps.transformValues(attributes, (raw) -> raw != null ? interpolate(raw, scope).output : null);
     }
 
     public static Object interpolate(final Object value, final Scope scope) {
+        if (value == null) {
+            return null;
+        }
         if (value instanceof String) {
-            return interpolate((String) value, scope);
+            return interpolate((String) value, scope).output;
         } else {
-            return value;
+            if (value.getClass().isAnnotationPresent(XmlRootElement.class)) {
+                return JaxbUtils.unmarshal(value.getClass(), interpolate(JaxbUtils.marshal(value), scope).output, false);
+            } else {
+                return value;
+            }
         }
     }
 
-    public static String interpolate(final String raw, final Scope scope) {
-        final StringBuffer stringBuffer = new StringBuffer();
+    public static Result interpolate(final String raw, final Scope scope) {
+        if (raw == null) {
+            return null;
+        }
+
+        final ImmutableList.Builder<ResultPart> parts = ImmutableList.builder();
+
+        final StringBuilder stringBuilder = new StringBuilder();
         final Matcher outerMatcher = OUTER_PATTERN.matcher(raw);
         while (outerMatcher.find()) {
             final Matcher innerMatcher = INNER_PATTERN.matcher(outerMatcher.group(1));
@@ -71,25 +88,67 @@ public class Interpolator {
                     final String[] arr = innerMatcher.group(1).split(":", 2);
                     final ContextKey contextKey = new ContextKey(arr[0], arr[1]);
 
-                    final Optional<String> replacement = scope.get(contextKey);
+                    final Optional<Scope.ScopeValue> replacement = scope.get(contextKey);
                     if (replacement.isPresent()) {
-                        result = Matcher.quoteReplacement(replacement.get());
+                        result = Matcher.quoteReplacement(replacement.get().value);
+                        parts.add(new ResultPart(outerMatcher.group(), innerMatcher.group(1), replacement.get()));
                         break;
                     }
                 } else if (innerMatcher.group(2) != null) {
                     result = Matcher.quoteReplacement(innerMatcher.group(2));
+                    parts.add(new ResultPart(outerMatcher.group(), innerMatcher.group(2), new Scope.ScopeValue(Scope.ScopeName.DEFAULT, innerMatcher.group(2))));
                     break;
                 }
             }
 
-            outerMatcher.appendReplacement(stringBuffer, result);
+            outerMatcher.appendReplacement(stringBuilder, result);
         }
 
-        outerMatcher.appendTail(stringBuffer);
-        return stringBuffer.toString();
+        outerMatcher.appendTail(stringBuilder);
+
+        return new Result(stringBuilder.toString(), parts.build());
     }
-    
+
+    public static Optional<ContextKey> getContextKeyFromMateData(final String raw) {
+        final Matcher outerMatcher = OUTER_PATTERN.matcher(raw);
+        ContextKey contextKey = null;
+        while (outerMatcher.find()) {
+            final Matcher innerMatcher = INNER_PATTERN.matcher(outerMatcher.group(1));
+
+            String result = "";
+            while (innerMatcher.find()) {
+                if (innerMatcher.group(1) != null) {
+                    final String[] arr = innerMatcher.group(1).split(":", 2);
+                    contextKey = new ContextKey(arr[0], arr[1]);
+                }
+            }
+        }
+        return Optional.ofNullable(contextKey);
+    }
+
     public static boolean containsMateData(String toCheck) {
         return toCheck != null && OUTER_PATTERN.matcher(toCheck).find();
+    }
+
+    public static class Result {
+        public final String output;
+        public final List<ResultPart> parts;
+
+        public Result(final String output, final List<ResultPart> parts) {
+            this.output = output;
+            this.parts = parts;
+        }
+    }
+
+    public static class ResultPart {
+        public final String input;
+        public final String match;
+        public final Scope.ScopeValue value;
+
+        public ResultPart(final String input, final String match, final Scope.ScopeValue value) {
+            this.input = input;
+            this.match = match;
+            this.value = value;
+        }
     }
 }

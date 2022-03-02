@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<prometheus-datacollection-config rrd-repository="${install.share.dir}/rrd/snmp/">
+   <!-- See prometheus-datacollection.d -->
+</prometheus-datacollection-config>

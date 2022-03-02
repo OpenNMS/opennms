@@ -1,0 +1,79 @@
+:imagesdir: ../assets/images
+= Build documentation
+
+This section describes how to build documentation locally. 
+We recommend that you do this to test major documentation changes, particularly if adding a lot of new content to the documentation or making significant revisions to existing documentation. 
+
+== Install Antora
+
+Antora is a documentation site generator based around the AsciiDoc format. 
+To install Antora, follow the https://docs.antora.org/antora/2.2/install/install-antora/[instructions] on the Antora website.  
+
+== Make a copy of the OpenNMS docs repository
+
+If you already know how to use https://git-scm.com/[git], then this is going to sound very familiar.
+If not, here’s the full walk-through:
+
+. Install git.
+. Locate the OpenNMS repo you want to write docs for and https://help.github.com/articles/fork-a-repo/[fork] it. (For example, the https://github.com/OpenNMS/opennms[core OpenNMS repository].)
+
+. Use git to clone the repo (either the original or your fork, as appropriate) to your local system: `git clone <repo URL>`
+
+If the project that you are working in already has version branches, then you will want to set up local copies of those as well.
+
+After you have cloned the repo to your local system, you can track those branches with the command:
+
+[source, shell]
+----
+git checkout -b <local_branch_name> <remote_repo>/<remote_branch_name>
+----
+
+== Write the docs
+
+The documentation for the project lives in the `docs` directory within the source code repository you have checked out.
+Each main section is structured in directories that contain the text `.adoc` files.
+Write the text files in the http://asciidoctor.org/docs/asciidoc-syntax-quick-reference/[AsciiDoc] format.
+
+You need to include every new directory or text file in the general structure of the documentation.
+The `nav.adoc` file defines the content hierarchy.
+
+.Sample structure of a nav.adoc file
+[source, nav.adoc]
+----
+
+.About  <1>
+* xref:about:welcome.adoc[Welcome] <2>
+* xref:about:legal-notice.adoc[Legal Notice]  <2>
+
+.Installation  <3>
+* xref:installation:requirements.adoc[Requirements]  <4>
+* xref:installation:rpm.adoc[Installing on RPM-based Linux (CentOS, Fedora, OpenSuse, RedHat)]  <4>
+* xref:installation:debian.adoc[Installing on Debian/Ubuntu]  <4>
+----
+<1> Friendly directory name _About_ that appears in the left navigation.
+<2> Each topic in the _About_ section, written as a cross reference to the directory, file name, and friendly name that appears in the left navigation. 
+<3> Second section, _Installation_.
+<4> Each topic in the _Installation_ section. 
+
+For information on directory structure for images files, see xref:development:docs/images.adoc#doc-guidelines-images[Include images].
+
+== Build the docs
+
+The documentation is located in the `docs` directory.
+Transforming an Antora repo into a documentation site is pretty easy:
+
+[source, shell]
+----
+make docs
+----
+
+=== Build Output
+
+Antora creates an archive of the documentation in `build/site.zip` and an extracted one in `public/index.html`, which you can open directly in a browser. 
+
+The generic path to a given version of the docs is:
+
+[source, shell]
+----
+<docs_repo_dir>/build/site/<distro>/<branch_dir_name>
+----

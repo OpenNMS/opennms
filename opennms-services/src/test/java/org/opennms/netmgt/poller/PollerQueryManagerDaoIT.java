@@ -67,6 +67,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockService.SvcMgmtStatus;
@@ -225,6 +226,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_poller.setPollerConfig(m_pollerConfig);
 		m_poller.setPollOutagesDao(m_pollerConfig);
 		m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
+		m_poller.setPersisterFactory(new MockPersisterFactory());
 	}
 
 	@After
@@ -247,7 +249,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
     	MockLogAppender.setupLogging(p);
         Package pkg = new Package();
         pkg.setName("SFO");
-        pkg.setRemote(true);
+        pkg.setPerspectiveOnly(true);
         Poller poller = new Poller();
 		poller.setPollerConfig(new MockPollerConfig(m_network));
         assertFalse(poller.pollableServiceInPackage(null, null, pkg));
@@ -1309,7 +1311,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		OutageChecker(MockService svc, Event lostSvcEvent,
 				Event regainedSvcEvent) {
 			super(m_db,
-					"select * from outages where nodeid = ? and ipAddr = ? and serviceId = ?");
+					"select * from outages where perspective is null and nodeid = ? and ipAddr = ? and serviceId = ?");
 
 			m_svc = svc;
 			m_lostSvcEvent = lostSvcEvent;

@@ -55,6 +55,7 @@ import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.MinionProfile;
+import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
@@ -69,6 +70,9 @@ public class DiscoveryIT {
 
     @ClassRule
     public static final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+			.withOpenNMS(OpenNMSProfile.newBuilder()
+					.withFile("empty-discovery-configuration.xml", "etc/discovery-configuration.xml")
+					.build())
             .withMinions(MinionProfile.newBuilder()
                     // Enable ICMP support for this test
                     .withIcmpSupportEnabled(true)

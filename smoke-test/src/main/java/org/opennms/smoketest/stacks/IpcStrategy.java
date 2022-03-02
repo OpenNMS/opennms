@@ -33,5 +33,6 @@ package org.opennms.smoketest.stacks;
  */
 public enum IpcStrategy {
     JMS,
-    KAFKA
+    KAFKA,
+    GRPC
 }

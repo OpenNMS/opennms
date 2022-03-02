@@ -1,0 +1,72 @@
+
+[[ga-provisioning-introduction]]
+= Provisioning
+
+Provisioning is a mechanism to import node and service definitions either from an external source such as DNS or HTTP or via the {page-component-title} web UI.
+The Provisiond daemon maintains your managed entity inventory through policy-based provisioning.
+
+Provisiond comes with a RESTful Web Service API for easy integration with external systems such as a configuration management database (CMDB) or external inventory systems.
+It also includes an adapter API for interfacing with other management systems such as configuration management.
+
+[[provisioning-works]]
+== How it works
+
+Provisiond receives requests to add managed entities (nodes, IP interfaces, SNMP interfaces, services) via three basic mechanisms:
+
+* xref:provisioning/auto-discovery.adoc[automatic discovery] (typically via the Discovery daemon)
+* xref:provisioning/directed-discovery.adoc[directed discovery] using an import requisition (typically via the Provisioning UI)
+* xref:development:rest/nodes.adoc[node asset import] through the RestAPI or the https://docs.opennms.com/pris/1.2.0/index.html[provisioning integration server] (PRIS)
+
+{page-component-title} enables you to control Provisiond behavior by creating provisioning policies that include scanning frequency, IP ranges, and which services to detect.
+
+Regardless of the method, provisioning is an iterative process: you will need to fine-tune your results to exclude or add things to what you monitor.
+
+[[discovery-auto]]
+== Automatic discovery
+
+{page-component-title} uses an ICMP ping sweep to find IP addresses on the network and provision node entities.
+Use link:#ga-provisioning-auto-discovery-detectors[auto discovery with detectors] in addition to the ICMP IP address ping to specify services that you need to detect.
+link:#import-handlers[Import handlers] let you to further control provisioning.
+
+Automatically discovered entities are analyzed, persisted to the relational data store, and managed based on the policies defined in the <<provisioning/getting-started.adoc#foreign-source-definition, default foreign source definition>>:
+
+* scanned to discover node entity’s interfaces (SNMP and IP)
+* interfaces are persisted
+* service detection of each IP interface
+* node merging
+
+NOTE: Merging occurs only when two automatically discovered nodes appear to be the same node.
+Nodes <<provisioning/directed-discovery.adoc#discovery-directed, discovered directly>> are not included in the node merging process.
+
+[[discovery-directed]]
+== Directed discovery
+Directed discovery lets you specify what you want to provision based on an existing data source such as an in-house inventory, standalone provisioning system, or set of element management systems.
+Using an import requisition, this mechanism directs {page-component-title} to add, update, or delete a node entity exactly as defined by the external source.
+No discovery process is used for finding more interfaces or services.
+
+IMPORTANT: An import requisition is an XML definition of node entities to be provisioned from an external source into {page-component-title}.
+See the http://xmlns.opennms.org/xsd/config/model-import[requisition schema] (XSD) for more information.
+
+=== Understanding the Process
+
+Directed discovery involves three phases:
+
+* import (with three sub-phases)
+** marshal
+** audit
+** limited SNMP scan
+* node scan
+* service scan
+
+The import phase begins when Provisiond receives a request to import a requisition from a URL.
+The requisition is marshalled into Java objects for processing.
+An audit, based on the unique foreign ID of the foreign source, determines whether the node already exists; the imported object is then added, updated, or deleted from the inventory.
+
+NOTE: If any syntactical or XML structural problems occur in the requisition, the entire import is abandoned and no import operations are completed.
+
+If a requisition node has an interface defined as the primary SNMP interface, then during the update and add operations the node is scanned for minimal SNMP attribute information.
+
+The node scan phase discovers details about the node and interfaces that were not directly provisioned.
+All physical (SNMP) and logical (IP) interfaces are discovered and persisted based on any provisioning policies that may have been defined for the foreign source associated with the import requisition.
+
+After interface discovery, Provisiond moves to service detection on each IP interface entity.

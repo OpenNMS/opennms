@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
 
     private static final int SLEEP_TIME = 2000;
@@ -88,9 +87,9 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
                         sleep(SLEEP_TIME); // encounter for UI Delay
                         findElementById("refresh-requisitions").click();
                         sleep(SLEEP_TIME); // encounter for UI Delay
-                        driver.findElement(By.xpath("//button[@data-bb-handler='reloadAll']")).click();
+                        driver.findElement(By.xpath("//button[text()='Reload Everything']")).click();
                         sleep(SLEEP_TIME); // encounter for UI Delay
-                        driver.findElement(By.xpath("//button[@data-bb-handler='confirm']")).click();
+                        driver.findElement(By.xpath("//button[text()='OK']")).click();
                         sleep(SLEEP_TIME); // encounter for UI Delay
                     }),
             new Check(
@@ -144,10 +143,15 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
 
             // Run action (again or an individual one), which should still pass
             LOG.info("{}: Perform action again. Should redirect to login page.", eachCheck.url);
-            if (eachCheck.actionToPerformAfterLogout != null) {
-                eachCheck.actionToPerformAfterLogout.run();
-            } else {
-                eachCheck.actionToPerform.run();
+            try {
+                if (eachCheck.actionToPerformAfterLogout != null) {
+                    eachCheck.actionToPerformAfterLogout.run();
+                } else {
+                    eachCheck.actionToPerform.run();
+                }
+            } catch(Exception e) {
+                // Sometimes we get logged out directly so the actionToPerform might fail.
+                // This is fine as long as the logout itself happened which we test below.
             }
             sleep(SLEEP_TIME);
 

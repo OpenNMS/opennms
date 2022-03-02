@@ -1,0 +1,63 @@
+.Create a project directory for PostgreSQL and create a `docker-compose.yml` file
+[source, console]
+----
+mkdir postgres
+cd postgres
+vi docker-compose.yml
+----
+
+.Create the PostgreSQL service and publish the port on your local host
+[source, docker-compose.yml]
+[subs="verbatim,attributes"]
+----
+---
+version: '3'
+
+volumes:
+  data-postgres: {}<1>
+
+services:
+  database:<2>
+    image: postgres:{postgresql-version}<3>
+    container_name: database
+    environment:<4>
+      TZ: 'America/New_York'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'my-postgres-password'
+    volumes:<5>
+      - 'data-postgres:/var/lib/postgresql/data'
+    healthcheck:<6>
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    ports:
+      - '5432:5432/tcp'
+----
+
+<1> Persist the PostgreSQL database in a local volume.
+<2> PostgreSQL service is named `database` with a friendly `container_name`.
+<3> Image reference using the official PostgreSQL image.
+<4> Set the time zone and the postgres credentials for administrative tasks (for example, creating and changing database schemas for upgrades).
+<5> Mount the volume for persisting the PostgreSQL database files.
+<6> Run an internal health check to see if the PostgreSQL instance is ready.
+
+.Start the service and run it in background
+[source, console]
+----
+docker-compose up -d
+----
+
+.Verify the PostgreSQL process is up and running
+[source, console]
+----
+docker-compose ps
+----
+
+.The state should be Up (healthy) and the TCP port should be available on all interfaces
+[source, output]
+----
+  Name                Command                 State               Ports
+--------------------------------------------------------------------------------
+database   docker-entrypoint.sh postgres   Up (healthy)   0.0.0.0:5432->5432/tcp
+----

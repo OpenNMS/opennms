@@ -70,10 +70,3 @@ angular.module('onms-search', [
   }
 
 }]);
-
-// Bootstrap to a an element with ID 'onms-search'
-
-angular.element(document).ready(function () {
-  var el = document.getElementById('onms-search');
-  angular.bootstrap(angular.element(el), ['onms-search']);
-});

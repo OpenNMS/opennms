@@ -39,7 +39,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.support.SavedHistory;
 
-@Command(scope="topo", name="show-history", description="Shows the history of a certain user")
+@Command(scope="opennms", name="topo-show-history", description="Shows the history of a certain user")
 @Service
 public class ShowHistoryCommand implements Action {
 

@@ -56,7 +56,7 @@ public class GraphMLSearchProviderTest {
         GraphMLGraph graph = new GraphMLGraph();
         graph.setProperty(GraphMLProperties.NAMESPACE, "namespace1:graph1");
 
-        GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(null, graph, new GraphMLServiceAccessor());
+        GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graph, new GraphMLServiceAccessor());
         GraphMLSearchProvider searchProvider = new GraphMLSearchProvider(topologyProvider);
         Assert.assertEquals(true, searchProvider.contributesTo("namespace1:graph1"));
         Assert.assertEquals(true, searchProvider.contributesTo("namespace1:graph2"));
@@ -72,7 +72,7 @@ public class GraphMLSearchProviderTest {
         Assert.assertNotNull(metaTopologyProvider.getDefaultGraphProvider());
 
         List<SearchProvider> searchProviders = metaTopologyProvider.getGraphProviders().stream()
-                .map(eachProvider -> new GraphMLSearchProvider(metaTopologyProvider.getRawTopologyProvider(eachProvider.getNamespace())))
+                .map(eachProvider -> new GraphMLSearchProvider(metaTopologyProvider.getGraphProvider(eachProvider.getNamespace())))
                 .collect(Collectors.toList());
         Assert.assertEquals(2, searchProviders.size());
 

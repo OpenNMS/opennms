@@ -142,7 +142,7 @@
                   </div>
               </div>
           </form>
-              
+
         <%-- Search by location --%>
           <form role="form" class="form-group" action="element/nodeList.htm" method="get">
               <input type="hidden" name="listInterfaces" value="false"/>
@@ -215,6 +215,19 @@
                   </div>
               </div>
           </form>
+
+          <%-- Search by Enhanced Linkd topology data --%>
+          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="listInterfaces" value="false"/>
+              <label class="hidden-sm hidden-md hidden-lg">Enhanced Linkd topology</label>
+              <div class="input-group">
+                  <input type="text" class="form-control" id="byif_topology" name="topology"/>
+                  <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                  </div>
+              </div>
+          </form>
+
       </div>
     </div>
 
@@ -272,7 +285,7 @@
       </div>
       <div class="card-body">
           <p>Searching by name is a case-insensitive, inclusive search. For example,
-            searching on <em>serv</em> would find any of <em>serv</em>, <em>Service</em>, 
+            searching on <em>serv</em> would find any of <em>serv</em>, <em>Service</em>,
             <em>Reserved</em>, <em>NTSERV</em>, <em>UserVortex</em>, etc. The underscore
             character acts as a single character wildcard. The percent character acts as a multiple
             character wildcard.
@@ -312,6 +325,10 @@
              matching the search string. This is a case-insensitive partial string match. For
              example, you can find all interfaces with a specified manufacturer's code by entering
              the first 6 characters of the mac address. Octet separators (dash or colon) are optional.
+          </p>
+
+          <p>Search for Enhanced Linkd topology information allows you to find nodes with CDP/LLDP data
+              matching the given search string.
           </p>
 
           <p>Searching for assets allows you to search for all assets which have been

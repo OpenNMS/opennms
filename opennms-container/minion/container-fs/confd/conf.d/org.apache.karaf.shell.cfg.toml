@@ -1,0 +1,6 @@
+[template]
+src = "org.apache.karaf.shell.cfg.tmpl"
+dest = "/opt/minion/etc/org.apache.karaf.shell.cfg"
+keys = [
+    "/karaf/shell/ssh"
+]

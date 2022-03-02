@@ -99,7 +99,7 @@ public abstract class Basethresholddef implements Serializable {
      *  reaches the trigger value then a threshold event is generated.
      */
     @XmlAttribute(name = "value", required = true)
-    private Double m_value;
+    private String m_value;
 
     /**
      * Rearm value. Identifies the value that the datasource must
@@ -108,7 +108,7 @@ public abstract class Basethresholddef implements Serializable {
      *  rearm, and once again be eligible to generate an event.
      */
     @XmlAttribute(name = "rearm", required = true)
-    private Double m_rearm;
+    private String m_rearm;
 
     /**
      * Trigger value. Identifies the number of consecutive polls that
@@ -116,7 +116,7 @@ public abstract class Basethresholddef implements Serializable {
      *  before a threshold event is generated.
      */
     @XmlAttribute(name = "trigger", required = true)
-    private Integer m_trigger;
+    private String m_trigger;
 
     /**
      * Value to retrieve from strings.properties to label this
@@ -188,28 +188,41 @@ public abstract class Basethresholddef implements Serializable {
         m_dsType = ConfigUtils.assertNotEmpty(dsType, "ds-type");
     }
 
-    public Double getValue() {
+    public String getValue() {
         return m_value;
     }
 
-    public void setValue(final Double value) {
+    public void setValue(final String value) {
         m_value = ConfigUtils.assertNotNull(value, "value");
     }
 
-    public Double getRearm() {
+    public void setDoubleValue(final Double value) {
+        m_value = String.valueOf(value);
+    }
+
+    public String getRearm() {
         return m_rearm;
     }
 
-    public void setRearm(final Double rearm) {
+    public void setRearm(final String rearm) {
         m_rearm = ConfigUtils.assertNotNull(rearm, "rearm");
     }
 
-    public Integer getTrigger() {
+    public void setRearmValue(final Double rearm) {
+        m_rearm = String.valueOf(rearm);
+    }
+
+    public String getTrigger() {
         return m_trigger;
     }
 
-    public void setTrigger(final Integer trigger) {
-        m_trigger = ConfigUtils.assertMinimumInclusive(trigger, 1, "trigger");
+    public void setTrigger(final String trigger) {
+        m_trigger = ConfigUtils.assertNotNull(trigger,  "trigger");
+    }
+
+    public void setTriggerValue(final Integer trigger) {
+        Integer triggerValue = ConfigUtils.assertMinimumInclusive(trigger, 1, "trigger");
+        m_trigger = String.valueOf(triggerValue);
     }
 
     public Optional<String> getDsLabel() {
@@ -275,7 +288,7 @@ public abstract class Basethresholddef implements Serializable {
                             m_description, 
                             m_type, 
                             m_dsType, 
-                            m_value, 
+                            m_value,
                             m_rearm, 
                             m_trigger, 
                             m_dsLabel, 

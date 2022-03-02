@@ -1,0 +1,19 @@
+[[ga-detectors]]
+= Detectors
+
+Use detectors within the provisioning process to detect available services on nodes automatically.
+
+== Supported detectors
+
+For information on supported detectors and how to configure them, see xref:reference:provisioning/detectors.adoc[provisioning detectors reference section].
+
+[[ga-detector-provisioning-meta-data]]
+== Metadata DSL
+Service detectors can use <<:meta-data.adoc#ga-meta-data-dsl, MetaData DSL>> (domain specific language) to leverage dynamic configuration in parameter values to interpolate metadata into the parameter.
+
+The syntax lets you use patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+
+During evaluation of an expression, the following scopes are available:
+
+* Node metadata
+* Interface metadata

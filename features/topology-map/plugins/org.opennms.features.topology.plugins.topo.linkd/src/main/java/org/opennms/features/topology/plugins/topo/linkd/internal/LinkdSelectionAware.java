@@ -35,12 +35,10 @@ import java.util.List;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.topo.GroupRef;
-import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.CollapsibleRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 
@@ -78,19 +76,9 @@ public class LinkdSelectionAware implements SelectionAware {
                 } catch (NumberFormatException e) {
                     LoggerFactory.getLogger(getClass()).warn("Cannot filter nodes with ID: {}", eachRef.getId());
                 }
-            } else if( ((Vertex)eachRef).isGroup() && "category".equals(eachRef.getNamespace()) ){
-                try{
-                    GroupRef group = (GroupRef) eachRef;
-                    nodeIdList.addAll(Collections2.transform(group.getChildren(), new Function<VertexRef, Integer>(){
-                        @Override
-                        public Integer apply(VertexRef input) {
-                            return Integer.valueOf(input.getId());
-                        }
-                    }));
-                } catch (ClassCastException e){
-                    LoggerFactory.getLogger(getClass()).warn("Cannot filter category with ID: {} children: {}", eachRef.getId(), ((GroupRef) eachRef).getChildren());
-
-                }
+            } else if("category".equals(eachRef.getNamespace()) && eachRef instanceof CollapsibleRef) {
+                CollapsibleRef collapsible = (CollapsibleRef) eachRef;
+                nodeIdList.addAll(Collections2.transform(collapsible.getChildren(), input -> Integer.valueOf(input.getId())));
             }
         }
         return nodeIdList;

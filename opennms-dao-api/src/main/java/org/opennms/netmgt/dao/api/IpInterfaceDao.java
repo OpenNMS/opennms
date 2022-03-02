@@ -114,4 +114,6 @@ public interface IpInterfaceDao extends LegacyOnmsDao<OnmsIpInterface, Integer> 
 
 	OnmsIpInterface findPrimaryInterfaceByNodeId(Integer nodeId);
 
+	List<OnmsIpInterface> findInterfacesWithMetadata(final String context, final String key, final String value);
+
 }

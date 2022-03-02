@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+  <context:annotation-config />
+
+  <bean id="openConfigAdapterFactory" class="org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapterFactory" />
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory" ref="openConfigAdapterFactory" />
+
+
+  <bean id="openConfigClientFactory" class="org.opennms.features.openconfig.telemetry.OpenConfigClientFactoryImpl" />
+  <onmsgi:service interface="org.opennms.features.openconfig.api.OpenConfigClientFactory" ref="openConfigClientFactory"/>
+
+  <bean id="connectorFactory" class="org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnectorFactory" >
+    <constructor-arg ref="telemetryRegistry" />
+    <constructor-arg ref="openConfigClientFactory"/>
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.api.receiver.ConnectorFactory" ref="connectorFactory" />
+
+
+
+</beans>

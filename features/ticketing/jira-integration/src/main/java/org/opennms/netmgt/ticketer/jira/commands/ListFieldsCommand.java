@@ -56,8 +56,8 @@ import com.google.common.base.Strings;
  * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
  * </ul>
  */
-@Command(scope = "jira", name = "list-fields", description="Uses the JIRA ReST API to list all fields available")
-@org.apache.karaf.shell.commands.Command(scope = "jira", name = "list-fields", description="Uses the JIRA ReST API to list all fields available")
+@Command(scope = "opennms", name = "jira-list-fields", description="Uses the JIRA ReST API to list all fields available")
+@org.apache.karaf.shell.commands.Command(scope = "opennms", name = "jira-list-fields", description="Uses the JIRA ReST API to list all fields available")
 @Service
 public class ListFieldsCommand extends AbstractJiraCommand implements Action {
 

@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<prometheus-datacollection-config>
+   <collection name="node_exporter">
+     <rrd step="300">
+       <rra>RRA:AVERAGE:0.5:1:2016</rra>
+       <rra>RRA:AVERAGE:0.5:12:1488</rra>
+       <rra>RRA:AVERAGE:0.5:288:366</rra>
+       <rra>RRA:MAX:0.5:288:366</rra>
+       <rra>RRA:MIN:0.5:288:366</rra>
+     </rrd>
+
+     <group-ref>node_exporter_cpu</group-ref> 
+     <group-ref>node_exporter_disks</group-ref>
+     <group-ref>node_exporter_filesystems</group-ref>
+     <group-ref>node_exporter_loadavg</group-ref>
+     <group-ref>node_exporter_memory</group-ref>
+   </collection>
+
+   <!--
+      node_load1 0.58
+      node_load5 0.36
+      node_load15 0.64
+   -->
+   <group name="node_exporter_loadavg"
+     resource-type="node"
+     filter-exp="name matches 'node_load.*'">
+    
+     <numeric-attribute alias-exp="name.substring('node_'.length())"/>
+   </group>
+
+   <!--
+      node_memory_Active 1.3626548224e+10
+      node_memory_Active_anon 6.314020864e+09
+      node_memory_Active_file 7.31252736e+09
+      ...
+      node_memory_HugePages_Free 0
+      ...
+   -->
+   <group name="node_exporter_memory"
+     resource-type="node"
+     filter-exp="name matches 'node_memory_.*'">
+
+     <numeric-attribute alias-exp="name.substring('node_memory_'.length())"/>
+   </group>
+
+   <!--
+      node_cpu{cpu="cpu0",mode="guest"} 0
+      node_cpu{cpu="cpu0",mode="idle"} 16594.88
+      ...
+      node_cpu{cpu="cpu1",mode="guest"} 0
+      node_cpu{cpu="cpu1",mode="idle"} 17790.51
+   -->
+   <group name="node_exporter_cpus"
+     resource-type="nodeExporterCPU"
+     filter-exp="name matches 'node_cpu'"
+     group-by-exp="labels[cpu]">
+
+     <numeric-attribute alias-exp="labels[mode]"/>
+   </group>
+
+   <!--
+      node_disk_bytes_read{device="dm-0"} 2.53952e+06
+      node_disk_bytes_read{device="dm-1"} 1.792955392e+09
+      ...
+      node_disk_bytes_written{device="dm-0"} 1.318912e+06
+      node_disk_bytes_written{device="dm-1"} 8.90744832e+08
+   -->
+   <group name="node_exporter_disks"
+     resource-type="nodeExporterDisk"
+     filter-exp="name matches 'node_disk_.*'"
+     group-by-exp="labels[device]">
+
+     <numeric-attribute alias-exp="name.substring('node_disk_'.length())"/>
+   </group>
+
+   <!--
+     node_filesystem_avail{device="/dev/sda1",fstype="vfat",mountpoint="/rootfs/boot/efi"} 1.99569408e+08
+     node_filesystem_avail{device="/dev/sda2",fstype="ext4",mountpoint="/rootfs/boot"} 7.78985472e+08
+     ...
+     node_filesystem_files{device="/dev/sda1",fstype="vfat",mountpoint="/rootfs/boot/efi"} 0
+     node_filesystem_files{device="/dev/sda2",fstype="ext4",mountpoint="/rootfs/boot"} 65536
+   -->
+   <group name="node_exporter_filesystems"
+     resource-type="nodeExporterFilesystem"
+     filter-exp="name matches 'node_filesystem_.*'"
+     group-by-exp="labels[mountpoint]">
+
+     <numeric-attribute alias-exp="name.substring('node_filesystem_'.length())"/>
+     <string-attribute alias="device" value-exp="labels[device]"/>
+   </group>
+</prometheus-datacollection-config>

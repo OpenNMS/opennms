@@ -32,6 +32,6 @@ import java.util.Collection;
 
 public interface EdgeListener {
 	
-	public void edgeSetChanged(EdgeProvider provider); 
-	public void edgeSetChanged(EdgeProvider provider, Collection<? extends Edge> added, Collection<? extends Edge> updated, Collection<String> removedEdgeIds); 
+	void edgeSetChanged(BackendGraph graph);
+	void edgeSetChanged(BackendGraph graph, Collection<? extends Edge> added, Collection<? extends Edge> updated, Collection<String> removedEdgeIds);
 }

@@ -1,0 +1,42 @@
+
+[[ga-service-assurance-critical-service]]
+= Critical Service
+
+Monitoring services on an IP network can be resource expensive, especially in cases where many of these services are not available.
+When a service is offline, or unreachable, the monitoring system spends most of it's time waiting for retries and timeouts.
+
+In order to improve efficiency, {page-component-title} deems all services on a interface to be `Down` if the critical service is down.
+{page-component-title} uses ICMP as the critical service by default.
+
+The following image shows how to use critical services to generate these events.
+
+.Service assurance with _Pollerd_ in {page-component-title} platform
+image::service-assurance/03_node-outage-correlation.png[]
+
+* (1) Critical services are all `Up` on the node and just a `nodeLostService` is sent.
+* (2) Critical service of one of many IP interface is `Down` and `interfaceDown` is sent.
+      All other services are not tested and no events are sent, the services are assumed as unreachable.
+* (3) All Critical services on the node are `Down` and just a `nodeDown` is sent.
+      All other services on the other IP interfaces are not tested and no events are sent, these services are assumed as unreachable.
+
+The Critical Service is used to correlate outages from services to a `nodeDown` or `interfaceDown` event.
+This is a global configuration option of Pollerd, defined in `poller-configuration.xml`.
+The {page-component-title} default configuration enables this behavior.
+
+.Critical Service Configuration in Pollerd
+[source, xml]
+----
+<poller-configuration threads="30"
+                      pathOutageEnabled="false"
+                      serviceUnresponsiveEnabled="false">
+
+<node-outage status="on" <1>
+      pollAllIfNoCriticalServiceDefined="true"> <2>
+      <critical-service name="ICMP" /> <3>
+</node-outage>
+----
+<1> Enable node outage correlation based on a critical service
+<2> Optional: In case of nodes without a critical service, this option controls the behavior.
+    If set to `true` then all services will be polled.
+    If set to `false` then the first service in the package that exists on the node will be polled until service is restored, and then polling will resume for all services.
+<3> Define critical service for node outage correlation

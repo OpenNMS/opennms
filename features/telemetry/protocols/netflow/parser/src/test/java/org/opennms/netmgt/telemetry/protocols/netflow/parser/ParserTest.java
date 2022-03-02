@@ -45,6 +45,7 @@ import java.util.function.Consumer;
 import org.junit.Test;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
@@ -60,7 +61,7 @@ public class ParserTest {
         execute("/flows/ipfix.dat", buffer -> {
             try {
 
-                final Session session = new TcpSession(InetAddress.getLoopbackAddress());
+                final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
 
                 final Header h1 = new Header(slice(buffer, Header.SIZE));
                 final Packet p1 = new Packet(session, h1, slice(buffer, h1.length - Header.SIZE));

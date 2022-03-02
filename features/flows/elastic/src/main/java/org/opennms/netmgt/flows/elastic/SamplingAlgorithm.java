@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import com.google.gson.annotations.SerializedName;
 import org.opennms.netmgt.flows.api.Flow;
+
+import com.google.gson.annotations.SerializedName;
 
 public enum SamplingAlgorithm {
     @SerializedName("Unassigned")

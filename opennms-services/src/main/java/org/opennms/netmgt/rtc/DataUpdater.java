@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,9 +35,9 @@ import java.util.Map;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Value;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
+import org.opennms.netmgt.events.api.model.IValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,7 @@ final class DataUpdater implements Runnable {
     /**
      * The event from which data is to be read
      */
-    private final Event m_event;
+    private final IEvent m_event;
 	private final DataManager m_dataManager;
 
     /**
@@ -127,7 +127,7 @@ final class DataUpdater implements Runnable {
     /**
      * Record the interfaceReparented info in the datastore
      */
-    private void handleInterfaceReparented(InetAddress ip, List<Parm> list) {
+    private void handleInterfaceReparented(InetAddress ip, List<IParm> list) {
 
         if (ip == null || list == null) {
             LOG.warn("{} ignored - info incomplete - ip/parms: {}/{}", m_event.getUei(), InetAddressUtils.str(ip), list);
@@ -141,10 +141,10 @@ final class DataUpdater implements Runnable {
         int newNodeId = -1;
 
         String parmName = null;
-        Value parmValue = null;
+        IValue parmValue = null;
         String parmContent = null;
 
-        for (Parm parm : list) {
+        for (IParm parm : list) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             if (parmValue == null)
@@ -218,8 +218,14 @@ final class DataUpdater implements Runnable {
     private void processEvent() {
 
         if (m_event == null) {
-
             LOG.debug("Event is null, nothing to process");
+            return;
+        }
+
+        final boolean isPerspectiveNull = m_event.getParm("perspective") == null ? true : m_event.getParm("perspective").getValue() == null;
+
+        if (!isPerspectiveNull) {
+            LOG.trace("Event's perspective is not null, nothing to process");
             return;
         }
 
@@ -281,9 +287,9 @@ final class DataUpdater implements Runnable {
      * Constructs the DataUpdater object
      * @param dataManager 
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
-    public DataUpdater(DataManager dataManager, Event event) {
+    public DataUpdater(DataManager dataManager, IEvent event) {
     	m_dataManager = dataManager;
         m_event = event;
     }

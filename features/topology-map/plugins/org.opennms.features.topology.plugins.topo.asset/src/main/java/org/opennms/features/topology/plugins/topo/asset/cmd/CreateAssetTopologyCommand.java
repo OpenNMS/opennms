@@ -38,7 +38,7 @@ import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfigBuilder;
 
-@Command(scope = "asset-topology", name = "create", description="Creates Asset Topology. Uses default config if options are not supplied.")
+@Command(scope = "opennms", name = "asset-topo-create", description="Creates Asset Topology. Uses default config if options are not supplied.")
 @Service
 public class CreateAssetTopologyCommand implements Action {
 

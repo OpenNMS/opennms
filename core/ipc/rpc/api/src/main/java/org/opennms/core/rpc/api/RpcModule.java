@@ -36,6 +36,8 @@ package org.opennms.core.rpc.api;
  */
 public interface RpcModule<S extends RpcRequest, T extends RpcResponse> extends RpcClient<S,T> {
 
+    public static final String MINION_HEADERS_MODULE = "MINION_HEADERS";
+
     /**
      * Used to route the request/responses to the appropriate module.
      * 

@@ -31,93 +31,79 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.bson.BsonDocument;
-import org.bson.BsonDocumentWriter;
+import java.util.Optional;
+
 import org.junit.Test;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.IllegalFlowException;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow9MessageBuilder;
+import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
+
+import com.google.common.collect.ImmutableList;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 public class FlowTimeoutTest {
+
     @Test
-    public void testWithoutTimeout() {
-        final BsonDocument bsonDocument = new BsonDocument();
-        final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        bsonDocumentWriter.writeStartDocument();
+    public void testWithoutTimeout() throws InvalidProtocolBufferException, IllegalFlowException {
 
-        bsonDocumentWriter.writeInt64("@unixSecs", 0);
-        bsonDocumentWriter.writeInt64("@sysUpTime", 0);
+        Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
+                .add(new UnsignedValue("@unixSecs", 0))
+                .add(new UnsignedValue("@sysUpTime", 0))
+                .add(new UnsignedValue("FIRST_SWITCHED", 123000))
+                .add(new UnsignedValue("LAST_SWITCHED", 987000)).build();
+        Netflow9MessageBuilder netflow9MessageBuilder = new Netflow9MessageBuilder();
 
-        bsonDocumentWriter.writeInt64("FIRST_SWITCHED", 123000);
-        bsonDocumentWriter.writeInt64("LAST_SWITCHED", 987000);
+        FlowMessage flowMessage = netflow9MessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
+        assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
+        assertThat(flowMessage.getDeltaSwitched().getValue(), is(123000L));
+        assertThat(flowMessage.getLastSwitched().getValue(), is(987000L));
 
-        bsonDocumentWriter.writeEndDocument();
-
-        final Netflow9Flow flow = new Netflow9Flow(bsonDocument);
-
-        assertThat(flow.getTimeout().isPresent(), is(false));
-
-        assertThat(flow.getFirstSwitched(), is(123000L));
-        assertThat(flow.getDeltaSwitched(), is(123000L)); // Timeout is same as first
-        assertThat(flow.getLastSwitched(), is(987000L));
     }
 
     @Test
-    public void testWithActiveTimeout() {
-        final BsonDocument bsonDocument = new BsonDocument();
-        final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        bsonDocumentWriter.writeStartDocument();
+    public void testWithActiveTimeout() throws InvalidProtocolBufferException, IllegalFlowException {
 
-        bsonDocumentWriter.writeInt64("@unixSecs", 0);
-        bsonDocumentWriter.writeInt64("@sysUpTime", 0);
+        Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
+                .add(new UnsignedValue("@unixSecs", 0))
+                .add(new UnsignedValue("@sysUpTime", 0))
+                .add(new UnsignedValue("FIRST_SWITCHED", 123000))
+                .add(new UnsignedValue("LAST_SWITCHED", 987000))
+                .add(new UnsignedValue("IN_BYTES", 10))
+                .add(new UnsignedValue("IN_PKTS", 10))
+                .add(new UnsignedValue("FLOW_ACTIVE_TIMEOUT", 10))
+                .add(new UnsignedValue("FLOW_INACTIVE_TIMEOUT", 300))
+                .build();
 
-        bsonDocumentWriter.writeInt64("FIRST_SWITCHED", 123000);
-        bsonDocumentWriter.writeInt64("LAST_SWITCHED", 987000);
+        Netflow9MessageBuilder netflow9MessageBuilder = new Netflow9MessageBuilder();
 
-        bsonDocumentWriter.writeInt64("IN_BYTES", 10);
-        bsonDocumentWriter.writeInt64("IN_PKTS", 10);
-
-        bsonDocumentWriter.writeInt64("FLOW_ACTIVE_TIMEOUT", 10);
-        bsonDocumentWriter.writeInt64("FLOW_INACTIVE_TIMEOUT", 300);
-
-        bsonDocumentWriter.writeEndDocument();
-
-        final Netflow9Flow flow = new Netflow9Flow(bsonDocument);
-
-        assertThat(flow.getTimeout().isPresent(), is(true));
-        assertThat(flow.getTimeout().get().getActive(), is(10000L));
-        assertThat(flow.getTimeout().get().getInactive(), is(300000L));
-
-        assertThat(flow.getFirstSwitched(), is(123000L));
-        assertThat(flow.getDeltaSwitched(), is(987000L - 10000L));
-        assertThat(flow.getLastSwitched(), is(987000L));
+        FlowMessage flowMessage = netflow9MessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
+        assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
+        assertThat(flowMessage.getDeltaSwitched().getValue(),  is(987000L - 10000L));
+        assertThat(flowMessage.getLastSwitched().getValue(), is(987000L));
     }
 
     @Test
-    public void testWithInactiveTimeout() {
-        final BsonDocument bsonDocument = new BsonDocument();
-        final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
-        bsonDocumentWriter.writeStartDocument();
+    public void testWithInactiveTimeout() throws InvalidProtocolBufferException, IllegalFlowException {
 
-        bsonDocumentWriter.writeInt64("@unixSecs", 0);
-        bsonDocumentWriter.writeInt64("@sysUpTime", 0);
+        Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
+                .add(new UnsignedValue("@unixSecs", 0))
+                .add(new UnsignedValue("@sysUpTime", 0))
+                .add(new UnsignedValue("FIRST_SWITCHED", 123000))
+                .add(new UnsignedValue("LAST_SWITCHED", 987000))
+                .add(new UnsignedValue("IN_BYTES", 0))
+                .add(new UnsignedValue("IN_PKTS", 0))
+                .add(new UnsignedValue("FLOW_ACTIVE_TIMEOUT", 10))
+                .add(new UnsignedValue("FLOW_INACTIVE_TIMEOUT", 300))
+                .build();
 
-        bsonDocumentWriter.writeInt64("FIRST_SWITCHED", 123000);
-        bsonDocumentWriter.writeInt64("LAST_SWITCHED", 987000);
+        Netflow9MessageBuilder netflow9MessageBuilder = new Netflow9MessageBuilder();
 
-        bsonDocumentWriter.writeInt64("IN_BYTES", 0);
-        bsonDocumentWriter.writeInt64("IN_PKTS", 0);
+        FlowMessage flowMessage = netflow9MessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
 
-        bsonDocumentWriter.writeInt64("FLOW_ACTIVE_TIMEOUT", 10);
-        bsonDocumentWriter.writeInt64("FLOW_INACTIVE_TIMEOUT", 300);
-
-        bsonDocumentWriter.writeEndDocument();
-
-        final Netflow9Flow flow = new Netflow9Flow(bsonDocument);
-
-        assertThat(flow.getTimeout().isPresent(), is(true));
-        assertThat(flow.getTimeout().get().getActive(), is(10000L));
-        assertThat(flow.getTimeout().get().getInactive(), is(300000L));
-
-        assertThat(flow.getFirstSwitched(), is(123000L));
-        assertThat(flow.getDeltaSwitched(), is(987000L - 300000L));
-        assertThat(flow.getLastSwitched(), is(987000L));
+        assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
+        assertThat(flowMessage.getDeltaSwitched().getValue(), is(987000L - 300000L));
+        assertThat(flowMessage.getLastSwitched().getValue(), is(987000L));
     }
 }

@@ -243,6 +243,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
 
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class)
             // The outage must have started before the end of the window
+            .isNull("perspective")
             .le("ifLostService", end)
             .or(new NullRestriction("ifRegainedService"), // The outage is ongoing
                 new AllRestriction( // or the outage was cleared somewhere in the window

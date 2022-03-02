@@ -1,0 +1,142 @@
+
+[[releasenotes-29]]
+
+= What's New in OpenNMS Horizon 29
+
+== System Requirements
+
+* *Java 11*: OpenNMS Horizon 29 runs on JDK 11.
+* *PostgreSQL 10 or higher*: Horizon 29 requires any supported version of PostgreSQL from 10 up to (and including) 14.
+
+== Breaking Changes
+
+=== Running as Non-Root
+
+By default, OpenNMS now runs as the `opennms` user rather than `root`.
+
+WARNING: If you are upgrading from a version of OpenNMS Horizon older than 29, you will have to fix the ownership of your files.
+
+==== Fixing Permissions and Ownership
+
+Since many OpenNMS instances are very large with thousands or even millions of RRD and similar data files in `$OPENNMS_HOME/share`,
+we decided _not_ to change ownership automatically upon package upgrade.
+
+The OpenNMS installer will detect if you need to fix the ownership of your files and warn you to run the script to fix permissions
+(`$OPENNMS_HOME/bin/fix-permissions`) in this case.
+
+If you wish to revert to the previous behavior, create an `$OPENNMS_HOME/etc/opennms.conf` file if it doesn't already exist, and set `RUNAS`.
+
+[source, shell]
+----
+RUNAS=root
+----
+
+Change the user to `root` in the systemd unit by editing the systemd unit file.
+
+[source, shell]
+----
+systemctl edit opennms
+----
+
+.Add the following content
+[source, shell]
+----
+[Service]
+User=root
+----
+
+Save the file and reload systemd with `systemctl daemon-reload` and restart OpenNMS with `systemctl restart opennms`.
+The OpenNMS process should run as root user instead of `opennms` and can be verified with `ps -aux | grep java`.
+
+==== Trapd Port Changes
+
+As OpenNMS can no longer listen on privileged ports by default, the default Trapd port is now `10162`.
+You will need to configure a proxy agent or port forward to continue to receive traps at port `162`.
+Otherwise, you must configure your agents to send traps to the new port instead.
+
+==== Java ICMP Permissions
+
+OpenNMS will attempt to configure ICMP permissions using the `net.ipv4.ping_group_range` sysctl.
+However, Linux kernels older than version 3.11 (like the version provided by CentOS 7) do not support this setting fully.
+
+If you are on a distribution with an older unsupported kernel, you can give Java ICMP permissions using the `setcap` utility once you have completed your upgrade.
+Note that this example assumes you have already run `$OPENNMS_HOME/bin/install` after install or upgrade, so `$OPENNMS_HOME/etc/java.conf` exists.
+
+[source, shell]
+----
+setcap cap_net_raw+ep $(</opt/opennms/etc/java.conf) && echo "$(dirname $(</opt/opennms/etc/java.conf))/../lib/jli/" > /etc/ld.so.conf.d/java.conf && ldconfig -v
+----
+
+=== Additional configuration needed when using Kafka/gRPC for Minion communication.
+
+The Twin API has replaced the OpenNMS REST API for synchronizing Trapd configuration updates.
+Additional settings are needed on both Minion and {page-component-title} to enable Twin when not using the ActiveMQ message broker.
+
+Refer to the deployment section in the documentation for details.
+
+NOTE: Horizon 29.0.5 consolidated IPC features into one feature on Minion. This groups all IPC (Sink/RPC/Twin) features of JMS into one feature as `openms-core-ipc-jms`. Similarly for Kafka and gRPC.
+When using Kafka or gRPC, you need to disable `opennms-core-ipc-jms` instead of disabling individual features such as `opennms-core-ipc-sink-camel`.
+
+=== SQS Minion IPC Support Dropped
+
+Support for Amazon SQS for Minion communication has been removed.
+We recommend to instead use Kafka for use cases that require horizontal scaling of Minion communication.
+
+=== Time Series Integration Layer Changes
+
+The Time Series integration layer has gone through link:https://issues.opennms.org/browse/NMS-13356[a number of big improvements] to reduce the complexity and cardinality of metadata and tags.
+
+* Time series plugins need to be compatible with OIA 0.6.x.
+* Resource level string attributes are now also stored via the plugin in the respective time series database.
+  The `timeseries_meta` table which previously stored this metadata has been removed.
+  There is no migration; string values are generally updated on the next poll.
+
+== New Features and Improvements
+
+=== Flows and Nephron
+
+Nephron and flow processing have gone through a number of major enhancements.
+
+* Flow metadata has been tuned and redundancy has been removed, resulting in less
+  data being stored per update.
+* Elasticsearch persistence has been improved to support batching updates.
+* The flow classification engine has been almost entirely rewritten to be
+  considerably more performant when processing large rulesets.
+* Support has been added for persisting flows to Cortex.
+
+=== Minion
+
+The Minion continues to receive improvements in performance and features, most notably the addition of a new API (the "Twin API"), which pushes configuration to Minion over RPC, reducing the amount of data that needs to be passed over the wire.
+
+The first subsystem to adopt this new API is SNMPv3 auth data, so the Minion no longer needs to make a REST call to the OpenNMS core.
+Over time, all configuration information will be migrated to this new API.
+
+=== Polling and Metadata
+
+* Threshold metadata link:https://issues.opennms.org/browse/NMS-12689[is now validated].
+* Kafka producer payloads now contain link:https://issues.opennms.org/browse/NMS-13191[additional useful resource metadata].
+* Monitor status can now link:https://issues.opennms.org/browse/NMS-13324[optionally be persisted to RRD] so that it can be retrieved using the Measurements API.
+* The `wsman-config.xml` link:https://issues.opennms.org/browse/NMS-13468[is now validated].
+
+=== Provisioning
+
+* A link:https://issues.opennms.org/browse/NMS-13313[`localhost` node is now monitored] and enumerates some useful OpenNMS metrics by default.
+* LLDP scanning in Enlinkd has link:https://issues.opennms.org/browse/NMS-13593[added support for `TIMETRA-LLDP-MIB`].
+
+=== GeoIP Provisioning Adapter
+You can use the GeoIP Provisioning Adapter to enrich a node's asset data with location information.
+It uses the GeoIP2 Databases from MaxMind to look up longitude/latitude values for a given IP address.
+
+=== REST API
+
+* RTC data now includes link:https://issues.opennms.org/browse/NMS-13238[an additional boolean field] for service up/down status.
+
+=== Documentation
+
+* A ton of work has gone into cleaning up, rearranging, and standardizing terms in the documentation.
+* A bunch of additional REST APIs are now documented through OpenAPI.
+
+== Important Internal Changes
+
+* Kafka components have been updated to version 2.8.0
+* Our embedded Karaf has been updated to version 4.3.2

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,15 +44,15 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
+import org.opennms.netmgt.events.api.model.IValue;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,7 +186,7 @@ final class PollerEventProcessor implements EventListener {
      *            The event to process.
      * 
      */
-    private void nodeGainedServiceHandler(final Event event) {
+    private void nodeGainedServiceHandler(final IEvent event) {
         // First make sure the service gained is in active state before trying to schedule
 
         final String ipAddr = event.getInterface();
@@ -229,7 +229,7 @@ final class PollerEventProcessor implements EventListener {
      *            The event to process.
      * 
      */
-    private void interfaceReparentedHandler(Event event) { 
+    private void interfaceReparentedHandler(IEvent event) {
         LOG.debug("interfaceReparentedHandler: processing interfaceReparented event for {}", event.getInterface());
 
         // Verify that the event has an interface associated with it
@@ -242,10 +242,10 @@ final class PollerEventProcessor implements EventListener {
         String oldNodeIdStr = null;
         String newNodeIdStr = null;
         String parmName = null;
-        Value parmValue = null;
+        IValue parmValue = null;
         String parmContent = null;
 
-        for (Parm parm : event.getParmCollection()) {
+        for (IParm parm : event.getParmCollection()) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             if (parmValue == null)
@@ -305,7 +305,7 @@ final class PollerEventProcessor implements EventListener {
      * This method is responsible for removing a node's pollable service from
      * the pollable services list
      */
-    private void nodeRemovePollableServiceHandler(Event event) {
+    private void nodeRemovePollableServiceHandler(IEvent event) {
         Long nodeId = event.getNodeid();
         InetAddress ipAddr = event.getInterfaceAddress();
         String svcName = event.getService();
@@ -324,17 +324,17 @@ final class PollerEventProcessor implements EventListener {
      * This method is responsible for removing the node specified in the
      * nodeDeleted event from the Poller's pollable node map.
      */
-    private void nodeDeletedHandler(Event event) {
+    private void nodeDeletedHandler(IEvent event) {
         Long nodeId = event.getNodeid();
         final String sourceUei = event.getUei();
 
         // Extract node label and transaction No. from the event parms
         long txNo = -1L;
         String parmName = null;
-        Value parmValue = null;
+        IValue parmValue = null;
         String parmContent = null;
 
-        for (Parm parm : event.getParmCollection()) {
+        for (IParm parm : event.getParmCollection()) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             if (parmValue == null)
@@ -369,13 +369,13 @@ final class PollerEventProcessor implements EventListener {
 
     }
 
-    private void nodeLabelChangedHandler(Event event) {
+    private void nodeLabelChangedHandler(IEvent event) {
         Long nodeId = event.getNodeid();
 
         // Extract node label from the event parms
-        for (Parm parm : event.getParmCollection()) {
+        for (IParm parm : event.getParmCollection()) {
             String parmName = parm.getParmName();
-            Value parmValue = parm.getValue();
+            IValue parmValue = parm.getValue();
             if (parmValue == null) {
                 continue;
             } else {
@@ -394,7 +394,7 @@ final class PollerEventProcessor implements EventListener {
         }
     }
 
-    private void interfaceDeletedHandler(Event event) {
+    private void interfaceDeletedHandler(IEvent event) {
         Long nodeId = event.getNodeid();
         String sourceUei = event.getUei();
         InetAddress ipAddr = event.getInterfaceAddress();
@@ -402,10 +402,10 @@ final class PollerEventProcessor implements EventListener {
         // Extract node label and transaction No. from the event parms
         long txNo = -1L;
         String parmName = null;
-        Value parmValue = null;
+        IValue parmValue = null;
         String parmContent = null;
 
-        for (Parm parm : event.getParmCollection()) {
+        for (IParm parm : event.getParmCollection()) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             if (parmValue == null)
@@ -446,7 +446,7 @@ final class PollerEventProcessor implements EventListener {
      * the specified interface, so that it will not be scheduled by the poller.
      * </p>
      */
-    private void serviceDeletedHandler(Event event) {
+    private void serviceDeletedHandler(IEvent event) {
         Long nodeId = event.getNodeid();
         InetAddress ipAddr = event.getInterfaceAddress();
         String service = event.getService();
@@ -465,10 +465,10 @@ final class PollerEventProcessor implements EventListener {
 
     }
 
-    private void reloadConfigHandler(Event event) {
+    private void reloadConfigHandler(IEvent event) {
         final String daemonName = "Pollerd";
         boolean isPoller = false;
-        for (Parm parm : event.getParmCollection()) {
+        for (IParm parm : event.getParmCollection()) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && daemonName.equalsIgnoreCase(parm.getValue().getContent())) {
                 isPoller = true;
                 break;
@@ -536,7 +536,7 @@ final class PollerEventProcessor implements EventListener {
      *            The event
      */
     @Override
-    public void onEvent(Event event) {
+    public void onEvent(IEvent event) {
         if (event == null)
             return;
 
@@ -626,7 +626,7 @@ final class PollerEventProcessor implements EventListener {
 
     } // end onEvent()
 
-    private void serviceReschedule(Event event, boolean rescheduleExisting)   {
+    private void serviceReschedule(IEvent event, boolean rescheduleExisting)   {
         final Long nodeId = event.getNodeid();
 
         if (nodeId == null || nodeId <= 0) {
@@ -651,7 +651,7 @@ final class PollerEventProcessor implements EventListener {
         serviceReschedule(nodeId, nodeLabel, nodeLocation, event, rescheduleExisting);
     }
 
-    private void rescheduleAllServices(Event event) {
+    private void rescheduleAllServices(IEvent event) {
         LOG.info("Poller configuration has been changed, rescheduling services.");
         getPollerConfig().rebuildPackageIpListMap();
         for (Long nodeId : getNetwork().getNodeIds()) {
@@ -673,7 +673,8 @@ final class PollerEventProcessor implements EventListener {
         }
     }
 
-    private void serviceReschedule(Long nodeId, String nodeLabel, String nodeLocation, Event sourceEvent, boolean rescheduleExisting) {
+    private void serviceReschedule(Long nodeId, String nodeLabel, String nodeLocation,
+                                   IEvent sourceEvent, boolean rescheduleExisting) {
         if (nodeId == null || nodeId <= 0) {
             LOG.warn("Invalid node ID for event, skipping service reschedule: {}", sourceEvent);
             return;
@@ -771,7 +772,8 @@ final class PollerEventProcessor implements EventListener {
         }
     }
 
-    protected void closeOutagesForService(final Event event, final Long nodeId, final Date closeDate, final Service polledService) {
+    protected void closeOutagesForService(final IEvent event, final Long nodeId, final Date closeDate,
+                                          final Service polledService) {
         getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), polledService.getAddress(), polledService.getServiceName());
     }
 

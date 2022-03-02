@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.features</artifactId>
-        <version>25.0.0-SNAPSHOT</version>
+        <version>29.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features</groupId>
@@ -53,7 +53,7 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -115,6 +115,11 @@
             <version>${mapstructVersion}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.topology</groupId>
+            <artifactId>org.opennms.features.topology.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.topologies</groupId>
             <artifactId>org.opennms.features.topologies.service.api</artifactId>
             <version>${project.version}</version>
@@ -122,6 +127,16 @@
         <dependency>
             <groupId>org.opennms.features.collection</groupId>
             <artifactId>org.opennms.features.collection.thresholding.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.graph</groupId>
+            <artifactId>org.opennms.features.graph.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.graph.provider</groupId>
+            <artifactId>org.opennms.features.graph.provider.topology</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -138,7 +153,7 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
+            <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

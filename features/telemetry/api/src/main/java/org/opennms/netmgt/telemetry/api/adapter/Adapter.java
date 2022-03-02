@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.telemetry.api.adapter;
 
-import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
-
 /**
  * Responsible for handling telemetry messages received by the listeners
  * within a adapter definition.
@@ -39,16 +37,6 @@ import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
  * @author jwhite
  */
 public interface Adapter {
-
-    /**
-     * A single instance of an adapter will only be responsible
-     * for one config. The config will be set using this method before
-     * any calls to {@link #handleMessageLog} are made.
-     *
-     * @param adapterConfig the config in which the adapter is defined
-     */
-    void setConfig(AdapterDefinition adapterConfig);
-
     /**
      * Handle the messages.
      *

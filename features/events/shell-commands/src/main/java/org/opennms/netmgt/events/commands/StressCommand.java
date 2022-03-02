@@ -69,7 +69,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  *
  * @author jwhite
  */
-@Command(scope = "events", name = "stress", description="Stress the event bus with generated events.",detailedDescription=
+@Command(scope = "opennms", name = "stress-events", description="Stress the event bus with generated events.",detailedDescription=
         "Generate newSuspect events with increasing IP addresses:\n"
         + "\tevents:stress -u uei.opennms.org/internal/discovery/newSuspect -e 10 -s 1 -j \"i=i+1\" -j \"eb.setInterface(iputils:int2ip(167837696 + i))\"\n"
 	+ "Trigger 100 alarms and reduce additional events against these:\n"

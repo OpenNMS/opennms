@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.smoketest.stacks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
@@ -60,7 +61,13 @@ import org.testcontainers.containers.Network;
  */
 public final class OpenNMSStack implements TestRule {
 
-    public static final OpenNMSStack MINIMAL = OpenNMSStack.withModel(StackModel.newBuilder().build());
+	public static final OpenNMSStack MINIMAL = OpenNMSStack.withModel(StackModel.newBuilder()
+			.withOpenNMS(OpenNMSProfile.newBuilder()
+					.withFile("empty-discovery-configuration.xml", "etc/discovery-configuration.xml")
+					.build())
+			.build());
+
+	public static final OpenNMSStack MINIMAL_WITH_DEFAULT_LOCALHOST = OpenNMSStack.withModel(StackModel.newBuilder().build());
 
     public static final OpenNMSStack MINION = OpenNMSStack.withModel(StackModel.newBuilder()
             .withMinion()
@@ -109,7 +116,7 @@ public final class OpenNMSStack implements TestRule {
         final boolean shouldEnableKafka = IpcStrategy.KAFKA.equals(model.getIpcStrategy())
                 || model.getOpenNMS().isKafkaProducerEnabled();
         if (shouldEnableKafka) {
-            kafkaContainer = new KafkaContainer()
+            kafkaContainer = new KafkaContainer("6.0.1")
                     // Reduce from the default of 1GB
                     .withEnv("KAFKA_HEAP_OPTS", "-Xms256m -Xmx256m")
                     .withNetwork(Network.SHARED)
@@ -131,12 +138,19 @@ public final class OpenNMSStack implements TestRule {
         opennmsContainer = new OpenNMSContainer(model, model.getOpenNMS());
         chain = chain.around(opennmsContainer);
 
-        final List<MinionContainer> minions = new ArrayList<>(model.getMinions().size());
-        for (MinionProfile profile : model.getMinions()) {
+        final List<MinionContainer> minions = new ArrayList<>(model.getMinions().size() + model.getLegacyMinions().size());
+        for (final MinionProfile profile : model.getMinions()) {
             final MinionContainer minion = new MinionContainer(model, profile);
             minions.add(minion);
             chain = chain.around(minion);
         }
+
+        for (final Map<String, String> configuration : model.getLegacyMinions()) {
+            final MinionContainer minion = new MinionContainer(model, configuration);
+            minions.add(minion);
+            chain = chain.around(minion);
+        }
+
         minionContainers = Collections.unmodifiableList(minions);
 
         final List<SentinelContainer> sentinels = new ArrayList<>(model.getSentinels().size());

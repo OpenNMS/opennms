@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +39,8 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
+
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * <p>ThresholdEvaluatorHighLow class.</p>
@@ -168,21 +169,32 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
         }
 
         @Override
-        public Status evaluateAfterFetch(double dsValue) {
-            if (isThresholdExceeded(dsValue)) {
+        public Status evaluateAfterFetch(double dsValue, ThresholdValues thresholdValues) {
+            Double thresholdValue  = thresholdValues != null && thresholdValues.getThresholdValue() != null ?
+                    thresholdValues.getThresholdValue() : getThresholdConfig().getValue();
+            Double rearm  = thresholdValues != null && thresholdValues.getRearm() != null ?
+                    thresholdValues.getRearm() : getThresholdConfig().getRearm();
+            Integer trigger = thresholdValues != null && thresholdValues.getTrigger() != null ?
+                    thresholdValues.getTrigger() : getThresholdConfig().getTrigger();
+
+            if(thresholdValue == null || rearm == null || trigger == null) {
+                return Status.NO_CHANGE;
+            }
+
+            if (isThresholdExceeded(dsValue, thresholdValue)) {
                 if (isArmed()) {
                     setExceededCount(getExceededCount() + 1);
 
                     LOG.debug("evaluate: {} threshold exceeded, count={}", getType(), getExceededCount());
 
-                    if (isTriggerCountExceeded()) {
+                    if (isTriggerCountExceeded(trigger)) {
                         LOG.debug("evaluate: {} threshold triggered", getType());
                         setExceededCount(1);
                         setArmed(false);
                         return Status.TRIGGERED;
                     }
                 }
-            } else if (isRearmExceeded(dsValue)) {
+            } else if (isRearmExceeded(dsValue, rearm)) {
                 if (!isArmed()) {
                     LOG.debug("evaluate: {} threshold rearmed", getType());
                     setArmed(true);
@@ -201,32 +213,52 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             return Status.NO_CHANGE;
         }
 
-        protected boolean isThresholdExceeded(double dsValue) {
+        protected boolean isThresholdExceeded(double dsValue, Double value) {
             if (ThresholdType.HIGH.equals(getThresholdConfig().getType())) {
-                return dsValue >= getThresholdConfig().getValue();
+                return dsValue >= value;
             } else if (ThresholdType.LOW.equals(getThresholdConfig().getType())) {
-                return dsValue <= getThresholdConfig().getValue();
+                return dsValue <= value;
             } else {
                 throw new IllegalStateException("This thresholding strategy can only be used for thresholding types of 'high' and 'low'.");
             }
         }
 
-        protected boolean isRearmExceeded(double dsValue) {
+        @VisibleForTesting
+        protected boolean isThresholdExceeded(double dsValue) {
+            Double thresholdValue = state.getThresholdValues() != null && state.getThresholdValues().getThresholdValue() != null ?
+                    state.getThresholdValues().getThresholdValue() : getThresholdConfig().getValue();
+            return isThresholdExceeded(dsValue, thresholdValue);
+        }
+
+        protected boolean isRearmExceeded(double dsValue, Double rearm) {
             if (ThresholdType.HIGH.equals(getThresholdConfig().getType())) {
-                return dsValue <= getThresholdConfig().getRearm();
+                return dsValue <= rearm;
             } else if (ThresholdType.LOW.equals(getThresholdConfig().getType())) {
-                return dsValue >= getThresholdConfig().getRearm();
+                return dsValue >= rearm;
             } else {
                 throw new IllegalStateException("This thresholding strategy can only be used for thresholding types of 'high' and 'low'.");
             }
+        }
+
+        @VisibleForTesting
+        protected boolean isRearmExceeded(double dsValue) {
+            Double rearm = state.getThresholdValues() != null && state.getThresholdValues().getRearm() != null ?
+                    state.getThresholdValues().getRearm() : getThresholdConfig().getRearm();
+            return isRearmExceeded(dsValue, rearm);
+        }
+
+        protected boolean isTriggerCountExceeded(Integer trigger) {
+            return getExceededCount() >= trigger;
         }
 
         protected boolean isTriggerCountExceeded() {
-            return getExceededCount() >= getThresholdConfig().getTrigger();
+            Integer trigger = state.getThresholdValues() != null && state.getThresholdValues().getTrigger() != null ?
+                    state.getThresholdValues().getTrigger() : getThresholdConfig().getTrigger();
+            return isTriggerCountExceeded(trigger);
         }
         
         @Override
-        public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource) {
+        public Event getEventForState(Status status, Date date, double dsValue, ThresholdValues thresholdValues, CollectionResourceWrapper resource) {
             /*
              * If resource is null, we will use m_lastCollectionResourceUsed; else we will use provided resource.
              * For future calls we will preserve the latest not null resource on m_lastCollectionResourceUsed.
@@ -244,12 +276,12 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.LOW_THRESHOLD_EVENT_UEI;
                     }
-                    return createBasicEvent(uei, date, dsValue, resource);
+                    return createBasicEvent(uei, date, dsValue, thresholdValues, resource);
                 } else if (ThresholdType.HIGH.equals(getThresholdConfig().getType())) {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.HIGH_THRESHOLD_EVENT_UEI;
                     }
-                    return createBasicEvent(uei, date, dsValue, resource);
+                    return createBasicEvent(uei, date, dsValue, thresholdValues, resource);
                 } else {
                     throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType() + " is not supported");
                 } 
@@ -260,12 +292,12 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI;
                     }
-                    return createBasicEvent(uei, date, dsValue, resource);
+                    return createBasicEvent(uei, date, dsValue, thresholdValues , resource);
                 } else if (ThresholdType.HIGH.equals(getThresholdConfig().getType())) {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI;
                     }
-                    return createBasicEvent(uei, date, dsValue, resource);
+                    return createBasicEvent(uei, date, dsValue, thresholdValues, resource);
                 } else {
                     throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType() + " is not supported");
                 } 
@@ -278,11 +310,14 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             }
         }
         
-        private Event createBasicEvent(String uei, Date date, double dsValue, CollectionResourceWrapper resource) {
+        private Event createBasicEvent(String uei, Date date, double dsValue, ThresholdValues thresholdValues, CollectionResourceWrapper resource) {
+            if(thresholdValues == null) {
+                thresholdValues = state.getThresholdValues();
+            }
             Map<String,String> params = new HashMap<String,String>();
-            params.put("threshold", Double.toString(getThresholdConfig().getValue()));
-            params.put("trigger", Integer.toString(getThresholdConfig().getTrigger()));
-            params.put("rearm", Double.toString(getThresholdConfig().getRearm()));
+            params.put("threshold", Double.toString(thresholdValues.getThresholdValue()));
+            params.put("trigger", Integer.toString(thresholdValues.getTrigger()));
+            params.put("rearm", Double.toString(thresholdValues.getRearm()));
             return createBasicEvent(uei, date, dsValue, resource, params);
         }
         
@@ -300,6 +335,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
         public void clearStateBeforePersist() {
             setArmed(true);
             setExceededCount(0);
+            state.setCached(false);
         }
         
     }

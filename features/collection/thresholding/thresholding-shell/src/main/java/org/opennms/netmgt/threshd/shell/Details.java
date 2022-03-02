@@ -35,7 +35,7 @@ import java.util.Optional;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 
-@Command(scope = "opennms-threshold-states", name = "details", description = "Prints the details of a specific " +
+@Command(scope = "opennms", name = "threshold-details", description = "Prints the details of a specific " +
         "threshold state")
 @Service
 public class Details extends AbstractKeyOrIndexCommand {

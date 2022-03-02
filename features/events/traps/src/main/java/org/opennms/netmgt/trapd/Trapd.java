@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,13 +30,17 @@ package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
 
+import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.snmp.TrapListenerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +88,13 @@ public class Trapd extends AbstractServiceDaemon {
     @Autowired
     private TrapListener m_trapListener;
 
+    private TrapdConfig m_config;
+
+    @Autowired
+    private TwinPublisher m_twinPublisher;
+
+    private TwinPublisher.Session<TrapListenerConfig> m_twinSession;
+
     /**
      * <P>
      * Constructs a new Trapd object that receives and forwards trap messages
@@ -96,6 +107,8 @@ public class Trapd extends AbstractServiceDaemon {
      */
     public Trapd() {
         super(LOG4J_CATEGORY);
+
+        m_config = TrapdConfigFactory.getInstance();
     }
 
 
@@ -121,6 +134,20 @@ public class Trapd extends AbstractServiceDaemon {
         m_status = STARTING;
 
         LOG.debug("start: Initializing the Trapd receiver");
+        // Register session with Publisher for once.
+        try {
+            m_twinSession = m_twinPublisher.register(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, null);
+        } catch (IOException e) {
+            LOG.error("Failed to register twin for trap listener config", e);
+            throw new RuntimeException(e);
+        }
+        // Publish existing config.
+        try {
+            m_twinSession.publish(from(m_config));
+        } catch (IOException e) {
+            LOG.error("Failed to register twin for trap listener config", e);
+            throw new RuntimeException(e);
+        }
 
         m_trapListener.start();
 
@@ -196,18 +223,33 @@ public class Trapd extends AbstractServiceDaemon {
     }
 
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadEvent(Event e) {
+    public void handleReloadEvent(IEvent e) {
         DaemonTools.handleReloadEvent(e, Trapd.LOG4J_CATEGORY, (event) -> handleConfigurationChanged());
     }
 
     private void handleConfigurationChanged() {
         stop();
+
         try {
             m_trapListener.reload();
+
+            publishListenerConfig();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         start();
+    }
+
+    public void publishListenerConfig() throws IOException {
+        m_config = TrapdConfigFactory.getInstance();
+        m_twinSession.publish(from(m_config));
+    }
+
+    public static TrapListenerConfig from(final TrapdConfig config) {
+        final TrapListenerConfig result = new TrapListenerConfig();
+        result.setSnmpV3Users(config.getSnmpV3Users());
+        return result;
     }
 
     public static String getLoggingCategory() {

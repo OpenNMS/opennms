@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,13 +42,13 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.features.topology.api.support.FocusStrategy;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -97,20 +99,20 @@ public class PathOutageProviderTest {
 	public void testHierarchy_GraphModification() {
 		this.pathOutageProvider = new PathOutageProvider(this.nodeDao, this.pathOutageStatusProvider);
 		this.pathOutageProvider.refresh();
-		List<VertexHopGraphProvider.VertexHopCriteria> criteria_original = FocusStrategy.ALL.getFocusCriteria(this.pathOutageProvider);
+		List<VertexHopCriteria> criteria_original = FocusStrategy.ALL.getFocusCriteria(this.pathOutageProvider.getCurrentGraph());
 		this.checkProvider(criteria_original);
 		this.updateNodes();
 		this.pathOutageProvider.refresh();
-		List<VertexHopGraphProvider.VertexHopCriteria> criteria_new = FocusStrategy.ALL.getFocusCriteria(this.pathOutageProvider);
+		List<VertexHopCriteria> criteria_new = FocusStrategy.ALL.getFocusCriteria(this.pathOutageProvider.getCurrentGraph());
 		assertThat(criteria_original, not(criteria_new));
 		this.checkProvider(criteria_new);
 	}
 
 	private void setBehaviour(PathOutageStatusProvider statusProvider) {
 		Mockito.when(statusProvider.getStatusForVertices(
-					Matchers.any(PathOutageProvider.class),
-					Matchers.anyCollection(),
-					Matchers.any()))
+					any(BackendGraph.class),
+					anyCollection(),
+					any()))
 				.thenReturn(new HashMap());
 	}
 
@@ -136,8 +138,8 @@ public class PathOutageProviderTest {
 	 * In this method the vertices from the {@link PathOutageProvider} are compared to the local vertices data
 	 * @param criteria
 	 */
-	private void checkProvider(List<VertexHopGraphProvider.VertexHopCriteria> criteria) {
-		List<Vertex> vertices = this.pathOutageProvider.getVertices(Lists.newArrayList(criteria).toArray(new Criteria[criteria.size()]));
+	private void checkProvider(List<VertexHopCriteria> criteria) {
+		List<Vertex> vertices = this.pathOutageProvider.getCurrentGraph().getVertices(Lists.newArrayList(criteria).toArray(new Criteria[criteria.size()]));
 		assertEquals(vertices.size(), this.nodesMap.size());
 		for (Vertex vertex : vertices) {
 			Integer id = Integer.parseInt(vertex.getId());

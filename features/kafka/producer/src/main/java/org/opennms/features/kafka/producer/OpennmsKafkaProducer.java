@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.features.kafka.producer;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -53,7 +54,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.errors.TimeoutException;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
-import org.joda.time.Duration;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
@@ -63,6 +63,8 @@ import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
+import org.opennms.netmgt.events.api.ThreadAwareEventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
@@ -84,11 +86,11 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
-public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListener, AlarmFeedbackListener, OnmsTopologyConsumer {
+public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListener, AlarmFeedbackListener, OnmsTopologyConsumer, ThreadAwareEventListener {
     private static final Logger LOG = LoggerFactory.getLogger(OpennmsKafkaProducer.class);
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
 
     public static final String KAFKA_CLIENT_PID = "org.opennms.features.kafka.producer.client";
@@ -140,6 +142,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final ExecutorService nodeUpdateExecutor;
 
     private String encoding = "UTF8";
+    private int numEventListenerThreads = 4;
 
     public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache,
                                 ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService,
@@ -498,8 +501,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     @Override
-    public void onEvent(Event event) {
-        forwardEvent(event);
+    public void onEvent(IEvent event) {
+        forwardEvent(Event.copyFrom(event));
     }
 
     @Override
@@ -617,6 +620,11 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         this.kafkaSendQueueCapacity = kafkaSendQueueCapacity;
     }
 
+    @Override
+    public int getNumThreads() {
+        return numEventListenerThreads;
+    }
+
     private static final class KafkaRecord {
         private final ProducerRecord<byte[], byte[]> producerRecord;
         private final Consumer<RecordMetadata> consumer;
@@ -649,6 +657,14 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     public void setEncoding(String encoding) {
         this.encoding = encoding;
+    }
+
+    public int getNumEventListenerThreads() {
+        return numEventListenerThreads;
+    }
+
+    public void setNumEventListenerThreads(int numEventListenerThreads) {
+        this.numEventListenerThreads = numEventListenerThreads;
     }
 
     private class TopologyVisitorImpl implements TopologyVisitor {

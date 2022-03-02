@@ -1,0 +1,122 @@
+
+[[charts]]
+= Charts
+
+This dashlet displays predefined bar graphs in the Charts UI (*Reports>Charts*) and the xref:admin/webui/opsboard/introduction.adoc#opsboard-config [Ops Board].
+You can also <<custom-chart, create custom charts>> in the `charts-configuration.xml` file.
+
+.Charts dashlet configuration options
+[options="header, autowidth", cols="1,2"]
+|===
+| Field
+| Description
+
+| Boost support
+| Not available
+
+| Properties: Chart
+| Type of the existing chart to display.
+
+| Properties: Maximize width
+| Rescale the image to fill display width.
+
+| Properties: Maximize Height
+| Rescale the image to fill display height.
+|===
+
+[[custom-chart]]
+== Create a custom chart
+
+To create a custom chart, follow these steps:
+
+. Find and copy a similar, existing chart in the `charts-configuration.xml`.
+. Modify the name, domain-axis-label, and title value to match the new information the chart will present.
+. For each series-def:
+* Change the series name and domain-axis label to an appropriate name
+* Modify the SQL to return a row with two columns — the first column is the label, the second the numeric value.
+In most cases, the first column will be a string in single quotes, the second will be a count(*).
+
+. Restart OpenNMS.
+
+.Custom chart example
+
+[source, xml]
+----
+
+  <tns:bar-chart name="Physical interfaces by type"
+        variation="2d"
+        domain-axis-label="Ethernet/PPP/Frame Relay"
+        show-legend="true"
+        plot-orientation="vertical"
+        draw-bar-outline="true"
+        range-axis-label="Count"
+        show-urls="false"
+    show-tool-tips="false">
+
+    <tns:title font="SansSerif" style="" value="Physical Interface Inventory" pitch="12" />
+    <tns:image-size>
+      <tns:hz-size>
+        <tns:pixels>450</tns:pixels>
+      </tns:hz-size>
+      <tns:vt-size>
+        <tns:pixels>300</tns:pixels>
+      </tns:vt-size>
+    </tns:image-size>
+    <tns:grid-lines visible="true">
+        <tns:rgb>
+            <tns:red>
+                <tns:rgb-color>255</tns:rgb-color>
+            </tns:red>
+            <tns:green>
+                <tns:rgb-color>255</tns:rgb-color>
+            </tns:green>
+            <tns:blue>
+                <tns:rgb-color>255</tns:rgb-color>
+            </tns:blue>
+        </tns:rgb>
+    </tns:grid-lines>
+    <tns:series-def number="1" series-name="Ethernet" use-labels="true" >
+          <tns:jdbc-data-set db-name="opennms" sql="select 'Eth', count(*) as Count from snmpinterface where snmpiftype=6;" />
+      <tns:rgb>
+        <tns:red>
+          <tns:rgb-color>255</tns:rgb-color>
+        </tns:red>
+        <tns:green>
+          <tns:rgb-color>0</tns:rgb-color>
+        </tns:green>
+        <tns:blue>
+          <tns:rgb-color>0</tns:rgb-color>
+        </tns:blue>
+      </tns:rgb>
+    </tns:series-def>
+    <tns:series-def number="2" series-name="PPP" use-labels="true" >
+          <tns:jdbc-data-set db-name="opennms" sql="select 'PPP', count(*) as Count from snmpinterface where snmpiftype=23;" />
+      <tns:rgb>
+        <tns:red>
+          <tns:rgb-color>0</tns:rgb-color>
+        </tns:red>
+        <tns:green>
+          <tns:rgb-color>255</tns:rgb-color>
+        </tns:green>
+        <tns:blue>
+          <tns:rgb-color>0</tns:rgb-color>
+        </tns:blue>
+      </tns:rgb>
+    </tns:series-def>
+    <tns:series-def number="3" series-name="Frame Relay" use-labels="true" >
+          <tns:jdbc-data-set db-name="opennms" sql="select 'FR', count(*) as Count from snmpinterface where snmpiftype=32;" />
+      <tns:rgb>
+        <tns:red>
+          <tns:rgb-color>0</tns:rgb-color>
+        </tns:red>
+        <tns:green>
+          <tns:rgb-color>0</tns:rgb-color>
+        </tns:green>
+        <tns:blue>
+          <tns:rgb-color>255</tns:rgb-color>
+        </tns:blue>
+      </tns:rgb>
+    </tns:series-def>
+  </tns:bar-chart>
+</pre>
+----

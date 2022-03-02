@@ -31,15 +31,35 @@ package org.opennms.netmgt.telemetry.api.adapter;
 import java.util.List;
 
 public interface TelemetryMessageLog {
-
+    /**
+     * the Minion's location
+     * @return the location
+     */
     String getLocation();
 
+    /**
+     * the Minion's system ID
+     * 
+     * @return the system ID
+     */
     String getSystemId();
 
-    int getSourcePort();
-
+    /**
+     * the source address the incoming message log entries came from
+     * @return the address
+     */
     String getSourceAddress();
 
+    /**
+     * the source port the incoming message log entries came from
+     * @return the port
+     */
+    int getSourcePort();
+
+    /**
+     * raw message log entries coming in from the listener
+     * @return the log entry or entries
+     */
     List<? extends TelemetryMessageLogEntry> getMessageList();
 
 }

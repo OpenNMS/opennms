@@ -60,6 +60,10 @@ public class GenericTypeResource extends DeferredGenericTypeResource {
         return instance.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_");
     }
 
+    public static String sanitizeInstanceStrict(String instance) {
+        return instance.replaceAll("[^A-Za-z0-9_\\-]", "_");
+    }
+
     public ResourceType getResourceType() {
         return m_resourceType;
     }

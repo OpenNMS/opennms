@@ -29,7 +29,6 @@
 package org.opennms.features.topology.app.internal.support;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -37,15 +36,14 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.support.IgnoreHopCriteria;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractCollapsibleVertex;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.GroupRef;
 import org.opennms.features.topology.api.topo.SearchCriteria;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.app.internal.CategoryProvider;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
@@ -67,34 +65,18 @@ public class CategoryHopCriteria extends VertexHopCriteria implements SearchCrit
 
 	private GraphContainer graphContainer;
 
-	public static class CategoryVertex extends AbstractVertex implements GroupRef {
-		private Set<VertexRef> m_children = new HashSet<>();
-
-        public CategoryVertex(String namespace, String id, String label) {
-			super(namespace, id, label);
+	public static class CategoryVertex extends AbstractCollapsibleVertex {
+        public CategoryVertex(String categoryName) {
+			super(NAMESPACE, NAMESPACE + ":" + categoryName, categoryName);
 			setIconKey(Constants.GROUP_ICON_KEY);
 		}
-
-		@Override
-		public boolean isGroup() {
-			return true;
-		}
-
-        @Override
-        public Set<VertexRef> getChildren() {
-            return m_children;
-        }
-
-        public void setChildren(Set<VertexRef> children) {
-            m_children = children;
-        }
     }
 
     public CategoryHopCriteria(SearchResult searchResult, CategoryProvider categoryProvider, GraphContainer graphContainer) {
 		super(searchResult.getLabel());
 		m_collapsed = searchResult.isCollapsed();
 		m_categoryName = searchResult.getLabel();
-		m_collapsedVertex = new CategoryVertex(NAMESPACE, NAMESPACE + ":" + m_categoryName, m_categoryName);
+		m_collapsedVertex = new CategoryVertex(m_categoryName);
 		this.categoryProvider = Objects.requireNonNull(categoryProvider);
 		this.graphContainer = graphContainer;
         m_collapsedVertex.setChildren(getVertices());
@@ -125,21 +107,17 @@ public class CategoryHopCriteria extends VertexHopCriteria implements SearchCrit
         return false;
     }
 
-    public String getCategoryName() {
-		return m_categoryName;
-	}
-
 	@Override
 	public Set<VertexRef> getVertices() {
-		OnmsCategory category = categoryProvider.findCategoryByName(m_categoryName);
+		final OnmsCategory category = categoryProvider.findCategoryByName(m_categoryName);
 		if (category == null) {
 			return Collections.emptySet();
 		} else {
-			List<OnmsNode> nodes = categoryProvider.findNodesForCategory(category);
-			List<Integer> nodeIds = nodes.stream().map(n -> n.getId()).collect(Collectors.toList());
-
-			GraphProvider graphProvider = graphContainer.getTopologyServiceClient().getGraphProviderBy(graphContainer.getTopologyServiceClient().getNamespace());
-			return graphProvider.getVertices(new IgnoreHopCriteria()).stream()
+			final List<OnmsNode> nodes = categoryProvider.findNodesForCategory(category);
+			final List<Integer> nodeIds = nodes.stream().map(n -> n.getId()).collect(Collectors.toList());
+			final GraphProvider graphProvider = graphContainer.getTopologyServiceClient().getGraphProviderBy(graphContainer.getTopologyServiceClient().getNamespace());
+			final BackendGraph currentGraph = graphProvider.getCurrentGraph();
+			return currentGraph.getVertices().stream()
 					.filter(v -> v.getNodeID() != null)
 					.filter(v -> nodeIds.contains(v.getNodeID()))
 					.collect(Collectors.toSet());

@@ -78,7 +78,6 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // Distributed Monitoring
         new String[] { "Manage Monitoring Locations", "//div[contains(@class,'card')]/table//tr//a[text()='Location Name']" },
         new String[] { "Manage Applications", "//span[text()='Applications']" },
-        new String[] { "Manage Remote Pollers", "//span[contains(text(),'Remote Poller Status')]" },
         new String[] { "Manage Minions", "//div[contains(@class,'card')]/table//th/a[text()='Location']" },
 
         // Additional Tools

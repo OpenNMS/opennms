@@ -202,8 +202,8 @@ public abstract class SnmpUtils {
         getStrategy().registerForTraps(listener, address, snmpTrapPort);
     }
     
-    public static void unregisterForTraps(final TrapNotificationListener listener, final InetAddress address, final int snmpTrapPort) throws IOException {
-        getStrategy().unregisterForTraps(listener, snmpTrapPort);
+    public static void unregisterForTraps(final TrapNotificationListener listener) throws IOException {
+        getStrategy().unregisterForTraps(listener);
     }
     
     public static SnmpValueFactory getValueFactory() {

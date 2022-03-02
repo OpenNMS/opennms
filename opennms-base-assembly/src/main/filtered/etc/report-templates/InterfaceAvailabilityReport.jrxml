@@ -109,7 +109,8 @@ FROM(	SELECT
 			ifservices.ipinterfaceid = ipinterface.id AND
 			outages.svclosteventid = events.eventid AND
 			events.eventuei = 'uei.opennms.org/nodes/interfaceDown' AND
-			node.nodeid = ipinterface.nodeid)
+			node.nodeid = ipinterface.nodeid AND
+			outages.perspective IS NULL)
 		AS
 			outages_scope)
 	AS

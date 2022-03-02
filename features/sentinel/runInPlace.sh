@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
+
 test -d repository || (echo "This command must be ran from the features/sentinel directory" && exit 1)
 
 # Inclue the bundled Maven in the $PATH
@@ -63,7 +65,7 @@ set_instance_specific_configuration() {
   #### Syslog listener - Set in 'etc/org.opennms.netmgt.syslog.cfg' via syslog.listen.port=1514
   #udp6       0      0 :::1514                 :::*                                23306/java
 
-  JAVA_DEBUG_PORT=$((5005 + offset))
+  JAVA_DEBUG_PORT=$((6005 + offset))
   JETTY_PORT=$((8181 + offset))
   RMI_REGISTRY_PORT=$((1399 + offset))
   RMI_SERVER_PORT=$((46444 + offset))

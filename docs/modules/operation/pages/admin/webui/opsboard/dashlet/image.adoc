@@ -1,0 +1,23 @@
+
+= Image
+
+This dashlet displays an image by a given URL in the xref:admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
+
+.Image dashlet configuration options
+[options="header,autowidth", cols="1,2"]
+|===
+|Field
+|Description
+
+| Boost support
+| not available
+
+| imageUrl
+| URL with the location of the image to show in this dashlet.
+
+| maximizeHeight
+| Rescale the image to fill display width.
+
+| maximizeWidth
+| Rescale the image to fill display height.
+|===

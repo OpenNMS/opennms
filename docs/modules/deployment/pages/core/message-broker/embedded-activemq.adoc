@@ -1,0 +1,37 @@
+{page-component-title} Core has an embedded ActiveMQ instance for convenience that you can enable. 
+It uses the same credentials configured from the web UI for users in the ROLE_MINION role.
+
+.Edit ActiveMQ configuration file
+[source, console]
+----
+sudo vi etc/opennms-activemq.xml
+----
+
+.Remove comments for the transport connector listening on 0.0.0.0 and save
+[source, opennms-activemq.xml]
+----
+<transportConnector name="openwire" uri="tcp://0.0.0.0:61616?useJmx=false&amp;maximumConnections=1000&amp;wireformat.maxFrameSize=104857600"/>
+----
+
+.Restart {page-component-title} Core instance
+[source, console]
+----
+sudo systemctl restart opennms
+----
+
+.Verify that ActiveMQ port is available on public network interface
+[source, console]
+----
+ss -lnpt sport = :61616
+----
+
+.Verify listening 61616/tcp on all interfaces
+[source, output]
+----
+State   Recv-Q  Send-Q  Local Address:Port  Peer  Address:Port
+LISTEN  0       128     *:61616             *:*   users:(("java",pid=1,fd=706))
+----
+
+TIP: If you run a host firewall, allow port 61616/tcp, as in the following example with firewalld: +
+     `sudo firewall-cmd --permanent --add-port=61616/tcp` +
+     `sudo firewall-cmd --reload`

@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import javax.mail.internet.AddressException;
@@ -164,12 +165,15 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         final ReportParameters parameters = scheduleConfig.getReportParameters();
         final DeliveryOptions deliveryOptions = scheduleConfig.getDeliveryOptions();
         final String cronExpression = scheduleConfig.getCronExpression();
+        TimeZone zone = getTimeZone(parameters);
         try {
             final Trigger trigger = m_scheduler.getTrigger(triggerKey);
             trigger.getJobDataMap().put("criteria", parameters);
             trigger.getJobDataMap().put("deliveryOptions", deliveryOptions);
             trigger.getJobDataMap().put("cronExpression", cronExpression);
+            trigger.getJobDataMap().put("timeZone", zone.getID());
             ((CronTriggerImpl) trigger).setCronExpression(cronExpression);
+            ((CronTriggerImpl) trigger).setTimeZone(zone);
             m_scheduler.rescheduleJob(triggerKey, trigger);
         } catch(SchedulerException e) {
             LOG.error("Could not update cron trigger {}:{}", cronTrigger, e.getMessage(), e);
@@ -189,6 +193,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         final ReportParameters parameters = scheduleConfig.getReportParameters();
         final DeliveryOptions deliveryOptions = scheduleConfig.getDeliveryOptions();
         final String cronExpression = scheduleConfig.getCronExpression();
+        TimeZone zone = getTimeZone(parameters);
         try {
             cronTrigger.setGroup(m_triggerGroup);
             cronTrigger.setName(deliveryOptions.getInstanceId());
@@ -199,9 +204,11 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
             throw new InvalidCronExpressionException(e, cronExpression);
         }
         cronTrigger.setJobName(m_jobDetail.getKey().getName());
+        cronTrigger.setTimeZone(zone);
         cronTrigger.getJobDataMap().put("criteria", parameters);
         cronTrigger.getJobDataMap().put("reportId", parameters.getReportId());
         cronTrigger.getJobDataMap().put("deliveryOptions", deliveryOptions);
+        cronTrigger.getJobDataMap().put("timeZone", zone.getID());
         cronTrigger.getJobDataMap().put("mode", ReportMode.SCHEDULED);
 
         try {
@@ -209,6 +216,19 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         } catch (SchedulerException e) {
             throw new org.opennms.web.svclayer.support.SchedulerException(e);
         }
+    }
+
+    private TimeZone getTimeZone(final ReportParameters parameters) {
+        TimeZone zone = TimeZone.getDefault();
+        if (parameters.getTimezoneParms() != null && parameters.getTimezoneParms().size() > 0) {
+            final String zoneString = parameters.getTimezoneParms().get(0).getValue();
+            try {
+                zone = TimeZone.getTimeZone(zoneString);
+            } catch (final Throwable t) {
+                LOG.warn("Failed to parse timezone '%s'", zoneString, t);
+            }
+        }
+        return zone;
     }
 
     @Override

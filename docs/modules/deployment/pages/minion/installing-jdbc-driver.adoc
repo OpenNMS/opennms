@@ -1,0 +1,63 @@
+
+[[install-jdbc-driver]]
+= Install JDBC driver
+
+To detect/poll/collect any JDBC service, you must install the corresponding JDBC driver in Minion.
+The following shows how to install JDBC driver.
+
+We reference the `repository directory` relative to the Minion home directory.
+Depending on your operating system, the home directory is `/usr/share/minion` for Debian/Ubuntu or `/opt/minion` for CentOS/RHEL.
+
+. Download the JDBC driver JAR from a repository, for example a public link:https://mvnrepository.com/artifact/mysql/mysql-connector-java/8.0.22[Maven Repository].
+. Install the JAR file in the repository directory following the Maven repository pattern.
+
++
+For MySQL 8.0.22, the path would be `repositories/default/mysql/mysql-connector-java/8.0.22/mysql-connector-java-8.0.22.jar`.
+
+. Create a Karaf feature for the MySQL JDBC driver.
+
+.Create a features configuration file
+[source, console]
+----
+sudo vi deploy/jdbc-mysql.xml
+----
+
+.Add the following content to download the MySQL JDBC driver
+[source, jdbc-mysql.xml]
+[subs="verbatim,attributes"]
+-----
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="opennms-{page-component-version}"<1>
+          xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0">
+  <feature name="mysql-bundle" version="8.0.22" install="auto"><2>
+    <bundle>wrap:mvn:mysql/mysql-connector-java/8.0.22</bundle><3>
+  </feature>
+</features>
+-----
+
+<1> The version should match your {page-component-title} Core version.
+<2> The bundle is named `mysql-bundle` and we set the version number to `8.0.22`.
+<3> Bundle to download version `8.0.22` with Maven from official repositories.
+
+As soon you write the file, Karaf picks up the feature and tries to install it.
+Troubleshoot the feature installation in the `data/log/karaf.log`.
+
+.Connect to the Karaf shell
+[source,console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Verify installation and start-up of the feature
+[source, karaf]
+----
+feature:list | grep mysql
+----
+
+.MySQL bundle is installed and available
+[source, output]
+----
+mysql-bundle   | 8.0.22   | x        | Started     | opennms-{page-component-version}  |
+----

@@ -995,6 +995,10 @@ public abstract class UserManager implements UserConfig {
                     m_users.remove(oldName);
                     throw new Exception("UserFactory:rename the data contained for old user " + oldName + " is null");
                 } else {
+                    if (m_users.containsKey(newName)) {
+                        throw new Exception("UserFactory: cannot rename user " + oldName + ". An user with the given name " + newName + " already exists");
+                    }
+
                     // Rename the user in the user map.
                     m_users.remove(oldName);
                     data.setUserId(newName);
@@ -1157,7 +1161,8 @@ public abstract class UserManager implements UserConfig {
     }
 
     public boolean checkSaltedPassword(final String raw, final String encrypted) {
-        return s_passwordEncryptor.checkPassword(raw, encrypted);
+        PasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+        return passwordEncryptor.checkPassword(raw, encrypted);
     }
     
     /**
@@ -1168,13 +1173,8 @@ public abstract class UserManager implements UserConfig {
      */
     protected abstract void doUpdate() throws IOException, FileNotFoundException;
 
-    public final void update() throws IOException, FileNotFoundException {
-        m_writeLock.lock();
-        try {
-            doUpdate();
-        } finally {
-            m_writeLock.unlock();
-        }
+    public final void update() throws IOException {
+        doUpdate();
     }
     
     /**

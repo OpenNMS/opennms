@@ -1,0 +1,193 @@
+[[minion-confd]]
+= Configuring Minion via confd
+
+For information on testing confd templates, see xref:configuration/minion-confd/test-confd.adoc#confd-template-test[Test confd templates].
+
+== Mounting
+When starting the Minion container, mount a yaml file to the following path: `/opt/minion/minion-config.yaml`.
+
+Any configuration provided to confd overwrites configuration specified as environment variables. 
+Direct overlay of specific configuration files overwrites the corresponding configuration that confd provides.
+
+== YAML file contents
+The following describes the keys in `minion-config.yaml` that configure the Minion via confd.
+
+=== Minion Controller Config
+
+```yaml
+broker-url: "<broker url>"
+http-url: "<http url>"
+id: "<id>"
+location: "<location>"
+```
+Writes specified configuration to `etc/org.opennms.minion.controller.cfg`.
+
+=== User/Password
+It is not possible to supply the http or broker username/password via yaml file for configuration via confd.
+
+=== Instance ID
+```yaml
+org.opennms.instance.id: "<instance id>"
+```
+Writes specified configuration to `etc/instance-id.properties`.
+
+=== Kafka RPC
+```yaml
+ipc:
+    rpc:
+        kafka:
+            boostrap.servers: "127.0.0.1:9092"
+            acks: 1
+            max.request.size: 5000000
+            # Any other keys necessary can be specified here
+```
+Writes specified configuration to `etc/org.opennms.core.ipc.rpc.kafka.cfg`. 
+Additionally, if the `bootstrap.servers` key is specified, `etc/featuresBoot.d/kafka-rpc.boot` is also updated.
+
+=== Kafka SINK
+```yaml
+ipc:
+    sink:
+        kafka:
+            boostrap.servers: "127.0.0.1:9092"
+            compression.type: "gzip"
+            request.timeout.ms: 30000
+            max.partition.fetch.bytes: 5000000
+            auto.offset.reset: "latest"
+            max.request.size: 5000000
+            # Any other keys necessary can be specified here
+```
+Writes specified configuration to `etc/org.opennms.core.ipc.sink.kafka.cfg`. 
+Additionally, if the `bootstrap.servers` key is specified, `etc/featuresBoot.d/kafka-sink.boot` is also updated.
+
+=== Sink off heap
+```yaml
+ipc:
+    sink:
+        offheap:
+            offHeapSize: "1GB"
+            entriesAllowedOnHeap: 100000
+            offHeapFilePath: ""
+```
+Writes specified configuration to `etc/org.opennms.core.ipc.sink.offheap.cfg`.
+
+=== Single port flows
+To configure flows on a single port, set the following `enabled` key to `true`. 
+Optionally, you can provide parameters to include in the generated configuration.
+
+```yaml
+telemetry:
+    flows:
+        single-port-listener:
+            # Set to true to add single port listener config, omit or set to false to disable
+            enabled: true
+            # Parameters can be optionally provided
+            parameters:
+                # This translates to parameters.port=50000 in the generated config
+                port: 50000
+```
+Writes specified configuration to `etc/org.opennms.features.telemtry.listeners-udp-single-port-flows.cfg`.
+
+=== Telemetry flow listeners
+You can configure individual flow listeners and define any number of uniquely named listeners. 
+The example below shows how to specify parameters and parsers. 
+
+```yaml
+telemetry:
+    flows:
+        listeners:
+            NXOS-Listener:
+                class-name: "org.opennms.netmgt.telemetry.listeners.UdpListener"
+                parameters:
+                    # List all the parameters you wish to specify here
+                    port: 50002
+                parsers:
+                    # List all the parsers you wish to specify here
+                    NXOS:
+                        class-name: "org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser"
+                        # Parsers can also have parameters specified
+                        #parameters:
+```
+Writes specified configuration to `etc/org.opennms.features.telemtry.listeners-<Listener-Name>.cfg`.
+
+=== Syslog
+```yaml
+netmgt:
+    syslog:
+        syslog.listen.interface: "0.0.0.0"
+        syslog.listen.port: 1514
+        # Any other keys necessary can be specified here
+```
+Writes specified configuration to `etc/org.opennms.netmgt.syslog.cfg`.
+
+=== Traps
+```yaml
+netmgt:
+    traps:
+        trapd.listen.interface: "0.0.0.0"
+        trapd.listen.port: 1162
+        # Any other keys necessary can be specified here
+```
+Writes specified configuration to `etc/org.opennms.netmgt.trapd.cfg`.
+
+=== System properties
+```yaml
+system:
+    properties:
+        jaeger-agent-host: "<host>"
+        org.opennms.snmp.snmp4j.allowSNMPv2InV1: true
+        # Any other keys necessary can be specified here
+```
+Writes specified configuration to `etc/confd.system.properties`, which gets automatically appended to `etc/system.properties`. 
+Additionally, if the `jaeger-agent-host` key is specified, `etc/featuresBoot.d/jaeger.boot` is also updated.
+
+=== Karaf properties
+```yaml
+karaf:
+    shell:
+        ssh:
+            host: "0.0.0.0"
+            port: 8201
+    management:
+        rmi:
+            registry:
+                host: "127.0.0.1"
+                port: 1299
+            server:
+                host: "127.0.0.1"
+                port: 45444
+```
+Writes specified configuration to
+
+* `etc/org.apache.karaf.shell.cfg` for content under `shell`.
+* `etc/org.apache.karaf.management.cfg` for content under `management`.
+
+=== Jetty properties
+```yaml
+jetty:
+    web:
+        host: "0.0.0.0"
+        port: 8181
+```
+Writes specified configuration to `etc/org.ops4j.pax.web.cfg`.
+
+=== Secure credentials vault provider
+```yaml
+scv:
+    provider: "dominion"
+```
+Use to override the default SCV provider from the JCEKS implementation (which uses the file system) to a gRPC-based implementation that requests credentials from Dominion. 
+If not specified, the default JCEKS is used.
+
+=== Java options
+```yaml
+process-env:
+    java-opts:
+        - -Xmx4096m
+        - -Xdebug
+        - -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=7896
+```
+
+Use to specify an arbitrary list of Java options.
+Writes specified configuration to `/opt/minion/etc/minion-process.env`, which contains `key=value` pairs that are set in the Minion process environment.
+

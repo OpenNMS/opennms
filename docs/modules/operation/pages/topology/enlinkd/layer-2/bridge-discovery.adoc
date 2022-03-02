@@ -1,0 +1,240 @@
+
+= Transparent Bridge Discovery
+
+Discovering Layer 2 network links using the bridge forwarding table (BFT) requires a special algorithm.
+Link discovery links implements an algorithm based on a scientific paper, link:https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.383.8579&rep=rep1&type=pdf[Topology Discovery for Large Ethernet Networks].
+The gathered information is used to classify links in macLink and bridgeLink.
+A macLink represents a link between a workstation or server identified by a MAC address.
+A bridgeLink is a connection between backbone ports.
+A Shared Segment is a connection among workstations or servers (several mac addresses) and backbone ports (for example devices connected via an hub).
+A bridgeLink is a a shared segment with only two bridge backbone ports.
+A macLink is a shared segment with only a bridge port and only one MAC address.
+A broadcast domain is a collection of shared segments based on common set of MAC addresses.
+
+Discovery Bridge Broadcast Domains is made in two steps, the first step regards data collection.
+The BridgeDiscovery Collector collects the Bridge Forwarding Table and other spanning tree information.
+The BTF is not persisted into database and is maintained in memory to be processed by the BridgeDomainDiscovery.
+BridgeDomainDiscovery runs the specified algorithm over collected BFT and will produce a bridge domain or several bridge domains depending on the broadcast set of MAC addresses found.
+A bridge domains is a collection of shared segments based on common set of MAC addresses.
+
+BridgeDomainDiscovery does not support multi VLAN, the bridge network model identifies a bridge for every VLAN.
+Each VLAN has its own bridge forwarding table and its own spanning tree.
+To discover a bridge topology the algorithm has to be run against every bridge and every vlan.
+Actually the discovery is run only against the main VLAN.
+
+Bridge domains provide no information about layer 3; only a layer 2 map of the broadcast domains.
+You can determine which layer 3 interfaces map to layer 2 if your device supports the https://oidref.com/1.3.6.1.2.1.4.22[IpNetToMedia table].
+In this manner, we can associate a MAC address with the corresponding IP address and then the associated node.
+The Bridge Topology Updater combines the information stored in bridge domains with the ipnettomedia data and provided Bridge OnmsTopology.
+
+Whenever possible, the Bridge Topology Updater tries to associate a MAC address to an IP address and then to a node.
+It can happen that the specified MAC address and the IP address are not associated with a single node (for example, because there are duplicate nodes or because the nodes support a protocol like LACP).
+As the Bridge Topology Updater does not support LACP, and other similar aggregation protocols, we do not resolve the node and record the association found as a mac:ip relationship for a specific vertex.
+
+Transparent bridging is not loop free, so if you have loops you must enable the spanning tree protocol that detects loops and will put some ports in a blocking state to avoid loops.
+To get links it is necessary to perform some calculations that let us define the links.
+The SNMP agent must support the following MIBS to allow Transparent Bridge Discovery.
+
+.Supported MIBS from the Cisco-VTP MIB
+[options="header"]
+[cols="1,3,1"]
+|===
+| Name
+| Description
+| OID
+
+| vtpVersion
+| The version of VTP in use on the local system.
+A device reports its version capability and not any particular version in use on the device.
+If the device does not support VTP, the version is none(3).
+| .1.3.6.1.4.1.9.9.46.1.1.1.0
+
+|===
+
+.Supported OIDs from the IP-MIB
+[options="header"]
+[cols="1,3,1"]
+|===
+| Name
+| Description
+| OID
+
+| ipNetToMediaIfIndex
+| The interface on which this entry's equivalence is effective
+The layer-2 interface identified by a particular value of this index is the same interface as identified by the same value of ifIndex.
+| .1.3.6.1.2.1.4.22.1.1
+
+| ipNetToMediaPhysAddress
+| The media-dependent physical address.
+| .1.3.6.1.2.1.4.22.1.2
+
+| ipNetToMediaNetAddress
+| The IpAddress corresponding to the media-dependent physical address.
+| .1.3.6.1.2.1.4.22.1.3
+
+| ipNetToMediaType
+| The type of mapping. Setting this object to the value `invalid(2)` invalidates the corresponding entry in the ipNetToMediaTable. 
+That effectively disassociates the interface identified with said entry from the mapping identified with said entry.
+It is an implementation-specific matter whether the agent removes an invalidated entry from the table.
+Accordingly, management stations must be prepared to receive tabular information from agents that correspond to entries not currently in use.
+Proper interpretation of such entries requires examination of the relevant ipNetToMediaType object.
+| .1.3.6.1.2.1.4.22.1.4
+|===
+
+.Supported OIDS from the BRIDGE-MIB
+[options="header"]
+[cols="1,3,1"]
+|===
+| Name
+| Description
+| OID
+
+| dot1dBaseBridgeAddress
+| The MAC address this bridge uses when it must be referred to in a unique fashion.
+We recommend that this be the numerically smallest MAC address of all ports that belong to this bridge.
+However, it is only required to be unique.
+When concatenated with _dot1dStpPriority_ a unique _BridgeIdentifier_ is formed which is used in the _Spanning Tree Protocol_.
+| .1.3.6.1.2.1.17.1.1.0
+
+| dot1dBaseNumPorts
+| The number of ports this bridging entity controls.
+| .1.3.6.1.2.1.17.1.2.0
+
+| dot1dBaseType
+| Indicates what type of bridging this bridge can perform.
+If a bridge is actually performing a certain type of bridging, entries in the port table for the given type will indicate this.
+| .1.3.6.1.2.1.17.1.3.0
+
+| dot1dBasePort
+| The port number of the port for which this entry contains bridge management information.
+| .1.3.6.1.2.1.17.1.4.1.1
+
+| dot1dPortIfIndex
+| The value of the instance of the ifIndex object, defined in MIB-II, for the interface corresponding to this port.
+| .1.3.6.1.2.1.17.1.4.1.2
+
+| dot1dStpProtocolSpecification
+| An indication of what version of the Spanning Tree Protocol is being run.
+The value `decLb100(2)` indicates the DEC LANbridge 100 Spanning Tree protocol.
+IEEE 802.1d implementations will return `ieee8021d(3)`.
+If future versions of the IEEE Spanning Tree Protocol are released that are incompatible with the current version, a new value will be defined.
+| .1.3.6.1.2.1.17.2.1.0
+
+| dot1dStpPriority
+| The value of the writeable portion of the bridge ID; for example, the first two octets of the (8 octet long) bridge ID.
+The value of dot1dBaseBridgeAddressother provides the (last) 6 octets of the bridge ID.
+| .1.3.6.1.2.1.17.2.2
+
+| dot1dStpDesignatedRoot
+| The bridge identifier of the root of the spanning tree as determined by the Spanning Tree Protocol as executed by this node. 
+This value is used as the root identifier parameter in all configuration bridge PDUs this node originates.
+| .1.3.6.1.2.1.17.2.5
+
+| dot1dStpRootCost
+| The cost of the path to the root as seen from this bridge.
+| .1.3.6.1.2.1.17.2.6
+
+| dot1dStpRootPort
+| The port number of the port that offers the lowest cost path from this bridge to the root bridge.
+| .1.3.6.1.2.1.17.2.7
+
+| dot1dStpPort
+| The port number of the port for which this entry contains Spanning Tree Protocol management information.
+| .1.3.6.1.2.1.17.2.15.1.1
+
+| dot1dStpPortPriority
+| The value of the priority field, which is contained in the first (in network byte order) octet of the (2 octet long) Port ID.
+The value of dot1dStpPort provides the other octet of the Port ID.
+| .1.3.6.1.2.1.17.2.15.1.2
+
+| dot1dStpPortState
+| The port's current state as defined by application of the Spanning Tree Protocol.
+This state controls what action a port takes on reception of a frame.
+If the bridge detects a port that is malfunctioning it places that port into the broken(6) state.
+For ports that are disabled (see dot1dStpPortEnable), this object will have a value of disabled(1).
+| .1.3.6.1.2.1.17.2.15.1.3
+
+| dot1dStpPortEnable
+| The enabled/disabled status of the port.
+| .1.3.6.1.2.1.17.2.15.1.4
+
+| dot1dStpPortPathCost
+| The contribution of this port to the path cost of paths towards the spanning tree root that includes this port.
+802.1D-1990 recommends that the default value of this parameter be in inverse proportion to the speed of the attached LAN.
+| .1.3.6.1.2.1.17.2.15.1.5
+
+| dot1dStpPortDesignatedRoot
+| The unique bridge identifier of the bridge recorded as the root in the configuration BPDUs the designated bridge transmitted for the segment to which the port is attached.
+| .1.3.6.1.2.1.17.2.15.1.6
+
+| dot1dStpPortDesignatedCost
+| The path cost of the designated port of the segment connected to this port.
+This value is compared to the root path cost field in received bridge PDUs.
+| .1.3.6.1.2.1.17.2.15.1.7
+
+| dot1dStpPortDesignatedBridge
+| The bridge identifier of the bridge that this port considers to be the designated bridge for this port's segment.
+| .1.3.6.1.2.1.17.2.15.1.8
+
+| dot1dStpPortDesignatedPort
+| The port identifier of the port on the designated bridge for this port's segment.
+| .1.3.6.1.2.1.17.2.15.1.9
+
+| dot1dTpFdbAddress
+| A unicast MAC address for which the bridge has forwarding and/or filtering information.
+| .1.3.6.1.2.1.17.4.3.1.1
+
+| dot1dTpFdbPort
+| Either the value '0', or the port number of the port on which a frame having a source address equal to the value of the corresponding instance of dot1dTpFdbAddress has been seen.
+A value of '0' indicates that the port number has not been learned but that the bridge does have some forwarding/filtering information about this address (for example, in dot1dStaticTable).
+Implementors are encouraged to assign the port value to this object whenever it is learned even for addresses for which the corresponding value of dot1dTpFdbStatus is not learned(3).
+| .1.3.6.1.2.1.17.4.3.1.2
+
+| dot1dTpFdbStatus
+| The status of this entry.
+The meanings of the values are: +
+*other(1)*: none of the following.
+This would include the case where some other MIB object (not the corresponding instance of dot1dTpFdbPort, nor an entry in the dot1dStaticTable) is being used to determine if and how frames addressed to the value of the corresponding instance of dot1dTpFdbAddress are being forwarded. +
+
+*invalid(2)*: this entry is no longer valid (for example, it was learned but has since aged-out), but has not yet been flushed from the table. +
+
+*learned(3)*: the value of the corresponding instance of dot1dTpFdbPort was learned, and is being used. +
+
+*self(4)*: the value of the corresponding instance of dot1dTpFdbAddress represents one of the bridge's addresses.
+The corresponding instance of dot1dTpFdbPort indicates which of the bridge's ports has this address. +
+
+*mgmt(5)*: the value of the corresponding instance of dot1dTpFdbAddress is also the value of an existing instance of dot1dStaticAddress.                                              | .1.3.6.1.2.1.17.4.3.1.3
+|===
+
+.Supported OIDS from the Q-BRIDGE-MIB
+[options="header"]
+[cols="1,3,1"]
+|===
+| Name
+| Description
+| OID
+
+| dot1qTpFdbPort
+| Either the value 0, or the port number of the port on which a frame having a source address equal to the value of the corresponding instance of dot1qTpFdbAddress has been seen.
+A value of 0 indicates that the port number has not been learned but that the device does have some forwarding/filtering information about this address (for example, in the dot1qStaticUnicastTable).
+Implementors are encouraged to assign the port value to this object whenever it is learned, even for addresses for which the corresponding value of dot1qTpFdbStatus is not learned(3).
+| .1.3.6.1.2.1.17.7.1.2.2.1.2
+
+| dot1qTpFdbStatus
+| The status of this entry.
+The meanings of the values are: +
+*other(1)*: none of the following.
+This may include the case where some other MIB object (not the corresponding instance of dot1qTpFdbPort, nor an entry in the dot1qStaticUnicastTable) is being used to determine if and how frames addressed to the value of the corresponding instance of dot1qTpFdbAddress are being forwarded. +
+*invalid(2)*: this entry is no longer valid (for example), it was learned but has since aged out), but has not yet been flushed from the table. +
+*learned(3)*: the value of the corresponding instance of dot1qTpFdbPort was learned and is being used. +
+*self(4)*: the value of the corresponding instance of dot1qTpFdbAddress represents one of the device's addresses.
+The corresponding instance of dot1qTpFdbPort indicates which of the device's ports has this address. +
+*mgmt(5)*: the value of the corresponding instance of dot1qTpFdbAddress is also the value of an existing instance of dot1qStaticAddress.
+| .1.3.6.1.2.1.17.7.1.2.2.1.3
+|===
+
+Find generic information about the bridge link discovery process in the bridge information box on the node detail page of the device.
+Information gathered from this OID will be stored in the following database table:
+
+.Database tables related to transparent bridge discovery
+image::enlinkd/bridge-database.png[]

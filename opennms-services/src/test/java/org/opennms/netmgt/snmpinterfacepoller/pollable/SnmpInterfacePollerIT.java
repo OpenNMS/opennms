@@ -77,8 +77,8 @@ public class SnmpInterfacePollerIT {
         snmpInterfaceMonitor = new SnmpPollInterfaceMonitor(locationAwareSnmpClient);
         SnmpPeerFactory.setInstance(snmpPeerFactory);
         // Set admin/operational status as unknown
-        SnmpMinimalPollInterface iface = new SnmpMinimalPollInterface(6, SnmpMinimalPollInterface.IF_UNKNOWN,
-                SnmpMinimalPollInterface.IF_UNKNOWN);
+        SnmpMinimalPollInterface iface = new SnmpMinimalPollInterface(6, SnmpInterfaceStatus.INVALID,
+                SnmpInterfaceStatus.INVALID);
         interfacesResult.add(iface);
 
     }
@@ -93,8 +93,8 @@ public class SnmpInterfacePollerIT {
         // Check if Poll Status is UP
         assertEquals(1, interfacesResult.get(0).getStatus().getStatusCode());
         // Check if Admin/Operational Status are retrieved properly
-        assertEquals(1, interfacesResult.get(0).getAdminstatus());
-        assertEquals(2, interfacesResult.get(0).getOperstatus());
+        assertEquals(SnmpInterfaceStatus.UP, interfacesResult.get(0).getAdminstatus());
+        assertEquals(SnmpInterfaceStatus.DOWN, interfacesResult.get(0).getOperstatus());
     }
 
 }

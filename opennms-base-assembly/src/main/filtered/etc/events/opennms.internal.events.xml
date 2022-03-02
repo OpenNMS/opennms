@@ -81,7 +81,7 @@
       <event-label>OpenNMS-defined internal event: rtc subscribe</event-label>
       <descr>&lt;p>This event is generated to RTC by any process that
             wishes to receive POSTs of RTC data.&lt;/p></descr>
-      <logmsg dest="logonly">
+      <logmsg dest="donotpersist">
             A subscription to RTC for the %parm[viewname]% for
             %parm[url]% has been generated.
         </logmsg>
@@ -93,7 +93,7 @@
       <descr>&lt;p>This event is generated to RTC by any subscribed
             process that wishes to discontinue receipt of POSTs of RTC
             data.&lt;/p></descr>
-      <logmsg dest="logonly">
+      <logmsg dest="donotpersist">
             Unsubscribe request received from %parm[url]%.
         </logmsg>
       <severity>Warning</severity>
@@ -248,8 +248,30 @@
    <event>
       <uei>uei.opennms.org/internal/applicationDeleted</uei>
       <event-label>OpenNMS-defined application event: applicationDeleted</event-label>
-      <descr>&lt;p>Application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been deleted.&lt;/p></descr>
-      <logmsg dest="logndisplay">Application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been deleted.</logmsg>
+      <descr>Application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been deleted.</descr>
+      <logmsg dest="logndisplay">Application '%parm[applicationName]%' has been deleted.</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/applicationChanged</uei>
+      <event-label>OpenNMS-defined node event: applicationChanged</event-label>
+      <descr>The application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been changed.</descr>
+      <logmsg dest="logndisplay">Application '%parm[applicationName]%' configuration has been changed.</logmsg>
+      <severity>Warning</severity>
+      <operinstruct>Make sure '%parm[applicationName]%' application's definition still reflects the requirements. Please verify it's &lt;a href=&quot;admin/applications.htm?applicationid=%parm[applicationId]%&amp;edit=services&quot;>definition&lt;/a&gt;.</operinstruct>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/applicationCreated</uei>
+      <event-label>OpenNMS-defined node event: applicationCreated</event-label>
+      <descr>The application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been created.</descr>
+      <logmsg dest="logndisplay">Application '%parm[applicationName]%' has been created.</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/telemetry/illegalFlowDetected</uei>
+      <event-label>Illegal flow detected</event-label>
+      <descr>A flow was dropped due to the following reason: '%parm[cause]%'</descr>
+      <logmsg dest="logndisplay">A flow (protocol '%parm[protocol]%') from exporter '%interface%' in location '%parm[monitoringSystemLocation]%' was detected and dropped by '%parm[monitoringSystemId]%' due to the following reason: '%parm[cause]%'.</logmsg>
       <severity>Warning</severity>
    </event>
 </events>

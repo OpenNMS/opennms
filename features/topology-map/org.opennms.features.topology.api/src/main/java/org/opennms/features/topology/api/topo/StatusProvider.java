@@ -35,5 +35,5 @@ import org.opennms.features.topology.api.NamespaceAware;
 
 public interface StatusProvider extends NamespaceAware {
 
-	Map<? extends VertexRef, ? extends Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria);
+	Map<? extends VertexRef, ? extends Status> getStatusForVertices(BackendGraph graph, Collection<VertexRef> vertices, Criteria[] criteria);
 }

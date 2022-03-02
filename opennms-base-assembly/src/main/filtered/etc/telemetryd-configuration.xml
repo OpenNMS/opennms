@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <telemetryd-config>
 
-    <!-- JTI Listener & adpaters -->
+    <!-- JTI Listener & adapters -->
     <listener name="JTI-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
         <parameter key="port" value="50000"/>
 
@@ -13,6 +13,36 @@
             <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/junos-telemetry-interface.groovy"/>
 
             <package name="JTI-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
+    </queue>
+
+    <!-- OpenConfig -->
+    <connector name="OpenConfig-Connector"
+               class-name="org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector"
+               service-name="OpenConfig"
+               queue="OpenConfig"
+               enabled="false">
+        <package name="OpenConfig-Default">
+            <filter>IPADDR != '0.0.0.0'</filter>
+            <parameter key="port" value="${requisition:oc.port|9000}"/>
+            <parameter key="paths" value="/network-instances/network-instance[instance-name='master'],/protocols/protocol/bgp"/>
+            <parameter key="mode" value="jti"/>
+         </package>
+    </connector>
+
+    <queue name="OpenConfig">
+        <adapter name="OpenConfig-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter" enabled="false">
+            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/openconfig-jti-telemetry.groovy"/>
+            <parameter key="mode" value="jti"/>
+            <package name="OpenConfig-Default">
                 <rrd step="300">
                     <rra>RRA:AVERAGE:0.5:1:2016</rra>
                     <rra>RRA:AVERAGE:0.5:12:1488</rra>
@@ -124,4 +154,56 @@
             </package>
         </adapter>
     </queue>
+
+    <!-- BMP listener & adapters -->
+    <listener name="BMP-TCP-5000" class-name="org.opennms.netmgt.telemetry.listeners.TcpListener" enabled="false">
+        <parameter key="port" value="5000"/>
+
+        <parser name="BMP-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser" queue="BMP" />
+    </listener>
+
+    <queue name="BMP">
+        <adapter name="BMP-Peer-Status-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPeerStatusAdapter" enabled="false">
+        </adapter>
+
+        <adapter name="BMP-Telemetry-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpTelemetryAdapter" enabled="false">
+           <package name="BMP-Default">
+              <rrd step="300">
+                 <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                 <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                 <rra>RRA:AVERAGE:0.5:288:366</rra>
+                 <rra>RRA:MAX:0.5:288:366</rra>
+                 <rra>RRA:MIN:0.5:288:366</rra>
+              </rrd>
+           </package>
+        </adapter>
+
+        <adapter name="BMP-OpenBMP-Integration-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpIntegrationAdapter" enabled="false">
+            <parameter key="kafka.bootstrap.servers" value="localhost:9092" />
+        </adapter>
+        <adapter name="BMP-Persisting-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPersistingAdapter" enabled="false">
+        </adapter>
+    </queue>
+
+    <!-- Graphite listener and adapter -->
+    <listener name="Graphite-UDP-2003" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
+        <parameter key="port" value="2003"/>
+        <parser name="Graphite-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" queue="Graphite" />
+    </listener>
+
+    <queue name="Graphite">
+        <adapter name="Graphite" class-name="org.opennms.netmgt.telemetry.protocols.graphite.adapter.GraphiteAdapter" enabled="false">
+            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/graphite-telemetry-interface.groovy"/>
+             <package name="Graphite-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
+    </queue>
+
 </telemetryd-config>

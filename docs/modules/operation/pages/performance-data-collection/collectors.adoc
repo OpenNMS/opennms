@@ -1,0 +1,11 @@
+[[collectors-overview]]
+= Collectors
+
+The Collectd service uses collectors to gather and store performance metrics via specific agents and protocols.
+This section includes information for the collector types available in {page-component-title}.
+
+Understanding xref:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+
+== Supported collectors
+
+For information on supported collectors and how to configure them, see xref:reference:configuration/performance-data-collection/introduction.adoc[performance data collector reference section].

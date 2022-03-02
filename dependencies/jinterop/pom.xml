@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -16,14 +16,25 @@
   </description>
   <dependencies>
     <dependency>
-      <groupId>org.jinterop</groupId>
-      <artifactId>j-interop</artifactId>
+      <groupId>com.github.skyghis</groupId>
+      <artifactId>j-interop-ng</artifactId>
       <version>${jinteropVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.jinterop</groupId>
-      <artifactId>j-interopdeps</artifactId>
+      <groupId>com.github.skyghis</groupId>
+      <artifactId>j-interop-ng-deps</artifactId>
       <version>${jinteropVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>eu.agno3.jcifs</groupId>
+          <artifactId>jcifs-ng</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>org.opennms.dependencies.jcifs-shaded</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
   <repositories>

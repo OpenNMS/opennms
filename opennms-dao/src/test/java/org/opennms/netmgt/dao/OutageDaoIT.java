@@ -47,6 +47,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -65,6 +67,7 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -75,6 +78,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import com.google.common.collect.Sets;
 
 /**
  * @author mhuot
@@ -107,6 +112,12 @@ public class OutageDaoIT implements InitializingBean {
 
     @Autowired
     private MonitoredServiceDao m_monitoredServiceDao;
+
+    @Autowired
+    private MonitoringLocationDao m_monitoringLocationDao;
+
+    @Autowired
+    private ApplicationDao m_applicationDao;
 
     @Autowired
     private OutageDao m_outageDao;
@@ -246,6 +257,119 @@ public class OutageDaoIT implements InitializingBean {
         List<OutageSummary> outages = m_outageDao.getNodeOutageSummaries(0);
         System.err.println(outages);
         assertEquals(3, outages.size());
+    }
+
+    @Test
+    @Transactional
+    public void testGetStatusChangesForApplicationIdBetween() {
+        final OnmsMonitoringLocation rdu = new OnmsMonitoringLocation();
+        rdu.setLocationName("RDU");
+        rdu.setMonitoringArea("USA");
+        rdu.setPriority(1L);
+        m_monitoringLocationDao.save(rdu);
+
+        final OnmsMonitoringLocation fulda = new OnmsMonitoringLocation();
+        fulda.setLocationName("Fulda");
+        fulda.setMonitoringArea("Germany");
+        fulda.setPriority(1L);
+        m_monitoringLocationDao.save(fulda);
+
+        final OnmsMonitoringLocation ottawa = new OnmsMonitoringLocation();
+        ottawa.setLocationName("Ottawa");
+        ottawa.setMonitoringArea("Canada");
+        ottawa.setPriority(1L);
+        m_monitoringLocationDao.save(ottawa);
+
+        final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node");
+        m_nodeDao.save(node);
+
+        final OnmsMonitoredService app1Service1 = getMonitoredService(getIpInterface("172.16.1.1", node), getServiceType("ICMP"));
+        final OnmsMonitoredService app1Service2 = getMonitoredService(getIpInterface("172.16.1.2", node), getServiceType("ICMP"));
+        final OnmsMonitoredService service3 = getMonitoredService(getIpInterface("172.18.1.2", node), getServiceType("ICMP"));
+
+        final OnmsApplication app1 = new OnmsApplication();
+        app1.setName("APP1");
+        app1.getPerspectiveLocations().add(rdu);
+        app1.getPerspectiveLocations().add(fulda);
+        int app1Id = this.m_applicationDao.save(app1);
+
+        app1Service1.setApplications(Sets.newHashSet(app1));
+        app1Service2.setApplications(Sets.newHashSet(app1));
+        this.m_monitoredServiceDao.saveOrUpdate(app1Service1);
+        this.m_monitoredServiceDao.saveOrUpdate(app1Service2);
+
+        assertEquals(0, this.m_outageDao.findAll().size());
+        assertEquals(0, this.m_outageDao.getStatusChangesForApplicationIdBetween(new Date(10000), new Date(20000), app1Id).size());
+
+        // Case #1 |---|               |---|
+        // Timeframe    | <- - - - -> |
+        addOutage(rdu, app1Service1, 9000L, 9500L);
+        addOutage(rdu, app1Service1, 20500L, 21000L);
+        assertEquals(2, this.m_outageDao.findAll().size());
+        assertEquals(0, this.m_outageDao.getStatusChangesForApplicationIdBetween(new Date(10000), new Date(20000), app1Id).size());
+
+        // Case #2    |---|
+        // Timeframe    | <- - - - -> |
+        addOutage(rdu, app1Service1, 5000L, 15000L);
+        assertEquals(3, this.m_outageDao.findAll().size());
+        assertEquals(1, this.m_outageDao.getStatusChangesForApplicationIdBetween(new Date(10000), new Date(20000), app1Id).size());
+
+        // Case #3           |---|
+        // Timeframe    | <- - - - -> |
+        addOutage(rdu, app1Service2, 12500L, 17500L);
+        assertEquals(4, this.m_outageDao.findAll().size());
+        assertEquals(2, this.m_outageDao.getStatusChangesForApplicationIdBetween(new Date(10000), new Date(20000), app1Id).size());
+
+        // Case #4                  |---|
+        // Timeframe    | <- - - - -> |
+        addOutage(rdu, app1Service1, 15000L, 25000L);
+        assertEquals(5, this.m_outageDao.findAll().size());
+        assertEquals(3, this.m_outageDao.getStatusChangesForApplicationIdBetween(new Date(10000), new Date(20000), app1Id).size());
+
+        // Case #5                  |---> ongoing
+        // Timeframe    | <- - - - -> |
+        addOutage(rdu, app1Service2, 15000L, null);
+        assertEquals(6, this.m_outageDao.findAll().size());
+        assertEquals(4, this.m_outageDao.getStatusChangesForApplicationIdBetween(new Date(10000), new Date(20000), app1Id).size());
+
+        // Case #6    |-----------------|
+        // Timeframe    | <- - - - -> |
+        addOutage(rdu, app1Service1, 5000L, 25000L);
+        assertEquals(7, this.m_outageDao.findAll().size());
+        assertEquals(5, this.m_outageDao.getStatusChangesForApplicationIdBetween(new Date(10000), new Date(20000), app1Id).size());
+
+        // Case #7    |-----------------> ongoing
+        // Timeframe    | <- - - - -> |
+        addOutage(rdu, app1Service1, 5000L, null);
+        assertEquals(8, this.m_outageDao.findAll().size());
+        assertEquals(6, this.m_outageDao.getStatusChangesForApplicationIdBetween(new Date(10000), new Date(20000), app1Id).size());
+
+        // now, insert stuff in the time interval that is not related to the application's services and locations
+        addOutage(rdu, service3, 11000L, 19000L);
+        addOutage(fulda, service3, 12000L, 18000L);
+        addOutage(ottawa, app1Service1, 13000L, 17000L);
+        addOutage(ottawa, app1Service2, 14000L, 16000L);
+
+        assertEquals(12, this.m_outageDao.findAll().size());
+        assertEquals(6, this.m_outageDao.getStatusChangesForApplicationIdBetween(new Date(10000), new Date(20000), app1Id).size());
+    }
+
+    private void addOutage(final OnmsMonitoringLocation location, final OnmsMonitoredService monitoredService, final Long start, final Long end) {
+        final OnmsOutage onmsOutage = new OnmsOutage();
+
+        if (start != null) {
+            onmsOutage.setIfLostService(new Date(start));
+        }
+
+        if (end!= null) {
+            onmsOutage.setIfRegainedService(new Date(end));
+        }
+
+        onmsOutage.setMonitoredService(monitoredService);
+        onmsOutage.setPerspective(location);
+
+        m_outageDao.save(onmsOutage);
+        m_outageDao.flush();
     }
 
     @Test

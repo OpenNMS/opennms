@@ -35,6 +35,11 @@ import java.util.Objects;
  * Compares first the group position and the the rules position.
  */
 public class RulePositionComparator implements Comparator<RuleDefinition> {
+
+    public static RulePositionComparator INSTANCE = new RulePositionComparator();
+
+    private RulePositionComparator() {}
+
     @Override
     public int compare(RuleDefinition r1, RuleDefinition r2) {
         Objects.requireNonNull(r1);

@@ -1,0 +1,1030 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmpcollectornxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpcollectornxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpcollectornxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmpcollectornxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-collector">
+
+    <createTable tableName="bmp_collectors" remarks="bmp collectors">
+      <column name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="state" type="varchar(8)" defaultValue="DOWN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="admin_id" type="varchar(64)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="routers" type="varchar(4096)"/>
+      <column name="routers_count" type="smallint" defaultValue="0"/>
+      <column name="last_updated" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="varchar(200)"/>
+      <column name="ip_address" type="varchar(40)"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmprouternxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmprouternxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmprouternxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmprouternxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-router">
+
+    <createTable tableName="bmp_routers" remarks="bmp routers">
+      <column name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="varchar(200)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ip_address" type="varchar(40)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="router_as" type="bigint"/>
+      <column name="last_updated" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="varchar(255)"/>
+      <column name="state" type="varchar(8)" defaultValue="DOWN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="is_passive" type="boolean" defaultValue="false"/>
+      <column name="term_reason_code" type="int"/>
+      <column name="term_reason_text" type="varchar(255)"/>
+      <column name="term_data" type="text"/>
+      <column name="init_data" type="text"/>
+      <column name="geo_ip_start" type="varchar(40)"/>
+      <column name="collector_hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="bgp_id" type="varchar(40)"/>
+      <column name="connection_count" type="int" defaultValue="0"/>
+    </createTable>
+    <createIndex tableName="bmp_routers" indexName="bmp_routers_name">
+      <column name="name" />
+    </createIndex>
+    <createIndex tableName="bmp_routers" indexName="bmp_routers_ip_address">
+      <column name="ip_address" />
+    </createIndex>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmppeernxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmppeernxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmppeernxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmppeernxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-peers">
+
+    <createTable tableName="bmp_peers" remarks="bmp peers">
+      <column name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="router_hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="peer_rd" type="varchar(32)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="is_ipv4" type="boolean" defaultValue="true">
+        <constraints nullable="false"/>
+      </column>
+      <column name="peer_addr" type="varchar(40)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="varchar(200)"/>
+      <column name="peer_bgp_id" type="varchar(40)"/>
+      <column name="peer_asn" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="state" type="varchar(8)" defaultValue="DOWN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="is_l3vpn_peer" type="boolean" defaultValue="false">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="is_pre_policy" type="boolean" defaultValue="true">
+        <constraints nullable="false"/>
+      </column>
+      <column name="geo_ip_start" type="varchar(40)"/>
+      <column name="local_ip" type="varchar(40)"/>
+      <column name="local_bgp_id" type="varchar(40)"/>
+      <column name="local_port" type="int"/>
+      <column name="local_hold_time" type="bigint"/>
+      <column name="local_asn" type="bigint"/>
+      <column name="remote_port" type="int"/>
+      <column name="remote_hold_time" type="bigint"/>
+      <column name="sent_capabilities" type="varchar(4096)"/>
+      <column name="recv_capabilities" type="varchar(4096)"/>
+      <column name="bmp_reason" type="smallint"/>
+      <column name="bgp_err_code" type="smallint"/>
+      <column name="bgp_err_subcode" type="smallint"/>
+      <column name="error_text" type="varchar(255)"/>
+      <column name="is_loc_rib" type="boolean" defaultValue="false">
+        <constraints nullable="false"/>
+      </column>
+      <column name="is_loc_rib_filtered" type="boolean" defaultValue="false">
+        <constraints nullable="false"/>
+      </column>
+      <column name="table_name" type="varchar(255)"/>
+    </createTable>
+    <createIndex tableName="bmp_peers" indexName="bmp_peers_peer_addr">
+      <column name="peer_addr" />
+    </createIndex>
+    <createIndex tableName="bmp_peers" indexName="bmp_peers_name">
+      <column name="name" />
+    </createIndex>
+    <createIndex tableName="bmp_peers" indexName="bmp_peers_peer_asn">
+      <column name="peer_asn" />
+    </createIndex>
+    <createIndex tableName="bmp_peers" indexName="bmp_peers_router_hash_id">
+      <column name="router_hash_id" />
+    </createIndex>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-baseattrsnxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'baseattrsnxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="baseattrsnxtid"/>
+    <rollback>
+      <dropSequence sequenceName="baseattrsnxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-baseattrs">
+
+    <createTable tableName="bmp_base_attributes" remarks="bmp base attributes">
+      <column name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="peer_hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="origin" type="varchar(16)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="as_path" type="varchar(8192)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="as_path_count" type="smallint" defaultValue="0"/>
+      <column name="origin_as" type="bigint"/>
+      <column name="next_hop" type="varchar(40)"/>
+      <column name="med" type="bigint"/>
+      <column name="local_pref" type="bigint"/>
+
+      <column name="aggregator" type="varchar(64)"/>
+      <column name="community_list" type="varchar(6000)"/>
+      <column name="ext_community_list" type="varchar(2048)"/>
+      <column name="large_community_list" type="varchar(3000)"/>
+      <column name="cluster_list" type="varchar(2048)"/>
+      <column name="is_atomic_agg" type="boolean" defaultValue="false"/>
+      <column name="is_nexthop_ipv4" type="boolean" defaultValue="true"/>
+      <column name="last_updated" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="originator_id" type="varchar(40)"/>
+    </createTable>
+    <createIndex tableName="bmp_base_attributes" indexName="bmp_base_attributes_origin_as">
+      <column name="origin_as" />
+    </createIndex>
+    <createIndex tableName="bmp_base_attributes" indexName="bmp_base_attributes_as_path_count">
+      <column name="as_path_count" />
+    </createIndex>
+    <createIndex tableName="bmp_base_attributes" indexName="bmp_base_attributes_as_path">
+      <column name="as_path" />
+    </createIndex>
+    <createIndex tableName="bmp_base_attributes" indexName="bmp_base_attributes_peer_hash_id">
+      <column name="peer_hash_id" />
+    </createIndex>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-unicastsequence">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpunicastnxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpunicastnxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmpunicastnxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-unicast">
+
+    <createTable tableName="bmp_ip_ribs" remarks="bmp unicast prefixes ">
+      <column name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="peer_hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="base_attr_hash_id" type="varchar(36)"/>
+      <column name="is_ipv4" type="boolean">
+        <constraints nullable="false"/>
+      </column>
+      <column name="origin_as" type="bigint"/>
+      <column name="prefix" type="varchar(40)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix_len" type="smallint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="first_added_timestamp" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="is_withdrawn" type="boolean" defaultValue="false">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix_bits" type="varchar(128)"/>
+      <column name="path_id" type="bigint"/>
+      <column name="labels" type="varchar(255)"/>
+      <column name="is_pre_policy" type="boolean" defaultValue="true">
+        <constraints nullable="false"/>
+      </column>
+      <column name="is_adj_ribin" type="boolean" defaultValue="true">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createIndex tableName="bmp_ip_ribs" indexName="bmp_ip_ribs_peer_hash_id">
+      <column name="peer_hash_id" />
+    </createIndex>
+    <createIndex tableName="bmp_ip_ribs" indexName="bmp_ip_ribs_base_attr_hash_id">
+      <column name="base_attr_hash_id" />
+    </createIndex>
+    <createIndex tableName="bmp_ip_ribs" indexName="bmp_ip_ribs_origin_as">
+      <column name="origin_as" />
+    </createIndex>
+  </changeSet>
+
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-global-ip-ribs-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpglobalipribsnxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpglobalipribsnxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmpglobalipribsnxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-global-ip-ribs">
+
+    <createTable tableName="bmp_global_ip_ribs" remarks="bmp global ip ribs">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix" type="varchar(40)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="should_delete" type="boolean" defaultValue="false">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix_len" type="int">
+        <constraints nullable="false"/>
+      </column>
+      <column name="recv_origin_as" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rpki_origin_as" type="bigint"/>
+      <column name="irr_origin_as" type="bigint"/>
+      <column name="irr_source" type="varchar(32)"/>
+      <column name="last_updated" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="num_peers" type="int" defaultValue="0"/>
+    </createTable>
+    <addPrimaryKey tableName="bmp_global_ip_ribs" constraintName="pk_bmp_global_ip_ribs"
+                   columnNames="prefix,recv_origin_as"/>
+    <createIndex tableName="bmp_global_ip_ribs" indexName="bmp_global_ip_ribs_recv_origin_as">
+      <column name="recv_origin_as" />
+    </createIndex>
+    <createIndex tableName="bmp_global_ip_ribs" indexName="bmp_global_ip_ribs_should_delete">
+      <column name="should_delete" />
+    </createIndex>
+    <createIndex tableName="bmp_global_ip_ribs" indexName="bmp_global_ip_ribs_rpki_origin_as">
+      <column name="rpki_origin_as" />
+    </createIndex>
+    <createIndex tableName="bmp_global_ip_ribs" indexName="bmp_global_ip_ribs_irr_origin_as">
+      <column name="irr_origin_as" />
+    </createIndex>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-asninfo-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpasninfonxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpasninfonxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmpasninfonxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-asn-info">
+
+    <createTable tableName="bmp_asn_info" remarks="bmp asn info">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="asn" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="as_name" type="varchar(255)"/>
+      <column name="org_id" type="varchar(255)"/>
+      <column name="org_name" type="varchar(255)"/>
+      <column name="remarks" type="text"/>
+      <column name="address" type="text"/>
+      <column name="city" type="varchar(255)"/>
+      <column name="state_prov" type="varchar(255)"/>
+      <column name="postal_code" type="varchar(255)"/>
+      <column name="country" type="varchar(255)"/>
+      <column name="raw_output" type="text"/>
+      <column name="last_updated" type="timestamp"/>
+      <column name="source" type="varchar(64)"/>
+    </createTable>
+    <addPrimaryKey tableName="bmp_asn_info" constraintName="pk_bmp_asn_info" columnNames="asn"/>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-asnpath-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpasnpathnxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpasnpathnxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmpasnpathnxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-asn-path-analysis">
+
+    <createTable tableName="bmp_asn_path_analysis" remarks="bmp asn path analysis">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="asn" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="asn_left" type="bigint"/>
+      <column name="asn_right" type="bigint"/>
+      <column name="asn_left_is_peering" type="boolean"/>
+      <column name="last_updated" type="timestamp"/>
+    </createTable>
+    <addPrimaryKey tableName="bmp_asn_path_analysis" constraintName="pk_bmp_asn_path"
+                   columnNames="asn, asn_left, asn_right, asn_left_is_peering"/>
+    <createIndex tableName="bmp_asn_path_analysis" indexName="bmp_asn_path_analysis_asn_left">
+      <column name="asn_left"/>
+    </createIndex>
+    <createIndex tableName="bmp_asn_path_analysis" indexName="bmp_asn_path_analysis_asn_right">
+      <column name="asn_right"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet id="27.1.0-bmp-view-peer" author="cgorantla">
+    <createView replaceIfExists="true" viewName="bmp_v_peers">
+      SELECT CASE WHEN length(rtr.name) > 0 THEN rtr.name ELSE rtr.ip_address END AS RouterName, rtr.ip_address as
+      RouterIP,
+      p.local_ip as LocalIP, p.local_port as LocalPort, p.local_asn as LocalASN, p.local_bgp_id as LocalBGPId,
+      CASE WHEN length(p.name) > 0 THEN p.name ELSE p.peer_addr END AS PeerName,
+      p.peer_addr as PeerIP, p.remote_port as PeerPort, p.peer_asn as PeerASN,
+      p.peer_bgp_id as PeerBGPId,
+      p.local_hold_time as LocalHoldTime, p.remote_hold_time as PeerHoldTime,
+      p.state as peer_state, rtr.state as router_state,
+      p.is_ipv4 as isPeerIPv4, p.is_l3vpn_peer as isPeerVPN, p.is_pre_policy as isPrePolicy,
+      p.last_updated as LastModified,
+      p.bmp_reason as LastBMPReasonCode, p.bgp_err_code as LastDownCode,
+      p.bgp_err_subcode as LastdownSubCode, p.error_text as LastDownMessage,
+      p.last_updated as LastDownTimestamp,
+      p.sent_capabilities as SentCapabilities, p.recv_capabilities as RecvCapabilities,
+      w.as_name,
+      p.is_loc_rib,p.is_loc_rib_filtered,p.table_name,
+      p.hash_id as peer_hash_id, rtr.hash_id as router_hash_id,p.geo_ip_start
+
+      FROM bmp_peers p JOIN bmp_routers rtr ON (p.router_hash_id = rtr.hash_id)
+      LEFT JOIN bmp_asn_info w ON (p.peer_asn = w.asn);
+    </createView>
+  </changeSet>
+
+  <changeSet id="27.1.0-bmp-view-ip-routes" author="cgorantla">
+    <createView replaceIfExists="true" viewName="bmp_v_ip_routes">
+      SELECT CASE WHEN length(rtr.name) > 0 THEN rtr.name ELSE rtr.ip_address END AS RouterName,
+      CASE WHEN length(p.name) > 0 THEN p.name ELSE p.peer_addr END AS PeerName,
+      r.prefix AS Prefix,r.prefix_len AS PrefixLen,
+      attr.origin AS Origin,r.origin_as AS Origin_AS,attr.med AS MED,
+      attr.local_pref AS LocalPref,attr.next_hop AS NH,attr.as_path AS AS_Path,
+      attr.as_path_count AS ASPath_Count,attr.community_list AS Communities,
+      attr.ext_community_list AS ExtCommunities,attr.large_community_list AS LargeCommunities,
+      attr.cluster_list AS ClusterList,
+      attr.aggregator AS Aggregator,p.peer_addr AS PeerAddress, p.peer_asn AS PeerASN,r.is_ipv4 as isIPv4,
+      p.is_ipv4 as isPeerIPv4, p.is_l3vpn_peer as isPeerVPN,
+      r.last_updated AS LastModified, r.first_added_timestamp as FirstAddedTimestamp,
+      r.path_id, r.labels,
+      r.hash_id as rib_hash_id,
+      r.base_attr_hash_id as base_hash_id, r.peer_hash_id, rtr.hash_id as router_hash_id,r.is_withdrawn,
+      r.prefix_bits,r.is_pre_policy,r.is_adj_ribin
+      FROM bmp_ip_ribs r
+      JOIN bmp_peers p ON (r.peer_hash_id = p.hash_id)
+      JOIN bmp_base_attributes attr ON (attr.hash_id = r.base_attr_hash_id and attr.peer_hash_id = r.peer_hash_id)
+      JOIN bmp_routers rtr ON (p.router_hash_id = rtr.hash_id);
+    </createView>
+  </changeSet>
+
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-route-info-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmprouteinfonxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmprouteinfonxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmprouteinfonxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-route-info">
+
+    <createTable tableName="bmp_route_info" remarks="bmp route info">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix" type="varchar(40)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix_len" type="int">
+        <constraints nullable="false"/>
+      </column>
+      <column name="descr" type="text"/>
+      <column name="origin_as" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="source" type="varchar(32)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="bmp_route_info" constraintName="pk_bmp_route_info"
+                   columnNames="prefix, prefix_len, origin_as"/>
+    <createIndex tableName="bmp_route_info" indexName="bmp_route_info_origin_as">
+      <column name="origin_as"/>
+    </createIndex>
+  </changeSet>
+
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-ip-rib-log-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpipriblognxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpipriblognxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmpipriblognxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-ip-rib-log">
+
+    <createTable tableName="bmp_ip_rib_log" remarks="bmp ip rib log">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="base_attr_hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="peer_hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix" type="varchar(40)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix_len" type="int">
+        <constraints nullable="false"/>
+      </column>
+      <column name="origin_as" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="is_withdrawn" type="boolean" defaultValue="false">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createIndex tableName="bmp_ip_rib_log" indexName="bmp_ip_rib_log_peer_hash_id" unique="false">
+      <column name="peer_hash_id" />
+    </createIndex>
+    <createIndex tableName="bmp_ip_rib_log" indexName="bmp_ip_rib_log_prefix" unique="false">
+      <column name="prefix" />
+    </createIndex>
+    <createIndex tableName="bmp_ip_rib_log" indexName="bmp_ip_rib_log_origin_as" unique="false">
+      <column name="origin_as" />
+    </createIndex>
+  </changeSet>
+
+  <!--  <changeSet  author="cgorantla" id="27.1.0.bmp-add-timescaledb-extension">
+      <preConditions onFail="MARK_RAN">
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid = 'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+      </preConditions>
+      <sql>
+        CREATE EXTENSION IF NOT EXISTS timescaledb;
+        DROP EXTENSION timescaledb;
+      </sql>
+    </changeSet>-->
+
+  <changeSet author="cgorantla" id="27.1.0.bmp-ip-rib-log-create-hypertable">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_ip_rib_log';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_ip_rib_log', 'last_updated', chunk_time_interval => interval '5 day');
+    </sql>
+  </changeSet>
+
+  <changeSet id="27.1.0-bmp-view-ip-routes-history" author="cgorantla">
+    <createView replaceIfExists="true" viewName="bmp_v_ip_routes_history">
+      SELECT
+      CASE WHEN length(rtr.name) > 0 THEN rtr.name ELSE rtr.ip_address END AS RouterName,
+      rtr.ip_address as RouterAddress,
+      CASE WHEN length(p.name) > 0 THEN p.name ELSE p.peer_addr END AS PeerName,
+      log.prefix AS Prefix,log.prefix_len AS PrefixLen,
+      attr.origin AS Origin,log.origin_as AS Origin_AS,
+      attr.med AS MED,attr.local_pref AS LocalPref,attr.next_hop AS NH,
+      attr.as_path AS AS_Path,attr.as_path_count AS ASPath_Count,attr.community_list AS Communities,
+      attr.ext_community_list AS ExtCommunities,attr.large_community_list AS LargeCommunities,
+      attr.cluster_list AS ClusterList,attr.aggregator AS Aggregator,p.peer_addr AS PeerIp,
+      p.peer_asn AS PeerASN,  p.is_ipv4 as isPeerIPv4, p.is_l3vpn_peer as isPeerVPN,
+      log.id,log.last_updated AS LastModified,
+      CASE WHEN log.is_withdrawn THEN 'Withdrawn' ELSE 'Advertised' END as event,
+      log.base_attr_hash_id as base_attr_hash_id, log.peer_hash_id, rtr.hash_id as router_hash_id
+      FROM bmp_ip_rib_log log
+      JOIN bmp_base_attributes attr
+      ON (log.base_attr_hash_id = attr.hash_id AND
+      log.peer_hash_id = attr.peer_hash_id)
+      JOIN bmp_peers p ON (log.peer_hash_id = p.hash_id)
+      JOIN bmp_routers rtr ON (p.router_hash_id = rtr.hash_id);
+    </createView>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-stats-bypeer-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpstatsbypeernxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpstatsbypeernxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmpstatsbypeernxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-stats-bypeer">
+
+    <createTable tableName="bmp_stats_by_peer" remarks="bmp stats by peer">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="peer_hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="interval_time" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="updates" type="bigint" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="withdraws" type="bigint" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createIndex tableName="bmp_stats_by_peer" indexName="bmp_stats_by_peer_peer_hash_id" unique="false">
+      <column name="peer_hash_id" />
+    </createIndex>
+    <createIndex tableName="bmp_stats_by_peer" indexName="bmp_stats_by_peer_peer_hash_id_interval_time" unique="true">
+      <column name="interval_time" />
+      <column name="peer_hash_id" />
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0.bmp-stats_by-peer-create-hypertable">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_by_peer';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_stats_by_peer', 'interval_time', chunk_time_interval => interval '2 day');
+    </sql>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-stats-byasn-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpstatsbyasnnxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpstatsbyasnnxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmpstatsbyasnnxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-stats-by-asn">
+
+    <createTable tableName="bmp_stats_by_asn" remarks="bmp stats by asn">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="peer_hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="origin_as" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="interval_time" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="updates" type="bigint" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="withdraws" type="bigint" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createIndex tableName="bmp_stats_by_asn" indexName="bmp_stats_by_asn_peer_hash_id" unique="false">
+      <column name="peer_hash_id" />
+    </createIndex>
+    <createIndex tableName="bmp_stats_by_asn" indexName="bmp_stats_by_asn_origin_as" unique="false">
+      <column name="origin_as" />
+    </createIndex>
+    <createIndex tableName="bmp_stats_by_asn" indexName="bmp_stats_by_asn_unique" unique="true">
+      <column name="interval_time" />
+      <column name="peer_hash_id" />
+      <column name="origin_as" />
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0.bmp-stats_by-asn-create-hypertable">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_by_asn';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_stats_by_asn', 'interval_time', chunk_time_interval => interval '2 day');
+    </sql>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-stats-byprefix-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpstatsbyprefixnxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpstatsbyprefixnxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmpstatsbyprefixnxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-stats-by-prefix">
+
+    <createTable tableName="bmp_stats_by_prefix" remarks="bmp stats by prefix">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="peer_hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix" type="varchar(40)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix_len" type="int">
+        <constraints nullable="false"/>
+      </column>
+      <column name="interval_time" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="updates" type="bigint" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="withdraws" type="bigint" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createIndex tableName="bmp_stats_by_prefix" indexName="bmp_stats_by_prefix_peer_hash_id" unique="false">
+      <column name="peer_hash_id" />
+    </createIndex>
+    <createIndex tableName="bmp_stats_by_prefix" indexName="bmp_stats_by_prefix_prefix" unique="false">
+      <column name="prefix" />
+    </createIndex>
+    <createIndex tableName="bmp_stats_by_prefix" indexName="bmp_stats_by_prefix_unique" unique="true">
+      <column name="interval_time" />
+      <column name="peer_hash_id" />
+      <column name="prefix" />
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0.bmp-stats_by-prefix-create-hypertable">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_by_prefix';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_stats_by_prefix', 'interval_time', chunk_time_interval => interval '2 day');
+    </sql>
+  </changeSet>
+
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-stats-peer-rib-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpstatspeerribnxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpstatspeerribnxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmpstatspeerribnxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-stats-peer-rib">
+
+    <createTable tableName="bmp_stats_peer_rib" remarks="bmp stats peer rib prefix counts">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="peer_hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="interval_time" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v4_prefixes" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v6_prefixes" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createIndex tableName="bmp_stats_peer_rib" indexName="bmp_stats_peer_rib_peer_hash_id" unique="false">
+      <column name="peer_hash_id" />
+    </createIndex>
+    <createIndex tableName="bmp_stats_peer_rib" indexName="bmp_stats_peer_rib_unique" unique="true">
+      <column name="interval_time" />
+      <column name="peer_hash_id" />
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0.bmp-stats-peer-rib-create-hypertable">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_peer_rib';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_stats_peer_rib', 'interval_time', chunk_time_interval => interval '1 month');
+    </sql>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-stats-ip-origins-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpstatsiporiginsnxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpstatsiporiginsnxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmpstatsiporiginsnxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-stats-ip-origins">
+
+    <createTable tableName="bmp_stats_ip_origins" remarks="bmp stats ip origins">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="asn" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="interval_time" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v4_prefixes" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v6_prefixes" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v4_with_rpki" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v6_with_rpki" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v4_with_irr" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v6_with_irr" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createIndex tableName="bmp_stats_ip_origins" indexName="bmp_stats_ip_origins_unique" unique="true">
+      <column name="interval_time" />
+      <column name="asn" />
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0.bmp-stats-ip-origins-create-hypertable">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_ip_origins';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_stats_ip_origins', 'interval_time', chunk_time_interval => interval '1 month');
+    </sql>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-rpki-info-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmprpkiinfonxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmprpkiinfonxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmprpkiinfonxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="27.1.0-bmp-rpki-info">
+
+    <createTable tableName="bmp_rpki_info" remarks="bmp rpki info">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix" type="varchar(40)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix_len" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix_len_max" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="origin_as" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="bmp_rpki_info" constraintName="pk_bmp_rpki_info"
+                   columnNames="prefix, prefix_len_max, origin_as"/>
+    <createIndex tableName="bmp_rpki_info" indexName="bmp_rpki_info_origin_as">
+      <column name="origin_as" />
+    </createIndex>
+  </changeSet>
+
+
+</databaseChangeLog>

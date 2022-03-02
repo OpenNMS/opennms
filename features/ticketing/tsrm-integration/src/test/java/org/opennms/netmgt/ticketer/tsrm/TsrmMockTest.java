@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,7 +36,10 @@ import org.opennms.api.integration.ticketing.Ticket;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.argThat;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -87,7 +90,12 @@ public class TsrmMockTest {
         incidentResponse.setINCIDENTMboKeySet(incidentMboKeyType);
         incidentMboKeyType.getINCIDENT().add(incidentKey);
 
-        when(port.createSHSIMPINC(argThat(new CreateIncidentArg()))).thenReturn(incidentResponse);
+        when(port.createSHSIMPINC(argThat(new ArgumentMatcher<CreateSHSIMPINCType>() {
+            @Override
+            public boolean matches(CreateSHSIMPINCType createSHSIMPINCType) {
+                return true;
+            }
+        }))).thenReturn(incidentResponse);
         port.createSHSIMPINC(createIncidentType);
 
         Ticket ticket = new Ticket();
@@ -111,7 +119,12 @@ public class TsrmMockTest {
         queryType.getINCIDENT().add(queryIncidentType);
         queryResponse.setSHSIMPINCSet(queryType);
 
-        when(port.querySHSIMPINC(argThat(new QueryIncidentArg()))).thenReturn(queryResponse);
+        when(port.querySHSIMPINC(argThat(new ArgumentMatcher<QuerySHSIMPINCType>() {
+            @Override
+            public boolean matches(QuerySHSIMPINCType querySHSIMPINCType) {
+                return true;
+            }
+        }))).thenReturn(queryResponse);
         port.querySHSIMPINC(queryIncident);
 
         Ticket ticket = m_ticketer.get(INCIDENT_ID);
@@ -120,23 +133,4 @@ public class TsrmMockTest {
 
         assertEquals(ticket.getId(), INCIDENT_ID);
     }
-
-    static class CreateIncidentArg
-            extends ArgumentMatcher<CreateSHSIMPINCType> {
-
-        @Override
-        public boolean matches(Object argument) {
-            return true;
-        }
-    }
-
-    static class QueryIncidentArg
-            extends ArgumentMatcher<QuerySHSIMPINCType> {
-
-        @Override
-        public boolean matches(Object argument) {
-            return true;
-        }
-    }
-
 }

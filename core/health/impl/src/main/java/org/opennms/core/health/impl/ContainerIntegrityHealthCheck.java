@@ -28,6 +28,8 @@
 
 package org.opennms.core.health.impl;
 
+import static org.opennms.core.health.api.HealthCheckConstants.BUNDLE;
+import static org.opennms.core.health.api.HealthCheckConstants.LOCAL;
 import static org.opennms.core.health.api.Status.Failure;
 import static org.opennms.core.health.api.Status.Starting;
 
@@ -40,6 +42,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.karaf.bundle.core.BundleInfo;
 import org.apache.karaf.bundle.core.BundleService;
 import org.opennms.core.health.api.Context;
@@ -85,6 +88,11 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
     }
 
     @Override
+    public List<String> getTags() {
+        return Arrays.asList(LOCAL, BUNDLE);
+    }
+
+    @Override
     public Response perform(Context context) {
         // Don't check within this delay period, because the container may not be started yet
         if (ManagementFactory.getRuntimeMXBean().getUptime() <= 10000) {
@@ -95,7 +103,7 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
         final Health health = new Health();
         for (Bundle b : bundleContext.getBundles()) {
             if (ignoreBundles.contains(b.getSymbolicName())) {
-                LOG.debug("Bundle {} with symbolic name {} is ignored while performing health:check", b.getBundleId(), b.getSymbolicName());
+                LOG.debug("Bundle {} with symbolic name {} is ignored while performing opennms:health-check", b.getBundleId(), b.getSymbolicName());
                 continue;
             }
             final BundleInfo info = bundleService.getInfo(b);
@@ -108,32 +116,32 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
                     if ((b.adapt(BundleRevision.class).getTypes() & BundleRevision.TYPE_FRAGMENT) != 0) {
                         break;
                     }
-                    health.add(new Response(Failure, "Bundle " + b.getBundleId() + " is resolved, but not active"));
+                    health.add(this, new Response(Failure, "Bundle " + b.getBundleId() + " is resolved, but not active"));
                     break;
                 // Waiting for dependencies
                 case Waiting:
                 case GracePeriod:
-                    health.add(new Response(Starting, "Bundle " + b.getBundleId() + " is waiting for dependencies"));
+                    health.add(this, new Response(Starting, "Bundle " + b.getBundleId() + " is waiting for dependencies"));
                     break;
                 // Installed, but not yet started
                 case Installed:
-                    health.add(new Response(Starting, "Bundle " + b.getBundleId() + " is not yet started"));
+                    health.add(this, new Response(Starting, "Bundle " + b.getBundleId() + " is not yet started"));
                     break;
                 // Starting
                 case Starting:
-                    health.add(new Response(Starting, "Bundle " + b.getBundleId() + " is starting"));
+                    health.add(this, new Response(Starting, "Bundle " + b.getBundleId() + " is starting"));
                     break;
                 // Stopping, Failed ur Unknown are considered Failures
                 case Stopping:
                 case Failure:
                 case Unknown:
-                    health.add(new Response(Failure, "Bundle " + b.getBundleId() + " is not started"));
+                    health.add(this, new Response(Failure, "Bundle " + b.getBundleId() + " is not started"));
                     break;
             }
         }
 
         // If there are some issues, we return the worst one, otherwise everything is okay
-        return health.getWorst().orElse(new Response(Status.Success));
+        return health.getWorst().map(Pair::getRight).orElse(new Response(Status.Success));
     }
 
     private List<String> parse(String bundlesToIgnore) {

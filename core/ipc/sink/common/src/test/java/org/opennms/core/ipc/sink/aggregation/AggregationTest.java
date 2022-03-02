@@ -56,6 +56,7 @@ import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.osgi.framework.BundleContext;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.RateLimiter;
 
 import io.opentracing.Tracer;
@@ -89,6 +90,11 @@ public class AggregationTest {
         @Override
         public Tracer getTracer() {
             return GlobalTracer.get();
+        }
+
+        @Override
+        public MetricRegistry getMetrics() {
+            return new MetricRegistry();
         }
 
     };

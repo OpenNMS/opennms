@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.flows</groupId>
     <artifactId>org.opennms.features.flows.rest</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.flows.rest</groupId>
@@ -67,7 +67,7 @@
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -1,0 +1,13 @@
+
+# TESTING: A histogram, which has a pretty complex representation in the text format
+# Notice all have timestamps.
+# HELP http_request_duration_seconds A histogram of the request duration.
+# TYPE http_request_duration_seconds histogram
+http_request_duration_seconds_bucket{mylabel="wotgorilla?",le="0.05"} 24054 123456789
+http_request_duration_seconds_bucket{mylabel="wotgorilla?",le="0.1"} 33444 123456789
+http_request_duration_seconds_bucket{mylabel="wotgorilla?",le="0.2"} 100392 123456789
+http_request_duration_seconds_bucket{mylabel="wotgorilla?",le="0.5"} 129389 123456789
+http_request_duration_seconds_bucket{mylabel="wotgorilla?",le="1"} 1.33988E5 123456789
+http_request_duration_seconds_bucket{mylabel="wotgorilla?",le="+Inf"} 144320.0 123456789
+http_request_duration_seconds_sum{mylabel="wotgorilla?"} 53423.0 123456789
+http_request_duration_seconds_count{mylabel="wotgorilla?"} 1.4432E5 123456789

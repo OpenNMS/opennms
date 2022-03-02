@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
+import org.opennms.netmgt.events.api.model.IValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.snmp.Definition;
@@ -45,8 +48,6 @@ import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Value;
 
 /**
  * Class for handling data passed as parms in a configureSNMP event.  Provides for
@@ -102,19 +103,19 @@ public class SnmpEventInfo {
     /**
      * <p>Constructor for SnmpEventInfo.</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
 	@SuppressWarnings("deprecation")
-	public SnmpEventInfo(Event event) {
+	public SnmpEventInfo(IEvent event) {
     	 String parmName = null;
-         Value parmValue = null;
+         IValue parmValue = null;
          String parmContent = null;
          
          if (!event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
              throw new IllegalArgumentException("Event is not an a \"configure SNMP\" event: "+event.toString());
          }
          	
-         for (Parm parm : event.getParmCollection()) {
+         for (IParm parm : event.getParmCollection()) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             if (parmValue == null) continue;

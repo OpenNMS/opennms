@@ -237,32 +237,32 @@
           <td valign="top" align="left">
             <%=buildPathSelect(newNotice.getDestinationPath())%>
           </td>
-         </tr>
-         <tr>
+        </tr>
+        <tr>
           <td width="10%" valign="top" align="left">
             <label>Text Message:</label>
           </td>
           <td valign="top" align="left">
             <textarea rows="3" class="form-control" name="textMsg"><%=(newNotice.getTextMessage()!=null ? WebSecurityUtils.sanitizeString(newNotice.getTextMessage()) : "")%></textarea>
           </td>
-         </tr>
-         <tr>
+        </tr>
+        <tr>
           <td width="10%" valign="top" align="left">
             <label>Short Message:</label>
           </td>
           <td valign="top" align="left">
             <textarea rows="1" class="form-control" name="numMsg"><%=WebSecurityUtils.sanitizeString(newNotice.getNumericMessage().orElse(""))%></textarea>
           </td>
-         </tr>
-         <tr>
+        </tr>
+        <tr>
           <td width="10%" valign="top" align="left">
             <label>Email Subject:</label>
           </td>
           <td valign="top" align="left">
             <input type="text" class="form-control" name="subject" value='<%=WebSecurityUtils.sanitizeString(newNotice.getSubject().orElse(""))%>'/>
           </td>
-         </tr>
-         <tr>
+        </tr>
+        <tr>
           <td width="10%" valign="top" align="left">
             <label>Special Values:</label>
           </td>
@@ -274,26 +274,31 @@
               <tr>
                 <td>%noticeid% = Notification ID number</td>
                 <td>%time% = Time sent</td>
-                <td>%severity% = Event severity</td>                          
+                <td>%severity% = Event severity</td>
               </tr>
               <tr>
                 <td>%nodelabel% = May be IP address or empty</td>
+                <td>%nodeid% = Database ID of node or empty</td>
+                <td>%foreignid% = Foreign Source ID of node or empty</td>
+              </tr>
+              <tr>
+                <td>%eventid% = Event ID, may be empty</td>
                 <td>%interface% = IP address, may be empty</td>
                 <td>%service% = Service name, may be empty</td>
               </tr>
               <tr>
-				<td>%eventid% = Event ID, may be empty</td>
-				<td>%parm[a_parm_name]% = Value of a named event parameter</td>
-				<td>%parm[#N]% = Value of the event parameter at index N</td>
-			  </tr>
-			  <tr>
-			    <td>%ifalias% = SNMP ifAlias of affected interface</td>
-			    <td>%interfaceresolve% = Reverse DNS name of interface IP address</td>
-               <td>%operinstruct% = Operator instructions from event definition</td>		     
-			  </tr>
+                <td>%ifalias% = SNMP ifAlias of affected interface</td>
+                <td>%parm[a_parm_name]% = Value of a named event parameter</td>
+                <td>%parm[#N]% = Value of the event parameter at index N</td>
+              </tr>
+              <tr>
+                <td>%interfaceresolve% = Reverse DNS name of interface IP address</td>
+                <td>%operinstruct% = Operator instructions from event definition</td>
+                <td>\${context:key|…} = node / interface / service meta-data</td>
+              </tr>
             </table>
           </td>
-         </tr>
+        </tr>
       </table>
         <div class="card-footer">
               <a class="btn btn-secondary" href="javascript:finish()">Finish</a>

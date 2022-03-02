@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.spring.BeanUtils;
@@ -37,24 +38,22 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableMap;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
     private final Logger logger = LoggerFactory.getLogger(AbstractVmwareMonitor.class);
-
-    protected static final String VMWARE_MANAGEMENT_SERVER_KEY = "vmwareManagementServer";
-    protected static final String VMWARE_MANAGED_ENTITY_TYPE_KEY = "vmwareManagedEntityType";
-    protected static final String VMWARE_MANAGED_OBJECT_ID_KEY = "vmwareManagedObjectId";
-    protected static final String VMWARE_MANAGEMENT_SERVER_USERNAME_KEY = "vmwareMangementServerUsername";
-    protected static final String VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY = "vmwareMangementServerPassword";
 
     /**
      * the node dao object for retrieving assets
      */
     private NodeDao m_nodeDao = null;
+
+    private TransactionTemplate m_transactionTemplate = null;
 
     /**
      * the config dao
@@ -71,38 +70,52 @@ public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
             m_vmwareConfigDao = BeanUtils.getBean("daoContext", "vmwareConfigDao", VmwareConfigDao.class);
         }
 
-        final OnmsNode onmsNode = m_nodeDao.get(svc.getNodeId());
-        if (onmsNode == null) {
-            throw new IllegalArgumentException("No node found with ID: " + svc.getNodeId());
+        if (m_transactionTemplate == null) {
+            m_transactionTemplate = BeanUtils.getBean("daoContext", "transactionTemplate", TransactionTemplate.class);
         }
 
-        // retrieve the assets
-        final String vmwareManagementServer = onmsNode.getAssetRecord().getVmwareManagementServer();
-        final String vmwareManagedEntityType = onmsNode.getAssetRecord().getVmwareManagedEntityType();
-        final String vmwareManagedObjectId = onmsNode.getForeignId();
+        final Map<String, Object> runtimeAttributes = new HashMap<>();
 
-        String vmwareMangementServerUsername = null;
-        String vmwareMangementServerPassword = null;
-        final Map<String, VmwareServer> serverMap = m_vmwareConfigDao.getServerMap();
-        if (serverMap == null) {
-            logger.error("Error getting vmware-config.xml's server map.");
-        } else {
-            final VmwareServer vmwareServer = serverMap.get(vmwareManagementServer);
-            if (vmwareServer == null) {
-                logger.error("Error getting credentials for VMware management server '{}'.", vmwareManagementServer);
-            } else {
-                vmwareMangementServerUsername = vmwareServer.getUsername();
-                vmwareMangementServerPassword = vmwareServer.getPassword();
+        m_transactionTemplate.execute(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus transactionStatus) {
+                final OnmsNode onmsNode = m_nodeDao.get(svc.getNodeId());
+                if (onmsNode == null) {
+                    throw new IllegalArgumentException("No node found with ID: " + svc.getNodeId());
+                }
+
+                // retrieve the assets
+
+                final String vmwareManagementServer = VmwareImporter.getManagementServer(onmsNode);
+                final String vmwareManagedEntityType = VmwareImporter.getManagedEntityType(onmsNode);
+
+                final String vmwareManagedObjectId = onmsNode.getForeignId();
+
+                String vmwareMangementServerUsername = null;
+                String vmwareMangementServerPassword = null;
+                final Map<String, VmwareServer> serverMap = m_vmwareConfigDao.getServerMap();
+                if (serverMap == null) {
+                    logger.error("Error getting vmware-config.xml's server map.");
+                } else {
+                    final VmwareServer vmwareServer = serverMap.get(vmwareManagementServer);
+                    if (vmwareServer == null) {
+                        logger.error("Error getting credentials for VMware management server '{}'.", vmwareManagementServer);
+                    } else {
+                        vmwareMangementServerUsername = vmwareServer.getUsername();
+                        vmwareMangementServerPassword = vmwareServer.getPassword();
+                    }
+                }
+
+                runtimeAttributes.put(VmwareImporter.METADATA_MANAGEMENT_SERVER, vmwareManagementServer);
+                runtimeAttributes.put(VmwareImporter.METADATA_MANAGED_ENTITY_TYPE, vmwareManagedEntityType);
+                runtimeAttributes.put(VmwareImporter.METADATA_MANAGED_OBJECT_ID, vmwareManagedObjectId);
+                runtimeAttributes.put(VmwareImporter.VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, vmwareMangementServerUsername);
+                runtimeAttributes.put(VmwareImporter.VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, vmwareMangementServerPassword);
+
+                return null;
             }
-        }
+        });
 
-        return new ImmutableMap.Builder<String, Object>()
-                .put(VMWARE_MANAGEMENT_SERVER_KEY, vmwareManagementServer)
-                .put(VMWARE_MANAGED_ENTITY_TYPE_KEY, vmwareManagedEntityType)
-                .put(VMWARE_MANAGED_OBJECT_ID_KEY, vmwareManagedObjectId)
-                .put(VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, vmwareMangementServerUsername)
-                .put(VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, vmwareMangementServerPassword)
-                .build();
+        return runtimeAttributes;
     }
-
 }

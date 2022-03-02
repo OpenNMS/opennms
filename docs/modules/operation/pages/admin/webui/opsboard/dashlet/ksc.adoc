@@ -1,0 +1,61 @@
+[[ksc]]
+= KSC Reports
+
+This dashlet shows an existing KSC report. 
+KSC Reports provide a way to generate prefabricated graphical views of collected data.
+
+This dashlet displays data from an existing link:https://opennms.discourse.group/t/ksc-report-configuration/2209[KSC report] in the xref:admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
+The view is exactly the same as the KSC report is built regarding order, columns, and time spans.
+Key SNMP Customized (KSC) reports shows SNMP performance data using prefabricated graph types.
+
+.KSC dashlet configuration options
+[options="header,autowidth", cols="1,2"]
+|===
+|Field
+|Description
+
+| Boost support
+| not available
+
+| KSC-Report
+| Name of the KSC report to show in this dashlet.
+|===
+
+== KSC Report Configuration
+
+Configure KSC reports through the UI in *Reports -> KSC Reports*. 
+
+Here is an example report entry that uses a custom index and graphs:
+[source, xml]
+----
+<Report id="7" title="GlassFish JVM Stats" show_timespan_button="true"
+        show_graphtype_button="true" graphs_per_line="2">
+  <Graph title="Instance1 Heap Usage" resourceId="node[1].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.heap"/>
+  <Graph title="Instance1 Non-Heap Usage" resourceId="node[1].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.nonheap"/>
+  <Graph title="Instance2 Heap Used" resourceId="node[2].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.heap"/>
+  <Graph title="Instance2 Non-Heap Used" resourceId="node[2].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.nonheap"/>
+</Report>
+----
+
+Valid options for timespan are: (See org.opennms.netmgt.config.KSC_PerformanceReportFactory.java:TIMESPAN_OPTIONS)
+
+[source, console]
+----
+  "1_hour", "2_hour", "4_hour", "6_hour", "8_hour", "12_hour",
+  "1_day", "2_day", "7_day", "1_month", "3_month", "6_month",
+  "1_year", "Today", "Yesterday", "Yesterday 9am-5pm",
+  "Yesterday 5pm-10pm", "This Week", "Last Week", "This Month",
+  "Last Month", "This Quarter", "Last Quarter", "This Year",
+  "Last Year"
+----
+
+Be sure to keep each `id` unique for each `<Report>`.`
+
+== Using KSC Reports
+
+The *KSC Reports* area on the right side of the main page of OpenNMS includes a drop-down menu where you can select the KSC reports you have configured.
+

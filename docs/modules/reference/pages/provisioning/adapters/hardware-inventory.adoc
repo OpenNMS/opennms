@@ -1,0 +1,110 @@
+[[hardware-inventory]]
+= Hardware Inventory
+
+{page-component-title} can be extended to import Entity-MIB information from SNMP agents to enrich node data.
+There are two types of Entity-MIBs.
+The first type is a generic implementation of https://tools.ietf.org/html/rfc4133[RFC 4133 ENTITY-MIB].
+The second type are vendor-specific Entity-MIBs, which some manufacturers provide.
+
+These Entity-MIBs provide dynamic attributes to describe device components.
+This includes information such as model number, description, serial number, and more.
+The optional hardware inventory extension of the provisiond service will add these fields to nodes in {page-component-title}.
+
+== Installation
+
+To use this feature you have to install the SNMP hardware inventory plugin from the repository.
+
+* For RPM-based distributions:
+** `yum install opennms-plugin-provisioning-snmp-hardware-inventory`
+* For Debian-based distributions:
+** `apt-get install opennms-plugin-provisioning-snmp-hardware-inventory`
+
+== Configuration
+
+Once enabled, the hardware inventory plugin collects the ENTITY-MIB::entPhysicalTable of all devices with no additional configuration.
+To collect inventory from devices that provide additional fields, you can specify which OIDs to use in the configuration file `$\{OPENNMS_HOME}/etc/snmp-hardware-inventory-adapter-configuration.xml`.
+This file includes support for the https://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?mibName=ENTITY-MIB[CISCO-ENTITY-MIB] as a starter example.
+
+Once you have enabled the plugin, the Provisiond service attempts to collect hardware inventory data when it refreshes requisitions.
+After synchronizing the requisition, you should see a `uei.opennms.org/internal/discovery/hardwareInventorySuccessful` event to confirm inventory was collected.
+This event is triggered only when the provisioning adapter detects changed hardware inventory for a node.
+If there is a problem retrieving or storing the inventory data, a `uei.opennms.org/internal/discovery/hardwareInventoryFailed` event will be sent instead.
+
+== Collecting custom inventory fields
+
+Any MIB column indexed by `entPhysicalIndex` can be added to the configuration file and the hardware inventory adapter will collect the value and store it for each entity that contains a non-null value for the custom attribute.
+The `hw-extension` element lets you group a list of Entity-MIB extensions defined in `mibObj` elements based on a sysOidMask of a node.
+If the system enterprise ID of the node matches the `sysOidMask` defined on the `hw-extension`, the `mibObj` entities inside are collected for populating the inventory.
+When a vendor provides the standard objects on a table other than `entPhysicalTable`, you can override any of the base attributes by specifying which attribute is to be overridden.
+
+.Example of importing custom vendor information
+[source, xml]
+----
+<hw-extension name="CISCO-ENTITY-ASSET-MIB" sysOidMask=".1.3.6.1.4.1.9.">
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.1"  type="string" alias="ceAssetOEMString" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.2"  type="string" alias="ceAssetSerialNumber" replace="entPhysicalSerialNum" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.3"  type="string" alias="ceAssetOrderablePartNumber" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.4"  type="string" alias="ceAssetHardwareRevision" replace="entPhysicalHardwareRev" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.5"  type="string" alias="ceAssetMfgAssyNumber" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.6"  type="string" alias="ceAssetMfgAssyRevision" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.7"  type="string" alias="ceAssetFirmwareID" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.8"  type="string" alias="ceAssetFirmwareRevision" replace="entPhysicalFirmwareRev" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.9"  type="string" alias="ceAssetSoftwareID" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.10" type="string" alias="ceAssetSoftwareRevision" replace="entPhysicalSoftwareRev" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.11" type="string" alias="ceAssetCLEI" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.12" type="string" alias="ceAssetAlias" />
+</hw-extension>
+----
+
+In this example, only the nodes that match the `sysOidMask .1.3.6.1.4.1.9` (Cisco devices) are candidates to discover the custom `mibObj` entities defined on the extension group.
+The definition of `ceAssetSerialNumber` has been configured to replace one of the base attributes `entPhysicalSerialNum` so the adapter will know to override the generic Entity-MIB attribute instead of creating a new custom attribute entry.
+
+== Viewing collected hardware inventory information
+
+To view inventory information collected for a node, click the "Hardware Info" link on the node's page in the Web UI.
+If the node has hardware inventory, {page-component-title} displays all collected fields.
+
+TIP: It is also possible to retrieve and update hardware inventory information via the xref:development:rest/nodes.adoc#nodes-rest[Nodes REST endpoint].
+See the REST documentation for more information.
+
+== Using hardware information in events and notifications
+
+A set of placeholders is available in {page-component-title} to enrich the content of the events, alarms, and notifications.
+Because of the hierarchical nature of the hardware entities, you must provide two fields to obtain the value of the required attribute.
+These two fields are either the `entPhysicalIndex` or the `entPhysicalName` and the name of the attribute to use.
+
+The `entPhysicalIndex` guarantees that you always get the same entity.
+Using `entPhysicalName` is not always a unique way to identify an entity, depending on the device manufacturer.
+When using the name, the first entity that matches the given `entPhysicalName` is used.
+
+Specify a regular expression to validate against the `entPhysicalName` by prefixing the field with a `~`.
+When using regular expression matching, the first attribute matched is used.
+
+Sample placeholders naming structure:
+
+* %hardware[\{entPhysicalIndex}:\{attributeName}]%
+* %hardware[\{entPhysicalName}:\{attributeName}]%
+* %hardware[~\{regexOverEntPhysicalName}:\{attributeName}]%
+
+.Example event definition
+[source, xml]
+----
+<event>
+    <uei>uei.opennms.org/hardware/nodeStatus</uei>
+    <event-label>Hardware Information</event-label>
+    <descr>
+        &lt;p&gt;Hardware information for %nodelabel%.&lt;/p&gt;
+        &lt;p&gt;Model Name: %hardware[Chassis:entPhysicalModelName]% &lt;/p&gt;
+        &lt;p&gt;Description: %hardware[9:entPhysicalDescr]% &lt;/p&gt;
+        &lt;p&gt;Memory Used: %hardware[~^NPE.*:ceExtNVRAMUsed]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>&lt;p&gt;Hardware information for %nodelabel%.&lt;/p&gt;</logmsg>
+    <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" />
+</event>
+----
+
+The event definition above uses the following placeholders:
+
+* `%hardware[Chassis:entPhysicalModelName]%` to obtain the model name of the Chassis entity based on the `entPhysicalName`.
+* `%hardware[9:entPhysicalDescr]%` to obtain the base description of the entity identified with an `entPhysicalIndex` of `9`.
+* `%hardware[~^NPE.*:ceExtNVRAMUsed]%` to obtain the vendor attribute called `ceExtNVRAMUsed` for the first entity that matches an `entPhysicalName` starting with `NPE`.

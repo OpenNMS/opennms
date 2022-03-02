@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.syslogd.ProcessMatch;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
@@ -164,7 +165,7 @@ public class SyslogReloadDaemonIT implements InitializingBean {
         System.setProperty("opennms.home", opennmsHome.getAbsolutePath());
         EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/internal/reloadDaemonConfig", "syslog-test");
         eventBuilder.addParam("daemonName", "Syslogd");
-        m_syslogd.handleReloadEvent(eventBuilder.getEvent());
+        m_syslogd.handleReloadEvent(ImmutableMapper.fromMutableEvent(eventBuilder.getEvent()));
         SyslogdTestUtils.waitForSyslogdToReload();
         // test new port change in config 
         assertEquals(10515, m_config.getSyslogPort());

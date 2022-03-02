@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.flows.elastic;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
@@ -43,7 +44,7 @@ public class NodeDocument {
     private Integer nodeId;
 
     @SerializedName("categories")
-    private List<String> categories;
+    private List<String> categories = new LinkedList<>();
 
     public void setForeignSource(String foreignSource) {
         this.foreignSource = foreignSource;

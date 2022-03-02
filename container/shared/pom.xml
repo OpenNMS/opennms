@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>25.0.0-SNAPSHOT</version>
+        <version>29.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -90,10 +90,13 @@
 
                         <!-- OPENNMS: Add our enhancements to the container -->
                         <feature>karaf-extender</feature>
-                        <feature>scv</feature>
+                        <feature>scv-api</feature>
+                        <feature>scv-jceks-impl</feature>
+                        <feature>scv-shell</feature>
 
                         <!-- OPENNMS: Additional tools -->
                         <feature>hawtio-offline</feature>
+                        <feature>jolokia</feature>
                     </bootFeatures>
                     <installedBundles>
                         <!-- override for security (see etc/overrides.properties) -->
@@ -122,16 +125,16 @@
                         <goals><goal>run</goal></goals>
                         <configuration>
                             <target>
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance.bat" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell.bat" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/etc/startup.properties" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/system/org/apache/karaf/features/framework/${karafVersion}/framework-${karafVersion}-features.xml" />
+                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance" />
+                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance.bat" />
+                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell" />
+                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell.bat" />
+                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/etc/startup.properties" />
+                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/system/org/apache/karaf/features/framework/${karafVersion}/framework-${karafVersion}-features.xml" />
                                 <delete>
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-api/1.10.2" />
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2/1.10.2" />
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-logback/1.10.2" />
+                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-api/2.0.9" />
+                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2/2.0.9" />
+                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-logback/2.0.9" />
                                 </delete>
                             </target>
                         </configuration>
@@ -175,6 +178,10 @@
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -188,22 +195,9 @@
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
-                file, and features will installed into the system directory if specified in 
-                the plugin configuration -->
-            <groupId>org.apache.karaf.features</groupId>
-            <artifactId>spring</artifactId>
-            <version>${karafVersion}</version>
-            <classifier>features</classifier>
-            <type>xml</type>
-            <scope>runtime</scope>
-            <exclusions>
                 <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -211,16 +205,41 @@
             <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
                 file, and features will installed into the system directory if specified in 
                 the plugin configuration -->
-            <groupId>org.apache.karaf.features</groupId>
-            <artifactId>spring-legacy</artifactId>
-            <version>${karafVersion}</version>
-            <classifier>features</classifier>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>spring</classifier>
             <type>xml</type>
             <scope>runtime</scope>
             <exclusions>
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
+                file, and features will installed into the system directory if specified in 
+                the plugin configuration -->
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>spring-legacy</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

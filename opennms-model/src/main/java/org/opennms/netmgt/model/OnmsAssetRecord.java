@@ -379,31 +379,6 @@ public class OnmsAssetRecord implements Serializable {
     private OnmsGeolocation m_geolocation = new OnmsGeolocation();
 
     /**
-     * VMware managed Object ID
-     */
-    private String m_vmwareManagedObjectId;
-
-    /**
-     * VMware managed entity Type (virtualMachine | hostSystem)
-     */
-    private String m_vmwareManagedEntityType;
-
-    /**
-     * VMware management Server
-     */
-    private String m_vmwareManagementServer;
-
-    /**
-     * VMware composite field for topology information
-     */
-    private String m_vmwareTopologyInfo;
-
-    /**
-     * VMware managed entity state
-     */
-    private String m_vmwareState;
-
-    /**
      * default constructor
      */
     public OnmsAssetRecord() {
@@ -1681,118 +1656,6 @@ public class OnmsAssetRecord implements Serializable {
             m_geolocation.setLatitude(latitude);
     }
 
-    /**
-     * <p>getVmwareManagedEntityType</p>
-     * 
-     * Set the VMware management entity type defines if the machine is a virtual machine or a host system
-     *
-     * @return a {@link java.lang.String} object
-     */
-    @Column(name = "vmwareManagedEntityType")
-    public String getVmwareManagedEntityType() {
-        return m_vmwareManagedEntityType;
-    }
-
-    /**
-     * <p>setVmwareManagedEntityType</p>
-     * 
-     * Set the VMware management entity type defines if the machine is a virtual machine or a host system
-     *
-     * @param vmwareManagedEntityType a {@link java.lang.String} object
-     */
-    public void setVmwareManagedEntityType(final String vmwareManagedEntityType) {
-        m_vmwareManagedEntityType = vmwareManagedEntityType;
-    }
-
-    /**
-     * <p>getVmwareManagedObjectId</p>
-     * 
-     * Get the VMware managed object ID as a unique identifier for VMware API
-     *
-     * @return a {@link java.lang.String} object
-     */
-    @Column(name = "vmwareManagedObjectId")
-    public String getVmwareManagedObjectId() {
-        return m_vmwareManagedObjectId;
-    }
-
-    /**
-     * <p>setVmwareManagedObjectId</p>
-     * 
-     * Set the VMware managed object ID as a unique identifier for VMware API
-     */
-    public void setVmwareManagedObjectId(final String vmwareManagedObjectId) {
-        m_vmwareManagedObjectId = vmwareManagedObjectId;
-    }
-
-    /**
-     * <p>getVmwareManagementServer</p>
-     * 
-     * Get the vCenter host or ip address
-     *
-     * @return a {@link java.lang.String} object
-     */
-    @Column(name = "vmwareManagementServer")
-    public String getVmwareManagementServer() {
-        return m_vmwareManagementServer;
-    }
-
-    /**
-     * <p>setVmwareManagementServer</p>
-     * 
-     * Set the vCenter host or ip address
-     *
-     * @param vmwareManagementServer a {@link java.lang.String} object
-     */
-    public void setVmwareManagementServer(final String vmwareManagementServer) {
-        m_vmwareManagementServer = vmwareManagementServer;
-    }
-
-    /**
-     * <p>getVmwareState</p>
-     * 
-     * Get the VMware managed entity state
-     *
-     * @return a {@link java.lang.String} object
-     */
-    @Column(name = "vmwareState")
-    public String getVmwareState() {
-        return m_vmwareState;
-    }
-
-    /**
-     * <p>setVmwareState</p>
-     * 
-     * Set the VMware managed entity state
-     *
-     * @param vmwareState a {@link java.lang.String} object
-     */
-    public void setVmwareState(final String vmwareState) {
-        m_vmwareState = vmwareState;
-    }
-
-    /**
-     * <p>getVmwareTopologyInfo</p>
-     * 
-     * Get the VMware topology information
-     *
-     * @return a {@link java.lang.String} object
-     */
-    @Column(name = "vmwareTopologyInfo")
-    public String getVmwareTopologyInfo() {
-        return m_vmwareTopologyInfo;
-    }
-
-    /**
-     * <p>setVmwareTopologyInfo</p>
-     * 
-     * Set the VMware topology information
-     *
-     * @param vmwareTopologyInfo a {@link java.lang.String} object
-     */
-    public void setVmwareTopologyInfo(final String vmwareTopologyInfo) {
-        m_vmwareTopologyInfo = vmwareTopologyInfo;
-    }
 
     /**
      * {@inheritDoc}
@@ -1862,11 +1725,7 @@ public class OnmsAssetRecord implements Serializable {
         .add("admin", getAdmin())
         .add("snmpcommunity", getSnmpcommunity())
         .add("rackunitheight", getRackunitheight())
-        .add("vmwareManagedObjectId", getVmwareManagedObjectId())
-        .add("vmwareManagedEntityType", getVmwareManagedEntityType())
-        .add("vmwareManagementServer", getVmwareManagementServer())
-        .add("vmwareTopologyInfo", getVmwareTopologyInfo())
-        .add("vmwareState", getVmwareState()).toString();
+        .toString();
     }
 
     /**

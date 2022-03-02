@@ -9,10 +9,8 @@
       <uei>uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>
       <event-label>OpenNMS-defined trap event: SNMP_Cold_Start</event-label>
       <descr>&lt;p>A coldStart trap signifies that the sending protocol entity is reinitializing itself such that the
-            agent's configuration or the protocol
-            entity implementation may be altered.&lt;/p></descr>
-      <logmsg dest="logndisplay">Agent Up with Possible Changes (coldStart Trap) enterprise:%id% (%id%)
-            args(%parm[##]%):%parm[all]%
+            agent's configuration or the protocol entity implementation may be altered.&lt;/p></descr>
+      <logmsg dest="logndisplay">Agent Up with Possible Changes (coldStart Trap)
         </logmsg>
       <severity>Normal</severity>
    </event>
@@ -28,8 +26,7 @@
       <descr>&lt;p>A warmStart trap signifies that the sending protocol entity is reinitializing itself such that
             neither the agent configuration nor the
             protocol entity implementation is altered.&lt;/p></descr>
-      <logmsg dest="logndisplay">Agent Up with No Changes (warmStart Trap) enterprise:%id% (%id%)
-            args(%parm[##]%):%parm[all]%
+      <logmsg dest="logndisplay">Agent Up with No Changes (warmStart Trap)
         </logmsg>
       <severity>Normal</severity>
    </event>
@@ -48,8 +45,7 @@
             affected interface. The name of the
             interface can be retrieved via an snmpget of .1.3.6.1.2.1.2.2.1.2.INST, where INST is the instance returned
             with the trap.&lt;/p></descr>
-      <logmsg dest="donotpersist">Agent Interface Down (linkDown Trap) enterprise:%id% (%id%) on interface
-            %parm[#1]%
+      <logmsg dest="donotpersist">Agent Interface Down (linkDown Trap)
         </logmsg>
       <severity>Minor</severity>
       <!-- Removed this alarm in preference to the translated version -->
@@ -64,11 +60,13 @@
             &lt;p>IfDescr: %parm[ifDescr]% &lt;/p>
             &lt;p>IfName: %parm[ifName]% &lt;/p>
             &lt;p>IfAlias: %parm[ifAlias]% &lt;/p></descr>
-      <logmsg dest="logndisplay">Agent Interface Down (linkDown Trap) on interface index:%parm[#1]%; ifDescr:
-            %parm[ifDescr]%; ifName:%parm[ifName]%; ifAlias:%parm[ifAlias]%
+      <logmsg dest="logndisplay">Agent Interface Down (linkDown Trap)
         </logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1"/>
+       <!-- reduce alarms from traps and polls into a single alarm -->
+       <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false">
+           <update-field field-name="severity" update-on-reduction="true"/>
+       </alarm-data>
    </event>
    <event>
       <mask>
@@ -85,7 +83,7 @@
             for the affected interface. The name of
             the interface can be retrieved via an snmpget of .1.3.6.1.2.1.2.2.1.2.INST, where INST is the instance
             returned with the trap.&lt;/p></descr>
-      <logmsg dest="donotpersist">Agent Interface Up (linkUp Trap) enterprise:%id% (%id%) on interface %parm[#1]%
+      <logmsg dest="donotpersist">Agent Interface Up (linkUp Trap)
         </logmsg>
       <severity>Normal</severity>
       <!-- Removed this alarm in preference to the translated version -->
@@ -100,11 +98,11 @@
             &lt;p>IfDescr: %parm[ifDescr]% &lt;/p>
             &lt;p>IfName: %parm[ifName]% &lt;/p>
             &lt;p>IfAlias: %parm[ifAlias]% &lt;/p></descr>
-      <logmsg dest="logndisplay">Agent Interface Up (linkUp Trap) on interface index:%parm[#1]%;
-            ifDescr:%parm[ifDescr]%; ifName:%parm[ifName]%; IfAlias:%parm[ifAlias]%
+      <logmsg dest="logndisplay">Agent Interface Up (linkUp Trap)
         </logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/translator/traps/SNMP_Link_Down:%dpname%:%nodeid%:%parm[#1]%"/>
+       <!-- reduce alarms from traps and polls into a single alarm -->
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[#1]"/>
    </event>
    <event>
       <mask>
@@ -118,8 +116,7 @@
       <descr>&lt;p>An authentication failure trap signifies that the sending protocol entity is the addressee of a
             protocol message that is not properly
             authenticated.&lt;/p></descr>
-      <logmsg dest="logndisplay">Incorrect Community Name (authenticationFailure Trap) enterprise:%id% (%id%)
-            args(%parm[##]%):%parm[all]%
+      <logmsg dest="logndisplay">Incorrect Community Name (authenticationFailure Trap)
         </logmsg>
       <severity>Warning</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
@@ -138,7 +135,7 @@
             peer relationship no longer obtains. The data passed with the event are The name and value of the ifIndex
             egpNeighAddr for the affected
             neighbor.&lt;/p></descr>
-      <logmsg dest="logndisplay">EGP Neighbor Down (egpNeighborLoss Trap) enterprise:%id% (%id%) neighbor %parm[#1]%
+      <logmsg dest="logndisplay">EGP Neighbor Down (egpNeighborLoss Trap)
         </logmsg>
       <severity>Warning</severity>
    </event>

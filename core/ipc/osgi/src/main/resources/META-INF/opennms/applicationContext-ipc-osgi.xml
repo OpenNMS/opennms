@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+  <context:annotation-config />
+
+
+  <bean id="osgiRpcServer" class="org.opennms.core.ipc.osgi.OsgiIpcManager" primary="true">
+  </bean>
+
+  <bean id="osgiTwinPublisher" class="org.opennms.core.ipc.twin.osgi.OsgiTwinPublisher" primary="true">
+  </bean>
+
+  <bean id="identity" class="org.opennms.features.distributed.identity.impl.OpenNMSIdentityImpl"/>
+  <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl">
+    <constructor-arg ref="identity"/>
+    <constructor-arg ref="tracerRegistry"/>
+    <constructor-arg ref="twinMetricRegistry"/>
+  </bean>
+
+  <onmsgi:service interface="org.opennms.core.ipc.twin.common.LocalTwinSubscriber" ref="localTwinSubscriber">
+    <onmsgi:service-properties>
+      <entry key="registration.export" value="true" />
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <onmsgi:service  interface="org.opennms.core.ipc.twin.api.TwinSubscriber" ref="localTwinSubscriber">
+    <onmsgi:service-properties>
+      <entry key="registration.export" value="true" />
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <bean id="osgiLocalDispatcherFactory" class="org.opennms.core.ipc.osgi.OsgiLocalDispatcherFactory" >
+    <property name="metrics" ref="osgiLocalSinkMetricRegistry"/>
+  </bean>
+
+
+  <!-- Sink Metrics -->
+  <bean id="osgiLocalSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+  <onmsgi:service ref="osgiLocalSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+    <onmsgi:service-properties>
+      <entry>
+        <key><value>name</value></key>
+        <value>Osgi Sink Producer</value>
+      </entry>
+      <entry>
+        <key><value>description</value></key>
+        <value>Sink Producer Metrics on OpenNMS</value>
+      </entry>
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <!-- Twin Metrics -->
+
+  <bean id="twinMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+  <onmsgi:service ref="twinMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+    <onmsgi:service-properties>
+      <entry>
+        <key><value>name</value></key>
+        <value>Grpc Twin metrics</value>
+      </entry>
+      <entry>
+        <key><value>description</value></key>
+        <value>Grpc Twin metrics on OpenNMS</value>
+      </entry>
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+    <constructor-arg ref="twinMetricRegistry"/>
+  </bean>
+
+  <bean id="metricRegistryDomainedJmxReporterBuilder" factory-bean="metricRegistryJmxReporterBuilder" factory-method="inDomain">
+    <constructor-arg value="org.opennms.core.ipc.twin.publisher"/>
+  </bean>
+
+  <bean id="metricRegistryJmxReporter"
+        factory-bean="metricRegistryJmxReporterBuilder"
+        factory-method="build"
+        init-method="start"
+        destroy-method="stop" />
+
+</beans>

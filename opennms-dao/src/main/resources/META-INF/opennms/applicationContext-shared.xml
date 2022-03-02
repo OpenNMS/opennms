@@ -42,6 +42,8 @@
                 <value>org.opennms.netmgt.flows</value>
                 <value>org.opennms.netmgt.enlinkd</value>
                 <value>org.opennms.netmgt.endpoints</value>
+                <value>org.opennms.netmgt.graph</value>
+                <value>org.opennms.netmgt.telemetry.protocols.bmp.persistence.api</value>
             </list>
         </property>
         <!--  property name="schemaUpdate" value="true">
@@ -246,16 +248,6 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" ref="monitoringLocationDao" />
-
-    <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate">
-        <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.LocationMonitorDao" ref="locationMonitorDao" />
-
-    <bean id="scanReportDao" class="org.opennms.netmgt.dao.hibernate.ScanReportDaoHibernate">
-        <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.ScanReportDao" ref="scanReportDao" />
 
     <!-- Filter DAO -->
     <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,11 +32,14 @@ package org.opennms.netmgt.xml.event;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import org.opennms.netmgt.events.api.model.IAlarmData;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -116,6 +119,23 @@ public class AlarmData implements Serializable {
         super();
     }
 
+    public static AlarmData copyFrom(IAlarmData source) {
+        if (source == null) {
+            return null;
+        }
+
+        AlarmData alarmData = new AlarmData();
+        alarmData.setReductionKey(source.getReductionKey());
+        alarmData.setAlarmType(source.hasAlarmType() ? source.getAlarmType() : null);
+        alarmData.setClearKey(source.getClearKey());
+        alarmData.setAutoClean(source.hasAutoClean() ? source.getAutoClean() : null);
+        alarmData.setX733AlarmType(source.getX733AlarmType());
+        alarmData.setX733ProbableCause(source.hasX733ProbableCause() ? source.getX733ProbableCause() : null);
+        alarmData.getUpdateFieldList().addAll(
+                source.getUpdateFieldList().stream().map(UpdateField::copyFrom).collect(Collectors.toList()));
+        alarmData.setManagedObject(ManagedObject.copyFrom(source.getManagedObject()));
+        return alarmData;
+    }
 
     public void deleteAlarmType(
     ) {

@@ -376,6 +376,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testPrometheusConfigFiles() {
+        testConfigFile("prometheus-datacollection-config.xml");
+    }
+
+    @Test
     public void testProvisiondConfiguration() {
         testConfigFile("provisiond-configuration.xml");
     }
@@ -454,6 +459,16 @@ public class ConfigTesterTest {
      */
     public void testSnmpAssetAdapterConfiguration() {
         ignoreConfigFile("snmp-asset-adapter-configuration.xml");
+    }
+
+    @Test
+    public void testSnmpMetadataConfiguration() {
+        testConfigFile("snmp-metadata-adapter-configuration.xml");
+    }
+
+    @Test
+    public void testGeoIpConfiguration() {
+        testConfigFile("geoip-adapter-configuration.xml");
     }
 
     @Test
@@ -618,6 +633,11 @@ public class ConfigTesterTest {
     @Test
     public void testElasticCredentialsConfig() {
         ignoreConfigFile("elastic-credentials.xml");
+    }
+
+    @Test
+    public void testStaticSearchActionsConfig() {
+        ignoreConfigFile("search-actions.xml");
     }
 
     @Test

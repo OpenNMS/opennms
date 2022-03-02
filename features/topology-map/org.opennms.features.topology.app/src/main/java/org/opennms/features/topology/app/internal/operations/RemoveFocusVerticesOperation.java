@@ -35,9 +35,9 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.WrappedVertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.CriteriaUtils;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.WrappedVertexHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -72,7 +72,7 @@ public class RemoveFocusVerticesOperation implements Constants, Operation {
 			return false;
 		}
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
-		final WrappedVertexHopCriteria wrappedVertexHopCriteria = VertexHopGraphProvider.getWrappedVertexHopCriteria(graphContainer);
+		final WrappedVertexHopCriteria wrappedVertexHopCriteria = CriteriaUtils.getWrappedVertexHopCriteria(graphContainer);
 		if (wrappedVertexHopCriteria.isEmpty()) {
 			return false;
 		}

@@ -1,0 +1,42 @@
+
+= Business service definition
+
+The status of service monitors and any kind of alarm can be used to drive the operational status of a business service.
+A business service is defined with the following components:
+
+* Business service name: a unique name used to identify the business service
+* Edges: a set of elements on which this business service relies, which can include other business services or reduction keys.
+* Reduce function: function used to aggregate the operational status from all the edges.
+   Specific functions may take additional parameters.
+* Attributes: optional key/value pairs to tag or enrich the business service with additional information.
+
+Each business service can contain a list of optional key/value attributes.
+Use these to identify or tag the business service, and may be referenced in other workflows.
+These attributes do not affect the dependencies or the status calculation of the business service.
+
+TIP: You can use attributes to filter business services in Ops Board dashlets.
+
+Use the *Manage Business Services* option on the system admin page to manage and model the business services and their hierarchy.
+Administrator permissions are required to define business services.
+
+.Managing business services with the business service editor
+image::bsm/01_bsm-editor.png[]
+
+(1) Create a new business service definition.
+
+(2) Collapse tree view for all business services in the view.
+
+(3) Expand tree view for all business services in the view.
+
+(4) Reload all business services in the view with current business services from the system.
+
+(5) Reload the business service monitoring daemon to use the business service definition as configured.
+
+(6) Show business service dependency hierarchy as tree view.
+
+(7) Show current business service, with dependencies, in the topology UI.
+
+(8) Edit and delete existing business service definitions.
+
+As shown in figure <<ga-bsm-editor, Managing Business Services with the Business Service Editor>> the business services can be created or changed.
+The hierarchy is created by assigning an existing business service as child service.

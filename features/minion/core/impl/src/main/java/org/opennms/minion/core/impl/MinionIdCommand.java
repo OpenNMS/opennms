@@ -32,7 +32,7 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.distributed.core.shell.AbstractIdCommand;
 
-@Command(scope = "minion", name = "id", description="Shows the id of the current instance.")
+@Command(scope = "opennms", name = "id", description="Shows the id of the current instance.")
 @Service
 public class MinionIdCommand extends AbstractIdCommand {
 

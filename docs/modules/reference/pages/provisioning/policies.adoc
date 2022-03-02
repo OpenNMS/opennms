@@ -1,0 +1,15 @@
+
+[[ref-policies]]
+= Policies
+
+This section describes all available built-in xref:operation:provisioning/introduction.adoc[provisioning] policies.
+You can configure them to allow node modifications or change provisioning behavior to meet the needs of your environment.
+
+For information on how to extend the functionality of these policies, see the xref:development:development.adoc#development[Development section] to contribute to the project.
+
+== Common policy parameters
+
+The matchBehavior action is a boolean control that determines how the optional parameters will be evaluated.
+Setting this parameter’s value to `ALL_PARAMETERS` causes Provisiond to evaluate each optional parameter with boolean AND logic and the value `ANY_PARAMETERS` causes OR logic to be applied.
+
+String values are assumed to be a substring match, unless the parameter is prefixed with `~` to indicate the policy should evaluate as a regular expression.

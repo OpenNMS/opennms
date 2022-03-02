@@ -56,8 +56,6 @@ public class TelemetryAdapterRegistryImplTest {
 
     // Dummy Adapter implementation
     private static class DummyAdapter implements Adapter {
-        @Override
-        public void setConfig(AdapterDefinition adapterConfig) {}
         @Override public void handleMessageLog(TelemetryMessageLog messageLog) { }
         @Override public void destroy() { }
     }
@@ -99,6 +97,11 @@ public class TelemetryAdapterRegistryImplTest {
             final Adapter adapter = registry.getService(new AdapterDefinition() {
                 @Override
                 public String getName() {
+                    return DummyAdapter.class.getName();
+                }
+
+                @Override
+                public String getFullName() {
                     return DummyAdapter.class.getName();
                 }
 

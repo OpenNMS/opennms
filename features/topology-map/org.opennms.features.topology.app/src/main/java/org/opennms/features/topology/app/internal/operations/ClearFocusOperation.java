@@ -34,7 +34,7 @@ import java.util.Set;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopologyUI;
 
@@ -48,8 +48,8 @@ public class ClearFocusOperation implements Operation {
     @Override
     public void execute(List<VertexRef> targets, OperationContext operationContext) {
         final GraphContainer graphContainer = operationContext.getGraphContainer();
-        final Set<VertexHopGraphProvider.VertexHopCriteria> focusCriteria = graphContainer.findCriteria(VertexHopGraphProvider.VertexHopCriteria.class);
-        for (VertexHopGraphProvider.VertexHopCriteria eachFocusCriteria : focusCriteria) {
+        final Set<VertexHopCriteria> focusCriteria = graphContainer.findCriteria(VertexHopCriteria.class);
+        for (VertexHopCriteria eachFocusCriteria : focusCriteria) {
             graphContainer.removeCriteria(eachFocusCriteria);
         }
         graphContainer.redoLayout();

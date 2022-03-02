@@ -1,8 +1,0 @@
-
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-[[ga-elasticsearch-alarm-history]]
-==== Alarm History
-
-See <<ga-alarm-history, Alarm History>>.

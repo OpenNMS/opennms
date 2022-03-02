@@ -33,7 +33,6 @@ import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
@@ -72,7 +71,6 @@ import net.jradius.packet.attribute.AttributeList;
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-@Distributable
 public final class RadiusAuthMonitor extends ParameterSubstitutingMonitor {
 	
     private static final Logger LOG = LoggerFactory.getLogger(RadiusAuthMonitor.class);

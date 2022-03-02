@@ -47,7 +47,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 
 import com.google.common.base.Strings;
 
-@Command(scope = "provision", name = "import-requisition", description = "Import the requisition from given url")
+@Command(scope = "opennms", name = "import-requisition", description = "Import the requisition from given url")
 @Service
 public class ImportRequisition implements Action {
 
@@ -57,7 +57,7 @@ public class ImportRequisition implements Action {
     @Reference
     private EventForwarder eventForwarder;
 
-    @Option(name = "-r", aliases = "--rescan", description = "Specify rescanExisting value, valid values : 'yes', 'no', 'dbonly'")
+    @Option(name = "-r", aliases = "--rescan", description = "Specify rescanExisting value, valid values : 'true', 'false', 'dbonly'")
     private String rescanExisting;
 
     @Argument(index = 0, name = "type", description = "Type", required = true)
@@ -79,7 +79,7 @@ public class ImportRequisition implements Action {
         String url = builder.build().toString();
         eventBuilder.addParam(EventConstants.PARM_URL, url);
         if (!Strings.isNullOrEmpty(rescanExisting)) {
-            List<String> validValues = Arrays.asList("yes", "dbonly", "no");
+            List<String> validValues = Arrays.asList("true", "false", "dbonly");
             if(validValues.contains(rescanExisting)) {
                 eventBuilder.addParam(EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
             } else {

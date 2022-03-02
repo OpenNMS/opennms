@@ -32,10 +32,12 @@ import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.firs
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.get;
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getString;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.bson.BsonDocument;
+import org.bson.BsonValue;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils;
 
@@ -61,7 +63,8 @@ public class SFlow implements Flow {
         }
 
         public Long getSequenceNumber() {
-            return get(document, "sequence_number")
+            return first(get(document, "sequence_number", "source_id_index"),
+                         get(document, "sequence_number"))
                     .map(v -> v.asInt64().getValue())
                     .orElse(0L);
         }
@@ -69,10 +72,17 @@ public class SFlow implements Flow {
 
     private final Header header;
     private final BsonDocument document;
+    private final Instant receivedAt;
 
-    public SFlow(final Header header, final BsonDocument document) {
+    public SFlow(final Header header, final BsonDocument document, final Instant receivedAt) {
         this.header = header;
         this.document = Objects.requireNonNull(document);
+        this.receivedAt = Objects.requireNonNull(receivedAt);
+    }
+
+    @Override
+    public long getReceivedAt() {
+        return this.receivedAt.toEpochMilli();
     }
 
     @Override
@@ -92,7 +102,17 @@ public class SFlow implements Flow {
 
     @Override
     public Direction getDirection() {
-        return Direction.INGRESS;
+        final Optional<BsonValue> source = first(get(document, "source_id", "source_id_index"),
+                get(document, "source_id"));
+
+        final Optional<BsonValue> input = first(get(document, "input", "value"),
+                get(document, "input"));
+
+        if (source.isPresent() && input.isPresent() && !Objects.equals(source, input)) {
+            return Direction.EGRESS;
+        } else {
+            return Direction.INGRESS;
+        }
     }
 
     @Override
@@ -172,14 +192,16 @@ public class SFlow implements Flow {
 
     @Override
     public Integer getInputSnmp() {
-        return get(document, "input")
+        return first(get(document, "input", "value"),
+                     get(document, "input"))
                 .map(v -> v.asInt64().getValue() == 0x3FFFFFFFL ? null : (int) v.asInt64().getValue())
                 .orElse(null);
     }
 
     @Override
     public Integer getOutputSnmp() {
-        return get(document, "output")
+        return first(get(document, "output", "value"),
+                     get(document, "output"))
                 .map(v -> v.asInt64().getValue() == 0x3FFFFFFFL ? null : (int) v.asInt64().getValue())
                 .orElse(null);
     }

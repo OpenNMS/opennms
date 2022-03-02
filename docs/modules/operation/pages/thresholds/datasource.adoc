@@ -1,0 +1,19 @@
+
+[[datasource-determine]]
+= Determine the Data Source
+Creating a threshold requires the name of the data source generating the metrics on which you want to threshold.
+Data source names for the SNMP protocol appear in `etc/snmp-graph.properties.d/`.
+
+. To determine the name of the data source, navigate to the *Resource Graphs* screen.
+For example,
+.. *Reports>Resource Graphs*.
+.. Select one of the listed resources.
+.. Under *SNMP Node Data*, select *Node-level Performance Data* and choose *Graph Selection*.
+. Scroll through the graphs to find the title of the graph that displays the metric on which you want to threshold.
+For example, "Number of Processes" or "System Uptime":
++
+image::thresholding/Graphs.png[]
+
+. Go to `etc/snmp-graph.properties.d/` and search for the title of the graph (for example, "System Uptime").
+
+. Note the name of the data source, and type it in the *Datasource* field when you xref:thresholds/create-thresh.adoc#threshold-create[create your threshold].

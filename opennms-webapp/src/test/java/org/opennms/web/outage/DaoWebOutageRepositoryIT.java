@@ -181,10 +181,10 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
     @Transactional
     public void testCountMatchingOutages(){
         int count = m_daoOutageRepo.countMatchingOutages(new OutageCriteria());
-        assertEquals(3, count);
+        assertEquals(5, count);
         
         count = m_daoOutageRepo.countMatchingOutages(new OutageCriteria(new RegainedServiceDateBeforeFilter(new Date())));
-        assertEquals(1, count);
+        assertEquals(2, count);
     }
 
     @Test
@@ -197,14 +197,14 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
         createNodeEventAndOutage("Minneapolis", "nodeE", "172.16.20.30", "ICMP");
 
         Outage[] outage1 = m_daoOutageRepo.getMatchingOutages(new OutageCriteria());
-        assertEquals(8, outage1.length);
+        assertEquals(10, outage1.length);
 
         Outage[] outage2 = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new LocationFilter("Minneapolis")));
         assertEquals(3, outage2.length);
         assertTrue(Arrays.stream(outage2).allMatch(o -> o.getLocation().equals("Minneapolis")));
 
         Outage[] outage3 = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new NegativeLocationFilter("Minneapolis")));
-        assertEquals(5, outage3.length);
+        assertEquals(7, outage3.length);
         assertTrue(Arrays.stream(outage3).allMatch(o -> !o.getLocation().equals("Minneapolis")));
     }
 
@@ -212,10 +212,10 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetMatchingOutages(){
         Outage[] outage = m_daoOutageRepo.getMatchingOutages(new OutageCriteria());
-        assertEquals(3, outage.length);
+        assertEquals(5, outage.length);
         
         outage = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new RegainedServiceDateBeforeFilter(new Date())));
-        assertEquals(1, outage.length);
+        assertEquals(2, outage.length);
         
         outage = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new OutageIdFilter(1)));
         assertEquals(1, outage.length);
@@ -233,13 +233,13 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetMatchingOutagesByForeignSource() {
         Outage[] outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new ForeignSourceFilter("imported:")));
-        assertEquals(3, outages.length);
+        assertEquals(5, outages.length);
         outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new ForeignSourceFilter("DOESNT_EXIST")));
         assertEquals(0, outages.length);
         outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new NegativeForeignSourceFilter("imported:")));
         assertEquals(0, outages.length);
         outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new NegativeForeignSourceFilter("DOESNT_EXIST")));
-        assertEquals(3, outages.length);
+        assertEquals(5, outages.length);
     }
     
     @Test
@@ -250,9 +250,9 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
         outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new NodeFilter(Integer.MAX_VALUE, null)));
         assertEquals(0, outages.length);
         outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new NegativeNodeFilter(m_dbPopulator.getNode2().getId(), null)));
-        assertEquals(2, outages.length);
+        assertEquals(4, outages.length);
         outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new NegativeNodeFilter(Integer.MAX_VALUE, null)));
-        assertEquals(3, outages.length);
+        assertEquals(5, outages.length);
     }
     
     @Test

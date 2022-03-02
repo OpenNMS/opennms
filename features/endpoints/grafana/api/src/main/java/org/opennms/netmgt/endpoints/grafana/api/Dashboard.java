@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,6 +39,7 @@ public class Dashboard implements PanelContainer {
     private String title;
     private String uri;
     private String url;
+    private String timezone;
     private List<Panel> panels = new ArrayList<>();
     private List<String> tags = new ArrayList<>();
     private DashboardMetadata meta;
@@ -75,6 +76,14 @@ public class Dashboard implements PanelContainer {
         this.url = url;
     }
 
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
+
     @Override
     public List<Panel> getPanels() {
         return panels;
@@ -107,6 +116,7 @@ public class Dashboard implements PanelContainer {
                 .add("title", title)
                 .add("uri", uri)
                 .add("url", url)
+                .add("timezone", timezone)
                 .add("panels", panels)
                 .add("tags", tags)
                 .add("meta", meta)

@@ -1,0 +1,7 @@
+{{- /* Upon updating this file please ensure that the schema minion-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+{{if exists "/ipc/grpc/host" -}}
+!opennms-core-ipc-jms
+!minion-jms
+opennms-core-ipc-grpc-client
+{{end -}}

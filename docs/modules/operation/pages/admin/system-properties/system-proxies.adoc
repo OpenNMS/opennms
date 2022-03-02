@@ -1,0 +1,42 @@
+
+[[system-proxies]]
+= Configuring system proxies
+
+You can use system proxy settings with certain {page-component-title} components via the `use-system-proxy` or `useSystemProxy` parameters.
+To configure system proxy servers, set some or all of the following properties:
+
+[options="header, autowidth" cols="1,3,1"]
+|===
+| Property
+| Description
+| Default
+
+| http.proxyHost
+| Hostname or IP address of proxy server to use for plain HTTP requests.
+| None
+
+| http.proxyPort
+| TCP port of proxy server to use for plain HTTP requests.
+| 3128
+
+| https.proxyHost
+| Hostname or IP address of proxy server to use for HTTPS requests.
+| None
+
+| https.proxyPort
+| TCP port of proxy server to use for HTTPS requests.
+| 3128
+
+| http.nonProxyHosts
+| Pipe-separated list of hostnames or IP addresses which bypass HTTP proxying.
+| None
+
+| https.nonProxyHosts
+| Pipe-separated list of hostnames or IP addresses which bypass HTTPS proxying.
+| None
+|===
+
+TIP: Depending on the JVM in use, the properties `http.proxyUser`, `http.proxyPassword`, and their `https.*` equivalents may enable the use of proxy servers that require authentication.
+
+WARNING: Setting these properties may have unintended effects.
+Use with care.

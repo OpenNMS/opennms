@@ -55,7 +55,7 @@ import com.google.common.collect.ImmutableMap;
 
 /**
  * Verifies the list of available detectors by parsing the output
- * of the 'provision:list-detectors' command issued in the Karaf shell.
+ * of the 'opennms:list-detectors' command issued in the Karaf shell.
  *
  * We try running this command several times since the feature providing
  * the 'list-detectors' command the feature(s) providing the detectors
@@ -138,14 +138,14 @@ public class DetectorsCommandIT {
         try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin")) {
             // List the detectors
             PrintStream pipe = sshClient.openShell();
-            pipe.println("provision:list-detectors");
+            pipe.println("opennms:list-detectors");
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
 
             // Parse the output
             String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
 
-            shellOutput = StringUtils.substringAfter(shellOutput, "provision:list-detectors");
+            shellOutput = StringUtils.substringAfter(shellOutput, "opennms:list-detectors");
             LOG.info("Detectors output: {}", shellOutput);
             Map<String, String> detectorMap = new HashMap<String, String>();
             for (String detector : shellOutput.split("\\r?\\n")) {

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Exit immediately if anything returns non-zero
+set -e
+
 # Exit script if a statement returns a non-true return value.
 set -o errexit
 

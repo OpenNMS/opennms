@@ -89,16 +89,6 @@ public class OnmsMonitoringLocation implements Serializable {
     private String m_monitoringArea;
 
     /**
-     * The polling packages associated with this monitoring location.
-     */
-    private List<String> m_pollingPackageNames;
-
-    /**
-     * The collection packages associated with this monitoring location.
-     */
-    private List<String> m_collectionPackageNames;
-
-    /**
      * The geolocation (address) of this monitoring location.
      */
     private String m_geolocation;
@@ -129,28 +119,14 @@ public class OnmsMonitoringLocation implements Serializable {
      * 
      * @param locationName
      * @param monitoringArea
-     * @param pollingPackageName
      */
     public OnmsMonitoringLocation(final String locationName, final String monitoringArea) {
         this(locationName, monitoringArea, null, null, null, null, null, null);
     }
 
-    /**
-     * This constructor is only used during unit testing.
-     * 
-     * @param locationName
-     * @param monitoringArea
-     * @param pollingPackageName
-     */
-    public OnmsMonitoringLocation(final String locationName, final String monitoringArea, final String pollingPackageName) {
-        this(locationName, monitoringArea, null, new String[] { pollingPackageName }, null, null, null, null);
-    }
-
-    public OnmsMonitoringLocation(final String locationName, final String monitoringArea, final String[] pollingPackageNames, final String[] collectionPackageNames, final String geolocation, final Float latitude, final Float longitude, final Long priority, final String... tags) {
+    public OnmsMonitoringLocation(final String locationName, final String monitoringArea, final String geolocation, final Float latitude, final Float longitude, final Long priority, final String... tags) {
         m_locationName = locationName;
         m_monitoringArea = monitoringArea;
-        m_pollingPackageNames = (pollingPackageNames == null ? Collections.emptyList() : Arrays.asList(pollingPackageNames));
-        m_collectionPackageNames = (collectionPackageNames == null ? Collections.emptyList() : Arrays.asList(collectionPackageNames));
         m_geolocation = geolocation;
         m_latitude = latitude;
         m_longitude = longitude;
@@ -179,32 +155,6 @@ public class OnmsMonitoringLocation implements Serializable {
 
     public void setMonitoringArea(final String monitoringArea) {
         m_monitoringArea = monitoringArea;
-    }
-
-    @XmlElementWrapper(name="polling-package-names")
-    @XmlElement(name="polling-package-name")
-    @ElementCollection
-    @JoinTable(name="monitoringLocationsPollingPackages", joinColumns = @JoinColumn(name="monitoringLocationId"))
-    @Column(name="packageName")
-    public List<String> getPollingPackageNames() {
-        return m_pollingPackageNames;
-    }
-
-    public void setPollingPackageNames(final List<String> pollingPackageNames) {
-        m_pollingPackageNames = pollingPackageNames;
-    }
-
-    @XmlElementWrapper(name="collection-package-names")
-    @XmlElement(name="collection-package-name")
-    @ElementCollection
-    @JoinTable(name="monitoringLocationsCollectionPackages", joinColumns = @JoinColumn(name="monitoringLocationId"))
-    @Column(name="packageName")
-    public List<String> getCollectionPackageNames() {
-        return m_collectionPackageNames;
-    }
-
-    public void setCollectionPackageNames(final List<String> collectionPackageNames) {
-        m_collectionPackageNames = collectionPackageNames;
     }
 
     @XmlAttribute(name="geolocation")
@@ -285,8 +235,6 @@ public class OnmsMonitoringLocation implements Serializable {
         result = prime * result + ((m_geolocation == null) ? 0 : m_geolocation.hashCode());
         result = prime * result + ((m_locationName == null) ? 0 : m_locationName.hashCode());
         result = prime * result + ((m_monitoringArea == null) ? 0 : m_monitoringArea.hashCode());
-        result = prime * result + ((m_pollingPackageNames == null || m_pollingPackageNames.size() == 0) ? 0 : m_pollingPackageNames.hashCode());
-        result = prime * result + ((m_collectionPackageNames == null || m_collectionPackageNames.size() == 0) ? 0 : m_collectionPackageNames.hashCode());
         result = prime * result + ((m_priority == null) ? 0 : m_priority.hashCode());
         result = prime * result + ((m_tags == null || m_tags.size() == 0) ? 0 : m_tags.hashCode());
         return result;
@@ -310,8 +258,6 @@ public class OnmsMonitoringLocation implements Serializable {
             .append(getGeolocation(), other.getGeolocation())
             .append(getLocationName(), other.getLocationName())
             .append(getMonitoringArea(), other.getMonitoringArea())
-            .append(getPollingPackageNames(), other.getPollingPackageNames())
-            .append(getCollectionPackageNames(), other.getCollectionPackageNames())
             .append(getPriority(), other.getPriority())
             .append(getTags(), other.getTags())
             .isEquals();
@@ -321,13 +267,10 @@ public class OnmsMonitoringLocation implements Serializable {
     public String toString() {
         return "OnmsMonitoringLocation [location-name=" + m_locationName +
                 ", monitoring-area=" + m_monitoringArea +
-                ", polling-package-names=" + m_pollingPackageNames +
-                ", collection-package-names=" + m_collectionPackageNames +
                 ", geolocation=" + m_geolocation +
                 ", latitude=" + m_latitude +
                 ", longitude=" + m_longitude +
                 ", priority=" + m_priority +
                 ", tags=" + m_tags + "]";
     }
-
 }

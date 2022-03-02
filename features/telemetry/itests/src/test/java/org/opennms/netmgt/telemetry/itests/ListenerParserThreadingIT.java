@@ -130,9 +130,9 @@ public class ListenerParserThreadingIT implements AsyncDispatcher<TelemetryMessa
     }
 
     @Override
-    public CompletableFuture<TelemetryMessage> send(TelemetryMessage message) {
+    public CompletableFuture<DispatchStatus> send(TelemetryMessage message) {
         messagesSent.incrementAndGet();
-        return CompletableFuture.completedFuture(message);
+        return CompletableFuture.completedFuture(DispatchStatus.DISPATCHED);
     }
 
     @Override

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -102,7 +102,7 @@
                   <classifier>daemon</classifier>
                   <type>tar.gz</type>
                   <outputDirectory>${project.build.directory}/unpacked/base-assembly</outputDirectory>
-                  <includes>bin/_lib.sh,bin/find-java.sh,bin/ensure-user-ping.sh</includes>
+                  <includes>bin/_lib.sh,bin/find-java.sh,bin/ensure-user-ping.sh,bin/fix-permissions,bin/update-package-permissions</includes>
                 </artifactItem>
               </artifactItems>
             </configuration>

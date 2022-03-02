@@ -35,6 +35,7 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,7 +43,6 @@ import org.bson.BsonDocument;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowConverter;
 
 import com.google.common.io.Files;
 
@@ -63,7 +63,7 @@ public class SFlowConverterTest {
         assertThat(bsonDocument.getDocument("data").getArray("samples"), notNullValue());
         assertThat(bsonDocument.getDocument("data").getArray("samples").size(), is(7));
 
-        final List<Flow> flows = new SFlowConverter().convert(bsonDocument);
+        final List<Flow> flows = new SFlowConverter().convert(bsonDocument, Instant.now());
 
         // There are six flows int the document, but two are skipped, because they don't contain IPv{4,6} information
         assertThat(flows.size(), is(5));
@@ -86,9 +86,10 @@ public class SFlowConverterTest {
         assertThat(bsonDocument.getDocument("data").getArray("samples"), notNullValue());
         assertThat(bsonDocument.getDocument("data").getArray("samples").size(), is(7));
 
-        final List<Flow> flows = new SFlowConverter().convert(bsonDocument);
+        final List<Flow> flows = new SFlowConverter().convert(bsonDocument, Instant.now());
 
         assertThat(compareValues(flows, 4, 17), is(true));
+        assertThat(compareValues(flows, 4, 42), is(true));
         assertThat(compareValues(flows, 17, 4), is(true));
         assertThat(compareValues(flows, 5, null), is(true));
         assertThat(compareValues(flows, null, 18), is(true));

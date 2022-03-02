@@ -166,6 +166,72 @@ public class AuthenticationIT implements InitializingBean {
         Assert.assertTrue(roles.contains("ROLE_USER"));
     }
 
+    @Test
+    public void testAuthenticateWithoutAsterisk16() {
+        org.springframework.security.core.Authentication authentication = new UsernamePasswordAuthenticationToken("no-asterisk-16", "AwLwLaTK3rxFezg3");
+        org.springframework.security.core.Authentication authenticated = m_provider.authenticate(authentication);
+        assertNotNull("authenticated Authentication object not null", authenticated);
+        Collection<? extends GrantedAuthority> authorities = authenticated.getAuthorities();
+        assertNotNull("GrantedAuthorities should not be null", authorities);
+        assertEquals("GrantedAuthorities size", 1, authorities.size());
+        assertContainsAuthority(Authentication.ROLE_USER, authorities);
+    }
+
+    @Test
+    public void testAuthenticateWithoutAsterisk24() {
+        org.springframework.security.core.Authentication authentication = new UsernamePasswordAuthenticationToken("no-asterisk-24", "1nIzDqoRw39OSqrvSFv1cImC");
+        org.springframework.security.core.Authentication authenticated = m_provider.authenticate(authentication);
+        assertNotNull("authenticated Authentication object not null", authenticated);
+        Collection<? extends GrantedAuthority> authorities = authenticated.getAuthorities();
+        assertNotNull("GrantedAuthorities should not be null", authorities);
+        assertEquals("GrantedAuthorities size", 1, authorities.size());
+        assertContainsAuthority(Authentication.ROLE_USER, authorities);
+    }
+
+    @Test
+    public void testAuthenticateWithoutAsterisk32() {
+        org.springframework.security.core.Authentication authentication = new UsernamePasswordAuthenticationToken("no-asterisk-32", "KfXH1bHM6KocQpKNYtoIDYSDl5avIACb");
+        org.springframework.security.core.Authentication authenticated = m_provider.authenticate(authentication);
+        assertNotNull("authenticated Authentication object not null", authenticated);
+        Collection<? extends GrantedAuthority> authorities = authenticated.getAuthorities();
+        assertNotNull("GrantedAuthorities should not be null", authorities);
+        assertEquals("GrantedAuthorities size", 1, authorities.size());
+        assertContainsAuthority(Authentication.ROLE_USER, authorities);
+    }
+
+    @Test
+    public void testAuthenticateWithAsterisk16() {
+        org.springframework.security.core.Authentication authentication = new UsernamePasswordAuthenticationToken("with-asterisk-16", "wm=5&#0;*ME%[;y%");
+        org.springframework.security.core.Authentication authenticated = m_provider.authenticate(authentication);
+        assertNotNull("authenticated Authentication object not null", authenticated);
+        Collection<? extends GrantedAuthority> authorities = authenticated.getAuthorities();
+        assertNotNull("GrantedAuthorities should not be null", authorities);
+        assertEquals("GrantedAuthorities size", 1, authorities.size());
+        assertContainsAuthority(Authentication.ROLE_USER, authorities);
+    }
+
+    @Test
+    public void testAuthenticateWithAsterisk24() {
+        org.springframework.security.core.Authentication authentication = new UsernamePasswordAuthenticationToken("with-asterisk-24", "z[+O`q@*I77=%&b,FEICJ,P&");
+        org.springframework.security.core.Authentication authenticated = m_provider.authenticate(authentication);
+        assertNotNull("authenticated Authentication object not null", authenticated);
+        Collection<? extends GrantedAuthority> authorities = authenticated.getAuthorities();
+        assertNotNull("GrantedAuthorities should not be null", authorities);
+        assertEquals("GrantedAuthorities size", 1, authorities.size());
+        assertContainsAuthority(Authentication.ROLE_USER, authorities);
+    }
+
+    @Test
+    public void testAuthenticateWithAsterisk32() {
+        org.springframework.security.core.Authentication authentication = new UsernamePasswordAuthenticationToken("with-asterisk-32", ",X-.yT`'J>=7l$=z85*91Dx_ujzHR\\Q;");
+        org.springframework.security.core.Authentication authenticated = m_provider.authenticate(authentication);
+        assertNotNull("authenticated Authentication object not null", authenticated);
+        Collection<? extends GrantedAuthority> authorities = authenticated.getAuthorities();
+        assertNotNull("GrantedAuthorities should not be null", authorities);
+        assertEquals("GrantedAuthorities size", 1, authorities.size());
+        assertContainsAuthority(Authentication.ROLE_USER, authorities);
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);

@@ -33,7 +33,6 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.SslSocketWrapper;
-import org.opennms.netmgt.poller.Distributable;
 
 import com.novell.ldap.LDAPConnection;
 
@@ -47,7 +46,6 @@ import com.novell.ldap.LDAPConnection;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  */
-@Distributable
 final public class LdapsMonitor extends LdapMonitor {
 
     @Override

@@ -72,6 +72,11 @@
         </Route>
       </Routes>
     </Routing>
+    <Console name="console" target="SYSTEM_OUT" follow="true">
+      <PatternLayout>
+        <pattern>[%p] %m%n</pattern>
+      </PatternLayout>
+    </Console>
   </appenders>
 
   <loggers>
@@ -80,6 +85,15 @@
     <logger name="org.opennms.netmgt.collectd.DefaultCollectdInstrumentation" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
     </logger>
+
+    <!-- write startup/shutdown logs to stdout or output.log as well as manager.log -->
+    <logger name="org.opennms.netmgt.vmmgr.Invoker" additivity="true" level="INFO">
+      <appender-ref ref="console"/>
+    </logger>
+    <logger name="org.opennms.netmgt.vmmgr.Manager" additivity="true" level="INFO">
+      <appender-ref ref="console"/>
+    </logger>
+
     <!-- 
       Set the threshold for individual loggers that may be too chatty at the default 
       level for their prefix.
@@ -192,6 +206,7 @@
         <KeyValuePair key="oss-qosd"             value="DEBUG" />
         <KeyValuePair key="oss-qosdrx"           value="DEBUG" />
         <KeyValuePair key="passive"              value="DEBUG" />
+        <KeyValuePair key="perspectivepollerd"   value="DEBUG" />
         <KeyValuePair key="poller"               value="DEBUG" />
         <KeyValuePair key="provisiond"           value="DEBUG" />
         <KeyValuePair key="queued"               value="DEBUG" />
@@ -204,7 +219,6 @@
         <KeyValuePair key="snmp-poller"          value="DEBUG" />
         <KeyValuePair key="syslogd"              value="DEBUG" />
         <KeyValuePair key="telemetryd"           value="DEBUG" />
-        <KeyValuePair key="threshd"              value="DEBUG" />
         <KeyValuePair key="tl1d"                 value="DEBUG" />
         <KeyValuePair key="trapd"                value="DEBUG" />
         <KeyValuePair key="trouble-ticketer"     value="DEBUG" />

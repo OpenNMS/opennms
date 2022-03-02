@@ -1,0 +1,49 @@
+
+= XmpCollector
+
+The XmpCollector collects performance metrics via the X/Open Management Protocol API (XMP).
+
+== Collector facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.protocols.xmp.collector.XmpCollector`
+| Package             | opennms-plugin-protocol-xmp
+| Supported on Minion | No
+| Configuration Files | $OPENNMS_HOME/etc/xmp-datacollection-config.xml
+|===
+
+== Configuration and use
+
+.Collector-specific parameters for the XmpCollector
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+3+| *Required*
+
+| collection
+| The name of the XMP Collection to use.
+| n/a
+
+| port
+| The TCP port on which the agent communicates.
+| n/a
+
+3+| *Optional*
+
+| authenUser
+| The username for authenticating to the agent.
+| n/a
+
+| timeout
+| The timeout when communicating with the agent.
+| 3000
+
+| retry
+| The number of retries permitted when timeout expires.
+| 0
+|===

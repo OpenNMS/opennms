@@ -53,6 +53,6 @@ public class ForwardParserFactory implements ParserFactory {
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        return new ForwardParser(parserDefinition.getName(), dispatcher);
+        return new ForwardParser(parserDefinition.getFullName(), dispatcher);
     }
 }

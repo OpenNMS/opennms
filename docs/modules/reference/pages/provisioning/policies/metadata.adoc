@@ -1,0 +1,9 @@
+= Metadata Policies
+
+== Node metadata policy
+
+The Metadata Policy lets you set node-level metadata in the context `requisition` for provisioned nodes.
+
+== Interface metadata policy
+
+The Metadata Policy lets you set interface-level metadata in the context `requisition` for provisioned nodes.

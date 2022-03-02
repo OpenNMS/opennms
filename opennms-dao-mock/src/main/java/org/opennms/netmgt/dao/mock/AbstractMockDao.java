@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.soa.ServiceRegistry;
+import org.opennms.netmgt.dao.api.AlarmAssociationDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
@@ -75,6 +76,7 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
     private MonitoredServiceDao m_monitoredServiceDao;
     private ServiceTypeDao m_serviceTypeDao;
     private AlarmDao m_alarmDao;
+    private AlarmAssociationDao m_alarmAssociationDao;
     private EventDao m_eventDao;
     private NodeDao m_nodeDao;
 
@@ -292,6 +294,14 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
             Assert.notNull(m_alarmDao);
         }
         return m_alarmDao;
+    }
+
+    protected AlarmAssociationDao getAlarmAssociationDao() {
+        if (m_alarmAssociationDao == null) {
+            m_alarmAssociationDao = getServiceRegistry().findProvider(AlarmAssociationDao.class);
+            Assert.notNull(m_alarmAssociationDao);
+        }
+        return m_alarmAssociationDao;
     }
 
     protected NodeDao getNodeDao() {

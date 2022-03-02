@@ -28,9 +28,15 @@
 
 package org.opennms.features.apilayer.model.mappers;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.mapstruct.Mapper;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.integration.api.v1.model.immutables.ImmutableNode;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
@@ -42,5 +48,10 @@ public interface NodeMapper {
     default String mapLocation(OnmsMonitoringLocation onmsMonitoringLocation) {
         return onmsMonitoringLocation == null ? LocationUtils.DEFAULT_LOCATION_NAME :
                 LocationUtils.getEffectiveLocationName(onmsMonitoringLocation.getLocationName());
+    }
+
+    default List<String> mapCategories(Set<OnmsCategory> categories) {
+        return categories == null ? Collections.emptyList() :
+                categories.stream().map(OnmsCategory::getName).collect(Collectors.toList());
     }
 }

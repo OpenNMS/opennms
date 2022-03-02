@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>minion-parent</artifactId>
-        <version>25.0.0-SNAPSHOT</version>
+        <version>29.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -27,10 +27,10 @@
                         <configuration>
                             <descriptors>
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.apache.karaf.features/spring-legacy/${karafVersion}/xml/features</descriptor>
                                 <!-- Add OpenNMS features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</descriptor>
+                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
                                 <!-- Add Minion features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</descriptor>
                                 <!-- Additional tools -->
@@ -39,12 +39,9 @@
                             <!-- To ensure that all JAR files for a feature 
                                 are included in the repository tar.gz file, add the feature to this list. -->
                             <features>
-                                <feature>opennms-core-ipc-rpc-jms</feature>
-                                <feature>opennms-core-ipc-rpc-aws-sqs</feature>
-                                <feature>opennms-core-ipc-rpc-kafka</feature>
-                                <feature>opennms-core-ipc-sink-camel</feature>
-                                <feature>opennms-core-ipc-sink-kafka</feature>
-                                <feature>opennms-core-ipc-sink-aws-sqs</feature>
+                                <feature>opennms-core-ipc-jms</feature>
+                                <feature>opennms-core-ipc-kafka</feature>
+                                <feature>opennms-core-ipc-twin-shell</feature>
                                 <feature>opennms-core-ipc-sink-offheap</feature>
                                 <feature>opennms-syslogd-listener-javanet</feature>
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
@@ -65,6 +62,15 @@
                                 <feature>opennms-core-tracing-jaeger</feature>
                                 <feature>opennms-dnsresolver-shell</feature>
                                 <feature>opennms-dnsresolver-netty</feature>
+                                <feature>opennms-core-ipc-grpc-client</feature>
+                                <feature>opennms-distributed-core-impl</feature>
+                                <feature>scv-api</feature>
+                                <feature>scv-shell</feature>
+                                <feature>scv-jceks-impl</feature>
+                                <feature>dominion-grpc-client</feature>
+                                <feature>dominion-secure-credentials-vault</feature>
+                                <featue>minion-rest-service</featue>
+                                <feature>minion-health-check</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -141,6 +147,20 @@
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>spring</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>spring-legacy</classifier>
             <type>xml</type>
         </dependency>
         <dependency>
@@ -272,6 +292,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.telemetry.protocols.bmp</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.bmp.parser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
             <artifactId>org.opennms.features.telemetry.protocols.netflow.parser</artifactId>
             <version>${project.version}</version>
@@ -279,6 +304,11 @@
         <dependency>
             <groupId>org.opennms.features.telemetry.protocols.sflow</groupId>
             <artifactId>org.opennms.features.telemetry.protocols.sflow.parser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.telemetry</groupId>
+            <artifactId>org.opennms.features.telemetry.shell</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -292,11 +322,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.core.ipc.rpc</groupId>
-            <artifactId>org.opennms.core.ipc.rpc.aws-sqs-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.core.ipc.sink.camel</groupId>
             <artifactId>org.opennms.core.ipc.sink.camel.client</artifactId>
             <version>${project.version}</version>
@@ -304,11 +329,6 @@
         <dependency>
             <groupId>org.opennms.core.ipc.sink.kafka</groupId>
             <artifactId>org.opennms.core.ipc.sink.kafka.client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
-            <artifactId>org.opennms.core.ipc.sink.aws.sqs.client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -361,6 +381,71 @@
         <dependency>
             <groupId>org.opennms.features.dnsresolver</groupId>
             <artifactId>org.opennms.features.dnsresolver.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.grpc</groupId>
+            <artifactId>org.opennms.core.ipc.grpc.client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.twin.grpc</groupId>
+            <artifactId>org.opennms.core.ipc.twin.grpc.subscriber</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.twin.jms</groupId>
+            <artifactId>org.opennms.core.ipc.twin.jms.subscriber</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.twin</groupId>
+            <artifactId>org.opennms.core.ipc.twin.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.twin.kafka</groupId>
+            <artifactId>org.opennms.core.ipc.twin.kafka.subscriber</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.grpc</groupId>
+            <artifactId>org.opennms.core.ipc.grpc.common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.grpc</groupId>
+            <artifactId>org.opennms.core.grpc.osgi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>dominion-grpc-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.dominion-grpc-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>minion-rest-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>health-check</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

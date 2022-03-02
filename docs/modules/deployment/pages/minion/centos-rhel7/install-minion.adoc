@@ -1,0 +1,66 @@
+.Install OpenJDK 11 JRE runtime
+[source, console]
+----
+sudo yum -y install java-11-openjdk-headless
+----
+
+ifeval::["{page-component-title}" == "Horizon"]
+include::../../repos/rhel-centos/horizon-rhel7.adoc[]
+endif::[]
+
+ifeval::["{page-component-title}" == "Meridian"]
+include::../../repos/rhel-centos/meridian-rhel7.adoc[]
+endif::[]
+
+.Install the {page-component-title} Minion package
+[source, console]
+----
+ifeval::["{page-component-title}" == "Horizon"]
+sudo yum -y install opennms-minion
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo yum -y install meridian-minion
+endif::[]
+----
+
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+     For this reason, we recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
+
+.Disable auto updates for {page-component-title} Minion
+[source, console]
+----
+sudo yum -y install yum-utils
+ifeval::["{page-component-title}" == "Horizon"]
+sudo yum-config-manager --disable opennms-repo-stable-*
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo yum-config-manager --disable meridian
+endif::[]
+----
+
+.Verify directory structure with the tree command
+[source, console]
+----
+sudo yum -y install tree
+tree /opt/minion -L 1
+----
+
+.Directory structure after successful installation
+[source, output]
+----
+/opt/minion
+├── bin
+├── COPYING
+├── deploy
+├── etc
+├── lib
+├── repositories
+└── system
+----
+
+.Enable {page-component-title} Minion on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now minion
+----

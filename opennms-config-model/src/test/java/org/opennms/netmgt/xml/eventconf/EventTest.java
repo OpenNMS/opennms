@@ -70,9 +70,13 @@ public class EventTest extends XmlTestNoCastor<Event> {
 		Maskelement maskelement2 = new Maskelement();
 		maskelement2.setMename("specific");
 		maskelement2.addMevalue("1");
+		Maskelement maskelement3 = new Maskelement();
+		maskelement3.setMename("trapoid");
+		maskelement3.addMevalue(".1.3.6.1.2.1.10.166.3.0.5");
 		mask0.addMaskelement(maskelement0);
 		mask0.addMaskelement(maskelement1);
 		mask0.addMaskelement(maskelement2);
+		mask0.addMaskelement(maskelement3);
 		Varbind varbind = new Varbind();
 		varbind.setVbnumber(5);
 		varbind.addVbvalue("0");
@@ -85,6 +89,7 @@ public class EventTest extends XmlTestNoCastor<Event> {
 		snmp0.setSpecific(3);
 		snmp0.setIdtext("Test");
 		snmp0.setCommunity("public");
+		snmp0.setTrapOID(".1.3.6.1.4.1.9.0.6");
 		event1.setSnmp(snmp0);
 		Correlation correlation0 = new Correlation();
 		correlation0.setState(StateType.ON);
@@ -160,8 +165,12 @@ public class EventTest extends XmlTestNoCastor<Event> {
 					"    <maskelement>\n" + 
 					"      <mename>specific</mename>\n" + 
 					"      <mevalue>1</mevalue>\n" + 
-					"    </maskelement>\n" + 
-					"    <varbind>" +
+					"    </maskelement>\n" +
+							"    <maskelement>\n" +
+							"      <mename>trapoid</mename>\n" +
+							"      <mevalue>.1.3.6.1.2.1.10.166.3.0.5</mevalue>\n" +
+							"    </maskelement>\n" +
+							"    <varbind>" +
 					"      <vbnumber>5</vbnumber>" +
 					"      <vbvalue>0</vbvalue>" +
 					"    </varbind>" +
@@ -175,6 +184,7 @@ public class EventTest extends XmlTestNoCastor<Event> {
 					"    <specific>3</specific>" +
 					"    <generic>6</generic>" +
 					"    <community>public</community>" +
+							"    <trapoid>.1.3.6.1.4.1.9.0.6</trapoid>" +
 					"  </snmp>" +
 					"  <descr>descr</descr>" +
 					"  <logmsg>log message</logmsg>" +

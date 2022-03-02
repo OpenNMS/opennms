@@ -54,11 +54,14 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.conn.util.InetAddressUtils;
+import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
@@ -91,6 +94,17 @@ import com.vmware.vim25.mo.VirtualMachine;
 public class VmwareImporter {
 
     private static final Logger logger = LoggerFactory.getLogger(VmwareImporter.class);
+
+    public final static String METADATA_CONTEXT = "VMware";
+    public final static String METADATA_MANAGEMENT_SERVER = "managementServer";
+    public final static String METADATA_MANAGED_ENTITY_TYPE = "managedEntityType";
+    public final static String METADATA_MANAGED_OBJECT_ID = "managedObjectId";
+    public final static String METADATA_TOPOLOGY_INFO = "topologyInfo";
+    public final static String METADATA_STATE = "state";
+    public static final String VMWARE_MANAGEMENT_SERVER_USERNAME_KEY = "managementServerUsername";
+    public static final String VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY = "managementServerPassword";
+    public static final String VMWARE_COLLECTION_KEY = "vmwareCollection";
+    public static final String VMWARE_SERVER_KEY = "vmwareServer";
 
     private final VmwareImportRequest request;
 
@@ -496,20 +510,11 @@ public class VmwareImporter {
             }
         }
 
-        RequisitionAsset requisitionAssetHostname = new RequisitionAsset("vmwareManagementServer", request.getHostname());
-        requisitionNode.putAsset(requisitionAssetHostname);
-
-        RequisitionAsset requisitionAssetType = new RequisitionAsset("vmwareManagedEntityType", (managedEntity instanceof HostSystem ? "HostSystem" : "VirtualMachine"));
-        requisitionNode.putAsset(requisitionAssetType);
-
-        RequisitionAsset requisitionAssetId = new RequisitionAsset("vmwareManagedObjectId", managedEntity.getMOR().getVal());
-        requisitionNode.putAsset(requisitionAssetId);
-
-        RequisitionAsset requisitionAssetTopologyInfo = new RequisitionAsset("vmwareTopologyInfo", vmwareTopologyInfo.toString());
-        requisitionNode.putAsset(requisitionAssetTopologyInfo);
-
-        RequisitionAsset requisitionAssetState = new RequisitionAsset("vmwareState", powerState);
-        requisitionNode.putAsset(requisitionAssetState);
+        requisitionNode.getMetaData().add(new RequisitionMetaData(METADATA_CONTEXT, METADATA_MANAGEMENT_SERVER, request.getHostname()));
+        requisitionNode.getMetaData().add(new RequisitionMetaData(METADATA_CONTEXT, METADATA_MANAGED_ENTITY_TYPE, (managedEntity instanceof HostSystem ? "HostSystem" : "VirtualMachine")));
+        requisitionNode.getMetaData().add(new RequisitionMetaData(METADATA_CONTEXT, METADATA_MANAGED_OBJECT_ID, managedEntity.getMOR().getVal()));
+        requisitionNode.getMetaData().add(new RequisitionMetaData(METADATA_CONTEXT, METADATA_TOPOLOGY_INFO, vmwareTopologyInfo.toString()));
+        requisitionNode.getMetaData().add(new RequisitionMetaData(METADATA_CONTEXT, METADATA_STATE, powerState));
 
         requisitionNode.putCategory(new RequisitionCategory("VMware" + apiVersion));
 
@@ -860,4 +865,28 @@ public class VmwareImporter {
         return services;
     }
 
+    private static String getMetaData(final OnmsNode node, final String key) {
+        final Optional<OnmsMetaData> metaData = node.findMetaDataForContextAndKey(METADATA_CONTEXT, key);
+        return metaData.map(onmsMetaData -> onmsMetaData.getValue().trim()).orElse("");
+    }
+
+    public static String getManagementServer(final OnmsNode node) {
+        return getMetaData(node, METADATA_MANAGEMENT_SERVER);
+    }
+
+    public static String getManagedObjectId(final OnmsNode node) {
+        return getMetaData(node, METADATA_MANAGED_OBJECT_ID);
+    }
+
+    public static String getManagedEntityType(final OnmsNode node) {
+        return getMetaData(node, METADATA_MANAGED_ENTITY_TYPE);
+    }
+
+    public static String getState(final OnmsNode node) {
+        return getMetaData(node, METADATA_STATE);
+    }
+
+    public static String getTopologyInfo(final OnmsNode node) {
+        return getMetaData(node, METADATA_TOPOLOGY_INFO);
+    }
 }

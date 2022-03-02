@@ -30,6 +30,7 @@ package org.opennms.features.kafka.producer.shell;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
@@ -39,7 +40,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.kafka.producer.datasync.AlarmDataStore;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 
-@Command(scope = "kafka-producer", name = "list-alarms", description = "Enumerates the alarms that are currently in the Kafka data store.")
+@Command(scope = "opennms", name = "kafka-list-alarms", description = "Enumerates the alarms that are currently in the Kafka data store.")
 @Service
 public class ListAlarms implements Action {
 
@@ -51,7 +52,7 @@ public class ListAlarms implements Action {
 
     @Override
     public Object execute() {
-        if (!SyncAlarms.waitForAlarmDataStore(alarmDataStore)) {
+        if (!SyncAlarms.waitForAlarmDataStore(alarmDataStore, 15, TimeUnit.SECONDS)) {
             return null;
         }
 

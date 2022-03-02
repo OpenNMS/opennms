@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,7 @@ import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,6 +60,7 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.InterfaceToNodeCacheEventProcessor;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
@@ -173,7 +174,7 @@ public class SyslogSinkConsumerNewSuspectIT {
         EventBuilder builder = new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, getClass().getSimpleName());
         builder.setNodeid(nodeId);
         builder.setInterface(addr);
-        m_processor.handleNodeGainedInterface(builder.getEvent());
+        m_processor.handleNodeGainedInterface(ImmutableMapper.fromMutableEvent(builder.getEvent()));
 
         // The entry was added to the cache
         assertEquals(1, m_cache.size());
@@ -189,7 +190,7 @@ public class SyslogSinkConsumerNewSuspectIT {
         builder = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, getClass().getSimpleName());
         builder.setNodeid(nodeId);
         builder.setInterface(addr);
-        m_processor.handleInterfaceDeleted(builder.getEvent());
+        m_processor.handleInterfaceDeleted(ImmutableMapper.fromMutableEvent(builder.getEvent()));
 
         // The entry was removed from the cache
         assertEquals(0, m_cache.size());

@@ -1,0 +1,17 @@
+
+= Map Functions
+
+The map functions define how the severity of the edge will be used in the reduce function of the parent when calculating the operational status.
+
+Available map functions:
+
+.Calculation of the Operational Status with Map Functions
+[options="header, autowidth"]
+|===
+| Name       | Description
+| Identity | Use the same severity as operational status of the business service.
+| Increase | Increase the severity by one level and use it as operational status of the business service.
+| Decrease | Decrease the severity by one level and use it as operational status of the business service.
+| SetTo    | Set the operational status to a constant severity value.
+| Ignore   | Ignore the input of the edge for operational status calculation.
+|===

@@ -67,20 +67,6 @@
       <directory>${project.build.directory}/jmx</directory>
       <outputDirectory>lib</outputDirectory>
     </fileSet>
-    <fileSet>
-      <directory>${project.build.directory}/remote-poller/etc</directory>
-      <outputDirectory>contrib/remote-poller</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>${project.build.directory}/remote-poller/bin</directory>
-      <outputDirectory>bin</outputDirectory>
-      <!-- Mark files in bin as executable -->
-      <fileMode>0755</fileMode>
-    </fileSet>
-    <fileSet>
-      <directory>${project.build.directory}/remote-poller/lib</directory>
-      <outputDirectory>bin</outputDirectory>
-    </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>

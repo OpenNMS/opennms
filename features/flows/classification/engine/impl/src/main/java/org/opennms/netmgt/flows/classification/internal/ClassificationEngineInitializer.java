@@ -30,15 +30,23 @@ package org.opennms.netmgt.flows.classification.internal;
 
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // Is required to initialize the classification engine properly, as it requires a transaction to load correctly.
 // While starting the bundle, the initialization occurs from within the blueprint container, thus no transaction is available
 // This bean wraps the loading in a transaction, ensuring loading can occurr correctly
 public class ClassificationEngineInitializer {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ClassificationEngineInitializer.class);
+
     public ClassificationEngineInitializer(ClassificationEngine engine, SessionUtils sessionUtils) {
         sessionUtils.withReadOnlyTransaction(() -> {
-            engine.reload();
+            try {
+                engine.reload();
+            } catch (InterruptedException e) {
+                LOG.error("reload was interrupted", e);
+            }
             return null;
         });
     }

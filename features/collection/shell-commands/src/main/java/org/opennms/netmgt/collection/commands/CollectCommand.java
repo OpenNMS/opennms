@@ -70,7 +70,7 @@ import org.opennms.netmgt.snmp.InetAddrUtils;
 
 import com.google.common.collect.Lists;
 
-@Command(scope = "collection", name = "collect", description="Invokes a collector against a host at a specified location.")
+@Command(scope = "opennms", name = "collect", description="Invokes a collector against a host at a specified location.")
 @Service
 public class CollectCommand implements Action {
 

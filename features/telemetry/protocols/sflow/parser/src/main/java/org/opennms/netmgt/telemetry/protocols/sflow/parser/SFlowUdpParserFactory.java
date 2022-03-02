@@ -58,9 +58,6 @@ public class SFlowUdpParserFactory implements ParserFactory {
     @Override
     public Parser createBean(ParserDefinition beanDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(beanDefinition.getQueueName());
-        final SFlowUdpParser parser = new SFlowUdpParser(beanDefinition.getName(), dispatcher, dnsResolver);
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(parser);
-        wrapper.setPropertyValues(beanDefinition.getParameterMap());
-        return parser;
+        return new SFlowUdpParser(beanDefinition.getFullName(), dispatcher, dnsResolver);
     }
 }

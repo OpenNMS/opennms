@@ -68,6 +68,7 @@ pageContext.setAttribute("canForecast", canForecast);
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
+  <jsp:param name="ngapp" value="forecast" />
   <jsp:param name="title" value="Forecasting" />
   <jsp:param name="quiet" value="true" />
   <jsp:param name="nobreadcrumbs" value="true" />
@@ -90,7 +91,7 @@ window.forecastError = "One or more dependencies required for forecasting "
   <jsp:param name="asset" value="forecast" />
 </jsp:include>
 
-<div class="row-fluid" ng-app="forecast" ng-controller="forecastCtrl">
+<div class="row-fluid" ng-controller="forecastCtrl">
     <div class="col-md-12">
       <div ng-cloak class="alert alert-danger" role="alert" ng-show="error">
 		<span class="fa fa-exclamation-circle" aria-hidden="true"></span>

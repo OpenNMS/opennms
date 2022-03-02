@@ -85,6 +85,16 @@ public final class Packet implements Iterable<Record>, RecordProvider {
     }
 
     @Override
+    public long getObservationDomainId() {
+        return this.header.engineType << 8 + this.header.engineId;
+    }
+
+    @Override
+    public long getSequenceNumber() {
+        return this.header.flowSequence;
+    }
+
+    @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("header", this.header)

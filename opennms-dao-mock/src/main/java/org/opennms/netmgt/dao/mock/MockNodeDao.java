@@ -486,11 +486,21 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     }
 
     @Override
-    public void markHavingFlows(Collection<Integer> nodeIds) {
+    public void markHavingFlows(Collection<Integer> ingressIds, Collection<Integer> egressIds) {
     }
 
     @Override
     public List<OnmsNode> findAllHavingFlows() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingIngressFlows() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingEgressFlows() {
         return Collections.emptyList();
     }
 

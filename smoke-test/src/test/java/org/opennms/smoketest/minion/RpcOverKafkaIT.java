@@ -73,10 +73,10 @@ public class RpcOverKafkaIT {
         // Add node and interface with minion location.
         addRequisition(stack.opennms().getRestClient(), stack.minion().getLocation(), LOCALHOST);
         await().atMost(3, MINUTES).pollInterval(15, SECONDS)
-                .until(this::detectTcpAtLocationMinion, containsString("'TCP' WAS detected on 127.0.0.1"));
+                .until(() -> detectTcpAtLocationMinion(stack), containsString("'TCP' WAS detected on 127.0.0.1"));
     }
 
-    private String detectTcpAtLocationMinion() throws Exception {
+    static String detectTcpAtLocationMinion(OpenNMSStack stack) throws Exception {
         try (final SshClient sshClient = new SshClient(stack.opennms().getSshAddress(), "admin", "admin")) {
             PrintStream pipe = sshClient.openShell();
             pipe.println(String.format("detect -l %s TCP 127.0.0.1 port=8201", stack.minion().getLocation()));

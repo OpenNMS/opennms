@@ -28,15 +28,24 @@
 
 package org.opennms.netmgt.provision.service;
 
+import static org.opennms.netmgt.provision.service.ProvisionService.ABORT;
+import static org.opennms.netmgt.provision.service.ProvisionService.ERROR;
+import static org.opennms.netmgt.provision.service.ProvisionService.LOCATION;
+import static org.opennms.netmgt.provision.service.ProvisionService.NODE_ID;
+
 import org.opennms.core.tasks.BatchTask;
+import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.opentracing.Span;
 
 /**
  * <p>ForceRescanScan class.</p>
@@ -51,22 +60,25 @@ public class ForceRescanScan implements Scan {
     private EventForwarder m_eventForwarder;
     private SnmpAgentConfigFactory m_agentConfigFactory;
     private TaskCoordinator m_taskCoordinator;
+    private Span m_span;
+    private ProvisionMonitor monitor;
 
     /**
      * <p>Constructor for NewSuspectScan.</p>
      *
-     * @param m_nodeId a {@link java.land.Integer} object.
+     * @param nodeId a {@link java.lang.Integer} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public ForceRescanScan(final Integer nodeId, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator) {
+    public ForceRescanScan(final Integer nodeId, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, final ProvisionMonitor monitor) {
         m_nodeId = nodeId;
         m_provisionService = provisionService;
         m_eventForwarder = eventForwarder;
         m_agentConfigFactory = agentConfigFactory;
         m_taskCoordinator = taskCoordinator;
+        this.monitor = monitor;
     }
 
     @Override
@@ -77,6 +89,7 @@ public class ForceRescanScan implements Scan {
     /** {@inheritDoc} */
     @Override
     public void run(final BatchTask phase) {
+        m_span = m_provisionService.buildAndStartSpan("ForceScan", null);
         scanExistingNode(phase);
     }
 
@@ -89,6 +102,8 @@ public class ForceRescanScan implements Scan {
         LOG.info("Attempting to re-scan node with Id {}", m_nodeId);
         final OnmsNode node = m_provisionService.getNode(m_nodeId);
         if (node != null) {
+            m_span.setTag(NODE_ID, node.getId());
+            m_span.setTag(LOCATION, node.getLocation().getLocationName());
             OnmsIpInterface iface = m_provisionService.getPrimaryInterfaceForNode(node);
             if (iface == null) { // NMS-6380, a discovered node added with wrong SNMP settings doesn't have a primary interface yet.
                 iface = node.getIpInterfaces().isEmpty() ? null : node.getIpInterfaces().iterator().next();
@@ -100,10 +115,17 @@ public class ForceRescanScan implements Scan {
                 LOG.info("The node with ID {} does not have any IP addresses", m_nodeId);
             } else {
                 phase.getBuilder().addSequence(
-                    new NodeInfoScan(node, iface.getIpAddress(), node.getForeignSource(), node.getLocation(), createScanProgress(), m_agentConfigFactory, m_provisionService, node.getId()),
-                    new IpInterfaceScan(node.getId(), iface.getIpAddress(), node.getForeignSource(), node.getLocation(), m_provisionService),
-                    new NodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator)
-                );
+                    new NodeInfoScan(node, iface.getIpAddress(), node.getForeignSource(), node.getLocation(), createScanProgress(), m_agentConfigFactory, m_provisionService, node.getId(), m_span),
+                    new IpInterfaceScan(node.getId(), iface.getIpAddress(), node.getForeignSource(), node.getLocation(), m_provisionService, m_span),
+                    new NodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, m_span, monitor),
+                        new RunInBatch() {
+                            @Override
+                            public void run(BatchTask batch) {
+                                LOG.info("Done re-scanning node with Id {}", m_nodeId);
+                                m_span.finish();
+                            }
+                        });
+
             }
         } else {
             LOG.info("Can't find node with ID {}", m_nodeId);
@@ -116,6 +138,9 @@ public class ForceRescanScan implements Scan {
             @Override
             public void abort(final String message) {
                 m_aborted = true;
+                m_span.setTag(ERROR, true);
+                m_span.setTag(ABORT, true);
+                m_span.log(message);
                 LOG.info(message);
             }
 

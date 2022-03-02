@@ -1,0 +1,43 @@
+.Enable password encryption
+[source, console]
+----
+sudo vi /usr/share/sentinel/etc/org.apache.karaf.jaas.cfg
+----
+
+[source, org.apache.karaf.jaas.cfg]
+----
+#
+# Boolean enabling / disabling encrypted passwords
+#
+encryption.enabled = true<1>
+#...
+encryption.algorithm = SHA-512<2>
+----
+<1> Enable password encryption from `false` to `true`
+<2> Set a secure encryption algorithm like `SHA-512`
+
+As soon the file is saved, Karaf will immediately encrypt the password in `users.properties`.
+
+.Set a secure admin password for Karaf
+[source, console]
+----
+sudo vi /usr/share/sentinel/etc/users.properties
+----
+
+[source, users.properties]
+----
+# All users, groups, and roles entered in this file are available after Karaf startup
+# and modifiable via the JAAS command group. These users reside in a JAAS domain
+# with the name "karaf".
+#
+# OPENNMS: Change the admin user from 'karaf' to 'admin'
+admin = {CRYPT}C7AD...{CRYPT},_g_:admingroup<1>
+----
+<1> Replace the whole string `\{CRYPT}C7AD...\{CRYPT}` with your new password in plaintext.
+    As soon you save the file the password will be SHA-512 encrypted.
+
+.Set restrictive file permissions
+[source, console]
+----
+sudo chmod 600 /usr/share/sentinel/etc/users.properties
+----

@@ -32,6 +32,9 @@ import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
 
+import io.searchbox.core.search.aggregation.MaxAggregation;
+import io.searchbox.core.search.aggregation.MetricAggregation;
+
 /**
  * Total bytes in/out related to some entity.
  */
@@ -40,11 +43,15 @@ public class TrafficSummary<T> {
     private final T entity;
     private final long bytesIn;
     private final long bytesOut;
+    private final boolean congestionEncountered;
+    private final boolean nonEcnCapableTransport;
 
     public TrafficSummary(final TrafficSummary.Builder<T> builder) {
         this.entity = Objects.requireNonNull(builder.entity);
         this.bytesIn = builder.bytesIn;
         this.bytesOut = builder.bytesOut;
+        this.congestionEncountered = builder.congestionEncountered;
+        this.nonEcnCapableTransport = builder.nonEcnCapableTransport;
     }
 
     public T getEntity() {
@@ -59,10 +66,42 @@ public class TrafficSummary<T> {
         return bytesOut;
     }
 
+    public BytesInOut getBytesInOut() {
+        // BytesInOut objects are mutable so we create a new one every get
+        return new BytesInOut(bytesIn, bytesOut);
+    }
+
+    public boolean isCongestionEncountered() {
+        return congestionEncountered;
+    }
+
+    public boolean isNonEcnCapableTransport() {
+        return nonEcnCapableTransport;
+    }
+
+    /**
+     * Combines the two booleans {@link #isCongestionEncountered()} and {@link #isNonEcnCapableTransport()} that
+     * capture information about encountered ecn values into a single integer.
+     *
+     * The resulting integers are:
+     *
+     * <ul>
+     *     <li>0: !nonEcnCapableTransport && !congestionEncountered</li>
+     *     <li>1:  nonEcnCapableTransport && !congestionEncountered</li>
+     *     <li>2: !nonEcnCapableTransport &&  congestionEncountered</li>
+     *     <li>3:  nonEcnCapableTransport &&  congestionEncountered</li>
+     * </ul>
+     */
+    public int ecnInfo() {
+        return (nonEcnCapableTransport ? 1 : 0) + 2 * (congestionEncountered ? 1 : 0);
+    }
+
     public static class Builder<T> {
         private T entity;
         private long bytesIn;
         private long bytesOut;
+        private boolean congestionEncountered;
+        private boolean nonEcnCapableTransport;
 
         private Builder() {
         }
@@ -82,17 +121,44 @@ public class TrafficSummary<T> {
             return this;
         }
 
+        public Builder<T> withCongestionEncountered(boolean congestionEncountered) {
+            this.congestionEncountered = congestionEncountered;
+            return this;
+        }
+
+        public Builder<T> withNonEcnCapableTransport(boolean nonEcnCapableTransport) {
+            this.nonEcnCapableTransport = nonEcnCapableTransport;
+            return this;
+        }
+
+        public Builder<T> withEcnInfo(TrafficSummary ts) {
+            this.congestionEncountered = ts.isCongestionEncountered();
+            this.nonEcnCapableTransport = ts.isNonEcnCapableTransport();
+            return this;
+        }
+
+        public Builder<T> withEcnInfo(MetricAggregation outerAgg) {
+            // sets the ecn info from corresponding elastic aggregations results
+            MaxAggregation ceAgg = outerAgg.getMaxAggregation("congestion_encountered");
+            if (ceAgg != null) {
+                this.congestionEncountered = ceAgg.getMax() != null && ceAgg.getMax() > 0;
+                MaxAggregation nonEctAgg = outerAgg.getMaxAggregation("non_ect");
+                this.nonEcnCapableTransport = nonEctAgg.getMax() != null && nonEctAgg.getMax() > 0;
+            }
+            return this;
+        }
+
         public Builder<T> withBytes(final long bytesIn, final long bytesOut) {
             return this
                     .withBytesIn(bytesIn)
                     .withBytesOut(bytesOut);
         }
 
-        public Builder<T> withBytesFrom(final TrafficSummary<?> source) {
+        public Builder<T> withBytesAndEcnInfo(final TrafficSummary<?> source) {
             Objects.requireNonNull(source);
             this.bytesIn = source.getBytesIn();
             this.bytesOut = source.getBytesOut();
-            return this;
+            return withEcnInfo(source);
         }
 
         public TrafficSummary<T> build() {
@@ -121,12 +187,14 @@ public class TrafficSummary<T> {
         final TrafficSummary<?> that = (TrafficSummary<?>) o;
         return this.bytesIn == that.bytesIn &&
                this.bytesOut == that.bytesOut &&
+               congestionEncountered == that.congestionEncountered &&
+               nonEcnCapableTransport == that.nonEcnCapableTransport &&
                Objects.equals(this.entity, that.entity);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.entity, this.bytesIn, this.bytesOut);
+        return Objects.hash(entity, bytesIn, bytesOut, congestionEncountered, nonEcnCapableTransport);
     }
 
     @Override
@@ -135,6 +203,8 @@ public class TrafficSummary<T> {
                 .add("entity", this.entity)
                 .add("bytesIn", this.bytesIn)
                 .add("bytesOut", this.bytesOut)
+                .add("nonEcnCapableTransport", this.nonEcnCapableTransport)
+                .add("congestionEncountered", this.congestionEncountered)
                 .toString();
     }
 }

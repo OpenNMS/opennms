@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.events.api;
 
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.events.api.model.IEvent;
 
 /**
  * The interface to be implemented by all services that wish to receive events
@@ -42,12 +42,12 @@ public interface EventListener {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getName();
+    String getName();
 
     /**
      * Process a sent event.
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
-    public void onEvent(Event e);
+    void onEvent(IEvent e);
 }

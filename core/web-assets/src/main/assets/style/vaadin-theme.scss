@@ -32,7 +32,7 @@ The finished CSS file will include this line, directly:
   padding: 0px;
 }
 
-.onmsheader {
+#onmsheader {
   /* enforce visibility of dropdown elements, as they are otherwise hidden and not fully shown */
   overflow: visible;
   font-family: $font-family-sans-serif;
@@ -40,25 +40,39 @@ The finished CSS file will include this line, directly:
   line-height: $line-height-base;
 }
 
-.onmsheader #navbar {
-  margin-top: 3px;
-}
-
-.onmsheader .dropdown-menu {
+#onmsheader .dropdown-menu {
   /* Change z-index so it is not hidden by some vaadin components */
-  z-index: 9999;
+  z-index: 99999;
 }
 
-.onmsheader .dropdown-item {
+#onmsheader .dropdown-item {
   box-sizing: border-box;
 }
 
-.onmsheader button.navbar-toggler {
+#onmsheader button.navbar-toggler {
   font-size: $navbar-toggler-font-size;
+}
+
+// The background sprite from reindeer theme looks weird in modern
+// browsers so we dont use it
+.v-menubar {
+  background-image: none;
 }
 
 .v-absolutelayout-wrapper {
   overflow: visible !important;
+}
+
+// HACK to make the buttons size correctly.
+// This is needed when embeeding the bootstrap header, which includes bs4
+.v-caption {
+  box-sizing: content-box;
+}
+
+// HACK to make the buttons size correctly.
+// This is needed when embeeding the bootstrap header, which includes bs4
+.v-button-wrap {
+  box-sizing: content-box;
 }
 
 /*  --------------------------------------------------

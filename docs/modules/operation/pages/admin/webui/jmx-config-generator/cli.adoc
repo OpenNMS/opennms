@@ -1,0 +1,418 @@
+
+= CLI-based utility
+
+The command line (CLI)-based tool is not installed by default.
+ifeval::["{page-component-name}" == "meridian"]
+It is available as an RPM package in the official repositories.
+endif::[]
+ifeval::["{page-component-name}" == "horizon"]
+It is available as Debian and RPM package in the official repositories.
+endif::[]
+
+== Installation
+
+.RHEL based installation with Yum
+
+[source, console]
+----
+yum install opennms-jmx-config-generator
+----
+
+ifndef::opennms-prime[]
+.Debian based installation with apt
+
+[source, console]
+----
+apt-get install opennms-jmx-config-generator
+----
+endif::opennms-prime[]
+
+=== Installation from source
+
+It is required to have the Java 8 Development Kit with Apache Maven installed.
+The `mvn` binary has to be in the path environment.
+After cloning the repository you have to enter the source folder and compile an executable JAR.
+
+[source, console]
+----
+cd opennms/features/jmx-config-generator
+mvn package
+----
+
+Inside the newly created `target` folder a file named `jmxconfiggenerator-<VERSION>-onejar.jar` is present.
+This file can be invoked by:
+
+[source, console]
+[subs="verbatim,attributes"]
+----
+java -jar target/jmxconfiggenerator-{page-component-version}-onejar.jar
+----
+
+== Use
+
+After installing the the JMX Config Generator the tool's wrapper script is located in the `$\{OPENNMS_HOME}}/bin` directory.
+
+[source, console]
+----
+$ cd /path/to/opennms/bin
+$ ./jmx-config-generator
+----
+
+TIP: When invoked without parameters the usage and help information is printed.
+
+The JMX Config Generator uses sub-commands for the different configuration generation tasks.
+Each of these sub-commands provide different options and parameters.
+The command line tool accepts the following sub-commands.
+
+[options="header"]
+[cols="1,3"]
+|===
+| Sub-command
+| Description
+
+| query
+| Queries an MBean Server for certain MBeans and attributes.
+
+| generate-conf
+| Generates a valid `jmx-datacollection-config.xml` file.
+
+| generate-graph
+| Generates an RRD graph definition file with matching graph definitions for a given `jmx-datacollection-config.xml`.
+
+|===
+
+The following global options are available in each of the sub-commands of the tool:
+
+[options="header"]
+[cols="1,3,1"]
+|===
+| Option/Argument
+| Description
+| Default
+
+| -h (--help)
+| Show help and usage information.
+| false
+
+| -v (--verbose)
+| Enables verbose mode for debugging purposes.
+| false
+
+|===
+
+== Sub-command: query
+
+This sub-command is used to query a MBean Server for its available MBean objects.
+The following example queries the server `myserver` with the credentials `myusername/mypassword` on port `7199` for MBean objects in the `java.lang` domain.
+
+[source, console]
+----
+./jmx-config-generator query --host myserver --username myusername --password mypassword --port 7199 "java.lang:*"
+java.lang:type=ClassLoading
+	description: Information on the management interface of the MBean
+	class name: sun.management.ClassLoadingImpl
+	attributes: (5/5)
+		TotalLoadedClassCount
+			id: java.lang:type=ClassLoading:TotalLoadedClassCount
+			description: TotalLoadedClassCount
+			type: long
+			isReadable: true
+			isWritable: false
+			isIs: false
+		LoadedClassCount
+			id: java.lang:type=ClassLoading:LoadedClassCount
+			description: LoadedClassCount
+			type: int
+			isReadable: true
+			isWritable: false
+			isIs: false
+
+<output omitted>
+----
+
+The following command line options are available for the query sub-command.
+
+[options="header" cols="1,3,1"]
+|===
+| Option/Argument
+| Description
+| Default
+
+| <filter criteria>
+| A filter criteria to query the MBean Server for.
+The format is `<objectname>[:attribute name]`.
+The `<objectname>` accepts the default JMX object name pattern to identify the MBeans to be retrieved.
+If `null`, all domains are shown.
+If no key properties are specified, the domain's MBeans are retrieved.
+To execute for certain attributes, you have to add `:<attribute name>`.
+The `<attribute name>` accepts regular expressions.
+When multiple `<filter criteria>` are provided they are `OR` concatenated.
+| -
+
+| --host <host>
+| Hostname or IP address of the remote JMX host.
+| -
+
+| --ids-only
+| Only show the ids of the attributes.
+| false
+
+| --ignore <filter criteria>
+| Set `<filter criteria>` to ignore while running.
+| -
+
+| --include-values
+| Include attribute values.
+| false
+
+| --jmxmp
+| Use JMXMP and not JMX over RMI.
+| false
+
+| --password <password>
+| Password for JMX authentication.
+| -
+
+| --port <port>
+| Port of JMX service.
+| -
+
+| --show-domains
+| Only lists the available domains.
+| true
+
+| --show-empty
+| Includes MBeans, even if they do not have attributes
+Either due to the `<filter criteria>` or while there are none.
+| false
+
+| --url <url>
+| Custom connection URL +
+`<hostname>:<port>` +
+`service:jmx:<protocol>:<sap>` +
+ `service:jmx:remoting-jmx://<hostname>:<port>`
+| -
+
+| --username <username>
+| Username for JMX authentication.
+| -
+
+| -h (--help)
+| Show help and usage information.
+| false
+
+| -v (--verbose)
+| Enables verbose mode for debugging purposes.
+| false
+|===
+
+== Sub-command: generate-conf
+
+This sub-command can be used to generate a valid `jmx-datacollection-config.xml` for a given set of MBean objects queried from a MBean Server.
+
+The following example generate a configuration file `myconfig.xml` for MBean objects in the `java.lang` domain of the server `myserver` on port `7199` with the credentials `myusername/mypassword`.
+You have to define either an URL or a hostname and port to connect to a JMX server.
+
+[source, console]
+----
+jmx-config-generator generate-conf --host myserver --username myusername --password mypassword --port 7199 "java.lang:*" --output myconfig.xml
+Dictionary entries loaded: '18'
+----
+
+The following options are available for the generate-conf sub-command.
+
+[options="header" cols="1,3,1"]
+|===
+| Option/Argument
+| Description
+| Default
+
+| <attribute id>
+| A list of attribute Ids to be included for the generation of the configuration file.
+| -
+
+| --dictionary <file>
+| Path to a dictionary file for replacing attribute names and part of MBean attributes.
+The file should have for each line a replacement, e.g. Auxillary:Auxil.
+| -
+
+| --host <host>
+| Hostname or IP address of JMX host.
+| -
+
+| --jmxmp | Use JMXMP and not JMX over RMI.
+| false
+
+| --output <file> | Output filename to write generated `jmx-datacollection-config.xml`.
+| -
+
+| --password <password>
+| Password for JMX authentication.
+| -
+
+| --port <port>
+| Port of JMX service
+| -
+
+| --print-dictionary
+| Prints the used dictionary to STDOUT.
+May be used with `--dictionary`
+| false
+
+| --service <value>
+| The service name used as JMX data collection name.
+| anyservice
+
+| --skipDefaultVM
+| Skip default JavaVM Beans.
+| false
+
+| --skipNonNumber
+| Skip attributes with non-number values
+| false
+
+| --url <url>
+| Custom connection URL +
+`<hostname>:<port>` +
+`service:jmx:<protocol>:<sap>` +
+`service:jmx:remoting-jmx://<hostname>:<port>`
+| -
+
+| --username <username>
+| Username for JMX authentication
+| -
+
+| -h (--help)
+| Show help and usage information.
+| false
+
+| -v (--verbose)
+| Enables verbose mode for debugging purposes.
+| false
+
+|===
+
+TIP: The option `--skipDefaultVM` offers the ability to ignore the MBeans provided as standard by the JVM and just create configurations for the MBeans provided by the java application itself.
+This is particularly useful if an optimized configuration for the JVM already exists.
+If the `--skipDefaultVM` option is not set the generated configuration will include the MBeans of the JVM and the MBeans of the Java Application.
+
+IMPORTANT: Check the file and see if there are `alias` names with more than 19 characters.
+           This errors are marked with `NAME_CRASH_AS_19_CHAR_VALUE`
+
+== Sub-command: generate-graph
+
+This sub-command generates a RRD graph definition file for a given configuration file.
+The following example generates a graph definition file `mygraph.properties` using the configuration in file `myconfig.xml`.
+
+[source, console]
+----
+./jmx-config-generator generate-graph --input myconfig.xml --output mygraph.properties
+reports=java.lang.ClassLoading.MBeanReport, \
+java.lang.ClassLoading.0TotalLoadeClassCnt.AttributeReport, \
+java.lang.ClassLoading.0LoadedClassCnt.AttributeReport, \
+java.lang.ClassLoading.0UnloadedClassCnt.AttributeReport, \
+java.lang.Compilation.MBeanReport, \
+<output omitted>
+----
+
+The following options are available for this sub-command.
+
+[options="header" cols="1,3,1"]
+|===
+| Option/Argument
+| Description
+| Default
+
+| --input <jmx-datacollection.xml>
+| Configuration file to use as input to generate the graph properties file
+| -
+
+| --output <file>
+| Output filename for the generated graph properties file.
+| -
+
+| --print-template
+| Prints the default template.
+| false
+
+| --template <file>
+| Template file using http://velocity.apache.org[_Apache Velocity_] template engine to be used to generate the graph properties.
+| -
+
+| -h (--help)
+| Show help and usage information.
+| false
+
+| -v (--verbose)
+| Enables verbose mode for debugging purposes.
+| false
+
+|===
+
+== Graph Templates
+
+The JMX Config Generator uses a template file to generate the graphs.
+It is possible to use a user-defined template.
+The option `--template` followed by a file lets the JMX Config Generator use the external template file as base for the graph generation.
+The following example illustrates how a custom template `mytemplate.vm` is used to generate the graph definition file `mygraph.properties` using the configuration in file `myconfig.xml`.
+
+[source, console]
+----
+./jmx-config-generator generate-graph --input myconfig.xml --output mygraph.properties --template mytemplate.vm
+----
+
+The template file has to be an http://velocity.apache.org[_Apache Velocity_] template.
+The following sample represents the template that is used by default:
+
+[source, properties]
+----
+reports=#foreach( $report in $reportsList )
+${report.id}#if( $foreach.hasNext ), \
+#end
+#end
+
+#foreach( $report in $reportsBody )
+
+#[[###########################################]]#
+#[[##]]# $report.id
+#[[###########################################]]#
+report.${report.id}.name=${report.name}
+report.${report.id}.columns=${report.graphResources}
+report.${report.id}.type=interfaceSnmp
+report.${report.id}.command=--title="${report.title}" \
+ --vertical-label="${report.verticalLabel}" \
+#foreach($graph in $report.graphs )
+ DEF:${graph.id}={rrd${foreach.count}}:${graph.resourceName}:AVERAGE \
+ AREA:${graph.id}#${graph.coloreB} \
+ LINE2:${graph.id}#${graph.coloreA}:"${graph.description}" \
+ GPRINT:${graph.id}:AVERAGE:" Avg \\: %8.2lf %s" \
+ GPRINT:${graph.id}:MIN:" Min \\: %8.2lf %s" \
+ GPRINT:${graph.id}:MAX:" Max \\: %8.2lf %s\\n" \
+#end
+
+#end
+----
+
+The JMX Config Generator generates different types of graphs from the `jmx-datacollection-config.xml`.
+The different types are listed below:
+
+[options="header" cols="1,3"]
+|===
+| Type
+| Description
+
+| AttributeReport
+| For each attribute of any MBean a graph will be generated.
+Composite attributes will be ignored.
+
+| MbeanReport
+| For each MBean a combined graph with all attributes of the MBeans is generated.
+Composite attributes will be ignored.
+
+| CompositeReport
+| For each composite attribute of every MBean a graph is generated.
+
+| CompositeAttributeReport
+| For each composite member of every MBean a combined graph with all composite attributes is generated.
+
+|===

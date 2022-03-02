@@ -1,0 +1,31 @@
+Configure {page-component-title} components to use your existing ActiveMQ instance.
+
+.Create a properties file for the ActiveMQ settings
+[source, console]
+----
+sudo vi etc/opennms.properties.d/activemq.properties
+----
+
+.Disable embedded ActiveMQ and set the credentials for your ActiveMQ endpoints
+[source, activemq.properties]
+----
+org.opennms.activemq.broker.disable=true<1>
+org.opennms.activemq.broker.url=failover:tcp://my-activemq:61616<2>
+org.opennms.activemq.broker.username=my-activemq-user<3>
+org.opennms.activemq.broker.password=my-activemq-password<4>
+org.opennms.activemq.client.max-connections=8<5>
+org.opennms.activemq.client.concurrent-consumers=10<6>
+----
+
+<1> Disable embedded ActiveMQ in {page-component-title} Core instance.
+<2> Set the URL endpoint to your dedicated ActiveMQ instance. Replace `my-active-mq:61616` accordingly. If you use ActiveMQ with SSL, replace `tcp` with `ssl`.
+<3> Set a user name for ActiveMQ authentication.
+<4> Set the password for ActiveMQ authentication.
+<5> By default we allow a maximum of 8 connections. Increase it depending on your size.
+<6> By default we allow a maximum of 10 concurrent consumers. Increase it depending on your size.
+
+.Restart {page-component-title} Core instance to apply the changes
+[source, console]
+----
+sudo systemctl restart opennms
+----

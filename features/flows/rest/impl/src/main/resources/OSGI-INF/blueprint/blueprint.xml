@@ -9,10 +9,10 @@
                 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 ">
 
-    <reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory"/>
+    <reference id="flowQueryService" interface="org.opennms.netmgt.flows.api.FlowQueryService" availability="mandatory"/>
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
-    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory"/>
     <reference id="classificationService" interface="org.opennms.netmgt.flows.classification.ClassificationService" availability="mandatory"/>
 
   <!-- Configuration properties -->
@@ -23,10 +23,10 @@
 	</cm:property-placeholder>
 
     <bean id="flowRestService" class="org.opennms.netmgt.flows.rest.internal.FlowRestServiceImpl">
-        <argument ref="flowRepository" />
+        <argument ref="flowQueryService" />
         <argument ref="nodeDao" />
         <argument ref="snmpInterfaceDao" />
-        <argument ref="transactionOperations" />
+        <argument ref="sessionUtils" />
         <property name="flowGraphUrl" value="${flowGraphUrl}" />
     </bean>
 

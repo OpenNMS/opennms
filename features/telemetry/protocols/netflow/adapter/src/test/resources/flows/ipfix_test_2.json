@@ -1,0 +1,4 @@
+[
+  {"numFlowRecords":2,"outputSnmpIfindex":137,"dstAddress":"192.168.3.90","srcAddress":"192.168.3.91","srcPort":443,"firstSwitched":"1519137948000","numBytes":"4295","samplingInterval":1.0,"netflowVersion":"IPFIX","deltaSwitched":"1519137948000","protocol":6,"dstPort":62870,"numPackets":"15","lastSwitched":"1519137948000","tos":0,"flowSeqNum":"14057793","tcpFlags":24,"inputSnmpIfindex":364,"nodeIdentifier":"0","timestamp":"1519137963000","direction":"EGRESS"},
+  {"numFlowRecords":2,"outputSnmpIfindex":137,"dstAddress":"192.168.3.90","srcAddress":"192.168.3.91","srcPort":443,"firstSwitched":"1519137934000","numBytes":"385184","samplingInterval":1.0,"netflowVersion":"IPFIX","deltaSwitched":"1519137934000","protocol":6,"dstPort":62870,"numPackets":"262","lastSwitched":"1519137948000","tos":0,"flowSeqNum":"14057793","tcpFlags":16,"inputSnmpIfindex":364,"nodeIdentifier":"0","timestamp":"1519137963000","direction":"EGRESS"}
+]

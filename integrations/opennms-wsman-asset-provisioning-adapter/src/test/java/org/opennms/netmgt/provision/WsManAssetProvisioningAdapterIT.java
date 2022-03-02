@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,7 +30,7 @@ package org.opennms.netmgt.provision;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -118,9 +118,9 @@ public class WsManAssetProvisioningAdapterIT {
         when(clientFactory.getClient(any(WSManEndpoint.class))).thenReturn(client);
 
         when(client.enumerateAndPullUsingFilter(any(), any(), any(), any(), anyBoolean())).then((Answer) invocation -> {
-            final String query = invocation.getArgumentAt(2, String.class);
+            final String query = invocation.getArgument(2);
             @SuppressWarnings("unchecked")
-            final List<Node> nodes = (List<Node>)invocation.getArgumentAt(3, List.class);
+            final List<Node> nodes = (List<Node>)invocation.getArgument(3);
 
             Node node = mock(Node.class);
             when(node.getTextContent()).thenReturn("Wesley");

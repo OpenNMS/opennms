@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.test-api</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.test-api</groupId>
@@ -75,9 +75,9 @@
                 <!-- Karaf standard features -->
                 <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
                 <!-- Karaf Spring features -->
-                <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor>
+                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</descriptor>
                 <!-- Karaf Spring legacy features -->
-                <descriptor>mvn:org.apache.karaf.features/spring-legacy/${karafVersion}/xml/features</descriptor>
+                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
                 <!-- Pax Exam features -->
                 <descriptor>mvn:org.ops4j.pax.exam/pax-exam-features/${paxExamVersion}/xml</descriptor>
                 <!-- Pax Web features -->
@@ -227,7 +227,7 @@
 
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
+      <artifactId>osgi.core</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -270,6 +270,10 @@
           <groupId>org.springframework</groupId>
           <artifactId>spring-expression</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -290,6 +294,10 @@
         <exclusion>
           <groupId>javax.xml.bind</groupId>
           <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -312,10 +320,10 @@
 
     <!-- Karaf Spring features artifact -->
     <dependency>
-      <groupId>org.apache.karaf.features</groupId>
-      <artifactId>spring</artifactId>
-      <version>${karafVersion}</version>
-      <classifier>features</classifier>
+      <groupId>org.opennms.karaf</groupId>
+      <artifactId>opennms</artifactId>
+      <version>${project.version}</version>
+      <classifier>spring</classifier>
       <type>xml</type>
       <scope>compile</scope>
       <exclusions>
@@ -328,10 +336,10 @@
 
     <!-- Karaf Spring legacy features artifact -->
     <dependency>
-      <groupId>org.apache.karaf.features</groupId>
-      <artifactId>spring-legacy</artifactId>
-      <version>${karafVersion}</version>
-      <classifier>features</classifier>
+      <groupId>org.opennms.karaf</groupId>
+      <artifactId>opennms</artifactId>
+      <version>${project.version}</version>
+      <classifier>spring-legacy</classifier>
       <type>xml</type>
       <scope>compile</scope>
       <exclusions>

@@ -113,7 +113,7 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
 
         LOG.trace("Got packet: {}", packet);
 
-        final CompletableFuture<TelemetryMessage> future = new CompletableFuture<>();
+        final CompletableFuture<AsyncDispatcher.DispatchStatus> future = new CompletableFuture<>();
         executor.execute(() -> {
             enricher.enrich(packet).whenComplete((enrichment,ex) -> {
                 if (ex != null) {
@@ -177,6 +177,17 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String getDescription() {
+        return "SFlow";
+    }
+
+    @Override
+    public Object dumpInternalState() {
+        // There is no internal state
+        return null;
     }
 
     @Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -463,13 +463,13 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @Override
     public List<OnmsIpInterface> findObsoleteIpInterfaces(Integer nodeId, Date scanStamp) {
         // we exclude the primary interface from the obsolete list since the only way for them to be obsolete is when we have snmp
-        return findObjects(OnmsIpInterface.class, "from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", nodeId, scanStamp);
+        return findObjects(OnmsIpInterface.class, "from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.snmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", nodeId, scanStamp);
     }
 
     /** {@inheritDoc} */
     @Override
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
-        getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+        getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.snmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
         getHibernateTemplate().bulkUpdate("delete from OnmsSnmpInterface snmpInterface where snmpInterface.node.id = ? and (snmpInterface.lastCapsdPoll is null or snmpInterface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
     }
 
@@ -518,15 +518,42 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     @Override
-    public void markHavingFlows(final Collection<Integer> ids) {
-        getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update node set hasFlows = true where nodeid in (:ids)")
-                .setParameterList("ids", ids)
-                .executeUpdate());
+    public void markHavingFlows(final Collection<Integer> ingressIds, final Collection<Integer> egressIds) {
+        getHibernateTemplate().executeWithNativeSession(session -> {
+            int results = 0;
+
+            if (!ingressIds.isEmpty()) {
+                results += session.createSQLQuery("update node set last_ingress_flow = NOW() where nodeid in (:ids)")
+                        .setParameterList("ids", ingressIds)
+                        .executeUpdate();
+            }
+            if (!egressIds.isEmpty()) {
+                results += session.createSQLQuery("update node set last_egress_flow = NOW() where nodeid in (:ids)")
+                        .setParameterList("ids", egressIds)
+                        .executeUpdate();
+            }
+
+            return results;
+        });
     }
 
     @Override
     public List<OnmsNode> findAllHavingFlows() {
-        return find("from OnmsNode as n where n.hasFlows = true");
+        if (OnmsSnmpInterface.INGRESS_AND_EGRESS_REQUIRED) {
+            return find("from OnmsNode as n where (EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" AND EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE + ")");
+        } else {
+            return find("from OnmsNode as n where (EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" OR EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE + ")");
+        }
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingIngressFlows() {
+        return find("from OnmsNode as n where EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE);
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingEgressFlows() {
+        return find("from OnmsNode as n where EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE);
     }
 
     @Override

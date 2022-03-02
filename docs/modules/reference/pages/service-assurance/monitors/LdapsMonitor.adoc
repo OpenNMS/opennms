@@ -1,0 +1,55 @@
+
+= LdapsMonitor
+
+The LDAPS monitor tests the response of an SSL-enabled LDAP server.
+The LDAPS monitor is an SSL-enabled extension of the LDAP monitor with a default TCP port value of 636.
+All LdapMonitor parameters apply, so refer to <<service-assurance/monitors/LdapMonitor.adoc#poller-ldap-monitor, LdapMonitor>> for more information.
+This monitor implements the same <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>> as LdapMonitor.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.LdapsMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameter for the LdapsMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| The destination port where connections are attempted.
+| 636
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[source, xml]
+----
+<!-- LDAPS service at OpenNMS.org is on port 6636 -->
+<service name="LDAPS" interval="300000" user-defined="false" status="on">
+  <parameter key="port" value="6636"/>
+  <parameter key="version" value="3"/>
+  <parameter key="searchbase" value="dc=opennms,dc=org"/>
+  <parameter key="searchfilter" value="uid=ulf"/>
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-base-name" value="ldaps"/>
+  <parameter key="ds-name" value="ldaps"/>
+</service>
+
+<monitor service="LDAPS" class-name="org.opennms.netmgt.poller.monitors.LdapsMonitor" />
+----

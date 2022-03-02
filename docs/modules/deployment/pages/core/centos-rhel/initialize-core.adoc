@@ -1,0 +1,73 @@
+.Configure PostgreSQL database access
+[source, console]
+----
+sudo -u opennms vi /opt/opennms/etc/opennms-datasources.xml
+----
+
+.Set credentials to access the PostgreSQL database
+[source, opennms-datasources.xml]
+----
+<jdbc-data-source name="opennms"
+                    database-name="opennms"<1>
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/opennms"
+                    user-name="** YOUR-OPENNMS-USERNAME **"<2>
+                    password="** YOUR-OPENNMS-PASSWORD **" /><3>
+
+<jdbc-data-source name="opennms-admin"
+                    database-name="template1"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/template1"
+                    user-name="postgres"<4>
+                    password="** YOUR-POSTGRES-PASSWORD **" /><5>
+----
+
+<1> Set the database name {page-component-title} should use.
+<2> Set the user name to access the opennms database table.
+<3> Set the password to access the opennms database table.
+<4> Set the postgres user for administrative access to PostgreSQL.
+<5> Set the password for administrative access to PostgreSQL.
+
+.Detect and assign Java environment and persist in /opt/opennms/etc/java.conf
+[source, console]
+----
+sudo /opt/opennms/bin/runjava -s
+----
+
+.Initialize the database and detect system libraries persisted in /opt/opennms/etc/libraries.properties
+[source, console]
+----
+sudo /opt/opennms/bin/install -dis
+----
+
+._Assign CAP_NET_RAW capabilities_
+{page-component-title} runs as a non-root user, which requires having a Linux kernel greater than 3.10.
+If you run on an older kernel, and are unable to upgrade your OS, you need to assign CAP_NET_RAW capabilities:
+
+Run `systemctl edit --full opennms.service` and add the following lines to the `[Service]` section:
+
+[source, console]
+----
+CapabilityBoundingSet=CAP_NET_RAW
+AmbientCapabilities=CAP_NET_RAW
+----
+
+Reload the sytemd unit with `systemctl daemon-reload` and restart the service with `systemctl restart opennms`.
+
+(For more background on this issue, see https://opennms.discourse.group/t/h29-wont-start-with-permission-error-to-open-icmp-socket/2387[H29+ won't start with permission error to open ICMP socket] on Discourse.)
+
+.Enable {page-component-title} core instance on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now opennms
+----
+
+.Allow connection to the web UI from your network
+[source, console]
+----
+sudo firewall-cmd --permanent --add-port=8980/tcp
+sudo systemctl reload firewalld
+----
+
+NOTE: The core service user must be able to send ICMP echo requests.
+      During setup, the permissions for `net.ipv4.ping_group_range` are set permanently on boot in `/etc/sysctl.d/99-opennms-non-root-icmp.conf`. 

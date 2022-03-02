@@ -1,0 +1,216 @@
+
+= JmxCollector
+
+The JmxCollector collects performance data via Java Management Extensions (JMX).
+Attributes are extracted from the available MBeans.
+
+== Collector facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.collectd.Jsr160Collector`
+| Package             | core
+| Supported on Minion | Yes
+| Configuration Files | $OPENNMS_HOME/etc/jmx-datacollection-config.xml +
+                        $OPENNMS_HOME/etc/jmx-datacollection-config.d/*.xml
+|===
+
+== Configuration and use
+
+.Collector-specific parameters for the Jsr160Collector
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+3+|*Required*
+
+| collection
+| The name of the JMX Collection to use.
+| n/a
+
+3+|*Optional*
+
+| thresholding-enabled
+| Whether to test collected performance data against thresholds.
+| true
+
+| retry
+| Number of retries before failing.
+| 3
+
+| friendlyName
+| Name of the path to store the metrics.
+| Value of the port, or `jsr160` if no port is set.
+
+| factory
+| The password strategy to use.
+Supported values are: +
+STANDARD (for authentication) +
+PASSWORD_CLEAR (same as STANDARD) +
+SASL (if secure connection is required)
+| STANDARD
+
+| url
+| The connection url to reach JMX metrics. +
+Example:  `service:jmx:rmi:localhost:18980` +
+Use `$\{ipaddr}` to substitute the IP address: `service:jmx:rmi:$\{ipaddr}:18980`.
+| n/a
+
+| username
+| The username, if authentication is required.
+| n/a
+
+| password
+| The password, if authentication is required.
+| n/a
+
+| port
+| *Deprecated*. JMX port.
+| 1099
+
+| protocol
+| *Deprecated*. Protocol used in the JMX connection string.
+| rmi
+
+| urlPath
+| *Deprecated*. Path used in JMX connection string.
+| /jmxrmi
+
+| rmiServerPort
+| *Deprecated*. RMI port.
+| 45444
+
+| remoteJMX
+| *Deprecated*. Use an alternative JMX URL
+| false
+|===
+
+NOTE: Replace the deprecated parameters port, protocol, urlPath, rmiServerPort, and remoteJMX with the url parameter.
+If url is not defined, the collector falls back to legacy mode and uses the deprecated parameters to build the connection url.
+
+If a service requires different configuration, use an entry in `$OPENNMS_HOME/etc/jmx-config.xml` to overwrite it.
+
+== JMX collection configuration
+
+Understanding xref:operation:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+
+JMX Collection definitions are defined in `etc/jmx-datacollection-config.xml` and `etc/jmx-datacollection-config.d/`.
+
+This snippet provides a collection definition named 'opennms-poller':
+
+[source, xml]
+----
+<jmx-collection name="opennms-poller">
+    <rrd step="300">
+        <rra>RRA:AVERAGE:0.5:1:2016</rra>
+        <rra>RRA:AVERAGE:0.5:12:1488</rra>
+        <rra>RRA:AVERAGE:0.5:288:366</rra>
+        <rra>RRA:MAX:0.5:288:366</rra>
+        <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <mbeans>
+        <mbean name="OpenNMS Pollerd" objectname="OpenNMS:Name=Pollerd">
+            <attrib name="NumPolls" alias="ONMSPollCount" type="counter"/>
+        </mbean>
+    </mbeans>
+</jmx-collection>
+----
+
+Once added to `etc/jmx-datacollection-config.xml` you can use the `collect` command available in the Karaf Shell to test it:
+
+[source, console]
+----
+opennms:collect org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 collection=opennms-poller port=18980
+----
+
+== Generic resource type
+
+To allow wildcards (`*`) in objectname, the JMX collector supports generic resource types.
+JMX configuration requires two changes for this to work:
+
+First, create a custom resource type in `etc/resource-types.d/`.
+For example, there is already a definition in `jmx-resource.xml` that defines a custom resource for Kafka lag.
+
+[source, xml]
+----
+<resource-types>
+    <resourceType name="kafkaLag" label="Kafka Lag" resourceLabel="${index}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+            <parameter key="sibling-column-name" value="name" />
+        </storageStrategy>
+    </resourceType>
+</resource-types>
+----
+
+Then, match the resourceType name as `resource-type` in MBean definition.
+
+[source, xml]
+----
+<mbean name="org.opennms.core.ipc.sink.kafka.heartbeat" resource-type="kafkaLag" objectname="org.opennms.core.ipc.sink.kafka:name=OpenNMS.Sink.*.Lag">
+    <attrib name="Value" alias="Lag" type="gauge"/>
+</mbean>
+----
+
+=== Resource definition
+
+The JMX objectname is the full name of MBean in the form of `domain:key=value, key=value, ...`.
+A wildcard `*` can exist anywhere in the objectname.
+
+In most cases, use `SiblingColumnStorageStrategy` to extract the resource label.
+If wildcard exists in the value (the usual case) use a corresponding `key` as the `sibling-column-name` parameter.
+For example:
+----
+org.apache.activemq:BrokerName=*,Type=Queue,Destination=com.mycompany.myqueue
+----
+
+This defines `BrokerName` as a parameter for SiblingColumnStorageStrategy:
+----
+<parameter key="sibling-column-name" value="BrokerName" />
+----
+
+The extracted BrokerNames from the wildcard will be the resource folders in the form of `nodeId/resourceTypeName/\{resource-label}`
+
+Wildcard may exist in domain as well.
+For example:
+----
+org.apache.*:BrokerName=trap, Type=Queue
+----
+
+Then you can define `domain` as the `sibling-column-name` parameter.
+----
+<parameter key="sibling-column-name" value="domain" />
+----
+
+To use the `objectname` itself as a resource label, use `IndexStorageStrategy` as storageStrategy in `resource-type` definition.
+
+== Third-party JMX services
+
+Some Java applications provide their own JMX implementation and require certain libraries to be present on the classpath.
+One example of this is the Java application server Wildfly.
+To successfully collect data, you may need to do the following:
+
+* Place the jmx client lib in the $OPENNMS_HOME/lib folder (for example, `jboss-cli-client.jar`).
+* Configure the collection accordingly (see above).
+* Configure the JmxCollector in `collectd-configuration.xml` (see below).
+
+[source, xml]
+----
+<service name="JMX-WILDFLY" interval="300000" user-defined="false" status="on">
+    <parameter key="url" value="service:jmx:http-remoting-jmx://$\{ipaddr}:9990"/>
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="3000"/>
+    <parameter key="factory" value="PASSWORD-CLEAR"/>
+    <parameter key="username" value="admin"/>
+    <parameter key="password" value="admin"/>
+    <parameter key="rrd-base-name" value="java"/>
+    <parameter key="collection" value="jsr160"/>
+    <parameter key="thresholding-enabled" value="true"/>
+    <parameter key="ds-name" value="jmx-wildfly"/>
+    <parameter key="friendly-name" value="jmx-wildfly"/>
+</service>
+<collector service="JMX-WILDFLY" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+----

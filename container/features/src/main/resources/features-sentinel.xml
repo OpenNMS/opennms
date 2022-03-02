@@ -67,12 +67,19 @@
         <!-- Core Sentinel -->
         <bundle>mvn:org.opennms.features.distributed/shell/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.sentinel/core/${project.version}</bundle>
+
+        <!-- Useful Commands -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.commands/${project.version}</bundle>
+
+        <!-- SystemProperties -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-events-forwarder" description="OpenNMS :: Sentinel :: Events Forwarder" version="${project.version}">
         <feature>sentinel-core</feature>
         <feature>opennms-events-sink-dispatcher</feature>
         <feature>opennms-send-event-command</feature>
+        <feature>opennms-core-ipc-sink-offheap</feature>
     </feature>
 
     <feature name="sentinel-persistence" description="Sentinel :: Persistence" version="${project.version}">
@@ -95,7 +102,7 @@
         <feature>opennms-core-ipc-sink-api</feature>
         <feature>opennms-dao-api</feature>
         <feature>opennms-dao</feature>
-
+        <feature>opennms-core-tracing</feature>
         <feature>sentinel-thresholding-service</feature>
 
         <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
@@ -118,6 +125,9 @@
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-dnsresolver-netty</feature>
         <feature>sentinel-kvstore-api</feature>
+        <feature>opennms-kafka</feature>
+        <feature>rate-limited-logger</feature>
+        <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
@@ -127,6 +137,7 @@
         <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.transport/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.flows/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.adapter/${project.version}</bundle>
@@ -144,6 +155,23 @@
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-jti</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-telemetry-graphite" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: Graphite" version="${project.version}">
+        <feature>sentinel-telemetry</feature>
+        <feature>opennms-telemetry-graphite</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-telemetry-bmp" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
+        <feature>sentinel-telemetry</feature>
+        <feature>opennms-telemetry-bmp-adapter</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-telemetry-bmp-persist" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
+        <feature>sentinel-telemetry</feature>
+        <feature>opennms-telemetry-bmp-adapter</feature>
     </feature>
 
 
@@ -164,7 +192,7 @@
              description="OpenNMS :: Features :: Distributed :: Coordination :: Zookeeper" version="${project.version}">
         <feature version="${project.version}">sentinel-coordination-api</feature>
         <feature version="${project.version}">sentinel-coordination-common</feature>
-        <feature version="3.4.7">zookeeper-dependencies</feature>
+        <feature version="${zookeeperVersion}">zookeeper-dependencies</feature>
         <bundle>mvn:org.opennms.features.distributed/coordination-zookeeper/${project.version}</bundle>
     </feature>
 
@@ -174,11 +202,11 @@
         <bundle>mvn:org.opennms.features.distributed/coordination-shell/${project.version}</bundle>
     </feature>
 
-    <feature name="zookeeper-dependencies" version="3.4.7" description="ZooKeeper Dependencies">
-        <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.7</bundle>
+    <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
+        <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
         <bundle dependency="true">mvn:com.google.guava/guava/16.0.1</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.6</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.6</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.10.0</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.10.0</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-client/2.9.1</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-framework/2.9.1</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-recipes/2.9.1</bundle>
@@ -195,7 +223,7 @@
         <feature>newts-cassandra-search</feature>
         <feature>fst</feature>
 
-        <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-trees/concurrent-trees/2.5.0</bundle>
+        <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-trees/concurrent-trees/${concurrentTreesVersion}</bundle>
         <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
         <bundle dependency="true">wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.4.2</bundle>

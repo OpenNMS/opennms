@@ -1,4 +1,4 @@
-#!/bin/bash -
+#!/usr/bin/env bash
 #
 # Wrapper script for starting a JRE within OpenNMS.
 # DJ Gregor
@@ -31,6 +31,8 @@
 #
 # put an '@' here so we don't break maven substition
 
+INCOMING_ARGS=("$@")
+
 # shellcheck disable=SC2016
 opennms_home='${install.dir}'
 if [ ! -d "${opennms_home}" ]; then
@@ -38,7 +40,32 @@ if [ ! -d "${opennms_home}" ]; then
     opennms_home="$OPENNMS_HOME"
 fi
 
-minimum_version="1.8.0"
+# The user to run as
+[ -z "$RUNAS" ] && RUNAS=opennms
+
+if [ -e "${opennms_home}/bin/_lib.sh" ]; then
+    # shellcheck disable=SC1090,SC1091
+    . "${opennms_home}/bin/_lib.sh"
+
+    # Load opennms.conf, if it exists, to override $RUNAS
+    if [ -f "${opennms_home}/etc/opennms.conf" ]; then
+        # shellcheck disable=SC1090
+        __onms_read_conf "${opennms_home}/etc/opennms.conf"
+    fi
+
+    SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
+    myuser="$(id -u -n)"
+    if [ "$myuser" != "$RUNAS" ]; then
+        if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
+            _cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
+            exec "${_cmd[@]}"
+        fi
+        echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
+        exit 4 # According to LSB: 4 - user had insufficient privileges
+    fi
+fi
+
+minimum_version="11.0"
 maximum_version="11.9999"
 
 searchdirs=("/usr/lib/jvm" "/usr/java" "/System/Library/Java/JavaVirtualMachines" "/Library/Java/JavaVirtualMachines" "/Library/Java/Home" "/usr" "/opt")

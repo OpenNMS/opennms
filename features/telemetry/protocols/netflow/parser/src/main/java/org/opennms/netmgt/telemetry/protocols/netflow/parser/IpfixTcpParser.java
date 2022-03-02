@@ -32,6 +32,8 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
@@ -42,10 +44,19 @@ import org.opennms.netmgt.telemetry.listeners.TcpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.ParserState;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.IpFixMessageBuilder;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Sets;
+
+import io.netty.buffer.ByteBuf;
 
 public class IpfixTcpParser extends ParserBase implements TcpParser {
+
+    private final IpFixMessageBuilder messageBuilder = new IpFixMessageBuilder();
+
+    private final Set<TcpSession> sessions = Sets.newConcurrentHashSet();
 
     public IpfixTcpParser(final String name,
                           final AsyncDispatcher<TelemetryMessage> dispatcher,
@@ -57,32 +68,85 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
     }
 
     @Override
+    public IpFixMessageBuilder getMessageBuilder() {
+        return this.messageBuilder;
+    }
+
+    @Override
     public Handler accept(final InetSocketAddress remoteAddress,
                           final InetSocketAddress localAddress) {
-        final TcpSession session = new TcpSession(remoteAddress.getAddress());
+        final TcpSession session = new TcpSession(remoteAddress.getAddress(), this::sequenceNumberTracker);
 
-        return buffer -> {
-            buffer.markReaderIndex();
+        return new Handler() {
+            @Override
+            public Optional<CompletableFuture<?>> parse(final ByteBuf buffer) throws Exception {
+                buffer.markReaderIndex();
 
-            final Header header;
-            if (buffer.isReadable(Header.SIZE)) {
-                header = new Header(slice(buffer, Header.SIZE));
-            } else {
-                buffer.resetReaderIndex();
-                return Optional.empty();
+                final Header header;
+                if (buffer.isReadable(Header.SIZE)) {
+                    header = new Header(slice(buffer, Header.SIZE));
+                } else {
+                    buffer.resetReaderIndex();
+                    return Optional.empty();
+                }
+
+                final Packet packet;
+                if (buffer.isReadable(header.payloadLength())) {
+                    packet = new Packet(session, header, slice(buffer, header.payloadLength()));
+                } else {
+                    buffer.resetReaderIndex();
+                    return Optional.empty();
+                }
+
+                detectClockSkew(header.exportTime * 1000L, session.getRemoteAddress());
+
+                return Optional.of(IpfixTcpParser.this.transmit(packet, session, remoteAddress));
             }
 
-            final Packet packet;
-            if (buffer.isReadable(header.payloadLength())) {
-                packet = new Packet(session, header, slice(buffer, header.payloadLength()));
-            } else {
-                buffer.resetReaderIndex();
-                return Optional.empty();
+            @Override
+            public void active() {
+                sessions.add(session);
             }
 
-            detectClockSkew(header.exportTime * 1000L, session.getRemoteAddress());
-
-            return Optional.of(this.transmit(packet, remoteAddress));
+            @Override
+            public void inactive() {
+                sessions.remove(session);
+            }
         };
+    }
+
+    public Long getFlowActiveTimeoutFallback() {
+        return this.messageBuilder.getFlowActiveTimeoutFallback();
+    }
+
+    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
+        this.messageBuilder.setFlowActiveTimeoutFallback(flowActiveTimeoutFallback);
+    }
+
+    public Long getFlowInactiveTimeoutFallback() {
+        return this.messageBuilder.getFlowInactiveTimeoutFallback();
+    }
+
+    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
+        this.messageBuilder.setFlowInactiveTimeoutFallback(flowInactiveTimeoutFallback);
+    }
+
+    public Long getFlowSamplingIntervalFallback() {
+        return this.messageBuilder.getFlowSamplingIntervalFallback();
+    }
+
+    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
+        this.messageBuilder.setFlowSamplingIntervalFallback(flowSamplingIntervalFallback);
+    }
+
+    @Override
+    public Object dumpInternalState() {
+        final ParserState.Builder parser = ParserState.builder();
+
+        this.sessions.stream()
+                     .flatMap(TcpSession::dumpInternalState)
+                     .forEach(parser::withExporter);
+
+        return parser.build();
     }
 }

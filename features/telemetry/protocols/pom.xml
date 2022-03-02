@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.telemetry</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry</groupId>
@@ -11,12 +11,15 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Telemetry :: Protocols</name>
   <modules>
+    <module>adapters</module>
+    <module>bmp</module>
     <module>common</module>
-    <module>collection</module>
     <module>flows</module>
+    <module>graphite</module>
     <module>jti</module>
     <module>nxos</module>
     <module>sflow</module>
     <module>netflow</module>
+    <module>openconfig</module>
   </modules>
 </project>

@@ -30,12 +30,12 @@ package org.opennms.netmgt.flows.classification.internal;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,7 +50,6 @@ import org.opennms.netmgt.flows.classification.ClassificationRequestBuilder;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
-import org.opennms.netmgt.flows.classification.persistence.api.GroupBuilder;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.classification.persistence.api.ProtocolType;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
@@ -97,8 +96,8 @@ public class DefaultClassificationEngineIT {
     public void setUp() {
         operations.execute(status -> {
             databasePopulator.populateDatabase();
-            groupDao.save(new GroupBuilder().withName(Groups.USER_DEFINED).build());
             Group userDefinedGroup = groupDao.findByName(Groups.USER_DEFINED);
+            assertNotNull("user defined group", userDefinedGroup);
 
             final ArrayList<Rule> rules = Lists.newArrayList(
                     new RuleBuilder().withName("rule1").withDstPort(80).withGroup(userDefinedGroup).build(),
@@ -118,13 +117,12 @@ public class DefaultClassificationEngineIT {
     public void tearDown() {
         operations.execute(status -> {
             databasePopulator.resetDatabase();
-            groupDao.findAll().forEach(group -> groupDao.delete(group));
             return null;
         });
     }
 
     @Test
-    public void verifyRuleFilter() {
+    public void verifyRuleFilter() throws InterruptedException {
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> ruleDao.findAllEnabledRules(), new DefaultFilterService(filterDao));
 
         // Create request, that matches rule1
@@ -151,7 +149,7 @@ public class DefaultClassificationEngineIT {
         assertThat(classificationEngine.classify(classificationRequest), is("rule4"));
 
         // Update no rule matches
-        classificationRequest.setDstPort(443);
+        classificationRequest.setDstPort(0);
         assertThat(classificationEngine.classify(classificationRequest), is(nullValue()));
     }
 }

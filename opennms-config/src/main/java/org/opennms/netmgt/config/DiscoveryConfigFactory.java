@@ -59,6 +59,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
@@ -72,6 +73,7 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
+import org.opennms.netmgt.config.discovery.ExcludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
@@ -94,6 +96,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     private final Lock m_writeLock = m_globalLock.writeLock();
     private Map<String, List<String>> m_urlSpecifics = new HashMap<>();
     private List<ExcludeRange> m_excludeRanges = new ArrayList<>();
+    private Map<String, Pair<Optional<String>, List<String>>> m_excludeUrlsMap = new HashMap<>();
 
     public static final String COMMENT_STR = "#";
     public static final char COMMENT_CHAR = '#';
@@ -154,6 +157,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
             try {
                 clearUrlSpecifics();
                 clearExcludeRanges();
+                clearExcludeUrls();
                 getInitialSleepTime();
                 getRestartSleepTime();
                 getIntraPacketDelay();
@@ -381,6 +385,8 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         m_excludeRanges.clear();
     }
 
+    private void clearExcludeUrls() { m_excludeUrlsMap.clear(); }
+
     /**
      * <p>getRanges</p>
      *
@@ -553,6 +559,21 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 }
             }
         }
+        if (!m_excludeUrlsMap.isEmpty()) {
+
+            for (final String url:  m_excludeUrlsMap.keySet()) {
+                final byte[] laddr = address.getAddress();
+                //get the pair object with location and the list of URLs extracted from the file
+                Pair<Optional<String>, List<String>> pair = m_excludeUrlsMap.get(url);
+                if (!isLocationMatched(pair.getLeft().orElse(defaultLocation), location)) {
+                    continue;
+                }
+                if (pair.getRight().stream().anyMatch(ip -> InetAddressUtils.areSameInetAddress(laddr, InetAddressUtils.toIpAddrBytes(ip)))) {
+                    return true;
+                }
+
+            }
+        }
         return false;
     }
 
@@ -565,6 +586,39 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 setLocationFromDefinition(def);
                 m_excludeRanges.addAll(def.getExcludeRanges());
             });
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    void initializeExcludeUrls() {
+        getReadLock().lock();
+        List<ExcludeUrl> excludeUrlList = new ArrayList<>();
+        try {
+            excludeUrlList.addAll(getConfiguration().getExcludeUrls());
+            // Add exclude urls from definitions. Assign location from definition.
+            getConfiguration().getDefinitions().forEach(def -> {
+                def.getExcludeUrls().forEach(eu -> {
+                    if (!eu.getLocation().isPresent()) {
+                        eu.setLocation(def.getLocation().orElse(LocationUtils.DEFAULT_LOCATION_NAME));
+                    }
+                });
+                excludeUrlList.addAll(def.getExcludeUrls());
+            });
+            for (final ExcludeUrl excludeUrl : excludeUrlList) {
+                if (excludeUrl.getUrl() != null) {
+                    final List<IPPollAddress> specifics = new LinkedList<IPPollAddress>();
+                    List<String> ipAddressList = addToSpecificsFromURL(specifics,
+                            excludeUrl.getUrl(),
+                            excludeUrl.getForeignSource().orElse(null),
+                            excludeUrl.getLocation().orElse(null),
+                            0,
+                            0);
+
+                    m_excludeUrlsMap.put(excludeUrl.getUrl(), Pair.of(excludeUrl.getLocation(), ipAddressList));
+                }
+            }
+
         } finally {
             getReadLock().unlock();
         }
@@ -749,6 +803,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
             final List<IPPollRange> ranges = getRanges();
             specifics.addAll(getURLSpecifics());
             initializeExcludeRanges();
+            initializeExcludeUrls();
 
             final List<Iterator<IPPollAddress>> iters = new ArrayList<Iterator<IPPollAddress>>();
             iters.add(specifics.iterator());

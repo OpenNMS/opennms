@@ -1,0 +1,5 @@
+[[ref-telemetryd]]
+= Telemetryd
+
+The xref:operation:telemetryd/introduction.adoc[Telemetryd] service collects sensor data sent from nodes to {page-component-title}.
+You can configure Listeners and Protocols to configure the service to accept data from the specific types of devices on your network.

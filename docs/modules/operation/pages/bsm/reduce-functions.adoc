@@ -1,0 +1,64 @@
+
+= Reduce Functions
+
+A reduce function aggregates the operational status for the business service.
+It uses the alarm severity from the edges as input.
+This operation can use the following reduce functions:
+
+.Status calculation reduce functions
+[options="header"]
+[cols="1,3"]
+|===
+| Name                      | Description
+
+| Highest Severity
+| Uses the value of the highest severity; ignores weight.
+
+| Threshold
+| Uses the highest severity found more often than the given threshold.
+Value should be a percentage as a decimal so that .26 means 26%.
+This means at least 2 of 4 alarms need to be raised to change the business service.
+
+| Highest Severity Above
+| Uses the highest severity greater than the given threshold severity.
+
+| Exponential Propagation
+| This reduce function computes the sum of the given child severities based on a base number.
+For this computation, the severities are mapped to numbers: +
+asciimath:[WARNING=0, MINOR=1, MAJOR=2, CRITICAL=3]
+
+All other severities are ignored.
+
+The aggregation uses the following formula to compute the resulting business service severity from its _n_ child entities based on the base number _b_: +
+asciimath:[severity = \|__log_{b}( sum_(i=1)^n b^(ch\ildSeverity_{i}) )__\|]
+
+In summary, the base value defines how many items of a severity _x_ will result in a severity _x+1_.
+Results lower than 0 are treated as NORMAL and results higher than 3 are treated as CRITICAL.
+If all input values are of severity INDETERMINATE, the result is INDETERMINATE.
+
+For example, if the business service depends on four child entities with the severities WARNING, WARNING, NORMAL, and NORMAL and the base defined by the number 2, the following computation will be made: +
+asciimath:[severity = \|__log_{2}( 2^{0} + 2^{0} + 0 + 0 )__\| = \|__log_{2}( 1 + 1 + 0 + 0)__\| = \|__log_{2}( 2 )__\| = \|__1__\| = 1]
+
+which corresponds to the severity MINOR. The same computation with the base value of 3 results in: +
+asciimath:[severity = \|__log_{3}( 3^{0} + 3^{0} + 0 + 0 )__\| = \|__log_{3}( 1 + 1 + 0 + 0)__\| = \|__log_{3}( 2 )__\| = \|__0.63__\| = 0]
+
+which means WARNING.
+|===
+
+The following table shows the status calculation with edges assigned to an IP service.
+The IP service is driven by the monitoring of the ICMP service for three web servers.
+Te table below shows a configuration where Web Server 3 is weighted three times higher than the others with a configured threshold of 0.33 (33%).
+
+.Example for status calculation using the threshold function
+[options="header, %autowidth"]
+|===
+| Name       | Weight | Weight Factor | Input Severity | Operational Status | Critical | Major | Minor | Warning | Normal
+| Web-ICMP-1 |   1    |     0.2       |    Critical    |      Critical      |    0.2   |  0.2  |  0.2  |   0.2   |  0.2
+| Web-ICMP-2 |   1    |     0.2       |     Normal     |       Normal       |    0     |  0    |  0    |   0     |  0.2
+| Web-ICMP-3 |   3    |     0.6       |    Warning     |      Warning       |    0     |  0    |  0    |   0.6   |  0.6
+| Total      |        |     1.0       |                |                    |    0.2   |  0.2  |  0.2  |   0.8   |  1
+| Percentage |        |     100%      |                |                    |    20%   |  20%  |  20%  |   80%   |  100%
+|===
+
+The operational status severity is evaluated from left to right; the first value higher than the configured threshold is used.
+In this case, the operational status is set to Warning because the first threshold that exceeds 33% is Warning with 80%.

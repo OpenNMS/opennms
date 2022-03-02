@@ -26,13 +26,6 @@
         <argument value="org.opennms.core.ipc.sink.kafka.consumer"/>
         <argument ref="configurationAdmin" />
     </bean>
-    <bean id="kafkaSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
-    <service ref="kafkaSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
-        <service-properties>
-            <entry key="name" value="Kafka Sink"/>
-            <entry key="description" value="Metrics related to Sink messages between OpenNMS and Minion"/>
-        </service-properties>
-    </service>
 
 
     <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
@@ -70,6 +63,15 @@
             <argument ref="kafkaConfigProvider"/>
             <argument value="Sink Consumer" />
         </bean>
+    </service>
+
+    <!-- Kafka Sink Consumer Metrics -->
+    <bean id="kafkaSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <service ref="kafkaSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+        <service-properties>
+            <entry key="name" value="Kafka Sink Consumer"/>
+            <entry key="description" value="Sink Consumer Metrics"/>
+        </service-properties>
     </service>
 
 </blueprint>

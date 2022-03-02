@@ -47,6 +47,8 @@ import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.PingConstants;
 
+import io.opentracing.Span;
+
 @XmlRootElement(name = "ping-sweep-request")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PingSweepRequestDTO implements RpcRequest {
@@ -119,6 +121,11 @@ public class PingSweepRequestDTO implements RpcRequest {
     @Override
     public Map<String, String> getTracingInfo() {
         return tracingInfo;
+    }
+
+    @Override
+    public Span getSpan() {
+        return null;
     }
 
     public void addTracingInfo(String key, String value) {

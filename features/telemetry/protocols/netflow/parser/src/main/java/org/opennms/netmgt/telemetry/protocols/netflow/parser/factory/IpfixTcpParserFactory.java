@@ -40,8 +40,6 @@ import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixTcpParser;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 
 public class IpfixTcpParserFactory implements ParserFactory {
 
@@ -65,9 +63,6 @@ public class IpfixTcpParserFactory implements ParserFactory {
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        final IpfixTcpParser parser = new IpfixTcpParser(parserDefinition.getName(), dispatcher, eventForwarder, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(parser);
-        wrapper.setPropertyValues(parserDefinition.getParameterMap());
-        return parser;
+        return new IpfixTcpParser(parserDefinition.getFullName(), dispatcher, eventForwarder, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
     }
 }

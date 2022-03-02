@@ -30,6 +30,8 @@ package org.opennms.core.rpc.api;
 
 import java.util.Map;
 
+import io.opentracing.Span;
+
 /**
  * The request of an RPC call.
  *
@@ -63,4 +65,6 @@ public interface RpcRequest {
      * Implementations should add tags defined above if they are available.
      */
     Map<String, String> getTracingInfo();
+
+    Span getSpan();
 }

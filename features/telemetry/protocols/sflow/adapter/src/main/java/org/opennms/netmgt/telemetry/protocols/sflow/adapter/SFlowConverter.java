@@ -34,6 +34,7 @@ import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getS
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getDocument;
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.get;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.bson.BsonDocument;
@@ -50,7 +51,7 @@ public class SFlowConverter implements Converter<BsonDocument> {
     }
 
     @Override
-    public List<Flow> convert(final BsonDocument packet) {
+    public List<Flow> convert(final BsonDocument packet, final Instant receivedAt) {
         final List<Flow> result = Lists.newLinkedList();
 
         final SFlow.Header header = new SFlow.Header(packet);
@@ -67,7 +68,7 @@ public class SFlowConverter implements Converter<BsonDocument> {
                            get(sampleDocument, "data", "flows", "0:3"),
                            get(sampleDocument, "data", "flows", "0:4")).isPresent()) {
                     // Handle only flows containing IP related records
-                    result.add(new SFlow(header, getDocument(sampleDocument, "data").orElseThrow(SFlowConverter::invalidDocument)));
+                    result.add(new SFlow(header, getDocument(sampleDocument, "data").orElseThrow(SFlowConverter::invalidDocument), receivedAt));
                 }
             }
         }

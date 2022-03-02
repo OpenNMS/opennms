@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -49,6 +51,7 @@ public final class Template implements Iterable<Field> {
 
     public final List<Scope> scopes;
     public final List<Field> fields;
+    public final Set<String> scopeNames;
 
     private Template(final int id,
                      final Type type,
@@ -58,6 +61,9 @@ public final class Template implements Iterable<Field> {
         this.type = Objects.requireNonNull(type);
         this.scopes = Objects.requireNonNull(scopes);
         this.fields = Objects.requireNonNull(fields);
+        // The set of scope names are used when processing packets - so we build it here once
+        // instead of having to re-compute this everytime
+        this.scopeNames = scopes.stream().map(Scope::getName).collect(Collectors.toSet());
     }
 
     public int count() {

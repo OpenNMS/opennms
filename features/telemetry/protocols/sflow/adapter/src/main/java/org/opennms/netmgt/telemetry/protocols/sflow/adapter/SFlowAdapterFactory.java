@@ -49,10 +49,12 @@ public class SFlowAdapterFactory implements AdapterFactory {
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        Objects.requireNonNull(telemetryRegistry);
-        Objects.requireNonNull(flowRepository);
+        Objects.requireNonNull(this.telemetryRegistry);
+        Objects.requireNonNull(this.flowRepository);
 
-        return new SFlowAdapter(adapterConfig.getName(), telemetryRegistry.getMetricRegistry(), flowRepository);
+        return new SFlowAdapter(adapterConfig,
+                                this.telemetryRegistry.getMetricRegistry(),
+                                this.flowRepository);
     }
 
     public void setTelemetryRegistry(TelemetryRegistry telemetryRegistry) {

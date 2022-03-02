@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,11 +53,32 @@ import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+
 /*
  * ProvisionService
  * @author brozow
  */
 public interface ProvisionService {
+
+    String NODE_ID = "nodeId";
+
+    String LOCATION = "location";
+
+    String IP_ADDRESS = "ipAddress";
+
+    String FOREIGN_ID = "foreignId";
+
+    String FOREIGN_SOURCE = "foreignSource";
+
+    String DETECTOR_NAME = "detectorName";
+
+    String ABORT = "abort";
+
+    String ERROR = "error";
+
 
     boolean isDiscoveryEnabled();
     
@@ -98,7 +119,7 @@ public interface ProvisionService {
      *            dbonly, if the node should not be rescanned (perform all DB operations)
      */
     @Transactional
-    void updateNode(OnmsNode node, String rescanExisting);
+    void updateNode(OnmsNode node, String rescanExisting, String monitorKey);
     
     @Transactional
     OnmsNode updateNodeAttributes(OnmsNode node);
@@ -107,16 +128,16 @@ public interface ProvisionService {
     OnmsNode getDbNodeInitCat(Integer nodeId);
     
     @Transactional
-    OnmsIpInterface updateIpInterfaceAttributes(Integer nodeId, OnmsIpInterface ipInterface);
+    OnmsIpInterface updateIpInterfaceAttributes(Integer nodeId, OnmsIpInterface ipInterface, String monitorKey);
     
     @Transactional
     OnmsSnmpInterface updateSnmpInterfaceAttributes(Integer nodeId, OnmsSnmpInterface snmpInterface);
 
     @Transactional
-    OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName);
+    OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName, String monitorKey);
 
     @Transactional
-    OnmsMonitoredService addMonitoredService(Integer nodeId, String ipAddress, String serviceName);
+    OnmsMonitoredService addMonitoredService(Integer nodeId, String ipAddress, String serviceName, String monitorKey);
 
     @Transactional
     OnmsMonitoredService updateMonitoredServiceState(Integer nodeId, String ipAddress, String serviceName);
@@ -151,7 +172,7 @@ public interface ProvisionService {
      * Insert the provided node into the database
      */
     @Transactional
-    void insertNode(OnmsNode node);
+    void insertNode(OnmsNode node, String monitorKey);
 
     /**
      * Look up the OnmsServiceType with the given name, creating one if it
@@ -211,9 +232,9 @@ public interface ProvisionService {
     /**
      * Returns a list of scheduled nodes.
      */
-    List<NodeScanSchedule> getScheduleForNodes();
+    List<NodeScanSchedule> getScheduleForNodes(String monitorKey);
 
-    NodeScanSchedule getScheduleForNode(int nodeId, boolean force);
+    NodeScanSchedule getScheduleForNode(int nodeId, boolean force, String monitorKey);
     
     void setForeignSourceRepository(ForeignSourceRepository foriengSourceRepository);
 
@@ -240,7 +261,7 @@ public interface ProvisionService {
     OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node);
 
     @Transactional
-    OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource, String location);
+    OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource, String location, String monitorKey);
 
     @Transactional
     OnmsNode getNode(Integer nodeId);
@@ -257,4 +278,8 @@ public interface ProvisionService {
     SnmpProfileMapper getSnmpProfileMapper();
 
     public void setSnmpProfileMapper(SnmpProfileMapper snmpProfileMapper);
+
+    public void setTracer(Tracer tracer);
+
+    public Span buildAndStartSpan(String name, SpanContext spanContext);
 }

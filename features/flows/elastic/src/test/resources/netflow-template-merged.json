@@ -1,6 +1,6 @@
 {
   "order": 0,
-  "template": "netflow-*",
+  "index_patterns": ["netflow-*"],
   "mappings": {
     "dynamic_templates": [
       {
@@ -743,6 +743,10 @@
         "type": "date",
         "format": "epoch_millis"
       },
+      "@clock_correction": {
+        "type": "date",
+        "format": "epoch_millis"
+      },
       "host": {
         "type": "keyword",
         "norms": false
@@ -842,8 +846,13 @@
             "type": "date"
           },
           "tos": {
-            "type": "keyword",
-            "norms": false
+            "type": "keyword"
+          },
+          "dscp": {
+            "type": "keyword"
+          },
+          "ecn": {
+            "type": "keyword"
           },
           "version": {
             "type": "keyword",

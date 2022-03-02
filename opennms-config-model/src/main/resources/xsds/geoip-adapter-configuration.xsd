@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+
+    <xs:element name="geoip-config">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="location">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="subnet" maxOccurs="unbounded" minOccurs="0">
+                  <xs:complexType mixed="true">
+                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                      <xs:element name="asset">
+                        <xs:complexType>
+                          <xs:attribute type="xs:string" name="name" use="required"/>
+                          <xs:attribute type="xs:string" name="value" use="required"/>
+                        </xs:complexType>
+                      </xs:element>
+                    </xs:sequence>
+                    <xs:attribute type="xs:string" name="cidr" use="required"/>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+              <xs:attribute type="xs:string" name="name" use="required"/>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="xs:boolean" name="enabled" use="required"/>
+        <xs:attribute type="xs:boolean" name="overwrite" use="required"/>
+        <xs:attribute type="xs:string" name="database" use="required"/>
+        <xs:attribute name="resolve" use="required">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="(public|public-ipv4|public-ipv6|primary)"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+    <changeSet runOnChange="false" author="cpape" id="27.0.0-remove-remote-poller">
+        <sql>
+            DELETE FROM monitoringsystems WHERE type='Remote Poller';
+        </sql>
+
+        <dropTable tableName="location_specific_status_changes"/>
+    </changeSet>
+
+    <changeSet runOnChange="false" author="cpape" id="27.0.0-add-perspective-to-outage-table">
+        <addColumn tableName="outages">
+            <column name="perspective" type="text"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="outages" baseColumnNames="perspective" constraintName="fk_outages_perspective" referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE" onUpdate="CASCADE"/>
+    </changeSet>
+
+    <changeSet author="cpape" id="27.0.0-unique-outages-per-location">
+        <dropIndex tableName="outages" indexName="one_outstanding_outage_per_service_idx"/>
+        <sql>
+            CREATE UNIQUE INDEX one_outstanding_outage_per_service_and_location_idx1
+              ON outages (ifserviceid)
+              WHERE perspective IS NULL AND ifregainedservice IS NULL;
+
+            CREATE UNIQUE INDEX one_outstanding_outage_per_service_and_location_idx2
+              ON outages (ifserviceid, perspective)
+              WHERE NOT perspective IS NULL AND ifregainedservice IS NULL;
+        </sql>
+    </changeSet>
+
+    <changeSet author="cpape" id="27.0.0-recreate-views-based-on-outage-table">
+        <dropView viewName="node_outages"/>
+        <dropView viewName="node_outage_status"/>
+
+        <createView replaceIfExists="true" viewName="node_outage_status">
+          SELECT
+            node.nodeid,
+            (CASE WHEN severity IS NULL OR severity &lt; 3 THEN 3 ELSE severity END) AS max_outage_severity
+          FROM
+            (
+              SELECT events.nodeid, max(events.eventseverity) AS severity
+              FROM events
+              JOIN outages ON outages.svclosteventid = events.eventid
+              WHERE outages.ifregainedservice IS NULL AND outages.perspective IS NULL
+              GROUP BY events.nodeid
+            ) AS tmp
+          RIGHT JOIN node ON tmp.nodeid = node.nodeid
+        </createView>
+
+        <createView replaceIfExists="true" viewName="node_outages">
+            SELECT
+              outages.outageid,
+              outages.svclosteventid,
+              outages.svcregainedeventid,
+              outages.iflostservice,
+              outages.ifregainedservice,
+              outages.ifserviceid,
+              e.eventuei AS svclosteventuei,
+              e.eventsource,
+              e.alarmid,
+              e.eventseverity,
+              (ifregainedservice NOTNULL) AS resolved,
+              s.servicename,
+              i.serviceid,
+              ipif.ipaddr,
+              COALESCE(outages.ifregainedservice - outages.iflostservice, now() - outages.iflostservice) AS duration,
+              nos.max_outage_severity,
+              nc.*
+            FROM
+              outages
+            JOIN
+              events e
+            ON
+              outages.svclosteventid = e.eventid
+            JOIN
+              ifservices i
+            ON
+              outages.ifserviceid = i.id
+            JOIN
+              service s
+            ON
+              i.serviceid = s.serviceid
+            JOIN
+              ipinterface ipif
+            ON
+              i.ipinterfaceid = ipif.id
+            JOIN
+              node_categories nc
+            ON
+              nc.nodeid = e.nodeid
+            JOIN
+              node_outage_status nos
+            ON
+              nc.nodeid = nos.nodeid
+            WHERE
+              outages.perspective IS NULL
+        </createView>
+    </changeSet>
+
+    <changeSet author="patrick.schweizer" id="27.0.0-perspective-poller-tables">
+        <createTable tableName="application_perspective_location_map" remarks="locations from where an application should be monitored">
+            <column name="appid" type="integer">
+                <constraints nullable="false" />
+            </column>
+            <column name="monitoringlocationid" type="text">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="appid_fkey"
+                                 baseTableName="application_perspective_location_map" baseColumnNames="appid"
+                                 referencedTableName="applications" referencedColumnNames="id" onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="monitoringLocationid_fkey"
+                                 baseTableName="application_perspective_location_map" baseColumnNames="monitoringlocationid"
+                                 referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE"/>
+        <createIndex tableName="application_perspective_location_map" indexName="application_perspective_location_map_appid_idx" unique="false">
+            <column name="appid" />
+        </createIndex>
+        <createIndex tableName="application_perspective_location_map" indexName="monitoringlocationid_idx" unique="false">
+            <column name="monitoringlocationid" />
+        </createIndex>
+        <createIndex tableName="application_perspective_location_map" indexName="appid_monitoringlocationid_idx" unique="true">
+            <column name="appid" />
+            <column name="monitoringlocationid" />
+        </createIndex>
+
+        <dropTable tableName="monitoringlocationspollingpackages"/>
+        <dropTable tableName="monitoringlocationscollectionpackages"/>
+    </changeSet>
+    
+    <changeSet author="cpape" id="27.0.0-remove-scanreports">
+        <dropTable tableName="scanreportlogs"/>
+        <dropTable tableName="scanreportpollresults"/>
+        <dropTable tableName="scanreportproperties"/>
+        <dropTable tableName="scanreports"/>
+    </changeSet>
+
+</databaseChangeLog>

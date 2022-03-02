@@ -340,7 +340,7 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
 
 // With bootstrap 4 height=100% does not work anymore, this workaround is enforcing 100% height
 iframe.vaadin-fullscreen {
-  height: calc(100vh - 67px /* header */- 63px /* footer */ - 46px /* navbar */ - 30px /* padding */);
+  height: calc(100vh - 67px /* header */ - 63px /* footer */ - 46px /* navbar */ - 30px /* padding */);
   width:100%;
 }
 
@@ -366,4 +366,8 @@ iframe.vaadin-fullscreen {
 // Use no margin for the last table in cards
 .card table:last-of-type {
   margin-bottom: 0px;
+}
+
+.opennms-bg-chromatic-black {
+     background-color: $opennms-chromatic-black;
 }

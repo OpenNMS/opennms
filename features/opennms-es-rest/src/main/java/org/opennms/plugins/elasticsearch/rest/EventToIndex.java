@@ -175,7 +175,7 @@ public class EventToIndex implements AutoCloseable {
 			request.execute();
 		} catch (BulkException ex) {
 			final BulkResult result = ex.getBulkResult().getRawResult();
-			LOG.error("Bulk API action failed. Error response was: {}", result.getErrorMessage());
+			LOG.error("Bulk API action failed. Error response was: {}", result.getErrorMessage(), ex);
 			// Log any unsuccessful completions as errors
 			if (LOG.isDebugEnabled() && result != null) {
 				for (BulkResultItem item : result.getItems()) {

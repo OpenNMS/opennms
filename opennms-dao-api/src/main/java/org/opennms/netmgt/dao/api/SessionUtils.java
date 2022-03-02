@@ -50,6 +50,13 @@ public interface SessionUtils {
      */
     <V> V withTransaction(Supplier<V> supplier);
 
+    default void withTransaction(Runnable runnable) {
+        this.withTransaction(() -> {
+            runnable.run();
+            return null;
+        });
+    }
+
     /**
      * Invokes the given supplier within the context of a read-only transaction.
      *
@@ -58,6 +65,13 @@ public interface SessionUtils {
      * @return value returned by the supplier
      */
     <V> V withReadOnlyTransaction(Supplier<V> supplier);
+
+    default void withReadOnlyTransaction(Runnable runnable) {
+        this.withReadOnlyTransaction(() -> {
+            runnable.run();
+            return null;
+        });
+    }
 
     /**
      * Converts the flush mode for the current session factory to MANUAL
@@ -70,5 +84,12 @@ public interface SessionUtils {
      * @return value returned by the supplier
      */
     <V> V withManualFlush(Supplier<V> supplier);
+
+    default void withManualFlush(Runnable runnable) {
+        this.withManualFlush(() -> {
+            runnable.run();
+            return null;
+        });
+    }
 
 }

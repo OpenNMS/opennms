@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,8 @@
 
 package org.opennms.features.events.sink.dispatcher;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,28 +43,66 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 
-@Command(scope = "events", name = "send", description = "Send event with specified uei and params")
+import com.google.common.base.Strings;
+
+@Command(scope = "opennms", name = "send-event", description = "Send event with specified uei and params")
 @Service
 public class EventSendCommand implements Action {
 
     @Reference
     private EventForwarder eventForwarder;
+    
+    @Option(name="-n", aliases="--nodeid", description="Database ID of associated node (or use parameters _foreignSource, _foreignId)", required=false, multiValued=false)
+    private Long nodeId;
+    
+    @Option(name="-i", aliases="--interface", description="IP address of associated interface", required=false, multiValued=false)
+    private String ipinterface;
+    
+    @Option(name="-s", aliases="--service", description="Name of the associated service", required=false, multiValued=false)
+    private String service;
+    
+    @Option(name="-f", aliases="--ifindex", description="ifIndex of the associated L2 interface", required=false, multiValued=false)
+    private Integer ifIndex;
+    
+    @Option(name="-x", aliases="--severity", description="Severity of the event (Indeterminate|Cleared|Normal|Warning|Minor|Major|Critical)", required=false, multiValued=false)
+    private String severity;
+    
+    @Option(name="-d", aliases="--description", description="A description for the event browser", required=false, multiValued=false)
+    private String descr;
+    
+    @Option(name="-l", aliases="--logmsg", description="A short logmsg for the event browser (secure field by default)", required=false, multiValued=false)
+    private String logmsg;
 
-    @Option(name="-u", aliases="--uei", description="events uei", required=true, multiValued=false)
-    String eventUei;
-
-    @Argument(index = 0, name = "parameters", description = "Parameters in key=value form", multiValued = true)
+    @Option(name = "-p", aliases="--parameter", description = "Parameter in key=value form", required = false, multiValued = true)
     List<String> params;
 
+    @Argument(index = 0, name="uei", description="Event UEI", required=true, multiValued=false)
+    private String eventUei;
+
     @Override
-    public Object execute() throws Exception {
+    public Object execute() {
 
         if (eventUei == null) {
             System.out.println("Event uei need to specified with -u or --uei option");
         }
-        EventBuilder eventBuilder = new EventBuilder(eventUei, "karaf-shell");
+        EventBuilder eventBuilder = new EventBuilder(eventUei, "KarafShell_send-event");
+        
+        if (nodeId != null) eventBuilder.setNodeid(nodeId);
+        if (! Strings.isNullOrEmpty(ipinterface))
+            try {
+                eventBuilder.setInterface(InetAddress.getByName(ipinterface));
+            } catch (UnknownHostException uhe) {
+                System.out.println(String.format("Error: %s", uhe.getMessage()));
+                return null;
+            }
+        if (! Strings.isNullOrEmpty(service)) eventBuilder.setService(service);
+        if (ifIndex != null) eventBuilder.setIfIndex(ifIndex);
+        if (! Strings.isNullOrEmpty(severity)) eventBuilder.setSeverity(canonicalizeSeverity(severity));
+        if (! Strings.isNullOrEmpty(descr)) eventBuilder.setDescription(descr);
+        if (! Strings.isNullOrEmpty(logmsg)) eventBuilder.setLogMessage(logmsg);
+        
         // parse and add params
-        Map<String, String> parameters = parse(params);
+        Map<String, String> parameters = parseParams(params);
         parameters.forEach(eventBuilder::addParam);
         // send event
         eventForwarder.sendNow(eventBuilder.getEvent());
@@ -70,7 +110,7 @@ public class EventSendCommand implements Action {
         return null;
     }
 
-    private static Map<String, String> parse(List<String> params) {
+    private static Map<String, String> parseParams(List<String> params) {
         Map<String, String> properties = new HashMap<>();
         if (params != null) {
             for (String keyValue : params) {
@@ -86,4 +126,19 @@ public class EventSendCommand implements Action {
         }
         return properties;
     }
+    
+    private String canonicalizeSeverity(String input) {
+        if (Strings.isNullOrEmpty(input)) return "Indeterminate";
+        switch(input.toLowerCase()) {
+            case "indeterminate": return "Indeterminate";
+            case "cleared": return "Cleared";
+            case "normal": return "Normal";
+            case "warning": return "Warning";
+            case "minor": return "Minor";
+            case "major": return "Major";
+            case "critical": return "Critical";
+        }
+        return "Indeterminate";
+    }
+
 }

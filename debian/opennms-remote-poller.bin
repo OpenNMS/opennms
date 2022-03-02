@@ -1,4 +1,0 @@
-#!/bin/sh
-
-/usr/share/opennms/bin/remote-poller.sh "$@" &>/var/log/opennms/opennms-remote-poller.log
-echo $! > /var/run/opennms-remote-poller.pid

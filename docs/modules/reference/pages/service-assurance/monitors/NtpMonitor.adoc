@@ -1,0 +1,58 @@
+
+= NtpMonitor
+
+The NTP monitor tests for NTP service availability.
+During the poll, an NTP request query packet is generated.
+If a response is received, it is parsed and validated.
+If the response is a valid NTP response, the service is considered available.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.NtpMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the NtpMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| The destination port to send the NTP.
+| 123
+
+| retry
+| Number of attempts to get a response.
+| 0
+
+| timeout
+| Time in milliseconds to wait for a response.
+| 5000
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[source, xml]
+----
+<!-- Fast NTP server -->
+<service name="NTP" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="1000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-base-name" value="ntp"/>
+  <parameter key="ds-name" value="ntp"/>
+</service>
+<monitor service="NTP" class-name="org.opennms.netmgt.poller.monitors.NtpMonitor"/>
+----

@@ -89,11 +89,16 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
             // Trust whatever is on the cache if exist for local resources only.
             if (isLocal) {
                 LOG.debug("importResourceRequisition: saving cached requisition to disk");
-                final Requisition req = getRequisitionsDirectoryWatcher().getContents(resource.getFilename());
-                if (req != null) {
-                    req.setResource(resource);
-                    save(req);
-                    return req;
+                final Requisition req;
+                try {
+                    req = getRequisitionsDirectoryWatcher().getContents(resource.getFilename());
+                    if (req != null) {
+                        req.setResource(resource);
+                        save(req);
+                        return req;
+                    }
+                } catch(FileNotFoundException e) {
+                    LOG.debug(e.getLocalizedMessage());
                 }
             }
         } catch (Exception e) {

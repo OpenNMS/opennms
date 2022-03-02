@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,6 +49,8 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsHwEntityAlias;
@@ -62,8 +64,6 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -205,6 +205,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
         }
 
         if (ebldr != null) {
+            ebldr.addParam(EventConstants.PARM_METHOD, NAME);
             ebldr.setNodeid(nodeId);
             ebldr.setInterface(ipAddress);
             getEventForwarder().sendNow(ebldr.getEvent());
@@ -239,7 +240,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
      * @param agentConfig the agent configuration
      * @param node the node
      * @return the root entity
-     * @throws HardwareInventoryException the hardware inventory exception
+     * @throws SnmpHardwareInventoryException the hardware inventory exception
      */
     private OnmsHwEntity getRootEntity(SnmpAgentConfig agentConfig, OnmsNode node) throws SnmpHardwareInventoryException {
         LOG.debug("getRootEntity: Getting ENTITY-MIB using {}", agentConfig);
@@ -432,7 +433,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
     /**
      * Sets the hardware inventory adapter configuration DAO.
      *
-     * @param hwInventoryAdapterConfigurationDao the hardware inventory adapter configuration DAO
+     * @param hwInventoryAdapterConfigDao the hardware inventory adapter configuration DAO
      */
     public void setHwInventoryAdapterConfigDao(SnmpHwInventoryAdapterConfigDao hwInventoryAdapterConfigDao) {
         this.m_hwInventoryAdapterConfigDao = hwInventoryAdapterConfigDao;
@@ -460,7 +461,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
      * @param event the event
      */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadConfigEvent(final Event event) {
+    public void handleReloadConfigEvent(final IEvent event) {
         if (isReloadConfigEventTarget(event)) {
             EventBuilder ebldr = null;
             LOG.debug("Reloading the Hardware Inventory adapter configuration");
@@ -476,6 +477,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
                 ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
             }
             if (ebldr != null) {
+                ebldr.addParam(EventConstants.PARM_METHOD, NAME);
                 getEventForwarder().sendNow(ebldr.getEvent());
             }
         }
@@ -487,9 +489,9 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
      * @param event the event
      * @return true, if checks if is reload configuration event target
      */
-    private boolean isReloadConfigEventTarget(final Event event) {
+    private boolean isReloadConfigEventTarget(final IEvent event) {
         boolean isTarget = false;
-        for (final Parm parm : event.getParmCollection()) {
+        for (final IParm parm : event.getParmCollection()) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && (PREFIX + NAME).equalsIgnoreCase(parm.getValue().getContent())) {
                 isTarget = true;
                 break;

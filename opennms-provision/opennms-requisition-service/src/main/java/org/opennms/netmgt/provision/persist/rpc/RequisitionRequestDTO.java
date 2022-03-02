@@ -43,6 +43,8 @@ import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.netmgt.provision.persist.RequisitionProvider;
 import org.opennms.netmgt.provision.persist.RequisitionRequest;
 
+import io.opentracing.Span;
+
 @XmlRootElement(name = "requisition-request")
 @XmlAccessorType(XmlAccessType.NONE)
 public class RequisitionRequestDTO implements RpcRequest {
@@ -119,6 +121,11 @@ public class RequisitionRequestDTO implements RpcRequest {
     @Override
     public Map<String, String> getTracingInfo() {
         return tracingInfo;
+    }
+
+    @Override
+    public Span getSpan() {
+        return null;
     }
 
     public void addTracingInfo(String key, String value) {

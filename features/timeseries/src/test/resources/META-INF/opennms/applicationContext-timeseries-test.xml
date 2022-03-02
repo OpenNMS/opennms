@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+  <context:annotation-config />
+
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
+
+ <!-- timeseries integration layer -->
+  <bean id="timeseries.ring_buffer_size" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.ring_buffer_size:8192}" />
+  </bean>
+
+  <bean id="timeseries.writer_threads" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.writer_threads:16}" />
+  </bean>
+
+  <bean id="sampleProcessor.maxThreads" class="java.lang.Integer">
+        <!-- This options should always match the number of writer threads. See NMS-8439. -->
+        <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.writer_threads:16}" />
+  </bean>
+
+  <bean id="timeseriesMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+  <bean id="timeseriesMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+      <constructor-arg ref="timeseriesMetricRegistry"/>
+  </bean>
+
+  <bean id="timeseriesMetricRegistryDomainedJmxReporterBuilder" factory-bean="timeseriesMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+      <constructor-arg value="org.opennms.timeseries"/>
+  </bean>
+
+  <bean id="timeseriesMetricRegistryJmxReporter"
+        factory-bean="timeseriesMetricRegistryDomainedJmxReporterBuilder"
+        factory-method="build"
+        init-method="start"
+        destroy-method="stop" />
+
+  <bean id="resourceIdSplitter" class="org.opennms.newts.cassandra.search.EscapableResourceIdSplitter" />
+
+  <bean id="timeseriesSearcher" class="org.opennms.netmgt.timeseries.resource.TimeseriesSearcher" />
+
+  <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriter" />
+
+  <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.TimeseriesStorageManagerImpl"/>
+
+  <bean id="timeseriesStorageImpl" class="org.opennms.integration.api.v1.timeseries.InMemoryStorage" />
+  <onmsgi:service interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage" ref="timeseriesStorageImpl" />
+
+  <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProviderImpl"/>
+  <onmsgi:service interface="org.opennms.core.rpc.utils.mate.EntityScopeProvider" ref="entityScopeProvider" />
+
+  <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader" />
+
+  <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesPersisterFactory" />
+
+  <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />
+
+  <bean id="timeseriesResourceStorageDao" class="org.opennms.netmgt.timeseries.resource.TimeseriesResourceStorageDao" />
+
+  <bean id="delegatingPersisterFactory" class="org.opennms.netmgt.collection.support.DelegatingPersisterFactory" primary="true" >
+    <constructor-arg index="0" ref="timeseriesPersisterFactory"/>
+    <constructor-arg index="1" ref="osgiPersisterFactory"/>
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="delegatingPersisterFactory">
+    <onmsgi:service-properties>
+      <entry>
+        <key><value>strategy</value></key>
+        <value>delegate</value>
+      </entry>
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <!-- Some beans still require an RrdStrategy -->
+  <bean id="rrdStrategy" primary="true" class="org.opennms.netmgt.rrd.NullRrdStrategy" />
+
+  <onmsgi:service ref="rrdStrategy" interface="org.opennms.netmgt.rrd.RrdStrategy" />
+
+  <!-- CacheConfig -->
+  <bean id="timeseriesPersisterMetaTagCache" class="org.opennms.core.cache.CacheConfig">
+    <constructor-arg index="0" value="timeseriesPersisterMetaTagCache" />
+    <property name="expireAfterRead" value="${cache.timeseriesPersisterMetaTagCache.expireAfterRead:1}" />
+  </bean>
+  <bean id="timeseriesSearcherCache" class="org.opennms.core.cache.CacheConfig">
+    <constructor-arg index="0" value="timeseriesSearcherCache" />
+    <property name="expireAfterRead" value="${cache.timeseriesSearcherCache.expireAfterRead:300}" />
+  </bean>
+</beans>

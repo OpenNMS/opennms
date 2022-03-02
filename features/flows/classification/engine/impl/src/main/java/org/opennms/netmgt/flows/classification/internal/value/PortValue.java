@@ -28,42 +28,61 @@
 
 package org.opennms.netmgt.flows.classification.internal.value;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-public class PortValue {
-    private final Set<Integer> ports = new HashSet<>();
+import org.opennms.core.network.IPPortRange;
+import org.opennms.netmgt.flows.classification.internal.decision.Bound;
 
-    public PortValue(String input) {
-        final StringValue portValue = new StringValue(input);
-        if (portValue.hasWildcard()) {
-            throw new IllegalArgumentException("Wildcards not supported");
-        }
-        final List<StringValue> portValues = portValue.splitBy(",");
-        final List<StringValue> rangedPortValues = portValues.stream().filter(v -> v.isRanged()).collect(Collectors.toList());
-        rangedPortValues.forEach(v -> portValues.remove(v));
+public class PortValue implements RuleValue<Integer, PortValue> {
 
-        // Add the actual ports
-        this.ports.addAll(portValues.stream().map(v -> new IntegerValue(v).getValue()).collect(Collectors.toList()));
-
-        // Add ranged ports
-        final Set<Integer> rangedPorts = rangedPortValues.stream()
-                .flatMap(v -> {
-                    final RangedValue rangedValue = new RangedValue(v);
-                    return IntStream.range(rangedValue.getStart(), rangedValue.getEnd() + 1).boxed();
-                })
-                .collect(Collectors.toSet());
-        this.ports.addAll(rangedPorts);
+    public static PortValue of(String input) {
+            final StringValue portValue = new StringValue(input);
+            if (portValue.hasWildcard()) {
+                throw new IllegalArgumentException("Wildcards not supported");
+            }
+            final List<StringValue> portValues = portValue.splitBy(",");
+            List<IPPortRange> ranges = new ArrayList<>();
+            for (var pv: portValues) {
+                if (pv.isRanged()) {
+                    var rv = new RangedValue(pv);
+                    ranges.add(new IPPortRange(rv.getStart(), rv.getEnd()));
+                } else {
+                    var iv = new IntegerValue(pv);
+                    ranges.add(new IPPortRange(iv.getValue()));
+                }
+            }
+            return new PortValue(ranges);
     }
 
-    public Set<Integer> getPorts() {
-        return ports;
+    private final List<IPPortRange> ranges;
+
+    public PortValue(List<IPPortRange> ranges) {
+        this.ranges = ranges;
+    }
+
+    public List<IPPortRange> getPortRanges() {
+        return ranges;
     }
 
     public boolean matches(int port) {
-        return getPorts().contains(port);
+        for (var r: ranges) {
+            if (r.contains(port)) {
+                return true;
+            }
+        }
+        return false;
     }
+
+    @Override
+    public PortValue shrink(Bound<Integer> bound) {
+        List<IPPortRange> l = new ArrayList<>(ranges.size());
+        for (var r: ranges) {
+            if (bound.overlaps(r.getBegin(), r.getEnd())) {
+                l.add(r);
+            }
+        }
+        return l.isEmpty() ? null : ranges.size() == l.size() ? this : new PortValue(l);
+    }
+
 }

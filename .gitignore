@@ -24,6 +24,7 @@ build.properties
 .*launch
 nb-configuration.xml
 .idea
+.jqwik-database
 dependency-reduced-pom.xml
 npm-debug.log
 yarn-error.log
@@ -45,3 +46,10 @@ opennms-container/*/tarball/*.tar.gz
 # Python
 *.pyc
 __pycache__
+
+# Antora artifacts
+/build/
+/public/
+
+# Ignore jenv local version files
+.java-version

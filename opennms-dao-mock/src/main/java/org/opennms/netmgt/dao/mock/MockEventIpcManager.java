@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,6 +54,8 @@ import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.events.api.EventWriter;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -93,13 +95,13 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
             return false;
         }
 
-        private boolean eventMatches(final Event e) {
+        private boolean eventMatches(final IEvent e) {
             if (m_ueiList == null)
                 return true;
             return m_ueiList.contains(e.getUei());
         }
 
-        public void sendEventIfAppropriate(final Event e) {
+        public void sendEventIfAppropriate(final IEvent e) {
             if (eventMatches(e)) {
                 m_listener.onEvent(e);
             }
@@ -237,8 +239,9 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     public void broadcastNow(final Event event, boolean synchronous) {
     	LOG.debug("Sending: {}", new EventWrapper(event));
         final List<ListenerKeeper> listeners = new ArrayList<ListenerKeeper>(m_listeners);
+        final IEvent immutableEvent = ImmutableMapper.fromMutableEvent(event);
         for (final ListenerKeeper k : listeners) {
-            k.sendEventIfAppropriate(event);
+            k.sendEventIfAppropriate(immutableEvent);
         }
     }
     

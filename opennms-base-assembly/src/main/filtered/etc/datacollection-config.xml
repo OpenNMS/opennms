@@ -56,6 +56,7 @@
       <include-collection dataCollectionGroup="Netbotz"/>
       <include-collection dataCollectionGroup="NetEnforcer"/>
       <include-collection dataCollectionGroup="Netscaler"/>
+      <include-collection dataCollectionGroup="Netscaler vServer"/>
       <include-collection dataCollectionGroup="Network Appliance"/>
       <include-collection dataCollectionGroup="Nortel"/>
       <include-collection dataCollectionGroup="Novell"/>
@@ -81,6 +82,7 @@
       <include-collection dataCollectionGroup="VMware4"/>
       <include-collection dataCollectionGroup="VMware5"/>
       <include-collection dataCollectionGroup="VMware6"/>
+      <include-collection dataCollectionGroup="VMware7"/>
       <include-collection dataCollectionGroup="WMI"/>
       <include-collection dataCollectionGroup="XMP"/>
       <include-collection dataCollectionGroup="Zertico"/>

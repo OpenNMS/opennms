@@ -66,6 +66,8 @@
   </div>
   <div class="card-body">
     <form role="form" class="form" method="post" name="goForm">
+      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+
       <div class="form-group">
         <label for="pass1" class="">Password</label>
         <%-- Management of another user's password, so prevent autocomplete with `autocomplete="new-password"`.

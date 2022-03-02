@@ -1,0 +1,149 @@
+
+[[ga-collectd-packages]]
+= Configure Collector Packages
+
+Collector packages in the `collectd-configuration.xml` file contain the information (IP addresses, interfaces, services, and connection parameters) that collectd needs to activate data collection.
+
+Collectd activates data collection for each node that contains an IP interface in the configured range and also contains any of the services listed in the package associated with the selected IP interface.
+
+Edit existing collector packages or create new ones to customize data collection for your needs.
+If you create a new collector package, we recommend copying and pasting an existing package in the `collectd-configuration.xml` to use as a template.
+
+A collector package has two categories of information to edit or specify:
+
+* <<performance-data-collection/collectd/collection-packages.adoc#ga-coll-pack-attribute,collector package attributes>>
+* <<performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services, collector package services>>
+
+[[ga-coll-pack-attribute]]
+== Collector package attributes
+At a minimum, collector package attributes include a package name and a filter that specifies the interfaces to include in the collector package:
+
+[source, xml]
+----
+<package name="cassandra-via-jmx" remote="false">
+      <filter>IPADDR != '0.0.0.0'</filter>
+----
+Note that `remote="false"` means that the services in this package are tested only from the OpenNMS core system itself and not from a different remote location.
+
+Each package must have a filter tag that performs the initial test to see if an interface should be included in a package.
+Filters operate on interfaces (not nodes).
+Each package can have only one `filter` tag.
+
+The following tags are also available for an interface filter:
+
+[options="header"]
+[cols="1,3,2"]
+|===
+| Tag
+| Description
+| Example
+
+| specific
+| Specify an actual IP address to include in the package.
+| <specific>192.168.1.59</specific>
+
+| include-range
+| Specify a range of IP addresses to include in a package.
+| <include-range begin="192.168.0.1" end="192.168.0.254"/>
+
+| exclude-range
+| Specify a range of IP addresses to exclude in a package.
+This overrides an `include-range` tag.
+| <exclude-range begin="192.168.0.100" end="192.168.0.104"/>
+
+| include-url
+| Specify a file that contains a list of IP addresses to include.
+| <include-url>file:$\{OPENNMS_HOME}/etc/include</include-url>
+|===
+
+The following example illustrates collector package attributes that use some of these additional tags:
+[source, xml]
+----
+<package name="example1" remote="false"><1>
+  <filter>IPADDR != '0.0.0.0'</filter><2>
+  <include-range begin="1.1.1.1" end="254.254.254.254"/><3>
+  <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/><4>
+  ...
+</package>
+----
+<1> Unique name of the collection package.
+<2> Apply this package to all IP interfaces with a configured IPv4 address (not equal `0.0.0.0`).
+<3> Evaluate IPv4 rule to collect for all IPv4 interfaces in the given range.
+<4> Evaluate IPv6 rule to collect for all IPv6 interfaces in the given range.
+
+
+[[ga-collectd-packages-services]]
+== Service configuration attributes
+
+Service configuration attributes define the collector to use and the performance metrics to collect.
+Each service is associated with a specific collector; the collector and its related Java class must appear at the bottom of the `collectd-configuration.xml` file:
+
+[source, xml]
+----
+<service name="SNMP"<1>
+         interval="300000"<2>
+         user-defined="false"<3>
+         status="on"><4>
+  <parameter key="collection" value="default"/><5>
+  <parameter key="thresholding-enabled" value="true"/><6>
+</service>
+...
+<collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/><7>
+----
+
+<1> Service configuration name, which is mapped to a specific collector.
+<2> The interval at which to collect the service (in milliseconds).
+<3> Marker to say if service is user defined (used for UI purposes).
+<4> Service is collected only if "on".
+<5> Assign the performance data collection schema named `default` (found in the corresponding configuration file for the type of collection, in this case `datacollection-config.xml`).
+<6> Enable threshold evaluation for metrics provided by this service.
+<7> Run the SnmpCollector implementation for the service named `SNMP`.
+
+The following table lists service attributes common to all services.
+For a list of collector-specific parameters and their default values, refer to the specific collector listed in the <<collectors-configure, Collectors>> section.
+
+[options="header" "autowidth", cols="1,2"]
+|===
+| Attribute
+| Description
+
+| name
+| Service name
+
+| interval
+| Polling interval, in milliseconds (5 minutes by default).
+
+| user-defined
+| Set to `true` if user defined the collection source in the UI.
+
+| status
+| Indicates that data collection for the service is on or off.
+|===
+
+[[ga-performance-management-collectd-configuration-xml]]
+.Configuration overview for data collection with Collectd
+image::performance-management/02_collectd-configuration-xml.png[]
+
+== Guidelines for collector packages
+
+You can configure multiple packages, and an interface can exist in more than one package.
+This gives great flexibility in determining the service levels for a given device.
+
+When IP interfaces match multiple collector packages with the same service configuration, collectd applies the last collector package on the service:
+
+* Use this "final" collector package as a less-specific, catch-all filter for a default configuration.
+
+OR
+
+* Use it as a more specific collector package to overwrite the default setting.
+
+[[ga-collectd-packages-services-meta-data]]
+=== Metadata DSL
+
+You can use <<meta-data.adoc#ga-meta-data-dsl, Metadata-DSL>> to dynamically interpolate metadata into parameter values during the collection process.
+
+During evaluation of an expression, the following scopes are available:
+
+* Node metadata
+* Interface metadata
+* Service metadata

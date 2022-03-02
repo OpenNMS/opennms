@@ -1,0 +1,175 @@
+[[auto-discovery]]
+= Auto Discovery
+
+Auto discovery is the process of automatically adding nodes to {page-component-title}.
+You do this through discovery, either periodically on schedule or through single, unscheduled times.
+
+Make sure you complete the tasks in the <<provisioning/getting-started.adoc#provision-getting-started, Getting Started>> section before adding nodes.
+
+[[discovery-configure]]
+== Configure discovery
+
+Configuring discovery specifies the parameters {page-component-title} uses when scanning for nodes.
+
+. Click the gear icon and in the *Provisioning* area choose *Configure Discovery*.
++
+NOTE: To configure a discovery scan to run once, select *Run Single Discovery Scan*.
+
+. In the *General Settings* area, accept the default scheduling options (sleeptime, retries,timeout, etc.), or set your own.
+. From the *Foreign Source* list, choose the requisition to which you want to add the discovered nodes.
+. If you have installed Minions, select one from the *Location* list.
+. Click *Add New* to add the following:
+
++
+* specific address (IP addresses to add)
+* URLs
+* IP address ranges to include
+* IP address ranges to exclude
+
+. Click *Save and Restart Discovery*.
+. When the discovery is finished, navigate to the requisition (*Manage Provisioning Requisitions*) where you specified to view the nodes discovered.
+. If desired, edit the nodes or delete them from the requisition, then click *Synchronize* to add them to the {page-component-title} database.
+. Repeat this process for each requisition you want to provision.
+
+[[ga-provisioning-auto-discovery-detectors]]
+== Automatic discovery detectors
+
+Auto discovery with detectors lets users specify the services to detect, in addition to ICMP ping, for the specified IP addresses to be discovered.
+Discovery sends a new suspect event only when the specified detectors succeed.
+A definition without any detectors will fall back to ICMP ping for discovery.
+
+[source, xml]
+.Sample discovery configuration with detectors:
+----
+<discovery-configuration xmlns="http://xmlns.opennms.org/xsd/config/discovery" packets-per-second="1"
+    initial-sleep-time="30000" restart-sleep-time="86400000" retries="1" timeout="2000">
+
+    <definition location="MINION" foreign-source="ApexOffice">
+
+		<detectors>
+			<detector name="reverse-dns-lookup" class-name="org.opennms.netmgt.provision.detector.rdns.ReverseDNSLookupDetector"/>
+			<detector name="SNMP" class-name="org.opennms.netmgt.provision.detector.snmp.SnmpDetector">
+				<parameter key="timeout" value="5000"/>
+				<parameter key="ttl" value="120000"/>
+			</detector>
+		</detectors>
+
+		<specific>10.0.0.5</specific>
+
+		<include-range>
+			<begin>192.168.0.1</begin>
+			<end>192.168.0.254</end>
+		</include-range>
+
+    <exclude-range>
+			<begin>192.168.0.120</begin>
+			<end>192.168.0.125</end>
+		</exclude-range>
+
+		<include-url>file:/opt/opennms/etc/include.txt</include-url>
+
+	</definition>
+
+</discovery-configuration>
+----
+
+[[ga-manual-discovery]]
+== Manual discovery configuration
+
+In addition to the configuration above, there are some optional settings you can configure via `$\{OPENNMS_HOME}/etc/discovery-configuration.xml`.
+
+.Discovery configuration parameters
+[options="header" cols="1,1,3"]
+|===
+| Name
+| Default
+| Description
+
+| packets-per-second
+| 1
+| Number of ICMP packets that will be generated each second.
+
+| initial-sleep-time
+| 30000 ms (30 seconds)
+| The time, in milliseconds, before the discovery process begins after OpenNMS has started.
+This delay allows {page-component-title} to fully start before generating new events.
+
+| restart-sleep-time
+| 86400000 ms (1 day)
+| Once the discovery process finishes, the time, in milliseconds, before it will start again.
+
+| timeout
+| 2000 ms
+| The amount of time, in milliseconds, that the discovery process will wait for a response from a given IP address before deciding that there is nothing there.
+
+| retries
+| 1
+| The number of attempts to query a given IP address before deciding that there is nothing there.
+
+| foreign-source
+| not set
+| Adds discovered nodes to the specified foreign source requisition.
+
+| location
+| Default
+| The monitoring location where this discovery batch will be executed.
+Only used when Minions have been deployed.
+
+| chunk-size
+| 100
+| When using a monitoring locations and Minions, defines how many IP addresses are delegated to each Minion for scanning.
+|===
+
+.Discovery range configuration parameters
+[options="header" cols="1,3a"]
+|===
+| Tag
+| Description
+
+| specific
+| Specify individual IP address(es) to discover.
+May be repeated multiple times.
+
+[source, xml]
+----
+<specific>ip-address</specific>
+----
+
+| include-range
+| Specify a range of IP addresses to discover.
+May be repeated multiple times.
+
+[source, xml]
+----
+<include-range>
+    <begin>start-ip-address</begin>
+    <end>end-ip-address</end>
+</include-range>
+----
+
+| exclude-range
+| Specify a range of IP address to exclude from discovery.
+
+[source, xml]
+----
+<exclude-range>
+    <begin>start-ip-address</begin>
+    <end>end-ip-address</end>
+</exclude-range>
+----
+
+NOTE: The exclude-range tag will override addresses only in an include-range.
+It will not override specific IP addresses or addresses included in a file.
+There is no "specific" version of the exclude tag.
+To exclude a specific IP address, use an exclude-range where the beginning and ending IP addresses are the same.
+
+| include-url
+| Specify the full path to a text file containing one IP address per line to include in discovery.
+You can embed comments in this file.
+Any content on a line after a `#` character is ignored.
+
+[source, xml]
+----
+<include-url>file:filename</include-url>
+----
+|===

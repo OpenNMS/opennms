@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,6 +47,11 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.core.rpc.utils.mate.FallbackScope;
+import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.rpc.utils.mate.MapScope;
+import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.DestinationPathManager;
@@ -73,15 +78,17 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
@@ -113,6 +120,9 @@ public final class BroadcastEventProcessor implements EventListener {
     
     @Autowired
     private ReadablePollOutagesDao m_pollOutagesDao;
+
+    @Autowired
+    private EntityScopeProvider m_entityScopeProvider;
 
     /**
      * <p>Constructor for BroadcastEventProcessor.</p>
@@ -203,7 +213,7 @@ public final class BroadcastEventProcessor implements EventListener {
      * available for processing.
      */
     @Override
-    public void onEvent(Event event) {
+    public void onEvent(IEvent event) {
         if (event == null) return;
 
         if (isReloadConfigEvent(event)) {
@@ -239,21 +249,23 @@ public final class BroadcastEventProcessor implements EventListener {
 
         boolean notifsOn = computeNullSafeStatus();
 
-        if (notifsOn && (checkCriticalPath(event, notifsOn))) {
-            scheduleNoticesForEvent(event);
+        Event mutableEvent = Event.copyFrom(event);
+
+        if (notifsOn && (checkCriticalPath(mutableEvent, notifsOn))) {
+            scheduleNoticesForEvent(mutableEvent);
         } else if (!notifsOn) {
             LOG.debug("discarding event {}, notifd status on = {}", event.getUei(), notifsOn);
         }
-        automaticAcknowledge(event, notifsOn);
+        automaticAcknowledge(mutableEvent, notifsOn);
     }
 
-    private boolean isReloadConfigEvent(Event event) {
+    private boolean isReloadConfigEvent(IEvent event) {
         boolean isTarget = false;
 
         if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-            List<Parm> parmCollection = event.getParmCollection();
+            List<IParm> parmCollection = event.getParmCollection();
 
-            for (Parm parm : parmCollection) {
+            for (IParm parm : parmCollection) {
                 if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Notifd".equalsIgnoreCase(parm.getValue().getContent())) {
                     isTarget = true;
                     break;
@@ -621,21 +633,10 @@ public final class BroadcastEventProcessor implements EventListener {
                         String scheduledOutageName = scheduledOutage(nodeid, ipaddr);
                         if (scheduledOutageName != null) {
                             // This event occurred during a scheduled outage.
-                            // Must decide what to do
-                            if (autoAckExistsForEvent(event.getUei())) {
-                                // Defer starttime till the given outage ends -
-                                // if the auto ack catches the other event
-                                // before then,
-                                // then the page will not be sent
-                                Calendar endOfOutage = m_pollOutagesDao.getEndOfOutage(scheduledOutageName);
-                                startTime = endOfOutage.getTime().getTime();
-                            } else {
-                                // No auto-ack exists - there's no point
-                                // delaying the page, so just drop it (but leave
-                                // the database entry)
+                                // drop it (but leave the database entry)
                                 continue; // with the next notification (for
                                             // loop)
-                            }
+                            
                         }
 
                         List<NotificationTask> targetSiblings = new ArrayList<NotificationTask>();
@@ -757,6 +758,22 @@ public final class BroadcastEventProcessor implements EventListener {
         paramMap.put(NotificationManager.PARAM_SERVICE, event.getService());
         paramMap.put("eventID", String.valueOf(event.getDbid()));
         paramMap.put("eventUEI", event.getUei());
+
+        final Integer nodeId = event.getNodeid() != null ? event.getNodeid().intValue() : null;
+
+        paramMap = new HashMap(Interpolator.interpolateStrings(paramMap, new FallbackScope(
+            m_entityScopeProvider.getScopeForNode(nodeId),
+            m_entityScopeProvider.getScopeForInterface(nodeId, event.getInterface()),
+            m_entityScopeProvider.getScopeForService(nodeId, event.getInterfaceAddress(), event.getService()),
+            MapScope.singleContext(Scope.ScopeName.SERVICE, "notification",
+                    new ImmutableMap.Builder<String,String>()
+                            .put("eventID", String.valueOf(event.getDbid()))
+                            .put("eventUEI", event.getUei())
+                            .put("noticeid", String.valueOf(noticeId))
+                            .build())
+                    )
+            )
+        );
 
         m_eventUtil.expandMapValues(paramMap, event);
 

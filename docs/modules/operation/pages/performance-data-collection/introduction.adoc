@@ -1,0 +1,31 @@
+
+[[performance-management]]
+= Performance Management
+
+{page-component-title} collects performance data using the _Collectd_ daemon, which is enabled by default.
+_Collectd_ schedules data collection on {page-component-title} entities (currently nodes and interfaces), using _management agents_ and protocol-specific _collectors_ (SNMP, HTTPS, JMX, JDBC, etc.) to collect performance metrics.
+Each collector has its own associated configuration that defines parameters for the collector.
+
+[[ga-performance-management-collectd-overview]]
+.Collectd overview for associated files and configuration
+image::performance-management/01_collectd-overview.png[]
+
+By default, data collection is enabled for SNMP and for OpenNMS-JVM (to monitor itself through JMX).
+Data collection works out of the box with SNMP, provided you have your SNMP community string configured properly.
+The default value of the community string is `public`.
+If your community string is different, you need to change the value:
+
+. Login to the web UI.
+. Go to *admin>Configure OpenNMS*.
+. In the *Provisioning* section, select *Configure SNMP Community Names by IP Address*.
+. Under *v1/v2c specific parameters* change the `Read Community String` value and click *Save Config*.
+
+Performance data collection on other protocols (HTTPS, JMX, JDBC, etc.), requires additional configuration.
+You may also want to change how _collectd_ works: when, how, and what data it collects.
+
+Learn how to manage performance data collection:
+
+* <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, collectd configuration>>
+* <<reference:configuration/performance-data-collection/introduction.adoc#ref-performance-data-collectors, collection for specific protocols>>
+* <<performance-data-collection/resource-types.adoc#resource-types, resource type management>>
+* <<performance-data-collection/collectd/collect-admin.adoc#collectd-admin, collectd administration>> (logging, graphing, and event properties)

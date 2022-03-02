@@ -1,0 +1,52 @@
+
+
+[[ga-threshold-metadata]]
+= Use Metadata in a Threshold
+
+Metadata in expression-based thresholds can streamline threshold creation.
+The <<meta-data.adoc#ga-meta-data-dsl, Metadata DSL>> (domain specific language) lets you use patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+A single expression can behave differently based on the node being tested against.
+
+During evaluation of an expression, the following scopes are available:
+
+* Node metadata
+* Interface metadata
+* Service metadata
+
+Metadata is also supported in Value, Re-arm, and Trigger fields for Single-DS and expression-based thresholds.
+
+NOTE: For more information on metadata and how to define it, see <<meta-data.adoc#metadata-overview
+, Metadata>>.
+
+
+== Example
+
+This procedure uses metadata to trigger an event when the number of logged-in users exceeds 1.
+
+The expression is in the form `${context:key|context_fallback:key_fallback|...|default}`.
+
+Before using metadata in a threshold, you need to add the metadata context pair, in this case, a requisition key called userLimit (see <<meta-data.adoc#ga-metadata-webui, Adding metadata through the web UI>>).
+
+. Click the gear icon in the top-right menu.
+. Under *Performance Measurement*, choose *Configure Thresholds*.
+. Click *Edit* beside the *netsnmp* group.
+. Click *Create New Expression-based Threshold*.
+. Fill in the following information:
+
++
+* Type: High
+* Expression: `hrSystemNumUsers / ${requisition:userLimit|1}`
+* Datasource type: Node
+* Value: 1
+* Rearm: 1
+* Description: Too many logged-in users
+
++
+
+image::metadata/meta-expression1.png[]
+
+. Click *Save*.
+
+This expression will trigger an event when the number of logged-in users exceeds 1.
+
+image::metadata/meta-expression2.png[]

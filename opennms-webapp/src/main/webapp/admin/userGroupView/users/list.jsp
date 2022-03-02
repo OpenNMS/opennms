@@ -106,6 +106,12 @@
             return;
           }
 
+          var element =  document.getElementById('users(' + _.escape(newID) + ').doModify');
+          if (typeof(element) != 'undefined' && element != null) {
+            alert("A user with this ID already exist.");
+            return;
+          }
+
           document.allUsers.newID.value = newID;
           document.allUsers.action="admin/userGroupView/users/renameUser";
           document.allUsers.submit();
@@ -120,6 +126,7 @@
 <input type="hidden" name="userID"/>
 <input type="hidden" name="newID"/>
 <input type="hidden" name="password"/>
+<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
 <p>
   Click on the <i>User ID</i> link to view detailed information about a
@@ -217,5 +224,9 @@
      </table>
   </div> <!-- panel -->
 </form>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="underscore-js" />
+</jsp:include>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

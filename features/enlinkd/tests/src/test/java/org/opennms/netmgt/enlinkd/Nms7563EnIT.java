@@ -115,7 +115,7 @@ public class Nms7563EnIT extends EnLinkdBuilderITCase {
         for (LldpLink link: m_lldpLinkDao.findAll()) {
             assertNotNull(link);
             printLldpLink(link);
-            assertEquals(8, link.getLldpLocalPortNum().intValue());
+            assertEquals(1, link.getLldpLocalPortNum().intValue());
             assertNull(link.getLldpPortIfindex());
             assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpPortIdSubType());
             assertEquals("Fa0/8",link.getLldpPortId());
@@ -176,7 +176,7 @@ public class Nms7563EnIT extends EnLinkdBuilderITCase {
         for (LldpLink link: m_lldpLinkDao.findAll()) {
             assertNotNull(link);
             printLldpLink(link);
-            assertEquals(2, link.getLldpLocalPortNum().intValue());
+            assertEquals(1, link.getLldpLocalPortNum().intValue());
             assertNull(link.getLldpPortIfindex());
             assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,link.getLldpPortIdSubType());
             assertEquals(HOMESERVER_IF_MAC_MAP.get(2),link.getLldpPortId());

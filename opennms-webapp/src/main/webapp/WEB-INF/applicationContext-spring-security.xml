@@ -86,6 +86,8 @@
 
     <!-- Allow users to POST to the Geolocation API, which is read-only -->
     <intercept-url pattern="/api/v2/geolocation" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <!-- Allow users to POST to the Graph API, which is read-only -->
+    <intercept-url pattern="/api/v2/graphs/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
 
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
@@ -119,6 +121,18 @@
   
   <!-- Allow anonymous access to the webstart portion of the app -->
   <http pattern="/webstart/**" security="none"/>
+
+  <http pattern="/admin/userGroupView/**" use-expressions="true" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
+    <!-- see NMS-13124 -->
+    <csrf />
+    <intercept-url pattern="/admin/userGroupView/**" access="hasAnyRole('ROLE_ADMIN')" />
+    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
+    <logout logout-url="/j_spring_security_logout" success-handler-ref="openNMSlLogoutSuccessHandler" invalidate-session="true"/>
+    <custom-filter position="FORM_LOGIN_FILTER" ref="onmsUsernamePasswordAuthenticationFilter" />
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
+    <custom-filter position="LAST" ref="authFilterEnabler"/>
+  </http>
 
   <!-- Only one <http> section can match the implicit '/**' pattern -->
   <http pattern="/**" use-expressions="true" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
@@ -156,11 +170,12 @@
     <intercept-url pattern="/graph/graph.png" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/dashboard/**" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/coreweb/**" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
-    
+
     <!-- DO NOT ALLOW ACCESS TO /osgi -->
     <intercept-url pattern="/osgi/**" access="denyAll" />
 
-    <!-- Exclude jsp includes, they shouldn't be accessible by themself -->
+    <!-- Exclude jsp includes other than bootstrap, they shouldn't be accessible by themself -->
+    <intercept-url pattern="/includes/bootstrap.jsp" access="permitAll" />
     <intercept-url pattern="/includes/*.jsp" access="denyAll" />
 
     <intercept-url pattern="/**" access="hasAnyRole('ROLE_USER')" />
@@ -170,7 +185,7 @@
 
     <!--Commented out for custom authentication filter<form-login login-page="/login.jsp" authentication-failure-url="/login.jsp?login_error=1" />-->
     <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
-    <logout logout-success-url="/" />
+    <logout logout-url="/j_spring_security_logout" success-handler-ref="openNMSlLogoutSuccessHandler" invalidate-session="true"/>
 
       <!-- added for custom authentication filter -->
     <custom-filter position="FORM_LOGIN_FILTER" ref="onmsUsernamePasswordAuthenticationFilter" />
@@ -194,17 +209,18 @@
         <beans:property name="postOnly" value="false"/>
   </beans:bean>
 
-    <beans:bean id="successHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+    <beans:bean id="successHandler" class="org.opennms.web.springframework.security.OpenNMSAuthSuccessHandler">
         <beans:property name="defaultTargetUrl" value="/index.jsp"/>
     </beans:bean>
-    <beans:bean id="failureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+    <beans:bean id="failureHandler" class="org.opennms.web.springframework.security.OpenNMSAuthFailureHandler">
         <beans:property name="defaultFailureUrl" value="/login.jsp?login_error=1"/>
     </beans:bean>
 
-    <beans:bean id="loginUrlAuthenticationEntryPoint"
-                class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+    <beans:bean id="loginUrlAuthenticationEntryPoint" class="org.opennms.web.springframework.security.OpenNMSLoginUrlAuthEntryPoint">
         <beans:property name="loginFormUrl" value="/login.jsp" />
     </beans:bean>
+    <beans:bean id="openNMSlLogoutSuccessHandler" class="org.opennms.web.springframework.security.OpenNMSlLogoutSuccessHandler" />
+
     <!-- END CUSTOM AUthentication Filter -->
 
   <!-- If a user is pre-authenticated, this will provide user details for the pre-authenticated user -->

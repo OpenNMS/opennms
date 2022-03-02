@@ -47,6 +47,8 @@ import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.PollerRequest;
 
+import io.opentracing.Span;
+
 @XmlRootElement(name = "poller-request")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PollerRequestDTO implements RpcRequest, PollerRequest{
@@ -204,6 +206,11 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
     @Override
     public Map<String, String> getTracingInfo() {
         return tracingInfo;
+    }
+
+    @Override
+    public Span getSpan() {
+        return null;
     }
 
     public void addTracingInfo(String key, String value) {

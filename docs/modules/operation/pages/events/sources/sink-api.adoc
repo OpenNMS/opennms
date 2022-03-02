@@ -1,0 +1,9 @@
+
+[[ga-events-sources-sink-api]]
+
+= Sink
+
+Events can also be created by routing them to a specific topic on Kafka/ActiveMQ.
+
+The topic name should be of the form `OpenNMS.Sink.Events` where `OpenNMS` is the default instance ID of {page-component-title}.
+The instance ID is configurable through a system property `org.opennms.instance.id`.

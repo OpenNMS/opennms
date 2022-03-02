@@ -1,8 +1,10 @@
-import ScheduleOptions from '../../lib/onms-schedule-editor/scripts/ScheduleOptions';
 import ReportDetails from './ReportDetails';
 import ErrorResponse from '../../lib/onms-http/ErrorResponse';
-import Types from "../../lib/onms-schedule-editor/scripts/Types";
+import Types from '../../lib/onms-schedule-editor/scripts/Types';
+import moment from 'moment';
+require('moment-timezone');
 
+const hash = require('hash.js');
 const angular = require('vendor/angular-js');
 require('../../lib/onms-http');
 require('../../lib/onms-pagination');
@@ -64,6 +66,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
             'ui.select',
             'mwl.confirm',
             'onms.http',
+            'onms.default.apps',
             'onms.datetimepicker',
             'onms.schedule.editor',
             'onms.pagination'
@@ -178,7 +181,11 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                 }
             };  
         })
-        .directive('onmsReportDetails', ['GrafanaResource', function (GrafanaResource) {
+        .directive('onmsReportDetails', ['GrafanaResource', '$q', '$http', function (GrafanaResource, $q, $http) {
+            const getDashboardDetails = (uid, dashboardId) => {
+                return $http.get('rest/endpoints/grafana/' + uid + '/dashboards/' + dashboardId).then((res) => res.data);
+            };
+
             return {
                 restrict: 'E',
                 templateUrl: reportDetailsTemplate,
@@ -189,6 +196,8 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                     onGlobalError: '&onGlobalError'
                 },
                 link: function (scope, element, attrs) {
+                    scope.oldTimeZone = undefined;
+
                     scope.endpoints = [];
                     scope.dashboards = [];
                     scope.selected = {
@@ -196,14 +205,70 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                         dashboard: undefined
                     };
                     scope.onInvalidChange = scope.onInvalidChange || function(invalidState) {}; // eslint-disable-line @typescript-eslint/no-empty-function
-                    scope.onDateParamStateChange = function(invalidState) {
-                        scope.onInvalidChange({invalidState: invalidState});
+                    scope.onDateParamStateChange = function(state, date, parameter) {
+                        scope.$evalAsync(() => {
+                            if (date && parameter) {
+                                parameter.internalValue = date;
+                            }
+                            scope.onInvalidChange({invalidState: state});
+                        });
+                    };
+
+                    scope.paramHash = (parameter) => {
+                        const ret = hash.sha256();
+                        if (parameter) {
+                            ret.update(parameter.type);
+                            ret.update(parameter.name);
+                            ret.update(parameter.value);
+                            ret.update(parameter.internalValue);
+                            ret.update(parameter.internalFormat);
+                        }
+                        return ret.digest('hex');
+                    };
+
+                    scope.timezoneChanged = () => {
+                        const before = scope.oldTimeZone;
+                        const after = scope.report && scope.report.parametersByName['timezone'] ? scope.report.parametersByName['timezone'].value : undefined;
+
+                        if (before && after && before !== after) {
+                            // timezone has changed, adjust existing date/time values to match
+
+                            scope.report.parameters.forEach((parameter, index) => {
+                                if (parameter.type === 'date') {
+                                    const oldDate = moment.tz(parameter.internalValue, before);
+                                    const newDate = oldDate.clone().tz(after);
+                                    if (newDate.isValid()) {
+                                        parameter.internalValue = newDate.format(parameter.internalFormat);
+                                        parameter.date = newDate.format('YYYY-MM-DD');
+                                        parameter.hours = newDate.hours();
+                                        parameter.minutes = newDate.minutes();
+                                    } else {
+                                        // eslint-disable-next-line no-console
+                                        console.error('timezoneChanged(): new date is invalid?!');
+                                    }
+
+                                    // re-hydrate this parameter because the datetime picker isn't refreshing itself properly
+                                    scope.report.parameters[index] = scope.report.parametersByName[parameter.name] = Object.assign({}, parameter);
+                                }
+                            });
+                        }
+
+                        // done processing, update state for next time
+                        if (scope.report && scope.report.parametersByName['timezone']) {
+                            scope.report.parametersByName['timezone'].value = after;
+                        }
+                        scope.oldTimeZone = after;
+                        scope.report.validateTimezone();
                     };
 
                     scope.endpointChanged = function () {
                         scope.dashboards = [];
                         scope.selected.dashboard = undefined;
                         scope.report.resetErrors();
+                        if (scope.report.parametersByName['timezone']) {
+                            scope.report.parametersByName['timezone'].value = undefined;
+                            scope.timezoneChanged();
+                        }
                         GrafanaResource.dashboards({uid: scope.selected.endpoint.uid}, function (dashboards) {
                             scope.dashboards = dashboards;
                             if (scope.dashboards.length > 0) {
@@ -255,8 +320,36 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                         }
                     });
 
-                    scope.$watchCollection('selected', function(newVal, oldVal) {
-                        scope.report.updateGrafanaParameters(scope.selected);
+                    scope.$watchCollection('selected', (newSelected) => {
+                        const deferred = $q.defer();
+
+                        if (newSelected
+                            && newSelected.endpoint
+                            && newSelected.endpoint.uid
+                            && newSelected.dashboard
+                            && newSelected.dashboard.uid
+                        ) {
+                            const selectedDashboard = newSelected.dashboard;
+                            // the dashboard object you get from search doesn't include the full
+                            // dashboard data; query the dashboard and grab the timezone from it
+                            getDashboardDetails(newSelected.endpoint.uid, selectedDashboard.uid).then((newDashboard) => {
+                                if (newDashboard
+                                    && newDashboard.timezone !== undefined
+                                    && selectedDashboard.timezone !== newDashboard.timezone
+                                ) {
+                                    selectedDashboard.timezone = newDashboard.timezone;
+                                    scope.timezoneChanged();
+                                }
+                            }).finally(() => {
+                                deferred.resolve(selectedDashboard);
+                            });
+                        } else {
+                            // endpoint and/or dashboard are missing UIDs?  assume we can't do anything yet
+                            deferred.resolve((newSelected && newSelected.dashboard) ? newSelected.dashboard : undefined);
+                        }
+                        deferred.promise.finally(() => {
+                            scope.report.updateGrafanaParameters(newSelected);
+                        })
                     });
 
                     scope.$watch('reportForm.$invalid', function(newVal, oldVal) {
@@ -327,7 +420,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                 online: $stateParams.online === 'true'
             };
 
-            $scope.report = new ReportDetails({id: $scope.meta.reportId});
+            $scope.report = new ReportDetails({id: $scope.meta.reportId, scope: $scope});
             $scope.options = {};
             $scope.loading = false;
             $scope.reportForm = { $invalid: false };
@@ -360,7 +453,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
 
                 ReportTemplateResource.get(requestParameters, function(response) {
                     $scope.loading = false;
-                    $scope.report = new ReportDetails(response);
+                    $scope.report = new ReportDetails(Object.assign(response, {scope: $scope}));
                 }, function(response) {
                     $scope.loading = false;
                     $scope.setGlobalError(response);
@@ -369,6 +462,8 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
 
             $scope.runReport = function() {
                 $scope.report.resetErrors();
+                // eslint-disable-next-line no-console
+                console.debug('running report:', $scope.report);
                 $http({
                     method: 'POST',
                     url: 'rest/reports/' + $stateParams.id,
@@ -444,16 +539,20 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
             $scope.execute = function() {
                 $scope.deliverySuccess = false;
                 $scope.scheduleSuccess = false;
-                $scope.report.updateDateParameters();
-                if ($scope.meta.online && !$scope.options.deliverReport && !$scope.options.scheduleReport) {
-                    $scope.runReport();
-                }
-                if ($scope.options.deliverReport && !$scope.options.scheduleReport) {
-                    $scope.deliverReport();
-                }
-                if ($scope.options.deliverReport && $scope.options.scheduleReport) {
-                    $scope.scheduleReport();
-                }
+                $scope.$evalAsync(() => {
+                    $scope.report.updateDateParameters();
+                });
+                $scope.$evalAsync(() => {
+                    if ($scope.meta.online && !$scope.options.deliverReport && !$scope.options.scheduleReport) {
+                        $scope.runReport();
+                    }
+                    if ($scope.options.deliverReport && !$scope.options.scheduleReport) {
+                        $scope.deliverReport();
+                    }
+                    if ($scope.options.deliverReport && $scope.options.scheduleReport) {
+                        $scope.scheduleReport();
+                    }
+                });
             };
 
             // We wait for the userInfo to be set, otherwise loading
@@ -535,13 +634,17 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
 
             $scope.refresh();
         }])
-        .controller('ScheduleEditController', ['$scope', 'userInfo', 'meta', 'setGlobalError', 'ReportScheduleResource', function($scope, userInfo, meta, setGlobalError, ReportScheduleResource) {
+        .controller('ScheduleEditController', ['$http', '$q', '$scope', '$timeout', 'userInfo', 'meta', 'setGlobalError', 'ReportScheduleResource', function($http, $q, $scope, $timeout, userInfo, meta, setGlobalError, ReportScheduleResource) {
             $scope.meta = meta;
             $scope.userInfo = userInfo;
-            $scope.report = new ReportDetails({id: $scope.meta.reportId});
+            $scope.report = null;
             $scope.options = {};
             $scope.loading = false;
             $scope.reportForm = { $invalid : false };
+
+            const getReportDetails = (reportId) => {
+                return $http.get('rest/reports/scheduled/' + reportId).then((res) => res.data);
+            };
 
             $scope.onReportFormInvalidStateChange = function(invalidState) {
                 $scope.reportForm.$invalid = invalidState;
@@ -552,34 +655,44 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
             };
 
             $scope.loadDetails = function() {
+                if ($scope.loading) {
+                    return;
+                }
                 $scope.loading = true;
-                $scope.selected = {
-                    endpoint: undefined,
-                    dashboard: undefined
-                };
 
-                $scope.options = {
-                    showReportFormatOptions: false,    // Options are not shown, as we are editing a schedule
-                    showDeliveryOptions: true,         // always show when editing
-                    showDeliveryOptionsToggle: false,  // Toggling is disabled
-                    showScheduleOptions: true,         // always show when editing
-                    showScheduleOptionsToggle: false, // Toggling is disabled
-                    deliverReport: true,        // when editing schedule and delivery is enabled
-                    scheduleReport: true,       // when editing schedule and delivery is enabled
-                    canEditTriggerName: false,  // When in edit mode, the trigger name should be unique
-                };
+                $scope.$evalAsync(() => {
+                    $scope.selected = {
+                        endpoint: undefined,
+                        dashboard: undefined
+                    };
 
-                ReportScheduleResource.get({id: $scope.meta.triggerName}, function(response) {
-                    $scope.loading = false;
-                    $scope.report = new ReportDetails(response);
-                }, function(response) {
-                    $scope.loading = false;
-                    $scope.setGlobalError(response);
-                    $scope.$close();
+                    $scope.options = {
+                        hideEndpointsChooser: true,        // endpoint should not be changed when editing
+                        showReportFormatOptions: false,    // Options are not shown, as we are editing a schedule
+                        showDeliveryOptions: true,         // always show when editing
+                        showDeliveryOptionsToggle: false,  // Toggling is disabled
+                        showScheduleOptions: true,         // always show when editing
+                        showScheduleOptionsToggle: false, // Toggling is disabled
+                        deliverReport: true,        // when editing schedule and delivery is enabled
+                        scheduleReport: true,       // when editing schedule and delivery is enabled
+                        canEditTriggerName: false,  // When in edit mode, the trigger name should be unique
+                    };
+
+                    getReportDetails($scope.meta.triggerName).then((reportData) => {
+                        $scope.report = new ReportDetails(Object.assign(reportData, {scope: $scope}));
+                    }).catch((err) => {
+                        $scope.setGlobalError(err);
+                        $scope.$close();
+                    }).finally(() => {
+                        $scope.loading = false;
+                    });
                 });
             };
 
             $scope.update = function() {
+                if (!$scope.report) {
+                    return $q.reject('report not initialized');
+                }
                 $scope.report.resetErrors();
                 const data = {
                     id: $scope.report.id,
@@ -589,14 +702,15 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                     deliveryOptions: $scope.report.deliveryOptions,
                     cronExpression: $scope.report.scheduleOptions.getCronExpression(),
                 };
-                ReportScheduleResource.update(data, function() {
-                 $scope.$close();
-              }, function(response) {
-                    handleReportError(response, $scope.report, () => {
-                        $scope.setGlobalError(response);
-                        $scope.$close();
+                return ReportScheduleResource.update(data).$promise.catch((err) => {
+                    // eslint-disable-next-line no-console
+                    console.error(err);
+                    handleReportError(err, $scope.report, () => {
+                        $scope.setGlobalError(err);
                     });
-              });
+                }).finally(() => {
+                    $scope.$close();
+                });
             };
 
             $scope.loadDetails();

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -70,6 +70,9 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
+import org.opennms.netmgt.events.api.model.IValue;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -82,9 +85,6 @@ import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -699,7 +699,7 @@ public class Collectd extends AbstractServiceDaemon implements
      * UEI.
      */
     @Override
-    public void onEvent(final Event event) {
+    public void onEvent(final IEvent event) {
         Logging.withPrefix(getName(), () -> {
             m_transTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
@@ -710,7 +710,7 @@ public class Collectd extends AbstractServiceDaemon implements
         });
     }
 
-    private void onEventInTransaction(Event event) {
+    private void onEventInTransaction(IEvent event) {
         // print out the uei
         //
         LOG.debug("received event, uei = {}", event.getUei());
@@ -757,12 +757,12 @@ public class Collectd extends AbstractServiceDaemon implements
         LOG.info(e.getMessage());
     }
 
-    private void handleDupNodeDeleted(Event event)
+    private void handleDupNodeDeleted(IEvent event)
             throws InsufficientInformationException {
         handleNodeDeleted(event);
     }
 
-    private void handleScheduledOutagesChanged(Event event) {
+    private void handleScheduledOutagesChanged(IEvent event) {
         try {
             LOG.info("Reloading Collectd config factory");
             m_collectdConfigFactory.reload();
@@ -789,7 +789,7 @@ public class Collectd extends AbstractServiceDaemon implements
      * @param event
      *            The event to process.
      */
-    private void handleConfigureSNMP(final Event event) {
+    private void handleConfigureSNMP(final IEvent event) {
         LOG.debug("configureSNMPHandler: processing configure SNMP event...", event);
         
         SnmpEventInfo info = null;
@@ -818,7 +818,7 @@ public class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      * @throws InsufficientInformationException
      */
-    private void handleInterfaceDeleted(Event event)
+    private void handleInterfaceDeleted(IEvent event)
             throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
 
@@ -882,7 +882,7 @@ public class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      * @throws InsufficientInformationException
      */
-    private void handleInterfaceReparented(Event event)
+    private void handleInterfaceReparented(IEvent event)
             throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
@@ -897,10 +897,10 @@ public class Collectd extends AbstractServiceDaemon implements
         String oldNodeIdStr = null;
         String newNodeIdStr = null;
         String parmName = null;
-        Value parmValue = null;
+        IValue parmValue = null;
         String parmContent = null;
 
-        for (Parm parm : event.getParmCollection()) {
+        for (IParm parm : event.getParmCollection()) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             if (parmValue == null)
@@ -976,7 +976,7 @@ public class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      * @throws InsufficientInformationException
      */
-    private void handleNodeDeleted(Event event)
+    private void handleNodeDeleted(IEvent event)
             throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
 
@@ -994,7 +994,7 @@ public class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      * @throws InsufficientInformationException if the event does not have a nodeId
      */
-    private void handleNodeCategoryMembershipChanged(Event event) throws InsufficientInformationException {
+    private void handleNodeCategoryMembershipChanged(IEvent event) throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
 
         Long nodeId = event.getNodeid();
@@ -1013,7 +1013,7 @@ public class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      * @throws InsufficientInformationException if the event does not have a nodeId
      */
-    private void handleNodeLocationChanged(Event event) throws InsufficientInformationException {
+    private void handleNodeLocationChanged(IEvent event) throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
 
         Long nodeId = event.getNodeid();
@@ -1106,7 +1106,7 @@ public class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      * @throws InsufficientInformationException
      */
-    private void handleNodeGainedService(Event event)
+    private void handleNodeGainedService(IEvent event)
             throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
@@ -1116,10 +1116,10 @@ public class Collectd extends AbstractServiceDaemon implements
         scheduleForCollection(event);
     }
     
-    private void handleReloadDaemonConfig(Event event) {
+    private void handleReloadDaemonConfig(IEvent event) {
         final String collectionDaemonName = "Collectd";
         boolean isCollection = false;
-        for (Parm parm : event.getParmCollection()) {
+        for (IParm parm : event.getParmCollection()) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && collectionDaemonName.equalsIgnoreCase(parm.getValue().getContent())) {
                 isCollection = true;
                 break;
@@ -1128,7 +1128,7 @@ public class Collectd extends AbstractServiceDaemon implements
         if (isCollection) {
             final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
             boolean isDataCollectionConfig = false;
-            for (Parm parm : event.getParmCollection()) {
+            for (IParm parm : event.getParmCollection()) {
                 if (EventConstants.PARM_CONFIG_FILE_NAME.equals(parm.getParmName()) && targetFile.equalsIgnoreCase(parm.getValue().getContent())) {
                     isDataCollectionConfig = true;
                     break;
@@ -1179,7 +1179,7 @@ public class Collectd extends AbstractServiceDaemon implements
         }
     }
     
-    private void scheduleForCollection(Event event) {
+    private void scheduleForCollection(IEvent event) {
         // This moved to here from the scheduleInterface() for better behavior
         // during initialization
         
@@ -1204,7 +1204,7 @@ public class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      * @throws InsufficientInformationException
      */
-    private void handlePrimarySnmpInterfaceChanged(Event event)
+    private void handlePrimarySnmpInterfaceChanged(IEvent event)
             throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
@@ -1221,10 +1221,10 @@ public class Collectd extends AbstractServiceDaemon implements
         //
         String oldPrimaryIfAddr = null;
         String parmName = null;
-        Value parmValue = null;
+        IValue parmValue = null;
         String parmContent = null;
 
-        for (Parm parm : event.getParmCollection()) {
+        for (IParm parm : event.getParmCollection()) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             if (parmValue == null)
@@ -1305,7 +1305,7 @@ public class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      * @throws InsufficientInformationException
      */
-    private void handleReinitializePrimarySnmpInterface(Event event)
+    private void handleReinitializePrimarySnmpInterface(IEvent event)
             throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
@@ -1357,7 +1357,7 @@ public class Collectd extends AbstractServiceDaemon implements
      * @throws InsufficientInformationException 
      * 
      */
-    private void handleServiceDeleted(Event event)
+    private void handleServiceDeleted(IEvent event)
             throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);

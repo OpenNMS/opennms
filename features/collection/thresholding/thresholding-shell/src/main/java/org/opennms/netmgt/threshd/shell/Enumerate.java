@@ -40,7 +40,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 
-@Command(scope = "opennms-threshold-states", name = "enumerate", description = "Enumerates threshold states")
+@Command(scope = "opennms", name = "threshold-enumerate", description = "Enumerates threshold states")
 @Service
 public class Enumerate extends AbstractThresholdStateCommand {
     @Reference

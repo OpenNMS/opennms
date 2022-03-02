@@ -29,6 +29,7 @@
 package org.opennms.features.topology.app.internal.ui.breadcrumbs;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -40,12 +41,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.TopologyServiceClient;
-import org.opennms.features.topology.api.support.SimpleGraphBuilder;
+import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
+import org.opennms.features.topology.api.topo.simple.SimpleGraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.app.internal.DefaultTopologyServiceClient;
 import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
 import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
@@ -60,17 +63,17 @@ public class BreadcrumbPathCalculatorTest {
 
     @Before
     public void setUp() {
-        final GraphProvider layer1 = new SimpleGraphBuilder("layer1")
+        final BackendGraph layer1 = new SimpleGraphBuilder("layer1")
                 .vertex("A1")
                 .vertex("A2")
                 .get();
-        final GraphProvider layer2 = new SimpleGraphBuilder("layer2")
+        final BackendGraph layer2 = new SimpleGraphBuilder("layer2")
                 .vertex("B1")
                 .vertex("B2")
                 .vertex("B3")
                 .vertex("B4")
                 .get();
-        final GraphProvider layer3 = new SimpleGraphBuilder("layer3")
+        final BackendGraph layer3 = new SimpleGraphBuilder("layer3")
                 .vertex("C1")
                 .vertex("C2")
                 .vertex("C3")
@@ -92,12 +95,12 @@ public class BreadcrumbPathCalculatorTest {
 
             @Override
             public GraphProvider getDefaultGraphProvider() {
-                return layer1;
+                return new ArrayList<>(getGraphProviders()).get(0);
             }
 
             @Override
             public Collection<GraphProvider> getGraphProviders() {
-                return Lists.newArrayList(layer1, layer2, layer3);
+                return Lists.newArrayList(new SimpleGraphProvider(layer1), new SimpleGraphProvider(layer2), new SimpleGraphProvider(layer3));
             }
 
             @Override

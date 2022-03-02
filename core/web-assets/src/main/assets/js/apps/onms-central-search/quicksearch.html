@@ -1,0 +1,98 @@
+<style type="text/css">
+    .search-result {
+        max-height: 700px;
+        min-width: 280px;
+        max-width: 60%;
+        position: absolute;
+        top: 100%;
+        z-index: 100000;
+        overflow: auto;
+        border: #343a40 solid 1px;
+    }
+
+    .search-result .list-group-item {
+        padding: .25rem 0.75rem;
+        font-size: 90%;
+    }
+
+    .search-result .list-group-item:last-child {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .search-bar .form-control {
+        border: none;
+        outline: none;
+        box-shadow: none;
+        border-radius: 1rem;
+        padding: 0px;
+    }
+
+    .search-bar .input-group-text {
+        border-top-left-radius: 1rem;
+        border-bottom-left-radius: 1rem;
+        background-color: #fff;
+        border-color: #fff;
+    }
+
+    .search-result .list-group-item:hover {
+        background-color: #e9ecef;
+    }
+
+    .selected {
+        background-color: #e9ecef;
+    }
+</style>
+
+<form id="onms-search-form" autocomplete="off" novalidate class="form-inline">
+    <!-- Disable auto complete -->
+    <input autocomplete="false" name="hidden" type="text" style="display:none;">
+
+    <!-- Search Input -->
+    <div class="input-group search-bar">
+        <div class="input-group-prepend">
+            <div class="input-group-text"><i class="fa fa-search"></i></div>
+        </div>
+        <label class="form-control">
+            <input id="onms-search-query" ng-change="onQueryChange()" ng-focus="input.focus=true" ng-blur="input.focus=false" ng-model="query" type="text" class="form-control" placeholder="Search..." aria-label="Search">
+            <small class="text-muted mr-4" ng-show="!input.focus">2x ⇧</small>
+        </label>
+        <!-- Loading Indicator -->
+        <div ng-if="showLoadingIndicator" class="btn btn-secondary rounded-0">
+            <div class="spinner-border spinner-border-sm text-white" role="status"/>
+            <span class="sr-only">Loading...</span>
+        </div>
+        <!-- Reset Search -->
+        <div ng-if="performSearchExecuted === true && !showLoadingIndicator" class="input-group-append">
+            <button class="btn btn-secondary" type="button" title="Reset Search" ng-click="resetQuery()"><i class="fa fa-times"></i></button>
+        </div>
+        <!-- Cancel -->
+        <div ng-if="showLoadingIndicator" class="input-group-append">
+            <button class="btn btn-secondary" type="button" title="Cancel Request" ng-click="cancelRequest()"><i class="fa fa-times"></i></button>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div ng-if="performSearchExecuted === true" class="bg-dark search-result rounded-bottom" id="onms-search-result">
+        <div class="list-group" ng-if="results.length > 0">
+            <div id="onms-search-result-item-{{$index}}" ng-repeat-start="item in results track by $index" ng-if="item.type === 'Group'" class="list-group-item bg-dark text-grey border-0 pl-2">
+                <span ng-if="!item.t">{{item.label}}</span>
+            </div>
+            <a id="onms-search-result-item-{{$index}}" ng-class="{'selected': item.selected}" ng-if="item.type === 'More'" ng-click="item.loadMore()" class="list-group-item list-group-item-action" href ng-mouseover="select($index)">more...</a>
+            <a id="onms-search-result-item-{{$index}}" ng-class="{'selected': item.selected}" ng-repeat-end ng-if="item.type === 'Item'" href="{{item.url}}" class="list-group-item list-group-item-action" ng-mouseover="select($index)" ng-click="resetQuery()">
+                <h6 class="mb-0"><i class="{{item.icon}}" ng-if="item.icon">&nbsp;</i>{{item.label}} <i style="-webkit-transform: scaleY(-1);transform: scaleY(-1);" class="fa fa-reply pull-right" ng-if="item.selected"></i></h6>
+                <small class="mr-4" ng-class="{'text-muted': !item.selected}" ng-repeat="match in item.matches">{{match.label}}: {{match.value}}</small>
+                <br ng-if="item.info !== ''"/>
+                <small class="mr-4" ng-class="{'text-muted': !item.selected}" ng-if="item.info !== ''">{{item.info}}</small>
+            </a>
+        </div>
+
+        <!-- No Result -->
+        <div ng-if="!error && results.length === 0" class="text-grey">
+            <span>No Results found</span>
+        </div>
+        <div ng-if="error" class="alert alert-danger mx-2 my-2">
+            <span>{{error}}</span>
+        </div>
+    </div>
+</form>

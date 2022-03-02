@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo;
 
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +47,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
@@ -66,9 +66,10 @@ import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SearchCriteria;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchResult;
-import org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider;
+import org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.app.internal.AlarmProvider;
 import org.opennms.features.topology.app.internal.AlarmSearchProvider;
 import org.opennms.features.topology.app.internal.CategoryProvider;
@@ -377,9 +378,11 @@ public class BundleContextHistoryManagerTest  {
     }
 
     private void setBehaviour(GraphProvider graphProviderMock) {
-        Mockito.when(graphProviderMock.getVertices(Matchers.any())).
-                thenReturn(Lists.newArrayList());
+        BackendGraph graphMock = Mockito.mock(BackendGraph.class);
+        Mockito.when(graphMock.getVertices(any())).thenReturn(Lists.newArrayList());
+        Mockito.when(graphMock.getNamespace()).thenReturn("test");
 
+        Mockito.when(graphProviderMock.getCurrentGraph()).thenReturn(graphMock);
         Mockito.when(graphProviderMock.getNamespace()).thenReturn("test");
     }
 
@@ -451,7 +454,7 @@ public class BundleContextHistoryManagerTest  {
 				capturedCriteria.add((Criteria) invocation.getArguments()[0]);
 			}
 			return null;
-		}).when(graphContainerMock).addCriteria(Matchers.any(Criteria.class));
+		}).when(graphContainerMock).addCriteria(any(Criteria.class));
     }
 
     private void setBehaviour(BundleContext bundleContextMock) {

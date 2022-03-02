@@ -1,0 +1,42 @@
+
+= Alarm Correlation
+
+This section describes how to configure {page-component-title} to provide real-time feedback on alarm correlation.
+
+[[ga-situation-feedback]]
+== Situation Feedback
+
+Situation feedback lets operators provide real-time feedback on alarm correlation.
+
+=== Installation
+
+Enable situation feedback by installing the feature from the Karaf shell:
+
+`feature:install opennms-situation-feedback`
+
+To ensure that the feature continues to be installed on subsequent restarts, add `opennms-situation-feedback` to the `featuresBoot` property in the `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
+
+=== Requirements
+
+The feature requires Elasticsearch to persist the feedback records.
+
+==== Configure Elasticsearch Persistence
+
+From a Karaf shell on your {page-component-title} instance, start by configuring the situation feedback persistence to use your Elasticsearch cluster:
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.situationfeedback.persistence.elastic
+admin@opennms()> config:property-set elasticUrl http://elastic:9200
+admin@opennms()> config:update
+----
+
+NOTE: This configuration is stored in `$\{OPENNMS_HOME}/etc/org.opennms.features.situationfeedback.persistence.elastic.cfg`.
+      See <<elasticsearch/introduction.adoc#ga-elasticsearch-integration, Elasticsearch Integration>> for more information.
+
+Installing the feature exposes a REST endpoint that OpenNMS Helm uses to display and submit feedback.
+
+Find further information on the REST API in the <<gs-situation-feedback, Developer Guide>>.
+

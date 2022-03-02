@@ -1,0 +1,56 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+">
+
+  <reference id="identity" interface="org.opennms.distributed.core.api.Identity"/>
+
+  <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
+
+  <reference id="grpcIpcServer" interface="org.opennms.core.grpc.common.GrpcIpcServer" />
+
+
+  <bean id="grpcServer" class="org.opennms.core.ipc.grpc.server.OpennmsGrpcServer"
+        init-method="start" destroy-method="shutdown">
+    <argument ref="grpcIpcServer"/>
+    <property name="identity" ref="identity"/>
+    <property name="rpcMetrics" ref="grpcRpcMetrics"/>
+    <property name="sinkMetrics" ref="grpcSinkMetrics"/>
+    <property name="tracerRegistry" ref="tracerRegistry"/>
+  </bean>
+
+  <service ref="grpcServer" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager">
+    <service-properties>
+      <entry key="strategy" value="grpc"/>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+  <service ref="grpcServer" interface="org.opennms.core.rpc.api.RpcClientFactory">
+    <service-properties>
+      <entry key="strategy" value="grpc"/>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+  <!-- RPC Metrics -->
+  <bean id="grpcRpcMetrics" class="com.codahale.metrics.MetricRegistry"/>
+  <service ref="grpcRpcMetrics" interface="com.codahale.metrics.MetricSet">
+    <service-properties>
+      <entry key="name" value="gRPC RPC"/>
+      <entry key="description" value="Metrics related to RPC messages between OpenNMS and Minion"/>
+    </service-properties>
+  </service>
+
+  <!-- Sink Metrics -->
+  <bean id="grpcSinkMetrics" class="com.codahale.metrics.MetricRegistry"/>
+  <service ref="grpcSinkMetrics" interface="com.codahale.metrics.MetricSet">
+    <service-properties>
+      <entry key="name" value="gRPC Sink Consumer"/>
+      <entry key="description" value="Sink consumer Metrics on OpenNMS"/>
+    </service-properties>
+  </service>
+
+</blueprint>

@@ -251,7 +251,7 @@ public class ThresholdController extends AbstractController implements Initializ
             //Set the two default values which need to be set for the UI to work properly
             threshold.setDsType("node");
             threshold.setType(ThresholdType.HIGH);
-            threshold.setTrigger(1); //Default to 1 - 0 will give an error, so we may as well be helpful
+            threshold.setTriggerValue(1); //Default to 1 - 0 will give an error, so we may as well be helpful
             group.addThreshold(threshold);
         }
 
@@ -304,7 +304,7 @@ public class ThresholdController extends AbstractController implements Initializ
             //Set the two default values which need to be set for the UI to work properly
             expression.setDsType("node");
             expression.setType(ThresholdType.HIGH);
-            expression.setTrigger(1); //Default to 1 - 0 will give an error, so we may as well be helpful
+            expression.setTriggerValue(1); //Default to 1 - 0 will give an error, so we may as well be helpful
             group.addExpression(expression);
         }
 
@@ -591,17 +591,17 @@ public class ThresholdController extends AbstractController implements Initializ
         baseDef.setDsType(dsType == null? null : dsType);
         baseDef.setType(thresholdType == null? null : ThresholdType.forName(thresholdType));
         try {
-            baseDef.setRearm(WebSecurityUtils.safeParseDouble(request.getParameter("rearm")));
+            baseDef.setRearm(request.getParameter("rearm"));
         } catch (final NumberFormatException e) {
             LOG.warn("Failed to parse rearm ('{}') as a number.", request.getParameter("rearm"));
         }
         try {
-            baseDef.setTrigger(WebSecurityUtils.safeParseInt(request.getParameter("trigger")));
+            baseDef.setTrigger(request.getParameter("trigger"));
         } catch (final NumberFormatException e) {
             LOG.warn("Failed to parse trigger ('{}') as a number.", request.getParameter("trigger"));
         }
         try {
-            baseDef.setValue(WebSecurityUtils.safeParseDouble(request.getParameter("value")));
+            baseDef.setValue(request.getParameter("value"));
         } catch (final NumberFormatException e) {
             LOG.warn("Failed to parse value ('{}') as a number.", request.getParameter("value"));
         }

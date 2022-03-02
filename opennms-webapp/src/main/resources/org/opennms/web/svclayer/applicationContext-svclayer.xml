@@ -68,20 +68,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="outageDao" ref="outageDao"/>
     <property name="viewDisplayDao" ref="viewDisplayDao"/>
   </bean>
-  <!-- Distributed Status Service Status beans -->
-  <bean id="distributedStatusService" class="org.opennms.web.svclayer.support.DefaultDistributedStatusService">
-    <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
-    <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
-    <property name="locationMonitorDao" ref="locationMonitorDao"/>
-    <property name="applicationDao" ref="applicationDao"/>
-    <property name="resourceDao" ref="resourceDao"/>
-    <property name="graphDao" ref="graphDao"/>
-    <property name="layoutApplicationsVertically" value="${distributed.layoutApplicationsVertically}"/>
-  </bean>
-  <bean id="distributedPollerService" class="org.opennms.web.svclayer.support.DefaultDistributedPollerService">
-    <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
-    <property name="locationMonitorDao" ref="locationMonitorDao"/>
-  </bean>
   <!--  Graphing beans -->
   <bean id="graphDao" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
     <property name="prefabConfigs">
@@ -106,6 +92,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean id="adminApplicationService" class="org.opennms.web.svclayer.support.DefaultAdminApplicationService">
     <property name="applicationDao" ref="applicationDao"/>
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+    <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
+    <property name="eventProxy" ref="eventProxy"/>
   </bean>
   <bean id="adminCategoryService" class="org.opennms.web.svclayer.support.DefaultAdminCategoryService">
     <property name="categoryDao" ref="categoryDao"/>
@@ -151,6 +139,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="resourceService" ref="resourceService"/>
     <property name="kscReportFactory" ref="kscReportFactory"/>
   </bean>
+  <onmsgi:service interface="org.opennms.web.svclayer.api.KscReportService" ref="kscReportService" />
   <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
     <property name="groupManager" ref="groupManager"/>
   </bean>
@@ -258,5 +247,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
   </bean>
   <bean id="foreignSourceAndRequisitionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
+  <onmsgi:service interface="org.opennms.web.svclayer.api.RequisitionAccessService" ref="foreignSourceAndRequisitionAccessService" />
   <bean id="snmpConfigAccessService" class="org.opennms.netmgt.config.SnmpConfigAccessService" />
 </beans>

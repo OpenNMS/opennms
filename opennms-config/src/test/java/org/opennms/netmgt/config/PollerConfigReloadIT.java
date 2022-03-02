@@ -28,12 +28,18 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -42,6 +48,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -53,6 +60,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
 
 public class PollerConfigReloadIT {
 
@@ -69,7 +77,7 @@ public class PollerConfigReloadIT {
         includeUrlFile = tempFolder.newFile("poller-config-include-url.txt");
         fillInitialData(includeUrlFile);
         InputStream configStream = setIncludeUrlFileInConfig(PollerConfigReloadIT.class.getResource("/poller-configuration.xml"));;
-        FilterDao mockFilterDao = Mockito.mock(FilterDao.class);
+        FilterDao mockFilterDao = mock(FilterDao.class);
         List<InetAddress> inetAddressList = new ArrayList<>();
         inetAddressList.add(InetAddressUtils.addr("127.0.0.5"));
         inetAddressList.add(InetAddressUtils.addr("128.0.1.10"));
@@ -130,5 +138,48 @@ public class PollerConfigReloadIT {
         String marshalledString = IOUtils.toString(configUrl, Charset.defaultCharset());
         String modifiedString = marshalledString.replace("${INCLUDE_URL_FILE}", includeUrlFile.getAbsolutePath());
         return IOUtils.toInputStream(modifiedString, Charset.defaultCharset());
+    }
+
+    @Test
+    public void testPollerConfigReloadFail() throws Exception {
+        final File temporaryFile = File.createTempFile("poller-configuration-", ".xml", new File(PollerConfigReloadIT.class.getResource("/etc").getFile()));
+        PollerConfigFactory.setPollerConfigFile(temporaryFile);
+
+        final AtomicBoolean invalid = new AtomicBoolean(false);
+        FilterDao filterDao = mock(FilterDao.class);
+        doAnswer(invocation -> {
+            if (invalid.get()) {
+                throw new FilterParseException("Something fishy");
+            }
+            return null;
+        }).when(filterDao).validateRule(any(String.class));
+        FilterDaoFactory.setInstance(filterDao);
+
+        IOUtils.copy(new FileInputStream(PollerConfigReloadIT.class.getResource("/poller-configuration-valid1.xml").getFile()), new FileOutputStream(temporaryFile));
+        long lastModified = temporaryFile.lastModified();
+
+        PollerConfigFactory.init();
+
+        assertEquals("IPADDR IPLIKE 1.*.*.*", PollerConfigFactory.getInstance().getPackage("example1").getFilter().getContent());
+
+        IOUtils.copy(new FileInputStream(PollerConfigReloadIT.class.getResource("/poller-configuration-valid2.xml").getFile()), new FileOutputStream(temporaryFile));
+        temporaryFile.setLastModified(lastModified + 1000);
+
+        invalid.set(true);
+        try {
+            PollerConfigFactory.getInstance().update();
+        } catch (FilterParseException e) {
+            // we expect this
+        }
+
+        assertEquals("IPADDR IPLIKE 1.*.*.*", PollerConfigFactory.getInstance().getPackage("example1").getFilter().getContent());
+
+        IOUtils.copy(new FileInputStream(PollerConfigReloadIT.class.getResource("/poller-configuration-valid2.xml").getFile()), new FileOutputStream(temporaryFile));
+        temporaryFile.setLastModified(lastModified + 2000);
+
+        invalid.set(false);
+        PollerConfigFactory.getInstance().update();
+
+        assertEquals("IPADDR IPLIKE 2.*.*.*", PollerConfigFactory.getInstance().getPackage("example1").getFilter().getContent());
     }
 }

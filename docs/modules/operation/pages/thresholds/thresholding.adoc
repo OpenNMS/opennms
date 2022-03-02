@@ -1,0 +1,39 @@
+= Thresholding
+
+Thresholding lets you define limits against network performance metrics of a managed entity to trigger an event when a value goes above or below the specified limit.
+
+* High
+* Low
+* Absolute Value
+* Relative Change
+
+== How thresholding works in {page-component-title}
+
+{page-component-title} uses collectors to implement data collection for a particular protocol or family of protocols (SNMP, JMX, HTTP, XML/JSON, WS-Management/WinRM, JDBC).
+You can specify configuration for a particular collector in a collection package: essentially the set of instructions that drives the behavior of the collector.
+
+The Collectd daemon gathers and stores performance data from these collectors.
+This is the data against which {page-component-title} applies thresholds.
+Thresholds trigger events when a specified threshold value is met.
+You can further create notifications and alarms for threshold events.
+
+image::thresholding/thresholding-flow.png[]
+
+== What triggers a thresholding event?
+
+{page-component-title} uses four thresholding algorithms that trigger an event when the data source value:
+
+* *Low* - equals or drops below the threshold value and re-arms when it equals or comes back up above the re-arm value (for example, available disk space falls under the specified value)
+* *High* - equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value (for example, bandwidth use exceeds the specified amount)
+* *Absolute* - changes by the specified amount (for example, on a fiber-optic link, a change in loss of anything greater than 3 dB is a problem regardless of what the original or final value is)
+* *Relative* - changes by percent (for example, available disk space changes more than 5% from the last poll)
+
+These thresholds can be *basic* (tested against a single value) or an *expression* (evaluated against multiple values in an expression).
+
+{page-component-title} applies these algorithms against any performance data (telemetry) collected by <<performance-data-collection/introduction.adoc#ga-performance-mgmt,collectd>> or pushed to <<telemetryd/introduction.adoc#ga-telemetryd, telemetryd>>.
+This includes, but is not limited to, metrics such as CPU load, bandwidth, disk space, and so on.
+
+NOTE: The basic walk-through focuses on how to set simple thresholds using default values in the {page-component-title} setup.
+
+For information on setting and configuring collectors, collectd, and the  _collectd-configuration.xml_ file, see <<performance-data-collection/introduction.adoc#performance-management, Performance Management>>.
+

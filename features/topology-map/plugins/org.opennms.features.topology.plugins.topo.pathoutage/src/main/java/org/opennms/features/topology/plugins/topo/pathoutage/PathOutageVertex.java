@@ -28,14 +28,14 @@
 
 package org.opennms.features.topology.plugins.topo.pathoutage;
 
-import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.AbstractLevelAwareVertex;
 import org.opennms.features.topology.api.topo.LevelAware;
 import org.opennms.netmgt.model.OnmsNode;
 
 /**
  * Vertex class for the {@link PathOutageProvider} object
  */
-class PathOutageVertex extends AbstractVertex implements LevelAware {
+class PathOutageVertex extends AbstractLevelAwareVertex implements LevelAware {
 
 	private int level;
 

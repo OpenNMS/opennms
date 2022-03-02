@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.opennms.core.ipc.grpc.common";
+option java_outer_classname = "MinionIpc";
+
+// service definitions of IPC between Minion and OpenNMS
+service OpenNMSIpc {
+    // Streams RPC messages between OpenNMS and Minion.
+    rpc RpcStreaming (stream RpcResponseProto) returns (stream RpcRequestProto) {
+    }
+    // Streams Sink messages from Minion to OpenNMS
+    rpc SinkStreaming (stream SinkMessage) returns (Empty) {
+    }
+}
+
+message Empty {
+
+}
+
+
+message RpcRequestProto {
+    string rpc_id = 1;
+    bytes rpc_content = 2;
+    string system_id = 3;
+    string location = 4;
+    string module_id = 5;
+    // absolute time elapsed since the epoch in msec.
+    uint64 expiration_time = 6;
+    map<string, string> tracing_info = 7;
+}
+
+message RpcResponseProto {
+    string rpc_id = 1;
+    bytes rpc_content = 2;
+    string system_id = 3;
+    string location = 4;
+    string module_id = 5;
+    map<string, string> tracing_info = 6;
+}
+
+message SinkMessage {
+    string message_id = 1;
+    bytes content = 2;
+    string system_id = 3;
+    string location = 4;
+    string module_id = 5;
+    map<string, string> tracing_info = 6;
+}

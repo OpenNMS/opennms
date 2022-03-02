@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.core.spring.FileReloadContainer;
@@ -73,6 +74,8 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
 
     /** The internal cache of container objects. */
     private ConcurrentHashMap<String, FileReloadContainer<T>> m_contents = new ConcurrentHashMap<String, FileReloadContainer<T>>();
+
+    private volatile boolean m_stopped = true;
 
     /**
      * Instantiates a new directory watcher.
@@ -131,17 +134,20 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
             synchronized (this) {
                 this.notifyAll();
             }
-            while (true) {
+            while (!m_stopped) {
                 if (m_thread.isInterrupted()) {
                     break;
                 }
-                WatchKey key = null;
+                WatchKey key;
                 try {
-                    LOG.debug("waiting for create event");
-                    key = watcher.take();
-                    LOG.debug("got an event, process it");
+                    LOG.trace("waiting for create event");
+                    key = watcher.poll(1, TimeUnit.SECONDS);
+                    if (key == null) {
+                        continue;
+                    }
+                    LOG.trace("got an event, process it");
                 } catch (InterruptedException ie) {
-                    LOG.info("interruped, must be time to shut down...");
+                    LOG.info("interrupted, must be time to shut down...");
                     break;
                 }
 
@@ -183,9 +189,13 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
      *
      * @throws InterruptedException the interrupted exception
      */
-    public void start() throws InterruptedException {
+    public synchronized void start() throws InterruptedException {
+        if (m_thread != null) {
+            stop();
+        }
         LOG.trace("starting monitor");
         m_thread = new Thread(this, "DirectoryWatcher-" + m_directory.getParentFile().getName() + '-' + m_directory.getName());
+        m_stopped = false;
         m_thread.start();
         synchronized (this) {
             this.wait();
@@ -198,8 +208,9 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
      *
      * @throws InterruptedException the interrupted exception
      */
-    public void stop() throws InterruptedException {
+    public synchronized void stop() throws InterruptedException {
         LOG.trace("stopping monitor");
+        m_stopped = true;
         m_thread.interrupt();
         m_thread.join();
         m_thread = null;

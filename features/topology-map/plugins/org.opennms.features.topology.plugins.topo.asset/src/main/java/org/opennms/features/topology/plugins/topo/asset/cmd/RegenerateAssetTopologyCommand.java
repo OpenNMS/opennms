@@ -36,7 +36,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 
-@Command(scope = "asset-topology", name = "regenerate", description="Regeneates the asset topology for given providerId")
+@Command(scope = "opennms", name = "asset-topo-regenerate", description="Regeneates the asset topology for given providerId")
 @Service
 public class RegenerateAssetTopologyCommand implements Action {
 

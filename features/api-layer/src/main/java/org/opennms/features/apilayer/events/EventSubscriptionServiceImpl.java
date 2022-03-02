@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,7 @@ import java.util.function.Consumer;
 import org.opennms.features.apilayer.utils.ModelMappers;
 import org.opennms.integration.api.v1.events.EventListener;
 import org.opennms.integration.api.v1.events.EventSubscriptionService;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,12 +134,12 @@ public class EventSubscriptionServiceImpl implements EventSubscriptionService {
         }
 
         @Override
-        public void onEvent(Event event) {
+        public void onEvent(IEvent event) {
             if (event == null || event.getUei() == null) {
                 return;
             }
             try {
-                delegate.onEvent(ModelMappers.toEvent(event));
+                delegate.onEvent(ModelMappers.toEvent(Event.copyFrom(event)));
             } catch (Exception e) {
                 LOG.error("Error occurred while handling event with UEI='{}' on: {}. Error: {}",
                         event.getUei(), this, e.getMessage(), e);

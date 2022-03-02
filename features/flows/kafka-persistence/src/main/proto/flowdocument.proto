@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.opennms.netmgt.flows.persistence.model";
+option java_outer_classname = "EnrichedFlowProtos";
+
+import "google/protobuf/wrappers.proto";
+
+
+
+enum Direction {
+    INGRESS = 0;
+    EGRESS = 1;
+}
+
+enum SamplingAlgorithm {
+    UNASSIGNED = 0;
+    SYSTEMATIC_COUNT_BASED_SAMPLING = 1;
+    SYSTEMATIC_TIME_BASED_SAMPLING = 2;
+    RANDOM_N_OUT_OF_N_SAMPLING = 3;
+    UNIFORM_PROBABILISTIC_SAMPLING = 4;
+    PROPERTY_MATCH_FILTERING = 5;
+    HASH_BASED_FILTERING = 6;
+    FLOW_STATE_DEPENDENT_INTERMEDIATE_FLOW_SELECTION_PROCESS = 7;
+}
+
+enum NetflowVersion {
+    V5 = 0;
+    V9 = 1;
+    IPFIX = 2;
+    SFLOW = 3;
+}
+
+enum Locality {
+    PUBLIC = 0;
+    PRIVATE = 1;
+}
+
+
+message NodeInfo {
+    string foreign_source = 1;
+    string foregin_id = 2;
+    uint32 node_id = 3;
+    repeated string categories = 4;
+}
+
+message FlowDocument {
+    uint64 timestamp = 1; // Flow timestamp in milliseconds.
+    google.protobuf.UInt64Value num_bytes = 2; // Number of bytes transferred in the flow
+    Direction direction = 3; // Direction of the flow (egress vs ingress)
+    string dst_address = 4; //  Destination address.
+    string dst_hostname = 5; // Destination address hostname.
+    google.protobuf.UInt64Value dst_as = 6; // Destination autonomous system (AS).
+    google.protobuf.UInt32Value dst_mask_len = 7; // The number of contiguous bits in the source address subnet mask.
+    google.protobuf.UInt32Value dst_port = 8; // Destination port.
+    google.protobuf.UInt32Value engine_id = 9; // Slot number of the flow-switching engine.
+    google.protobuf.UInt32Value engine_type = 10; // Type of flow-switching engine.
+    google.protobuf.UInt64Value delta_switched = 11; // Unix timestamp in ms at which the previous exported packet-
+    // -associated with this flow was switched.
+    google.protobuf.UInt64Value first_switched = 12; // Unix timestamp in ms at which the first packet-
+    // -associated with this flow was switched.
+    google.protobuf.UInt64Value last_switched = 13;
+    google.protobuf.UInt32Value num_flow_records = 14; // Number of flow records in the associated packet.
+    google.protobuf.UInt64Value num_packets = 15; // Number of packets in the flow.
+    google.protobuf.UInt64Value flow_seq_num = 16; // Flow packet sequence number.
+    google.protobuf.UInt32Value input_snmp_ifindex   = 17; // Input SNMP ifIndex.
+    google.protobuf.UInt32Value output_snmp_ifindex = 18; // Output SNMP ifIndex.
+    google.protobuf.UInt32Value ip_protocol_version = 19; // IPv4 vs IPv6.
+    string next_hop_address = 20; // Next hop IpAddress.
+    string next_hop_hostname = 21; // Next hop hostname.
+    google.protobuf.UInt32Value protocol = 22; // IP protocol number i.e 6 for TCP, 17 for UDP
+    SamplingAlgorithm sampling_algorithm = 23; // Sampling algorithm ID.
+    google.protobuf.DoubleValue sampling_interval = 24; // Sampling interval.
+    string src_address = 26; // Source address.
+    string src_hostname = 27; // Source hostname.
+    google.protobuf.UInt64Value src_as = 28; // Source AS number.
+    google.protobuf.UInt32Value src_mask_len = 29; // The number of contiguous bits in the destination address subnet mask.
+    google.protobuf.UInt32Value src_port = 30; // Source port.
+    google.protobuf.UInt32Value tcp_flags = 31; // TCP Flags.
+    google.protobuf.UInt32Value tos = 32; // TOS
+    NetflowVersion netflow_version = 33; // Netflow version
+    string vlan = 34; // VLAN ID.
+    NodeInfo src_node = 35;
+    NodeInfo exporter_node = 36;
+    NodeInfo dest_node = 37;
+    string application = 38;
+    string host = 39;
+    string location = 40;
+    Locality src_locality = 41;
+    Locality dst_locality = 42;
+    Locality flow_locality = 43;
+    reserved 44; // former convo_key
+    uint64 clock_correction = 45; // Applied clock correction im milliseconds.
+    google.protobuf.UInt32Value dscp = 46; // DSCP; upper 6 bits of TOS
+    google.protobuf.UInt32Value ecn = 47; // ECN; lower 2 bits of TOS
+}

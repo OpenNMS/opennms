@@ -1,0 +1,72 @@
+openapi: 3.0.3
+info:
+  version: 0.1.0
+  title: OpenNMS Health Check RESTful API
+  description: OpenNMS Health Check RESTful API
+  contact:
+    name: OpenNMS
+    url: 'http://www.opennms.com/'
+  license:
+    name: OpenNMS(R) Licensing
+    url: 'https://github.com/OpenNMS/opennms/blob/develop/LICENSE.md'
+servers:
+  - url: 'http://localhost:8181/minion/rest'
+security:
+  - basicAuth: []
+paths:
+  /health/probe:
+    get:
+      summary: Health check probe for components
+      description: Health check probe for components. Only indicate if the health is good or not
+      operationId: getHealthProbe
+      parameters:
+        - name: t
+          in: query
+          description: Timeout in milliseconds
+          schema:
+            type: integer
+            format: int32
+            default: 5000
+        - name: tag
+          in: query
+          description: "Use tag to filter Health Check components. A tag could be - local
+, rest, broker, telemetry, dao, minion, elastic, bundle"
+          schema:
+            type: array
+            items:
+              type: string
+              default: ''
+      responses:
+        default:
+          description: default response
+  /health:
+    get:
+      summary: Health check results for components with details
+      description: Health check results for components. Include health check result details for each element
+      operationId: getHealth
+      parameters:
+        - name: t
+          in: query
+          description: Timeout in milliseconds
+          schema:
+            type: integer
+            format: int32
+            default: 5000
+        - name: tag
+          in: query
+          description: "Use tag to filter Health Check components. A tag could be - local
+, rest, broker, telemetry, dao, minion, elastic, bundle"
+          schema:
+            type: array
+            items:
+              type: string
+              default: ''
+      responses:
+        default:
+          description: default response
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic

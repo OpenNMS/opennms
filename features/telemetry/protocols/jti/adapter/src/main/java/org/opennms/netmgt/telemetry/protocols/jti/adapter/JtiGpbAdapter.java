@@ -44,7 +44,8 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
-import org.opennms.netmgt.telemetry.protocols.collection.AbstractPersistingAdapter;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptedCollectionAdapter;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
 import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass;
@@ -73,7 +74,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  *
  * @author jwhite
  */
-public class JtiGpbAdapter extends AbstractPersistingAdapter {
+public class JtiGpbAdapter extends AbstractScriptedCollectionAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(JtiGpbAdapter.class);
 
     private static final ExtensionRegistry s_registry = ExtensionRegistry.newInstance();
@@ -95,12 +96,13 @@ public class JtiGpbAdapter extends AbstractPersistingAdapter {
 
     private TransactionOperations transactionTemplate;
 
-    public JtiGpbAdapter(String name, MetricRegistry metricRegistry) {
-        super(name, metricRegistry);
+    public JtiGpbAdapter(final AdapterDefinition adapterConfig,
+                         final MetricRegistry metricRegistry) {
+        super(adapterConfig, metricRegistry);
     }
 
     @Override
-    public Stream<CollectionSetWithAgent> handleMessage(TelemetryMessageLogEntry message, TelemetryMessageLog messageLog) {
+    public Stream<CollectionSetWithAgent> handleCollectionMessage(TelemetryMessageLogEntry message, TelemetryMessageLog messageLog) {
         final TelemetryTop.TelemetryStream jtiMsg;
         try {
             jtiMsg = TelemetryTop.TelemetryStream.parseFrom(message.getByteArray(), s_registry);

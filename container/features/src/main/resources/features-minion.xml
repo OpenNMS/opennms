@@ -105,6 +105,7 @@
       <feature>opennms-config-jaxb</feature>
       <feature>opennms-core-web</feature>
       <!-- System classpath dependency of opennms-vmware -->
+      <feature>opennms-prometheus-collector</feature>
       <feature>opennms-provisioning</feature>
       <feature>opennms-vmware</feature>
       <feature>opennms-xml-collector</feature>
@@ -132,6 +133,7 @@
       <feature>opennms-dnsresolver-api</feature>
       <feature>dropwizard-metrics</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+      <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
       <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
       <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
@@ -140,11 +142,58 @@
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.registry/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.shell/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.parser/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.transport/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.parser/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.transport/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.parser/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.minion/${project.version}</bundle>
     </feature>
+
+    <feature name="opennms-core-ipc-grpc-client" description="OpenNMS :: Core :: IPC :: GRPC :: Client" version="${project.version}">
+      <feature>opennms-core-ipc-sink-api</feature>
+      <feature>opennms-core-ipc-rpc-api</feature>
+      <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.client/${project.version}</bundle>
+      <feature>opennms-core-ipc-twin-grpc-subscriber</feature>
+    </feature>
+
+    <feature name="opennms-core-ipc-twin-grpc-subscriber" description="OpenNMS :: Core :: IPC :: Twin :: GRPC :: Subscriber" version="${project.version}">
+        <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.subscriber/${project.version}</bundle>
+        <feature>json-patch</feature>
+    </feature>
+
+    <feature name="dominion-grpc-client" description="Dominion :: GRPC :: Client" version="${project.version}">
+        <feature>minion-core-api</feature>
+        <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.minion/dominion-grpc-client/${project.version}</bundle>
+    </feature>
+
+    <feature name="dominion-secure-credentials-vault" description="Dominion :: Secure Credentials Vault" version="${project.version}">
+        <feature>scv-api</feature>
+        <feature>dominion-grpc-client</feature>
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.dominion-grpc-impl/${project.version}</bundle>
+    </feature>
+
+  <feature name="minion-rest-service" version="${project.version}" description="Minion :: Rest :: Service">
+    <feature>opennms-health-rest</feature>
+    <feature version="${cxfVersion}">cxf-core</feature>
+    <feature version="${cxfVersion}">cxf-jaxrs</feature>
+    <bundle>mvn:org.opennms.features.minion/minion-rest-service/${project.version}</bundle>
+  </feature>
+
+  <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
+    <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+    <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
+  </feature>
 
 </features>

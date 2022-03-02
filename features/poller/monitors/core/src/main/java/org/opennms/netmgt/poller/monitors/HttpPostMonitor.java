@@ -36,20 +36,22 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.ParseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.core.web.HttpClientWrapper;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
@@ -69,7 +71,6 @@ import com.google.common.base.Strings;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</a>
  */
 
-@Distributable(DistributionContext.DAEMON)
 final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
 
     /**
@@ -107,7 +108,7 @@ final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
     public static final String PARAMETER_PASSWORD = "auth-password";
 
     private static final Logger LOG = LoggerFactory.getLogger(HttpPostMonitor.class);
-
+    private static final Pattern HEADER_PATTERN = Pattern.compile("header[0-9]+$");
 
     /**
      * {@inheritDoc}
@@ -201,6 +202,21 @@ final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
                 LOG.debug("HttpPostMonitor: Constructed URL is {}", ub);
 
                 HttpPost post = new HttpPost(ub.build());
+
+                for (final String key : parameters.keySet()) {
+                    if (HEADER_PATTERN.matcher(key).matches()) {
+                        final Header header = getHeader(ParameterMap.getKeyedString(parameters, key, null));
+
+                        if (Strings.isNullOrEmpty(header.getName())) {
+                            LOG.debug("Ignoring header with empty name (value='{}')", header.getValue());
+                            continue;
+                        }
+
+                        post.setHeader(header);
+                        LOG.debug("Using header '{}'", header.getName() + ": " + header.getValue());
+                    }
+                }
+
                 post.setEntity(postReq);
                 CloseableHttpResponse response = clientWrapper.execute(post);
 
@@ -266,4 +282,17 @@ final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
         return serviceStatus;
     }
 
+    private Header getHeader(final String header) {
+        if (Strings.isNullOrEmpty(header)) {
+            throw new ParseException("Header is null or empty");
+        }
+
+        final String arr[] = header.split(":");
+
+        if (arr.length != 2) {
+            throw new ParseException("Invalid header: '" + header + "'");
+        }
+
+        return new BasicHeader(arr[0].trim(), arr[1].trim());
+    }
 }

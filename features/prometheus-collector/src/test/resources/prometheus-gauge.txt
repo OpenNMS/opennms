@@ -1,0 +1,4 @@
+# note this gauge has a timestamp - which is ignored/unsupported.
+
+# TYPE go_memstats_alloc_bytes gauge
+go_memstats_alloc_bytes 4.14422136e+08 123456

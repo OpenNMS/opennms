@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>dependencies</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>29.0.6-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>org.opennms.dependencies.jcifs-shaded</artifactId>
+  <name>OpenNMS :: Dependencies :: JCIFs :: Shaded</name>
+  <description>
+    This module is used to provide a single artifact that the OpenNMS project
+    can depend on to use the jcifs-ng and bountycastle
+  </description>
+  <licenses>
+    <license>
+      <name>GNU Lesser/Library Public License, Version 3.0</name>
+      <url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
+    </license>
+    <license>
+      <name>GNU Public License, Version 3.0</name>
+      <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+    </license>
+  </licenses>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven.shade.plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <!--
+              Shade and relocate the bouncycastle classes to avoid it in default lib folder.
+              See https://issues.opennms.org/browse/NMS-13111
+            -->
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>eu.agno3.jcifs:jcifs-ng</include>
+                  <include>org.bouncycastle:*</include>
+                </includes>
+              </artifactSet>
+              <!-- Unsign the content -->
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/BC1024KE.DSA</exclude>
+                    <exclude>META-INF/BC1024KE.SF</exclude>
+                    <exclude>META-INF/BC2048KE.DSA</exclude>
+                    <exclude>META-INF/BC2048KE.SF</exclude>
+                    <exclude>META-INF/services/java.security.Provider</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <relocations>
+                <relocation>
+                  <pattern>org.bouncycastle</pattern>
+                  <shadedPattern>org.opennms.shaded.org.bouncycastle</shadedPattern>
+                </relocation>
+              </relocations>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>eu.agno3.jcifs</groupId>
+      <artifactId>jcifs-ng</artifactId>
+      <version>${jcifsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+</project>

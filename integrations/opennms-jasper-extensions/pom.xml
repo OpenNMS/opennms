@@ -4,7 +4,7 @@
 <parent>
   <groupId>org.opennms</groupId>
   <artifactId>opennms-integrations</artifactId>
-  <version>25.0.0-SNAPSHOT</version>
+  <version>29.0.6-SNAPSHOT</version>
 </parent>
   <!-- the name must alphabetically come before jasperreports jar -->
   <artifactId>jasper-extensions</artifactId>
@@ -38,9 +38,10 @@
         <artifactId>keytool-maven-plugin</artifactId>
         <configuration>
           <alias>localhost</alias>
-          <keysize>1024</keysize>
-          <keyalg>DSA</keyalg>
+          <keysize>2048</keysize>
+          <keyalg>RSA</keyalg>
           <dname>CN=localhost, OU=Measurement API Wire Mock, O=The OpenNMS Group, C=US</dname>
+          <storetype>jks</storetype>
         </configuration>
       </plugin>
       <plugin>
@@ -58,6 +59,31 @@
         </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>keytool-maven-plugin</artifactId>
+                    <versionRange>[1.5,)</versionRange>
+                    <goals><goal>generateKeyPair</goal></goals>
+                  </pluginExecutionFilter>
+                  <action><ignore></ignore></action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
   <dependencies>
     <dependency>
@@ -121,6 +147,12 @@
       <artifactId>wiremock-jre8</artifactId>
       <version>2.23.2</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>

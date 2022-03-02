@@ -11,8 +11,26 @@
 
   <context:annotation-config />
 
-  <bean id="camelLocalMessageDispatcherFactory" class="org.opennms.core.ipc.sink.camel.client.CamelLocalMessageDispatcherFactory" />
+  <bean id="camelLocalMessageDispatcherFactory"
+        class="org.opennms.core.ipc.sink.camel.client.CamelLocalMessageDispatcherFactory">
+    <property name="metrics" ref="camelSinkMetricRegistry"/>
+  </bean>
 
   <onmsgi:service ref="camelLocalMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory" />
+
+  <!-- Sink Metrics -->
+  <bean id="camelSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+  <onmsgi:service ref="camelSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+    <onmsgi:service-properties>
+      <entry>
+        <key><value>name</value></key>
+        <value>Camel Sink Producer</value>
+      </entry>
+      <entry>
+        <key><value>description</value></key>
+        <value>Sink Producer Metrics on OpenNMS</value>
+      </entry>
+    </onmsgi:service-properties>
+  </onmsgi:service>
 
 </beans>

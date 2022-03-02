@@ -53,6 +53,11 @@ public class Rule implements RuleDefinition {
     public static final int MIN_PORT_VALUE = 0;
     public static final int MAX_PORT_VALUE = 65535;
 
+    public boolean canBeReversed() {
+        return isOmnidirectional() &&
+               (hasSrcPortDefinition() || hasSrcAddressDefinition() || hasDstPortDefinition() || hasDstAddressDefinition());
+    }
+
     @Id
     @SequenceGenerator(name="ruleSequence", sequenceName="ruleNxtId")
     @GeneratedValue(generator="ruleSequence")

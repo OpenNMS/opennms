@@ -61,10 +61,14 @@ import org.opennms.netmgt.dao.VmwareConfigDao;
 import org.opennms.netmgt.dao.VmwareDatacollectionConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.google.common.base.Strings;
 import com.vmware.vim25.mo.ManagedEntity;
@@ -83,20 +87,17 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
      */
     private static final Logger logger = LoggerFactory.getLogger(VmwareCollector.class);
 
-    private static final String VMWARE_COLLECTION_KEY = "vmwareCollection";
-    private static final String VMWARE_MGMT_SERVER_KEY = "vmwareManagementServer";
-    private static final String VMWARE_MGED_OBJECT_ID_KEY = "vmwareManagedObjectId";
-    private static final String VMWARE_SERVER_KEY = "vmwareServer";
-
     private static final Map<String, Class<?>> TYPE_MAP = Collections.unmodifiableMap(Stream.of(
-            new SimpleEntry<>(VMWARE_COLLECTION_KEY, VmwareCollection.class),
-            new SimpleEntry<>(VMWARE_SERVER_KEY, VmwareServer.class))
+            new SimpleEntry<>(VmwareImporter.VMWARE_COLLECTION_KEY, VmwareCollection.class),
+            new SimpleEntry<>(VmwareImporter.VMWARE_SERVER_KEY, VmwareServer.class))
             .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
 
     /**
      * the node dao object for retrieving assets
      */
     private NodeDao m_nodeDao = null;
+
+    private TransactionTemplate m_transactionTemplate = null;
 
     /**
      * the config dao
@@ -140,47 +141,61 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
         if (m_vmwareConfigDao == null) {
             m_vmwareConfigDao = BeanUtils.getBean("daoContext", "vmwareConfigDao", VmwareConfigDao.class);
         }
+
+        if (m_transactionTemplate == null) {
+            m_transactionTemplate = BeanUtils.getBean("daoContext", "transactionTemplate", TransactionTemplate.class);
+        }
     }
 
     @Override
     public Map<String, Object> getRuntimeAttributes(CollectionAgent agent, Map<String, Object> parameters) {
         final Map<String, Object> runtimeAttributes = new HashMap<>();
-        final OnmsNode onmsNode = m_nodeDao.get(agent.getNodeId());
-        if (onmsNode == null) {
-            throw new IllegalArgumentException(String.format("VmwareCollector: No node found with id: %d", agent.getNodeId()));
-        }
 
-        // retrieve the assets
-        final String vmwareManagementServer = onmsNode.getAssetRecord().getVmwareManagementServer();
-        if (Strings.isNullOrEmpty(vmwareManagementServer)) {
-            throw new IllegalArgumentException(String.format("VmwareCollector: No management server is set on node with id %d.",  onmsNode.getId()));
-        }
-        runtimeAttributes.put(VMWARE_MGMT_SERVER_KEY, vmwareManagementServer);
+        m_transactionTemplate.execute(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus transactionStatus) {
+                final OnmsNode onmsNode = m_nodeDao.get(agent.getNodeId());
+                if (onmsNode == null) {
+                    throw new IllegalArgumentException(String.format("VmwareCollector: No node found with id: %d", agent.getNodeId()));
+                }
 
-        final String vmwareManagedObjectId = onmsNode.getForeignId();
-        if (Strings.isNullOrEmpty(vmwareManagedObjectId)) {
-            throw new IllegalArgumentException(String.format("VmwareCollector: No foreign id is set on node with id %d.",  onmsNode.getId()));
-        }
-        runtimeAttributes.put(VMWARE_MGED_OBJECT_ID_KEY, vmwareManagedObjectId);
+                // retrieve the metadata
+                final String vmwareManagementServer = VmwareImporter.getManagementServer(onmsNode);
 
-        // retrieve the collection
-        final String collectionName = ParameterMap.getKeyedString(parameters, "collection", ParameterMap.getKeyedString(parameters, "vmware-collection", null));
-        final VmwareCollection collection = m_vmwareDatacollectionConfigDao.getVmwareCollection(collectionName);
-        if (collection == null) {
-            throw new IllegalArgumentException(String.format("VmwareCollector: No collection found with name '%s'.",  collectionName));
-        }
-        runtimeAttributes.put(VMWARE_COLLECTION_KEY, collection);
+                if (Strings.isNullOrEmpty(vmwareManagementServer)) {
+                    throw new IllegalArgumentException(String.format("VmwareCollector: No management server is set on node with id %d.",  onmsNode.getId()));
+                }
+                runtimeAttributes.put(VmwareImporter.METADATA_MANAGEMENT_SERVER, vmwareManagementServer);
 
-        // retrieve the server configuration
-        final Map<String, VmwareServer> serverMap = m_vmwareConfigDao.getServerMap();
-        if (serverMap == null) {
-            throw new IllegalStateException(String.format("VmwareCollector: Error getting vmware-config.xml's server map."));
-        }
-        final VmwareServer vmwareServer = serverMap.get(vmwareManagementServer);
-        if (vmwareServer == null) {
-            throw new IllegalStateException(String.format("VmwareCollector: Error getting credentials for VMware management server: %s", vmwareManagementServer));
-        }
-        runtimeAttributes.put(VMWARE_SERVER_KEY, vmwareServer);
+                final String vmwareManagedObjectId = onmsNode.getForeignId();
+                if (Strings.isNullOrEmpty(vmwareManagedObjectId)) {
+                    throw new IllegalArgumentException(String.format("VmwareCollector: No foreign id is set on node with id %d.",  onmsNode.getId()));
+                }
+                runtimeAttributes.put(VmwareImporter.METADATA_MANAGED_OBJECT_ID, vmwareManagedObjectId);
+
+                // retrieve the collection
+                final String collectionName = ParameterMap.getKeyedString(parameters, "collection", ParameterMap.getKeyedString(parameters, "vmware-collection", null));
+                final VmwareCollection collection = m_vmwareDatacollectionConfigDao.getVmwareCollection(collectionName);
+                if (collection == null) {
+                    throw new IllegalArgumentException(String.format("VmwareCollector: No collection found with name '%s'.",  collectionName));
+                }
+                runtimeAttributes.put(VmwareImporter.VMWARE_COLLECTION_KEY, collection);
+
+                // retrieve the server configuration
+                final Map<String, VmwareServer> serverMap = m_vmwareConfigDao.getServerMap();
+                if (serverMap == null) {
+                    throw new IllegalStateException(String.format("VmwareCollector: Error getting vmware-config.xml's server map."));
+                }
+                final VmwareServer vmwareServer = serverMap.get(vmwareManagementServer);
+                if (vmwareServer == null) {
+                    throw new IllegalStateException(String.format("VmwareCollector: Error getting credentials for VMware management server: %s", vmwareManagementServer));
+                }
+                runtimeAttributes.put(VmwareImporter.VMWARE_SERVER_KEY, vmwareServer);
+
+                return null;
+            }
+        });
+
         return runtimeAttributes;
     }
 
@@ -194,15 +209,12 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
      */
     @Override
     public CollectionSet collect(CollectionAgent agent, Map<String, Object> parameters) throws CollectionException {
-        final VmwareCollection collection = (VmwareCollection) parameters.get(VMWARE_COLLECTION_KEY);
-        final String vmwareManagementServer = (String) parameters.get(VMWARE_MGMT_SERVER_KEY);
-        final String vmwareManagedObjectId = (String) parameters.get(VMWARE_MGED_OBJECT_ID_KEY);
-        final VmwareServer vmwareServer = (VmwareServer) parameters.get(VMWARE_SERVER_KEY);
-
-        CollectionSetBuilder builder = new CollectionSetBuilder(agent);
+        final VmwareCollection collection = (VmwareCollection) parameters.get(VmwareImporter.VMWARE_COLLECTION_KEY);
+        final String vmwareManagementServer = (String) parameters.get(VmwareImporter.METADATA_MANAGEMENT_SERVER);
+        final String vmwareManagedObjectId = (String) parameters.get(VmwareImporter.METADATA_MANAGED_OBJECT_ID);
+        final VmwareServer vmwareServer = (VmwareServer) parameters.get(VmwareImporter.VMWARE_SERVER_KEY);
+        final CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         builder.withStatus(CollectionStatus.FAILED);
-
-        VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareServer);
 
         if (collection.getVmwareGroup().length < 1) {
             logger.info("No groups to collect. Returning empty collection set.");
@@ -210,8 +222,71 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
             return builder.build();
         }
 
-        try {
+        try (final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareServer)) {
             vmwareViJavaAccess.connect(ParameterMap.getKeyedInteger(parameters, "timeout", VmwareViJavaAccess.DEFAULT_TIMEOUT));
+            final ManagedEntity managedEntity = vmwareViJavaAccess.getManagedEntityByManagedObjectId(vmwareManagedObjectId);
+            VmwarePerformanceValues vmwarePerformanceValues = null;
+            try {
+                vmwarePerformanceValues = vmwareViJavaAccess.queryPerformanceValues(managedEntity);
+            } catch (RemoteException e) {
+                logger.warn("Error retrieving performance values from VMware management server '" + vmwareManagementServer + "' for managed object '" + vmwareManagedObjectId + "'", e.getMessage());
+                return builder.build();
+            }
+            for (final VmwareGroup vmwareGroup : collection.getVmwareGroup()) {
+                final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
+                if ("node".equalsIgnoreCase(vmwareGroup.getResourceType())) {
+                    // single instance value
+                    for (final Attrib attrib : vmwareGroup.getAttrib()) {
+                        if (!vmwarePerformanceValues.hasSingleValue(attrib.getName())) {
+                            // warning
+                            logger.debug("Warning! No single value for '{}' defined as single instance attribute for node {}", attrib.getName(), agent.getNodeId());
+                        } else {
+                            final Long value = vmwarePerformanceValues.getValue(attrib.getName());
+                            logger.debug("Storing single instance value {}='{}' for node {}",
+                                    attrib.getName(), value, agent.getNodeId());
+                            final AttributeType type = attrib.getType();
+                            if (type.isNumeric()) {
+                                builder.withNumericAttribute(nodeResource, vmwareGroup.getName(), attrib.getAlias(), value, type);
+                            } else {
+                                builder.withStringAttribute(nodeResource, vmwareGroup.getName(), attrib.getAlias(), String.valueOf(value));
+                            }
+                        }
+                    }
+                } else {
+                    // multi instance value
+                    final Set<String> instanceSet = new TreeSet<>();
+                    final HashMap<String, Resource> resources = new HashMap<>();
+                    for (final Attrib attrib : vmwareGroup.getAttrib()) {
+                        if (!vmwarePerformanceValues.hasInstances(attrib.getName())) {
+                            // warning
+                            logger.debug("Warning! No multi instance value for '{}' defined as multi instance attribute for node {}", attrib.getName(), agent.getNodeId());
+                        } else {
+                            final Set<String> newInstances = vmwarePerformanceValues.getInstances(attrib.getName());
+                            for (final String instance : newInstances) {
+                                if (!instanceSet.contains(instance)) {
+                                    resources.put(instance, new DeferredGenericTypeResource(nodeResource, vmwareGroup.getResourceType(), instance));
+                                    instanceSet.add(instance);
+                                }
+                                final AttributeType type = attrib.getType();
+                                final Long value = vmwarePerformanceValues.getValue(attrib.getName(), instance);
+                                logger.debug("Storing multi instance value {}[{}='{}' for node {}",
+                                        attrib.getName(), instance, value, agent.getNodeId());
+                                if (type.isNumeric()) {
+                                    builder.withNumericAttribute(resources.get(instance), vmwareGroup.getName(), attrib.getAlias(), value, type);
+                                } else {
+                                    builder.withStringAttribute(resources.get(instance), vmwareGroup.getName(), attrib.getAlias(), Long.toString(value));
+                                }
+                            }
+                        }
+                    }
+                    for (final String instance : instanceSet) {
+                        logger.debug("Storing multi instance value {}[{}='{}' for node {}",
+                                vmwareGroup.getResourceType() + "Name", instance, instance, agent.getNodeId());
+                        builder.withStringAttribute(resources.get(instance), vmwareGroup.getName(), vmwareGroup.getResourceType() + "Name", instance);
+                    }
+                }
+            }
+            builder.withStatus(CollectionStatus.SUCCEEDED);
         } catch (MalformedURLException e) {
             logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
             return builder.build();
@@ -219,91 +294,6 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
             logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
             return builder.build();
         }
-
-        ManagedEntity managedEntity = vmwareViJavaAccess.getManagedEntityByManagedObjectId(vmwareManagedObjectId);
-
-        VmwarePerformanceValues vmwarePerformanceValues = null;
-
-        try {
-            vmwarePerformanceValues = vmwareViJavaAccess.queryPerformanceValues(managedEntity);
-        } catch (RemoteException e) {
-            logger.warn("Error retrieving performance values from VMware management server '" + vmwareManagementServer + "' for managed object '" + vmwareManagedObjectId + "'", e.getMessage());
-
-            vmwareViJavaAccess.disconnect();
-
-            return builder.build();
-        }
-
-        for (final VmwareGroup vmwareGroup : collection.getVmwareGroup()) {
-            final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
-
-            if ("node".equalsIgnoreCase(vmwareGroup.getResourceType())) {
-                // single instance value
-
-                for (Attrib attrib : vmwareGroup.getAttrib()) {
-                    if (!vmwarePerformanceValues.hasSingleValue(attrib.getName())) {
-                        // warning
-                        logger.debug("Warning! No single value for '{}' defined as single instance attribute for node {}", attrib.getName(), agent.getNodeId());
-                    } else {
-                        final Long value = vmwarePerformanceValues.getValue(attrib.getName());
-                        logger.debug("Storing single instance value {}='{}' for node {}",
-                                attrib.getName(), value, agent.getNodeId());
-
-                        final AttributeType type = attrib.getType();
-                        if (type.isNumeric()) {
-                            builder.withNumericAttribute(nodeResource, vmwareGroup.getName(), attrib.getAlias(), value, type);
-                        } else {
-                            builder.withStringAttribute(nodeResource, vmwareGroup.getName(), attrib.getAlias(), String.valueOf(value));
-                        }
-                    }
-                }
-            } else {
-                // multi instance value
-
-                final Set<String> instanceSet = new TreeSet<>();
-
-                final HashMap<String, Resource> resources = new HashMap<>();
-
-                for (Attrib attrib : vmwareGroup.getAttrib()) {
-
-                    if (!vmwarePerformanceValues.hasInstances(attrib.getName())) {
-                        // warning
-                        logger.debug("Warning! No multi instance value for '{}' defined as multi instance attribute for node {}", attrib.getName(), agent.getNodeId());
-                    } else {
-
-                        Set<String> newInstances = vmwarePerformanceValues.getInstances(attrib.getName());
-
-                        for (String instance : newInstances) {
-                            if (!instanceSet.contains(instance)) {
-                                resources.put(instance, new DeferredGenericTypeResource(nodeResource, vmwareGroup.getResourceType(), instance));
-                                instanceSet.add(instance);
-                            }
-
-                            final AttributeType type = attrib.getType();
-                            final Long value = vmwarePerformanceValues.getValue(attrib.getName(), instance);
-                            logger.debug("Storing multi instance value {}[{}='{}' for node {}",
-                                    attrib.getName(), instance, value, agent.getNodeId());
-                            if (type.isNumeric()) {
-                                builder.withNumericAttribute(resources.get(instance), vmwareGroup.getName(), attrib.getAlias(), value, type);
-                            } else {
-                                builder.withStringAttribute(resources.get(instance), vmwareGroup.getName(), attrib.getAlias(), Long.toString(value));
-                            }
-                        }
-                    }
-                }
-
-                for (String instance : instanceSet) {
-                    logger.debug("Storing multi instance value {}[{}='{}' for node {}",
-                            vmwareGroup.getResourceType() + "Name", instance, instance, agent.getNodeId());
-                    builder.withStringAttribute(resources.get(instance), vmwareGroup.getName(), vmwareGroup.getResourceType() + "Name", instance);
-                }
-            }
-        }
-
-        builder.withStatus(CollectionStatus.SUCCEEDED);
-
-        vmwareViJavaAccess.disconnect();
-
         return builder.build();
     }
 

@@ -34,7 +34,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.collection.api.ServiceCollectorRegistry;
 
-@Command(scope = "collection", name = "list-collectors", description = "Lists all of the available collectors.")
+@Command(scope = "opennms", name = "list-collectors", description = "Lists all of the available collectors.")
 @Service
 public class ListCollectors implements Action {
 

@@ -58,6 +58,11 @@ public interface Flow {
     }
 
     /**
+     * Time at which the flow was received by listener in milliseconds since epoch UTC.
+     */
+    long getReceivedAt();
+
+    /**
      * Flow timestamp in milliseconds.
      */
     long getTimestamp();
@@ -214,6 +219,14 @@ public interface Flow {
      * TOS.
      */
     Integer getTos();
+
+    default Integer getDscp() {
+        return getTos() != null ? getTos() >>> 2 : null;
+    }
+
+    default Integer getEcn() {
+        return getTos() != null ? getTos() & 0x03 : null;
+    }
 
     /**
      * Netfow version

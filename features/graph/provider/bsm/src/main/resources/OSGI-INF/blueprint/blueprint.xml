@@ -1,0 +1,30 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0" xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+           xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+        http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+    <reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory" />
+    <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
+    <reference id="graphContainerCache" interface="org.opennms.netmgt.graph.api.service.GraphContainerCache" availability="mandatory" />
+
+    <bean id="bsmGraphProvider" class="org.opennms.netmgt.graph.provider.bsm.BusinessServiceGraphProvider" init-method="init" destroy-method="destroy">
+        <argument ref="graphContainerCache" />
+        <argument ref="businessServiceManager" />
+        <argument ref="eventIpcManager" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="bsmGraphProvider" />
+
+    <!-- Expose custom property converter to serialse the data to json -->
+    <service interface="org.opennms.netmgt.graph.rest.api.PropertyConverter">
+        <bean class="org.opennms.netmgt.graph.provider.bsm.converter.MapFunctionJsonConverter" />
+    </service>
+    <service interface="org.opennms.netmgt.graph.rest.api.PropertyConverter">
+        <bean class="org.opennms.netmgt.graph.provider.bsm.converter.ReduceFunctionJsonConverter" />
+    </service>
+</blueprint>

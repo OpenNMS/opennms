@@ -1,0 +1,86 @@
+[[ga-role-user-management-roles]]
+= Assigning User Permissions
+
+Create user permissions by assigning security roles.
+These roles regulate access to the web UI and the REST API to exchange monitoring and inventory information.
+ifndef::opennms-prime[]
+In a distributed installation the Minion instance requires the ROLE_MINION permission to interact with {page-component-title}.
+endif::opennms-prime[]
+
+.Built-in security roles (those with an asterisk are the most commonly used)
+[options="header"]
+[cols="1,3"]
+|===
+| Security Role Name
+| Description
+
+| ROLE_ADMIN*
+| Permissions to create, read, update, and delete in the web UI and the ReST API.
+
+| ROLE_ASSET_EDITOR
+| Permissions only to update the asset records from nodes.
+
+| ROLE_DASHBOARD
+| Allow user access only to the dashboard.
+
+| ROLE_DELEGATE
+| Allow actions (such as acknowledging an alarm) to be performed on behalf of another user.
+
+| ROLE_FLOW_MANAGER
+| Allow user to edit flow classifications.
+
+| ROLE_JMX
+| Allow retrieving JMX metrics but do not allow executing MBeans of the {page-component-title} JVM, even if they just return simple values.
+ifndef::opennms-prime[]
+
+| ROLE_MINION
+| Minimum required permissions for a Minion to operate.
+endif::opennms-prime[]
+
+| ROLE_MOBILE
+| Allow user to use OpenNMS COMPASS mobile application to acknowledge alarms and notifications via the REST API.
+
+| ROLE_PROVISION
+| Allow user to use the provisioning system and configure SNMP in {page-component-title} to access management information from devices.
+
+| ROLE_READONLY*
+| User limited to reading information in the web UI; unable to change alarm states or notifications.
+
+| ROLE_REPORT_DESIGNER
+| Permissions to manage reports in the web UI and REST API.
+
+| ROLE_REST
+| Allow users to interact with the entire {page-component-title} REST API.
+
+| ROLE_RTC*
+| Exchange information with the {page-component-title} Real-Time Console for availability calculations.
+
+| ROLE_USER*
+| Default permissions for a new user to interact with the web UI: can escalate and acknowledge alarms and notifications.
+|===
+
+== Assigning roles to users
+. Log in as a user with administrative permissions.
+. Click the gear icon in the top right.
+. Choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users].
+. Click the modify icon next to the user you want to update.
+. Select the role from menu:Security Roles[Available Roles].
+. Click *Add* to assign the security role to the user.
+. Click *Finish* to apply the changes.
+. Log out and log in to apply the new security role settings.
+
+== Creating custom security roles
+
+To create a custom security role you need to define the name and specify the security permissions.
+
+* Create a file called `$OPENNMS_HOME/etc/security-roles.properties`.
+* Add a property called `roles`, and for its value, a comma-separated list of the custom security roles, for example:
+
+```
+roles=operator,stage
+```
+
+To define permissions associated with the custom security role, manually update the application context of the Spring security here:
+```
+/opt/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml
+```

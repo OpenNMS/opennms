@@ -1,0 +1,48 @@
+
+[[ga-events-sources-eif]]
+= Receive IBM Tivoli Event Integration Facility Events
+
+You can configure {page-component-title} to receive events sent using the https://www.ibm.com/docs/en/netcoolomnibus/8.1?topic=reference-overview-tivoli-event-integration-facility[Tivoli Event Integration Facility].
+These EIF events are translated into OpenNMS events using preconfigured rules.
+The resulting UEI are anchored in the `uei.opennms.org/vendor/IBM/EIF/` namespace, with the name of the EIF https://www.ibm.com/support/knowledgecenter/SSSHTQ_8.1.0/com.ibm.netcool_OMNIbus.doc_8.1.0/omnibus/wip/eifsdk/concept/ecoemst16.html[event class] appended.
+
+A sample event configuration for the `OMEGAMON_BASE` class is included with OpenNMS.
+
+[[ga-events-sources-eif-configuring]]
+== Configuring the EIF Adapter
+
+Once {page-component-title} starts and the Karaf shell is accessible, you can install the EIF Adapter feature and configure it to listen on a specific interface and port.
+
+NOTE: By default the EIF Adapter listens on TCP port 1828 on all interfaces.
+
+.OSGi login, installation, and configuration of the EIF Adapter
+[source]
+----
+[root@localhost /root]# $ ssh -p 8101 admin@localhost
+...
+opennms> feature:install eif-adapter
+opennms> config:edit org.opennms.features.eifadapter
+opennms> config:property-set interface 0.0.0.0
+opennms> config:property-set port 1828
+opennms> config:update
+----
+
+You can check the routes status with the `camel:*` commands and/or inspect the log with `log:tail` for any obvious errors.
+The feature has a debug level logging that can be used to debug operations.
+
+NOTE: link:$$http://karaf.apache.org/manual/latest/#_using_the_console$$[Documentation] on using the OSGi console embedded in OpenNMS and the related https://camel.apache.org/camel-karaf/latest/index.html[camel commands].
+
+NOTE: Features installed through the Karaf shell persist only as long as the `$\{OPENNMS_HOME}/data` directory remains intact.
+To enable the feature permanently, add it to the `featuresBoot` list in `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
+
+You should now be able to configure your EIF forwarders to send to this destination, and their events will be translated into OpenNMS events and written to the event bus.
+
+[[ga-events-sources-eif-troubleshooting]]
+== Troubleshooting
+
+If events are not reaching OpenNMS, check whether the event source (EIF forwarder) is correctly configured.
+Check your event destination configuration. In particular review the `HOSTNAME` and `PORT` parameters. Also check that your situations are configured to forward to that EIF destination.
+
+If those appear to be correct verify that the EIF forwarder can communicate with OpenNMS over the configured port (default 1828).
+
+Review the OSGi log with `log:tail` or the `camel:*` commands.

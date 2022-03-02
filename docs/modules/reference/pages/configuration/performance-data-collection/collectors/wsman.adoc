@@ -1,0 +1,345 @@
+
+[[ga-performance-mgmt-collectors-wsman-collector]]
+= WsManCollector
+
+The WsManCollector collects performance metrics using the Web Services-Management (WS-Management) protocol.
+
+WS-Management is a Distributed Management Task Force (DMTF) open standard that defines a SOAP-based protocol for the management of servers, devices, applications, and web services.
+Windows Remote Management (WinRM) is the Microsoft implementation of WS-Management Protocol.
+
+== Collector facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.collectd.WsManCollector`
+| Package             | core
+| Supported on Minion | Yes
+| Configuration Files | $OPENNMS_HOME/etc/wsman-datacollection-config.xml +
+                        $OPENNMS_HOME/etc/wsman-datacollection.d/*.xml
+
+|===
+
+== Configuration and use
+
+.Required collector-specific parameters for the WsManCollector
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| collection
+| The name of the WS-Man Collection to use.
+| n/a
+|===
+
+[[ga-performance-mgmt-collectors-wsman-setup]]
+== WS-Management setup
+
+Before setting up {page-component-title} to communicate with a WS-Management agent, you should confirm that it is properly configured and reachable from the {page-component-title} system.
+If you need help to enable the WS-Management agent, consult the manufacturer's documentation.
+Here are some resources that could help:
+
+* https://msdn.microsoft.com/en-us/library/windows/desktop/aa384372(v=vs.85).aspx[Installation and Configuration for Windows Remote Management]
+* http://www.hurryupandwait.io/blog/understanding-and-troubleshooting-winrm-connection-and-authentication-a-thrill-seekers-guide-to-adventure[Troubleshooting WinRM connection and authentication]
+
+We suggest using the https://github.com/Openwsman/openwsman/wiki/openwsman-command-line-client[Openwsman command line client] to validate authentication and connectivity.
+Packages are available for most distributions under `wsmancli`.
+
+For example:
+
+[source, shell]
+----
+wsman identify -h localhost -P 5985 -u wsman -p secret
+----
+
+Once validated, add the agent-specific details to the {page-component-title} configuration, defined in the next section.
+
+=== Troubleshooting and commands
+
+For troubleshooting, there is a set of commands you can use in Powershell, verified on Microsoft Windows Server 2012.
+
+.Enable WinRM in PowerShell
+[source, shell]
+----
+Enable-PSRemoting
+----
+
+.Set up Firewall for WinRM over HTTP
+[source, shell]
+----
+netsh advfirewall firewall add rule name="WinRM-HTTP" dir=in localport=5985 protocol=TCP action=allow
+----
+
+.Set up Firewall for WinRM over HTTPS
+[source, shell]
+----
+netsh advfirewall firewall add rule name="WinRM-HTTPS" dir=in localport=5986 protocol=TCP action=allow
+----
+
+.Test WinRM on local Windows Server
+[source, shell]
+----
+winrm id
+----
+
+.Show WinRM configuration on Windows Server
+[source, shell]
+----
+winrm get winrm/config
+----
+
+.Show listener for configuration on Windows Server
+[source, shell]
+----
+winrm e winrm/config/listener
+----
+
+.Test connectivity from a Linux system
+[source, shell]
+----
+nc -z -w1 <windows-server-ip-or-host> 5985;echo $?
+----
+
+IMPORTANT: Use BasicAuthentication just with WinRM over HTTPS with verifiable certificates in production environment.
+
+.Enable BasicAuthentication
+[source, shell]
+----
+winrm set winrm/config/client/auth '@{Basic="true"}'
+winrm set winrm/config/service/auth '@{Basic="true"}'
+winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+----
+
+[[ga-performance-mgmt-collectors-wsman-agent-config]]
+== WS-Management agent configuration
+
+Understanding xref:operation:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+
+The agent-specific configuration details are maintained in `etc/wsman-config.xml`.
+This file has a similar structure as `etc/snmp-config.xml`, which you may already be familiar with.
+
+This file is consulted when a connection to a WS-Man Agent is made.
+If the IP address of the agent is matched by the `range`, `specific`, or `ip-match` elements of a definition, then the attributes on that definition are used to connect to the agent.
+Otherwise, the attributes on the outer `wsman-config` definition are used.
+
+The `etc/wsman-config.xml` files automatically reload when modified.
+
+Here is an example with several definitions:
+
+[source, xml]
+----
+<?xml version="1.0"?>
+<wsman-config retry="3" timeout="1500" ssl="true" strict-ssl="false" path="/wsman">
+    <definition ssl="true" strict-ssl="false" path="/wsman" username="root" password="calvin" product-vendor="Dell" product-version="iDRAC 6">
+        <range begin="192.168.1.1" end="192.168.1.10"/>
+    </definition>
+    <definition ssl="false" port="5985" path="/wsman" username="Administrator" password="P@ssword">
+        <ip-match>172.23.1-4.1-255</ip-match>
+        <specific>172.23.1.105</specific>
+    </definition>
+</wsman-config>
+----
+
+.Collector configuration attributes
+[options="header"]
+[cols="1,3,2"]
+|===
+| Attribute
+| Description
+| Default
+
+| timeout
+| HTTP Connection and response timeout in milliseconds.
+| HTTP client default
+
+| retry
+| Number of retries on connection failure.
+| 0
+
+| username
+| Username for basic authentication.
+| n/a
+
+| password
+| Password for basic authentication.
+| n/a
+
+| port
+| HTTP/S port
+| Default for protocol
+
+| max-elements
+| Maximum number of elements to retrieve in a single request.
+| no limit
+
+| ssl
+| Enable SSL
+| False
+
+| strict-ssl
+| Enforce SSL certificate verification.
+| True
+
+| path
+| Path in the URL to the WS-Management service.
+| /
+
+| product-vendor
+| Used to overwrite the detected product vendor.
+| n/a
+
+| product-version
+| Used to overwrite the detected product version.
+| n/a
+
+| gss-auth
+| Enables GSS authentication.
+When enabled, a reverse lookup is performed on the target IP address to determine the canonical host name.
+| False
+|===
+
+NOTE: If you try to connect against Microsoft Windows Server, make sure to set specific ports for WinRM connections.
+By default, Microsoft Windows Server uses port `TCP/5985` for plain text and port `TCP/5986` for SSL connections.
+
+== WS-Management collection configuration
+
+Configuration for the WS-Management collector is stored in `etc/wsman-datacollection-config.xml` and `etc/wsman-datacollection.d/*.xml`.
+
+NOTE: The contents of these files are automatically merged and reloaded when changed.
+The following shows the default WS-Management collection:
+
+[source, xml]
+----
+<?xml version="1.0"?>
+<wsman-datacollection-config rrd-repository="$OPENNMS_HOME/share/rrd/snmp/">
+    <collection name="default">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+
+        <!--
+            Include all of the available system definitions
+        -->
+        <include-all-system-definitions/>
+    </collection>
+</wsman-datacollection-config>
+----
+
+The magic happens with the `<include-all-system-definitions/>` element that automatically includes all of the system definitions into the collection group.
+
+NOTE: If required, you can include a specific system-definition with `<include-system-definition>sys-def-name</include-system-definition>`.
+
+You can define system definitions and related groups in the root `etc/wsman-datacollection-config.xml` file, but it is preferable to add them to device-specific configuration files in `etc/wsman-datacollection-config.d/*.xml`.
+
+TIP: Avoid modifying any of the distribution configuration files. Create new ones to store your specific details instead.
+
+Here is an example configuration file for a Dell iDRAC:
+
+[source, xml]
+----
+<?xml version="1.0"?>
+<wsman-datacollection-config>
+    <group name="drac-system"
+            resource-uri="http://schemas.dell.com/wbem/wscim/1/cim-schema/2/root/dcim/DCIM_ComputerSystem"
+            resource-type="node">
+        <attrib name="OtherIdentifyingInfo" index-of="#IdentifyingDescriptions matches '.*ServiceTag'" alias="serviceTag" type="String"/>
+    </group>
+
+    <group name="drac-power-supply"
+            resource-uri="http://schemas.dmtf.org/wbem/wscim/1/*"
+            dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
+            filter="select InputVoltage,InstanceID,PrimaryStatus,SerialNumber,TotalOutputPower from DCIM_PowerSupplyView where DetailedState != 'Absent'"
+            resource-type="dracPowerSupplyIndex">
+        <attrib name="InputVoltage" alias="inputVoltage" type="Gauge"/>
+        <attrib name="InstanceID" alias="instanceId" type="String"/>
+        <attrib name="PrimaryStatus" alias="primaryStatus" type="Gauge"/>
+        <attrib name="SerialNumber" alias="serialNumber" type="String"/>
+        <attrib name="TotalOutputPower" alias="totalOutputPower" type="Gauge"/>
+    </group>
+
+    <system-definition name="Dell iDRAC (All Version)">
+        <rule>#productVendor matches '^Dell.*' and #productVersion matches '.*iDRAC.*'</rule>
+        <include-group>drac-system</include-group>
+        <include-group>drac-power-supply</include-group>
+    </system-definition>
+</wsman-datacollection-config>
+----
+
+[[ga-performance-mgmt-collectors-wsman-system-definitions]]
+=== System definitions
+
+Rules in the system definition are written using http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[SpEL] expressions.
+
+The expression has access to the following variables in its evaluation context:
+
+[options="header, autowidth"]
+|===
+| Name           | Type
+| (root)         | org.opennms.netmgt.model.OnmsNode
+| agent          | org.opennms.netmgt.collection.api.CollectionAgent
+| productVendor  | java.lang.String
+| productVersion | java.lang.String
+|===
+
+If a particular agent is matched by any of the rules, then the collector attempts to collect the referenced groups from the agent.
+
+[[ga-performance-mgmt-collectors-wsman-group-definitions]]
+=== Group definitions
+
+Groups are retrieved by issuing an Enumerate command against a particular `Resource URI` and parsing the results.
+The Enumerate commands can include an optional `filter` to filter the records and attributes that are returned.
+
+When you configure a filter, you must also specify the dialect.
+
+The resource type the group uses must of be of type `node` or a generic resource type.
+Interface-level resources are not supported.
+
+With a generic resource type, you cannot use the `IndexStorageStrategy` since records have no implicit index.
+Instead, you must use an alternative such as the `SiblingColumnStorageStrategy`.
+
+If a record includes a multi-valued key, you can collect the value at a specific index with an `index-of` expression.
+This is best demonstrated with an example.
+Assume we want to collect the `ServiceTag` from the following record:
+
+[source, xml]
+----
+<IdentifyingDescriptions>CIM:GUID</IdentifyingDescriptions>
+<IdentifyingDescriptions>CIM:Tag</IdentifyingDescriptions>
+<IdentifyingDescriptions>DCIM:ServiceTag</IdentifyingDescriptions>
+<OtherIdentifyingInfo>45454C4C-3700-104A-8052-C3C01BB25031</OtherIdentifyingInfo>
+<OtherIdentifyingInfo>mainsystemchassis</OtherIdentifyingInfo>
+<OtherIdentifyingInfo>C8BBBP1</OtherIdentifyingInfo>
+----
+
+Specifying the attribute name `OtherIdentifyingInfo` would not be sufficient, since there are multiple values for that key.
+Instead, we want to retrieve the value for the `OtherIdentifyingInfo` key at the same index where `IdentifyingDescriptions` is set to `DCIM:ServiceTag`.
+
+Use the following attribute definition to achieve this:
+
+[source, xml]
+----
+<attrib name="OtherIdentifyingInfo" index-of="#IdentifyingDescriptions matches '.*ServiceTag'" alias="serviceTag" type="String"/>
+----
+
+[[ga-performance-mgmt-collectors-wsman-special-attributes]]
+=== Special attributes
+
+A group can contain the placeholder attribute `ElementCount` that, during collection, will be populated with the total number of results returned for that group.
+Use this to threshold on the number results returned by an enumeration.
+
+[source, xml]
+----
+<group name="Event-1234"
+        resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*"
+        dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
+        filter="select * from Win32_NTLogEvent where LogFile = 'Some-Application-Specific-Logfile/Operational' AND EventCode = '1234'"
+        resource-type="node">
+    <attrib name="##ElementCount##" alias="elementCount" type="Gauge"/>
+</group>
+----

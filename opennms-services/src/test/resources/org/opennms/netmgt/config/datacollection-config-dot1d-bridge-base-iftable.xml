@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<datacollection-config rrdRepository="%rrdRepository%">
+	<snmp-collection name="default" snmpStorageFlag="all">
+
+		<rrd step="300">
+			<rra>RRA:AVERAGE:0.5:1:2016</rra>
+			<rra>RRA:AVERAGE:0.5:12:1488</rra>
+			<rra>RRA:AVERAGE:0.5:288:366</rra>
+			<rra>RRA:MAX:0.5:288:366</rra>
+			<rra>RRA:MIN:0.5:288:366</rra>
+		</rrd>
+
+		<resourceType name="dot1dBasePortEntry" label="dot1d Base Port" resourceLabel="${index}">
+			<persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+			<storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+		</resourceType>
+		
+		<resourceType name="dot1dStpPortEntry" label="dot1d STP Port" resourceLabel="${index}">
+			<persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+			<storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+		</resourceType>
+		
+		<groups>
+
+			<group name="ifTable" ifType="all">
+			    <mibObj oid=".1.3.6.1.2.1.2.2.1.1"     instance="ifIndex" alias="interfaceIndex"      type="string" />
+				<mibObj oid=".1.3.6.1.2.1.2.2.1.2"     instance="ifIndex" alias="interfaceDescr"      type="string" />
+				<mibObj oid=".1.3.6.1.2.1.2.2.1.8"     instance="ifIndex" alias="interfaceOperStatus" type="string" />
+				<mibObj oid=".1.3.6.1.2.1.31.1.1.1.1"  instance="ifIndex" alias="interfaceName"       type="string" />
+				<mibObj oid=".1.3.6.1.2.1.31.1.1.1.18" instance="ifIndex" alias="interfaceAlias"      type="string" />
+			</group>
+
+			<group name="dot1dBasePortTable" ifType="all">
+				<mibObj oid=" .1.3.6.1.2.1.17.1.4.1.1" instance="dot1dBasePortEntry" alias="dot1dBasePort"        type="string" />
+				<mibObj oid=" .1.3.6.1.2.1.17.1.4.1.2" instance="dot1dBasePortEntry" alias="dot1dBasePortIfIndex" type="string" />
+				<mibObj oid=" .1.3.6.1.2.1.17.1.4.1.4" instance="dot1dBasePortEntry" alias="d1dBPDelayExDiscard"  type="counter" />
+				<mibObj oid=" .1.3.6.1.2.1.17.1.4.1.5" instance="dot1dBasePortEntry" alias="d1dBPMtuExDiscard"    type="counter" />
+				<property instance="dot1dBasePortEntry" alias="dot1dBasePortIfDescr" class-name="org.opennms.netmgt.collectd.InterfaceSnmpPropertyExtender">
+					<parameter key="source-ifindex-attribute" value="interfaceIndex"/>
+					<parameter key="source-attribute" value="interfaceDescr"/>
+					<parameter key="target-ifindex-pointer-column" value="dot1dBasePortIfIndex"/>
+				</property>
+				<property instance="dot1dBasePortEntry" alias="dot1dBasePortIfName" class-name="org.opennms.netmgt.collectd.InterfaceSnmpPropertyExtender">
+					<parameter key="source-ifindex-attribute" value="interfaceIndex"/>
+					<parameter key="source-attribute" value="interfaceName"/>
+					<parameter key="target-ifindex-pointer-column" value="dot1dBasePortIfIndex"/>
+				</property>
+				<property instance="dot1dBasePortEntry" alias="dot1dBasePortIfAlias" class-name="org.opennms.netmgt.collectd.InterfaceSnmpPropertyExtender">
+					<parameter key="source-ifindex-attribute" value="interfaceIndex"/>
+					<parameter key="source-attribute" value="interfaceAlias"/>
+					<parameter key="target-ifindex-pointer-column" value="dot1dBasePortIfIndex"/>
+				</property>
+			</group>
+
+			<group name="dot1dStpPortTable" ifType="all">
+				<mibObj oid=".1.3.6.1.2.1.17.2.15.1.3"  instance="dot1dStpPortEntry" alias="dot1dStpPortState"    type="string" />
+				<mibObj oid=".1.3.6.1.2.1.17.2.15.1.4"  instance="dot1dStpPortEntry" alias="dot1dStpPortEnable"   type="string" />
+				<mibObj oid=".1.3.6.1.2.1.17.2.15.1.10" instance="dot1dStpPortEntry" alias="dot1dStpPortFwTrans"  type="counter" />
+				<property instance="dot1dStpPortEntry" alias="dot1dStpPortStateText" class-name="org.opennms.netmgt.collectd.EnumLookupPropertyExtender">
+					<parameter key="enum-attribute" value="dot1dStpPortState"/>
+					<parameter key="1" value="disabled(1)"/>
+					<parameter key="2" value="blocking(2)"/>
+					<parameter key="3" value="listening(3)"/>
+					<parameter key="4" value="learning(4)"/>
+					<parameter key="5" value="forwarding(5)"/>
+					<parameter key="6" value="broken(6)"/>
+				</property>
+				<property instance="dot1dStpPortEntry" alias="dot1dStpPortEnableText" class-name="org.opennms.netmgt.collectd.EnumLookupPropertyExtender">
+					<parameter key="enum-attribute" value="dot1dStpPortEnable"/>
+					<parameter key="default-value" value="testDefaultValue"/>
+					<parameter key="5" value="justAPlaceHolderForTest(5)"/>
+					<parameter key="6" value="justAnotherPlaceholderForTest(6)"/>
+				</property>
+			</group>
+		</groups>
+
+		<systems>
+			<systemDef name="Cisco switches or whatever">
+				<sysoidMask>.1.3.6.1.4.1.9.</sysoidMask>
+				<collect>
+					<includeGroup>ifTable</includeGroup>
+					<includeGroup>dot1dBasePortTable</includeGroup>
+					<includeGroup>dot1dStpPortTable</includeGroup>
+				</collect>
+			</systemDef>
+		</systems>
+
+	</snmp-collection>
+</datacollection-config>

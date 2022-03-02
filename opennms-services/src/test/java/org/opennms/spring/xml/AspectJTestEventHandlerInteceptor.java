@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.springframework.core.Ordered;
 
 /**
@@ -70,7 +70,7 @@ public class AspectJTestEventHandlerInteceptor implements Ordered {
     }
     
     @Around("testEventHandlers() && args(event)")
-    public void onEvent(ProceedingJoinPoint pjp, Event event) throws Throwable {
+    public void onEvent(ProceedingJoinPoint pjp, IEvent event) throws Throwable {
         preEvent(event);
         
         try {
@@ -81,17 +81,17 @@ public class AspectJTestEventHandlerInteceptor implements Ordered {
         }
     }
 
-    private void handleException(Event event, RuntimeException ex) {
+    private void handleException(IEvent event, RuntimeException ex) {
         System.err.println("handleException");
         m_handledExceptionCount++;
     }
 
-    private void postEvent(Event event) {
+    private void postEvent(IEvent event) {
         System.err.println("postEvent");
         m_postEventCount++;
     }
 
-    private void preEvent(Event event) {
+    private void preEvent(IEvent event) {
         System.err.println("preEvent");
         m_preEventCount++;
     }

@@ -1,0 +1,6 @@
+[template]
+src = "org.ops4j.pax.web.cfg.tmpl"
+dest = "/opt/minion/etc/org.ops4j.pax.web.cfg"
+keys = [
+    "/jetty/web"
+]

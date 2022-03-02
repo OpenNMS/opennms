@@ -1,0 +1,6 @@
+[template]
+src = "confd-telemetry-feature.xml.tmpl"
+dest = "/opt/minion/deploy/confd-telemetry-feature.xml"
+keys = [
+    "/telemetry/flows"
+]

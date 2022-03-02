@@ -33,9 +33,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!-- application/summary-box.htm -->
+<c:url var="headingLink" value="application/index.jsp"/>
 <div class="card">
   <div class="card-header">
-    <a href="#">Applications with Pending Problems</a>
+    <a href="${headingLink}">Applications with Pending Problems</a>
   </div>
   <c:choose>
     <c:when test="${empty summaries}">

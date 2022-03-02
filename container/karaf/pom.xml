@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>25.0.0-SNAPSHOT</version>
+        <version>29.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -36,14 +36,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <bootRepositories>
-                        <!-- OPENNMS: Replace the standard, spring, and spring-legacy features files with our modified versions -->
-                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/standard</repository>
+                        <!--Karaf standard features-->
+                        <repository>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</repository>
+                        <!-- OPENNMS: Replace the spring, and spring-legacy features files with our modified versions -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</repository>
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</repository>
                         <!-- OPENNMS: Add the OpenNMS feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
-                        <!-- OPENNMS: Add the OpenNMS Karaf extensions feature repository -->
-                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
                         <!-- OPENNMS: Add the OpenNMS Minion feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</repository>
                     </bootRepositories>
@@ -75,8 +74,7 @@
                         <feature>system</feature>
 
                         <!-- OPENNMS: Add http, http-whiteboard to the default list of features -->
-                        <feature>http</feature>
-                        <feature>http-whiteboard</feature>
+                        <feature>opennms-http-whiteboard</feature>
                     </bootFeatures>
                     <installedBundles>
                         <!-- override for security (see etc/overrides.properties) -->
@@ -122,16 +120,16 @@
                         <goals><goal>run</goal></goals>
                         <configuration>
                             <target>
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance.bat" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell.bat" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/etc/startup.properties" />
-                                <replace token="1.10.2" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/system/org/apache/karaf/features/framework/${karafVersion}/framework-${karafVersion}-features.xml" />
+                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance" />
+                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance.bat" />
+                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell" />
+                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell.bat" />
+                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/etc/startup.properties" />
+                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/system/org/apache/karaf/features/framework/${karafVersion}/framework-${karafVersion}-features.xml" />
                                 <delete>
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-api/1.10.2" />
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2/1.10.2" />
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-logback/1.10.2" />
+                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-api/2.0.9" />
+                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2/2.0.9" />
+                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-logback/2.0.9" />
                                 </delete>
                             </target>
                         </configuration>
@@ -199,6 +197,10 @@
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!--
@@ -219,14 +221,11 @@
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.karaf</groupId>
-            <artifactId>opennms</artifactId>
-            <version>${project.version}</version>
-            <classifier>standard</classifier>
-            <type>xml</type>
         </dependency>
         <dependency>
             <groupId>org.opennms.karaf</groupId>
@@ -282,6 +281,10 @@
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -292,6 +295,10 @@
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

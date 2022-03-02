@@ -1,0 +1,67 @@
+
+= Kafka Producer
+
+The Kafka Producer feature lets {page-component-title} forward events, alarms, nodes, topologies, and metrics to Kafka.
+
+These objects are stored in different topics and the payloads are encoded using link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)].
+See `opennms-kafka-producer.proto` and `collectionset.proto` in the corresponding source distribution for the model definitions.
+
+== Events
+
+The Kafka Producer listens for all events on the event bus and forwards these to a Kafka topic.
+The records are keyed by event ID and contain a GPB-encoded model of the event.
+
+By default, all events are forwarded to a topic named `events`.
+
+You can configure the name of the topic, and set up an optional filtering expression to help control which events are sent to the topic.
+
+== Alarms
+
+The Kafka Producer listens for changes made to the current set of alarms and forwards the resulting alarms to a Kafka topic.
+The records are keyed by alarm reduction key and contain a GPB-encoded model of the alarm.
+When an alarm is deleted, a null value is sent with the corresponding reduction key.
+Publishing records in this fashion lets the topic be used as a link:https://docs.confluent.io/current/streams/concepts.html#ktable[KTable].
+The Kafka Producer will also perform periodic synchronization tasks to ensure that the contents of the Kafka topic reflect the current state of alarms in the {page-component-title} database.
+
+By default, all alarms (and subsequent updates) are forwarded to a topic named `alarms`.
+
+You can configure the name of the topic, and set up an optional filtering expression to help control which alarms are sent to the topic.
+
+== Nodes
+
+If an event or alarm being forwarded references a node, then the corresponding node is also forwarded.
+The records are keyed by "node criteria" (see below) and contain a GPB-encoded model of the alarm.
+A caching mechanism is in place to help avoid forwarding nodes that have been successfully forwarded, and have not changed since.
+
+The name of the topic used can be configured.
+
+IMPORTANT: The node topic is not intended to include all of the nodes in the system, it only includes records for nodes that relate to events or alarms that have been forwarded.
+
+=== Node Criteria
+
+The node criteria is a string representation of the unique identifier for a given node.
+If the node is associated with a foreign source (fs)  and foreign id (fid), the resulting node criteria will be the name of the foreign source, followed by a colon (:) and then the foreign id i.e., (fs:fid).
+If the node is not associated with both a foreign source and foreign ID, then the node ID (database ID) will be used.
+
+== Topologies
+
+The Kafka Producer listens for changes made to the current set of topologies and forwards the resulting messages to the topologyEdgeTopic Kafka topic.
+The topologies are provided by the <<topology/enlinkd/introduction.adoc#ga-enlinkd, Enhanced Linkd>> updaters via the OnmsTopology API.
+An updater sends OnmsTopologyMessage to the subscribers.
+The records are keyed by GPB-encoded key of the protocol and TopologyRef and contain a GPB-encoded model of the vertex or edge.
+When a vertex or an edge is deleted, a null value is sent with the corresponding encoded GPB key.
+Publishing records in this fashion lets the topic be used as a link:https://docs.confluent.io/current/streams/concepts.html#ktable[KTable].
+
+IMPORTANT: The topologies topic is not intended to include all the vertices in the system.
+It only includes records for vertices that relate to topology messages that have been forwarded.
+
+== Metrics
+
+You can use the Kafka Producer to write metrics to Kafka either exclusively, or in addition to an existing persistence strategy i.e., RRD or Newts.
+The metrics are written in the form of "collection sets" that correspond to the internal representation the existing collectors and persistence strategies use.
+The records are keyed by node ID or by IP address if no node ID is available and contain a GPB-encoded version of the collection sets.
+The records are keyed in this fashion to help ensure that collection sets related to the same resources are written to the same partitions.
+
+When enabled (this functionality is disabled by default), the metrics are written to a topic named `metrics`.
+
+NOTE: When exclusively writing to Kafka, no metrics or resource graphs will be available on the {page-component-title} instance.

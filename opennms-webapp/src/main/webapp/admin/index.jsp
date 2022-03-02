@@ -238,7 +238,6 @@
         <ul class="list-unstyled mb-0">
             <li><a href="locations/index.jsp">Manage Monitoring Locations</a></li>
             <li><a href="admin/applications.htm">Manage Applications</a></li>
-            <li><a href="distributed/locationMonitorList.htm">Manage Remote Pollers</a></li>
             <li><a href="minion/index.jsp">Manage Minions</a></li>
         </ul>
       </div> <!-- card-body -->
@@ -265,7 +264,6 @@
         <span>Descriptions</span>
       </div>
       <div class="card-body">
-        <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://wiki.opennms.org" target="new">the OpenNMS wiki</a>.
         </p>
 
         <p><b>Configure Users, Groups and On-Call Roles</b>: Add, modify or delete
@@ -355,8 +353,8 @@
         <p><b>Configure thresholds</b>: Allows you to add, remove, or modify thresholds.</p>
 
 
-        <p><b>Manage Applications</b> and <b>Manage Remote Pollers</b>: Configure and administer 
-        the operation of remote pollers that report back to this OpenNMS server to provide distributed
+        <p><b>Manage Applications</b>: Configure and administer 
+        the operation of perspective pollers that report back to this OpenNMS server to provide distributed
         status information.
         </p>
 

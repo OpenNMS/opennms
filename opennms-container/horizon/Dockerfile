@@ -6,7 +6,7 @@ ARG BASE_IMAGE_VERSION="11.0.14.0.9-b8239"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-base
 
-ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl jq"
+ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl jq diffutils"
 
 ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
 ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
@@ -43,7 +43,7 @@ RUN groupadd -g 10001 opennms && \
 FROM horizon-base
 
 # A default which installs the required OpenNMS Horizon packages
-ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-remoting opennms-webapp-hawtio"
+ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-hawtio"
 
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES
@@ -71,7 +71,7 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
         mkdir -p /opt/opennms && \
         tar -xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && \
-        chown -R 0:0 /opt/opennms && \
+        chown -R 10001:0 /opt/opennms && \
         cp -r /opt/opennms/etc /opt/opennms/share/etc-pristine; \
     elif [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
         echo "installing local RPMs from filesystem" && \

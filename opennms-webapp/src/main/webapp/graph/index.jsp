@@ -32,6 +32,7 @@
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Resource Graphs" />
+  <jsp:param name="ngapp" value="onms-resources" />
   <jsp:param name="headTitle" value="Resource Graphs" />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="location" value="performance" />
@@ -39,7 +40,7 @@
   <jsp:param name="breadcrumb" value="Resource Graphs" />
 </jsp:include>
 
-<div class="container-fluid" ng-app="onms-resources" ng-controller="NodeListCtrl">
+<div class="container-fluid" ng-controller="NodeListCtrl">
 
   <div growl></div>
 

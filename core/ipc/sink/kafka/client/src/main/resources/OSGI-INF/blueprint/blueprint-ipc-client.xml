@@ -22,6 +22,8 @@
         <!-- same as persistent-id -->
         <argument value="org.opennms.core.ipc.sink.kafka"/>
         <argument ref="configAdmin" />
+        <!-- common pid for kafka config on IPC-->
+        <argument value="org.opennms.core.ipc.kafka"/>
     </bean>
 
     <!-- Provided by minion-core or Sentinel -->
@@ -31,10 +33,11 @@
 
 	<bean id="kafkaRemoteMessageDispatcherFactory" class="org.opennms.core.ipc.sink.kafka.client.KafkaRemoteMessageDispatcherFactory"
 	  init-method="init" destroy-method="destroy">
-	  <property name="configAdmin" ref="configAdmin"/>
-      <property name="bundleContext" ref="blueprintBundleContext"/>
-      <property name="tracerRegistry" ref="tracerRegistry"/>
-      <property name="identity" ref="identity"/>
+        <property name="configAdmin" ref="configAdmin"/>
+        <property name="bundleContext" ref="blueprintBundleContext"/>
+        <property name="tracerRegistry" ref="tracerRegistry"/>
+        <property name="identity" ref="identity"/>
+        <property name="metrics" ref="kafkaSinkMetricRegistry"/>
 	</bean>
     <service ref="kafkaRemoteMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
 
@@ -44,6 +47,16 @@
             <argument ref="kafkaConfigProvider"/>
             <argument value="Sink Producer" />
         </bean>
+    </service>
+
+    <!-- Sink Metrics -->
+    <bean id="kafkaSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+    <service ref="kafkaSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+        <service-properties>
+            <entry key="name" value="Kafka Sink Producer" />
+            <entry key="description" value="Sink Producer Metrics" />
+        </service-properties>
     </service>
 
 </blueprint>

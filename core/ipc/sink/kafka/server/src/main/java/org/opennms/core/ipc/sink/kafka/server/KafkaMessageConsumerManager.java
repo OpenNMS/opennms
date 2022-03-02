@@ -29,6 +29,7 @@
 package org.opennms.core.ipc.sink.kafka.server;
 
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.DEFAULT_MESSAGEID_CONFIG;
+import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX;
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.MESSAGEID_CACHE_CONFIG;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
 
@@ -60,7 +61,7 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
-import org.opennms.core.ipc.sink.model.SinkMessageProtos;
+import org.opennms.core.ipc.sink.model.SinkMessage;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
@@ -117,7 +118,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
 
 
     public KafkaMessageConsumerManager() {
-        this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
+        this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX, KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX));
     }
 
     public KafkaMessageConsumerManager(KafkaConfigProvider configProvider, Identity identity,
@@ -163,7 +164,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                     for (ConsumerRecord<String, byte[]> record : records) {
                         try {
                             // Parse sink message content from protobuf.
-                            SinkMessageProtos.SinkMessage sinkMessage = SinkMessageProtos.SinkMessage.parseFrom(record.value());
+                            SinkMessage sinkMessage = SinkMessage.parseFrom(record.value());
                             byte[] messageInBytes = sinkMessage.getContent().toByteArray();
                             String messageId = sinkMessage.getMessageId();
                             // Handle large message where there are multiple chunks of message.
@@ -232,14 +233,12 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             }
         }
 
-        private Tracer.SpanBuilder buildSpanFromSinkMessage(SinkMessageProtos.SinkMessage sinkMessage) {
+        private Tracer.SpanBuilder buildSpanFromSinkMessage(SinkMessage sinkMessage) {
 
             Tracer tracer = getTracer();
             Tracer.SpanBuilder spanBuilder;
             Map<String, String> tracingInfoMap = new HashMap<>();
-            sinkMessage.getTracingInfoList().forEach(tracingInfo -> {
-                tracingInfoMap.put(tracingInfo.getKey(), tracingInfo.getValue());
-            });
+            sinkMessage.getTracingInfoMap().forEach(tracingInfoMap::put);
             SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfoMap));
             if (context != null) {
                 // Span on consumer side will follow the span from producer (minion).
@@ -260,7 +259,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     @Override
     protected void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (!consumerRunnersByModule.containsKey(module)) {
-            LOG.info("Starting consumers for module: {}", module);
+            LOG.info("Starting consumers for module: {}", module.getId());
 
             final int numConsumerThreads = getNumConsumerThreads(module);
             final List<KafkaConsumerRunner> consumerRunners = new ArrayList<>(numConsumerThreads);
@@ -277,7 +276,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     @Override
     protected void stopConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (consumerRunnersByModule.containsKey(module)) {
-            LOG.info("Stopping consumers for module: {}", module);
+            LOG.info("Stopping consumers for module: {}", module.getId());
             final List<KafkaConsumerRunner> consumerRunners = consumerRunnersByModule.get(module);
             for (KafkaConsumerRunner consumerRunner : consumerRunners) {
                 consumerRunner.shutdown();

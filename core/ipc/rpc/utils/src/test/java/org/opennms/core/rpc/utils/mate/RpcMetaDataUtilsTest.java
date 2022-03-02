@@ -30,11 +30,18 @@ package org.opennms.core.rpc.utils.mate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.pagesequence.PageSequence;
+import org.opennms.netmgt.config.pagesequence.Parameter;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItem;
 
 public class RpcMetaDataUtilsTest {
     final Map<ContextKey, String> metaData = new HashMap<>();
@@ -45,6 +52,8 @@ public class RpcMetaDataUtilsTest {
         metaData.put(new ContextKey("ctx1", "key2"), "val2");
         metaData.put(new ContextKey("ctx2", "key3"), "val3");
         metaData.put(new ContextKey("ctx2", "key4"), "val4");
+        metaData.put(new ContextKey("ctx3", "port"), "1234");
+        metaData.put(new ContextKey("ctx3", "user"), "papapape");
     }
 
     @Test
@@ -62,7 +71,7 @@ public class RpcMetaDataUtilsTest {
         attributes.put("attribute9", "aaa${ctx1:key4|${nodeLabel}}bbb");
         attributes.put("attribute10", "aaa${abc}bbb");
 
-        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new MapScope(this.metaData));
+        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new MapScope(Scope.ScopeName.NODE, this.metaData));
 
         Assert.assertEquals(attributes.size(), interpolatedAttributes.size());
         Assert.assertEquals("aaaval1bbb", interpolatedAttributes.get("attribute1"));
@@ -77,5 +86,44 @@ public class RpcMetaDataUtilsTest {
         Assert.assertEquals(42L, interpolatedAttributes.get("attribute8"));
         Assert.assertEquals("aaa${nodeLabel}bbb", interpolatedAttributes.get("attribute9"));
         Assert.assertEquals("aaa${abc}bbb", interpolatedAttributes.get("attribute10"));
+    }
+
+    @Test
+    public void testGetContextKeyFromMedataInterpolator() {
+
+        Optional<ContextKey> output = Interpolator.getContextKeyFromMateData("${ctx1:key1|ctx2:key2|ctx3:key3}");
+        Assert.assertTrue(output.isPresent());
+        Assert.assertEquals("ctx3", output.get().context);
+        Assert.assertEquals("key3", output.get().key);
+        output = Interpolator.getContextKeyFromMateData("${ctx1:key1|default}");
+        Assert.assertTrue(output.isPresent());
+        Assert.assertEquals("ctx1", output.get().context);
+        Assert.assertEquals("key1", output.get().key);
+
+        // Test invalid
+        output = Interpolator.getContextKeyFromMateData("${ctx1|default}");
+        Assert.assertFalse(output.isPresent());
+    }
+
+    @Test
+    public void testPageSequence() {
+        final PageSequence pageSequence = JaxbUtils.unmarshal(PageSequence.class, getClass().getClassLoader().getResourceAsStream("page-sequence.xml"));
+        System.err.println(pageSequence);
+        final Map<String, Object> input = new HashMap<>();
+        input.put("page-sequence", pageSequence);
+        final Map<String, Object> output = Interpolator.interpolateObjects(input, new MapScope(Scope.ScopeName.NODE, this.metaData));
+        Assert.assertEquals("8980", ((PageSequence)output.get("page-sequence")).getPages().get(0).getPort());
+        Assert.assertEquals("1234", ((PageSequence)output.get("page-sequence")).getPages().get(1).getPort());
+        Assert.assertEquals("8980", ((PageSequence)output.get("page-sequence")).getPages().get(2).getPort());
+        Assert.assertThat(((PageSequence)output.get("page-sequence")).getPages().get(1).getParameters(), hasItem(new Parameter("j_username", "papapape")));
+    }
+
+    @Test
+    public void testNewRegExpPattern() {
+        final Interpolator.Result result = Interpolator.interpolate("foo-${aaa}-bar-${ctx1:key1|down}-bla-${ctx2:key4|down}-blupp-${bbb}", new MapScope(Scope.ScopeName.NODE, this.metaData));
+        Assert.assertEquals(2, result.parts.size());
+        Assert.assertEquals("val1", result.parts.get(0).value.value);
+        Assert.assertEquals("val4", result.parts.get(1).value.value);
+        Assert.assertEquals("foo-${aaa}-bar-val1-bla-val4-blupp-${bbb}", result.output);
     }
 }

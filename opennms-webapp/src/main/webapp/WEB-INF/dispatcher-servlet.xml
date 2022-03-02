@@ -131,34 +131,6 @@
         <property name="service" ref="surveillanceService"/>
     </bean>
 
-    <bean name="/distributedStatusSummary.htm"
-          class="org.opennms.web.controller.DistributedStatusSummaryController">
-        <property name="distributedStatusService"
-                  ref="distributedStatusService"/>
-    </bean>
-
-    <bean id="distributedStatusDetailsValidator" class="org.opennms.web.validator.DistributedStatusDetailsValidator">
-        <property name="applicationDao" ref="applicationDao"/>
-        <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
-        <property name="locationMonitorDao" ref="locationMonitorDao"/>
-    </bean>
-
-    <bean name="/distributedStatusHistory.htm"
-          class="org.opennms.web.controller.DistributedStatusHistoryController">
-        <property name="distributedStatusService"
-                  ref="distributedStatusService"/>
-    </bean>
-
-    <bean name="/distributed/locationMonitorList.htm"
-          class="org.opennms.web.controller.distributed.LocationMonitorListController">
-        <property name="distributedPollerService"
-                  ref="distributedPollerService"/>
-    </bean>
-
-    <bean id="locationMonitorIdValidator" class="org.opennms.web.validator.LocationMonitorIdValidator">
-        <property name="locationMonitorDao" ref="locationMonitorDao"/>
-    </bean>
-
     <bean name="/alarm/ticket/create.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">
         <property name="troubleTicketProxy" ref="troubleTicketProxy"/>
     </bean>
@@ -300,18 +272,6 @@
         <property name="webOutageRepository" ref="webOutageRepository"/>
     </bean>
 
-    <bean name="/admin/distributed/locationMonitorPauseAll.htm"
-          class="org.opennms.web.controller.distributed.LocationMonitorPauseAllController">
-        <property name="distributedPollerService" ref="distributedPollerService"/>
-        <property name="successView" value="redirect:/distributed/locationMonitorList.htm"/>
-    </bean>
-
-    <bean name="/admin/distributed/locationMonitorResumeAll.htm"
-          class="org.opennms.web.controller.distributed.LocationMonitorResumeAllController">
-        <property name="distributedPollerService" ref="distributedPollerService"/>
-        <property name="successView" value="redirect:/distributed/locationMonitorList.htm"/>
-    </bean>
-
     <bean name="/admin/thresholds/index.htm" class="org.opennms.web.controller.admin.thresholds.ThresholdController">
         <property name="resourceDao" ref="resourceDao"/>
         <property name="eventConfDao" ref="eventConfDao"/>
@@ -437,16 +397,10 @@
                                 <property name="url" value="trend/index.jsp"/>
                                 <property name="locationMatch" value="trend"/>
                             </bean>
-                            <bean class="org.opennms.web.navigate.DistributedStatusNavBarEntry">
-                                <property name="name" value="Distributed Status"/>
-                                <property name="url" value="distributedStatusSummary.htm"/>
-                                <property name="locationMatch" value="distributedstatus"/>
-                                <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
-                            </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Scan Reports"/>
-                                <property name="url" value="scanreports/index.jsp"/>
-                                <property name="locationMatch" value="scanReport"/>
+                                <property name="name" value="Application"/>
+                                <property name="url" value="application/index.jsp"/>
+                                <property name="locationMatch" value="application"/>
                             </bean>
                         </list>
                     </property>
@@ -513,8 +467,13 @@
     <bean id="headerProvider" name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
         <property name="navBarItems" ref="navBarEntries" />
     </bean>
-    
-  <onmsgi:service interface="org.opennms.web.api.OnmsHeaderProvider" ref="headerProvider"/>
+
+  <onmsgi:service ref="headerProvider">
+      <onmsgi:interfaces>
+          <value>org.opennms.web.api.OnmsHeaderProvider</value>
+          <value>org.opennms.web.api.MenuProvider</value>
+      </onmsgi:interfaces>
+  </onmsgi:service>
 
     <bean name="/includes/nodeCategory-box.htm" class="org.opennms.web.controller.NodeCategoryBoxController">
         <property name="adminCategoryService" ref="adminCategoryService"/>

@@ -75,14 +75,6 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service>
-    <name>OpenNMS:Name=Trapd</name>
-    <class-name>org.opennms.netmgt.trapd.jmx.Trapd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service>
     <name>OpenNMS:Name=Queued</name>
     <class-name>org.opennms.netmgt.queued.jmx.Queued</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -125,14 +117,6 @@ maintained
   <service>
     <name>OpenNMS:Name=Pollerd</name>
     <class-name>org.opennms.netmgt.poller.jmx.Pollerd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service>
-    <name>OpenNMS:Name=PollerBackEnd</name>
-    <class-name>org.opennms.netmgt.poller.remote.jmx.RemotePollerBackEnd</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>
@@ -293,6 +277,14 @@ maintained
       <name>SpringContext</name>
       <value type="java.lang.String">telemetrydContext</value>
     </attribute>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service>
+    <name>OpenNMS:Name=Trapd</name>
+    <class-name>org.opennms.netmgt.trapd.jmx.Trapd</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>

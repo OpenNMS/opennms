@@ -31,11 +31,13 @@ package org.opennms.netmgt.dao.util;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 public class ReductionKeyHelper {
 
@@ -78,6 +80,22 @@ public class ReductionKeyHelper {
                 monitoredService.getNodeId(),
                 InetAddressUtils.toIpAddrString(monitoredService.getIpAddress()),
                 monitoredService.getServiceName());
+    }
+
+    public static Set<String> getNodeLostServiceFromPerspectiveReductionKeys(final OnmsMonitoredService monitoredService) {
+        Objects.requireNonNull(monitoredService);
+        return monitoredService
+                .getApplications().stream()
+                .flatMap(a -> a.getPerspectiveLocations().stream())
+                .map(OnmsMonitoringLocation::getLocationName)
+                .distinct()
+                .map(locationName -> String.format("%s:%s:%d:%s:%s",
+                        EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI,
+                        locationName,
+                        monitoredService.getNodeId(),
+                        InetAddressUtils.toIpAddrString(monitoredService.getIpAddress()),
+                        monitoredService.getServiceName()))
+                .collect(Collectors.toSet());
     }
 
     public static String getInterfaceDownReductionKey(final OnmsMonitoredService monitoredService) {

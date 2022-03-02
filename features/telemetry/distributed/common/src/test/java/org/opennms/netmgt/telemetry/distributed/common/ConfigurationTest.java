@@ -43,13 +43,36 @@ public class ConfigurationTest {
         properties.put("name", "Example");
         properties.put("class-name", "com.example.Adapter");
         properties.put("parameters.test", "success");
+        properties.put("parameters.dotted.key", "success");
 
         final PropertyTree tree = PropertyTree.from(properties);
 
-        final AdapterDefinition adapter = new MapBasedAdapterDef(tree);
+        final AdapterDefinition adapter = new MapBasedAdapterDef("Test", tree);
 
         Assert.assertEquals("Example", adapter.getName());
         Assert.assertEquals("com.example.Adapter", adapter.getClassName());
         Assert.assertEquals("success", adapter.getParameterMap().get("test"));
+        Assert.assertEquals("success", adapter.getParameterMap().get("dotted.key"));
+    }
+
+    /**
+     * see NMS-13477
+     */
+    @Test
+    public void testWhitespaces() {
+        final Map<String, String> properties = new HashMap();
+        properties.put("name", " Example");
+        properties.put("class-name", " com.example.Adapter");
+        properties.put("parameters.test", "success ");
+        properties.put("parameters.dotted.key", "success ");
+
+        final PropertyTree tree = PropertyTree.from(properties);
+
+        final AdapterDefinition adapter = new MapBasedAdapterDef("Test", tree);
+
+        Assert.assertEquals("Example", adapter.getName());
+        Assert.assertEquals("com.example.Adapter", adapter.getClassName());
+        Assert.assertEquals("success", adapter.getParameterMap().get("test"));
+        Assert.assertEquals("success", adapter.getParameterMap().get("dotted.key"));
     }
 }

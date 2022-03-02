@@ -78,7 +78,8 @@ FROM
 			ifservices.serviceid = service.serviceId AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
-			events.eventuei = 'uei.opennms.org/nodes/nodeDown')
+			events.eventuei = 'uei.opennms.org/nodes/nodeDown' AND
+			outages.perspective IS NULL)
 		AS
 			outages_scope
 	RIGHT JOIN

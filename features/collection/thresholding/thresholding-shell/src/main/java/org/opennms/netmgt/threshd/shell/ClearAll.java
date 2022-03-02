@@ -36,7 +36,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
 
-@Command(scope = "opennms-threshold-states", name = "clear-all", description = "Clears all threshold states")
+@Command(scope = "opennms", name = "threshold-clear-all", description = "Clears all threshold states")
 @Service
 public class ClearAll extends AbstractThresholdStateCommand {
     @Reference

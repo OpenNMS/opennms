@@ -1,0 +1,69 @@
+
+= PrTableMonitor
+
+The PrTableMonitor monitor tests the link:http://www.net-snmp.org/docs/mibs/ucdavis.html#prTable[prTable] of a Net-SNMP agent.
+
+.prTable definition
+[quote,,UCD-SNMP-MIB]
+____
+A table containing information on running programs/daemons configured for monitoring in the snmpd.conf file of the agent.
+Processes violating the number of running processes required by the agent's configuration file are flagged with numerical and textual errors.
+____
+
+The monitor looks up the prErrorFlag entries of this table.
+If the value of a prErrorFlag entry in this table is set to 1, the service is considered unavailable.
+
+.prErrorFlag definition
+[quote,,UCD-SNMP-MIB]
+____
+An Error flag to indicate trouble with a process.
+It goes to 1 if there is an error, 0 if no error.
+____
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.PrTableMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the PrTableMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| The port to which to try connection.
+|From `snmp-config.xml`
+
+| retries
+| *Deprecated*.
+Same as retry.
+Parameter retry takes precedence if both are set.
+| From `snmp-config.xml`
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+[source, xml]
+----
+<!-- Overriding default SNMP config -->
+<service name="Process-Table" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="3"/>
+  <parameter key="timeout" value="5000"/>
+</service>
+
+<monitor service="Process-Table" class-name="org.opennms.netmgt.poller.monitors.PrTableMonitor" />
+----
+
+== UCD-SNMP-MIB
+
+Find the UCD-SNMP-MIB link:http://www.net-snmp.org/docs/mibs/UCD-SNMP-MIB.txt[here].

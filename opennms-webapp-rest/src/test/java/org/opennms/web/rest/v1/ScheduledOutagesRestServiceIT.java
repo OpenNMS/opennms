@@ -123,6 +123,8 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         // Setup Filter DAO
         m_filterDao = EasyMock.createMock(FilterDao.class);
         EasyMock.expect(m_filterDao.getActiveIPAddressList("IPADDR != '0.0.0.0'")).andReturn(Collections.singletonList(InetAddressUtils.getLocalHostAddress())).anyTimes();
+        m_filterDao.validateRule("IPADDR != '0.0.0.0'");
+        EasyMock.expectLastCall().anyTimes();
         m_filterDao.flushActiveIpAddressListCache();
         EasyMock.expectLastCall().anyTimes();
         EasyMock.replay(m_filterDao);

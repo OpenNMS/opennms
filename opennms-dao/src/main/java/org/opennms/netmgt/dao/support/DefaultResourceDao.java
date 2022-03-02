@@ -28,31 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.Maps;
-import org.apache.commons.lang.CharEncoding;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.api.CollectdConfigFactory;
-import org.opennms.netmgt.config.api.ResourceTypesDao;
-import org.opennms.netmgt.config.collectd.Package;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.OnmsResourceType;
-import org.opennms.netmgt.model.ResourceId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.orm.ObjectRetrievalFailureException;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
-
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collection;
@@ -62,6 +38,32 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang.CharEncoding;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.config.api.CollectdConfigFactory;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
+import org.opennms.netmgt.config.collectd.Package;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceId;
+import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+
+import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
+
+import static org.opennms.netmgt.dao.support.NodeSnmpResourceType.PARENT_RESOURCE_TYPE_FOR_STORE_BY_FOREIGN_SOURCE;
 
 /**
  * Retrieves and enumerates elements from the resource tree.
@@ -93,7 +95,6 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
     private ResourceStorageDao m_resourceStorageDao;
     private NodeDao m_nodeDao;
-    private LocationMonitorDao m_locationMonitorDao;
     private IpInterfaceDao m_ipInterfaceDao;
     private CollectdConfigFactory m_collectdConfig;
     private ResourceTypesDao m_resourceTypesDao;
@@ -137,7 +138,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     /**
      * <p>getCollectdConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
+     * @return a {@link org.opennms.netmgt.config.api.CollectdConfigFactory} object.
      */
     public CollectdConfigFactory getCollectdConfig() {
         return m_collectdConfig;
@@ -146,28 +147,10 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     /**
      * <p>setCollectdConfig</p>
      *
-     * @param collectdConfig a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
+     * @param collectdConfig a {@link org.opennms.netmgt.config.api.CollectdConfigFactory} object.
      */
     public void setCollectdConfig(CollectdConfigFactory collectdConfig) {
         m_collectdConfig = collectdConfig;
-    }
-    
-    /**
-     * <p>getLocationMonitorDao</p>
-     *
-     * @return a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
-     */
-    public LocationMonitorDao getLocationMonitorDao() {
-        return m_locationMonitorDao;
-    }
-    
-    /**
-     * <p>setLocationMonitorDao</p>
-     *
-     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
-     */
-    public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
-        m_locationMonitorDao = locationMonitorDao;
     }
 
     public IpInterfaceDao getIpInterfaceDao() {
@@ -210,10 +193,6 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             throw new IllegalStateException("nodeDao property has not been set");
         }
 
-        if (m_locationMonitorDao == null) {
-            throw new IllegalStateException("locationMonitorDao property has not been set");
-        }
-
         if (m_resourceStorageDao == null) {
             throw new IllegalStateException("resourceStorageDao property has not been set");
         }
@@ -224,6 +203,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     private void initResourceTypes() {
         final Map<String, OnmsResourceType> resourceTypes = Maps.newLinkedHashMap();
         OnmsResourceType resourceType;
+        ServiceResourceType serviceResourceType;
 
         resourceType = new NodeSnmpResourceType(m_resourceStorageDao);
         resourceTypes.put(resourceType.getName(), resourceType);
@@ -234,10 +214,16 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resourceType = new InterfaceSnmpByIfIndexResourceType(intfResourceType);
         resourceTypes.put(resourceType.getName(), resourceType);
 
-        resourceType = new ResponseTimeResourceType(m_resourceStorageDao, m_ipInterfaceDao);
+        resourceType = serviceResourceType = new ResponseTimeResourceType(m_resourceStorageDao, m_ipInterfaceDao);
         resourceTypes.put(resourceType.getName(), resourceType);
 
-        resourceType = new DistributedStatusResourceType(m_resourceStorageDao, m_locationMonitorDao);
+        resourceType = new PerspectiveResponseTimeResourceType(m_resourceStorageDao, serviceResourceType);
+        resourceTypes.put(resourceType.getName(), resourceType);
+
+        resourceType = serviceResourceType = new ServiceStatusResourceType(m_resourceStorageDao, m_ipInterfaceDao);
+        resourceTypes.put(resourceType.getName(), resourceType);
+
+        resourceType = new PerspectiveStatusResourceType(m_resourceStorageDao, serviceResourceType);
         resourceTypes.put(resourceType.getName(), resourceType);
 
         resourceTypes.putAll(GenericIndexResourceType.createTypes(m_resourceTypesDao.getResourceTypes(), m_resourceStorageDao));
@@ -330,21 +316,6 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         return m_nodeResourceType.createResourceForNode(node);
     }
 
-    /**
-     * @return OnmsResource for the <code>distributedStatus</code> resource on the interface or 
-     * null if the <code>distributedStatus</code> resource cannot be found for the given IP interface.
-     */ 
-    @Override
-    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsLocationMonitor locMon) {
-        Assert.notNull(ipInterface, "ipInterface argument must not be null");
-        Assert.notNull(locMon, "locMon argument must not be null");
-        Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
-        
-        final String ipAddress = InetAddressUtils.str(ipInterface.getIpAddress());
-        final OnmsResource nodeResource = getResourceForNode(ipInterface.getNode());
-        return getChildResource(nodeResource, DistributedStatusResourceType.TYPE_NAME, DistributedStatusResourceType.getResourceName(locMon.getId(), ipAddress));
-    }
-
     @Override
     public boolean deleteResourceById(final ResourceId resourceId) {
         final OnmsResource resource = this.getResourceById(resourceId);
@@ -431,5 +402,34 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             }
         }
         return false;
+    }
+
+    @Override
+    public ResourceId getResourceId(CollectionResource resource, long nodeId) {
+        if ( resource == null) {
+            return null;
+        }
+
+        String resourceType  = resource.getResourceTypeName();
+        String resourceLabel = resource.getInterfaceLabel();
+        if (CollectionResource.RESOURCE_TYPE_NODE.equals(resourceType)) {
+            resourceType  = NodeSnmpResourceType.NODE_RESOURCE_TYPE_NAME;
+            resourceLabel = "";
+        }
+        if (CollectionResource.RESOURCE_TYPE_IF.equals(resourceType)) {
+            resourceType = InterfaceSnmpResourceType.INTERFACE_RESOURCE_TYPE_NAME;
+        }
+        String parentResourceTypeName = CollectionResource.RESOURCE_TYPE_NODE;
+        String parentResourceName = String.valueOf(nodeId);
+        // When storeByForeignSource is enabled, need to account for parent resource.
+        if (resource.getParent() != null && resource.getParent().toString().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
+            // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
+            String[] parts = resource.getParent().toString().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
+            if (parts.length == 3) {
+                parentResourceTypeName = PARENT_RESOURCE_TYPE_FOR_STORE_BY_FOREIGN_SOURCE;
+                parentResourceName = parts[1] + ":" + parts[2];
+            }
+        }
+        return ResourceId.get(parentResourceTypeName, parentResourceName).resolve(resourceType, resourceLabel);
     }
 }

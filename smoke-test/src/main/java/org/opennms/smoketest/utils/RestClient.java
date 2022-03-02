@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,11 +29,13 @@
 package org.opennms.smoketest.utils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -48,13 +50,12 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
@@ -226,13 +227,13 @@ public class RestClient {
         return getBuilder(target).get();
     }
 
-    public Response setNodeLevelMetadata(String nodeCriteria, OnmsMetaData metaData) {
-        final WebTarget target = getTargetV2().path("nodes").path(nodeCriteria).path("metadata");
-        return getBuilder(target).post(Entity.entity(metaData, MediaType.APPLICATION_XML));
-    }
-
     public OnmsEventCollection getEventsForNode(int nodeId) {
         final WebTarget target = getTarget().path("events").queryParam("node.id", nodeId);
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsEventCollection.class);
+    }
+
+    public OnmsEventCollection getEventsForNodeByEventUei(int nodeId, String eventUei) {
+        final WebTarget target = getTarget().path("events").queryParam("node.id", nodeId).queryParam("eventUei", eventUei);
         return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsEventCollection.class);
     }
 
@@ -280,10 +281,7 @@ public class RestClient {
         }
         final WebTarget target = getTarget().path("events");
         final Response response = getBuilder(target).post(Entity.entity(event, MediaType.APPLICATION_XML));
-        if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
-            throw new RuntimeException(String.format("Request failed with: %s:\n%s",
-                    response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
-        }
+        bailOnFailure(response);
     }
 
     public List<OnmsEvent> getEvents() {
@@ -356,5 +354,41 @@ public class RestClient {
         return target.request().header("Authorization", authorizationHeader);
     }
 
+    public void sendGraphML(String graphName, InputStream graphMLStream) {
+        Objects.requireNonNull(graphName);
+        Objects.requireNonNull(graphMLStream);
 
+        final WebTarget target = getTarget().path("graphml").path(graphName);
+        final Response response = getBuilder(target).accept(MediaType.APPLICATION_XML).post(Entity.entity(graphMLStream, MediaType.APPLICATION_XML));
+        bailOnFailure(response);
+    }
+
+    public Response getGraphML(String graphName) {
+        Objects.requireNonNull(graphName);
+
+        final WebTarget target = getTarget().path("graphml").path(graphName);
+        final Response response = getBuilder(target).accept(MediaType.APPLICATION_XML).get();
+        return response;
+    }
+
+    public void deleteGraphML(String graphName) {
+        Objects.requireNonNull(graphName);
+        final WebTarget target = getTarget().path("graphml").path(graphName);
+        final Response response = getBuilder(target).delete();
+        bailOnFailure(response);
+    }
+
+    private void bailOnFailure(Response response) {
+        if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
+            throw new RuntimeException(String.format("Request failed with: %s:\n%s",
+                    response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
+        }
+    }
+
+    public List<OnmsApplication> getApplications() {
+        final GenericType<List<OnmsApplication>> applications = new GenericType<List<OnmsApplication>>() {
+        };
+        final WebTarget target = getTargetV2().path("applications");
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(applications);
+    }
 }

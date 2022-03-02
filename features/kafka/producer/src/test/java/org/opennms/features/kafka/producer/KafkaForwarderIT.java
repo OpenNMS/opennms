@@ -613,6 +613,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         public List<CollectionSetProtos.CollectionSet> getCollectionSetValues() {
             return collectionSetValues;
         }
+        public void clearCollectionSetValues() {
+            collectionSetValues.clear();
+        }
 
     }
 

@@ -1,0 +1,198 @@
+[[getting-started-core]]
+= Installation and configuration
+
+[[objectives-setup-core]]
+== Objectives
+
+* Install all required OpenNMS {page-component-title} components including PostgreSQL on a single node
+* Run {page-component-title} Core and PostgreSQL with the default configuration (which is not optimized to run in production and monitor large networks)
+ifeval::["{page-component-title}" == "Horizon"]
+** By default your time series storage is JRobin, which persists RRD files on the local file system
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+** By default your time series storage is RRDtool, which persists RRD files on the local file system
+endif::[]
+* Log in to the web UI and change the default admin password
+
+[[requirements-core]]
+== Requirements
+
+ifeval::["{page-component-title}" == "Meridian"]
+* Credentials to access the Meridian repositories
+endif::[]
+* Linux physical server or a virtual machine running a supported xref:deployment:core/system-requirements.adoc#operating-systems-core[Linux operating system]
+* Internet access to download the installation packages
+* DNS works and localhost and your server's host name resolve properly
+* System user with administrative permissions (sudo) to perform installation
+ifeval::["{page-component-title}" == "Horizon"]
+* To run services in link:https://docs.docker.com/[Docker] you need link:https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples
+
+NOTE: On Debian, you must install and configure `sudo` yourself.
+      See the link:https://wiki.debian.org/sudo/[Debian Wiki] for more information.
+
+endif::[]
+
+include::../time-sync.adoc[]
+
+[[setup-postgresql]]
+== Set up PostgreSQL
+
+[{tabs}]
+====
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/postgresql.adoc[]
+--
+
+CentOS/RHEL 7::
++
+--
+include::centos-rhel7/postgresql.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Debian/Ubuntu::
++
+--
+include::debian-ubuntu/postgresql.adoc[]
+--
+
+Docker::
++
+--
+include::docker/postgresql.adoc[]
+--
+endif::[]
+====
+
+[[install-core-instance]]
+== Install the Core instance
+IMPORTANT: For security reasons, {page-component-title} is designed to run within an organization's protected intranet.
+Do not expose the web console and login pages directly to the Internet without appropriate isolation controls (for example, a VPN with multi-factor authentication).
+
+[{tabs}]
+====
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/install-core.adoc[]
+--
+
+CentOS/RHEL 7::
++
+--
+include::centos-rhel7/install-core.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Ubuntu::
++
+--
+include::ubuntu/install-core.adoc[]
+--
+
+Debian::
++
+--
+include::debian/install-core.adoc[]
+--
+
+Docker::
++
+--
+include::docker/core.adoc[]
+--
+endif::[]
+====
+
+[[set-up-core-instance]]
+== Set up the Core instance
+
+[{tabs}]
+====
+CentOS/RHEL 7/8::
++
+--
+include::centos-rhel/initialize-core.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Debian/Ubuntu::
++
+--
+include::debian-ubuntu/initialize-core.adoc[]
+--
+
+Docker::
++
+--
+include::docker/initialize.adoc[]
+--
+endif::[]
+====
+
+== Receive SNMP Traps/Informs
+
+OpenNMS {page-component-title} core lets you receive and process SNMP Traps/Informs out of the box.
+The OpenNMS {page-component-title} core services run as an unprivileged user and can't bind on port numbers < 1024 without escalated privileges.
+For this reason, the default port for the SNMP Trap/Inform listener is set to port number 10162/udp instead of the IANA registered port number 162/udp.
+The following example shows how to configure the local firewall daemon to forward port 162/udp to 10162/udp.
+
+TIP: If you need SNMP Trap listener on port 162/udp directly, you can add the Linux `CAP_NET_BIND_SERVICE` capability to the Java binary using `setcap`.
+     Be aware: this method allows any Java program run on your system to bind to privileged ports < 1024.
+
+[{tabs}]
+====
+CentOS/RHEL 7/8::
++
+--
+include::centos-rhel/firewall-core.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Debian/Ubuntu::
++
+--
+include::debian-ubuntu/firewall-core.adoc[]
+--
+endif::[]
+====
+
+You can verify your firewall and port forwarding configuration by sending an SNMP trap from a remote system to your OpenNMS {page-component-title} core instance with the following command:
+
+[source, console]
+----
+snmptrap -v 2c -c public opennms-core-host '' 1.3.6.1.4.1.2021.991.17 .1.3.6.1.2.1.1.6.0 s "Milky Way"<1><2>
+----
+<1> By default, OpenNMS uses the community string `public`. 
+If you changed the community string in OpenNMS, use that name here.
+<2> Replace `opennms-core-host` with the IP or FQDN of your OpenNMS {page-component-title} core instance.
+
+On RHEL/CentOS the `snmptrap` command line tool is part of the `net-snmp-utils`. 
+When you run on Debian/Ubuntu, you have to install the `snmp-utils` package.
+
+Your configuration works as expected when you see an SNMP trap event in the web UI.
+
+. Log in to the web UI.
+. Click menu:Status[Events > All events].
+. Verify you received a `uei.opennms.org/generic/traps/EnterpriseDefault` event from your test host.
+
+== First login
+
+After you start the {page-component-title} Core services, access the web application at +
+`\http://core-instance-ip:8980/opennms`.
+The default login and password is *admin*.
+
+IMPORTANT: Immediately change the password to a secure one.
+
+. Open `\http://core-instance-ip:8980/opennms` in your web browser.
+. Log in with with admin/admin.
+. Click  btn:[admin] -> btn:[Change Password] in the navigation bar.
+. Use *admin* as the current password then type and confirm a new password in the appropriate boxes.
+. Click btn:[Submit].
+. Log out, then log in with your new password.
+
+== First monitored node
+The default configuration will discover a single node with an interface 127.0.0.1 and detect services exposed on the loopback interface, including the OpenNMS-JVM service.
+Nodes with this service have JMX-based data collection performed on Java JVM statistics such as heap memory and open file handles.

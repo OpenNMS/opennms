@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.health</artifactId>
-        <version>25.0.0-SNAPSHOT</version>
+        <version>29.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.core.health</groupId>
@@ -38,7 +38,7 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -67,5 +67,9 @@
             <artifactId>org.opennms.core.test-api.lib</artifactId>
             <scope>test</scope>
         </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-util</artifactId>
+      </dependency>
     </dependencies>
 </project>

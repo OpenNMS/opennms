@@ -16,12 +16,15 @@ case "$1" in
         # try to detect java if possible
         if [ ! -e /etc/opennms/java.conf ]; then
             /usr/share/opennms/bin/runjava -s || :
+            /usr/share/opennms/bin/fix-permissions -R /usr/share/opennms/etc/java.conf
         fi
 
         if [ -d "/usr/share/opennms/data" ]; then
             find /usr/share/opennms/data/* -maxdepth 0 -name tmp -o -name history.txt -prune -o -print0 | xargs -0 rm -rf
             find /usr/share/opennms/data/tmp/* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
         fi
+
+        /usr/share/opennms/bin/update-package-permissions opennms-server
 
         echo ""
         echo " *** Installation complete.  You must still run the installer at"

@@ -31,11 +31,11 @@ package org.opennms.netmgt.flows.classification.internal;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,12 +85,13 @@ public class DefaultClassificationServiceIT {
     private SessionUtils sessionUtils;
 
     private ClassificationService classificationService;
+    private int initialCount;
 
     private Group userGroupDb; // the user group that is attached to hibernate
     private Group userGroupCsv; // the user group that is not attached to hibernate
 
     @Before
-    public void setUp() {
+    public void setUp() throws InterruptedException {
         FilterService filterService = new DefaultFilterService(filterDao);
         classificationService = new DefaultClassificationService(
                 ruleDao,
@@ -99,15 +100,11 @@ public class DefaultClassificationServiceIT {
                         new DaoClassificationRuleProvider(ruleDao), filterService),
                 filterService,
                 sessionUtils);
-        userGroupDb = new GroupBuilder().withName(Groups.USER_DEFINED).build();
-        groupDao.save(userGroupDb);
-        assertThat(ruleDao.countAll(), is(0));
+        assertThat("The groups should be pre-populated from liquibase", groupDao.countAll(), is(2));
+        assertTrue("The rules should be pre-populated from liquibase", ruleDao.countAll() > 0);
+        userGroupDb = groupDao.findByName(Groups.USER_DEFINED);
         userGroupCsv = new GroupBuilder().withName(Groups.USER_DEFINED).build();
-    }
-
-    @After
-    public void tearDown() {
-        groupDao.findAll().forEach(group -> groupDao.delete(group));
+        initialCount = ruleDao.countAll();
     }
 
     @Test
@@ -135,7 +132,7 @@ public class DefaultClassificationServiceIT {
         classificationService.importRules(userGroupDb.getId(), inputStream, true, true);
 
         // Verify
-        assertThat(ruleDao.countAll(), is(3));
+        assertThat(ruleDao.countAll(), is(initialCount + 3));
         assertThat(ruleDao.findByDefinition(new RuleBuilder()
                 .withGroup(userGroupCsv)
                 .withName("http") // name differs
@@ -159,7 +156,7 @@ public class DefaultClassificationServiceIT {
         classificationService.importRules(userGroupDb.getId(), inputStream, false, true);
 
         // Verify
-        assertThat(ruleDao.countAll(), is(2));
+        assertThat(ruleDao.countAll(), is(initialCount + 2));
         assertThat(ruleDao.findByDefinition(new RuleBuilder()
                 .withGroup(userGroupCsv)
                 .withName("http")
@@ -182,7 +179,7 @@ public class DefaultClassificationServiceIT {
         ruleDao.save(rule);
 
         // verify it is created
-        assertThat(ruleDao.countAll(), is(1));
+        assertThat(ruleDao.countAll(), is(initialCount + 1));
 
         // define csv and import
         final String csv = new CsvBuilder()
@@ -196,7 +193,7 @@ public class DefaultClassificationServiceIT {
 
         // Verify original one is deleted, but count is still 1
         assertThat(ruleDao.findByDefinition(rule), hasSize(0));
-        assertThat(ruleDao.countAll(), is(1));
+        assertThat(ruleDao.countAll(), is(initialCount + 1));
     }
 
     @Test
@@ -211,7 +208,7 @@ public class DefaultClassificationServiceIT {
         ruleDao.save(rule1);
 
         // verify it is created
-        assertThat(ruleDao.countAll(), is(1));
+        assertThat(ruleDao.countAll(), is(initialCount + 1));
 
         // Define another rule, to import
         Rule rule2 = new RuleBuilder()
@@ -227,10 +224,10 @@ public class DefaultClassificationServiceIT {
         boolean deleteExistingRules = false;
         final String csv = new CsvBuilder().withRule(rule2).withHeader(hasHeader).build();
         classificationService.importRules(userGroupDb.getId(), new ByteArrayInputStream(csv.getBytes()), hasHeader, deleteExistingRules);
-        assertThat(ruleDao.countAll(), is(2));
+        assertThat(ruleDao.countAll(), is(initialCount + 2));
 
         // Verify original one is retained, and new one was added
-        assertThat(ruleDao.findByDefinition(rule1), hasSize(1));
+        assertThat(ruleDao.findByDefinition(rule1), hasSize(2));
         assertThat(ruleDao.findByDefinition(rule2), hasSize(1));
 
     }

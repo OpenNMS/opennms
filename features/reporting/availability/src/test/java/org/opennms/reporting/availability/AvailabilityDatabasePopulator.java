@@ -41,7 +41,6 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
@@ -104,7 +103,6 @@ public class AvailabilityDatabasePopulator {
     private AlarmDao m_alarmDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
-    private LocationMonitorDao m_locationMonitorDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     
     private OnmsNode m_node1;
@@ -419,14 +417,6 @@ public class AvailabilityDatabasePopulator {
     
     private void setNode1(OnmsNode node1) {
         m_node1 = node1;
-    }
-
-    public LocationMonitorDao getLocationMonitorDao() {
-        return m_locationMonitorDao;
-    }
-
-    public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
-        m_locationMonitorDao = locationMonitorDao;
     }
 
     public AcknowledgmentDao getAcknowledgmentDao() {

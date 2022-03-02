@@ -32,7 +32,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 
-@Command(scope = "nodecache", name = "sync", description="Synchronizes the InterfaceToNodeCache")
+@Command(scope = "opennms", name = "sync-node-cache", description="Synchronizes the InterfaceToNodeCache")
 @Service
 public class InterfaceToNodeCacheSyncCommand implements Action {
 

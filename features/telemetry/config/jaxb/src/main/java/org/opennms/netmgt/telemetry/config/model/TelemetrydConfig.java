@@ -44,6 +44,9 @@ public class TelemetrydConfig {
     @XmlElement(name="listener")
     private List<ListenerConfig> listeners = new ArrayList<>();
 
+    @XmlElement(name="connector")
+    private List<ConnectorConfig> connectors = new ArrayList<>();
+
     @XmlElement(name="queue")
     private List<QueueConfig> queues = new ArrayList<>();
 
@@ -53,6 +56,14 @@ public class TelemetrydConfig {
 
     public void setListeners(final List<ListenerConfig> listeners) {
         this.listeners = listeners;
+    }
+
+    public List<ConnectorConfig> getConnectors() {
+        return connectors;
+    }
+
+    public void setConnectors(List<ConnectorConfig> connectors) {
+        this.connectors = connectors;
     }
 
     public List<QueueConfig> getQueues() {
@@ -71,18 +82,20 @@ public class TelemetrydConfig {
         final TelemetrydConfig that = (TelemetrydConfig) o;
 
         return Objects.equals(this.listeners, that.listeners) &&
+                Objects.equals(this.connectors, that.connectors) &&
                 Objects.equals(this.queues, that.queues);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.listeners,this.queues);
+        return Objects.hash(this.listeners, this.connectors, this.queues);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("listeners", this.listeners)
+                .add("connectors", this.connectors)
                 .add("queues", this.queues)
                 .toString();
     }

@@ -1,0 +1,106 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+">
+	<reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" availability="mandatory" />
+	<reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
+	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" />
+	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
+	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
+	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" />
+	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" availability="optional"/>
+	<reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" />
+	<reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
+
+	<!-- BMP DAOs -->
+	<reference id="bmpCollectorDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpCollectorDao" availability="mandatory"/>
+	<reference id="bmpRouterDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao" />
+	<reference id="bmpPeerDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao" />
+	<reference id="bmpBaseAttributeDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpBaseAttributeDao" />
+	<reference id="bmpUnicastPrefixDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao" />
+	<reference id="bmpGlobalIpRibDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao" />
+	<reference id="bmpAsnPathAnalysisDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathAnalysisDao" />
+	<reference id="bmpIpRibLogDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao" />
+
+
+	<reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
+
+	<!-- Telemetry Adapter -->
+	<bean id="bmpTelemetryFactory" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpTelemetryAdapterFactory">
+		<argument ref="blueprintBundleContext" />
+		<property name="telemetryRegistry" ref="telemetryRegistry" />
+		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
+		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+		<property name="nodeDao" ref="nodeDao" />
+		<property name="transactionTemplate" ref="transactionTemplate" />
+		<property name="filterDao" ref="filterDao" />
+		<property name="persisterFactory" ref="persisterFactory" />
+		<property name="thresholdingService" ref="thresholdingService" />
+	</bean>
+	<service ref="bmpTelemetryFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
+
+	<!-- Peer Status Adapter -->
+	<bean id="bmpPeerStatusFactory" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPeerStatusAdapterFactory">
+		<argument ref="blueprintBundleContext" />
+		<property name="telemetryRegistry" ref="telemetryRegistry" />
+		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+		<property name="eventForwarder" ref="eventForwarder" />
+	</bean>
+	<service ref="bmpPeerStatusFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
+
+	<!-- OpenBMP Integration Adapter -->
+	<bean id="bmpIntegrationFactory" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpIntegrationAdapterFactory">
+		<argument ref="blueprintBundleContext" />
+		<property name="telemetryRegistry" ref="telemetryRegistry" />
+		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+	</bean>
+
+	<service ref="bmpIntegrationFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
+
+
+	<!-- OpenBMP Persisting Adapter -->
+	<bean id="bmpPersistingAdapterFactory" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPersistingAdapterFactory">
+		<argument ref="blueprintBundleContext" />
+		<argument ref="bmpMessagePersister"/>
+		<property name="telemetryRegistry" ref="telemetryRegistry" />
+		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+	</bean>
+
+	<service ref="bmpPersistingAdapterFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
+
+	<!-- OpenBMP Message Persister -->
+	<bean id="bmpMessagePersister" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpMessagePersister">
+		<property name="bmpCollectorDao" ref="bmpCollectorDao"/>
+		<property name="bmpRouterDao" ref="bmpRouterDao"/>
+		<property name="bmpPeerDao" ref="bmpPeerDao"/>
+		<property name="bmpUnicastPrefixDao" ref="bmpUnicastPrefixDao"/>
+		<property name="bmpBaseAttributeDao" ref="bmpBaseAttributeDao"/>
+		<property name="bmpGlobalIpRibDao" ref = "bmpGlobalIpRibDao"/>
+		<property name="bmpAsnPathAnalysisDao" ref="bmpAsnPathAnalysisDao"/>
+		<property name="bmpIpRibLogDao" ref="bmpIpRibLogDao"/>
+		<property name="sessionUtils" ref="sessionUtils"/>
+	</bean>
+
+	<service ref="bmpMessagePersister" interface="org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpMessageHandler">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
+</blueprint>

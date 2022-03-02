@@ -30,8 +30,6 @@ package org.opennms.web.navigate;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 public class LocationBasedNavBarEntry implements NavBarEntry {
     private String m_locationMatch;
     private String m_url;
@@ -73,8 +71,8 @@ public class LocationBasedNavBarEntry implements NavBarEntry {
     }
 
     @Override
-    public DisplayStatus evaluate(HttpServletRequest request) {
-        return isLinkMatches(request) ? DisplayStatus.DISPLAY_NO_LINK : DisplayStatus.DISPLAY_LINK;
+    public DisplayStatus evaluate(MenuContext context) {
+        return isLinkMatches(context) ? DisplayStatus.DISPLAY_NO_LINK : DisplayStatus.DISPLAY_LINK;
     }
 
     public String getLocationMatch() {
@@ -84,7 +82,7 @@ public class LocationBasedNavBarEntry implements NavBarEntry {
         m_locationMatch = locationMatch;
     }
 
-    protected boolean isLinkMatches(HttpServletRequest request) {
-        return m_locationMatch.equals(request.getParameter("location"));
+    protected boolean isLinkMatches(MenuContext context) {
+        return m_locationMatch.equals(context.getLocation());
     }
 }

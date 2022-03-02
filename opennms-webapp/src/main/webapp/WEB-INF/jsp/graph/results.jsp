@@ -38,6 +38,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <c:import url="/includes/bootstrap.jsp">
+    <c:param name="ngapp" value="onms-ksc" />
     <c:param name="title" value="Resource Graph Results" />
     <c:param name="headTitle" value="Results" />
     <c:param name="headTitle" value="Resource Graphs" />
@@ -171,7 +172,7 @@
 <c:set var="showFootnote1" value="false"/>
 
 
-<div class="row" ng-app="onms-ksc" ng-controller="AddToKscCtrl">
+<div class="row" ng-controller="AddToKscCtrl">
 
     <div class="col-md-10" ng-controller="graphSearchBoxCtrl" id="search-graphs">
         <form class="form-inline pull-right mb-4">
@@ -320,10 +321,10 @@
         <ul class="nav flex-column">
             <c:forEach var="resourceType" items="${results.resourceTypes}">
             <li class="nav-item">
-                <a class="nav-link" href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}">${resourceType}</a>
+                <a class="nav-link" target="_self" href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}">${resourceType}</a>
                 <ul class="nav">
                     <c:forEach var="resultSet" items="${results.graphResultMap[resourceType]}">
-                    <li class="nav-item"><a class="nav-link" href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li>
+                    <li class="nav-item"><a class="nav-link" target="_self" href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li>
                     </c:forEach>
                 </ul>
             </li>

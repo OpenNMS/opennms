@@ -1,0 +1,72 @@
+
+= SmtpMonitor
+
+The SMTP monitor tests for SMTP service availability on a node.
+The monitor first tries to establish a TCP connection on the specified port.
+If it establishes a connection, the service banner is checked for a valid response (starts with `220`).
+If the banner is valid, the monitor sends a HELO SMTP command, identifying itself with the hostname of the OpenNMS server, and makes sure the service answers with a valid response (starts with `250`).
+If that response to the HELO is valid, the monitor issues a QUIT SMTP command.
+The service is considered available if the service's answer to the HELO command is valid (starts with `221`).
+
+Simulate the behavior with telnet or netcat:
+
+[source,console]
+----
+$ nc -v gmail-smtp-in.l.google.com 25
+Ncat: Version 7.60 ( https://nmap.org/ncat )
+Ncat: Connected to 2607:f8b0:4002:c06::1a:25.
+220 mx.google.com ESMTP j17-v6si13545102ywb.87 - gsmtp
+HELO opennms.com
+250 mx.google.com at your service
+QUIT
+221 2.0.0 closing connection j17-v6si13545102ywb.87 - gsmtp
+----
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.SmtpMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the SmtpMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| TCP port to connect to.
+| 25
+
+| retry
+| Number of attempts to find the service available.
+| 0
+
+| timeout
+| Timeout in milliseconds for the underlying socket's connect and read operations.
+| 3000
+|===
+
+== Examples
+
+The following example uses CentOS/RHEL path names.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[source, xml]
+----
+<service name="SMTP" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1" />
+  <parameter key="timeout" value="3000" />
+  <parameter key="port" value="25" />
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="rrd-base-name" value="smtp" />
+  <parameter key="ds-name" value="smtp" />
+</service>
+<monitor service="SMTP" class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor" />
+----

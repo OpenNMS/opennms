@@ -1,0 +1,27 @@
+
+= Grafana
+
+This dashlet displays a Grafana dashboard for a given time range in the xref:admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
+The <<admin/webui/grafana-dashboard-box.adoc#webui-grafana-dashboard-box, Grafana Dashboard Box>> configuration is used to access the Grafana instance.
+
+.Grafana dashlet configuration options
+[options="header,autowidth", cols="1,2"]
+|===
+| Field
+| Description
+
+| Boost support
+| not available
+
+| Properties: Title
+| Title of the Grafana dashboard to display.
+
+| Properties: uri
+| URI to the Grafana Dashboard to display.
+
+| Properties: from
+| Start of time range
+
+| Properties: to
+| End of time range
+|===

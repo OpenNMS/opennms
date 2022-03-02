@@ -28,6 +28,14 @@
 
 package org.opennms.smoketest;
 
+import static org.awaitility.Awaitility.await;
+import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
+import static org.openqa.selenium.support.ui.ExpectedConditions.not;
+import static org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfElementLocated;
+import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
+
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,14 +45,6 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
-
-import java.util.concurrent.TimeUnit;
-
-import static org.awaitility.Awaitility.await;
-import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
-import static org.openqa.selenium.support.ui.ExpectedConditions.not;
-import static org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfElementLocated;
-import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 /**
  * The Test Class for the New Provisioning UI using AngularJS.
@@ -237,7 +237,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
         final By findModal = By.cssSelector(".modal-dialog");
         waitUntil(visibilityOfElementLocated(findModal));
         // Find the 'Yes' button in the modal and click it until we can't click anymore
-        By findYesButton = By.xpath("//div/button[text()='Yes']");
+        By findYesButton = By.xpath("//div/button[text()='Synchronize']");
         final WebElement yesButton = waitUntil(elementToBeClickable(findYesButton));
         await().until(() -> {
             try {

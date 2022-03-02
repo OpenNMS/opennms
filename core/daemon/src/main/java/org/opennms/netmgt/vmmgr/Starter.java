@@ -71,6 +71,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Starter {
     private static final Logger LOG = LoggerFactory.getLogger(Starter.class);
+    private boolean emitStandardFileNotFoundWarnings = Boolean.parseBoolean(System.getProperty("org.opennms.netmgt.vmmgr.emitStandardFileNotFoundWarnings", "true"));
 
     /**
      * The log4j category used to log debug messsages and statements.
@@ -116,7 +117,9 @@ public class Starter {
                 LOG.info("Found file '{}' at '{}'.  Setting '{}' to this path.", file, url.getPath(), propertyName);
                 System.setProperty(propertyName, url.getPath());
             } else {
-                LOG.warn("Did not find file '{}' in the class path. {} Set the property '{}' to the location of the file.", file, notFoundWarning, propertyName);
+                if(emitStandardFileNotFoundWarnings) {
+                    LOG.warn("Did not find file '{}' in the class path. {} Set the property '{}' to the location of the file.", file, notFoundWarning, propertyName);
+                }
             }
         } else {
             LOG.debug("System property '{}' already set to '{}'.", propertyName, System.getProperty(propertyName));

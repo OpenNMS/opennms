@@ -36,7 +36,6 @@ import java.util.TreeSet;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
@@ -56,7 +55,6 @@ import org.xbill.DNS.Type;
  *
  * @author brozow, fooker, schlazor
  */
-@Distributable
 public class DNSResolutionMonitor extends ParameterSubstitutingMonitor {
     public static final Logger LOG = LoggerFactory.getLogger(DNSResolutionMonitor.class);
 

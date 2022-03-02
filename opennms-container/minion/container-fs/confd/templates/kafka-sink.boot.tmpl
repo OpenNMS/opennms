@@ -1,0 +1,6 @@
+{{- /* Upon updating this file please ensure that the schema minion-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+{{if exists "/ipc/sink/kafka/bootstrap.servers" -}}
+!opennms-core-ipc-sink-camel
+opennms-core-ipc-sink-kafka
+{{end -}}

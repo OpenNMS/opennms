@@ -37,6 +37,8 @@ import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.codahale.metrics.MetricRegistry;
+
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 
@@ -82,6 +84,11 @@ public class MockMessageDispatcherFactory<U extends Message, V extends Message> 
     @Override
     public Tracer getTracer() {
         return GlobalTracer.get();
+    }
+
+    @Override
+    public MetricRegistry getMetrics() {
+        return new MetricRegistry();
     }
 
     public MessageConsumer<U, V> getConsumer() {

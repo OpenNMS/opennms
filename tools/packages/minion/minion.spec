@@ -18,7 +18,7 @@
 %{!?_descr:%define _descr OpenNMS}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?_java:%define _java java-1.8.0-openjdk-devel}
+%{!?_java:%define _java java-11-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo %{nil}}
 %{!?extrainfo2:%define extrainfo2 %{nil}}
@@ -32,6 +32,10 @@
 %define __os_install_post %{nil}
 %define __find_requires %{nil}
 %define __perl_requires %{nil}
+%define _source_filedigest_algorithm 0
+%define _binary_filedigest_algorithm 0
+%define _source_payload w0.bzdio
+%define _binary_payload w0.bzdio
 %global _binaries_in_noarch_packages_terminate_build 0
 AutoReq: no
 AutoProv: no
@@ -172,6 +176,13 @@ mv "%{buildroot}%{minioninstprefix}/etc/minion.conf" "%{buildroot}%{_sysconfdir}
 # delete the debian files
 rm -rf "%{buildroot}%{minioninstprefix}/debian"
 
+# fix the permissions-fixing scripts
+sed -i \
+    -e 's,OPENNMS_HOME,MINION_HOME,g' \
+    -e 's,opennms,minion,g' \
+    '%{buildroot}%{minioninstprefix}/bin/fix-permissions' \
+    '%{buildroot}%{minioninstprefix}/bin/update-package-permissions'
+
 ### FILE LISTS FOR %files ###
 
 # minion package files
@@ -267,10 +278,12 @@ fi
 # Generate a new UUID to replace the default UUID if it is still present
 UUID=$(/usr/bin/uuidgen -t)
 sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "${ROOT_INST}/etc/org.opennms.minion.controller.cfg"
+"${ROOT_INST}/bin/fix-permissions" "${ROOT_INST}/etc/org.opennms.minion.controller.cfg"
 
 # Remove the directory used as the local Maven repo cache
 rm -rf "${ROOT_INST}/repositories/.local"
 
+"${ROOT_INST}/bin/update-package-permissions" "%{name}"
 
 ### PRE-UN-INSTALLATION ###
 

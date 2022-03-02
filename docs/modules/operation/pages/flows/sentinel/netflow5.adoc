@@ -1,0 +1,32 @@
+[source, karaf]
+----
+config:edit --alias netflow5 --factory org.opennms.features.telemetry.adapters
+config:property-set name Netflow-5<1>
+config:property-set adapters.0.name Netflow-5-Adapter<2>
+config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter<3>
+config:update
+----
+
+<1> Queue name from which Sentinel will fetch messages.
+By default for {page-component-title} components, the queue name convention is `Netflow-5`.
+<2> Set a name for the Netflow v5 adapter.
+<3> Assign an adapter to enrich Netflow v5 messages.
+
+The configuration is persisted with the suffix specified as alias in `etc/org.opennms.features.telemetry.adapters-netflow5.cfg`.
+
+TIP: To process multiple protocols, increase the index `0` in the adapters name and class name accordingly for additional protocols.
+
+.Run health-check to verify adapter configuration
+[source, karaf]
+----
+opennms:health-check
+----
+
+.Ensure the configured flow adapters work properly
+[source, output]
+----
+Verifying the health of the container
+
+...
+Verifying Adapter Netflow-5-Adapter (org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter)   [ Success  ]
+----

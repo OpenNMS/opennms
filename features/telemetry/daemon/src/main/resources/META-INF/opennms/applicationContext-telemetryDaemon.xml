@@ -20,11 +20,15 @@
     <property name="configResource" value="file:${opennms.home}/etc/telemetryd-configuration.xml" />
   </bean>
 
+  <bean id="connectorManager" class="org.opennms.netmgt.telemetry.daemon.ConnectorManager" />
+
   <bean id="daemon" class="org.opennms.netmgt.telemetry.daemon.Telemetryd" />
 
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.api.TelemetryManager" ref="daemon" />
 
 </beans>

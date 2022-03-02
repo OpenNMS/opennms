@@ -32,7 +32,7 @@ import java.util.Collection;
 
 public interface VertexListener {
 	
-	void vertexSetChanged(VertexProvider provider);
-	void vertexSetChanged(VertexProvider provider, Collection<? extends Vertex> added, Collection<? extends Vertex> update, Collection<String> removedVertexIds);
+	void vertexSetChanged(BackendGraph graph);
+	void vertexSetChanged(BackendGraph provider, Collection<? extends Vertex> added, Collection<? extends Vertex> update, Collection<String> removedVertexIds);
 	
 }

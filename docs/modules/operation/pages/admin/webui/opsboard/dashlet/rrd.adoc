@@ -1,0 +1,37 @@
+
+= RRD
+
+This dashlet shows one or multiple RRD graphs in the xref:admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
+It is possible to arrange and order the RRD graphs in multiple columns and rows.
+All RRD graphs are normalized with a given width and height.
+
+.RRD dashlet configuration options
+[options="header,autowidth", cols="1,2"]
+|===
+| Field
+| Description
+
+| Boost support
+| not available
+
+| Columns
+| Number of columns in the dashlet
+
+| Rows
+| Number of rows in the dashlet
+
+| KSC Report
+| Import RRD graphs from an existing KSC report and rearrange them.
+
+| Graph Width
+| Generic width for all RRD graphs in this dashlet
+
+| Graph Height
+| Generic height for all RRD graphs in this dashlet
+
+| Timeframe value
+| Number of the given `Timeframe type`
+
+| Timeframe type
+| Minute, hour, day, week, month, and year for all RRD graphs
+|===

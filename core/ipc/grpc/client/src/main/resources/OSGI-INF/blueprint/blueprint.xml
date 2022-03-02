@@ -1,0 +1,64 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+		http://camel.apache.org/schema/blueprint
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.19.1.xsd
+">
+
+  <cm:property-placeholder id="serverProperties" persistent-id="org.opennms.core.ipc.grpc.client"
+                           update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="host" value="localhost"/>
+      <cm:property name="port" value="8990"/>
+      <cm:property name="tlsEnabled" value="false"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
+
+  <!-- Provided by minion-core -->
+  <reference id="minionIdentity" interface="org.opennms.distributed.core.api.MinionIdentity"/>
+
+  <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
+
+  <bean id="grpcClient" class="org.opennms.core.ipc.grpc.client.MinionGrpcClient"
+        init-method="start" destroy-method="shutdown">
+    <argument ref="minionIdentity"/>
+    <argument ref="configAdmin"/>
+    <property name="metrics" ref="grpcSinkMetricRegistry"/>
+    <property name="tracerRegistry" ref="tracerRegistry"/>
+  </bean>
+
+  <service ref="grpcClient" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
+
+  <reference-list id="rpcModulesRef" interface="org.opennms.core.rpc.api.RpcModule" availability="optional">
+    <reference-listener bind-method="bind" unbind-method="unbind" ref="grpcClient"/>
+  </reference-list>
+
+  <!-- GRPC Health Check -->
+  <bean id="grpcHealthCheck" class="org.opennms.core.ipc.grpc.client.GrpcHealthCheck">
+    <argument ref="grpcClient"/>
+  </bean>
+
+  <service ref="grpcHealthCheck" interface="org.opennms.core.health.api.HealthCheck"/>
+
+  <!-- Sink Metrics -->
+  <bean id="grpcSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+  <service ref="grpcSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+    <service-properties>
+      <entry key="name" value="gRPC Sink Producer" />
+      <entry key="description" value="Sink Producer Metrics on Minion" />
+    </service-properties>
+  </service>
+
+
+</blueprint>

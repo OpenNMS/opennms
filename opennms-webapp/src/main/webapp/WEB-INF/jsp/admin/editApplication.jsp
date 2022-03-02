@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,13 +52,15 @@
         Application '${fn:escapeXml(model.application.name)}' has ${fn:length(model.sortedMemberServices)} services
         </p>
 
+        <h5>Defined service(s):</h5>
+
         <form class="form-row" role="form" action="admin/applications.htm" method="get">
           <input type="hidden" name="applicationid" value="${model.application.id}"/>
-          <input type="hidden" name="edit" value="edit"/>
+          <input type="hidden" name="edit" value="services"/>
 
           <div class="form-group col-md-5">
             <label for="input_toAdd">Available services</label>
-            <select name="toAdd" id="input_toAdd" class="form-control" size="20" multiple>
+            <select name="serviceAdds" id="input_toAdd" class="form-control" size="15" multiple>
               <c:forEach items="${model.monitoredServices}" var="service">
                 <option value="${service.id}">${fn:escapeXml(service.ipInterface.node.label)} / ${service.ipAddressAsString} / ${service.serviceName}</option>
               </c:forEach>
@@ -66,19 +68,50 @@
           </div>
 
           <div class="form-group col-md-2 text-center mb-auto mt-auto">
-            <input type="submit" class="btn btn-secondary" name="action" value="Add &#155;&#155;"/>
-            <input type="submit" class="btn btn-secondary" name="action" value="&#139;&#139; Remove"/>
+            <input type="submit" id="input_addService" class="btn btn-secondary" name="action" value="Add &#155;&#155;"/>
+            <input type="submit" id="input_removeService" class="btn btn-secondary" name="action" value="&#139;&#139; Remove"/>
           </div>
 
           <div class="form-group col-md-5">
             <label for="input_toDelete">Services on application</label>
-            <select name="toDelete" id="input_toDelete" class="form-control" size="20" multiple>
+            <select name="serviceDeletes" id="input_toDelete" class="form-control" size="15" multiple>
               <c:forEach items="${model.sortedMemberServices}" var="service">
                 <option value="${service.id}">${fn:escapeXml(service.ipInterface.node.label)} / ${service.ipAddressAsString} / ${service.serviceName}</option>
               </c:forEach>
             </select>
           </div>
         </form>
+
+        <h5>Associated location(s):</h5>
+
+        <form class="form-row" role="form" action="admin/applications.htm" method="get">
+          <input type="hidden" name="applicationid" value="${model.application.id}"/>
+          <input type="hidden" name="edit" value="locations"/>
+
+          <div class="form-group col-md-5">
+            <label for="input_locationAdd">Available locations</label>
+            <select name="locationAdds" id="input_locationAdd" class="form-control" size="10" multiple>
+              <c:forEach items="${model.monitoringLocations}" var="location">
+                <option value="${location.locationName}">${fn:escapeXml(location.locationName)}</option>
+              </c:forEach>
+            </select>
+          </div>
+
+          <div class="form-group col-md-2 text-center mb-auto mt-auto">
+            <input type="submit" id="input_addLocation" class="btn btn-secondary" name="action" value="Add &#155;&#155;"/>
+            <input type="submit" id="input_removeLocation" class="btn btn-secondary" name="action" value="&#139;&#139; Remove"/>
+          </div>
+
+          <div class="form-group col-md-5">
+            <label for="input_locationDelete">Locations on application</label>
+            <select name="locationDeletes" id="input_locationDelete" class="form-control" size="10" multiple>
+              <c:forEach items="${model.sortedMemberLocations}" var="location">
+                <option value="${location.locationName}">${fn:escapeXml(location.locationName)}</option>
+              </c:forEach>
+            </select>
+          </div>
+        </form>
+
       </div> <!-- card-body -->
     </div> <!-- panel -->
 

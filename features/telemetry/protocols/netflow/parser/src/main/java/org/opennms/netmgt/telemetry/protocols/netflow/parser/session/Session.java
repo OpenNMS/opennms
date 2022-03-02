@@ -29,10 +29,8 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.session;
 
 import java.net.InetAddress;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
@@ -58,4 +56,7 @@ public interface Session {
     Resolver getResolver(final long observationDomainId);
 
     InetAddress getRemoteAddress();
+
+    boolean verifySequenceNumber(final long observationDomainId,
+                                 final long sequenceNumber);
 }

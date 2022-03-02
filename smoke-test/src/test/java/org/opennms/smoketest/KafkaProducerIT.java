@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,9 @@
 
 package org.opennms.smoketest;
 
-import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
@@ -64,15 +64,17 @@ import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.minion.DetectorsOnMinionIT;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.CommandTestUtils;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
+import org.opennms.smoketest.utils.OnTimeOutLogger;
 import org.opennms.smoketest.utils.SshClient;
 
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class KafkaProducerIT extends BaseKafkaPersisterIT {
 
     @ClassRule
@@ -99,8 +101,8 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
         event.setParmCollection(parms);
         stack.opennms().getRestClient().sendEvent(event);
 
-        String shellOutput = runCommandAndLogout(stack, "kafka-producer:list-alarms");
-        return StringUtils.substringAfter(shellOutput, "kafka-producer:list-alarms");
+        String shellOutput = runCommandAndLogout(stack, "opennms:kafka-list-alarms");
+        return StringUtils.substringAfter(shellOutput, "opennms:kafka-list-alarms");
     }
 
     @Test
@@ -130,7 +132,7 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
     }
 
     protected String persistCollectionData(OpenNMSStack stack, String nodeId) throws Exception {
-        return runCommandAndLogout(stack, "collection:collect --node " + nodeId + " --persist org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 port=18980");
+        return runCommandAndLogout(stack, "opennms:collect --node " + nodeId + " --persist org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 port=18980");
     }
 
     /**
@@ -142,7 +144,9 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
             PrintStream pipe = sshClient.openShell();
             pipe.println(command);
             pipe.println("logout");
-            await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
+            await().atMost(2, MINUTES)
+                    .conditionEvaluationListener(new OnTimeOutLogger(() -> System.out.println("Shell output: " + sshClient.getStdoutOrNull())))
+                    .until(sshClient.isShellClosedCallable());
             shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
         }
         return shellOutput;

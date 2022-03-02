@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -51,6 +50,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -112,7 +112,7 @@ public class Events implements Serializable {
     private List<Event> m_nullPartitionedEvents;
 
     @XmlTransient
-    private Map<String, Event> m_eventsByUei = new HashMap<>();
+    private Map<String, Event> m_eventsByUei = new ConcurrentSkipListMap<>();
 
     @XmlTransient
     private List<Event> m_wildcardEvents;
@@ -541,5 +541,19 @@ public class Events implements Serializable {
             filesProcessed.add(loadedEvents.getKey());
             forEachEvent(callback, loadedEvents.getValue(), filesProcessed);
         }
+    }
+
+    /**
+     * Quick-look for Events by UEI with the caveat that not all  Events can be looked up this way.
+     *
+     * This function can be used a first pass when attempting to lookup events by UEI. The caller should
+     * fall back to other means if no match is found - having no results returned by this function
+     * does not necessarily mean that an Event with the given UEI does not exist.
+     *
+     * @param uei UEI to lookup
+     * @return matching Event, or {@link null} if none was found in the index
+     */
+    public Event getEventByUeiOptimistic(String uei) {
+        return m_eventsByUei.get(uei);
     }
 }

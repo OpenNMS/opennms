@@ -47,6 +47,17 @@
 	"
 %>
 <%@ page import="java.util.Optional" %>
+<%@ page import="org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation" %>
+<%@ page import="org.opennms.web.element.NetworkElementFactory" %>
+<%@ page import="org.opennms.netmgt.model.OnmsOutage" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="org.opennms.web.services.ServiceJspUtil" %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.opennms.core.rpc.utils.mate.Interpolator" %>
+<%@ page import="org.opennms.core.rpc.utils.mate.FallbackScope" %>
+<%@ page import="org.opennms.core.rpc.utils.mate.Scope" %>
+<%@ page import="org.opennms.core.utils.InetAddressUtils" %>
+<%@ page import="org.opennms.core.rpc.utils.mate.MapScope" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -55,6 +66,7 @@
 
 <%
     OnmsMonitoredService service = (OnmsMonitoredService)request.getAttribute("service");
+    Collection<OnmsOutage> outages = NetworkElementFactory.getInstance(getServletContext()).currentOutagesForServiceFromPerspectivePoller(service);
 
     String ipAddr = service.getIpAddress().getHostAddress();
     String serviceName = service.getServiceName();
@@ -67,9 +79,9 @@
     Enumeration<Package> en = pollerCfgFactory.enumeratePackage();
     while (en.hasMoreElements()) {
         Package pkg = en.nextElement();
-        if (!pkg.getRemote() &&
-    pollerCfgFactory.isServiceInPackageAndEnabled(serviceName, pkg) &&
-    pollerCfgFactory.isInterfaceInPackage(ipAddr, pkg)) {
+        if (!pkg.getPerspectiveOnly() &&
+            pollerCfgFactory.isServiceInPackageAndEnabled(serviceName, pkg) &&
+            pollerCfgFactory.isInterfaceInPackage(ipAddr, pkg)) {
     lastPkg = pkg;
         }
     }
@@ -141,6 +153,12 @@ function doDelete() {
      }
      return false;
 }
+</script>
+
+<script type="text/javascript" >
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
 </script>
 
 </sec:authorize>
@@ -250,6 +268,46 @@ function doDelete() {
               </c:choose>
             </table>
             </div>
+
+            <!-- Availability box -->
+            <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />
+
+            <!-- Perspective status Box -->
+            <%
+              ServiceJspUtil util = new ServiceJspUtil(service, outages);
+              if (!util.getAllPerspectives().isEmpty()) {
+            %>
+            <div class="card">
+              <div class="card-header"><span>Application Perspective Monitoring</span></div>
+              <table class="table table-sm severity">
+                <tr>
+                  <th>Perspective</th>
+                  <th>Polling Status</th>
+                  <th>Outage ID</th>
+                </tr>
+                <%
+                  for(OnmsMonitoringLocation location : util.getAllPerspectives()) {
+                      Optional<OnmsOutage> outage = util.getOutageForPerspective(location);
+                %>
+                <% if(outage.isPresent()) { %>
+                <tr class="severity-Critical">
+                <% } else { %>
+                <tr class="severity-Cleared">
+                <% } %>
+                  <td class="divider"><%=location.getLocationName()%></td>
+                  <td class="divider bright"><%=outage.isPresent() ? "<b>DOWN</b>" : "UP"%></td>
+                  <td class="divider"><%=outage.isPresent() ? util.getOutageUrl(outage.get()) : ""%></td>
+                </tr>
+                <% } %>
+              </table>
+            </div>
+            <% } %>
+
+            <jsp:include page="/includes/serviceApplication-box.htm" flush="false" />
+
+      </div> <!-- content-left" -->
+
+      <div class="col-md-6">
             <!-- patterns variables box -->
             <c:if test="${patternVariables != null}">
               <div class="card">
@@ -272,15 +330,59 @@ function doDelete() {
               <div class="card-header">
                 <span>Service Parameters</span>
               </div>
-              <table class="table table-sm">
-              <c:forEach var="entry" items="${parameters}">
-                <tr>
-                  <th nowrap>${entry.key}</th>
-                  <td>${entry.value}</td>
-                </tr>
-              </c:forEach>
-              </table>
-            </div>
+                  <table class="table table-sm severity">
+                      <tr>
+                          <th colspan="2">Parameter</th>
+                          <th>Value</th>
+                          <th>Effective</th>
+                      </tr>
+                      <%
+                          final Scope nodeScope = NetworkElementFactory.getInstance(getServletContext()).getScopeForNode(service.getNodeId());
+                          final Scope interfaceScope = NetworkElementFactory.getInstance(getServletContext()).getScopeForInterface(service.getNodeId(), ipAddr);
+                          final Scope serviceScope = NetworkElementFactory.getInstance(getServletContext()).getScopeForService(service.getNodeId(), InetAddressUtils.getInetAddress(ipAddr), serviceName);
+                          final Map<String, String> patternVariables = (Map<String, String>) pageContext.getAttribute("patternVariables");
+                          final Scope scope = new FallbackScope(nodeScope, interfaceScope, serviceScope, MapScope.singleContext(Scope.ScopeName.SERVICE, "pattern", patternVariables));
+
+                          for(Map.Entry<String,String> entry : ((Map<String,String>)pageContext.getAttribute("parameters")).entrySet()) {
+                              %>
+                              <tr>
+                                  <td colspan="2"><%=WebSecurityUtils.sanitizeString(entry.getKey())%></td>
+                                  <td><%=WebSecurityUtils.sanitizeString(entry.getValue())%></td>
+                                  <%
+                                      final Interpolator.Result result = Interpolator.interpolate(entry.getValue(), scope);
+
+                                      if (result.parts.size() == 1) {
+                                          %>
+                                            <td><%=WebSecurityUtils.sanitizeString(result.output)%> <span data-toggle="tooltip" data-placement="left" title="match='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).match)%>', scope='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).value.scopeName.toString())%>'">&#9432;</span></td>
+                                          <%
+                                      } else {
+                                          %>
+                                          <td><%=WebSecurityUtils.sanitizeString(result.output)%>
+                                          <%
+                                      }
+                                      if (result.parts.size() > 1) {
+                                          int counter = 1;
+                                          %>
+                                          </td>
+                                          <%
+                                          for(Interpolator.ResultPart part : result.parts) {
+                                            %>
+                                            </tr>
+                                                <tr class="CellStatus">
+                                                    <td class="severity-Cleared nobright spacer"></td>
+                                                    <td><%=WebSecurityUtils.sanitizeString(entry.getKey())%> #<%=counter++%></td>
+                                                    <td><%=WebSecurityUtils.sanitizeString(part.input)%></td>
+                                                    <td><%=WebSecurityUtils.sanitizeString(part.value.value)%> <span data-toggle="tooltip" data-placement="left" title="match='<%=WebSecurityUtils.sanitizeString(part.match)%>', scope='<%=WebSecurityUtils.sanitizeString(part.value.scopeName.toString())%>'">&#9432;</span></td>
+                                            <%
+                                          }
+                                      }
+                              %>
+                              </tr>
+                              <%
+                          }
+                      %>
+                  </table>
+              </div>
             </c:if>
             <!-- XML parameters box -->
             <c:if test="${xmlParams != null}">
@@ -294,14 +396,6 @@ function doDelete() {
               </c:forEach>
             </c:if>
 
-            <!-- Availability box -->
-            <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />
-            
-            <jsp:include page="/includes/serviceApplication-box.htm" flush="false" />
-            
-      </div> <!-- content-left" -->
-
-      <div class="col-md-6">
             <!-- events list box -->
             <jsp:include page="/includes/eventlist.jsp" flush="false" >
               <jsp:param name="node" value="${service.ipInterface.node.id}" />

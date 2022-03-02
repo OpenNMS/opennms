@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.telemetry.protocols</groupId>
     <artifactId>org.opennms.features.telemetry.protocols.sflow</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry.protocols.sflow</groupId>
@@ -49,7 +49,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.telemetry.protocols</groupId>
-      <artifactId>org.opennms.features.telemetry.protocols.collection</artifactId>
+      <artifactId>org.opennms.features.telemetry.protocols.adapters</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -58,7 +58,7 @@
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
+      <artifactId>osgi.core</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

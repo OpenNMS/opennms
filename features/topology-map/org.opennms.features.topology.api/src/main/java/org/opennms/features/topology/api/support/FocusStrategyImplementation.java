@@ -30,7 +30,8 @@ package org.opennms.features.topology.api.support;
 
 import java.util.List;
 
-import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.BackendGraph;
 
 /**
  * Interface to define the determination of the vertices in focus.
@@ -39,12 +40,12 @@ import org.opennms.features.topology.api.topo.GraphProvider;
  */
 public interface FocusStrategyImplementation {
     /**
-     * Determines the default focus for the given {@link GraphProvider}.
+     * Determines the default focus for the given {@link BackendGraph}.
      * The optional vertexIdsWithoutNamespace parameter may be used to narrow down the selection to specific ids.
      *
-     * @param topologyProvider
+     * @param graph
      * @param vertexIdsWithoutNamespace
      * @return A list of vertices in focus. The list may be empty, but should not be null.
      */
-    List<VertexHopGraphProvider.VertexHopCriteria> determine(GraphProvider topologyProvider, String... vertexIdsWithoutNamespace);
+    List<VertexHopCriteria> determine(BackendGraph graph, String... vertexIdsWithoutNamespace);
 }

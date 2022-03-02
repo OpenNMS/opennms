@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,11 +32,12 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
@@ -44,6 +45,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;
+import org.opennms.core.rpc.utils.mate.ContextKey;
+import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
@@ -71,12 +74,16 @@ public class ThresholdStateIT {
 
     private final ThresholdingSession thresholdingSession = MockSession.getSession();
     private ThresholdStateMonitor monitor;
+    private final Scope scope = mock(Scope.class);
 
     @Before
     public void setup() {
         monitor = new BlobStoreAwareMonitor(blobStore);
         when(thresholdingSession.getThresholdStateMonitor()).thenReturn(monitor);
         when(thresholdingSession.getBlobStore()).thenReturn(blobStore);
+        when(scope.get(new ContextKey("requisition", "value"))).thenReturn(Optional.of(new Scope.ScopeValue(Scope.ScopeName.DEFAULT, "99.0")));
+        when(scope.get(new ContextKey("requisition", "rearm"))).thenReturn(Optional.of(new Scope.ScopeValue(Scope.ScopeName.DEFAULT, "0.5")));
+        when(scope.get(new ContextKey("requisition", "trigger"))).thenReturn(Optional.of(new Scope.ScopeValue(Scope.ScopeName.DEFAULT, "2")));
     }
     
     @After
@@ -92,15 +99,16 @@ public class ThresholdStateIT {
         // it correctly sees that the threshold has been exceeded twice and triggers the threshold
         ThresholdEvaluatorState item = new ThresholdEvaluatorHighLow.ThresholdEvaluatorStateHighLow(getWrapper(),
                 thresholdingSession);
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = getWrapper().interpolateThresholdValues(scope);
 
-        ThresholdEvaluatorState.Status status = item.evaluate(100.0);
+        ThresholdEvaluatorState.Status status = item.evaluate(100.0, thresholdValues, null);
         assertEquals("first threshold evaluation status", ThresholdEvaluatorState.Status.NO_CHANGE, status);
 
         // re-initialize the item to simulate another node taking over processing of this threshold and creating a new
         // threshold object to do so
         item = new ThresholdEvaluatorHighLow.ThresholdEvaluatorStateHighLow(getWrapper(), thresholdingSession);
         
-        status = item.evaluate(100.0);
+        status = item.evaluate(100.0, thresholdValues, null);
         assertEquals("second threshold evaluation status", ThresholdEvaluatorState.Status.TRIGGERED, status);
     }
     
@@ -132,8 +140,9 @@ public class ThresholdStateIT {
         // Now evaluate a threshold multiple times
         ThresholdEvaluatorState item = new ThresholdEvaluatorHighLow.ThresholdEvaluatorStateHighLow(getWrapper(),
                 thresholdingSession);
-        item.evaluate(100.0);
-        item.evaluate(100.0);
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = getWrapper().interpolateThresholdValues(scope);
+        item.evaluate(100.0, thresholdValues, null);
+        item.evaluate(100.0, thresholdValues, null);
         
         // Verify that only one fetch was performed
         assertThat(fetchesPerformed.get(), equalTo(1));
@@ -141,8 +150,8 @@ public class ThresholdStateIT {
         // Now simulate being on Sentinel in distributed and redo the evaluations
         when(thresholdingSession.isDistributed()).thenReturn(true);
         fetchesPerformed.set(0);
-        item.evaluate(100.0);
-        item.evaluate(100.0);
+        item.evaluate(100.0, thresholdValues, null);
+        item.evaluate(100.0, thresholdValues, null);
 
         // Verify that multiple fetches were performed
         assertThat(fetchesPerformed.get(), greaterThan(1));
@@ -154,21 +163,22 @@ public class ThresholdStateIT {
                 thresholdingSession);
 
         // Two evaluations exceeding the threshold should trigger
-        ThresholdEvaluatorState.Status status = item.evaluate(100.0);
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = getWrapper().interpolateThresholdValues(scope);
+        ThresholdEvaluatorState.Status status = item.evaluate(100.0, thresholdValues, null);
         assertEquals("first threshold evaluation status", ThresholdEvaluatorState.Status.NO_CHANGE, status);
-        status = item.evaluate(100.0);
+        status = item.evaluate(100.0, thresholdValues, null);
         assertEquals("second threshold evaluation status", ThresholdEvaluatorState.Status.TRIGGERED, status);
 
         // A third evaluation exceeding the threshold should result in no change since the evaluator is already
         // triggered
-        status = item.evaluate(100.0);
+        status = item.evaluate(100.0, thresholdValues, null);
         assertEquals("third threshold evaluation status", ThresholdEvaluatorState.Status.NO_CHANGE, status);
 
         // After performing a state clear we should now see the threshold get triggered again if we exceed the threshold
         // twice again
         monitor.reinitializeStates();
-        item.evaluate(100.0);
-        status = item.evaluate(100.0);
+        item.evaluate(100.0, thresholdValues, null);
+        status = item.evaluate(100.0, thresholdValues, null);
         assertEquals("third threshold evaluation status", ThresholdEvaluatorState.Status.TRIGGERED, status);
     }
 
@@ -177,9 +187,9 @@ public class ThresholdStateIT {
         threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(99.0);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(2);
+        threshold.setValue("${requisition:value|0}");
+        threshold.setRearm("${requisition:rearm|0}");
+        threshold.setTrigger("${requisition:trigger|0}");
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         
         return wrapper;

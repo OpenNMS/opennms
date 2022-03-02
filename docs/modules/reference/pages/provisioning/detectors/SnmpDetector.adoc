@@ -1,0 +1,123 @@
+
+= SNMP Detector
+
+Use this detector to find and assigns services based on SNMP.
+The detector binds a service with a given service name when a particular SNMP OID as scalar or table matches a given criteria.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.snmp.SnmpDetector`
+|===
+
+== Configuration and use
+
+.Parameters for the SNMP service detector
+[options="header"]
+[cols="1,4a,1"]
+|===
+| Parameter
+| Description
+| Default
+
+3+| *Required*
+
+| oid
+| SNMP OID for scalar or table to detect the service.
+| .1.3.6.1.2.1.1.2.0
+
+3+| *Optional*
+
+| retry
+| Number of retries to detect the service.
+| agent config
+
+| timeout
+| Timeout in milliseconds to wait for a response from the SNMP agent.
+| agent config
+
+| vbvalue
+| Expected return value to detect the service. +
+If not specified, the service is detected if the SNMP OID returns any valid value. +
+Evaluated as a link:https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html[Java Regular Expression].
+| none
+
+| hex
+| Set `true` if the data is from type HEX-String.
+| false
+
+| isTable
+| Set `true` if detector should evaluate SNMP tables.
+| false
+
+| matchType
+| Set match type to evaluate the expected value in the SNMP table.
+
+* *exist*: ignore the expected #`vbalue`# and detect the service if the given table under OID exists.
+* *all*: all values in the table must match against expected `vbalue` to detect the service.
+* *any*: at least one value in the table must match against expected `vbalue` to detect the service.
+* *none*: none of the values should match against expected value to detect service.
+| exist
+
+| useSnmpProfiles
+| Set `true` if detector should use SNMP profiles to detect SNMP service.
+| false
+
+| ttl
+| Time to live, in milliseconds, to wait for a response from a Minion.
+| 20000
+|===
+
+== Example for SNMP scalar value
+
+Assume you have a Dell server farm and you want to monitor the global server status provided by the OpenManage Server Administrator.
+Global status is provided by a scalar OID `.1.3.6.1.4.1.674.10892.1.200.10.1.2.1`.
+The service should be detected automatically if the server supports this OID.
+
+For provisioning, we have a requisition named `Server` that contains all servers in our data center.
+We create a detector with the name `Dell-OMSA-Global-State` for this requisition with the following parameters:
+
+.Parameters for the SNMP detector
+[options="header, autowidth"]
+[cols="1,2"]
+|===
+| Parameter
+| Value
+
+| name
+| Dell-OMSA-Global-State
+
+| oid
+| .1.3.6.1.4.1.674.10892.1.200.10.1.2.1
+|===
+
+When the requisition server synchronizes with the service, `Dell-OMSA-Global-State` will be detected if it supports the given SNMP OID.
+
+== Example using SNMP tables
+
+Assume you have an HP server farm and want to monitor the status of logical drives over SNMP provided from the HP Insight Manager.
+The status for logical drives is provided in an SNMP table under `.1.3.6.1.4.1.232.3.2.3.1.1.4`.
+The service will be automatically assigned to any nodes that respond with a value for the specified OID.
+
+For provisioning, we have a requisition named `Server` that contains all servers in our data center.
+A detector with the name `HP-Insight-Drive-Logical` for this requisition is created with the following parameters:
+
+.Parameters for the SNMP detector
+[options="header, autowidth"]
+[cols="1,2"]
+|===
+| Parameter
+| Value
+
+| name
+| HP-Insight-Drive-Logical
+
+| oid
+| .1.3.6.1.4.1.232.3.2.3.1.1.4
+
+| isTable
+| true
+|===
+
+When the requisition `Server` is synchronized, the service `HP-Insight-Drive-Logical` will be detected if it supports the given SNMP OID table.

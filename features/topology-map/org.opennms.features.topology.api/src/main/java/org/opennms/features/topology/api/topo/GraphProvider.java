@@ -28,41 +28,15 @@
 
 package org.opennms.features.topology.api.topo;
 
-import java.util.Map;
-import java.util.Set;
-
 import org.opennms.features.topology.api.browsers.SelectionAware;
 
-public interface GraphProvider extends VertexProvider, EdgeProvider, SelectionAware {
+public interface GraphProvider extends SelectionAware {
+
+	BackendGraph getCurrentGraph();
 
 	void refresh();
 
-	void resetContainer();
-
-	void addVertices(Vertex... vertices);
-
-	void removeVertex(VertexRef... vertexId);
-
-	/**
-	 * @deprecated Convert calls to this to addVertices
-	 */
-	Vertex addVertex(int x, int y);
-
-	Vertex addGroup(String label, String iconKey);
-
-	EdgeRef[] getEdgeIdsForVertex(VertexRef vertex);
-
-	/**
-	 * This function can be used for efficiency when you need the {@link EdgeRef}
-	 * instances for a large number of vertices.
-	 */
-	Map<VertexRef,Set<EdgeRef>> getEdgeIdsForVertices(VertexRef... vertex);
-
-	void addEdges(Edge... edges);
-
-	void removeEdges(EdgeRef... edges);
-
-	Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId);
+	String getNamespace();
 
 	Defaults getDefaults();
 

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.telemetry.config.api;
 
+import java.util.Map;
+
 /**
  * Telemetry protocol package configuration.
  */
@@ -38,7 +40,7 @@ public interface PackageDefinition {
      *
      * If the rule is <code>null</code>, then all sources should match.
      *
-     * @return the fitler rule
+     * @return the filter rule
      */
     String getFilterRule();
 
@@ -48,4 +50,11 @@ public interface PackageDefinition {
      * @return the rrd settings
      */
     RrdDefinition getRrd();
+
+    /**
+     * Package specific parameters.
+     *
+     * @return the parameter map
+     */
+    Map<String, String> getParameterMap();
 }

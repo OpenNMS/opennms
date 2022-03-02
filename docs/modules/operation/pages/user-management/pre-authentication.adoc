@@ -1,0 +1,46 @@
+[[ga-role-user-management-pre-authentication]]
+= Web UI Pre-Authentication
+
+It is possible to configure {page-component-title} to run behind a proxy that provides authentication, and then pass the pre-authenticated user to the {page-component-title}webapp using a header.
+
+Define the pre-authentication configuration in `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/spring-security.d/header-preauth.xml`. This file is automatically included in the Spring security context, but is not enabled by default.
+
+WARNING: Do not configure {page-component-title} this way unless you are certain the web UI is accessible only to the proxy and not to end users.
+	Otherwise, malicious attackers can craft queries that include the pre-authentication header and get full control of the web UI and REST APIs.
+
+== Enabling pre-authentication
+
+Edit the `header-preauth.xml` file, and set the `enabled` property:
+
+[source,xml]
+----
+<beans:property name="enabled" value="true" />
+----
+
+== Configuring pre-authentication
+
+You can also set the following properties to change the behavior of the pre-authentication plugin:
+
+[options="header"]
+[cols="1,3,2"]
+|====
+| Property
+| Description
+| Default
+
+| enabled
+| Whether the pre-authentication plugin is active.
+| false
+
+| failOnError
+| If true, disallow login if the header is not set or the user does not exist. If false, fall through to other mechanisms (basic auth, form login, and so on.)
+| false
+
+| userHeader
+| The HTTP header that will specify the user to authenticate as.
+| X-Remote-User
+
+| credentialsHeader
+| A comma-separated list of additional credentials (roles) the user should have.
+| n/a
+|====

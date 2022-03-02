@@ -1,0 +1,36 @@
+
+[[gu-bsm-rc-imp-analysis]]
+= Root Cause and Impact Analysis
+
+The root cause operation can be used to quickly identify the underlying reduction keys as edges that contribute to the current operational status of an element.
+The impact analysis operation, converse to the root cause operation, can be used to identify all of the BS affected by a given element.
+Both of these options are available in the context menu of the Topology User Interface when visualizing BS.
+
+The following example shows how to identify the root cause of the critical status of the hop service.
+Use the Context Menu on the BS to investigate the root cause shown in figure <<ug-bsm-example-rca-action, View before performing Root Cause Analysis>>.
+
+[[ug-bsm-example-rca-action]]
+.View before performing Root Cause Analysis
+image::bsm/03_bsm-rca-action.png[]
+
+The Topology UI sets only elements to focus, which are the reason for the operational status of the selected BS.
+In figure <<ug-bsm-example-rca-results, View after performing Root Cause Analysis>> the Page Sequence Monitor which tests the user login is down and has set the BS to a critical status.
+
+[[ug-bsm-example-rca-results]]
+.View after performing Root Cause Analysis
+image::bsm/04_bsm-rca-results.png[]
+
+Similar to identifying a root cause for a BS it is also possible to identify which business services from a specific edge are affected.
+Use the context menu on a specific edge element and select impact analysis shown in figure <<ug-bsm-example-ia-action, View before performing Impact Analysis>>.
+
+[[ug-bsm-example-ia-action]]
+.View before performing Impact Analysis
+image::bsm/05_bsm-ia-action.png[]
+
+In figure <<ug-bsm-example-ia-results, View after performing Impact Analysis>> the business services for login, shop, and payment are affected if this HTTP service is unavailable.
+
+[[ug-bsm-example-ia-results]]
+.View after performing Impact Analysis
+image::bsm/06_bsm-ia-results.png[]
+
+NOTE: For the reason the service PSM Shop is introducing the critical status for the Business Service Shop, the HTTP service has no impact on the operational status of the PSM Shop and is not shown.

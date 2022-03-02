@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,9 +38,9 @@ import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -148,7 +148,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	 * Event listener Interface required implementation
 	 */
     @Override
-	public void onEvent(Event e) {
+	public void onEvent(IEvent e) {
         try {
 		if (EventConstants.TROUBLETICKET_CANCEL_UEI.equals(e.getUei())) {
 			handleCancelTicket(e);
@@ -173,7 +173,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	 * @param e An OpenNMS event.
 	 * @throws InsufficientInformationException
 	 */
-    private void handleCloseTicket(Event e) throws InsufficientInformationException {
+    private void handleCloseTicket(IEvent e) throws InsufficientInformationException {
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_ID);
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_UEI);
         EventUtils.requireParm(e, EventConstants.PARM_USER);
@@ -190,7 +190,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
      * @param e An OpenNMS Event
      * @throws InsufficientInformationException
      */
-	private void handleUpdateTicket(Event e) throws InsufficientInformationException {
+	private void handleUpdateTicket(IEvent e) throws InsufficientInformationException {
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_ID);
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_UEI);
         EventUtils.requireParm(e, EventConstants.PARM_USER);
@@ -207,14 +207,14 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	 * @param e An OpenNMS Event
 	 * @throws InsufficientInformationException
 	 */
-	private void handleCreateTicket(Event e) throws InsufficientInformationException {
+	private void handleCreateTicket(IEvent e) throws InsufficientInformationException {
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_ID);
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_UEI);
         EventUtils.requireParm(e, EventConstants.PARM_USER);
 
         int alarmId = EventUtils.getIntParm(e, EventConstants.PARM_ALARM_ID, 0);
         Map<String,String> attributes = new HashMap<String, String>();
-        for (final Parm parm: e.getParmCollection()) {
+        for (final IParm parm: e.getParmCollection()) {
         	attributes.put(parm.getParmName(), parm.getValue().getContent());
         }
         
@@ -226,7 +226,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	 * @param e
 	 * @throws InsufficientInformationException
 	 */
-	private void handleCancelTicket(Event e) throws InsufficientInformationException {
+	private void handleCancelTicket(IEvent e) throws InsufficientInformationException {
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_ID);
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_UEI);
         EventUtils.requireParm(e, EventConstants.PARM_USER);
@@ -238,11 +238,11 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         m_ticketerServiceLayer.cancelTicketForAlarm(alarmId, ticketId);
 	}
 
-    private boolean isReloadConfigEvent(Event event) {
+    private boolean isReloadConfigEvent(IEvent event) {
         boolean isTarget = false;
         if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-            List<Parm> parmCollection = event.getParmCollection();
-            for (Parm parm : parmCollection) {
+            List<IParm> parmCollection = event.getParmCollection();
+            for (IParm parm : parmCollection) {
                 if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Ticketd".equalsIgnoreCase(parm.getValue().getContent())) {
                     isTarget = true;
                     break;
@@ -252,7 +252,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         return isTarget;
     }
     
-    private void handleTicketerReload(Event e) {
+    private void handleTicketerReload(IEvent e) {
         m_ticketerServiceLayer.reloadTicketer();
     }
 

@@ -36,7 +36,7 @@ import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.snmp4j.smi.OctetString;
 
 
-@Command(scope = "snmp", name = "local-engine-id", description = "Display the Local Engine Id used for Traps/Informs")
+@Command(scope = "opennms", name = "snmp-local-engine-id", description = "Display the Local Engine Id used for Traps/Informs")
 @Service
 public class LocalEngineIdCommand implements Action {
 

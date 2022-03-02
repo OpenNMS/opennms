@@ -29,7 +29,9 @@
 package org.opennms.netmgt.icmp.commands;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -46,7 +48,7 @@ import org.opennms.netmgt.icmp.proxy.PingSummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "ping", name = "ping", description = "Ping")
+@Command(scope = "opennms", name = "ping", description = "ICMP Ping")
 @Service
 public class PingCommand implements Action {
 
@@ -68,9 +70,15 @@ public class PingCommand implements Action {
     String m_host;
 
     @Override
-    public Object execute() throws Exception {
-        LOG.debug("ping:ping {} {}", m_location != null ? "-l " + m_location : "", m_host);
-        final InetAddress byName = InetAddress.getByName(m_host);
+    public Object execute() {
+        LOG.debug("opennms:ping {} {}", m_location != null ? "-l " + m_location : "", m_host);
+        InetAddress byName;
+        try {
+            byName = InetAddress.getByName(m_host);
+        } catch (UnknownHostException uhe) {
+            System.out.printf("PING %s: Unknown host%n", uhe);
+            return null;
+        }
         final PingRequestBuilder.Callback callback = (newSequence, summary) -> {
             if (m_count > 1) {
                 if (summary.getSequences().size() == 0) {
@@ -104,6 +112,11 @@ public class PingCommand implements Action {
                 break;
             } catch (TimeoutException e) {
                 // pass
+            } catch (InterruptedException | ExecutionException e) {
+                if (m_count == 1) {
+                    System.out.println(String.format("PING: %s %s", byName, e.getCause().getClass().getName()));
+                }
+                break;
             }
             System.out.print(".");
         }

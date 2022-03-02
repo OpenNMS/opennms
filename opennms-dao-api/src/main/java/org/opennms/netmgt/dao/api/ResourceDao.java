@@ -31,8 +31,7 @@ package org.opennms.netmgt.dao.api;
 import java.util.Collection;
 import java.util.List;
 
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -74,15 +73,6 @@ public interface ResourceDao {
     public OnmsResource getResourceForNode(OnmsNode node);
 
     /**
-     * <p>getResourceForIpInterface</p>
-     *
-     * @param ipInterface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-     * @param locationMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
-     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
-     */
-    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsLocationMonitor locationMonitor);
-
-    /**
      * Deletes the resource identified by the given resource ID.
      *
      * @param resourceId the ID of the resource to delete
@@ -90,4 +80,7 @@ public interface ResourceDao {
      * @return {@code true} iff, the resource was found and deleted
      */
     public boolean deleteResourceById(final ResourceId resourceId);
+
+
+    public ResourceId getResourceId(CollectionResource resource, long nodeId);
 }

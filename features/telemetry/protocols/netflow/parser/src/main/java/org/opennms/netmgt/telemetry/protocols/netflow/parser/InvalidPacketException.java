@@ -29,6 +29,8 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
 
 public class InvalidPacketException extends Exception {
 
@@ -41,10 +43,13 @@ public class InvalidPacketException extends Exception {
     }
 
     private static String appendPosition(final String message, final ByteBuf buffer) {
-        if (buffer.hasArray()) {
-            return String.format("%s [0x%04X]", message, buffer.arrayOffset() + buffer.readerIndex());
-        } else {
-            return message;
-        }
+        // we want to hex-dump the whole PDU, wo we need to get the unsliced buffer
+        final ByteBuf unwrappedBuffer = Unpooled.wrappedUnmodifiableBuffer(buffer.unwrap() != null ? buffer.unwrap() : buffer).resetReaderIndex();
+        // compare the readableBytes() to determine the adjustment
+        final int delta = unwrappedBuffer.readableBytes() - (buffer.readableBytes() + buffer.readerIndex());
+        // compute the offset for which this exception had occurred
+        final int offset = buffer.readerIndex() + delta;
+
+        return String.format("%s, Offset: [0x%04X], Payload:\n%s", message, offset, ByteBufUtil.prettyHexDump(unwrappedBuffer));
     }
 }

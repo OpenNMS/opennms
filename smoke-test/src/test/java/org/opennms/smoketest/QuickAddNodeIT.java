@@ -55,7 +55,6 @@ public class QuickAddNodeIT extends OpenNMSSeleniumIT {
     public void setUp() throws Exception {
         deleteTestRequisition();
         createTestRequisition();
-        provisioningPage();
     }
 
     /**
@@ -82,7 +81,7 @@ public class QuickAddNodeIT extends OpenNMSSeleniumIT {
     @Test
     public void testQuickAddNode() throws Exception {
         adminPage();
-        clickMenuItem("name=nav-admin-top", "Quick-Add Node", "admin/ng-requisitions/quick-add-node.jsp");
+        findElementByXpath("//nav//a[contains(@title, 'Quick-Add Node') and contains(@href, 'admin/ng-requisitions/quick-add-node.jsp')]").click();
 
         Thread.sleep(5000);
 
@@ -101,7 +100,7 @@ public class QuickAddNodeIT extends OpenNMSSeleniumIT {
         enterTextAutocomplete(By.cssSelector("input[name='categoryName']"), NODE_CATEGORY);
 
         wait.until(ExpectedConditions.elementToBeClickable(By.id("provision"))).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog button[data-bb-handler='main']"))).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[text()='Ok']"))).click();
 
         wait.until(new WaitForNodesInDatabase(1));
     }

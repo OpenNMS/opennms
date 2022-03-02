@@ -30,6 +30,7 @@ package org.opennms.web.rest.v2;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,6 +46,7 @@ import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoredServiceList;
 import org.opennms.web.api.RestUtils;
@@ -57,6 +59,8 @@ import org.opennms.web.rest.support.SearchProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Sets;
 
 /**
  * Basic Web Service using REST for {@link OnmsMonitoredService} entity.
@@ -152,8 +156,16 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     @Override
     protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoredService targetObject, MultivaluedMapImpl params) {
         final String previousStatus = targetObject.getStatus();
+        final Set<OnmsApplication> applicationsOriginal = new HashSet<>(); // unfortunately applications set is not immutable, let's make a copy.
+        if(targetObject.getApplications() != null) {
+            applicationsOriginal.addAll(targetObject.getApplications());
+        }
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
+
+        Set<OnmsApplication> changedApplications = Sets.symmetricDifference(applicationsOriginal, targetObject.getApplications());
+        ApplicationEventUtil.getApplicationChangedEvents(changedApplications).forEach(this::sendEvent);
+
         boolean changed = m_component.hasStatusChanged(previousStatus, targetObject);
         return changed ? Response.noContent().build() : Response.notModified().build();
     }

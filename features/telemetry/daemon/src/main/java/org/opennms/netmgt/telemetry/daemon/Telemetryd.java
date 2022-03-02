@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.telemetry.api.TelemetryManager;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -50,7 +52,6 @@ import org.opennms.netmgt.telemetry.config.model.AdapterConfig;
 import org.opennms.netmgt.telemetry.config.model.ListenerConfig;
 import org.opennms.netmgt.telemetry.config.model.QueueConfig;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
-import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,13 +60,13 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * telemetryd is responsible for managing the life cycle of
- * {@link Listener}s and {@link Adapter}s as well as connecting
- * both of these to the Sink API.
+ * {@link Listener}s, {@link org.opennms.netmgt.telemetry.api.receiver.Connector}s and {@link Adapter}s
+ * as well as connecting these to the Sink API.
  *
  * @author jwhite
  */
 @EventListener(name=Telemetryd.NAME, logPrefix=Telemetryd.LOG_PREFIX)
-public class Telemetryd implements SpringServiceDaemon {
+public class Telemetryd implements SpringServiceDaemon, TelemetryManager {
     private static final Logger LOG = LoggerFactory.getLogger(Telemetryd.class);
 
     public static final String NAME = "Telemetryd";
@@ -86,6 +87,9 @@ public class Telemetryd implements SpringServiceDaemon {
 
     @Autowired
     private TelemetryRegistry telemetryRegistry;
+
+    @Autowired
+    private ConnectorManager connectorManager;
 
     private List<TelemetryMessageConsumer> consumers = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
@@ -135,6 +139,9 @@ public class Telemetryd implements SpringServiceDaemon {
                 continue;
             }
             final Listener listener = telemetryRegistry.getListener(listenerConfig);
+            if (listener == null) {
+                throw new IllegalStateException("Failed to create listener from registry for listener named: " + listenerConfig.getName());
+            }
             listeners.add(listener);
         }
 
@@ -148,6 +155,12 @@ public class Telemetryd implements SpringServiceDaemon {
         for (Listener listener : listeners) {
             LOG.info("Starting {} listener.", listener.getName());
             listener.start();
+        }
+
+        // Start the connectors
+        if (!config.getConnectors().isEmpty()) {
+            LOG.info("Starting connectors.");
+            connectorManager.start(config);
         }
 
         LOG.info("{} is started.", NAME);
@@ -168,10 +181,14 @@ public class Telemetryd implements SpringServiceDaemon {
         }
         listeners.clear();
 
+        // Stop the connectors
+        LOG.info("Stopping connectors.");
+        connectorManager.stop();
+
         // Stop the dispatchers
         for (AsyncDispatcher<?> dispatcher : telemetryRegistry.getDispatchers()) {
             try {
-                LOG.info("Closing dispatcher.", dispatcher);
+                LOG.info("Closing dispatcher: {}", dispatcher);
                 dispatcher.close();
             } catch (Exception e) {
                 LOG.warn("Error while closing dispatcher.", e);
@@ -210,8 +227,19 @@ public class Telemetryd implements SpringServiceDaemon {
     }
 
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadEvent(Event e) {
+    public void handleReloadEvent(IEvent e) {
         DaemonTools.handleReloadEvent(e, Telemetryd.NAME, (event) -> handleConfigurationChanged());
     }
 
+    @Override
+    public List<Listener> getListeners() {
+        return this.listeners;
+    }
+
+    @Override
+    public List<Adapter> getAdapters() {
+        return this.consumers.stream()
+                .flatMap(consumer -> consumer.getAdapters().stream())
+                .collect(Collectors.toList());
+    }
 }

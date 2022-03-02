@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,9 +33,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyListOf;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyListOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -62,6 +62,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -123,14 +124,14 @@ public class MinionStatusTrackerTest {
     public void testEventMissingNodeId() throws Exception {
         final Event e = EventUtils.createNodeGainedServiceEvent(FOREIGN_SOURCE, 1, InetAddressUtils.addr("192.168.0.1"), MINION_HEARTBEAT, null, NodeLabelSource.UNKNOWN, null, null);
         e.setNodeid(null);
-        m_tracker.onNodeGainedService(e);
+        m_tracker.onNodeGainedService(ImmutableMapper.fromMutableEvent(e));
     }
 
     @Test(expected=IllegalStateException.class)
     public void testEventMissingNode() throws Exception {
         final Event e = EventUtils.createNodeGainedServiceEvent(FOREIGN_SOURCE, 1, InetAddressUtils.addr("192.168.0.1"), MINION_HEARTBEAT, null, NodeLabelSource.UNKNOWN, null, null);
         when(m_nodeDao.get(anyInt())).thenReturn(null);
-        m_tracker.onNodeGainedService(e);
+        m_tracker.onNodeGainedService(ImmutableMapper.fromMutableEvent(e));
     }
 
     @Test
@@ -138,7 +139,7 @@ public class MinionStatusTrackerTest {
         final String foreignId = UUID.randomUUID().toString();
 
         final Event e = EventUtils.createNodeGainedServiceEvent(FOREIGN_SOURCE, 1, InetAddressUtils.addr("192.168.0.1"), "Imaginary", "one", NodeLabelSource.HOSTNAME, null, null);
-        m_tracker.onNodeGainedService(e);
+        m_tracker.onNodeGainedService(ImmutableMapper.fromMutableEvent(e));
 
         verifyNoMoreInteractions(m_nodeDao);
         verifyNoMoreInteractions(m_minionDao);
@@ -158,7 +159,7 @@ public class MinionStatusTrackerTest {
         when(m_minionDao.findById(foreignId)).thenReturn(minion);
 
         final Event e = EventUtils.createNodeGainedServiceEvent(FOREIGN_SOURCE, 1, InetAddressUtils.addr("192.168.0.1"), MINION_HEARTBEAT, "one", NodeLabelSource.HOSTNAME, null, null);
-        m_tracker.onNodeGainedService(e);
+        m_tracker.onNodeGainedService(ImmutableMapper.fromMutableEvent(e));
 
         assertEquals("there should be one minion", 1, m_tracker.getMinions().size());
         assertEquals("it should match our minion", foreignId, m_tracker.getMinions().iterator().next().getId());
@@ -179,7 +180,7 @@ public class MinionStatusTrackerTest {
         when(m_minionDao.findById(foreignId)).thenReturn(minion);
 
         final Event e = EventUtils.createNodeGainedServiceEvent(FOREIGN_SOURCE, 1, InetAddressUtils.addr("192.168.0.1"), MINION_HEARTBEAT, "one", NodeLabelSource.HOSTNAME, null, null);
-        m_tracker.onNodeGainedService(e);
+        m_tracker.onNodeGainedService(ImmutableMapper.fromMutableEvent(e));
 
         assertEquals("there should be one minion", 1, m_tracker.getMinions().size());
         assertEquals("it should match our minion", foreignId, m_tracker.getMinions().iterator().next().getId());
@@ -199,7 +200,7 @@ public class MinionStatusTrackerTest {
         when(m_minionDao.findById(foreignId)).thenReturn(minion);
 
         final Event e = EventUtils.createNodeGainedServiceEvent(FOREIGN_SOURCE, 1, InetAddressUtils.addr("192.168.0.1"), MINION_RPC, "one", NodeLabelSource.HOSTNAME, null, null);
-        m_tracker.onNodeGainedService(e);
+        m_tracker.onNodeGainedService(ImmutableMapper.fromMutableEvent(e));
 
         assertEquals("there should be one minion", 1, m_tracker.getMinions().size());
         assertEquals("it should match our minion", foreignId, m_tracker.getMinions().iterator().next().getId());
@@ -218,9 +219,9 @@ public class MinionStatusTrackerTest {
         when(m_minionDao.findById(foreignId)).thenReturn(minion);
 
         Event e = EventUtils.createNodeGainedServiceEvent(FOREIGN_SOURCE, 1, InetAddressUtils.addr("192.168.0.1"), MINION_HEARTBEAT, "one", NodeLabelSource.HOSTNAME, null, null);
-        m_tracker.onNodeGainedService(e);
+        m_tracker.onNodeGainedService(ImmutableMapper.fromMutableEvent(e));
         e = EventUtils.createNodeGainedServiceEvent(FOREIGN_SOURCE, 1, InetAddressUtils.addr("192.168.0.1"), MINION_RPC, "one", NodeLabelSource.HOSTNAME, null, null);
-        m_tracker.onNodeGainedService(e);
+        m_tracker.onNodeGainedService(ImmutableMapper.fromMutableEvent(e));
 
         assertEquals("there should be one minion", 1, m_tracker.getMinions().size());
         assertEquals("it should match our minion", foreignId, m_tracker.getMinions().iterator().next().getId());
@@ -262,8 +263,8 @@ public class MinionStatusTrackerTest {
         when(m_nodeDao.get(Integer.valueOf(1))).thenReturn(node);
         when(m_minionDao.findById(foreignId)).thenReturn(minion);
 
-        Event e = EventUtils.createNodeDeletedEvent(FOREIGN_SOURCE, 1, "one", "one");
-        m_tracker.onNodeDeleted(e);
+        Event e = EventUtils.createNodeDeletedEvent(FOREIGN_SOURCE, 1, "one", "one", null, null, null, null);
+        m_tracker.onNodeDeleted(ImmutableMapper.fromMutableEvent(e));
 
         assertEquals("there should still be a minion", 1, m_tracker.getMinions().size());
         final MinionStatus status = m_tracker.getStatus(minion);
@@ -539,7 +540,7 @@ public class MinionStatusTrackerTest {
                 .setService(service)
                 .setTime(time)
                 .getEvent();
-        m_tracker.onOutageEvent(e);
+        m_tracker.onOutageEvent(ImmutableMapper.fromMutableEvent(e));
         return outage;
     }
 

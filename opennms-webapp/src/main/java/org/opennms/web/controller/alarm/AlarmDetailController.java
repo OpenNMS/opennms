@@ -46,11 +46,8 @@ import org.opennms.web.alarm.AlarmIdNotFoundException;
 import org.opennms.web.event.Event;
 import org.opennms.web.event.SortStyle;
 import org.opennms.web.event.WebEventRepository;
+import org.opennms.web.event.filter.AlarmIDFilter;
 import org.opennms.web.event.filter.EventCriteria;
-import org.opennms.web.event.filter.IPAddrLikeFilter;
-import org.opennms.web.event.filter.IfIndexFilter;
-import org.opennms.web.event.filter.NodeFilter;
-import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.servlet.XssRequestWrapper;
 import org.slf4j.Logger;
@@ -221,13 +218,10 @@ public class AlarmDetailController extends MultiActionController {
 
     private List<RelatedEvent> getRelatedEvents(final OnmsAlarm alarm, final HttpServletRequest request) {
         Assert.notNull(alarm);
-
+ 
         final List<RelatedEvent> relatedEvents = new ArrayList<>();
 
-        final List<Filter> filters = getFilters(alarm, request.getServletContext());
-        if (filters.size() == 0) {
-            return relatedEvents;
-        }
+        final List<Filter> filters = new ArrayList<>(List.of(new AlarmIDFilter(alarm.getId())));
 
         SortStyle sortStyle = SortStyle.ID;
         final String sortStyleString = request.getParameter("sortby");
@@ -265,34 +259,11 @@ public class AlarmDetailController extends MultiActionController {
         final EventCriteria queryCriteria = new EventCriteria(filters, sortStyle, null, limit, limit * multiple);
         try {
             for (final Event event : m_webEventRepository.getMatchingEvents(queryCriteria)) {
-                relatedEvents.add(new RelatedEvent(event.getId(), event.getAlarmId(), event.getCreateTime(), event.getSeverity()));
+                relatedEvents.add(new RelatedEvent(event.getId(), event.getAlarmId(), event.getCreateTime(), event.getSeverity(), event.getUei(), event.getLogMessage()));
             }
         } catch (final Exception e) {
             logger.error("Could not retrieve events for queryCriteria '{}'.", queryCriteria);
         }
         return relatedEvents;
-    }
-
-    private List<Filter> getFilters(final OnmsAlarm alarm, final ServletContext context) {
-        final List<Filter> filters = new ArrayList<>();
-
-        if (alarm.getNodeId() != null) {
-            filters.add(new NodeFilter(alarm.getNodeId(), context));
-        }
-
-        if (alarm.getIpAddr() != null) {
-            filters.add(new IPAddrLikeFilter(InetAddressUtils.str(alarm.getIpAddr())));
-        }
-
-        if (alarm.getServiceType() != null) {
-            filters.add(new ServiceFilter(alarm.getServiceType().getId(), context));
-        }
-
-        if (alarm.getIfIndex() != null) {
-            filters.add(new IfIndexFilter(alarm.getIfIndex()));
-        }
-
-        return filters;
-
     }
 }

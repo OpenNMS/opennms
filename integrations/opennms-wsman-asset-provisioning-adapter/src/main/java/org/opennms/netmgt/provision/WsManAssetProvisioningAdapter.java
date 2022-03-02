@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,7 +47,7 @@ import org.opennms.core.wsman.WSManConstants;
 import org.opennms.core.wsman.WSManEndpoint;
 import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
 import org.opennms.netmgt.config.WsManAssetAdapterConfig;
-import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
+import org.opennms.netmgt.config.wsman.credentials.WsmanAgentConfig;
 import org.opennms.netmgt.config.wsmanAsset.adapter.AssetField;
 import org.opennms.netmgt.config.wsmanAsset.adapter.WqlObj;
 import org.opennms.netmgt.daemon.DaemonTools;
@@ -56,18 +56,15 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.w3c.dom.Node;
 
@@ -340,8 +337,9 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
     }
 
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadEvent(Event e) {
-        DaemonTools.handleReloadEvent(e, WsManAssetProvisioningAdapter.NAME, (event) -> handleConfigurationChanged());
+    public void handleReloadEvent(IEvent e) {
+        DaemonTools.handleReloadEvent(e,
+                WsManAssetProvisioningAdapter.NAME, (event) -> handleConfigurationChanged());
     }
 
 }

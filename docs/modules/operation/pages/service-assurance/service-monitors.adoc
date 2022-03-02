@@ -1,0 +1,10 @@
+
+= Service Monitors
+
+The Pollerd service uses service monitors to check the status of services running on nodes.
+These monitors will track if services are up or down and generate outages if the desired service state is not met.
+Monitoring is a separate process from our performance management component that collects metrics from nodes to generate graphs and threshold alerts.
+
+== Supported monitors
+
+For information on supported monitors and how to configure them, see xref:reference:service-assurance/introduction.adoc[service monitor reference section].

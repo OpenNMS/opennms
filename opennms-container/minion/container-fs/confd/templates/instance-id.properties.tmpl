@@ -1,0 +1,6 @@
+{{- /* Upon updating this file please ensure that the schema minion-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+{{$instanceIdKey := "/org.opennms.instance.id" -}}
+{{if exists $instanceIdKey -}}
+org.opennms.instance.id={{getv $instanceIdKey}}
+{{end -}}

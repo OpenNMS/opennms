@@ -1,0 +1,140 @@
+
+[[webui-opsboard-criteria-builder]]
+= Criteria Builder
+
+The Criteria Builder is a generic component to filter dashlet information.
+Some dashlets use this component to filter the shown information on a dashlet for certain use cases.
+It is possible to combine multiple criteria to display just a subset of information in a given dashlet.
+
+.Generic Criteria Builder configuration options
+[options="header, %autowidth" cols="1,2,1,1,1"]
+|===
+| Restriction
+| Description
+| Property
+| Value 1
+| Value 2
+
+
+| Asc
+| ascending order
+| -
+| -
+| -
+
+| Desc
+| descending order
+| -
+| -
+| -
+
+| Between
+| Subset of data between value 1 and value 2
+| database attribute
+| String
+| String
+
+| Contains
+| Select all data that contains a given text string in a given database attribute.
+| database attribute
+| String
+| -
+
+| Distinct
+| Select a single instance.
+| database attribute
+| -
+| -
+
+| Eq
+| database attribute
+| Select data where attribute equals (`==`) a given text string.
+| String
+| -
+
+| Ge
+| Select data where attribute is greater or equal to (`>=`) a given text value.
+| database attribute
+| String
+| -
+
+| Gt
+| Select data where attribute is greater than (`>`) a given text value.
+| database attribute
+| String
+| -
+
+| Ilike
+| unknown
+| database attribute
+| String
+| -
+
+| In
+| unknown
+| database attribute
+| String
+| -
+
+| Iplike
+| Select data where attribute matches a given IPLIKE expression.
+| database attribute
+| String
+| -
+
+| IsNull
+| Select data where attribute is null.
+| database attribute
+| -
+| -
+
+| IsNotNull
+| Select data where attribute is not null.
+| database attribute
+| -
+| -
+
+| Le
+| Select data where attribute is less than or equal to (`\<=`) a given text value.
+| database attribute
+| String
+| -
+
+| Lt
+| Select data where attribute is less than (`<`) a given text value.
+| database attribute
+| String
+| -
+
+| Like
+| Select data where attribute is like a given text value (similar to SQL `like`).
+| database attribute
+| String
+| -
+
+| Limit
+| Limit the result set by a given number.
+| -
+| Integer
+| -
+
+| Ne
+| Select data where attribute does not equal (`!=`) a given text value.
+| database attribute
+| String
+| -
+
+| Not
+| Unknown difference between `Ne`.
+| database attribute
+| String
+| -
+
+| OrderBy
+| Order the result set by a given attribute.
+| database attribute
+| -
+| -
+|===
+
+TIP: For date values, you can specify absolute value in ISO format (2019-06-20T20:45:15.123-05:00). Specify relative times by +seconds and -seconds.

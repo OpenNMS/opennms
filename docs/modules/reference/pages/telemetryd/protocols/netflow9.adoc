@@ -1,0 +1,87 @@
+
+= NetFlow v9
+
+See <<ga-flow-support, Flow Support>> for details on flow support in {page-component-title}.
+
+
+[[telemetryd-netflow9-parser-udp]]
+== Netflow v9 UDP Parser
+
+The Netflow v9 UDP parser accepts packets received by a <<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<telemetryd-netflow9-adapter, Netflow v9 adapter>>.
+
+The Netflow v9 UDP parser supports protocol detection.
+
+=== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser`
+|===
+
+=== Configuration and use
+
+.Optional parameters for the Netflow v9 UDP parser
+[options="header" cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| templateTimeout
+| Templates must be redeclared in the given duration or they will be dropped.
+| 30 minutes
+
+| maxClockSkew
+| The maximum delta in seconds between exporter and Minion timestamps.
+| 0
+
+| clockSkewEventRate
+| Used to rate-limit clock skew events in seconds.
+| 3600
+
+| dnsLookupsEnabled
+| Used to enable or disable DNS resolution for flows.
+| true
+
+| sequenceNumberPatience
+| A value > 1 enables checking for sequence number completeness.
+ The value gives the size of the history buffer allowing flows to be processed out of order.
+| 32
+
+| flowActiveTimeoutFallback
+| Fallback value for active flow timeout, if value is not included in exported flows.
+| none
+
+| flowInactiveTimeoutFallback
+| Fallback value for inactive flow timeout, if value is not included in exported flows.
+| none
+
+| flowSamplingIntervalFallback
+| Fallback value for sampling interval, if value is not included in exported flows.
+| none
+|===
+
+NOTE: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters.
+It specifies the maximum delta in seconds between exporter and Minion timestamps.
+If exceeded, an alarm will be generated for the exporting device.
+The default value is 0, so clock skew detection is disabled.
+Furthermore, you can use the `clockSkewEventRate` parameter to rate-limit clock skew events.
+The default is `3600` seconds, so every hour an event will be sent.
+
+
+[[telemetryd-netflow9-adapter]]
+== Netflow v9 Adapter
+
+The Netflow v9 adapter handles Netflow v9 payloads received and parsed by by the <<telemetryd-netflow9-parser-udp, Netflow v9 UDP Parser>>.
+Flows are decoded from the messages into the canonical flow format and are published to the flow repository.
+
+=== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter`
+|===
+
+=== Configuration and use
+
+This adapter does not currently have any configurable parameters.

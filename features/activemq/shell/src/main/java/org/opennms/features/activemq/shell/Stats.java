@@ -41,7 +41,7 @@ import org.opennms.core.utils.StringUtils;
 import org.opennms.features.activemq.broker.api.ManagedDestination;
 import org.opennms.features.activemq.broker.api.ManagedBroker;
 
-@Command(scope = "opennms-activemq", name = "stats", description = "Show statistics for the embedded ActiveMQ broker.")
+@Command(scope = "opennms", name = "activemq-stats", description = "Show statistics for the embedded ActiveMQ broker.")
 @Service
 public class Stats implements Action {
 

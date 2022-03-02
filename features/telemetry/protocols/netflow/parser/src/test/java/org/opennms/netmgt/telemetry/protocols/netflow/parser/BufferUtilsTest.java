@@ -28,7 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.*;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.sfloat;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.sint;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint24;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint64;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import org.junit.Assert;
 import org.junit.Test;

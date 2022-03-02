@@ -1,0 +1,129 @@
+[[nodes-rest]]
+= Nodes
+
+NOTE: The default offset is 0.
+The default limit is 10 results.
+To get all results, use limit=0 as a parameter on the URL (GET /nodes?limit=0).
+
+Additionally, anywhere you use "id" in the queries below, you can use the foreign source and foreign ID separated by a colon instead (GET /nodes/fs:fid).
+
+== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                      | Description
+| `/nodes`                                                      | Get a list of nodes. This includes the ID and node label.
+| `/nodes/\{id}`                                                | Get a specific node, by ID.
+| `/nodes/\{id}/ipinterfaces`                                   | Get the list of IP interfaces associated with the given node.
+| `/nodes/\{id}/ipinterfaces/\{ipaddress}`                      | Get the IP interface for the given node and IP address.
+| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services`             | Get the list of services associated with the given node and IP interface.
+| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services/\{service}`  | Get the requested service associated with the given node, IP interface, and service name.
+| `/nodes/\{id}/snmpinterfaces`                                 | Get the list of SNMP interfaces associated with the given node.
+| `/nodes/\{id}/snmpinterfaces/\{ifindex}`                      | Get the specific interface associated with the given node and ifIndex.
+| `/nodes/\{id}/categories`                                     | Get the list of categories associated with the given node.
+| `/nodes/\{id}/categories/\{categoryname}`                     | Get the category associated with the given node and category name.
+| `/nodes/\{id}/assetRecord`                                    | Get the asset record associated with the given node.
+| `/nodes/\{id}/hardwareInventory`                              | Get the hardware inventory information collected by the xref:reference:provisioning/adapters/hardware-inventory.adoc[hardware inventory plugin].
+| `/nodes/\{id}/hardwareInventory/\{entPhysicalIndex}`          | Get a specific entity from the hardware inventory information.
+|===
+
+== POSTs (Adding Data)
+
+POST requires XML using application/xml as its Content-Type.
+
+[options="header", cols="5,10"]
+|===
+| Resource                                             | Description
+| `/nodes`                                             | Add a node.
+| `/nodes/\{id}/ipinterfaces`                          | Add an IP interface to the node.
+| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services`    | Add a service to the interface for the given node.
+| `/nodes/\{id}/snmpinterfaces`                        | Add an SNMP interface to the node.
+| `/nodes/\{id}/categories`                            | Add a category association to the node.
+| `/nodes/\{id}/hardwareInventory`                     | Add entire hardware inventory to the node.
+| `/nodes/\{id}/hardwareInventory/\{entPhysicalIndex}` | Add specific entity to node's hardware inventory.
+|===
+
+[[rest-api-nodes-put]]
+== PUTs (Modifying Data)
+
+PUT requires form data using `application/x-www-form-urlencoded` as a content type.
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                     | Description
+| `/nodes/\{id}`                                               | Modify a node with the given ID.
+| `/nodes/\{id}/ipinterfaces/\{ipaddress}`                     | Modify the IP interface with the given node ID and IP address.
+| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services/\{service}` | Modify the service with the given node ID, IP address, and service name.
+| `/nodes/\{id}/snmpinterfaces/\{ifindex}`                     | Modify the SNMP interface with the given node ID and ifIndex.
+| `/nodes/\{id}/categories/\{categoryname}`                    | Modify the category with the given node ID and name.
+| `/nodes/\{id}/hardwareInventory/\{entPhysicalIndex}`         | Modify the hardware inventory entity for given node ID and index.
+                                                                 It is possible to use this endpoint to add custom attributes.
+|===
+
+== DELETEs (Removing Data)
+
+Perform a DELETE to the singleton URLs specified in <<rest-api-nodes-put, PUT>> above to delete that object.
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                     | Description
+| `/nodes/\{id}`                                               | Delete a node with the given ID.
+| `/nodes/\{id}/hardwareInventory/\{entPhysicalIndex}`         | Delete a specific entity from the node's hardware inventory.
+                                                                 If you provide the `entPhysicalIndex` of the root entity, all the hardware inventory will be removed.
+|===
+
+NOTE: Deletion of nodes, ipinterfaces, and services is asynchronous so it will return 202 (ACCEPTED).
+Deletion of snmpinterfaces and categories is synchronous calls so will return 204 (NO_CONTENT) on success.
+
+== Example hardware inventory
+
+[source, bash]
+----
+curl -u 'admin:admin' http://localhost:8980/opennms/rest/nodes/1/hardwareInventory
+----
+
+[source, xml]
+----
+<hwEntity entPhysicalIndex="1" nodeId="1" entityId="14">
+    <children>
+        <hwEntity entPhysicalIndex="2" nodeId="1" entityId="15" parentPhysicalIndex="1">
+        <children>
+            <hwEntity entPhysicalIndex="9" nodeId="1" entityId="16" parentPhysicalIndex="2">
+            <children>
+            ...
+            </children>
+            <entPhysicalClass>module</entPhysicalClass>
+            <entPhysicalDescr>Cisco 7200VXR Network Processing Engine NPE-400</entPhysicalDescr>
+            <entPhysicalHardwareRev>N/A</entPhysicalHardwareRev>
+            <entPhysicalIsFRU>true</entPhysicalIsFRU>
+            <entPhysicalMfgName>Cisco</entPhysicalMfgName>
+            <entPhysicalModelName>NPE-400</entPhysicalModelName>
+            <entPhysicalName>NPE400 0</entPhysicalName>
+            <entPhysicalParentRelPos>1</entPhysicalParentRelPos>
+            <entPhysicalSerialNum>11111111</entPhysicalSerialNum>
+            <entPhysicalSoftwareRev>12.4(4)T1</entPhysicalSoftwareRev>
+            <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.9.5.39</entPhysicalVendorType>
+            <vendorAttributes>
+                <hwEntityAttribute class="integer" name="ceExtNVRAMUsed" oid=".1.3.6.1.4.1.9.9.195.1.1.1.3" value="8605"/>
+                <hwEntityAttribute class="integer" name="ceExtNVRAMSize" oid=".1.3.6.1.4.1.9.9.195.1.1.1.2" value="129016"/>
+                <hwEntityAttribute class="integer" name="ceExtProcessorRam" oid=".1.3.6.1.4.1.9.9.195.1.1.1.1" value="268435456"/>
+            </vendorAttributes>
+            </hwEntity>
+            ...
+        </children>
+        ...
+        </hwEntity>
+    </children>
+    <entPhysicalClass>chassis</entPhysicalClass>
+    <entPhysicalDescr>Cisco 7206VXR, 6-slot chassis</entPhysicalDescr>
+    <entPhysicalHardwareRev>N/A</entPhysicalHardwareRev>
+    <entPhysicalIsFRU>true</entPhysicalIsFRU>
+    <entPhysicalMfgName>Cisco</entPhysicalMfgName>
+    <entPhysicalModelName>CISCO7206VXR</entPhysicalModelName>
+    <entPhysicalName>Chassis</entPhysicalName>
+    <entPhysicalParentRelPos>-1</entPhysicalParentRelPos>
+    <entPhysicalSerialNum>4294967295</entPhysicalSerialNum>
+    <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.3.74</entPhysicalVendorType>
+    <vendorAttributes/>
+</hwEntity>
+----

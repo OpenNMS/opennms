@@ -39,8 +39,6 @@ import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 
 public class Netflow5UdpParserFactory implements ParserFactory {
 
@@ -67,11 +65,6 @@ public class Netflow5UdpParserFactory implements ParserFactory {
     @Override
     public org.opennms.netmgt.telemetry.api.receiver.Parser createBean(final ParserDefinition parserDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        final Netflow5UdpParser parser = new Netflow5UdpParser(parserDefinition.getName(), dispatcher, eventForwarder, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
-        if (!parserDefinition.getParameterMap().isEmpty()) {
-            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(parser);
-            wrapper.setPropertyValues(parserDefinition.getParameterMap());
-        }
-        return parser;
+        return new Netflow5UdpParser(parserDefinition.getFullName(), dispatcher, eventForwarder, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
     }
 }

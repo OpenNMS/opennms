@@ -1,0 +1,46 @@
+.Configure PostgreSQL database access
+[source, shell]
+----
+sudo -u opennms vi /usr/share/opennms/etc/opennms-datasources.xml
+----
+
+.Set credentials to access the PostgreSQL database
+[source, opennms-datasources.xml]
+----
+<jdbc-data-source name="opennms"
+                    database-name="opennms"<1>
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/opennms"
+                    user-name="** YOUR-OPENNMS-USERNAME **"<2>
+                    password="** YOUR-OPENNMS-PASSWORD **" /><3>
+
+<jdbc-data-source name="opennms-admin"
+                    database-name="template1"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/template1"
+                    user-name="postgres"<4>
+                    password="** YOUR-POSTGRES-PASSWORD **" /><5>
+----
+
+<1> Set the database name {page-component-title} should use.
+<2> Set the user name to access the opennms database table.
+<3> Set the password to access the opennms database table.
+<4> Set the postgres user for administrative access to PostgreSQL.
+<5> Set the password for administrative access to PostgreSQL.
+
+.Detect Java environment and persist in /usr/share/opennms/etc/java.conf
+[source, console]
+----
+sudo /usr/share/opennms/bin/runjava -s
+----
+
+.Initialize the database and detect system libraries persisted in /opt/opennms/etc/libraries.properties
+[source, console]
+----
+sudo /usr/share/opennms/bin/install -dis
+----
+
+NOTE: The core service user must be able to send ICMP echo requests.
+      During setup, the permissions for `net.ipv4.ping_group_range` are set permanently on boot in `/etc/sysctl.d/99-opennms-non-root-icmp.conf` 
+
+TIP: If you are using Uncomplicated Firewall (UFW) as your host firewall, you can allow access to the web user interface with the command `sudo ufw allow 8980/tcp`.

@@ -1,18 +1,13 @@
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
-           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
-           xsi:schemaLocation="
-		http://www.osgi.org/xmlns/blueprint/v1.0.0
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 
 		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
-		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
-
-		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
-		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
-">
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
 
     <!-- Configuration properties -->
-    <cm:property-placeholder id="elasticSituationFeedbackRepositoryProperties" persistent-id="org.opennms.features.situation-feedback.persistence.elastic" update-strategy="reload">
+    <cm:property-placeholder id="elasticSituationFeedbackRepositoryProperties" persistent-id="org.opennms.features.situationfeedback.persistence.elastic" update-strategy="reload">
         <cm:default-properties>
             <!-- Elastic Connection Settings -->
             <cm:property name="elasticUrl" value="http://localhost:9200" />
@@ -21,6 +16,7 @@
             <cm:property name="elasticIndexStrategy" value="monthly" />
             <cm:property name="defaultMaxTotalConnectionPerRoute" value="-1" />
             <cm:property name="maxTotalConnection" value="-1" />
+            <cm:property name="ignoreCertificates" value="false"/>
             <cm:property name="nodeDiscovery" value="false" />
             <cm:property name="nodeDiscoveryFrequency" value="0" />
             <cm:property name="proxy" value=""/>
@@ -66,6 +62,7 @@
         <property name="connTimeout" value="${connTimeout}" />
         <property name="readTimeout" value="${readTimeout}" />
         <property name="retries" value="${retries}" />
+        <property name="ignoreCertificates" value="${ignoreCertificates}"/>
     </bean>
 
     <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>

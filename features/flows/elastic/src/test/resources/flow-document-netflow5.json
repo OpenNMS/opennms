@@ -1,5 +1,6 @@
 {
   "@timestamp": 0,
+  "@clock_correction": 0,
   "@version": 1,
   "host": "192.168.1.1",
   "hosts": [
@@ -38,6 +39,8 @@
   "netflow.tcp_flags": 0,
   "netflow.delta_switched": 0,
   "netflow.tos": 0,
+  "netflow.dscp": 0,
+  "netflow.ecn": 0,
   "netflow.version": "Netflow v5",
   "node_dst": {
     "foreign_source": "SomeRequisition",

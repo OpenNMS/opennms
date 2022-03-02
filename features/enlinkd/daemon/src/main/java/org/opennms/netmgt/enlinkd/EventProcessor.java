@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,10 +36,10 @@ import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 
 /**
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
@@ -68,7 +68,7 @@ public final class EventProcessor {
      * @param event
      */
     @EventHandler(uei=EventConstants.NODE_ADDED_EVENT_UEI)
-    public void handleNodeAdded(Event event) throws InsufficientInformationException {
+    public void handleNodeAdded(IEvent event) throws InsufficientInformationException {
 
         EventUtils.checkNodeId(event);
 
@@ -81,7 +81,7 @@ public final class EventProcessor {
      * @param event
      */
     @EventHandler(uei=EventConstants.NODE_DELETED_EVENT_UEI)
-    public void handleNodeDeleted(Event event) throws InsufficientInformationException {
+    public void handleNodeDeleted(IEvent event) throws InsufficientInformationException {
 
         EventUtils.checkNodeId(event);
 
@@ -94,7 +94,7 @@ public final class EventProcessor {
      * @param event
      */
     @EventHandler(uei=EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)
-    public void handleNodeGainedService(Event event) throws InsufficientInformationException {
+    public void handleNodeGainedService(IEvent event) throws InsufficientInformationException {
 
         EventUtils.checkNodeId(event);
         EventUtils.checkService(event);
@@ -109,7 +109,7 @@ public final class EventProcessor {
      * @param event
      */
     @EventHandler(uei=EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
-    public void handleNodeLostService(Event event) throws InsufficientInformationException {
+    public void handleNodeLostService(IEvent event) throws InsufficientInformationException {
 
         EventUtils.checkNodeId(event);
         EventUtils.checkService(event);
@@ -124,7 +124,7 @@ public final class EventProcessor {
      * @param event
      */
     @EventHandler(uei=EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)
-    public void handleRegainedService(Event event) throws InsufficientInformationException {
+    public void handleRegainedService(IEvent event) throws InsufficientInformationException {
 
         EventUtils.checkNodeId(event);
         EventUtils.checkService(event);
@@ -136,10 +136,10 @@ public final class EventProcessor {
     /**
      * <p>handleForceRescan</p>
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.FORCE_RESCAN_EVENT_UEI)
-    public void handleForceRescan(Event e) {
+    public void handleForceRescan(IEvent e) {
     	m_linkd.rescheduleNodeCollection(new Long(e.getNodeid()).intValue());
     }
     
@@ -147,13 +147,13 @@ public final class EventProcessor {
     /**
      * <p>handleRealodDaemonconfig</p>
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadDaemonConfig(Event e) {
-        List<Parm> parmCollection = e.getParmCollection();
+    public void handleReloadDaemonConfig(IEvent e) {
+        List<IParm> parmCollection = e.getParmCollection();
 
-        for (Parm parm : parmCollection) {
+        for (IParm parm : parmCollection) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Enlinkd".equalsIgnoreCase(parm.getValue().getContent())) {
                 m_linkd.reloadConfig();
                 break;
@@ -162,7 +162,7 @@ public final class EventProcessor {
     }
     
     @EventHandler(uei = EventConstants.RELOAD_TOPOLOGY_UEI)
-    public void handleReloadTopology(Event e) {
+    public void handleReloadTopology(IEvent e) {
         final String topologyNamespace = EventUtils.getParm(e, PARAM_TOPOLOGY_NAMESPACE);
         if (topologyNamespace == null || "all".equalsIgnoreCase(topologyNamespace) || OnmsTopology.TOPOLOGY_NAMESPACE_LINKD.equalsIgnoreCase(topologyNamespace)) {
             m_linkd.reloadTopology();

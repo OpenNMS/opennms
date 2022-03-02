@@ -36,6 +36,8 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;

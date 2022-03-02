@@ -138,12 +138,14 @@
 
 	function createBucket() {
 		document.createBucketForm.action="admin/storage/storageCreateBucket.htm?node=${model.db_id}";
+		document.createBucketForm.submit();
 		return true;
 	}
 
 	function deleteBucket() {
 		if(confirm('Do you really want to delete all image files?')==true) {
 			document.deleteBucketForm.action="admin/storage/storageDeleteBucket.htm?node=${model.db_id}";
+			document.deleteBucketForm.submit();
 			return true;
 		} else {
 			return false;
@@ -252,7 +254,6 @@
         <span>Descriptions</span>
       </div>
       <div class="card-body">
-        <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
         </p>
           <p><b>(Delete) Bucket Item</b>: Delete the specified image file from <em>bucket</em>.</p>
 

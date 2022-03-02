@@ -1,0 +1,79 @@
+
+= VmwareCimMonitor
+
+This monitor is part of the VMware integration provided by Provisiond.
+The monitor is specialized to test the health status provided from all host system (host) sensor data.
+
+This monitor only runs on VMware hosts and only if the power state "on".
+It does not apply to virtual machines.
+
+This monitor requires hosts be imported with Provisiond and the VMware import.
+{page-component-title} requires network access to VMware vCenter server and each of the monitored hosts.
+The credentials for accessing the status of a VMware entity are collected from the responsible VMware vCenter using the settings from `$OPENNMS_HOME/etc/vmware-config.xml`.
+The VMware integration populates the following via Provisiond:
+
+* VMware Management Server
+* VMware Managed Entity Type
+* foreignId (which contains an internal VMware vCenter Identifier)
+
+The global health status is evaluated by testing all available host sensors and evaluating the state of each sensor.
+A sensor state could be represented as the following:
+
+* Unknown(0)
+* OK(5)
+* Degraded/Warning(10)
+* Minor failure(15)
+* Major failure(20)
+* Critical failure(25)
+* Non-recoverable error(30)
+
+The service is up if all sensors have the status OK(5).
+If any sensor gives a status other than OK(5), the service is marked as down.
+The monitor error reason contains a list of all sensors that do not return status OK(5).
+
+When using link:https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/techpaper/Distributed-Power-Management-vSphere.pdf[Distributed Power Management] (automatic PDF download), the standBy state forces a service down.
+The health status is gathered with a direct connection to the host and in standby this connection is unavailable and the service is down.
+To deal with standby states, use the ignoreStandBy parameter to consider the service as up when using distributed power management.
+See the ignoreStandBy parameter below on how to change the state.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.VmwareCimMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the VmwareCimMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| retry
+| Number of retries before the service is marked as down.
+| 0
+
+| ignoreStandBy
+| Treat power state standBy as up.
+| false
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+Example configuration on how to configure the monitor in `poller-configuration.xml`.
+
+[source, xml]
+----
+<service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+</service>
+
+<monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
+----

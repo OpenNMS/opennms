@@ -40,6 +40,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opennms.core.criteria.Criteria;
@@ -51,12 +52,16 @@ import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
+import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.NetworkProtocol;
+import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.slf4j.Logger;
@@ -72,10 +77,17 @@ import org.slf4j.LoggerFactory;
 public class TrapIT {
     private static final Logger LOG = LoggerFactory.getLogger(TrapIT.class);
 
-    @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINION;
+    @Rule
+    public final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withMinion()
+            .withIpcStrategy(getIpcStrategy())
+            .build());
 
     private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+    public IpcStrategy getIpcStrategy() {
+        return IpcStrategy.JMS;
+    }
 
     @Test
     public void canReceiveTraps() {
@@ -120,40 +132,7 @@ public class TrapIT {
         }
         LOG.info("Trap has been sent");
     }
-
-    @Test
-    public void testSnmpV3Traps() {
-        Date startOfTest = new Date();
-        final InetSocketAddress snmpAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.SNMP);
-        AlarmDao alarmDao = stack.postgres().dao(AlarmDaoHibernate.class);
-
-        Criteria criteria = new CriteriaBuilder(OnmsAlarm.class)
-                .eq("uei", "uei.opennms.org/generic/traps/EnterpriseDefault").ge("lastEventTime", startOfTest)
-                .toCriteria();
-
-        try {
-            executor.scheduleWithFixedDelay(() -> {
-                try {
-                    sendV3Trap(snmpAddress);
-                } catch (Exception e) {
-                    LOG.error("exception while sending traps");
-                }
-            }, 0, 5, TimeUnit.SECONDS);
-
-            // Check if there is at least one alarm
-            await().atMost(1, MINUTES).pollInterval(5, SECONDS)
-                    .until(DaoUtils.countMatchingCallable(alarmDao, criteria), greaterThanOrEqualTo(1));
-            // Check if multiple traps are getting received not just the first one
-            await().atMost(2, MINUTES).pollInterval(5, SECONDS)
-                    .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
-                                    .eq("uei", "uei.opennms.org/generic/traps/EnterpriseDefault")
-                                    .ge("counter", 5).toCriteria()),
-                            notNullValue());
-        } finally {
-            executor.shutdownNow();
-        }
-    }
-
+    
     @Test
     public void testSnmpV3TrapsOnMinion() {
         Date startOfTest = new Date();
@@ -178,7 +157,7 @@ public class TrapIT {
             await().atMost(2, MINUTES).pollInterval(5, SECONDS)
                     .until(DaoUtils.countMatchingCallable(alarmDao, criteria), greaterThanOrEqualTo(1));
             // Check if multiple traps are getting received not just the first one
-            await().atMost(5, MINUTES).pollInterval(5, SECONDS)
+            await().atMost(2, MINUTES).pollInterval(5, SECONDS)
                     .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
                                     .eq("uei", "uei.opennms.org/generic/traps/EnterpriseDefault")
                                     .ge("counter", 5).toCriteria()),
@@ -190,11 +169,12 @@ public class TrapIT {
 
     private void sendV3Trap(InetSocketAddress snmpAddress) throws Exception {
 
-        SnmpTrapBuilder pdu = SnmpUtils.getV3TrapBuilder();
+        SnmpV3TrapBuilder pdu = SnmpUtils.getV3TrapBuilder();
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"),
                 SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.6.3.1.1.5.4.0")));
-        pdu.send(InetAddressUtils.str(snmpAddress.getAddress()), snmpAddress.getPort(), "traptest");
+        pdu.send(InetAddressUtils.str(snmpAddress.getAddress()), snmpAddress.getPort(), SnmpConfiguration.AUTH_PRIV, "traptest",
+                "0p3nNMSv3", "SHA-256", "0p3nNMSv3", "DES");
         LOG.info("V3 trap sent successfully");
 
     }

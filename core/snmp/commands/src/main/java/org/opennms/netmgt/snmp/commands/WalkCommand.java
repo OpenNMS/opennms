@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,57 +29,42 @@
 package org.opennms.netmgt.snmp.commands;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.apache.karaf.shell.api.action.Action;
-import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.Option;
-import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
-import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "opennms-snmp", name = "walk", description = "Walk the agent on the specified host and print the results.")
+@Command(scope = "opennms", name = "snmp-walk", description = "Walk one or more MIB objects from the agent on the specified host and print the results.")
 @Service
-public class WalkCommand implements Action {
+public class WalkCommand extends SnmpRequestCommand implements Action {
 
     private static final Logger LOG = LoggerFactory.getLogger(WalkCommand.class);
 
-    @Reference
-    public SnmpAgentConfigFactory snmpAgentConfigFactory;
-
-    @Reference
-    public LocationAwareSnmpClient locationAwareSnmpClient;
-
-    @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
-    String m_location;
-
-    @Option(name = "-s", aliases = "--system-id", description = "System ID")
-    String m_systemId = null;
-
-    @Argument(index = 0, name = "host", description = "Hostname or IP Address of the system to walk", required = true, multiValued = false)
-    String m_host;
-
-    @Argument(index = 1, name = "oids", description = "List of OIDs to retrieve from the agent", required = true, multiValued = true)
-    List<String> m_oids;
-
     @Override
-    public Object execute() throws Exception {
+    public Object execute() {
         LOG.debug("snmp:walk {} {} {}", m_location != null ? "-l " + m_location : "", m_host, m_oids);
         final List<SnmpObjId> snmpObjIds = m_oids.stream()
                     .map(SnmpObjId::get)
                     .collect(Collectors.toList());
-        final SnmpAgentConfig agent = snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(m_host), m_location);
+        SnmpAgentConfig agent;
+        try {
+            agent = snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(m_host), m_location);
+        } catch (UnknownHostException uhe) {
+            System.out.println(String.format("Unknown host '%s' at location '%s': %s", m_host, m_location, uhe.getMessage()));
+            return null;
+        }
         final CompletableFuture<List<SnmpResult>> future = locationAwareSnmpClient.walk(agent, snmpObjIds)
             .withDescription("snmp:walk")
             .withLocation(m_location)
@@ -90,13 +75,16 @@ public class WalkCommand implements Action {
             try {
                 future.get(1, TimeUnit.SECONDS).stream()
                     .forEach(res -> {
-                        System.out.printf("[%s].[%s] = %s%n", res.getBase(), res.getInstance(), res.getValue());
+                        System.out.println(String.format("[%s].[%s] = %s", res.getBase(), res.getInstance(), res.getValue()));
                     });
                 break;
             } catch (TimeoutException e) {
-                // pass
+                //pass
+                System.out.print(".");
+            } catch (InterruptedException | ExecutionException e) {
+                System.out.println(String.format("\n %s: %s", m_host, e.getMessage()));
+                break;
             }
-            System.out.print(".");
         }
         return null;
     }

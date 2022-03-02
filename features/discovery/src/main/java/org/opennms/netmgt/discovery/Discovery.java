@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,9 +40,9 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,10 +162,10 @@ public class Discovery extends AbstractServiceDaemon {
     /**
      * <p>handleDiscoveryConfigurationChanged</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)
-    public void handleDiscoveryConfigurationChanged(Event event) {
+    public void handleDiscoveryConfigurationChanged(IEvent event) {
         LOG.info("handleDiscoveryConfigurationChanged: handling message that a change to configuration happened...");
         reloadAndReStart();
     }
@@ -190,10 +190,10 @@ public class Discovery extends AbstractServiceDaemon {
     /**
      * <p>reloadDaemonConfig</p>
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void reloadDaemonConfig(Event e) {
+    public void reloadDaemonConfig(IEvent e) {
         LOG.info("reloadDaemonConfig: processing reload daemon event...");
         if (isReloadConfigEventTarget(e)) {
             reloadAndReStart();
@@ -201,12 +201,12 @@ public class Discovery extends AbstractServiceDaemon {
         LOG.info("reloadDaemonConfig: reload daemon event processed.");
     }
     
-    private boolean isReloadConfigEventTarget(Event event) {
+    private boolean isReloadConfigEventTarget(IEvent event) {
         boolean isTarget = false;
         
-        final List<Parm> parmCollection = event.getParmCollection();
+        final List<IParm> parmCollection = event.getParmCollection();
 
-        for (final Parm parm : parmCollection) {
+        for (final IParm parm : parmCollection) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && DAEMON_NAME.equalsIgnoreCase(parm.getValue().getContent())) {
                 isTarget = true;
                 break;
@@ -220,20 +220,20 @@ public class Discovery extends AbstractServiceDaemon {
     /**
      * <p>handleDiscoveryResume</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.DISC_RESUME_EVENT_UEI)
-    public void handleDiscoveryResume(Event event) {
+    public void handleDiscoveryResume(IEvent event) {
         resume();
     }
 
     /**
      * <p>handleDiscoveryPause</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.DISC_PAUSE_EVENT_UEI)
-    public void handleDiscoveryPause(Event event) {
+    public void handleDiscoveryPause(IEvent event) {
         pause();
     }
 

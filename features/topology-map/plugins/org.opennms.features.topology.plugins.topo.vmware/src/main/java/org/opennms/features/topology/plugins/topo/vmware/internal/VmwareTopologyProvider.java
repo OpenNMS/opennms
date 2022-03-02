@@ -35,12 +35,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Defaults;
@@ -48,10 +49,12 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -61,6 +64,13 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
     private static final String SPLIT_REGEXP = " *, *";
     private final NodeDao m_nodeDao;
     private final IpInterfaceDao m_ipInterfaceDao;
+
+    public final static String METADATA_CONTEXT = "VMware";
+    public final static String METADATA_MANAGEMENT_SERVER = "managementServer";
+    public final static String METADATA_MANAGED_ENTITY_TYPE = "managedEntityType";
+    public final static String METADATA_MANAGED_OBJECT_ID = "managedObjectId";
+    public final static String METADATA_TOPOLOGY_INFO = "topologyInfo";
+    public final static String METADATA_STATE = "state";
 
     private interface Icons {
         String DATACENTER = "vmware.DATACENTER_ICON";
@@ -129,16 +139,16 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
 
     @Override
     public void refresh() {
-        resetContainer();
+        graph.resetContainer();
 
         getEntities("HostSystem").stream().forEach(this::addHostSystem);
         getEntities("VirtualMachine").stream().forEach(this::addVirtualMachine);
     }
 
-    private List<OnmsNode> getEntities(String entityType) {
-        List<OnmsNode> entities = m_nodeDao.findAllByVarCharAssetColumn("vmwareManagedEntityType", entityType);
+    private List<OnmsNode> getEntities(final String entityType) {
+        List<OnmsNode> entities = m_nodeDao.findNodeWithMetaData(METADATA_CONTEXT, METADATA_MANAGED_ENTITY_TYPE, entityType);
         if (entities.isEmpty()) {
-            LOG.info("No entities of type '{}' with defined VMware assets fields found!", entityType);
+            LOG.info("No entities of type '{}' with defined VMware metadata fields found!", entityType);
         }
         return entities;
     }
@@ -147,10 +157,10 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
     public Defaults getDefaults() {
         return new Defaults()
                 .withCriteria(() -> {
-                    if (getVertices().isEmpty()) {
+                    if (graph.getVertices().isEmpty()) {
                         return Lists.newArrayList();
                     }
-                    return getVertices().stream().filter(e -> Icons.DATACENTER.equals(e.getIconKey())).map(DefaultVertexHopCriteria::new).collect(Collectors.toList());
+                    return graph.getVertices().stream().filter(e -> Icons.DATACENTER.equals(e.getIconKey())).map(DefaultVertexHopCriteria::new).collect(Collectors.toList());
                 });
     }
 
@@ -165,8 +175,8 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
     }
 
     private AbstractVertex createEntityVertex(String vertexId, String vertexName, String iconKey) {
-        if (containsVertexId(vertexId)) {
-            return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
+        if (graph.containsVertexId(vertexId)) {
+            return (AbstractVertex) graph.getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
         }
         AbstractVertex vertex = new AbstractVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId, vertexName);
         vertex.setIconKey(iconKey);
@@ -219,17 +229,20 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
     }
 
     private Map<String, ParsedEntity> parseNodeAssets(OnmsNode onmsNode) {
-        String vmwareTopologyInfo = onmsNode.getAssetRecord().getVmwareTopologyInfo().trim();
+        final String vmwareTopologyInfo = getTopologyInfo(onmsNode);
 
         return Arrays.stream(vmwareTopologyInfo.split(SPLIT_REGEXP))
+                .map(s -> s.trim())
+                .filter(s -> !s.isEmpty())
                 .map(ParsedEntity::new)
                 .collect(Collectors.toMap(ParsedEntity::getEntityId, Function.identity()));
     }
 
     private void addHostSystem(OnmsNode hostSystem) {
-        String vmwareManagementServer = hostSystem.getAssetRecord().getVmwareManagementServer().trim();
-        String vmwareManagedObjectId = hostSystem.getAssetRecord().getVmwareManagedObjectId().trim();
-        String vmwareState = hostSystem.getAssetRecord().getVmwareState().trim();
+        final String vmwareManagementServer = getManagementServer(hostSystem);
+        final String vmwareManagedObjectId = getManagedObjectId(hostSystem);
+        final String vmwareState = getState(hostSystem);
+
         String primaryInterface = "unknown";
         OnmsIpInterface ipInterface = m_ipInterfaceDao.findPrimaryInterfaceByNodeId(hostSystem.getId());
 
@@ -245,29 +258,30 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
                 vmwareState
         );
 
-        addVertices(hostSystemVertex);
+        graph.addVertices(hostSystemVertex);
 
         Map<String, ParsedEntity> parsedEntities = parseNodeAssets(hostSystem);
 
         String datacenterName = parsedEntities.values().stream().filter(e -> "datacenter".equals(e.getEntityType())).findFirst().map(e -> parsedEntities.get(e.getEntityId()).getEntityName() + " (" + vmwareManagementServer + ")").orElse("Datacenter (" + vmwareManagementServer + ")");
 
         AbstractVertex datacenterVertex = createDatacenterVertex(vmwareManagementServer, datacenterName);
-        addVertices(datacenterVertex);
+        graph.addVertices(datacenterVertex);
 
         if (!hostSystemVertex.equals(datacenterVertex)) {
-            connectVertices(hostSystemVertex, datacenterVertex);
+            graph.connectVertices(
+                    datacenterName + "/" + vmwareManagementServer + "/" + vmwareManagedObjectId,
+                    hostSystemVertex,
+                    datacenterVertex);
         }
 
         parsedEntities.values().stream().filter(e -> "network".equals(e.getEntityType())).forEach(
                 e -> {
                     AbstractVertex networkVertex = createNetworkVertex(vmwareManagementServer + "/" + e.getEntityId(), parsedEntities.get(e.getEntityId()).getEntityName());
-                    addVertices(networkVertex);
-
-                    connectVertices(
+                    graph.addVertices(networkVertex);
+                    graph.connectVertices(
                             vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + e.getEntityId(),
                             hostSystemVertex,
-                            networkVertex,
-                            getNamespace()
+                            networkVertex
                     );
                 }
         );
@@ -275,22 +289,21 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
         parsedEntities.values().stream().filter(e -> "datastore".equals(e.getEntityType())).forEach(
                 e -> {
                     AbstractVertex datastoreVertex = createDatastoreVertex(vmwareManagementServer + "/" + e.getEntityId(), parsedEntities.get(e.getEntityId()).getEntityName());
-                    addVertices(datastoreVertex);
-
-                    connectVertices(
+                    graph.addVertices(datastoreVertex);
+                    graph.connectVertices(
                             vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + e.getEntityId(),
                             hostSystemVertex,
-                            datastoreVertex,
-                            getNamespace()
-                    );
+                            datastoreVertex)
+                    ;
                 }
         );
     }
 
     private void addVirtualMachine(OnmsNode virtualMachine) {
-        String vmwareManagementServer = virtualMachine.getAssetRecord().getVmwareManagementServer().trim();
-        String vmwareManagedObjectId = virtualMachine.getAssetRecord().getVmwareManagedObjectId().trim();
-        String vmwareState = virtualMachine.getAssetRecord().getVmwareState().trim();
+        final String vmwareManagementServer = getManagementServer(virtualMachine);
+        final String vmwareManagedObjectId = getManagedObjectId(virtualMachine);
+        final String vmwareState = getState(virtualMachine);
+
         String primaryInterface = "unknown";
         OnmsIpInterface ipInterface = m_ipInterfaceDao.findPrimaryInterfaceByNodeId(virtualMachine.getId());
 
@@ -307,17 +320,41 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
         }
 
         AbstractVertex virtualMachineVertex = createVirtualMachineVertex(vmwareManagementServer + "/" + vmwareManagedObjectId, virtualMachine.getLabel(), primaryInterface, virtualMachine.getId(), vmwareState);
-        addVertices(virtualMachineVertex);
+        graph.addVertices(virtualMachineVertex);
 
-        if (!containsVertexId(vmwareManagementServer + "/" + vmwareHostSystemId)) {
+        if (!graph.containsVertexId(vmwareManagementServer + "/" + vmwareHostSystemId)) {
             LOG.warn("Cannot find associated vertex for host system {}/{}", vmwareManagementServer, vmwareHostSystemId);
         }
 
-        connectVertices(
+        graph.connectVertices(
                 vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + vmwareManagementServer + "/" + vmwareHostSystemId,
                 virtualMachineVertex,
-                getVertex(getNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId),
-                getNamespace()
+                graph.getVertex(getNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId)
         );
+    }
+
+    private static String getMetaData(final OnmsNode node, final String key) {
+        final Optional<OnmsMetaData> metaData = node.findMetaDataForContextAndKey(METADATA_CONTEXT, key);
+        return metaData.map(onmsMetaData -> onmsMetaData.getValue().trim()).orElse("");
+    }
+
+    public static String getManagementServer(final OnmsNode node) {
+        return getMetaData(node, METADATA_MANAGEMENT_SERVER);
+    }
+
+    public static String getManagedObjectId(final OnmsNode node) {
+        return getMetaData(node, METADATA_MANAGED_OBJECT_ID);
+    }
+
+    public static String getManagedEntityType(final OnmsNode node) {
+        return getMetaData(node, METADATA_MANAGED_ENTITY_TYPE);
+    }
+
+    public static String getState(final OnmsNode node) {
+        return getMetaData(node, METADATA_STATE);
+    }
+
+    public static String getTopologyInfo(final OnmsNode node) {
+        return getMetaData(node, METADATA_TOPOLOGY_INFO);
     }
 }

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.config-dao</artifactId>
         <groupId>org.opennms</groupId>
-        <version>25.0.0-SNAPSHOT</version>
+        <version>29.0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.opennms.config-dao.common-impl</artifactId>
@@ -64,7 +64,7 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
+            <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

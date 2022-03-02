@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 __onms_is_array() {
 	__onms_is_array_name="$1"; shift

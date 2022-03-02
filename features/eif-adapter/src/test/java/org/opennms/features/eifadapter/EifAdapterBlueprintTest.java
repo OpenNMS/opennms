@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,9 +52,8 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.snmp.InetAddrUtils;
-import org.opennms.netmgt.xml.event.Event;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EifAdapterBlueprintTest extends CamelBlueprintTest {
@@ -82,7 +81,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
     @Test
     public void testCanParseEifPacketsAndGenerateEvents() throws Exception {
         // Register an event listener
-        final List<Event> receivedEvents = Lists.newArrayList();
+        final List<IEvent> receivedEvents = Lists.newArrayList();
         eventIpcManager.addEventListener(new EventListener() {
             @Override
             public String getName() {
@@ -90,7 +89,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
             }
 
             @Override
-            public void onEvent(Event e) {
+            public void onEvent(IEvent e) {
                 receivedEvents.add(e);
             }
         });
@@ -102,7 +101,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
         clientSocket.close();
         
         await().atMost(15, SECONDS).until(() -> receivedEvents.size() == 6);
-        for (Event event : receivedEvents) {
+        for (IEvent event : receivedEvents) {
             assertTrue("UEI must match regex.", event.getUei().matches("^uei.opennms.org/vendor/IBM/EIF/EIF_TEST_EVENT_TYPE_\\w$"));
             assertTrue("situation_name must match regex.",event.getParm("situation_name").getValue().getContent().
                     matches("^Situation \\d{2}"));
@@ -112,7 +111,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
     @Test
     public void testCanParseEifWithSemicolonsInSlotsAndGenerateEvents() throws Exception {
         // Register an event listener
-        final List<Event> receivedEvents = Lists.newArrayList();
+        final List<IEvent> receivedEvents = Lists.newArrayList();
         eventIpcManager.addEventListener(new EventListener() {
             @Override
             public String getName() {
@@ -120,7 +119,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
             }
 
             @Override
-            public void onEvent(Event e) {
+            public void onEvent(IEvent e) {
                 receivedEvents.add(e);
             }
         });
@@ -132,7 +131,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
         clientSocket.close();
 
         await().atMost(15, SECONDS).until(() -> receivedEvents.size() == 6);
-        for (Event event : receivedEvents) {
+        for (IEvent event : receivedEvents) {
             assertTrue("UEI must match regex.", event.getUei().matches("^uei.opennms.org/vendor/IBM/EIF/EIF_TEST_EVENT_TYPE_\\w$"));
             assertTrue("situation_name must match regex.",event.getParm("situation_name").getValue().getContent().
                     matches("^Situation \\d{2}"));
@@ -142,7 +141,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
    @Test
     public void testCanParseEifWith36ByteOffset() throws Exception {
         // Register an event listener
-        final List<Event> receivedEvents = Lists.newArrayList();
+        final List<IEvent> receivedEvents = Lists.newArrayList();
         eventIpcManager.addEventListener(new EventListener() {
             @Override
             public String getName() {
@@ -150,7 +149,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
             }
 
             @Override
-            public void onEvent(Event e) {
+            public void onEvent(IEvent e) {
                 receivedEvents.add(e);
             }
         });
@@ -166,7 +165,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
         clientSocket.close();
 
         await().atMost(15, SECONDS).until(() -> receivedEvents.size() == 1);
-        for (Event event : receivedEvents) {
+        for (IEvent event : receivedEvents) {
             assertTrue("UEI must match regex.", event.getUei().matches("^uei.opennms.org/vendor/IBM/EIF/EIF_TEST_EVENT_TYPE_G$"));
         }
     }

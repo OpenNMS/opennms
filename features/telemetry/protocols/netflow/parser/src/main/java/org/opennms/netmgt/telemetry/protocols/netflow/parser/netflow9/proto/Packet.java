@@ -192,6 +192,16 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
     }
 
     @Override
+    public long getObservationDomainId() {
+        return this.header.sourceId;
+    }
+
+    @Override
+    public long getSequenceNumber() {
+        return this.header.sequenceNumber;
+    }
+
+    @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("header", header)

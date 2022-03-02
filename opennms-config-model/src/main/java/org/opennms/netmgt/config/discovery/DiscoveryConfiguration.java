@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -138,6 +138,12 @@ public class DiscoveryConfiguration implements Serializable {
     @XmlElement(name = "include-url")
     private List<IncludeUrl> m_includeUrls = new ArrayList<>();
 
+    /**
+     * a file URL holding specific addresses to be excluded
+     */
+    @XmlElement(name = "exclude-url")
+    private List<ExcludeUrl> m_excludeUrls = new ArrayList<>();
+
     @XmlElement(name = "definition")
     private List<Definition> m_definitions = new ArrayList<>();
 
@@ -216,7 +222,7 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setSpecifics(final List<Specific> specifics) {
-        if (specifics == m_specifics) return;
+        if (specifics != null && specifics.equals(m_specifics)) return;
         m_specifics.clear();
         if (specifics != null) m_specifics.addAll(specifics);
     }
@@ -240,7 +246,7 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setIncludeRanges(final List<IncludeRange> includeRanges) {
-        if (includeRanges == m_includeRanges) return;
+        if (includeRanges != null && includeRanges.equals(m_includeRanges)) return;
         m_includeRanges.clear();
         if (includeRanges != null) m_includeRanges.addAll(includeRanges);
     }
@@ -264,7 +270,7 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setExcludeRanges(final List<ExcludeRange> excludeRanges) {
-        if (excludeRanges == m_excludeRanges) return;
+        if (excludeRanges != null && excludeRanges.equals(m_excludeRanges)) return;
         m_excludeRanges.clear();
         if (excludeRanges != null) m_excludeRanges.addAll(excludeRanges);
     }
@@ -288,7 +294,7 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setIncludeUrls(final List<IncludeUrl> includeUrls) {
-        if (includeUrls == m_includeUrls) return;
+        if (includeUrls != null && includeUrls.equals(m_includeUrls)) return;
         m_includeUrls.clear();
         if (includeUrls != null) m_includeUrls.addAll(includeUrls);
     }
@@ -305,6 +311,30 @@ public class DiscoveryConfiguration implements Serializable {
      */
     public void clearIncludeUrls() {
         m_includeUrls.clear();
+    }
+
+    public List<ExcludeUrl> getExcludeUrls() {
+        return m_excludeUrls;
+    }
+
+    public void setExcludeUrls(final List<ExcludeUrl> excludeUrls) {
+        if (excludeUrls != null && excludeUrls.equals(m_excludeUrls)) return;
+        m_excludeUrls.clear();
+        if (excludeUrls != null) m_excludeUrls.addAll(excludeUrls);
+    }
+
+    public void addExcludeUrl(final ExcludeUrl excludeUrl) {
+        m_excludeUrls.add(excludeUrl);
+    }
+
+    public boolean removeExcludeUrl(final ExcludeUrl excludeUrl) {
+        return m_excludeUrls.remove(excludeUrl);
+    }
+
+    /**
+     */
+    public void clearExcludeUrls() {
+        m_excludeUrls.clear();
     }
 
     public List<Definition> getDefinitions() {
@@ -333,7 +363,8 @@ public class DiscoveryConfiguration implements Serializable {
                             m_specifics, 
                             m_includeRanges, 
                             m_excludeRanges, 
-                            m_includeUrls);
+                            m_includeUrls,
+                            m_excludeUrls);
     }
 
     @Override
@@ -355,7 +386,8 @@ public class DiscoveryConfiguration implements Serializable {
                     && Objects.equals(this.m_specifics, that.m_specifics)
                     && Objects.equals(this.m_includeRanges, that.m_includeRanges)
                     && Objects.equals(this.m_excludeRanges, that.m_excludeRanges)
-                    && Objects.equals(this.m_includeUrls, that.m_includeUrls);
+                    && Objects.equals(this.m_includeUrls, that.m_includeUrls)
+                    && Objects.equals(this.m_excludeUrls, that.m_excludeUrls);
         }
         return false;
     }
@@ -371,7 +403,8 @@ public class DiscoveryConfiguration implements Serializable {
                 + m_chunkSize + ", specifics=" + m_specifics
                 + ", includeRanges=" + m_includeRanges
                 + ", excludeRanges=" + m_excludeRanges + ", includeUrls="
-                + m_includeUrls + "]";
+                + m_includeUrls + ", excludeUrls="
+                + m_excludeUrls + "]";
     }
 
 }

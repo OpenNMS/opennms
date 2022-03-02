@@ -1,0 +1,10 @@
+[[basic-deployment]]
+= Basic {page-component-title} deployment
+
+A basic {page-component-title} deployment installs and configures the core software, which includes PostgreSQL, REST endpoints, monitoring functions, provisioning, and web interface:
+
+image::deployment/core/opennms-arch.png[]
+
+OpenNMS contains a set of daemons for specific network management use cases.
+
+For more details about {page-component-title} architecture, see xref:ROOT:index.adoc#welcome[Welcome to the {page-component-title} Documentation].

@@ -40,8 +40,6 @@ import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.InetAddrUtils;
@@ -72,7 +70,6 @@ import com.google.common.base.Suppliers;
 
 // This monitor uses SNMP and therefore relies on the SNMP peer factory,
 // so it is not distributable
-@Distributable(DistributionContext.DAEMON)
 public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(CiscoPingMibMonitor.class);
 	

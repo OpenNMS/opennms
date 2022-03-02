@@ -2,7 +2,7 @@
 
 const angular = require('vendor/angular-js');
 const moment = require('moment-timezone');
-require('@rangerrick/moment-javaformat/dist/moment-javaformat');
+require('@rangerrick/moment-javaformat');
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 function OnmsDateFormatter() {

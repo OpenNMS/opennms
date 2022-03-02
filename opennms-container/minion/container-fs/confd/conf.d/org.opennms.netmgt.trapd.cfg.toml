@@ -1,0 +1,7 @@
+[template]
+src = "org.opennms.netmgt.trapd.cfg.tmpl"
+dest = "/opt/minion/etc/org.opennms.netmgt.trapd.cfg"
+keys = [
+    "/netmgt/traps"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/org.opennms.netmgt.trapd.cfg"

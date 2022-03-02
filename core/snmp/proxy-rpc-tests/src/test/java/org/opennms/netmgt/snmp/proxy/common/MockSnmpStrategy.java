@@ -118,13 +118,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
     }
 
     @Override
-    public void unregisterForTraps(TrapNotificationListener listener, InetAddress address, int snmpTrapPort)
-            throws IOException {
-
-    }
-
-    @Override
-    public void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException {
+    public void unregisterForTraps(TrapNotificationListener listener) throws IOException {
 
     }
 

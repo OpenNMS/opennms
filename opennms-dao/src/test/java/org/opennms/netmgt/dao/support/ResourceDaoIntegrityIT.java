@@ -66,7 +66,6 @@ import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -132,9 +131,6 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
     private NodeDao m_nodeDao;
 
     @Autowired
-    private LocationMonitorDao m_locationMonitorDao;
- 
-    @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 
     @Rule
@@ -168,7 +164,6 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
 
         m_resourceDao = new DefaultResourceDao();
         m_resourceDao.setNodeDao(m_nodeDao);
-        m_resourceDao.setLocationMonitorDao(m_locationMonitorDao);
         m_resourceDao.setCollectdConfig(m_collectdConfig);
         m_resourceDao.setResourceStorageDao(m_resourceStorageDao);
         m_resourceDao.setResourceTypesDao(m_resourceTypesDao);
@@ -198,10 +193,6 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
 
         // We must have at least one resource for every known type
         for (OnmsResourceType type : m_resourceDao.getResourceTypes()) {
-            // Ignore this type for now #needstoomanydbojects
-            if (DistributedStatusResourceType.TYPE_NAME.equals(type.getName())) {
-                continue;
-            }
             // Ignore the interfaceSnmpByIfIndex since it functions as a pure alias
             // and should never be returned when enumerating resources
             if (InterfaceSnmpByIfIndexResourceType.TYPE_NAME.equals(type.getName())) {
@@ -265,7 +256,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         String[] resourceTreeFiles = fileAsString.split("\\r?\\n");
 
         // This should match the number of lines in the file
-        assertEquals(31829, resourceTreeFiles.length);
+        assertEquals(31850, resourceTreeFiles.length);
 
         for (String resourceTreeFile : resourceTreeFiles) {
             // Create the file and its parent directories in the temporary folder

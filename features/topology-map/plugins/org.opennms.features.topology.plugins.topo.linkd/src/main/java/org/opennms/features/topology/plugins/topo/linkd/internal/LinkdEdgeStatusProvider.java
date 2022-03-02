@@ -36,10 +36,10 @@ import java.util.Map;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.NeRestriction;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -96,11 +96,10 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
     }
 
     @Override
-    public Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider,
-            Collection<EdgeRef> edges, Criteria[] criteria) {
+    public Map<EdgeRef, Status> getStatusForEdges(BackendGraph graph, Collection<EdgeRef> edges, Criteria[] criteria) {
         Map<EdgeRef, Status> retVal = new LinkedHashMap<EdgeRef, Status>();
 EDGES:        for (EdgeRef edgeRef : edges) {
-                LinkdEdge edge = (LinkdEdge) edgeProvider.getEdge(edgeRef);
+                LinkdEdge edge = (LinkdEdge) graph.getEdge(edgeRef);
                 for (OnmsAlarm alarm: getLinkdEdgeDownAlarms()) {
                     if (alarm.getNode() == null)
                         continue;

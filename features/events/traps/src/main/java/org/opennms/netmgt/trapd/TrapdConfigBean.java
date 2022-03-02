@@ -111,12 +111,7 @@ public class TrapdConfigBean implements TrapdConfig, Serializable {
 	}
 
 	public void setSnmpV3Users(List<SnmpV3User> snmpV3Users) {
-		Objects.requireNonNull(snmpV3Users);
-		final Map<String, SnmpV3User> collect = snmpV3Users.stream().collect(Collectors.toMap(SnmpV3User::getSecurityName, Function.identity(), (a, b) -> {
-			LoggerFactory.getLogger(getClass()).warn("Multiple SNMPv3 user entries found for security name \"{}\", using entry {}", a.getSecurityName(), a);
-			return a;
-		}));
-		this.snmpV3Users = new ArrayList<>(collect.values());
+		this.snmpV3Users = new ArrayList<>(Objects.requireNonNull(snmpV3Users));
 	}
 
 	@Override

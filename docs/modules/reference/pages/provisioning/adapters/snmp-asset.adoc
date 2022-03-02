@@ -1,0 +1,67 @@
+[[adapter-snmp-asset]]
+= SNMP Asset
+
+The SNMP asset provisioning adapter collects SNMP values to populate asset records for the node.
+This can be very useful for automatically populating asset fields in a large number of managed systems.
+Depending on the SNMP MIBs that your devices support, you could either fill in some of the existing asset fields (for example, manufacturer, vendor, modelnumber, and/or serialnumber) or construct a custom-formatted message for the comment field.
+
+The SNMP asset provisioning adapter is invoked every time provisiond adds or updates a node.
+With the default provisiond configuration, the update takes place once every 24 hours.
+
+You can reload the provisiond SnmpAssetProvisioningAdapter with this command (or just restart OpenNMS):
+
+[source, console]
+----
+${OPENNMS_HOME}/bin# ./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Provisiond.SnmpAssetProvisioningAdapter'
+----
+
+NOTE: By default, this adapter runs 5 minutes after a provisiond `nodeScanCompleted` event is sent to indicate that provisiond completed the import.
+
+== Installation
+
+To use this feature you have to install the SNMP asset provisioning plugin from the repository.
+
+* For RPM-based distributions:
+** `yum install opennms-plugin-provisioning-snmp-asset`
+* For Debian-based distributions:
+** `apt-get install opennms-plugin-provisioning-snmp-asset`
+
+== Configuration
+
+Mapping SNMP OID fields to node asset fields is defined in the `$\{OPENNMS_HOME}/etc/snmp-asset-adapter-configuration.xml` file.
+
+.Example SNMP asset config
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<snmp-asset-adapter-configuration>
+    <package name="ciscoWireless">
+    <!-- A Cisco wireless sysoid, for example purposes only :) -->
+    <sysoid>.1.3.6.1.4.1.9.1.379</sysoid>
+    <assetField name="region" formatString="${gsmCountry}">
+        <mibObjs>
+            <!-- A Cisco 3G WAN adapter OID -->
+            <mibObj oid=".1.3.6.1.4.1.9.9.661.1.3.2.1.8" alias="gsmCountry"/>
+            </mibObjs>
+    </assetField>
+    </package>
+    <package name="Cisco">
+	<sysoidMask>.1.3.6.1.4.1.9.</sysoidMask>
+        <assetField name="ram" formatString="${processorRam}">
+            <mibObjs>
+                <mibObj oid=".1.3.6.1.4.1.9.3.6.6.0" alias="processorRam"/>
+            </mibObjs>
+        </assetField>
+    </package>
+</snmp-asset-adapter-configuration>
+----
+
+Variables in the formatString using the `$\{token}` syntax will be replaced by values that are defined by the list of mibObj parameters.
+
+In this configuration example, every node whose `sysoid` equals `.1.3.6.1.4.1.9.1.379` will be matched by the "ciscoWireless" package.
+The adapter will get the OID value `.1.3.6.1.4.1.9.9.661.1.3.2.1.8` and place the value in the "region" field in the asset database.
+
+You may want to snmpwalk your target nodes and see if there are any interesting identifiers or string values that you would like to see in an asset field first.
+Once you identify the `mibObjs` to use, add them under a package that matches the device `sysoid`, {page-component-title} will be set to start collecting data.
+
+NOTE: You may specify any number of `<sysoid>` or `<sysoidMask>` tags in the config file.

@@ -1,0 +1,17 @@
+
+= Summary
+
+This dashlet shows a trend of incoming alarms in a given time frame in the xref:admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
+
+.Summary dashlet configuration options
+[options="header,autowidth", cols="1,2"]
+|===
+| Field
+| Description
+
+| Boost support
+| Change priority of the dashlet on ops board depending on alarm level severity. (See <<admin/webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted Severity>>.)
+
+| timeslot
+| Time slot in seconds to evaluate the trend for alarms by severity and UEI.
+|===

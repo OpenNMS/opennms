@@ -30,18 +30,24 @@ package org.opennms.netmgt.telemetry.protocols.registry.impl;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.netmgt.telemetry.protocols.registry.api.TelemetryServiceRegistry;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
+import org.opennms.netmgt.telemetry.api.receiver.Connector;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.ConnectorDefinition;
 import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
+import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
+import org.opennms.netmgt.telemetry.protocols.registry.api.TelemetryServiceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -58,6 +64,10 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     private TelemetryServiceRegistry<ListenerDefinition, Listener> listenerRegistryDelegate;
 
     @Autowired
+    @Qualifier("connectorRegistry")
+    private TelemetryServiceRegistry<ConnectorDefinition, Connector> connectorRegistryDelegate;
+
+    @Autowired
     @Qualifier("parserRegistry")
     private TelemetryServiceRegistry<ParserDefinition, Parser> parserRegistryDelegate;
 
@@ -67,17 +77,22 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
 
     @Override
     public Adapter getAdapter(AdapterDefinition adapterDefinition) {
-        return adapterRegistryDelegate.getService(adapterDefinition);
+        return adapterRegistryDelegate.getService(MutableAdapterDefinition.wrap(adapterDefinition));
     }
 
     @Override
     public Listener getListener(ListenerDefinition listenerDefinition) {
-        return listenerRegistryDelegate.getService(listenerDefinition);
+        return listenerRegistryDelegate.getService(MutableListenerDefinition.wrap(listenerDefinition));
+    }
+
+    @Override
+    public Connector getConnector(ConnectorDefinition connectorDefinition) {
+        return connectorRegistryDelegate.getService(MutableConnectorDefinition.wrap(connectorDefinition));
     }
 
     @Override
     public Parser getParser(ParserDefinition parserDefinition) {
-        return parserRegistryDelegate.getService(parserDefinition);
+        return parserRegistryDelegate.getService(MutableParserDefinition.wrap(parserDefinition));
     }
 
     @Override
@@ -127,5 +142,181 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
 
     public void setMetricRegistry(MetricRegistry metricRegistry) {
         this.metricRegistry = metricRegistry;
+    }
+
+    private static class MutableAdapterDefinition implements AdapterDefinition {
+        private final AdapterDefinition definition;
+        private final Map<String, String> parameters;
+
+        private MutableAdapterDefinition(final AdapterDefinition definition) {
+            this.definition = Objects.requireNonNull(definition);
+            this.parameters = new HashMap<>(definition.getParameterMap());
+        }
+
+        @Override
+        public String getName() {
+            return this.definition.getName();
+        }
+
+        @Override
+        public String getFullName() {
+            return this.definition.getFullName();
+        }
+
+        @Override
+        public String getClassName() {
+            return this.definition.getClassName();
+        }
+
+        @Override
+        public Map<String, String> getParameterMap() {
+            return this.parameters;
+        }
+
+        @Override
+        public List<? extends PackageDefinition> getPackages() {
+            return this.definition.getPackages();
+        }
+
+        public static MutableAdapterDefinition wrap(final AdapterDefinition definition) {
+            if (definition instanceof MutableAdapterDefinition) {
+                return (MutableAdapterDefinition) definition;
+            }
+
+            return new MutableAdapterDefinition(definition);
+        }
+    }
+
+    private static class MutableParserDefinition implements ParserDefinition {
+        private final ParserDefinition definition;
+        private final Map<String, String> parameters;
+
+        private MutableParserDefinition(final ParserDefinition definition) {
+            this.definition = Objects.requireNonNull(definition);
+            this.parameters = new HashMap<>(definition.getParameterMap());
+        }
+
+        @Override
+        public String getName() {
+            return this.definition.getName();
+        }
+
+        @Override
+        public String getFullName() {
+            return this.definition.getFullName();
+        }
+
+        @Override
+        public String getClassName() {
+            return this.definition.getClassName();
+        }
+
+        @Override
+        public Map<String, String> getParameterMap() {
+            return this.parameters;
+        }
+
+        @Override
+        public String getQueueName() {
+            return this.definition.getQueueName();
+        }
+
+        public static MutableParserDefinition wrap(final ParserDefinition definition) {
+            if (definition instanceof MutableParserDefinition) {
+                return (MutableParserDefinition) definition;
+            }
+
+            return new MutableParserDefinition(definition);
+        }
+    }
+
+    private static class MutableListenerDefinition implements ListenerDefinition {
+        private final ListenerDefinition definition;
+        private final Map<String, String> parameters;
+        private final List<MutableParserDefinition> parsers;
+
+        private MutableListenerDefinition(final ListenerDefinition definition) {
+            this.definition = Objects.requireNonNull(definition);
+            this.parameters = new HashMap<>(definition.getParameterMap());
+            this.parsers = definition.getParsers().stream()
+                    .map(MutableParserDefinition::new)
+                    .collect(Collectors.toList());
+        }
+
+        @Override
+        public String getName() {
+            return this.definition.getName();
+        }
+
+        @Override
+        public String getClassName() {
+            return this.definition.getClassName();
+        }
+
+        @Override
+        public Map<String, String> getParameterMap() {
+            return this.parameters;
+        }
+
+        @Override
+        public List<? extends ParserDefinition> getParsers() {
+            return this.parsers;
+        }
+
+        public static MutableListenerDefinition wrap(final ListenerDefinition definition) {
+            if (definition instanceof MutableListenerDefinition) {
+                return (MutableListenerDefinition) definition;
+            }
+
+            return new MutableListenerDefinition(definition);
+        }
+    }
+
+    private static class MutableConnectorDefinition implements ConnectorDefinition {
+        private final ConnectorDefinition definition;
+        private final Map<String, String> parameters;
+
+        private MutableConnectorDefinition(final ConnectorDefinition definition) {
+            this.definition = Objects.requireNonNull(definition);
+            this.parameters = new HashMap<>(definition.getParameterMap());
+        }
+
+        @Override
+        public String getName() {
+            return this.definition.getName();
+        }
+
+        @Override
+        public String getQueueName() {
+            return this.definition.getQueueName();
+        }
+
+        @Override
+        public String getServiceName() {
+            return this.definition.getServiceName();
+        }
+
+        @Override
+        public List<? extends PackageDefinition> getPackages() {
+            return this.definition.getPackages();
+        }
+
+        @Override
+        public String getClassName() {
+            return this.definition.getClassName();
+        }
+
+        @Override
+        public Map<String, String> getParameterMap() {
+            return this.parameters;
+        }
+
+        public static MutableConnectorDefinition wrap(final ConnectorDefinition definition) {
+            if (definition instanceof MutableConnectorDefinition) {
+                return (MutableConnectorDefinition) definition;
+            }
+
+            return new MutableConnectorDefinition(definition);
+        }
     }
 }

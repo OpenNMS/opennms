@@ -1,6 +1,6 @@
 {
   "aliases": {},
-  "index_patterns": "opennms-alarms-*",
+  "index_patterns": ["opennms-alarms-*"],
   "mappings": {
     "dynamic_templates": [],
     "properties": {

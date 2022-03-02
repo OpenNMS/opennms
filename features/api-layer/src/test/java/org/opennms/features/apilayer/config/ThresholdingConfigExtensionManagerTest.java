@@ -181,14 +181,14 @@ public class ThresholdingConfigExtensionManagerTest {
         assertThat(basethresholddef.getDsType(), equalTo(dsType));
         assertThat(basethresholddef.getDsLabel().get(), equalTo(dsLabel));
         assertThat(basethresholddef.getFilterOperator().name(), equalTo(filterOperator.name()));
-        assertThat(basethresholddef.getRearm(), equalTo(rearm));
+        assertThat(Double.parseDouble(basethresholddef.getRearm()), equalTo(rearm));
         assertThat(basethresholddef.getRearmedUEI().get(), equalTo(rearmedUEI));
         assertThat(basethresholddef.getRelaxed(), equalTo(relaxed));
         assertThat(basethresholddef.getResourceFilters().get(0).getContent().get(), equalTo(content));
         assertThat(basethresholddef.getResourceFilters().get(0).getField(), equalTo(field));
-        assertThat(basethresholddef.getTrigger(), equalTo(trigger));
+        assertThat(Integer.parseInt(basethresholddef.getTrigger()), equalTo(trigger));
         assertThat(basethresholddef.getTriggeredUEI().get(), equalTo(triggeredUEI));
         assertThat(basethresholddef.getType().name(), equalTo(type.name()));
-        assertThat(basethresholddef.getValue(), equalTo(value));
+        assertThat(Double.parseDouble(basethresholddef.getValue()), equalTo(value));
     }
 }

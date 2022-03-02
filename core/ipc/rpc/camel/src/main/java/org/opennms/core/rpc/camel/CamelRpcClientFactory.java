@@ -119,23 +119,15 @@ public class CamelRpcClientFactory implements RpcClientFactory {
         return new RpcClient<S,T>() {
             @Override
             public CompletableFuture<T> execute(S request) {
+
                 if (request.getLocation() == null || request.getLocation().equals(location)) {
                     // The request is for the current location, invoke it directly
                     return module.execute(request);
                 }
+                Span span = buildAndStartSpan(request);
+                TracingInfoCarrier tracingInfoCarrier = getTracingInfoCarrier(request, span);
                 // Save the context map and restore it on callback
                 final Map<String, String> clientContextMap = Logging.getCopyOfContextMap();
-                // Build span with module id and start it.
-                Span span = tracer.buildSpan(module.getId()).start();
-                span.setTag(TAG_LOCATION, request.getLocation());
-                if(request.getSystemId() != null) {
-                    span.setTag(TAG_SYSTEM_ID, request.getSystemId());
-                }
-                request.getTracingInfo().forEach(span::setTag);
-                TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
-                tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
-                //Add custom tags to tracing info.
-                request.getTracingInfo().forEach(tracingInfoCarrier::put);
                 // Build or retrieve rpc metrics.
                 final Histogram rpcDuration = getMetrics().histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_DURATION));
                 final Histogram responseSize = getMetrics().histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_RESPONSE_SIZE));
@@ -222,9 +214,34 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                     // Ensure that future log statements on this thread are routed properly
                     Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                 }
-                final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
+                final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_REQUEST_SENT));
                 requestSentMeter.mark();
                 return future;
+            }
+
+            private Span buildAndStartSpan(S request) {
+                // Build span with module id and start it.
+                Span span = null;
+                if (request.getSpan() != null) {
+                    span = tracer.buildSpan(module.getId()).asChildOf(request.getSpan().context()).start();
+                } else {
+                    span = tracer.buildSpan(module.getId()).start();
+                }
+                span.setTag(TAG_LOCATION, request.getLocation());
+                if(request.getSystemId() != null) {
+                    span.setTag(TAG_SYSTEM_ID, request.getSystemId());
+                }
+                request.getTracingInfo().forEach(span::setTag);
+                return span;
+            }
+
+            private TracingInfoCarrier getTracingInfoCarrier(S request, Span span) {
+
+                TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
+                tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+                //Add custom tags to tracing info.
+                request.getTracingInfo().forEach(tracingInfoCarrier::put);
+                return tracingInfoCarrier;
             }
         };
     }

@@ -1,4 +1,5 @@
-#!${install.perl.bin}
+#!/usr/bin/env perl
+
 #
 # a quick hack of a script to send traps
 # by Ben Reed (ben@opennms.org)
@@ -7,6 +8,7 @@
 
 $|++;
 
+use warnings;
 use lib '.';
 use Net::SNMP;
 use Getopt::Long 2.17; # Released with Perl 5.005

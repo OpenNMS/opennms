@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-services</artifactId>
@@ -165,15 +165,6 @@
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-    <!-- 
-      This dependency is needed for HTTP remoting classes that we
-      extend for the remote poller back end.
-    -->
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-web-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-security-core-dependencies</artifactId>
@@ -303,10 +294,6 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-    </dependency>
-    <dependency>
       <groupId>bsf</groupId>
       <artifactId>bsf</artifactId>
       <scope>compile</scope>
@@ -323,8 +310,8 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>jakarta.mail</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>

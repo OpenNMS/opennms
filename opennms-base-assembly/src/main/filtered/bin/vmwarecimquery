@@ -13,11 +13,13 @@ LOG4J_JAR=`ls -1 "$OPENNMS_HOME"/lib/log4j-*.jar | head -n 1`
 CIM_JAR=`ls -1 "$OPENNMS_HOME"/lib/sblimCIMClient-*.jar | head -n 1`
 SLP_JAR=`ls -1 "$OPENNMS_HOME"/lib/sblimSLPClient-*.jar | head -n 1`
 CORE_JAR=`ls -1 "$OPENNMS_HOME"/lib/org.opennms.core.lib-*.jar | head -n 1`
+JDK9_JAXB=`ls -1 "$OPENNMS_HOME"/lib/jdk9plus/jaxb-runtime-*.jar | head -n 1`
+JAKARTA_JAR=`ls -1 "$OPENNMS_HOME"/lib/jdk9plus/jakarta.xml.bind-api-*.jar | head -n 1`
 
 exec "$OPENNMS_BINDIR"/runjava -r -- \
 	-Xmx256m \
 	-Dopennms.home="$OPENNMS_HOME" \
 	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
-	-cp "$CORE_JAR:$YAVIJAVA_JAR:$VMWARE_JAR:$JCIFS_JAR:$DOM4J_JAR:$CIM_JAR:$SLP_JAR:$SLF4J_API_JAR:$SLF4J_L4J_JAR:$LOG4J_JAR:$COMMONS_CLI_JAR" \
+	-cp "$JAKARTA_JAR:$JDK9_JAXB:$CORE_JAR:$YAVIJAVA_JAR:$VMWARE_JAR:$JCIFS_JAR:$DOM4J_JAR:$CIM_JAR:$SLP_JAR:$SLF4J_API_JAR:$SLF4J_L4J_JAR:$LOG4J_JAR:$COMMONS_CLI_JAR" \
 	org.opennms.protocols.vmware.VmwareCimQuery \
 	"$@"

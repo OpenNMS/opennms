@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.flows;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -50,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
@@ -75,44 +77,58 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
      */
     private final Histogram packetsPerLogHistogram;
 
-    public AbstractFlowAdapter(final String name,
+    private final Meter entriesReceived;
+
+    private final Meter entriesParsed;
+
+    private final Meter entriesConverted;
+
+    public AbstractFlowAdapter(final AdapterDefinition adapterConfig,
                                final MetricRegistry metricRegistry,
                                final FlowRepository flowRepository,
                                final Converter<P> converter) {
-        Objects.requireNonNull(name);
+        Objects.requireNonNull(adapterConfig);
         Objects.requireNonNull(metricRegistry);
+
         this.flowRepository = Objects.requireNonNull(flowRepository);
         this.converter = Objects.requireNonNull(converter);
 
-        logParsingTimer = metricRegistry.timer(name("adapters", name, "logParsing"));
-        packetsPerLogHistogram = metricRegistry.histogram(name("adapters", name, "packetsPerLog"));
-    }
-
-    @Override
-    public void setConfig(AdapterDefinition protocol) {
-        // we do not need the protocol
+        this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getFullName(), "logParsing"));
+        this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getFullName(), "packetsPerLog"));
+        this.entriesReceived = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesReceived"));
+        this.entriesParsed = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesParsed"));
+        this.entriesConverted = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesConverted"));
     }
 
     @Override
     public void handleMessageLog(TelemetryMessageLog messageLog) {
         LOG.debug("Received {} telemetry messages", messageLog.getMessageList().size());
 
-        final List<P> flowPackets = new LinkedList<>();
+        int flowPackets = 0;
+
         final List<Flow> flows = new LinkedList<>();
         try (Timer.Context ctx = logParsingTimer.time()) {
             for (TelemetryMessageLogEntry eachMessage : messageLog.getMessageList()) {
+                this.entriesReceived.mark();
+
                 LOG.trace("Parsing packet: {}", eachMessage);
                 final P flowPacket = parse(eachMessage);
                 if (flowPacket != null) {
-                    flowPackets.add(flowPacket);
-                    flows.addAll(converter.convert(flowPacket));
+                    this.entriesParsed.mark();
+
+                    flowPackets += 1;
+
+                    final List<Flow> converted = converter.convert(flowPacket, Instant.ofEpochMilli(eachMessage.getTimestamp()));
+                    flows.addAll(converted);
+
+                    this.entriesConverted.mark(converted.size());
                 }
             }
-            packetsPerLogHistogram.update(flowPackets.size());
+            packetsPerLogHistogram.update(flowPackets);
         }
 
         try {
-            LOG.debug("Persisting {} packets, {} flows.", flowPackets.size(), flows.size());
+            LOG.debug("Persisting {} packets, {} flows.", flowPackets, flows.size());
             final FlowSource source = new FlowSource(messageLog.getLocation(),
                     messageLog.getSourceAddress(),
                     contextKey);

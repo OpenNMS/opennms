@@ -30,11 +30,15 @@ package org.opennms.features.apilayer.dao;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.apilayer.utils.ModelMappers;
 import org.opennms.integration.api.v1.dao.AlarmDao;
+import org.opennms.integration.api.v1.graph.NodeRef;
 import org.opennms.integration.api.v1.model.Alarm;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -59,5 +63,24 @@ public class AlarmDaoImpl implements AlarmDao {
     public List<Alarm> getAlarms() {
         return sessionUtils.withReadOnlyTransaction(() ->
                 alarmDao.findAll().stream().map(ModelMappers::toAlarm).collect(Collectors.toList()));
+    }
+
+    @Override
+    public Optional<Alarm> getAlarmWithHighestSeverity(NodeRef nodeRef) {
+        final Criteria criteria = new CriteriaBuilder(OnmsAlarm.class)
+                .alias("node", "node")
+                .orderBy("severity", false)
+                .and(Restrictions.eq("node.foreignSource", nodeRef.getForeignSource()),
+                     Restrictions.eq("node.foreignId", nodeRef.getForeignId()))
+                .limit(1)
+                .toCriteria();
+        return sessionUtils.withReadOnlyTransaction(() -> {
+            final List<OnmsAlarm> matching = alarmDao.findMatching(criteria);
+            if (matching.isEmpty()) {
+                return Optional.empty();
+            }
+            final Alarm alarm = ModelMappers.toAlarm(matching.get(0));
+            return Optional.of(alarm);
+        });
     }
 }

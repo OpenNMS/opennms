@@ -46,8 +46,8 @@ import com.google.common.base.Strings;
  * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
  * </ul>
  */
-@Command(scope = "jira", name = "list-versions", description="Uses the JIRA ReST API to list all versions")
-@org.apache.karaf.shell.commands.Command(scope = "jira", name = "list-versions", description="Uses the JIRA ReST API to list all versions")
+@Command(scope = "opennms", name = "jira-list-versions", description="Uses the JIRA ReST API to list all versions")
+@org.apache.karaf.shell.commands.Command(scope = "opennms", name = "jira-list-versions", description="Uses the JIRA ReST API to list all versions")
 @Service
 public class ListVersionsCommand extends AbstractJiraCommand implements Action {
 

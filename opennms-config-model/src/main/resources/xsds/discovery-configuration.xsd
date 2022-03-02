@@ -55,6 +55,13 @@
           </annotation>
         </element>
 
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:exclude-url">
+          <annotation>
+            <documentation>a file URL holding specific addresses to be excluded
+              </documentation>
+          </annotation>
+        </element>
+
         <element maxOccurs="unbounded" minOccurs="0" ref="this:definition">
           <annotation>
             <documentation>Definition of specifics, ranges of IP Addresses and detectors
@@ -290,6 +297,33 @@
     
   </element>
 
+  <element name="exclude-url">
+    <annotation>
+      <documentation>A file URL holding specific addresses to be excluded from being polled. Each
+        line in the URL file can be one of:
+        "&lt;IP&gt;&lt;space&gt;#&lt;comments&gt;", "&lt;IP&gt;", or
+        "#&lt;comments&gt;". Lines starting with a '#' are ignored and so are
+        characters after a '&lt;space&gt;#' in a line.</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="location" type="string" use="optional">
+            <annotation>
+              <documentation>The monitoring location where this include URL
+                will be executed.</documentation>
+            </annotation>
+          </attribute>
+
+          <attribute name="foreign-source" type="string" use="optional" />
+
+        </extension>
+      </simpleContent>
+    </complexType>
+
+  </element>
+
   <element name="foreign-source" >
     <simpleType>
       <restriction base="string" />
@@ -337,6 +371,14 @@
               polled</documentation>
           </annotation>
         </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:exclude-url">
+          <annotation>
+            <documentation>a file URL holding specific addresses to be excluded from being
+              polled</documentation>
+          </annotation>
+        </element>
+
       </sequence>
 
       <attribute name="location" type="string" use="optional">

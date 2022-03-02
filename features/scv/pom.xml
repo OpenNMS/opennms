@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -15,5 +15,6 @@
     <module>jceks-impl</module>
     <module>shell</module>
     <module>scvcli</module>
+    <module>dominion-grpc-impl</module>
   </modules>
 </project>

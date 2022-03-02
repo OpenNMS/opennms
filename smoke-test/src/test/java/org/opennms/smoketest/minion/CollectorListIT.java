@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * Verifies the output of "collection:list-collectors" on both OpenNMS and Minion. 
+ * Verifies the output of "opennms:list-collectors" on both OpenNMS and Minion.
  */
 @Category(MinionTests.class)
 public class CollectorListIT {
@@ -72,6 +72,7 @@ public class CollectorListIT {
             "org.opennms.netmgt.collectd.VmwareCollector",
             "org.opennms.netmgt.collectd.WmiCollector",
             "org.opennms.netmgt.collectd.WsManCollector",
+            "org.opennms.netmgt.collectd.prometheus.PrometheusCollector",
             "org.opennms.protocols.xml.collector.XmlCollector")
             .build();
 
@@ -104,14 +105,14 @@ public class CollectorListIT {
         try (final SshClient sshClient = new SshClient(sshAddr, OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD)) {
             // List the collectors
             PrintStream pipe = sshClient.openShell();
-            pipe.println("collection:list-collectors");
+            pipe.println("opennms:list-collectors");
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
 
             // Parse the output
             String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
 
-            shellOutput = StringUtils.substringAfter(shellOutput, "collection:list-collectors");
+            shellOutput = StringUtils.substringAfter(shellOutput, "opennms:list-collectors");
             LOG.info("Collectors output: {}", shellOutput);
             Set<String> collectors = new HashSet<>();
             for (String collector : shellOutput.split("\\r?\\n")) {

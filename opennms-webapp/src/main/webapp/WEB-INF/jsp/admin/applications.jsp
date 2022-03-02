@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,7 +53,7 @@
         <c:forEach items="${applications}" var="app">
         <tr>
           <td><a href="admin/applications.htm?removeApplicationId=${app.id}"><i class="fa fa-trash-o fa-2x"></i></a></td>
-          <td><a href="admin/applications.htm?applicationid=${app.id}&edit=edit"><i class="fa fa-edit fa-2x"></i></a></td>
+          <td><a href="admin/applications.htm?applicationid=${app.id}&edit=services"><i class="fa fa-edit fa-2x"></i></a></td>
           <td><a href="admin/applications.htm?applicationid=${app.id}">${fn:escapeXml(app.name)}</a></td>
         </tr>
         </c:forEach>
@@ -63,7 +63,7 @@
               <div class="form-group">
                 <input type="textfield" class="form-control" placeholder="Application name" name="newApplicationName" size="40"/>
               </div>
-              <button type="submit" class="btn btn-secondary ml-2"><i class="fa fa-plus"></i> Add New Application</button>
+              <button type="submit" name="newApplicationSubmit" class="btn btn-secondary ml-2"><i class="fa fa-plus"></i> Add New Application</button>
             </form>
           </td>
         </tr>

@@ -57,6 +57,12 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
         updateSubObjects(alarm);
     }
 
+    @Override
+    public void delete(final OnmsAlarm alarm) {
+        super.delete(alarm);
+        updateSubObjects(alarm);
+    }
+
     private void updateSubObjects(final OnmsAlarm alarm) {
         // Assume that the system ID is the ID of an OpenNMS system
         // instead of a Minion or Remote Poller
@@ -64,6 +70,7 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
         getEventDao().save(alarm.getLastEvent());
         getNodeDao().save(alarm.getNode());
         getServiceTypeDao().save(alarm.getServiceType());
+        alarm.getAssociatedAlarms().forEach(a -> getAlarmAssociationDao().saveOrUpdate(a));
     }
 
     @Override

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -115,12 +114,7 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
 
             Assert.isTrue(TYPE.equals(thresholdConfig.getType()), "threshold for ds-name '" + thresholdConfig.getDatasourceExpression() + "' has type of '" + thresholdConfig.getType() + "', but this evaluator only supports thresholds with a 'type' value of '" + TYPE + "'");
 
-            Assert.isTrue(!Double.isNaN(thresholdConfig.getValue()), "threshold must have a 'value' value that is a number");
-            Assert.isTrue(thresholdConfig.getValue() != Double.POSITIVE_INFINITY && thresholdConfig.getValue() != Double.NEGATIVE_INFINITY, "threshold must have a 'value' value that is not positive or negative infinity");
-            Assert.isTrue(thresholdConfig.getValue() != 1.0, "threshold must not be unity (1.0)");
-
             m_thresholdConfig = thresholdConfig;
-            setMultiplier(thresholdConfig.getValue());
         }
 
         @Override
@@ -129,11 +123,17 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
         }
 
         @Override
-        public Status evaluateAfterFetch(double dsValue) {
+        public Status evaluateAfterFetch(double dsValue, ThresholdValues thresholdValues) {
         	//Fix for Bug 2275 so we handle negative numbers
         	//It will not handle values which cross the 0 boundary (from - to +, or v.v.) properly, but
         	// after some discussion, we can't come up with a sensible scenario when that would actually happen.
         	// If such a scenario eventuates, reconsider
+            Double multiplier = thresholdValues != null && thresholdValues.getThresholdValue() != null ?
+                    thresholdValues.getThresholdValue() : m_thresholdConfig.getValue();
+            if(multiplier == null) {
+                return Status.NO_CHANGE;
+            }
+            setMultiplier(multiplier);
         	dsValue=Math.abs(dsValue);
             if (getLastSample() != 0.0) {
                 double threshold = getMultiplier() * getLastSample();
@@ -171,19 +171,22 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
         }
 
         @Override
-        public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource) {
+        public Event getEventForState(Status status, Date date, double dsValue, ThresholdValues thresholdValues, CollectionResourceWrapper resource) {
             if (status == Status.TRIGGERED) {
                 final String uei=getThresholdConfig().getTriggeredUEI().orElse(EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI);
-                return createBasicEvent(uei, date, dsValue, resource);
+                return createBasicEvent(uei, date, dsValue, thresholdValues, resource);
             } else {
                 return null;
             }
         }
         
-        private Event createBasicEvent(String uei, Date date, double dsValue, CollectionResourceWrapper resource) {
+        private Event createBasicEvent(String uei, Date date, double dsValue, ThresholdValues thresholdValues, CollectionResourceWrapper resource) {
+            if(thresholdValues == null) {
+                thresholdValues = state.getThresholdValues();
+            }
             Map<String,String> params = new HashMap<String,String>();
             params.put("previousValue", formatValue(getPreviousTriggeringSample()));
-            params.put("multiplier", Double.toString(getThresholdConfig().getValue()));
+            params.put("multiplier", Double.toString(thresholdValues.getThresholdValue()));
             // params.put("trigger", Integer.toString(getThresholdConfig().getTrigger()));
             // params.put("rearm", Double.toString(getThresholdConfig().getRearm()));
             return createBasicEvent(uei, date, dsValue, resource, params);

@@ -37,8 +37,19 @@ public class TestFlow implements Flow {
     final FlowDocument flowDocument;
     String nodeIdentifier;
 
+    private long receivedAt = System.currentTimeMillis();
+
     public TestFlow(final FlowDocument flowDocument) {
         this.flowDocument = flowDocument;
+    }
+
+    @Override
+    public long getReceivedAt() {
+        return this.receivedAt;
+    }
+
+    public void setReceivedAt(final long receivedAt) {
+        this.receivedAt = receivedAt;
     }
 
     @Override
@@ -237,13 +248,13 @@ public class TestFlow implements Flow {
 
         switch (flowDocument.getNetflowVersion()) {
             case V5:
-                return Flow.NetflowVersion.V5;
+                return NetflowVersion.V5;
             case V9:
-                return Flow.NetflowVersion.V9;
+                return NetflowVersion.V9;
             case IPFIX:
-                return Flow.NetflowVersion.IPFIX;
+                return NetflowVersion.IPFIX;
             case SFLOW:
-                return Flow.NetflowVersion.SFLOW;
+                return NetflowVersion.SFLOW;
             default:
                 throw new IllegalArgumentException("Unknown protocol version: " + flowDocument.getNetflowVersion().name());
         }

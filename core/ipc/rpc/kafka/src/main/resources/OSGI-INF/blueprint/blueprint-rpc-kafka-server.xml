@@ -29,6 +29,8 @@
       <!-- same as persistent-id -->
       <argument value="org.opennms.core.ipc.rpc.kafka"/>
       <argument ref="configAdmin"/>
+        <!-- common pid for kafka config on IPC-->
+      <argument value="org.opennms.core.ipc.kafka"/>
     </bean>
 
     <bean id="kafkaRpcServerManager" class="org.opennms.core.ipc.rpc.kafka.KafkaRpcServerManager"
@@ -36,6 +38,7 @@
       <argument ref="kafkaConfigProvider"/>
       <argument ref="minionIdentity"/>
       <argument ref="tracerRegistry"/>
+      <argument ref="metricRegistry"/>
     </bean>
 
     <reference-list id="rpcModulesRef" interface="org.opennms.core.rpc.api.RpcModule" availability="optional">
@@ -50,5 +53,28 @@
         <argument value="RPC" />
       </bean>
     </service>
+
+     <!-- Kafka RPC Metrics -->
+    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <service ref="metricRegistry" interface="com.codahale.metrics.MetricSet">
+      <service-properties>
+        <entry key="name" value="Minion Kafka RPC" />
+        <entry key="description" value="Kafka RPC Metrics on Minion" />
+      </service-properties>
+    </service>
+
+    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+      <argument ref="metricRegistry"/>
+    </bean>
+
+    <bean id="metricRegistryDomainedJmxReporterBuilder" factory-ref="metricRegistryJmxReporterBuilder" factory-method="inDomain">
+      <argument value="org.opennms.core.ipc.rpc.kafka"/>
+    </bean>
+
+    <bean id="metricRegistryJmxReporter"
+          factory-ref="metricRegistryJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
 
 </blueprint>

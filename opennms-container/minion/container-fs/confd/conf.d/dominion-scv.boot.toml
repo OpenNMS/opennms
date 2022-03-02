@@ -1,0 +1,7 @@
+[template]
+src = "dominion-scv.boot.tmpl"
+dest = "/opt/minion/etc/featuresBoot.d/dominion-scv.boot"
+keys = [
+    "/scv"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/featuresBoot.d/dominion-scv.boot"

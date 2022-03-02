@@ -434,7 +434,7 @@ if (request.getAttribute("success") != null) {
             Proxy Host
             </label>
             <div class="col-sm-9">
-              <input id="proxyHost" name="proxyHost=" class="form-control" value="<%=proxyHost%>">
+              <input id="proxyHost" name="proxyHost" class="form-control" value="<%=proxyHost%>">
             </div>
           </div>
 
@@ -563,7 +563,7 @@ if (request.getAttribute("success") != null) {
           </label>
           <div class="col-sm-9">
 			<select id="authProtocol" name="authProtocol" class="form-control custom-select">
-			  <%=getOptions(authProtocol, "", "", "MD5", "SHA")%>
+			  <%=getOptions(authProtocol, "", "", "MD5", "SHA", "SHA-224", "SHA-256", "SHA-512")%>
 			</select>
             <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_AUTH_PROTOCOL %></p>
           </div>

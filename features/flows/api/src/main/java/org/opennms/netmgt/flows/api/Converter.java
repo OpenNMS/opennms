@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.flows.api;
 
+import java.time.Instant;
 import java.util.List;
 
 public interface Converter<P> {
-    List<Flow> convert(P packet);
+    List<Flow> convert(P packet, final Instant receivedAt);
 }

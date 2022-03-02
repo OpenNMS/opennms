@@ -1,0 +1,84 @@
+
+[[poller-ldap-monitor]]
+= LdapMonitor
+
+The LDAP monitor tests for LDAP service availability.
+The LDAP monitor first tries to establish a TCP connection on the specified port.
+If it succeeds, it attempts to establish an LDAP connection and do a simple search.
+If the search returns a result within the specified timeout and attempts, the service will be considered available.
+The scope of the LDAP search is limited to the immediate subordinates of the base object.
+The LDAP search is anonymous by default.
+The LDAP monitor uses the com.novell.ldap.LDAPConnection class, and supports most LDAP-compatible directory systems, including Active Directory.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.LdapMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the LdapMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default value
+
+| dn kbd:[{}]
+| The distinguished name to use if authenticated search is needed.
+| n/a
+
+| password kbd:[{}]
+| The password to use if authenticated search is needed.
+| n/a
+
+| port
+| The destination port to attempt connection at.
+| 389
+
+| retry
+| Number of attempts to get a search result.
+| 1
+
+| searchbase
+| The base distinguished name to search from.
+| base
+
+| searchfilter
+| The LDAP search's filter.
+| (objectclass=*)
+| version
+| The version of the LDAP protocol to use, specified as an integer. +
+Note: Only LDAPv3 is supported.
+| 3
+|===
+
+kbd:[{}] _indicates the parameter supports <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[source, xml]
+----
+<!-- OpenNMS.org -->
+<service name="LDAP" interval="300000" user-defined="false" status="on">
+  <parameter key="port" value="389"/>
+  <parameter key="version" value="3"/>
+  <parameter key="searchbase" value="dc=opennms,dc=org"/>
+  <parameter key="searchfilter" value="uid=ulf"/>
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-base-name" value="ldap"/>
+  <parameter key="ds-name" value="ldap"/>
+</service>
+<monitor service="LDAP" class-name="org.opennms.netmgt.poller.monitors.LdapMonitor"/>
+----

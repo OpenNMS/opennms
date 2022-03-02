@@ -1,0 +1,68 @@
+[[setup-message-broker]]
+= Set up Message Broker
+
+Distributing {page-component-title} components like Minions and Sentinel require a messaging infrastructure.
+This section describes how to set up your {page-component-title} Core instance to use an existing messaging infrastructure based on ActiveMQ or Apache Kafka.
+
+{page-component-title} Core comes with an embedded ActiveMQ system, which by default an external network cannot reach.
+To get started quickly, this guide describes how to enable and configure the embedded ActiveMQ instance.
+
+CAUTION: We recommend using Apache Kafka in production, as it is scalable to process high workloads.
+         The embedded ActiveMQ instance is for convenience to get started quickly in a test environment.
+         It is not suitable for production workloads.
+
+== Objectives
+
+* Configure {page-component-title} Core instance to use a message broker for communication
+* Create a Minion user to authenticate the communication channels
+
+== Create a Minion user
+
+Credentials secure the communication between {page-component-title} Core instance and the Minion component.
+The example uses the name _my-minion-user_ with password _my-minion-password_. 
+Make sure to use an alternate, more secure password. 
+
+. Log in to the web UI as an administrative user.
+. Click the gears icon and click btn:[Configure Users, Groups and On-Call Roles] -> btn:[Configure Users].
+. Click *Add new user*.
+. Type a login name (my-minion-user) and password (my-minion-password) and click btn:[OK].
++
+The new Minion user appears in the user list.
+
+. Click the edit icon beside the new user. 
+. In the *Security Roles* area, assign the ROLE_MINION security role.
+.. Optional: fill in a comment for the Minion user's location and purpose.
+. Click btn:[Finish].
+
+== Configure message broker
+
+Configuration occurs in the {page-component-title} etc directory.
+      We reference `etc` relative to the OpenNMS {page-component-title} Core home directory.
+      Depending on your operating system, the home directory is `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
+
+[{tabs}]
+====
+Kafka::
++
+--
+include::message-broker/kafka.adoc[]
+--
+
+ActiveMQ::
++
+--
+include::message-broker/activemq.adoc[]
+--
+
+Embedded ActiveMQ::
++
+--
+include::message-broker/embedded-activemq.adoc[]
+--
+
+gRPC::
++
+--
+include::message-broker/grpc.adoc[]
+--
+====

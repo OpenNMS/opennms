@@ -1,0 +1,595 @@
+---
+# Minion configuration schema
+#
+# See the readme MINION_CONFIG_SCHEMA_README.md for more information.
+
+# Version of Minion this schema configuration is applicable to
+version: "@VERSION@"
+revision: "@REVISION@"
+branch: "@BRANCH@"
+buildnumber: @BUILD_NUMBER@
+
+# The root set of categories configurable on a Minion container. Ordering here is used only to determine order for
+# display purposes.
+categories:
+  # General
+  - name: "general"
+    label: "General"
+    description: "Generic Minion configuration settings"
+    config:
+      - name: "instance-id"
+        type:
+          name: "string"
+          validation: "TODO"
+        label: "Core instance ID"
+        description: "Identifier for core instance used as queue prefix in message broker"
+        key: "/org.opennms.instance.id"
+        example: "OpenNMS"
+      - name: "system-properties"
+        type:
+          name: "properties"
+        label: "System Properties"
+        description: "Generic Java system properties"
+        key: "/system/properties"
+        example: "jaeger-agent-host: my-jaeger-host"
+      - name: "server-certificates"
+        type:
+          name: "collection"
+          strategy: "indexed"
+          items:
+            label: "Certificate Name"
+            type:
+              name: "string"
+        label: "Server Certificates"
+        description: "TLS certificates for public communication endpoints"
+        key: "/server-certs"
+        example: "TODO"
+    categories:
+      # General :: Controller
+      - name: "controller"
+        label: "Minion Controller"
+        description: "Minion controller configuration for a location and communication endpoints"
+        config:
+          - name: "location"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Location"
+            description: "Name of location where Minion is deployed"
+            key: "/location"
+            example: "my-remote-office-nyc"
+          - name: "id"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Minion Id"
+            description: "Unique Minion identifier in the location"
+            key: "/id"
+            example: "id: my-minion-nyc"
+          - name: "broker-url"
+            type:
+              name: "url"
+            label: "Message broker URL"
+            description: "Message broker connection URL"
+            key: "/broker-url"
+            example: "ActiveMQ: failover:[tcp,ssl]://my-activemq-ip:61616, Kafka: broker-01:9092, broker-02:9092"
+          - name: "http-url"
+            type:
+              name: "url"
+            label: "Core base URL"
+            description: "Core instance web application base URL"
+            key: "/http-url"
+            example: "http://my-opennms-instance-ip:8980/opennms"
+  # Dominion
+  - name: "dominion"
+    label: "Dominion"
+    description: "Configuration for the Dominion process"
+    categories:
+      # Dominion :: gRPC
+      - name: "grpc"
+        label: "gRPC"
+        description: "Configuration for the Dominion gRPC endpoint"
+        config:
+          - name: "host"
+            type:
+              name: "host"
+            label: "Host"
+            description: "Host for Dominion gRPC endpoint"
+            key: "/dominion/grpc/host"
+            example: "my-dominion-grpc-host"
+          - name: "port"
+            type:
+              name: "port"
+            label: "Port"
+            description: "TCP port for Dominion gRPC endpoint"
+            key: "/dominion/grpc/port"
+            example: "443"
+          - name: "client-secret"
+            type:
+              name: "string"
+            label: "Client Secret"
+            description: "gRPC client secret"
+            key: "/dominion/grpc/client-secret"
+            example: "my-9RPC-cl13nt-s3cr3t"
+      # Dominion :: SCV
+      - name: "scv"
+        label: "Secure Credentials Vault"
+        description: "Configuration for secure credentials vault (SCV)"
+        config:
+          - name: "provider"
+            type:
+              name: "string"
+            label: "Provider"
+            description: "Secure credentials vault (SCV) provider"
+            key: "/scv/provider"
+            example: "TODO"
+
+  # Java Agent
+  - name: "java"
+    label: "Java"
+    description: "Java configuration parameters."
+    categories:
+      # Java :: Agent
+      - name: "agent"
+        label: "Agent"
+        description: "Configuration parameters for Java agents."
+        categories:
+          # Prometheus JMX exporter
+          - name: "prom-jmx-exporter"
+            label: "Prometheus JMX Exporter"
+            description: "Configuration for the Prometheus JMX Exporter agent."
+            config:
+              - name: "startDelaySeconds"
+                type:
+                  name: "string"
+                label: "Start delay"
+                description: "Start delay in seconds before serving requests. Any requests within the delay period will result in an empty metrics set."
+                key: "/java/agent/prom-jmx-exporter/startDelaySeconds"
+                example: "0"
+              - name: "jmxUrl"
+                type:
+                  name: "string"
+                label: "JMX URL"
+                description: "JMX URL connecting to the local JVM."
+                key: "/java/agent/prom-jmx-exporter/jmxUrl"
+                example: "service:jmx:rmi:///jndi/rmi://127.0.0.1:1299/karaf-minion"
+              - name: "username"
+                type:
+                  name: "string"
+                label: "Username"
+                description: "Connection username to establish the JMX connection."
+                key: "/java/agent/prom-jmx-exporter/username"
+                example: "admin"
+              - name: "password"
+                type:
+                  name: "string"
+                label: "Password"
+                description: "Connection password to establish the JMX connection."
+                key: "/java/agent/prom-jmx-exporter/password"
+                example: "admin"
+              - name: "lowerCaseOutputName"
+                type:
+                  name: "boolean"
+                label: "Lowercase output name"
+                description: "Lowercase the output metric name."
+                key: "/java/agent/prom-jmx-exporter/lowerCaseOutputName"
+                example: "true"
+              - name: "lowercaseOutputLabelNames"
+                type:
+                  name: "boolean"
+                label: "Lowercase output label names"
+                description: "Lowercase the output metric label names."
+                key: "/java/agent/prom-jmx-exporter/lowercaseOutputLabelNames"
+                example: "true"
+              - name: "whitelistObjectNames"
+                type:
+                  name: "collection"
+                  strategy: "indexed"
+                  items:
+                    label: "Whitelist Object Names"
+                    type:
+                      name: "string"
+                label: "Whitelist Object Names"
+                description: "A list of ObjectNames to query."
+                key: "/java/agent/prom-jmx-exporter/whitelistObjectNames"
+                example: "\"org.opennms.core.ipc.sink.producer:*\", \"org.opennms.netmgt.dnsresolver.netty:*\", or \"org.opennms.netmgt.telemetry:*\""
+              - name: "blacklistObjectNames"
+                type:
+                  name: "collection"
+                  strategy: "indexed"
+                  items:
+                    label: "Blacklist Object Names"
+                    type:
+                      name: "string"
+                label: "Blacklist Object Names"
+                description: "A list of ObjectNames to not query. Takes precedence over whitelistObjectNames. Defaults to none."
+                key: "/java/agent/prom-jmx-exporter/blacklistObjectNames"
+                example: "org.apache.activemq:clientId=*,*"
+  # Karaf
+  - name: "karaf"
+    label: "Karaf"
+    description: "Karaf configuration"
+    categories:
+      # Karaf :: Management
+      - name: "management"
+        label: "Management"
+        description: "Configuration for Karaf JMX management access"
+        categories:
+          # Karaf :: Management :: RMI
+          - name: "rmi"
+            label: "RMI"
+            description: "Configuration for remote method invocation (RMI)"
+            config:
+              - name: "registry-host"
+                type:
+                  name: "host"
+                label: "Registry Host"
+                description: "RMI registry host IP address"
+                key: "/karaf/management/rmi/registry/host"
+                example: "127.0.0.1"
+              - name: "registry-port"
+                type:
+                  name: "port"
+                label: "Registry Port"
+                description: "RMI registry TCP port"
+                key: "/karaf/management/rmi/registry/port"
+                example: "1299"
+              - name: "server-host"
+                type:
+                  name: "host"
+                label: "Server Host"
+                description: "RMI server host IP address seen by the client"
+                key: "/karaf/management/rmi/server/host"
+                example: "127.0.0.1"
+              - name: "server-port"
+                type:
+                  name: "port"
+                label: "Server Port"
+                description: "RMI server TCP port"
+                key: "/karaf/management/rmi/server/port"
+                example: "45444"
+      # Karaf :: Shell
+      - name: "shell"
+        label: "Shell"
+        description: "Karaf shell access configuration"
+        categories:
+          # Karaf :: Shell :: SSH
+          - name: "ssh"
+            label: "SSH"
+            description: "Apache Karaf SSH configuration settings"
+            config:
+              - name: "host"
+                type:
+                  name: "host"
+                label: "Host"
+                description: "Listening IP address for the SSH service"
+                key: "/karaf/shell/ssh/host"
+                example: "0.0.0.0"
+              - name: "port"
+                type:
+                  name: "port"
+                label: "Port"
+                description: "TCP listening port for the SSH service"
+                key: "/karaf/shell/ssh/port"
+                example: "8201"
+  # Minion Environment
+  - name: "environment"
+    label: "Environment"
+    description: "Minion Java environment settings"
+    config:
+      - name: "java-opts"
+        type:
+          name: "collection"
+          strategy: "indexed"
+          items:
+            label: "Option"
+            type:
+              name: "string"
+        label: "JVM Options"
+        description: "Additional Java options"
+        key: "/process-env/java-opts"
+        example: "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=7896"
+  # IPC Configuration
+  - name: "ipc"
+    label: "IPC"
+    description: "Core, Minion, and Sentinel distributed inter-process communication (IPC) settings"
+    categories:
+      # IPC Configuration :: gRPC
+      - name: "grpc"
+        label: "gRPC"
+        description: "Configuration for IPC communication using gRPC"
+        config:
+          - name: "host"
+            type:
+              name: "host"
+            label: "Host"
+            description: gRPC host endpoint – typically the same as the core instance host"
+            key: "/ipc/grpc/host"
+            example: "my-opennms-instance-ip"
+          - name: "port"
+            type:
+              name: "port"
+            label: "gRPC TCP port"
+            description: "Set the gRPC TCP port the server is listening on."
+            key: "/ipc/grpc/port"
+            example: "8990"
+          - name: "properties"
+            type:
+              name: "properties"
+            label: "Properties"
+            description: "Generic gRPC configuration properties for IPC"
+            key: "/ipc/grpc"
+            example: "max.message.size: 10485760"
+      # IPC Configuration :: RPC
+      - name: "rpc"
+        label: "RPC"
+        description: "Configuration settings for Remote Producer Call (RPC)"
+        categories:
+          # IPC Configuration :: RPC :: Kafka
+          - name: "kafka"
+            label: "Kafka"
+            description: "Configuration for RPC using Apache Kafka as message broker"
+            config:
+              - name: "bootstrap-servers"
+                type:
+                  name: "collection"
+                  strategy: "concat"
+                  items:
+                    label: "Server"
+                    type:
+                      name: "host-with-port"
+                    separator: ","
+                label: "Bootstrap Servers"
+                description: "Kafka bootstrap servers"
+                key: "/ipc/rpc/kafka/bootstrap.servers"
+                example: "kafka-01-ip:9092, kafka-02-ip:9092"
+              - name: "properties"
+                type:
+                  name: "properties"
+                label: "Properties"
+                description: "Additional Kafka configuration properties"
+                key: "/ipc/rpc/kafka"
+                example: "compression.type: gzip"
+       # IPC Configuration :: Twin
+            - name: "twin"
+              label: "Twin"
+              description: "Configuration settings for Twin"
+              categories:
+                # IPC Configuration :: Twin :: Kafka
+                - name: "kafka"
+                  label: "Kafka"
+                  description: "Configuration for Twin using Apache Kafka as message broker"
+                  config:
+                    - name: "bootstrap-servers"
+                      type:
+                        name: "collection"
+                        strategy: "concat"
+                        items:
+                          label: "Server"
+                          type:
+                            name: "host-with-port"
+                          separator: ","
+                      label: "Bootstrap Servers"
+                      description: "Kafka bootstrap servers"
+                      key: "/ipc/twin/kafka/bootstrap.servers"
+                      example: "kafka-01-ip:9092, kafka-02-ip:9092"
+                    - name: "properties"
+                      type:
+                        name: "properties"
+                      label: "Properties"
+                      description: "Additional Kafka configuration properties"
+                      key: "/ipc/twin/kafka"
+                      example: "compression.type: gzip"
+      # IPC Configuration :: Sink
+      - name: "sink"
+        label: "Sink"
+        description: "Message sink configuration"
+        config:
+          - name: "offheap"
+            type:
+              name: "properties"
+            label: "Off Heap"
+            description: "Configuration for off-heap storage for sink messages"
+            key: "/ipc/sink/offheap"
+            example: "offHeapSize: 1GB"
+        categories:
+          # IPC Configuration :: Sink :: Kafka
+          - name: "kafka"
+            label: "Kafka"
+            description: "Configure Kafka for IPC communication"
+            config:
+              - name: "bootstrap-servers"
+                type:
+                  name: "collection"
+                  strategy: "concat"
+                  items:
+                    label: "Server"
+                    type:
+                      name: "host-with-port"
+                    separator: ","
+                label: "Bootstrap Servers"
+                description: "Kafka bootstrap servers for IPC Sink"
+                key: "/ipc/sink/kafka/bootstrap.servers"
+                example: "127.0.0.1:9092, my-broker-ip:9092"
+              - name: "properties"
+                type:
+                  name: "properties"
+                label: "Properties"
+                description: "Additional generic Kafka configuration properties for IPC Sink"
+                key: "/ipc/sink/kafka"
+                example: "compression.type: gzip"
+       # IPC Configuration :: Kafka IPC
+        - name: "kafka"
+          label: "Kafka IPC"
+          description: "Configuration settings for Kafka IPC"
+          config:
+            - name: "bootstrap-servers"
+              type:
+                name: "collection"
+                strategy: "concat"
+                items:
+                  label: "Server"
+                  type:
+                    name: "host-with-port"
+                  separator: ","
+              label: "Bootstrap Servers"
+              description: "Kafka bootstrap servers"
+              key: "/ipc/kafka/bootstrap.servers"
+              example: "kafka-01-ip:9092, kafka-02-ip:9092"
+            - name: "properties"
+              type:
+                name: "properties"
+              label: "Properties"
+              description: "Additional Kafka configuration properties"
+              key: "/ipc/kafka"
+              example: "compression.type: gzip"
+
+  # Netmgt
+  - name: "netmgt"
+    label: "Network Management"
+    description: "Configuration for generic network management functions"
+    categories:
+      # Netmgt :: Traps
+      - name: "traps"
+        label: "SNMP Trap daemon"
+        description: "Configuration for the SNMP Trap daemon"
+        config:
+          - name: "properties"
+            type:
+              name: "properties"
+            label: "Properties"
+            description: "Set SNMP Trap daemon properties."
+            key: "/netmgt/traps"
+            example: "trapd.listen.interface: 0.0.0.0, trapd.listen.port: 1162"
+      # Netmgt :: Syslog
+      - name: "syslog"
+        label: "Syslog daemon"
+        description: "Configuration for the Syslog daemon"
+        config:
+          - name: "properties"
+            type:
+              name: "properties"
+            label: "Properties"
+            description: "Set Syslog daemon properties."
+            key: "/netmgt/syslog"
+            example: "syslog.listen.interface: 0.0.0.0, syslog.listen.port: 1514" 
+  # Web
+  - name: "web"
+    label: "Web"
+    description: "Configuration for the core instance web server"
+    categories:
+      # Web :: Jetty
+      - name: "jetty"
+        label: "Jetty"
+        description: "Set generic Jetty web server configuration parameters."
+        config:
+          - name: "http-listen-port"
+            type:
+              name: "port"
+            label: "HTTP Listen Port"
+            description: "Jetty HTTP listen port"
+            key: "/jetty/web/port"
+            example: "8181"
+          - name: "listen-address"
+            type:
+              name: "collection"
+              strategy: "concat"
+              items:
+                label: "Listen Address"
+                type:
+                  name: "host"
+                separator: ","
+            label: "Listen Address"
+            description: "Jetty listen addresses"
+            key: "/jetty/web/host"
+            example: "0.0.0.0"
+  # Telemetry
+  - name: "telemetry"
+    label: "Telemetry"
+    description: "Telemetry daemon configuration"
+    categories:
+      # Telemetry :: Flows
+      - name: "flows"
+        label: "Flows"
+        description: "Configuration for network flow collectors"
+        config:
+          - name: "flow-listener-def"
+            type:
+              name: "objects"
+              fields:
+                - name: "listener-name"
+                  label: "Listener Name"
+                  type:
+                    name: "string"
+                    validation: "TODO"
+                - name: "class-name"
+                  label: "Class Name"
+                  type:
+                    name: "string"
+                    validation: "TODO"
+                - name: "parameters"
+                  label: "Parameters"
+                  type:
+                    name: "properties"
+                - name: "parsers"
+                  label: "Flow Parser Definition"
+                  type:
+                    name: "objects"
+                    fields:
+                      - name: "name"
+                        label: "Parser Name"
+                        type:
+                          name: "string"
+                          validation: "TODO"
+                      - name: "class-name"
+                        label: "Class Name"
+                        type:
+                          name: "string"
+                          validation: "TODO"
+                      - name: "parameters"
+                        label: "Parameters"
+                        type:
+                          name: "properties"
+                    index-type: "field"
+                    index-field: "name"
+              index-type: "field"
+              index-field: "listener-name"
+            label: "Flow Listener Definition"
+            description: "Configure listener for network flow packets"
+            key: "/telemetry/flows/listeners"
+            example: "TODO"
+        categories:
+          # Telemetry :: Flows :: Single Port Listener
+          - name: "single-port-listener"
+            label: "Single Port Listener"
+            description: "Configuration for single port flow listener"
+            config:
+              - name: "enabled"
+                type:
+                  name: "boolean"
+                label: "Enable Single Port Listener"
+                description: "Enable or disable the single port flow listener."
+                key: "/telemetry/flows/single-port-listener/enabled"
+                example: "true"
+              - name: "name"
+                type:
+                  name: "string"
+                  validation: "TODO"
+                label: "Name"
+                description: "Single port listener name"
+                key: "/telemetry/flows/single-port-listener/name"
+                example: "Name for the single port listener."
+              - name: "parameters"
+                type:
+                  name: "properties"
+                label: "Parameters"
+                description: "Configuration parameter for the single port listener"
+                key: "/telemetry/flows/single-port-listener/parameters"
+                example: "port: 50000"
+              - name: "parser-parameters"
+                type:
+                  name: "properties"
+                label: "Parser Parameters"
+                description: "Flow packet parser configuration parameters"
+                key: "/telemetry/flows/single-port-listener/parser-parameters"
+                example: "queue: Netflow-9"

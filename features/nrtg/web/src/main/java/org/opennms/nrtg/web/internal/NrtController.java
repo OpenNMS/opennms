@@ -332,7 +332,7 @@ public class NrtController {
             // Convert the "relative RRD path" from the RrdGraphAttribute to a ResourcePath used
             // by the ResourceStorageDao.
             ResourcePath pathToMetaFile;
-            if (TimeSeries.getTimeseriesStrategy() == Strategy.NEWTS) {
+            if (TimeSeries.getTimeseriesStrategy() == Strategy.NEWTS || TimeSeries.getTimeseriesStrategy() == Strategy.INTEGRATION) {
                 String path = attr.getRrdRelativePath();
                 if (path.startsWith("/")) {
                     path = path.substring(1);

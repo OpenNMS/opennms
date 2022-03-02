@@ -1,0 +1,72 @@
+
+[[gu-bsm-op-status]]
+= Operational Status
+
+Every business service maintains an operational status that represents the overall status calculated by the map and reduce functions from the edges.
+The operational status uses the severities known from events and alarms.
+
+.Operational status representation
+[options="header"]
+[cols="1,3,1,1"]
+|===
+| Name
+| Description
+| Numerical code
+|Color / Code
+
+| Critical
+| Indicates a severe service-affecting event has occurred.
+| 7
+| Purple / #c00
+
+| Major
+| Indicates serious disruption or malfunction of a service or system.
+| 6
+| Red / #f30
+
+| Minor
+| Used for troubles that have no immediate effect on service or system performance.
+| 5
+| Orange / #f90
+
+| Warning
+| An event has occurred that may require action.
+Use this severity to indicate a condition that should be noted (logged) but does not require immediate action.
+| 4
+| Yellow / #fc0
+
+| Normal
+| Informational message. No action required.
+| 3
+| Dark green / #360
+
+| Cleared
+| This severity is reserved for use in alarms to indicate that an alarm describes a self-clearing error condition that has been corrected and service is restored.
+
+Never use this severity in event definitions.
+Use "Normal" severity for events that clear an alarm.
+| 2
+| Grey / #eee
+
+| Indeterminate
+| No severity could be associated with this event.
+| 1
+| Light green / #990
+
+|===
+
+If a business service changes its operational status, an OpenNMS event of the type `uei.opennms.org/bsm/serviceOperationalStatusChanged` is generated and sent to the OpenNMS event bus.
+In cases where the operational status changed from normal to a higher severity, an event of the type `uei.opennms.org/bsm/serviceProblem` is generated and has the severity of the BS.
+When the BS goes back to normal, an event of the type `uei.opennms.org/bsm/serviceProblemResolved` is generated.
+
+NOTE: Use the service problem and service problem resolved events for notifications or ticketing integration.
+
+The log message of the events have the following information:
+
+* Business Service Name: `businessServiceName`
+* Business Service Identifier: `id`
+* Previous Severity Identifier: `prevSeverityId`
+* Previous Severity Label: `prevSeverityLabel`
+* New Severity Identifier: `newSeverityId`
+* New Severity Label: `newSeverityLabel`
+

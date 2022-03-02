@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,6 +37,7 @@ import java.util.Map;
 import org.opennms.netmgt.collection.test.api.CollectorComplianceTest;
 import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
 import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
+import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.config.jmx.MBeanServer;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.connection.JmxServerConnector;
@@ -68,9 +69,11 @@ public class JMXCollectorComplianceTest extends CollectorComplianceTest {
     @Override
     public Map<String, Object> getRequiredBeans() {
         MBeanServer mbeanServer = new MBeanServer();
-        JmxConfigDao jmxConfigDao = mock(JmxConfigDao.class, RETURNS_DEEP_STUBS);
         final String host = InetAddrUtils.str(InetAddrUtils.getLocalHostAddress());
-        when(jmxConfigDao.getConfig().lookupMBeanServer(host, JmxServerConnector.DEFAULT_OPENNMS_JMX_PORT)).thenReturn(mbeanServer);
+        JmxConfig jmxConfig = mock(JmxConfig.class);
+        when(jmxConfig.lookupMBeanServer(host, JmxServerConnector.DEFAULT_OPENNMS_JMX_PORT)).thenReturn(mbeanServer);
+        JmxConfigDao jmxConfigDao = mock(JmxConfigDao.class);
+        when(jmxConfigDao.getConfig()).thenReturn(jmxConfig);
 
         JmxCollection collection = new JmxCollection();
         JMXDataCollectionConfigDao jmxCollectionDao = mock(JMXDataCollectionConfigDao.class, RETURNS_DEEP_STUBS);

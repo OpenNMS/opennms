@@ -81,10 +81,10 @@ public class GraphMLMetaTopologyProviderTest {
         assertNull(regionsGraphProvider.getDefaults().getPreferredLayout());
         assertEquals(GraphMLTopologyProvider.DEFAULT_DESCRIPTION, regionsGraphProvider.getTopologyProviderInfo().getDescription());
         assertEquals(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL, regionsGraphProvider.getDefaults().getSemanticZoomLevel());
-        assertEquals(4, regionsGraphProvider.getVertexTotalCount());
+        assertEquals(4, regionsGraphProvider.getCurrentGraph().getVertexTotalCount());
         for (String region : Lists.newArrayList("north", "south", "east", "west")) {
             // Every vertex should link to 4 other vertices
-            Vertex vertex = regionsGraphProvider.getVertex("acme:regions", region);
+            Vertex vertex = regionsGraphProvider.getCurrentGraph().getVertex("acme:regions", region);
             assertEquals(4, metaTopoProvider.getOppositeVertices(vertex).size());
         }
 
@@ -95,7 +95,7 @@ public class GraphMLMetaTopologyProviderTest {
         assertEquals("The Markets Layer", marketsGraphProvider.getTopologyProviderInfo().getDescription());
         assertEquals("Some Layout", marketsGraphProvider.getDefaults().getPreferredLayout());
         assertEquals(0, marketsGraphProvider.getDefaults().getSemanticZoomLevel());
-        assertEquals(16, marketsGraphProvider.getVertexTotalCount());
+        assertEquals(16, marketsGraphProvider.getCurrentGraph().getVertexTotalCount());
     }
 
     @Test

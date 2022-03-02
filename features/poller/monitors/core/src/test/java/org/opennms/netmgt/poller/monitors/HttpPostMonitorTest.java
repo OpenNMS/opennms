@@ -29,36 +29,23 @@
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.http.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.poller.Parameter;
-import org.opennms.netmgt.dao.mock.MockMonitoringLocationDao;
-import org.opennms.netmgt.dao.mock.MockNodeDao;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsAssetRecord;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.core.test.http.annotations.Webapp;
+import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -69,7 +56,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -92,5 +78,39 @@ public class HttpPostMonitorTest {
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "HTTP");
         Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
         assertTrue(subbedParams.get("subbed-url").toString().equals("/localhost.html"));
+    }
+
+    @Test
+    @JUnitHttpServer(basicAuth = true, webapps = @Webapp(context = "/opennms", path = "src/test/resources/loginTestWar"))
+    public void testHeaders() throws UnknownHostException {
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final ServiceMonitor monitor = new HttpPostMonitor();
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "HTTP");
+
+        if (port > 0) {
+            m.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
+
+        m.put("retry", "0");
+        m.put("timeout", "500");
+        m.put("banner", "");
+        m.put("uri", "/opennms/j_spring_security_check");
+        m.put("payload", "foo");
+        m.put("header0", "Authorization: Basic " + new String(Base64.encodeBase64(("admin:istrator").getBytes())));
+
+        final PollStatus status1 = monitor.poll(svc, m);
+        MockUtil.println("Reason: " + status1.getReason());
+        assertEquals(PollStatus.SERVICE_AVAILABLE, status1.getStatusCode());
+        assertNull(status1.getReason());
+
+        m.put("header0", "Authorization: Basic " + new String(Base64.encodeBase64(("admin:wrong").getBytes())));
+
+        final PollStatus status2 = monitor.poll(svc, m);
+        MockUtil.println("Reason: " + status2.getReason());
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status2.getStatusCode());
+        assertNotNull(status2.getReason());
     }
 }

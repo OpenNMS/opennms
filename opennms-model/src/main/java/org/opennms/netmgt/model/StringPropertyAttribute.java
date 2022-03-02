@@ -29,6 +29,8 @@
 package org.opennms.netmgt.model;
 
 
+import java.util.Objects;
+
 /**
  * <p>StringPropertyAttribute class.</p>
  *
@@ -88,5 +90,20 @@ public class StringPropertyAttribute implements OnmsAttribute {
     @Override
     public void setResource(OnmsResource resource) {
         m_resource = resource;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StringPropertyAttribute that = (StringPropertyAttribute) o;
+        return Objects.equals(this.m_name, that.m_name) &&
+                Objects.equals(this.m_value, that.m_value) &&
+                Objects.equals(this.m_resource, that.m_resource);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_name, m_value, m_resource);
     }
 }

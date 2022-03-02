@@ -39,7 +39,7 @@ import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
-import org.opennms.features.topology.api.topo.SimpleSearchProvider;
+import org.opennms.features.topology.api.topo.simple.SimpleSearchProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
@@ -82,7 +82,7 @@ public class GraphMLSearchProvider extends SimpleSearchProvider {
                     .filter(eachProvider -> eachProvider.getNamespace().equals(searchResult.getNamespace()))
                     .findFirst();
             // If there is a graph provider (which should) select it
-            if (first.isPresent() && first.get().getVertex(vertexRef) != null) {
+            if (first.isPresent() && first.get().getCurrentGraph().getVertex(vertexRef) != null) {
                 graphContainer.selectTopologyProvider(first.get());
                 graphContainer.clearCriteria();
             }
@@ -98,7 +98,7 @@ public class GraphMLSearchProvider extends SimpleSearchProvider {
     @Override
     public List<? extends VertexRef> queryVertices(SearchQuery searchQuery, GraphContainer container) {
         final List<GraphMLVertex> matchingVertices = new ArrayList<>();
-        graphMLTopologyProvider.getVertices().stream()
+        graphMLTopologyProvider.getCurrentGraph().getVertices().stream()
             .map(v -> (GraphMLVertex) v)
             .filter(v -> matches(searchQuery, v))
             .sorted((v1, v2) -> v1.getId().compareTo(v2.getId()))

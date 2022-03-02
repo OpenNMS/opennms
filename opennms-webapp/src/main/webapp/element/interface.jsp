@@ -45,6 +45,9 @@
             org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl"
 %>
 <%@ page import="org.opennms.netmgt.model.ResourceId" %>
+<%@ page import="org.opennms.web.services.ServiceJspUtil" %>
+<%@ page import="org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation" %>
+<%@ page import="org.opennms.netmgt.model.OnmsOutage" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 

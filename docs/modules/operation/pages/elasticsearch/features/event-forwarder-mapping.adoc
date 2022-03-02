@@ -1,0 +1,23 @@
+
+= Mapping Events to Elasticsearch
+
+== Overview of Index Mapping
+
+In {page-component-title}, event table entries contain references to associated node, asset, service, and journal message tables.
+In Elasticsearch, we must flatten these entries into a single index entry for each insertion.
+Thus, each index entry contains more context information than would be found in the actual {page-component-title} event.
+This context information includes the associated node and asset table information which was current when (but may have changed since) the event was archived.
+
+The <<elasticsearch/features/event-forwarder-mapping-table.adoc#ga-elastic-field-index, table of index mappings>> illustrates sample event data as stored in Elasticsearch.
+The table illustrates how {page-component-title} saves data in Elasticsearch.
+
+Internal Elasticsearch fields always begin with an underscore character.
+The internal fields `_id`, `_index`, and `_type` are combined to give the unique identifier for an entry as described above under index definitions.
+All of the fields within `_source` represent the stored event, which Elasticsearch refers to as indexed documents.
+The ID of each event is included in the `_source` block's `id` field and is also duplicated in the internal `_id`.
+
+Events in the {page-component-title} events table corresponding to logs or traps are copied directly to the `opennms-events-raw-` indexes.
+In {page-component-title}, events can contain parameters that are key-value pairs referencing additional data stored when the event is created.
+In Elasticsearch these parameters are always stored in separate fields in the index, with names beginning with `p_`.
+
+Events have a severity field defined as integers (long) and a corresponding severity_text field that gives the text equivalent (Critical, Major, Minor, Normal, and Cleared).

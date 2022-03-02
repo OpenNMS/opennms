@@ -44,7 +44,7 @@ import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.icmp.proxy.PingSweepSummary;
 
-@Command(scope = "ping", name = "sweep", description = "Ping-Sweep")
+@Command(scope = "opennms", name = "ping-sweep", description = "ICMP Ping Sweep")
 @Service
 public class PingSweepCommand implements Action {
 
@@ -66,7 +66,7 @@ public class PingSweepCommand implements Action {
     @Option(name = "-p", aliases = "--packetsize", description = "Packet size")
     int m_packetsize = PingConstants.DEFAULT_PACKET_SIZE;
 
-    @Option(name = "--pps", description = "packer per second")
+    @Option(name = "--pps", description = "packets per second")
     double m_packetsPerSecond = PingConstants.DEFAULT_PACKETS_PER_SECOND;
 
     @Argument(index = 0, name = "begin", description = "First address of the IP range to be pinged", required = true, multiValued = false)

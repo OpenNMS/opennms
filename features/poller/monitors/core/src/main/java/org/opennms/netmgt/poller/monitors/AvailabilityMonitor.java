@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -47,7 +46,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-@Distributable
 public class AvailabilityMonitor extends AbstractServiceMonitor {
     
     

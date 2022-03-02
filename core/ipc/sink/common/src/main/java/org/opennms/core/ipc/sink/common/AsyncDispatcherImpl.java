@@ -28,32 +28,33 @@
 
 package org.opennms.core.ipc.sink.common;
 
+import java.time.Duration;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
-import org.joda.time.Duration;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
+import org.opennms.core.ipc.sink.api.DispatchQueue;
+import org.opennms.core.ipc.sink.api.DispatchQueueFactory;
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.OffHeapQueue;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.opennms.core.ipc.sink.api.WriteFailedException;
-import org.opennms.core.ipc.sink.offheap.OffHeapServiceLoader;
+import org.opennms.core.ipc.sink.offheap.DispatchQueueServiceLoader;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,232 +62,231 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.annotations.VisibleForTesting;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implements AsyncDispatcher<S> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AsyncDispatcherImpl.class);
     private final SyncDispatcher<S> syncDispatcher;
-    private OffHeapAdapter offHeapAdapter;
-    private ExecutorService offHeapAdapterExecutor = Executors.newSingleThreadExecutor();
     private final AsyncPolicy asyncPolicy;
-    private OffHeapQueue offHeapQueue;
-    private SinkModule<S,T> sinkModule;
-    private DispatcherState<W,S,T> state;
-    private boolean useOffHeap = false;
+    private final Counter droppedCounter;
+
+    private final Map<String, CompletableFuture<DispatchStatus>> futureMap = new ConcurrentHashMap<>();
+    private final AtomicResultQueue<S> atomicResultQueue;
+    private final AtomicLong missedFutures = new AtomicLong(0);
+    private final AtomicInteger activeDispatchers = new AtomicInteger(0);
     
-    final RateLimitedLog rateLimittedLogger = RateLimitedLog
+    private final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
 
-    final LinkedBlockingQueue<Runnable> queue;
-    final ExecutorService executor;
+    private final ExecutorService executor;
 
     public AsyncDispatcherImpl(DispatcherState<W, S, T> state, AsyncPolicy asyncPolicy,
-            SyncDispatcher<S> syncDispatcher) {
+                               SyncDispatcher<S> syncDispatcher) {
         Objects.requireNonNull(state);
         Objects.requireNonNull(asyncPolicy);
-        this.syncDispatcher = Objects.requireNonNull(syncDispatcher);
+        Objects.requireNonNull(syncDispatcher);
+        this.syncDispatcher = syncDispatcher;
         this.asyncPolicy = asyncPolicy;
-        this.state = state;
-        sinkModule = state.getModule();
-        if (OffHeapServiceLoader.isOffHeapEnabled()) {
-            offHeapQueue = OffHeapServiceLoader.getOffHeapQueue();
-            if (offHeapQueue != null) {
-                useOffHeap = true;
-                LOG.info("Offheap storage enabled for sink module, {}", sinkModule.getId());
-            }
-        }
-        
-        final RejectedExecutionHandler rejectedExecutionHandler;
-        if (asyncPolicy.isBlockWhenFull()) {
-            // This queue ensures that calling thread is blocked when the queue is full
-            // See the implementation of OfferBlockingQueue for details
-            queue = new OfferBlockingQueue<>(asyncPolicy.getQueueSize());
-            rejectedExecutionHandler = new ThreadPoolExecutor.AbortPolicy();
+        SinkModule<S, T> sinkModule = state.getModule();
+        Optional<DispatchQueueFactory> factory = DispatchQueueServiceLoader.getDispatchQueueFactory();
+
+        DispatchQueue<S> dispatchQueue;
+        if (factory.isPresent()) {
+            LOG.debug("Using queue from factory");
+            dispatchQueue = factory.get().getQueue(asyncPolicy, sinkModule.getId(),
+                    sinkModule::marshalSingleMessage, sinkModule::unmarshalSingleMessage);
         } else {
-            queue = new LinkedBlockingQueue<Runnable>(asyncPolicy.getQueueSize());
-            // Reject and increase the dropped counter when the queue is full
-            final Counter droppedCounter = state.getMetrics().counter(MetricRegistry.name(state.getModule().getId(), "dropped"));
-            rejectedExecutionHandler = new RejectedExecutionHandler() {
-                @Override
-                public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
-                    droppedCounter.inc();
-                    throw new RejectedExecutionException("Task " + r.toString() +
-                            " rejected from " +
-                            e.toString());
-                }
-            };
+            int size = asyncPolicy.getQueueSize();
+            LOG.debug("Using default in memory queue of size {}", size);
+            dispatchQueue = new DefaultQueue<>(size);
         }
+        atomicResultQueue = new AtomicResultQueue<>(dispatchQueue);
 
-        state.getMetrics().register(MetricRegistry.name(state.getModule().getId(), "queue-size"), new Gauge<Integer>() {
-            @Override
-            public Integer getValue() {
-                return queue.size();
-            }
-        });
+        state.getMetrics().register(MetricRegistry.name(state.getModule().getId(), "queue-size"),
+                (Gauge<Integer>) activeDispatchers::get);
 
-        executor = new ThreadPoolExecutor(
-                asyncPolicy.getNumThreads(),
-                asyncPolicy.getNumThreads(),
-                1000L,
-                TimeUnit.MILLISECONDS,
-                queue,
-                new LogPreservingThreadFactory(SystemInfoUtils.DEFAULT_INSTANCE_ID + ".Sink.AsyncDispatcher." + state.getModule().getId(), Integer.MAX_VALUE),
-                rejectedExecutionHandler
-            );
+        droppedCounter = state.getMetrics().counter(MetricRegistry.name(state.getModule().getId(), "dropped"));
+
+        executor = Executors.newFixedThreadPool(asyncPolicy.getNumThreads(),
+                new LogPreservingThreadFactory(SystemInfoUtils.DEFAULT_INSTANCE_ID + ".Sink.AsyncDispatcher." +
+                        state.getModule().getId(), Integer.MAX_VALUE));
+        startDrainingQueue();
     }
 
-    /**
-     * When used in a ThreadPoolExecutor, this queue will block calls to
-     * {@link ThreadPoolExecutor#execute(Runnable)} when the queue is full.
-     * This is done by overriding calls to {@link LinkedBlockingQueue#offer(Object)}
-     * with calls to {@link LinkedBlockingQueue#put(Object)}, but comes with the caveat
-     * that executor must be built with <code>corePoolSize == maxPoolSize</code>.
-     * In the context of the {@link AsyncDispatcherImpl}, this is an acceptable caveat,
-     * since we enforce the matching pool sizes.
-     *
-     * There are alternative ways of solving this problem, for example we could use a
-     * {@link RejectedExecutionHandler} to achieve similar behavior, and allow
-     * for <code>corePoolSize < maxPoolSize</code>, but not for <code>corePoolSize==0</code>.
-     *
-     * For further discussions on this topic see:
-     *   http://stackoverflow.com/a/3518588
-     *   http://stackoverflow.com/a/32123535
-     *
-     * If the implementation is changed, make sure that that executor is built accordingly.
-     */
-    
-    private static class OfferBlockingQueue<E> extends LinkedBlockingQueue<E> {
-        private static final long serialVersionUID = 1L;
-
-        public OfferBlockingQueue(int capacity) {
-            super(capacity);
-        }
-
-        @Override
-        public boolean offer(E e) {
+    private void dispatchFromQueue() {
+        while (true) {
             try {
-                put(e);
-                return true;
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
+                LOG.trace("Asking dispatch queue for the next entry...");
+                Map.Entry<String, S> messageEntry = atomicResultQueue.dequeue();
+                LOG.trace("Received message entry from dispatch queue {}", messageEntry);
+                activeDispatchers.incrementAndGet();
+                LOG.trace("Sending message {} via sync dispatcher", messageEntry);
+                syncDispatcher.send(messageEntry.getValue());
+                LOG.trace("Successfully sent message {}", messageEntry);
+
+                if (messageEntry.getKey() != null) {
+                    LOG.trace("Attempting to complete future for message {}", messageEntry);
+                    CompletableFuture<DispatchStatus> messageFuture = futureMap.remove(messageEntry.getKey());
+
+                    if (messageFuture != null) {
+                        messageFuture.complete(DispatchStatus.DISPATCHED);
+                        LOG.trace("Completed future for message {}", messageEntry);
+                    } else {
+                        RATE_LIMITED_LOGGER.warn("No future found for message {}", messageEntry);
+                        missedFutures.incrementAndGet();
+                    }
+                } else {
+                    LOG.trace("Dequeued an entry with a null key");
+                }
+
+                activeDispatchers.decrementAndGet();
+            } catch (InterruptedException e) {
+                break;
+            } catch (Exception e) {
+                RATE_LIMITED_LOGGER.warn("Encountered exception while taking from dispatch queue", e);
             }
-            return false;
+        }
+    }
+
+    private void startDrainingQueue() {
+        for (int i = 0; i < asyncPolicy.getNumThreads(); i++) {
+            executor.execute(this::dispatchFromQueue);
         }
     }
 
     @Override
-    public CompletableFuture<S> send(S message) {
-         
-        // Check if OffHeap is enabled and if local queue is full or if OffHeap not Empty then write message to OffHeap.
-        if (useOffHeap && (asyncPolicy.getQueueSize() == getQueueSize() ||
-                ((offHeapAdapter != null) && !offHeapAdapter.isOffHeapEmpty()))) {
-            // Start drain thread before the first write to OffHeapQueue.
-            if (offHeapAdapter == null) {
-                this.offHeapAdapter = new OffHeapAdapter();
-                offHeapAdapterExecutor.execute(offHeapAdapter);
-                LOG.info("started drain thread for {}", sinkModule.getId());
-            }
-            try {
-                return offHeapAdapter.writeMessage(message);
-            } catch (WriteFailedException e) {
-                rateLimittedLogger.error("OffHeap write failed ", e);
-            }
+    public CompletableFuture<DispatchStatus> send(S message) {
+        CompletableFuture<DispatchStatus> sendFuture = new CompletableFuture<>();
+
+        if (!asyncPolicy.isBlockWhenFull() && atomicResultQueue.isFull()) {
+            droppedCounter.inc();
+            sendFuture.completeExceptionally(new RuntimeException("Dispatch queue full"));
+            return sendFuture;
         }
+
         try {
-            return CompletableFuture.supplyAsync(() -> {
-                syncDispatcher.send(message);
-                return message;
-            }, executor);
-        } catch (RejectedExecutionException ree) {
-            final CompletableFuture<S> future = new CompletableFuture<>();
-            future.completeExceptionally(ree);
-            return future;
+            String newId = UUID.randomUUID().toString();
+            futureMap.put(newId, sendFuture);
+            atomicResultQueue.enqueue(message, newId, result -> {
+                LOG.trace("Result of enqueueing for Id {} was {}", newId, result);
+
+                if (result == DispatchQueue.EnqueueResult.DEFERRED) {
+                    futureMap.remove(newId);
+                    sendFuture.complete(DispatchStatus.QUEUED);
+                }
+            });
+        } catch (WriteFailedException e) {
+            sendFuture.completeExceptionally(e);
+        }
+
+        return sendFuture;
+    }
+
+    @VisibleForTesting
+    public long getMissedFutures() {
+        return missedFutures.get();
+    }
+
+    /**
+     * This class serves to ensure operations of enqueueing a message and acting on the result of that enqueue are done
+     * atomically from the point of view of any thread calling dequeue.
+     */
+    private final static class AtomicResultQueue<T> {
+        private final Map<String, CountDownLatch> resultRecordedMap = new ConcurrentHashMap<>();
+        private final DispatchQueue<T> dispatchQueue;
+
+        public AtomicResultQueue(DispatchQueue<T> dispatchQueue) {
+            this.dispatchQueue = Objects.requireNonNull(dispatchQueue);
+        }
+
+        void enqueue(T message, String key, Consumer<DispatchQueue.EnqueueResult> onEnqueue) throws WriteFailedException {
+            CountDownLatch resultRecorded = new CountDownLatch(1);
+            resultRecordedMap.put(key, resultRecorded);
+            DispatchQueue.EnqueueResult result = dispatchQueue.enqueue(message, key);
+
+            // When the result is DEFERRED we should not track the future so remove it from the map
+            if (result == DispatchQueue.EnqueueResult.DEFERRED) {
+                resultRecordedMap.remove(key);
+            }
+
+            onEnqueue.accept(result);
+            resultRecorded.countDown();
+        }
+
+        Map.Entry<String, T> dequeue() throws InterruptedException {
+            Map.Entry<String, T> messageEntry = dispatchQueue.dequeue();
+
+            // If the key is null, we weren't tracking it so we don't need to synchronize
+            if (messageEntry.getKey() == null) {
+                return messageEntry;
+            }
+            CountDownLatch resultRecorded = resultRecordedMap.remove(messageEntry.getKey());
+            if(resultRecorded != null) {
+                resultRecorded.await();
+            }
+
+            return messageEntry;
+        }
+
+        boolean isFull() {
+            return dispatchQueue.isFull();
+        }
+
+        int getSize() {
+            return dispatchQueue.getSize();
         }
     }
     
     @Override
     public int getQueueSize() {
-        return queue.size();
+        return atomicResultQueue.getSize();
     }
 
     @Override
     public void close() throws Exception {
         syncDispatcher.close();
         executor.shutdown();
-        if (offHeapAdapter != null) {
-            offHeapAdapter.shutdown();
-            offHeapAdapterExecutor.shutdown();
-        }
     }
 
-    /** This adapter encapsulates write/read sink messages to OffHeapQueue. **/
-    private class OffHeapAdapter implements Runnable {
+    /**
+     * This class is intended to be used only when a suitable implementation could not be found at runtime. This should
+     * only occur in testing.
+     */
+    private static class DefaultQueue<T> implements DispatchQueue<T> {
+        private final BlockingQueue<Map.Entry<String, T>> queue;
 
-        private Map<String, CompletableFuture<S>> offHeapFutureMap = new ConcurrentHashMap<>();
-        private final CountDownLatch firstWrite = new CountDownLatch(1);
-        private final AtomicBoolean closed = new AtomicBoolean(false);
-
-        public OffHeapAdapter() {
-            state.getMetrics().register(MetricRegistry.name(state.getModule().getId(), "offheap-messages"), new Gauge<Integer>() {
-                @Override
-                public Integer getValue() {
-                    return offHeapQueue.getNumOfMessages(sinkModule.getId());
-                }
-            });
+        DefaultQueue(int size) {
+            queue = new LinkedBlockingQueue<>(size);
         }
 
-        /** This is drain thread which polls data from OffHeapQueue, when data is available, it will push the data to the executor queue.
-         *  It also retrieves the future from the map and completes the future.**/
         @Override
-        public void run() {
-            while (!closed.get()) {
-               
-                try {
-                    // Wait till atleast one write call to OffHeapQueue.
-                    firstWrite.await();
-                    //retrieve key,value entry from top of queue.
-                    AbstractMap.SimpleImmutableEntry<String, byte[]> keyValue = offHeapQueue
-                            .readNextMessage(sinkModule.getId());
-                    if (keyValue != null) {
-                        queue.put(() -> {
-                            S message = sinkModule.unmarshalSingleMessage(keyValue.getValue());
-                            syncDispatcher.send(message);
-                            CompletableFuture<S> future = offHeapFutureMap.get(keyValue.getKey());
-                            future.complete(message);
-                            offHeapFutureMap.remove(keyValue.getKey());
-                        });
-
-                    }
-                } catch (InterruptedException e) {
-                   LOG.warn("Interrupted while retrieving OffHeap Message for {} ", sinkModule.getId(), e);
-                }
+        public EnqueueResult enqueue(T message, String key) throws WriteFailedException {
+            try {
+                queue.put(new AbstractMap.SimpleImmutableEntry<>(key, message));
+                return EnqueueResult.IMMEDIATE;
+            } catch (InterruptedException e) {
+                throw new WriteFailedException(e);
             }
         }
-        
-        /** writeMessage will marshal sink message and write to OffHeapQueue and return a future that is cached in map. **/
-        public CompletableFuture<S> writeMessage(S message) throws WriteFailedException {
-            final CompletableFuture<S> future = new CompletableFuture<>();
-            byte[] bytes = sinkModule.marshalSingleMessage(message);
-            String uuid = UUID.randomUUID().toString();
-            offHeapFutureMap.put(uuid, future);
-            offHeapQueue.writeMessage(bytes, sinkModule.getId(), uuid);
-            firstWrite.countDown();
-            return future;
-            
-        }
-        
-        public boolean isOffHeapEmpty() {
-            return offHeapFutureMap.isEmpty();
-        }
-        
-        public void shutdown() {
-            firstWrite.countDown();
-            closed.set(true);
+
+        @Override
+        public Map.Entry<String, T> dequeue() throws InterruptedException {
+            return queue.take();
         }
 
+        @Override
+        public boolean isFull() {
+            return queue.remainingCapacity() <= 0;
+        }
+
+        @Override
+        public int getSize() {
+            return queue.size();
+        }
     }
 
 }

@@ -1,0 +1,25 @@
+[[ga-operation-config-tester]]
+= Configuration Tester
+
+To identify configuration problems, use the config-tester located in `$\{OPENNMS_HOME}/bin/`.
+Use `config-tester` to check configuration files.
+Type `-l, --list` to view the list of files checked.
+It prints issues into `output.log`.
+You can use the tool while OpenNMS is running to check configuration beforehand.
+
+Possible parameters:
+
+[source, console]
+----
+# ${OPENNMS_HOME}/bin/config-tester -h
+ usage: config-tester -a
+                     OR: config-tester [config files]
+                     OR: config-tester -l
+                     OR: config-tester -h
+ -a,--all              check all supported configuration files
+ -h,--help             print this help and exit
+ -i,--ignore-unknown   ignore unknown configuration files and continue
+                       processing
+ -l,--list             list supported configuration files and exit
+ -v,--verbose          list each configuration file as it is tested
+----

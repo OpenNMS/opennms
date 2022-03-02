@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -50,6 +51,9 @@ import com.google.common.base.MoreObjects;
 @XmlAccessorType(XmlAccessType.NONE)
 public class ParserConfig implements ParserDefinition {
 
+    @XmlTransient
+    private ListenerConfig listener;
+
     @XmlAttribute(name="name", required=true)
     private String name;
 
@@ -62,6 +66,10 @@ public class ParserConfig implements ParserDefinition {
 
     @XmlElement(name="parameter")
     private List<Parameter> parameters = new ArrayList<>();
+
+    public ListenerConfig getListener() {
+        return this.listener;
+    }
 
     @Override
     public String getName() {
@@ -96,6 +104,12 @@ public class ParserConfig implements ParserDefinition {
             return queue.getName();
         }
         return null;
+    }
+
+    @Override
+    @XmlTransient
+    public String getFullName() {
+        return String.format("%s.%s", this.listener.getName(), this.getName());
     }
 
     public List<Parameter> getParameters() {
@@ -136,5 +150,9 @@ public class ParserConfig implements ParserDefinition {
                 .add("queue", this.queue.getName())
                 .add("parameters", this.parameters)
                 .toString();
+    }
+
+    public void afterUnmarshal(final Unmarshaller u, final Object parent) {
+        this.listener = (ListenerConfig) parent;
     }
 }

@@ -28,20 +28,27 @@
 
 package org.opennms.core.rpc.common;
 
+import com.google.common.base.Strings;
+
 public class RpcStrategy {
+
+    public static final String IPC_STRATEGY = "org.opennms.core.ipc.strategy";
 
     public static final String RPC_STRATEGY_PROPERTY = "org.opennms.core.ipc.rpc.strategy";
 
     private static final String JMS_RPC_STRATEGY_NAME = "jms";
 
-    private static final String SQS_RPC_STRATEGY_NAME = "sqs";
-
     private static final String KAFKA_RPC_STRATEGY_NAME = "kafka";
+
+    private static final String GRPC_RPC_STRATEGY_NAME = "grpc";
+
+    private static final String OSGI_RPC_STRATEGY_NAME = "osgi";
 
     public static enum Strategy {
         JMS(JMS_RPC_STRATEGY_NAME, "JMS implementation using Camel"),
-        SQS(SQS_RPC_STRATEGY_NAME, "Amazon SQS implementation"),
-        KAFKA(KAFKA_RPC_STRATEGY_NAME, "Kafka implementation");
+        KAFKA(KAFKA_RPC_STRATEGY_NAME, "Kafka implementation"),
+        GRPC(GRPC_RPC_STRATEGY_NAME, "GRPC implementation"),
+        OSGI(OSGI_RPC_STRATEGY_NAME, "OSGI Delegate implementation");
 
         private final String m_name;
         private final String m_descr;
@@ -64,7 +71,10 @@ public class RpcStrategy {
     }
 
     public static Strategy getRpcStrategy() {
-        final String effectiveStrategyName = System.getProperty(RPC_STRATEGY_PROPERTY, JMS_RPC_STRATEGY_NAME);
+        String effectiveStrategyName = System.getProperty(IPC_STRATEGY);
+        if (Strings.isNullOrEmpty(effectiveStrategyName)) {
+            effectiveStrategyName = System.getProperty(RPC_STRATEGY_PROPERTY, JMS_RPC_STRATEGY_NAME);
+        }
         for (Strategy strategy : Strategy.values()) {
             if (strategy.getName().equalsIgnoreCase(effectiveStrategyName)) {
                 return strategy;

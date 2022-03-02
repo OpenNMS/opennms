@@ -1,0 +1,24 @@
+[[ga-user-groups]]
+= Groups
+
+A group is a collection of users. 
+Organizing users into groups helps with notifications and lets you assign a set of users to on-call roles to build more complex notification workflows.
+
+[[ga-user-group-create]]
+== Creating a User Group
+
+ . Log in as a user with administrative permissions.
+. Click the gear icon in the top right. 
+. Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Groups*.
+. Specify a group name and description and click *OK*.
+
+WARNING: Please note that angle brackets (<>), single (') and double quotation marks ("), and the ampersand symbol (&) are not allowed to be used in the group name.
+
+. Add users to the group by selecting them from the *Available Users* column and using the arrows to move them to the *Currently in Group* column.
+. _(Optional)_ Assign categories of responsibility to the group, such as Routers, Switches, Servers, etc. 
+. _(Optional)_ Create a <<user-management/user-config.adoc#ga-user-schedule, set a duty schedule>>.
+. Click *Finish*. 
+
+NOTE: Users will receive notifications in the order in which the user appears in the group. 
+
+IMPORTANT: If you delete a user group, no one receives notification that the group has been deleted. If the group is associated with a schedule, that schedule will no longer exist, and users associated with that group will no longer receive notifications previously specified in the schedule. 

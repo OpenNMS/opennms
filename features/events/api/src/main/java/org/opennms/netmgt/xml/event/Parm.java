@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.opennms.netmgt.events.api.model.IParm;
 
 /**
  * A varbind from the trap
@@ -84,6 +85,16 @@ public class Parm implements Serializable {
         super();
     }
 
+    public static Parm copyFrom(IParm source) {
+        if (source == null) {
+            return null;
+        }
+
+        Parm parm = new Parm();
+        parm.setParmName(source.getParmName());
+        parm.setValue(Value.copyFrom(source.getValue()));
+        return parm;
+    }
 
       //-----------/
      //- Methods -/

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 MYDIR=`dirname $0`
 BINDIR=`cd "$MYDIR"; pwd`

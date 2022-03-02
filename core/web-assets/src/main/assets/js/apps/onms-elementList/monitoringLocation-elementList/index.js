@@ -130,8 +130,6 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'monitor
 			saveMe.latitude = item.latitude;
 			saveMe.longitude = item.longitude;
 			saveMe.priority = item.priority;
-			saveMe['polling-package-names'] = item['polling-package-names'];
-			saveMe['collection-package-names'] = item['collection-package-names'];
 
 			// We have to provide the locationName here because it has a dash in its
 			// name and we can't use dot notation to refer to it as a default param
@@ -151,8 +149,6 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'monitor
 				saveMe.latitude = item.latitude;
 				saveMe.longitude = item.longitude;
 				saveMe.priority = item.priority;
-				saveMe['polling-package-names'] = item['polling-package-names'];
-				saveMe['collection-package-names'] = item['collection-package-names'];
 
 				// Insert the object instead of updating it
 				saveMe.$save({}, function() {

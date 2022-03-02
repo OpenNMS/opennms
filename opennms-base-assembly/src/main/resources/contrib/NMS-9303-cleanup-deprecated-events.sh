@@ -1,9 +1,11 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 # =====================================================================
 # Cleanup script to delete and rename existing events in the OpenNMS.
 # The issue with the cleaned up events is in NMS-9207.
 #
 # =====================================================================
+
+set -e
 
 # Initialize with useful default values
 PSQL_BIN=/usr/bin/psql

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.opennms.features.graph</groupId>
+        <artifactId>org.opennms.features.graph.rest</artifactId>
+        <version>29.0.6-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.features.graph.rest</groupId>
+    <artifactId>org.opennms.features.graph.rest.api</artifactId>
+    <name>OpenNMS :: Features :: Graph :: Rest :: API</name>
+    <packaging>bundle</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>org.opennms.features.graph</groupId>
+            <artifactId>org.opennms.features.graph.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-web-api</artifactId>
+        </dependency>
+    </dependencies>
+</project>

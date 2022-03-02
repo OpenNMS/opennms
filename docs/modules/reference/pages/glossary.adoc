@@ -1,0 +1,88 @@
+[[glossary]]
+[glossary]
+= Glossary
+
+[glossary]
+ActiveMQ:: Java-based open-source message broker supported by the Apache community.
+(See xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set Up Message Broker].)
+
+ALEC:: The Architecture for Learning Enabled Correlation (ALEC) is an OpenNMS framework that uses artificial intelligence and machine learning to provide alarm triage.
+ALEC groups related alarms so you can better manage the more complex situations they might represent.
+
+Application Perspective Monitoring (APM):: A method that uses the Minion infrastructure to monitor a service’s availability from different perspectives to help identify if nodes are down for everyone or if an outage affects only certain sites. When a service is not responsive an outage will be generated with the corresponding perspective that sees the outage.
+(See xref:operation:application-perspective-monitoring/application-perspective-monitoring.adoc#application-perspective[Application Perspective Monitoring].)
+
+Cassandra:: Open-source distributed/scale-out NoSQL database designed to hold large amounts of structured or unstructured data across many servers.
+(See xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].)
+
+Discovery:: A process that uses ICMP to find network devices and services in your network and then automatically adds them to monitoring.
+(See xref:operation:provisioning/introduction.adoc#discovery-auto[Provisioning].)
+
+Dominion:: The service on an OpenNMS core that controls the operation of Minions.
+(See xref:reference:configuration/minion-confd/minion-confd.adoc#dominion [Configuring Minion via Confd].)
+
+Elasticsearch:: Elasticsearch is a search engine based on the Lucene library. OpenNMS persists/forwards certain data to Elasticsearch to store flow records and warehouse events and alarm history for long-term storage of this data.
+(See xref:operation:elasticsearch/introduction.adoc#elasticsearch[Elasticsearch Integration].)
+
+Helm:: Helm is an an OpenNMS application for creating flexible dashboards to display and customize fault management and performance management data from Horizon and Meridian.
+Helm works with the Grafana analytics program to customize the data you can view.
+
+Horizon:: Open-source solution from OpenNMS that helps users visualize and monitor everything on their local and remote networks.
+Free, community-driven project includes the latest technology and features delivered through a rapid release cycle.
+
+IFTTT:: If This Then That (https://ifttt.com/[IFTTT]) service integrates apps, devices, and services. Horizon and Meridian can integrate with IFTTT to trigger actions on other services based on customized alarms.
+(See xref:operation:alarms/ifttt-integration.adoc#ifttt[IFTTT Integration].)
+
+JRobin:: JRobin is a clone of RRDTool (see below) written in Java.
+Default time series database for new {page-component-title} instances.
+
+Kafka:: Clusterable, open-source message broker designed for high-throughput/low-latency event streaming originally developed at LinkedIn, now supported by the Apache community.
+(See xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set Up Message Broker].)
+
+KSC Reports:: Key SNMP customized (KSC) reports provide a way to generate prefabricated graphical views of collected data. They let you display data from different devices and sources (SNMP, ICMP, HTTP) on one page.
+(See xref:operation:admin/webui/opsboard/dashlet/ksc.adoc#ksc[KSC Reports].)
+
+Meridian:: Subscription-based, optimized, and stable version of the OpenNMS Horizon platform.
+Annual release with monthly security patches that includes only the most stable and secure Horizon features.
+
+Message broker:: When using Minions and Sentinels, a message broker is required for communication between servers.
+{page-component-title} has an embedded ActiveMQ server available for smaller deployments.
+You can swap the broker with a dedicated ActiveMQ, gRPC, or Kafaka cluster to provide scalability and load balancing.
+
+Minion:: Instance of the Karaf OSGi service that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach.
+Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
+(See xref:development:minion/introduction.adoc#minion[Minion].)
+
+Nephron:: OpenNMS component that enables horizontal scaling of flow processing.
+Not required for flow processing, but can improve performance for deployments with a very high volume of flow documents.
+
+Newts:: Newts (New-Fangled Time Series Datastore) is an OpenNMS time series data store based on Apache Cassandra.
+Use it as an alternative persistence strategy instead of JRobin or RRDtool.
+(See xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].)
+
+
+Operator board:: Customizable dashboard to visualize monitoring information. (See xref:operation:admin/webui/opsboard/introduction.adoc#ops-board[Operator Board].)
+
+PostgreSQL:: Commonly used open-source relational database known for its stability.
+PostgreSQL scales up but not out.
+(See xref:deployment:core/getting-started.adoc#setup-postgresql[Set up PostgreSQL].)
+
+PRIS:: PRovisioning Integration Server, an optional service to gather node inventory information from an external source.
+Use to generate requisition XML files for creating/updating/removing nodes for monitoring.
+
+Provisioning:: The process of getting your devices, applications, and services into monitoring.
+(See xref:operation:provisioning/introduction.adoc#discovery-auto[Provisioning].)
+
+Remote Method Invocation (RMI):: Java API that lets one Java Virtual Machine (JVM) running object to invoke methods on an object running in another JVM. RMI integration lets you access Horizon/Meridian through jconsole or remote manage them.
+(See xref:operation:admin/rmi.adoc#rmi[Enabling RMI].)
+
+Round Robin Database (RRD):: Special type of database designed for collection, visualization, and analysis of time-series data.
+Data is maintained as a fixed-size circular-buffer that overwrites the oldest data with new data.
+
+Sentinel:: Karaf container that provides scalability for data processing, including flows, SNMP traps, syslog messages, and streaming telemetry in OpenNMS.
+It also supports thresholding for streaming telemetry if you are using OpenNMS Newts.
+(See xref:deployment:sentinel/introduction.adoc#sentinel[Sentinel].)
+
+Time series, time-series database (TSDB):: Time series is a sequence of data points that occur in successive order over a period of time.
+A time series database (TSDB) is designed to store and serve time series data.
+(See xref:deployment:time-series-storage/timeseries/time-series-storage.adoc#time-series[Time Series Storage] and https://en.wikipedia.org/wiki/Time_series_database[time series database].)

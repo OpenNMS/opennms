@@ -1,0 +1,24 @@
+[[ga-collectd-configuration]]
+= Configuring Collectd
+
+The `$OPENNMS_HOME/etc/collectd-configuration.xml` file defines the nodes, services, and parameters on which collectd collects metrics.
+It also specifies the list of available collectors.
+
+Edit the `collectd-configuration.xml` file to:
+
+* <<ga-thread-pool-edit, set the thread pool>>
+* <<ga-collectd-packages, configure collector packages>>
+* specify collectors to use
+
+In addition to editing `collectd-configuration.xml`, you need to <<collectors-configure, configure collectors>> for the protocols from which you want to collect data by editing the configuration files associated with them.
+
+[[ga-thread-pool-edit]]
+== Setting the thread pool
+
+A globally defined thread attribute limits the number of threads the data collection process uses in parallel.
+Increase or decrease this value based on your network and the size of your server by changing the value in `$OPENNMS_HOME/etc/collectd-configuration.xml`:
+
+[source, xml]
+----
+<collectd-configuration threads="50">
+----

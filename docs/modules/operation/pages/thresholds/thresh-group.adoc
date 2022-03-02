@@ -1,0 +1,49 @@
+
+[[threshold-group]]
+= Create a Threshold Group
+
+A threshold group associates a set of thresholds to a service (for example, thresholds that apply to all Cisco devices).
+{page-component-title} includes seven preconfigured, editable threshold groups:
+
+* mib2
+* cisco
+* hrstorage
+* netsnmp
+* juniper-srx
+* netsnmp-memory-linux
+* netsnmp-memory-nonlinux
+
+You can edit an existing group (through the UI) or create a new one (in the `thresholds.xml` file located in `$OPENNMS_HOME/etc/thresholds.xml`).
+Once you create the group, you can then define it in the `thresholds.xml` file or define it in the UI.
+
+We will create a threshold group called "demo_group".
+
+. Type the following in the `thresholds.xml` file.
+
++
+[source, xml]
+----
+<group name="demo_group" rrdRepository="/opt/opennms/share/rrd/snmp/">
+</group>
+----
+
+. Once you have created the group in the `thresholds.xml` file, switch to the UI, go to the threshold screen and click *Reload Threshold Configuration*.
+
+.. The group you created should appear in the UI.
+
+. Click *Edit* to edit it.
+
+The following is a sample of how the threshold appears in the `thresholds.xml` file:
+
+[source, xml]
+-----
+<group name="demo_group" rrdRepository="/opt/opennms/share/rrd/snmp/"> <1>
+  <expression type="high" ds-type="hrStorageIndex" value="90.0"
+    rearm="75.0" trigger="2" ds-label="hrStorageDescr"
+    filterOperator="or" expression="hrStorageUsed / hrStorageSize * 100.0">
+    <resource-filter field="hrStorageType">^\.1\.3\.6\.1\.2\.1\.25\.2\.1\.4$</resource-filter> <2>
+  </expression>
+</group>
+-----
+<1> The name of the group and the directory of the stored data.
+<2> The details of the threshold including type, data source type, threshold value, rearm value, and so on.

@@ -76,6 +76,8 @@ public class Outage {
 
     protected String eventLocation;
 
+    protected String perspectiveLocation;
+
     /**
      * <p>Constructor for Outage.</p>
      */
@@ -314,6 +316,14 @@ public class Outage {
         this.eventLocation = eventLocation;
     }
 
+    public String getPerspectiveLocation() {
+        return perspectiveLocation;
+    }
+
+    public void setPerspectiveLocation(String perspectiveLocation) {
+        this.perspectiveLocation = perspectiveLocation;
+    }
+
     /**
      * <p>toString</p>
      *
@@ -336,6 +346,7 @@ public class Outage {
             .append("Suppress Time", getSuppressTime())
             .append("Suppressed By", getSuppressedBy())
             .append("Building", getBuilding())
+            .append("Perspective Location", getPerspectiveLocation())
             .toString();
     }
 }

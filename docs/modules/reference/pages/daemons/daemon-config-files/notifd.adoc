@@ -1,0 +1,47 @@
+[[ref-daemon-config-files-notifd]]
+= Notifd
+
+.Notifd configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| notifd-configuration.xml
+| Describes auto-acknowledge prefix; for example, prefix "RESOLVED: " for nodeUp/nodeDown events.
+| yes
+| no
+
+| notificationCommands.xml
+| Configuration for notification media; for example, scripts, XMPP, or HTTP Post, immediately applied.
+| no
+| no
+
+| notifications.xml
+| Event notification definitions and changes are immediately applied.
+| no
+| no
+
+| destinationPaths.xml
+| Contains paths for notification targets; for example, JavaMail, XMPP, or external scripts.
+| no
+| no
+
+| users.xml
+| Contain pager and address information for notification destination paths.
+| no
+| no
+
+| groups.xml
+| Groups can be used as target for notifications.
+| no
+| no
+
+| javamail-configuration.properties
+| Configuration to send notification mails via specific mail servers.
+| no
+| no
+|===

@@ -25,6 +25,9 @@
       <button type="button" class="btn btn-primary" id="save-node" ng-click="save()" ng-show="nodeForm.$dirty" ng-disabled="nodeForm.$invalid || timingStatus.isRunning">
         <span class="fa fa-save"></span> Save
       </button>
+      <button type="button" class="btn btn-secondary" uib-tooltip="Delete the current Node" ng-click="deleteNode(node)">
+        <span class="fa fa-trash"></span> Delete
+      </button>
       <button type="button" class="btn btn-secondary" id="go-back" ng-click="goBack()">
         <i class="fa fa-reply" aria-hidden="true"></i> Return
       </button>

@@ -12,5 +12,7 @@
 	</page>
 	<page method="GET" http-version="1.1" scheme="http" host="${ipaddr}"
 		disable-ssl-verification="true" port="7080" path="/Logout.do"
-		successMatch="HQ Login" response-range="100-399" />
+		successMatch="HQ Login" response-range="100-399" >
+		<header name="foo" value="bar"/>
+	</page>
 </page-sequence>

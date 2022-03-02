@@ -1,0 +1,32 @@
+
+= Enable the Kafka Producer
+
+The Kafka Producer is disabled by default and can be enabled as follows.
+
+First, log in to the Karaf shell of your {page-component-title} instance and configure the Kafka client settings to point to your Kafka broker.
+See link:https://kafka.apache.org/10/documentation.html#producerconfigs[Producer Configs] for a complete list of available options.
+
+.Connect to Karaf shell
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+.Configure the Kafka producer client
+[source, karaf]
+----
+config:edit org.opennms.features.kafka.producer.client
+config:property-set bootstrap.servers kafka-broker-ip:9092 <1>
+config:update
+----
+<1> Set the Kafka broker IP by replacing the kafka-broker-ip and port you want to connect to.
+    Add multiple hosts in a comma-separated list, for example, `kafka-broker-1:9092,kafka-broker-2:9092`
+
+Next, install the `opennms-kafka-producer` feature from that same shell using:
+
+[source, karaf]
+----
+feature:install opennms-kafka-producer
+----
+
+To ensure that the feature continues to be installed on subsequent restarts, add `opennms-kafka-producer` to the `featuresBoot` property in `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.

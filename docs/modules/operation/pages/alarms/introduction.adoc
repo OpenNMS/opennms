@@ -1,0 +1,33 @@
+
+[[ga-alarmd-introduction]]
+= Alarms
+
+{page-component-title} monitors the state of problems with its managed entities (ME), their resources, the services they provide, as well as the applications they host; or more simply, the network.
+{page-component-title}, characterizes the state of these problems as alarms.
+
+While OpenNMS events (or messages) carry problem state attributes such as acknowledgement and severity, alarms are _the_ indicator for problems in the network, (see also situations and <<bsm/introduction.adoc#ga-bsm-introduction, Business Services>>).
+
+== Single Alarm Tracking Problem States
+.First occurrence of a service down problem (SNMP), alarm instantiated
+image::alarms/single_alarm_1.png[]
+
+.The service down event from the poller (via clicking on alarm count)
+image::alarms/single_alarm_2.png[]
+
+.Alarm is cleared immediately (no longer creating separate alarm for normal state)
+image::alarms/single_alarm_3.png[]
+
+.Both service down and service restored events from the poller
+image::alarms/single_alarm_4.png[]
+
+.The second occurrence of the service down problem (SNMP), alarm reduced
+image::alarms/single_alarm_5.png[]
+
+.Both service down events and the previous service restored event from the poller
+image::alarms/single_alarm_6.png[]
+
+.The alarm is again cleared immediately (notice counter does not increment)
+image::alarms/single_alarm_7.png[]
+
+.Both service down and restored events
+image::alarms/single_alarm_8.png[]

@@ -71,6 +71,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockVisitor;
@@ -153,7 +154,7 @@ public class PollablesIT {
     private MockScheduler m_scheduler;
     private MockTimer m_timer;
 
-    private PersisterFactory m_persisterFactory = null;
+    private PersisterFactory m_persisterFactory = new MockPersisterFactory();
     private ThresholdingService m_thresholdingService = null;
 
     @Autowired
@@ -630,8 +631,8 @@ public class PollablesIT {
         pDot1Icmp.doPoll();
         m_network.processStatusChange(new Date());
 
-        final String ifOutageOnNode1 = "select * from outages, ifServices, ipInterface where outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 1 and ipInterface.ipAddr = '192.168.1.1'";
-        final String ifOutageOnNode2 = "select * from outages, ifServices, ipInterface where outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 2 and ipInterface.ipAddr = '192.168.1.1'";
+        final String ifOutageOnNode1 = "select * from outages, ifServices, ipInterface where outages.perspective is null and outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 1 and ipInterface.ipAddr = '192.168.1.1'";
+        final String ifOutageOnNode2 = "select * from outages, ifServices, ipInterface where outages.perspective is null and outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 2 and ipInterface.ipAddr = '192.168.1.1'";
 
         m_eventMgr.finishProcessingEvents();
 

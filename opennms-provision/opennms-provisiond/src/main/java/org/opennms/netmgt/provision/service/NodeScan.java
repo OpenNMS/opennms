@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,10 @@ package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.LocationUtils.DEFAULT_LOCATION_NAME;
+import static org.opennms.netmgt.provision.service.ProvisionService.ABORT;
+import static org.opennms.netmgt.provision.service.ProvisionService.ERROR;
+import static org.opennms.netmgt.provision.service.ProvisionService.LOCATION;
+import static org.opennms.netmgt.provision.service.ProvisionService.NODE_ID;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -45,6 +49,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import com.codahale.metrics.Timer;
+import com.google.common.base.MoreObjects;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
@@ -63,11 +69,14 @@ import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
+import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.TableTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
+
+import io.opentracing.Span;
 
 // FIXME inner non static class with backreference, bad design, keeps objects alive
 public class NodeScan implements Scan {
@@ -88,6 +97,9 @@ public class NodeScan implements Scan {
 
     private OnmsNode m_node;
     private boolean m_agentFound = false;
+    private Span m_span;
+    private final Span m_parentSpan;
+    private ProvisionMonitor monitor;
 
     /**
      * <p>Constructor for NodeScan.</p>
@@ -100,8 +112,9 @@ public class NodeScan implements Scan {
      * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
+     * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object. (optional)
      */
-    public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final OnmsMonitoringLocation location, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator) {
+    public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final OnmsMonitoringLocation location, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, final Span span, final ProvisionMonitor monitor) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
@@ -111,7 +124,8 @@ public class NodeScan implements Scan {
         m_eventForwarder = eventForwarder;
         m_agentConfigFactory = agentConfigFactory;
         m_taskCoordinator = taskCoordinator;
-
+        m_parentSpan = span;
+        this.monitor = monitor;
     }
 
     /**
@@ -227,6 +241,9 @@ public class NodeScan implements Scan {
      */
     public void abort(final String reason) {
         m_aborted = true;
+        m_span.setTag(ERROR, true);
+        m_span.setTag(ABORT, true);
+        m_span.log(reason);
 
         LOG.info("Aborting Scan of node {} for the following reason: {}", m_nodeId, reason);
 
@@ -251,51 +268,71 @@ public class NodeScan implements Scan {
     @Override
     public void run(final BatchTask parent) {
         LOG.info("Scanning node {}/{}/{}", m_nodeId, m_foreignSource, m_foreignId);
-
+        if (monitor != null) {
+            monitor.beginScanning(this);
+        }
+        if (m_parentSpan != null) {
+            m_span = getProvisionService().buildAndStartSpan("NodeScan", m_parentSpan.context());
+        } else {
+            m_span = getProvisionService().buildAndStartSpan("ScheduledScan", null);
+        }
+        if (m_nodeId != null && m_nodeId > 0) {
+            m_span.setTag(NODE_ID, m_nodeId);
+            m_span.setTag(LOCATION, getLocationName());
+        }
         parent.getBuilder().addSequence(
                                         new RunInBatch() {
                                             @Override
                                             public void run(final BatchTask phase) {
+                                                Span span = getProvisionService().buildAndStartSpan("LoadNode", m_span.context());
                                                 loadNode(phase);
+                                                span.finish();
                                             }
                                         },
                                         new RunInBatch() {
                                             @Override
                                             public void run(final BatchTask phase) {
+                                                Span span = getProvisionService().buildAndStartSpan("DetectAgents", m_span.context());
                                                 detectAgents(phase);
+                                                span.finish();
                                             }
                                         },
                                         new RunInBatch() {
                                             @Override
                                             public void run(final BatchTask phase) {
+                                                Span span = getProvisionService().buildAndStartSpan("HandleAgentUndetected", m_span.context());
                                                 handleAgentUndetected(phase);
+                                                span.finish();
                                             }
                                         },
                                         new RunInBatch() {
                                             @Override
                                             public void run(final BatchTask phase) {
+                                                Span span = getProvisionService().buildAndStartSpan("ApplyNodePolicies", m_span.context());
                                                 applyNodePolicies(phase);
+                                                span.finish();
                                             }
                                         },
                                         new RunInBatch() {
                                             @Override
                                             public void run(final BatchTask phase) {
+                                                Span span = getProvisionService().buildAndStartSpan("ScanCompletedEvent", m_span.context());
                                                 scanCompleted(phase);
+                                                span.finish();
+                                                m_span.finish();
                                             }
                                         }
                 );
-
-
     }
-
 
     ScheduledFuture<?> schedule(ScheduledExecutorService executor, NodeScanSchedule schedule) {
 
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                try {
 
+                try {
+                    sendScheduledNodeScanStartedEvent();
                     final Task t = createTask();
                     t.schedule();
                     // NMS-5593 shows 10 provisioning threads all waiting on these
@@ -315,6 +352,17 @@ public class NodeScan implements Scan {
         return executor.scheduleWithFixedDelay(r, schedule.getInitialDelay().getMillis(), schedule.getScanInterval().getMillis(), TimeUnit.MILLISECONDS);
     }
 
+    private void sendScheduledNodeScanStartedEvent() {
+        final EventBuilder bldr = new EventBuilder(EventConstants.PROVISION_SCHEDULED_NODE_SCAN_STARTED, "Provisiond");
+        if (m_nodeId != null) {
+            bldr.setNodeid(m_nodeId);
+        }
+        bldr.addParam(EventConstants.PARM_FOREIGN_SOURCE, m_foreignSource);
+        bldr.addParam(EventConstants.PARM_FOREIGN_ID, m_foreignId);
+
+        m_eventForwarder.sendNow(bldr.getEvent());
+    }
+
     /**
      * <p>loadNode</p>
      *
@@ -327,7 +375,7 @@ public class NodeScan implements Scan {
                 abort(String.format("Unable to get requisitioned node (%s/%s): aborted", m_foreignSource, m_foreignId));
             } else {
                 for(final OnmsIpInterface iface : m_node.getIpInterfaces()) {
-                    loadNode.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getLocation(), getProvisionService()));
+                    loadNode.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getLocation(), getProvisionService(), m_span));
                 }
             }
         } else {
@@ -646,40 +694,54 @@ public class NodeScan implements Scan {
         @Override
         public void run(final ContainerTask<?> parent) {
             //AgentScan
+            Span agentScanSpan = m_provisionService.buildAndStartSpan("AgentScan", m_span.context());
+            this.setSpan(agentScanSpan);
             parent.getBuilder().addSequence(
-                                            new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), getLocation(), this, getAgentConfigFactory(), getProvisionService(), getNodeId()),
+                                            new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), getLocation(), this, getAgentConfigFactory(), getProvisionService(), getNodeId(), agentScanSpan),
                                             new RunInBatch() {
                                                 @Override
                                                 public void run(final BatchTask phase) {
+                                                    Span span = m_provisionService.buildAndStartSpan("DetectPhysicalInterfaces", agentScanSpan.context());
                                                     detectPhysicalInterfaces(phase);
+                                                    span.finish();
                                                 }
                                             },
                                             new RunInBatch() {
                                                 @Override
                                                 public void run(final BatchTask phase) {
+                                                    Span span = m_provisionService.buildAndStartSpan("DetectIpAddressTable", agentScanSpan.context());
                                                     detectIpAddressTable(phase);
+                                                    span.finish();
                                                 }
                                             },
                                             new RunInBatch() {
                                                 @Override
                                                 public void run(final BatchTask phase) {
+                                                    Span span = m_provisionService.buildAndStartSpan("DetectIpInterfaceTable", agentScanSpan.context());
                                                     detectIpInterfaceTable(phase);
+                                                    span.finish();
                                                 }
                                             },
                                             new RunInBatch() {
                                                 @Override
                                                 public void run(final BatchTask phase) {
+                                                    Span span = m_provisionService.buildAndStartSpan("DeleteObsoleteResources", agentScanSpan.context());
                                                     deleteObsoleteResources();
+                                                    span.finish();
                                                 }
                                             },
                                             new RunInBatch() {
                                                 @Override
                                                 public void run(final BatchTask phase) {
+                                                    Span span = m_provisionService.buildAndStartSpan("AgentScan-completed-event", agentScanSpan.context());
                                                     completed();
+                                                    span.finish();
                                                 }
                                             }
                     );
+            agentScanSpan.finish();
         }
+
     }
 
     /**
@@ -744,32 +806,43 @@ public class NodeScan implements Scan {
         @Override
         public void run(final ContainerTask<?> parent) {
             //NoAgentScan
+            Span noAgentScanSpan = m_provisionService.buildAndStartSpan("NoAgentScan", m_span.context());
+            this.setSpan(noAgentScanSpan);
             parent.getBuilder().addSequence(
                                             new RunInBatch() {
                                                 @Override
                                                 public void run(final BatchTask phase) {
+                                                    Span span = m_provisionService.buildAndStartSpan("ApplyNodePolicies", noAgentScanSpan.context());
                                                     applyNodePolicies(phase);
+                                                    span.finish();
                                                 }
                                             },
                                             new RunInBatch() {
                                                 @Override
                                                 public void run(final BatchTask phase) {
+                                                    Span span = m_provisionService.buildAndStartSpan("StampProvisionedInterfaces", noAgentScanSpan.context());
                                                     stampProvisionedInterfaces(phase);
+                                                    span.finish();
                                                 }
                                             },
                                             new RunInBatch() {
                                                 @Override
                                                 public void run(final BatchTask phase) {
+                                                    Span span = m_provisionService.buildAndStartSpan("DeleteObsoleteResources", noAgentScanSpan.context());
                                                     deleteObsoleteResources(phase);
+                                                    span.finish();
                                                 }
                                             },
                                             new RunInBatch() {
                                                 @Override
                                                 public void run(final BatchTask phase) {
+                                                    Span span = m_provisionService.buildAndStartSpan("DoPersistNodeInfo", noAgentScanSpan.context());
                                                     doPersistNodeInfo(phase);
+                                                    span.finish();
                                                 }
                                             }
                     );
+            noAgentScanSpan.finish();
         }
 
     }
@@ -781,6 +854,7 @@ public class NodeScan implements Scan {
 
         private final OnmsNode m_node;
         private final Integer m_nodeId;
+        private Span m_baseAgentSpan;
 
         private BaseAgentScan(final Integer nodeId, final OnmsNode node) {
             m_nodeId = nodeId;
@@ -830,9 +904,9 @@ public class NodeScan implements Scan {
         }
 
         void updateIpInterface(final BatchTask currentPhase, final OnmsIpInterface iface) {
-            getProvisionService().updateIpInterfaceAttributes(getNodeId(), iface);
+            getProvisionService().updateIpInterfaceAttributes(getNodeId(), iface, monitor != null ? monitor.getName() : null);
             if (iface.isManaged()) {
-                currentPhase.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getLocation(), getProvisionService()));
+                currentPhase.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getLocation(), getProvisionService(), m_baseAgentSpan));
             }
         }
 
@@ -844,6 +918,10 @@ public class NodeScan implements Scan {
                 }
             };
             return r;
+        }
+
+        public void setSpan(Span span) {
+            m_baseAgentSpan = span;
         }
 
     }
@@ -864,7 +942,6 @@ public class NodeScan implements Scan {
         .append("provision service", m_provisionService)
         .toString();
     }
-
 
     /**
      * <p>detectAgents</p>
@@ -961,7 +1038,8 @@ public class NodeScan implements Scan {
             bldr.addParam(EventConstants.PARM_FOREIGN_ID, getForeignId());
             getEventForwarder().sendNow(bldr.getEvent());
         }
-
+        if (monitor != null) {
+            monitor.finishScanning(this);
+        }
     }
-
 }

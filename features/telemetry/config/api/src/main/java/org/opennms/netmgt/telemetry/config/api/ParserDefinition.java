@@ -41,4 +41,11 @@ public interface ParserDefinition extends TelemetryBeanDefinition {
      * @return The name of the queue the parser "writes" to. Must not be null.
      */
     String getQueueName();
+
+    /**
+     * Returns the full qualified (unique) name of the parser.
+     *
+     * @return The name uniquely identifying the parser. Must not be null.
+     */
+    String getFullName();
 }

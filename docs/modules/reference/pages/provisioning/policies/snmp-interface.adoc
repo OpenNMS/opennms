@@ -1,0 +1,33 @@
+[[snmp-interface-policy]]
+= SNMP Interface Policy
+
+This policy controls whether to persist the discovered SNMP interface entities and whether {page-component-title} should collect performance metrics from the SNMP agent for specific SNMP interfaces.
+
+[options="header"]
+[cols="1,3"]
+|===
+
+| Action
+| Description
+
+| DISABLE_COLLECTION
+| Disallow collecting performance metrics on the interface.
+
+| DISABLE_POLLING
+| Disallow SNMP polling on the interface.
+
+| DO_NOT_PERSIST
+| Prevent the SNMP interface from being added to the node.
+
+| ENABLE_COLLECTION
+| Allow collecting performance metrics on the interface.
+
+| ENABLE_POLLING
+| Allow SNMP polling on the interface.
+|===
+
+Another use of this policy is to mark interfaces for polling by the <<operation:snmp-poller/concepts.adoc#snmp-interface-poller, SNMP Interface Poller>>.
+The SNMP Interface Poller is a separate daemon that is disabled by default.
+For this daemon to do any work, some SNMP interfaces need to be selected for polling.
+
+Use the `ENABLE_POLLING` and `DISABLE_POLLING` actions available in this policy to manage which SNMP interfaces this daemon polls.

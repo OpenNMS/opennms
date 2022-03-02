@@ -27,4 +27,14 @@
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 
+  <bean id="filterWatcher" class="org.opennms.netmgt.dao.support.DefaultFilterWatcher" />
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.FilterWatcher" ref="filterWatcher" />
+  <bean id="filterWatcherListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="filterWatcher" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+
+  <bean id="serviceTracker" class="org.opennms.netmgt.dao.support.DefaultServiceTracker" />
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.ServiceTracker" ref="serviceTracker" />
+
 </beans>

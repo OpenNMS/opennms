@@ -139,7 +139,7 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
         adder.add(Protocol.NETFLOW9, 92, UnsignedValue::parserWith32Bit, "SRC TRAFFIC INDEX", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 93, UnsignedValue::parserWith32Bit, "DST TRAFFIC INDEX", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 94, StringValue::parser, "APPLICATION DESCRIPTION", Semantics.DEFAULT);
-        adder.add(Protocol.NETFLOW9, 95, UnsignedValue::parserWith64Bit, "APPLICATION TAG", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 95, OctetArrayValue::parser, "APPLICATION TAG", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 96, StringValue::parser, "APPLICATION NAME", Semantics.DEFAULT);
         // 97 ?
         adder.add(Protocol.NETFLOW9, 98, UnsignedValue::parserWith8Bit, "postipDiffServCodePoint", Semantics.DEFAULT);
@@ -150,5 +150,9 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
         adder.add(Protocol.NETFLOW9, 103, UnsignedValue::parserWith32Bit, "layer2packetSectionSize", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 104, OctetArrayValue::parser, "layer2packetSectionData", Semantics.DEFAULT);
         // 105-127 reserved for future use by cisco
+
+        // Cisco also supports absolute timestamps on some platforms, see NMS-13006
+        adder.add(Protocol.NETFLOW9, 152, UnsignedValue::parserWith64Bit, "flowStartMilliseconds", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 153, UnsignedValue::parserWith64Bit, "flowEndMilliseconds", Semantics.DEFAULT);
     }
 }

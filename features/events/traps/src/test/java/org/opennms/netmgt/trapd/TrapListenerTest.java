@@ -82,9 +82,9 @@ public class TrapListenerTest {
         receiver.setTrapdConfig(config); // update and verify that it now is equal
         Assert.assertEquals(Boolean.FALSE, receiver.hasConfigurationChanged(new TrapdConfigBean(config)));
 
-        // Adding another copy of an existing user will NOT trigger an update, the first entry found in the list will be used
+        // Adding another copy of an existing user will now trigger an update
         config.getSnmpv3UserCollection().add(createUser("MD5", "0p3nNMSv3", "some-engine-id", "DES", "0p3nNMSv3", "some-security-name"));
-        Assert.assertEquals(Boolean.FALSE, receiver.hasConfigurationChanged(new TrapdConfigBean(config)));
+        Assert.assertEquals(Boolean.TRUE, receiver.hasConfigurationChanged(new TrapdConfigBean(config)));
 
         // Editing a user should result in a difference
         config.getSnmpv3UserCollection().get(0).setPrivacyProtocol("AES");
@@ -111,7 +111,8 @@ public class TrapListenerTest {
         Assert.assertEquals(Boolean.FALSE, receiver.hasSnmpV3UsersChanged(new TrapdConfigBean(config)));
     }
 
-    private static Snmpv3User createUser(String authProtocol,
+
+    public static Snmpv3User createUser(String authProtocol,
                                          String autoPassPhrase,
                                          String engineId,
                                          String privatcyProtocol,

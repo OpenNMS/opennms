@@ -92,7 +92,7 @@ angular.module('onms.datetimepicker', ['ui.bootstrap'])
                         if (event.date) {
                             scope.date = event.date.format(scope.options.format);
                             scope.error = false;
-                            scope.onStateChange({invalidState: scope.error})
+                            scope.onStateChange({invalidState: scope.error, date: scope.date})
                         }
                     });
                 });

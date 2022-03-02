@@ -1,0 +1,78 @@
+
+[[ga-notifications-strategy-mattermost]]
+= Mattermost
+
+If your organization uses the Mattermost team communications platform, you can configure {page-component-title} to send notices to any Mattermost channel via an incoming webhook.
+You must configure an incoming webhook in your Mattermost team and do a bit of manual configuration to your {page-component-title} instance.
+
+First, add the following bit of XML to the `notificationCommands.xml` configuration file (no customization should be needed):
+
+[source, xml]
+----
+<command binary="false">
+  <name>mattermost</name>
+  <execute>org.opennms.netmgt.notifd.MattermostNotificationStrategy</execute>
+  <comment>class for sending messages to a Mattermost team channel for notifications</comment>
+  <argument streamed="false">
+    <switch>-subject</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+</command>
+----
+
+Then create a new file called `mattermost.properties` in the `opennms.properties.d` directory with the following contents (customizing values as appropriate):
+
+[source, properties]
+----
+org.opennms.netmgt.notifd.mattermost.webhookURL=https://mattermost.example.com/hooks/bf980352b5f7232efe721dbf0626bee1
+----
+
+Restart OpenNMS so that the `mattermost.properties` file will be loaded. Your new `mattermost` notification command is now available for use in a destination path.
+
+== Additional options
+The following table lists optional properties that you may use in `mattermost.properties` to customize your Mattermost notifications.
+
+IMPORTANT: To improve the layout, the property names have been shortened to their final component; you must prepend `org.opennms.netmgt.notifd.mattermost.` when using them.
+
+.Additional optional parameters for the Mattermost notification strategy
+[options="header"]
+[cols="1,3,1,2"]
+|===
+| Parameter
+| Description
+| Default
+| Example
+
+| channel
+| Specify a channel or private group other than the one targeted by the webhook.
+| Webhook default
+| NetOps
+
+| username
+| The username to associate with the notification posts.
+| None
+| OpenNMS_Bot
+
+| iconEmoji
+| An emoji sequence to use as the icon for the notification posts.
+| No icon
+| :metal:
+
+| iconURL
+| The URL of an image to use as the icon for the notification posts.
+| No icon
+| \https://example.org/assets/icon.png
+
+| useSystemProxy
+| Should the system-wide proxy settings be used?
+Configure the system proxy settings via <<admin/system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>.
+| true
+| true
+|===
+
+IMPORTANT: Some of the optional configuration parameters are incompatible with some versions of Mattermost.
+           For instance, the `channel` option is known not to work with Mattermost 3.7.0.
+
+For more information on incoming webhooks in Mattermost, see https://docs.mattermost.com/developer/webhooks-incoming.html[Mattermost Integration Guide].

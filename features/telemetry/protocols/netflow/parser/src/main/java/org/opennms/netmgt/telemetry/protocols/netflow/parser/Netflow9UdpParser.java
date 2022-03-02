@@ -33,8 +33,10 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.time.Duration;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -42,10 +44,12 @@ import org.opennms.netmgt.telemetry.listeners.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow9MessageBuilder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.MoreObjects;
@@ -54,6 +58,9 @@ import com.google.common.base.Objects;
 import io.netty.buffer.ByteBuf;
 
 public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispatchable {
+
+    private final Netflow9MessageBuilder messageBuilder = new Netflow9MessageBuilder();
+
     public Netflow9UdpParser(final String name,
                              final AsyncDispatcher<TelemetryMessage> dispatcher,
                              final EventForwarder eventForwarder,
@@ -61,6 +68,10 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
                              final DnsResolver dnsResolver,
                              final MetricRegistry metricRegistry) {
         super(Protocol.NETFLOW9, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+    }
+
+    public Netflow9MessageBuilder getMessageBuilder() {
+        return this.messageBuilder;
     }
 
     @Override
@@ -115,8 +126,37 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
         }
 
         @Override
+        public String getDescription() {
+            return InetAddressUtils.str(this.remoteAddress);
+        }
+
+        @Override
         public InetAddress getRemoteAddress() {
             return this.remoteAddress;
         }
+    }
+
+    public Long getFlowActiveTimeoutFallback() {
+        return this.messageBuilder.getFlowActiveTimeoutFallback();
+    }
+
+    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
+        this.messageBuilder.setFlowActiveTimeoutFallback(flowActiveTimeoutFallback);
+    }
+
+    public Long getFlowInactiveTimeoutFallback() {
+        return this.messageBuilder.getFlowInactiveTimeoutFallback();
+    }
+
+    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
+        this.messageBuilder.setFlowInactiveTimeoutFallback(flowInactiveTimeoutFallback);
+    }
+
+    public Long getFlowSamplingIntervalFallback() {
+        return this.messageBuilder.getFlowSamplingIntervalFallback();
+    }
+
+    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
+        this.messageBuilder.setFlowSamplingIntervalFallback(flowSamplingIntervalFallback);
     }
 }

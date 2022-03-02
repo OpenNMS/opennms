@@ -1,0 +1,29 @@
+[[jmx-exporter]]
+= Prometheus JMX exporter
+
+To provide an out-of-band monitoring of the JVM with the Minion process, this container image ships with the Prometheus JMX exporter.
+The default configuration, which you can edit, appears in the `minion-config.yaml` file:
+
+```yaml
+java:
+  agent:
+    prom-jmx-exporter:
+      jmxUrl: "service:jmx:rmi:///jndi/rmi://127.0.0.1:1299/karaf-minion"
+      username: "admin"
+      password: "admin"
+      lowerCaseOutputName: "true"
+      lowercaseOutputLabelNames: "true"
+      whitelistObjectNames:
+      - "org.opennms.core.ipc.sink.producer:*"
+      - "org.opennms.netmgt.dnsresolver.netty:*"
+      - "org.opennms.netmgt.telemetry:*"
+```
+
+The Minion container images come with the Prometheus JMX exporter.
+Enable them with the following:
+
+```yaml
+process-env:
+  java-opts:
+    - -javaagent:/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar=9299:/opt/prom-jmx-exporter/config.yaml
+```

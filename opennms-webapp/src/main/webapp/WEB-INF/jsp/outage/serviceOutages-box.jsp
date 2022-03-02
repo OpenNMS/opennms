@@ -62,7 +62,7 @@
 <div class="card-header">
   <span><a href="${outageLink}">Recent&nbsp;Outages</a></span>
 </div>
-<table class="table table-sm">
+<table class="table table-sm severity">
 
 <% if (outages.length == 0) { %>
   <td colspan="3">There have been no outages on this service in the last 24 hours.</td>
@@ -77,7 +77,7 @@
       Outage outage = outages[i];
       pageContext.setAttribute("outage", outage);
   %>
-     <tr class="<%=(outages[i].getRegainedServiceTime() == null) ? "Critical" : "Normal"%>">
+     <tr class="<%=(outages[i].getRegainedServiceTime() == null) ? "severity-Critical" : "severity-Cleared"%>">
       <td class="divider"><onms:datetime date="${outage.lostServiceTime}"/></td>
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
         <td class="divider bright"><b>DOWN</b></td>

@@ -1,0 +1,47 @@
+[[ga-elastic-field-index]]
+= Table of Index Mapping
+
+The following table describes the mapping of simple {page-component-title} events to the Raw Events Index.
+Note that fields that begin with an underscore (_) are internal to Elasticsearch.
+
+[options="header"]
+[cols="1,3,1,3"]
+|===
+2+|Event Index Fields                                                                                    2+|Description
+s|Event Field       s|Example Event JSON                                                                  s| Type  s| Description
+| _index             | "_index": "opennms-raw-events-2017.03"                                              | string | The Elasticsearch index to store the document.
+| _type              | "_type": "eventdata"                                                                | string | Either `alarmdata` or `eventdata`.
+| _id                | "_id": "1110"                                                                       | string | The event or alarm ID, if present.
+| _score             | "_score": 1                                                                         | long   | Internal Elasticsearch ranking of the search result.
+| _source            | "_source": {...}                                                                    | string | The content of the document to store.
+| @timestamp         | "@timestamp": "2017-03-02T15:20:56.861Z"                                            | date   | Time from `event.getTime()`.
+| dom                | "dom": "2"                                                                          | long   | Day of month from `@timestamp`.
+| dow                | "dow": "5"                                                                          | long   | Day of week from `@timestamp`.
+| hour               | "hour": "15"                                                                        | long   | Hour of day from `@timestamp`.
+| eventdescr         | "eventdescr": "<p>Alarm <ahref="/opennms/alarm/detail.htm?id=30">30</a> Cleared<p>" | string | Event description.
+| eventseverity      | "eventseverity": "3"                                                                | long   | Event severity.
+| eventseverity_text | "eventseverity_text": "Normal"                                                      | string | Text representation of severity value.
+| eventsource        | "eventsource": "AlarmChangeNotifier"                                                | string | OpenNMS event source.
+| eventuei           | "eventuei": "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmCleared"      | string | OpenNMS unique event identifier (UEI) of the event.
+| id                 | "id": "1110"                                                                        | string | Event ID.
+| interface          | "interface": "127.0.0.1"                                                            | string | Interface of the event.
+| ipaddr             | "ipaddr": "127.0.0.1"                                                               | string | IP address of the event.
+| logmsg             | "logmsg": "<p>Alarm <a href="/opennms/alarm/detail.htm?id=30">30</a> Cleared<p>"    | string | Log message of the event.
+| logmsgdest         | "logmsgdest": "logndisplay"                                                         | string | Log destination of the event.
+| asset-category     | "asset-category": "Power"                                                           | string | All `asset_` entries correspond to fields in the asset table of the node referenced in the event.
+                                                                                                                      These fields are present only if populated in the asset table.
+| asset-building     | "asset-building": "55"                                                              | string |
+| asset-room         | "asset-room": "F201"                                                                | string |
+| asset-floor        | "asset-floor": "Gnd"                                                                | string |
+| asset-rack         | "asset-rack": "2101"                                                                | string |
+| categories         | "categories": ""                                                                    | string | `categories` corresponds to the node categories table.
+                                                                                                                      This is a comma-separated list of categories associated with this node ID.
+                                                                                                                      This field is indexed, so separate values can be searched.
+| foreignid          | "foreignid": "1488375237814"                                                        | string | Foreign ID of the node associated with the event.
+| foreignsource      | "foreignsource": "LocalTest"                                                        | string | Foreign source of the node associated with event.
+| nodeid             | "nodeid": "88"                                                                      | string | Node ID of the node associated with the alarm or event.
+| nodelabel          | "nodelabel": "localhost"                                                            | string | Node label of the node associated with the alarm or event.
+| nodesyslocation    | "nodesyslocation": "Unknown (edit /etc/snmp/snmpd.conf)"                            | string | SNMP `syslocation` of the node associated with the alarm or event.
+| nodesysname        | "nodesysname": "localhost.localdomain"                                              | string | SNMP `sysname` of the node associated with the alarm or event.
+| qosalarmstate      | "qosalarmstate": null                                                               | string |
+|===

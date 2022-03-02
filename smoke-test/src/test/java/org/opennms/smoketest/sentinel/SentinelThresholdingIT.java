@@ -103,7 +103,7 @@ public class SentinelThresholdingIT {
         // However, sentinel may not know about it yet, so we manually sync the InterfaceToNodeCache in order to
         // "see" the new nodes and interfaces.
         final InetSocketAddress sentinelSshAddress = stack.sentinel().getSshAddress();
-        new KarafShell(sentinelSshAddress).runCommand("nodecache:sync");
+        new KarafShell(sentinelSshAddress).runCommand("opennms:sync-node-cache");
 
         final InetSocketAddress minionListenerAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.JTI);
         sendTriggerHighThresholdMessages(minionListenerAddress);

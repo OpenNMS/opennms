@@ -212,10 +212,25 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     /** {@inheritDoc} */
     @Override
     public Map<InetAddress, Set<String>> getIPAddressServiceMap(final String rule) throws FilterParseException {
-        final Map<InetAddress, Set<String>> ipServices = new TreeMap<InetAddress, Set<String>>(new InetAddressComparator());
+        final Map<Integer, Map<InetAddress, Set<String>>> nodeIpServices = getNodeIPAddressServiceMap(rule);
+
+        // Flatten the map, remove the node
+        final Map<InetAddress, Set<String>> ipServices = new TreeMap<>(new InetAddressComparator());
+        nodeIpServices.values().forEach(ipServicesForNode -> {
+            ipServicesForNode.forEach((ipAddr, services) -> {
+                ipServices.computeIfAbsent(ipAddr, key -> new TreeSet<>()).addAll(services);
+            });
+        });
+
+        return ipServices;
+    }
+
+    @Override
+    public Map<Integer, Map<InetAddress, Set<String>>> getNodeIPAddressServiceMap(String rule) throws FilterParseException {
+        final Map<Integer, Map<InetAddress, Set<String>>> nodeIpServices = new TreeMap<>();
         String sqlString;
 
-        LOG.debug("Filter.getIPAddressServiceMap({})", rule);
+        LOG.debug("Filter.getNodeIPAddressServiceMap({})", rule);
 
         // get the database connection
         Connection conn = null;
@@ -225,8 +240,8 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             d.watch(conn);
 
             // parse the rule and get the sql select statement
-            sqlString = getIPServiceMappingStatement(rule);
-            LOG.debug("Filter.getIPAddressServiceMap({}): SQL statement: {}", rule, sqlString);
+            sqlString = getNodeIPServiceMappingStatement(rule);
+            LOG.debug("Filter.getNodeIPAddressServiceMap({}): SQL statement: {}", rule, sqlString);
 
             // execute query
             final Statement stmt = conn.createStatement();
@@ -238,20 +253,19 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             if (rset != null) {
                 // Iterate through the result and build the array list
                 while (rset.next()) {
-                    final InetAddress ipaddr = addr(rset.getString(1));
-
-                    if (ipaddr != null) {
-                        if (!ipServices.containsKey(ipaddr)) {
-                            ipServices.put(ipaddr, new TreeSet<String>());
-                        }
-
-                        ipServices.get(ipaddr).add(rset.getString(2));
+                    final Integer nodeId = rset.getInt(1);
+                    final InetAddress ipaddr = addr(rset.getString(2));
+                    final String serviceName = rset.getString(3);
+                    if (ipaddr == null || serviceName == null) {
+                        continue;
                     }
+                    Map<InetAddress, Set<String>> ifServices = nodeIpServices.computeIfAbsent(nodeId, key -> new TreeMap<>(new InetAddressComparator()));
+                    ifServices.computeIfAbsent(ipaddr, key -> new TreeSet<>()).add(serviceName);
                 }
             }
 
         } catch (final FilterParseException e) {
-        	LOG.warn("Filter Parse Exception occurred getting IP Service List.", e);
+            LOG.warn("Filter Parse Exception occurred getting IP Service List.", e);
             throw new FilterParseException("Filter Parse Exception occurred getting IP Service List: " + e.getLocalizedMessage(), e);
         } catch (final SQLException e) {
             LOG.warn("SQL Exception occurred getting IP Service List.", e);
@@ -266,7 +280,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             d.cleanUp();
         }
 
-        return ipServices;
+        return nodeIpServices;
     }
 
     @Override
@@ -462,17 +476,18 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     /**
-     * <p>getIPServiceMappingStatement</p>
+     * <p>getNodeIPServiceMappingStatement</p>
      *
      * @param rule a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws org.opennms.netmgt.filter.api.FilterParseException if any.
      */
-    public String getIPServiceMappingStatement(final String rule) throws FilterParseException {
+    public String getNodeIPServiceMappingStatement(final String rule) throws FilterParseException {
     	final List<Table> tables = new ArrayList<>();
 
     	final StringBuilder columns = new StringBuilder();
-        columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "ipAddr"));
+        columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "nodeID"));
+        columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "ipAddr"));
         columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "serviceName"));
 
         final String where = parseRule(tables, rule);

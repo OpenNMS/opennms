@@ -45,7 +45,6 @@ import java.util.Map;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -60,7 +59,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  */
-@Distributable
 final public class MemcachedMonitor extends AbstractServiceMonitor {
 
     public static final Logger LOG = LoggerFactory.getLogger(MemcachedMonitor.class);

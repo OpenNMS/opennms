@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -63,10 +63,10 @@ import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.config.wsman.Attrib;
 import org.opennms.netmgt.config.wsman.Collection;
-import org.opennms.netmgt.config.wsman.Definition;
+import org.opennms.netmgt.config.wsman.credentials.Definition;
 import org.opennms.netmgt.config.wsman.Group;
 import org.opennms.netmgt.config.wsman.Groups;
-import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
+import org.opennms.netmgt.config.wsman.credentials.WsmanAgentConfig;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
@@ -150,7 +150,13 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
 
     @Override
     public CollectionSet collect(CollectionAgent agent, Map<String, Object> parameters) throws CollectionException {
-        LOG.debug("collect(agent={}, parameters={})", agent, parameters);
+        if (LOG.isDebugEnabled()) {
+            final Map<String, Object> sanitizedParameters = parameters.entrySet().stream()
+                    .filter(e -> !e.getKey().matches("(?i).*password.*"))
+                    .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+
+            LOG.debug("collect(agent={}, parameters={})", agent, sanitizedParameters);
+        }
 
         final WsmanAgentConfig config = (WsmanAgentConfig)parameters.get(WSMAN_AGENT_CONFIG_KEY);
         final Groups groups = (Groups)parameters.get(WSMAN_GROUPS_KEY);

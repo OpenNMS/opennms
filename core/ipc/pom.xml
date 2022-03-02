@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>29.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -14,5 +14,8 @@
     <module>common</module>
     <module>rpc</module>
     <module>sink</module>
+    <module>grpc</module>
+    <module>osgi</module>
+    <module>twin</module>
   </modules>
 </project>

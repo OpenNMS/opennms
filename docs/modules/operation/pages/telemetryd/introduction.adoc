@@ -1,0 +1,118 @@
+
+[[ga-telemetryd]]
+= Telemetry Daemon
+
+The telemetry daemon (telemetryd) provides an extensible framework you can use to handle sensor data pushed to {page-component-title}.
+Use the framework to support applications that use different protocols to transfer metrics.
+With telemetryd, operators can define listeners supporting different protocols to receive the telemetry data and adapters transferring the received data into generic formats like flows or performance data.
+
+.Generic component overview of components in telemetryd
+image::telemetryd/telemetryd-overview.png[]
+
+The configuration is split in two parts.
+Listeners and attached parsers or connectors on one side receive telemetry data transported over a specific protocol and parse the data according to the protocol's specification.
+On the other side, adapters pick up the parsed data and enrich it before persisting it.
+
+Queues transport the parsed telemetry data from parsers to adapters by binding a specific parser to a specific adapter.
+
+== Listeners and Parsers
+Listeners receive sensor data from an external source and hand them off to parsers, which handle the transport protocol format and extract the transported data.
+
+A listener does the transport protocol handling like opening a socket and accepting incoming connections.
+The received messages are then passed to the parser configured for the listener that parses the concrete protocol implementation and extracts all available information out of the received message.
+For further processing, the extracted data is handed over to the configured queue.
+
+For example, a listener may open a UDP socket for receiving packets and an assigned parser parses the incoming IPFIX packets.
+
+Parsers and listeners must work together closely.
+Therefore, they cannot be combined in any random way.
+Which parser is supported by which listener is described in the documentation of each respective parser.
+
+For information on supported listeners and how to configure them, see xref:reference:telemetryd/listeners/introduction.adoc[telemetryd listeners reference section].
+
+== Connectors
+
+Connectors initiate a connection and maintain a session with an agent. 
+A new connector is created for every agent it is responsible for connecting to.
+Agent here refers to an IP service that is a named service attached to an IP interface on a specific node.
+Connectors do not use parsers, and dispatch messages directly to a queue.
+
+.Connectors in telemetryd
+image::telemetryd/telemetryd-connectors.png[]
+
+== Adapters
+Adapters enrich and process the data dispatched over a queue.
+They receive the data from the queue and transform it into a format usable by {page-component-title}.
+Adapters can also enrich the incoming data to attach node or interface information, depending on information already available.
+
+For example, an adapter may be used to transform telemetry data received via sFlow into performance data and persist it to the applicable node.
+
+Since an adapter must handle data dependent to a transport protocol, not all adapters can be used in combination with any possible parser.
+Which parsers are supported by which adapters is described in the documentation of each respective adapter.
+
+TIP: If you have multiple adapters, the execution order is the same as defined in the `telemetryd-configuration.xml`.
+
+=== Working with Minions
+Listeners and parsers run on Minion, but adapters do not. 
+Adapters run on Sentinel, while the main {page-component-title} instance can run listeners, parsers, and adapters. 
+When using Minion as a listener, you must use adapters on {page-component-title} or Sentinel to transform the data. 
+
+== Queues
+Queues transfer data between parsers and adapters and are represented by a channel in the messaging system.
+
+=== Configuring Queues
+
+The following options can help fine tune queue behavior:
+
+[options="header"]
+[cols="1,1,3,1"]
+|===
+| Queue attribute (OpenNMS) | Key (Minion/Sentinel)  | Description | Default value
+| threads                 | queue.threads            | Number of threads used for consuming and dispatching messages. | (2 * number of cores)
+| queue-size              | queue.size               | Maximum number of messages to keep in memory while waiting to be dispatched. | 10000
+| use-routing-key         | queue.use-routing-key    | Whether to use the routing key when forwarding messages to the broker. This enforces message ordering. | true
+| batch-size              | batch.size               | Messages are aggregated in batches before being dispatched. When the batch reaches this size, it will be dispatched. | 1000
+| batch-interval          | batch.interval           | Messages are aggregated in batches before being dispatched. When the batch has been created for longer than this interval (ms) it will be dispatched, regardless of the current size. | 500
+|===
+
+TIP: When using Kafka as a message broker, setting `use-routing-key` to `false` balances the messages across all partitions.
+This can be done safely for flows, but is not supported for metrics when using thresholding (order is required).
+
+When setting these options in OpenNMS, you can add them as an attribute to the `<queue>` element.
+For example:
+[source, xml]
+----
+<queue name="IPFIX" use-routing-key="false">
+    ...
+</queue>
+----
+
+When setting these options on Minion, you can add them as parser properties, and on Sentinel as adapter properties:
+[source, properties]
+----
+name=IPFIX-Listener
+class-name=org.opennms.netmgt.telemetry.listeners.UdpListener
+parameters.host=0.0.0.0
+parameters.port=4738
+parsers.0.name=IPFIX
+parsers.0.class-name=org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser
+parsers.0.queue.use-routing-key=false
+----
+
+== Push Sensor Data through Minion
+Listeners and their parsers may run on either {page-component-title} or Minion, whereas adapters run on {page-component-title} or Sentinel.
+If a listener and its parsers are running on Minion, the received messages will be dispatched automatically to the associated adapters running in {page-component-title} or Sentinel via a queue.
+Minions can listen (receive) data, but require {page-component-title} or Sentinel to process.
+
+.Running Listener on a Minion forwarding packets using the messaging system
+image::telemetryd/telemetryd-minion.png[]
+
+[[telemetryd-reverse-hostname-resolution]]
+== Reverse Hostname Resolution
+Some parsers support reverse hostname resolution to annotate IP addresses with the actual hostname.
+The Minion performs the reverse name lookup while parsing the protocol data.
+The resolved hostname, if found, is attached to the address information and both are sent to the adapter for further processing.
+
+For more information see <<dnsresolver/introduction.adoc#ga-dnsresolver, DNS Resolver>>
+
+The following parsers currently support reverse hostname resolution: Netflow v5, Netflow v9, IPFIX, and sFlow.

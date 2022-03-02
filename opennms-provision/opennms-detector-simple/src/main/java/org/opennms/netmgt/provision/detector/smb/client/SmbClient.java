@@ -31,6 +31,11 @@ package org.opennms.netmgt.provision.detector.smb.client;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import jcifs.CIFSContext;
+import jcifs.NameServiceClient;
+import jcifs.context.BaseContext;
+import jcifs.context.SingletonContext;
+import jcifs.netbios.NameServiceClientImpl;
 import jcifs.netbios.NbtAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -47,6 +52,7 @@ import org.opennms.netmgt.provision.support.Client;
 public class SmbClient implements Client<LineOrientedRequest, NbtAddressResponse>{
     
     private NbtAddress m_nbtAddress;
+    private NameServiceClient m_nsc;
     private String m_address;
     
     /**
@@ -61,8 +67,10 @@ public class SmbClient implements Client<LineOrientedRequest, NbtAddressResponse
     /** {@inheritDoc} */
     @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
+       CIFSContext base = SingletonContext.getInstance();
+       m_nsc = new NameServiceClientImpl(base);
        m_address = InetAddressUtils.str(address);
-       m_nbtAddress = NbtAddress.getByName(m_address);
+       m_nbtAddress = (NbtAddress) m_nsc.getNbtByName(m_address);
     }
 
     /**

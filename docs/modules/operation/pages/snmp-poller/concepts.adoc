@@ -1,0 +1,210 @@
+[[snmp-interface-poller]]
+= SNMP Interface Poller
+
+{page-component-title} can monitor the status of an SNMP interface that is not directly monitored by a <<service-assurance/introduction.adoc#ga-service-assurance, Service Assurance>> monitor.
+
+The SNMP interface poller is a separate service that uses a node interface, typically a management interface, to get administration and operational status for other interfaces present on the device.
+On a configurable time interval, a SNMP GET request is made for two specific objects in an `ifEntry` of the `ifTable` defined in the `IF-MIB`:
+
+```
+ifAdminStatus OBJECT-TYPE
+              SYNTAX  INTEGER {
+                          up(1),       -- ready to pass packets
+                          down(2),
+                          testing(3)   -- in some test mode
+                      }
+              ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "The desired state of the interface.  The testing(3) state
+                      indicates that no operational packets can be passed. When a
+                      managed system initializes, all interfaces start with
+                      ifAdminStatus in the down(2) state.  As a result of either
+                      explicit management action or per configuration information
+                      retained by the managed system, ifAdminStatus is then
+                      changed to either the up(1) or testing(3) states (or remains
+                      in the down(2) state)."
+              ::= { ifEntry 7 }
+
+ifOperStatus OBJECT-TYPE
+              SYNTAX  INTEGER {
+                          up(1),        -- ready to pass packets
+                          down(2),
+                          testing(3),   -- in some test mode
+                          unknown(4),   -- status can not be determined
+                                        -- for some reason.
+                          dormant(5),
+                          notPresent(6),    -- some component is missing
+                          lowerLayerDown(7) -- down due to state of
+                                            -- lower-layer interface(s)
+                      }
+              ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "The current operational state of the interface.  The
+                      testing(3) state indicates that no operational packets can
+                      be passed.  If ifAdminStatus is down(2) then ifOperStatus
+                      should be down(2).  If ifAdminStatus is changed to up(1)
+                      then ifOperStatus should change to up(1) if the interface is
+                      ready to transmit and receive network traffic; it should
+                      change to dormant(5) if the interface is waiting for
+                      external actions (such as a serial line waiting for an
+                      incoming connection); it should remain in the down(2) state
+                      if and only if there is a fault that prevents it from going
+                      to the up(1) state; it should remain in the notPresent(6)
+                      state if the interface has missing (typically, hardware)
+                      components."
+              ::= { ifEntry 8 }
+```
+
+After retrieving these values the service will:
+
+* Update the values of `ifAdminStatus` and `ifOperStatus` of the polled interfaces in the database.
+This column is normally updated only when an import of a <<provisioning/introduction.adoc#ga-provisioning-introduction, Provisiond>> requisition takes place.
+* Send events when the state of a polled interface changes state. The UEIs of these events are:
+** `uei.opennms.org/nodes/snmp/interfaceAdminDown`
+** `uei.opennms.org/nodes/snmp/interfaceAdminUp`
+** `uei.opennms.org/nodes/snmp/interfaceOperDown`
+** `uei.opennms.org/nodes/snmp/interfaceOperUp`
+** `uei.opennms.org/nodes/snmp/interfaceOperTesting`
+** `uei.opennms.org/nodes/snmp/interfaceOperUnknown`
+** `uei.opennms.org/nodes/snmp/interfaceOperDormant`
+** `uei.opennms.org/nodes/snmp/interfaceOperNotPresent`
+** `uei.opennms.org/nodes/snmp/interfaceOperLowerLayerDown`
+
+The appropriate event will be sent whenever:
+
+* a polled interface's `ifAdminStatus` is up and `ifOperStatus` is in a down state at startup
+* `ifAdminStatus` is in an up state and `ifOperStatus` transitions to a down state from a not down state
+* `ifAdminStatus` is in an up state and `ifOperStatus` transitions to an up state from a not up state
+* `ifAdminStatus` transitions to a down state from a not down state
+* `ifAdminStatus` transitions to an up state from a not up state
+
+NOTE: It is possible to configure the service to treat additional values of `ifOperStatus` as logically up or down.
+In the event that this configuration option is used and `ifOperStatus` transitions to a state configured as a down value that is not literally `down(2)`, both the `uei.opennms.org/nodes/snmp/interfaceOperDown` event and an event for the more specific state is sent.
+
+== Enabling the Service
+
+By default the SNMP interface poller daemon is not enabled.
+To enable it, change the value of the `enabled` attribute of the `service` element that contains a `name` element with the following text: `OpenNMS:Name=SnmpPoller`.
+
+```
+<service enabled="true">
+   <name>OpenNMS:Name=SnmpPoller</name>
+   <class-name>org.opennms.netmgt.snmpinterfacepoller.jmx.SnmpPollerd</class-name>
+   <invoke at="start" pass="0" method="init"/>
+   <invoke at="start" pass="1" method="start"/>
+   <invoke at="status" pass="0" method="status"/>
+   <invoke at="stop" pass="0" method="stop"/>
+</service>
+```
+
+You must restart {page-component-title}.
+
+== Configuring the Service
+
+The configuration file is `$ONMS_HOME/etc/snmp-interface-poller-configuration.xml`.
+The default version of this file follows:
+
+```
+<snmp-interface-poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/snmpinterfacepoller" threads="30" service="SNMP"  up-values="1" down-values="2">
+   <node-outage>
+      <critical-service name="ICMP"/>
+      <critical-service name="SNMP"/>
+   </node-outage>
+   <package name="example1">
+      <filter>IPADDR != '0.0.0.0'</filter>
+      <include-range begin="1.1.1.1" end="1.1.1.1"/>
+      <include-range begin="::1" end="::1"/>
+      <interface criteria="snmpiftype = 6" name="Ethernet" interval="300000" user-defined="false" status="on"/>
+   </package>
+   <!--  package name="overwritesnmpvalues">
+      <filter>IPADDR != '0.0.0.0'</filter>
+       <include-range begin="1.1.1.1" end="254.254.254.254" />
+       <interface name="Ethernet" criteria="snmpiftype = 6" interval="300000" user-defined="false" status="on" port="161" timeout="1000" retry="1" max-vars-per-pdu="10" />
+   </package-->
+</snmp-interface-poller-configuration>
+```
+
+Explanation of the configuration options available:
+
+snmp-interface-poller-configuration::
+Top-level element for the snmp-interface-poller-configuration.xml configuration file.
+Several global configuration attributes are available:
+
+* interval: default polling interval in milliseconds.
+* threads: maximum number of threads used for SNMP polling.
+* service: SNMP service string; almost always "SNMP".
+* useCriteriaFilters: Flag that indicates if interfaces that do not match the criteria attribute of an interface element in an otherwise matching package should be polled with default settings or not.
+
+When "false" such an interface will be polled with default settings; when "true" that interface will not be polled.
+* up-values: comma-separated list of valid integer values (1-7) to treat as equivalent to `up(1)` when sending status change events for an interface.
+Defaults to "1".
+* down-values: comma-separated list of valid integer values (1-7) to treat as equivalent to `down(2)` when sending status change events for an interface.
+Defaults to "2".
+
+node-outage::
+Polling will not be attempted if any of the critical service(s) contained in this element are unavailable on a node interface.
+
+critical-service::
+The `name` attribute of this element indicates the name of a service that, when unavailable, will prevent the attempted polling of SNMP interfaces on a node interface.
+
+package::
+Similar to <<service-assurance/introduction.adoc#ga-service-assurance, Service Assurance>> and <<performance-data-collection/introduction.adoc#performance-management, Performance Management>> packages, this service uses package elements to allow different settings to be used for different types of devices.
+Has a single attribute, `name`, which is mandatory.
+
+filter::
+Mandatory.
+Behaves like `filter` elements in pollerd <<service-assurance/polling-packages.adoc#ga-pollerd-packages, packages>>.
+
+specific:: Behaves like `specific` elements in pollerd <<service-assurance/polling-packages.adoc#ga-pollerd-packages, packages>>.
+
+include-range:: Behaves like `include-range` elements in pollerd <<service-assurance/polling-packages.adoc#ga-pollerd-packages, packages>>.
+
+exclude-range:: Behaves like `exclude-range` elements in pollerd <<service-assurance/polling-packages.adoc#ga-pollerd-packages, packages>>.
+
+include-url:: Behaves like `include-url` in other pollerd <<service-assurance/polling-packages.adoc#ga-pollerd-packages, packages>>.
+
+NOTE: The `filter`, `specific`, `include-range`, `exclude-range`, and `include-url` elements apply to the node and interface on which the SNMP interface data resides, not the SNMP interfaces themselves.
+
+interface:: Controls how, when, and (sometimes) which kinds of SNMP interfaces will be polled for status from management interfaces that match the package rules. Attributes include:
+* name: name for this interface element.
+It is generally advisable to make the name representative of the criteria filter of the interface. Required.
+* criteria: Criteria added to the SQL query performed on the SNMP interfaces available for polling on an interface node.
+Can have more than one.
+Lets you specify different settings for different types of interfaces.
+As noted above, if `useCriteriaFilters` is `true` on the top-level element, any interface that does not match the criteria filter on one of the interface elements will not be polled.
+* interval: polling interval for interfaces matching this element's criteria, in milliseconds.
+Overrides the global setting in the top-level element for interfaces that match this element's criteria filter.
+* user-defined: An unused boolean value reserved for use in the UI, should one ever exist for this service.
+Defaults to `false`.
+* status: When `off` polling will not be performed for SNMP interfaces that meet the criteria filter of this element.
+Defaults to `on`.
+* port: If set, overrides UDP port 161 as the port where SNMP GET/GETNEXT/GETBULK requests are sent.
+Valid values are between 1 and 65535.
+* retry: Number of retry attempts made when attempting to retrieve `ifAdminStatus` and `ifOperStatus` values from the management interface for SNMP interfaces that match this element's criteria filter.
+* timeout: Timeout, in milliseconds, to wait for a response to SNMP GET/GETNEXT/GETBULK requests sent to the node interface.
+* max-vars-per-pdu: Number of variables to send per SNMP request.
+Default is "10".
+* up-values: Values of `ifAdminStatus` and `ifOperStatus` to treat as up values.
+Expects a comma-separated list of integer values between 1 and 7.
+Example: "1,5".
+Defaults to "1".
+* down-values: Values of `ifAdminStatus` and `ifOperStatus` to treat as down values.
+Expects a comma-separated list of integer values between 1 and 7.
+Example: "2,3,4,6,7".
+Defaults to "2".
+
+== Using the Service
+
+Besides enabling the service and configuring packages and interfaces to match your use case, you must add a policy that enables polling to the foreign source definition of the import requisition(s) for the devices on which you want to use this feature.
+
+Use the `ENABLE_POLLING` and `DISABLE_POLLING` actions of the <<reference:provisioning/policies/snmp-interface.adoc#snmp-interface-policy, matching SNMP interface policy>> to manage which SNMP interfaces this service polls along with the appropriate `matchBehavior` and parameters for your use case.
+
+As an example, you could create a policy named pollVoIPDialPeers that marks interfaces with `ifType 104` to be polled.
+Set the `action` to `ENABLE_POLLING` and `matchBehavior` to `ALL_PARAMETERS`.
+Add parameter `ifType` with `104` for the value.
+Once you synchronize the requisition, SNMP interface polling will begin for all SNMP interfaces with `ifType 104` found on node interfaces matching the filter of a package in the SNMP interface poller config file.
+
+As explained in the prior sections, exactly how and when the polling is performed is controlled by the settings on the `interface` element the SNMP interface matches in that package.
+If an SNMP interface does not match the criteria of any `interface` element in a package, default settings are used, unless `useCriteriaFilters` is set to true in the top-level element, in which case no polling is performed.

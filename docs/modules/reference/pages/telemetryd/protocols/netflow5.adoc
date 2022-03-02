@@ -1,0 +1,65 @@
+
+= NetFlow v5
+
+See <<operation:flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
+
+
+[[telemetryd-netflow5-parser-udp]]
+== Netflow v5 UDP parser
+
+The Netflow v5 UDP parser accepts packets received by a <<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<telemetryd-netflow5-adapter, Netflow v5 adapter>>.
+
+The Netflow v5 UDP parser supports protocol detection.
+
+=== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser`
+|===
+
+=== Configuration and use
+
+.Optional parameters for the Netflow v5 UDP parser
+[options="header" cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| maxClockSkew
+| The maximum delta in seconds between exporter and Minion timestamps.
+| 0
+
+| clockSkewEventRate
+| Rate-limit clock skew events, in seconds.
+| 3600
+
+| dnsLookupsEnabled
+| Enable or disable DNS resolution for flows.
+| True
+|===
+
+NOTE: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters.
+It specifies the maximum delta in seconds between exporter and Minion timestamps.
+If exceeded, an alarm will be generated for the exporting device.
+The default value is 0, so clock skew detection is disabled.
+Furthermore, you can use the `clockSkewEventRate` parameter to rate-limit clock skew events.
+The default is `3600` seconds, so every hour an event will be sent.
+
+[[telemetryd-netflow5-adapter]]
+== Netflow v5 adapter
+
+The Netflow v5 adapter handles Netflow v5 payloads received and parsed by by the <<telemetryd-netflow5-parser-udp, Netflow v5 UDP Parser>>.
+Flows are decoded from the messages into the canonical flow format and published to the flow repository.
+
+=== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter`
+|===
+
+=== Configuration and use
+
+This adapter does not currently have any configurable parameters.

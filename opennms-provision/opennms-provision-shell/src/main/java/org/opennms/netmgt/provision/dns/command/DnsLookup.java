@@ -41,7 +41,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 
-@Command(scope = "dns", name = "lookup", description = "DNS lookup for the specified host")
+@Command(scope = "opennms", name = "dns-lookup", description = "DNS lookup for the specified host")
 @Service
 public class DnsLookup implements Action {
 

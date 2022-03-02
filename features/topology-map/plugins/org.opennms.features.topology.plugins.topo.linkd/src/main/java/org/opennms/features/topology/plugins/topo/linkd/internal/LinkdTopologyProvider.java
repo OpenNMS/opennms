@@ -162,16 +162,16 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         
         final Map<String, LinkdVertex> vmap = new HashMap<>();
         topology.getVertices().stream().forEach(tvertex -> {
-            LinkdVertex vertex = (LinkdVertex) getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, tvertex.getId());
+            LinkdVertex vertex = (LinkdVertex) graph.getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, tvertex.getId());
             if (vertex == null) {
                 vertex = LinkdVertex.create(tvertex);
-                addVertices(vertex);
+                graph.addVertices(vertex);
             } 
             vertex.getProtocolSupported().add(protocol);
             vmap.put(vertex.getId(), vertex);
         });
         
-        topology.getEdges().stream().forEach(tedge -> addEdges(
+        topology.getEdges().stream().forEach(tedge -> graph.addEdges(
                                        LinkdEdge.create(
                                                 tedge.getId(), 
                                                 LinkdPort.create(tedge.getSource(), vmap.get(tedge.getSource().getVertex().getId())),
@@ -195,7 +195,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             return null;
         }
         LOG.info("getDefaultVertex: default node found: [{}]:{}", node.getId(), node.getLabel());
-        return getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, node.getId());
+        final Vertex defaultVertex = graph.getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, node.getId());
+        return defaultVertex;
     }
 
     @Override
@@ -218,7 +219,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         Timer.Context vcontext = m_loadVerticesTimer.time();
         try {
             for (OnmsTopologyVertex tvertex : m_onmsTopologyDao.getTopology(ProtocolSupported.NODES.name()).getVertices()) {
-                addVertices(LinkdVertex.create(tvertex));
+                graph.addVertices(LinkdVertex.create(tvertex));
             }
             LOG.info("refresh: Loaded Vertices");
         } catch (Exception e){
@@ -242,15 +243,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public void refresh() {
         final Timer.Context context = m_loadFullTimer.time();
         try {
-            resetContainer();
+            graph.resetContainer();
             doRefresh();
         } finally {
             context.stop();
         }
         
-        LOG.info("refresh: Found {} groups", getGroups().size());
-        LOG.info("refresh: Found {} vertices", getVerticesWithoutGroups().size());
-        LOG.info("refresh: Found {} edges", getEdges().size());
+        LOG.info("refresh: Found {} vertices", graph.getVertices().size());
+        LOG.info("refresh: Found {} edges", graph.getEdges().size());
     }
     public OnmsTopologyDao getOnmsTopologyDao() {
         return m_onmsTopologyDao;

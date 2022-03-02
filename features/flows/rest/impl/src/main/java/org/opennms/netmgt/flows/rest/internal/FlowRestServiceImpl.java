@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.flows.rest.internal;
 
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -44,7 +47,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.WebApplicationException;
@@ -54,12 +59,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
-import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.FlowQueryService;
 import org.opennms.netmgt.flows.api.Host;
+import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
+import org.opennms.netmgt.flows.filter.api.DscpFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.NodeCriteria;
@@ -74,35 +82,34 @@ import org.opennms.netmgt.flows.rest.model.FlowSeriesResponse;
 import org.opennms.netmgt.flows.rest.model.FlowSnmpInterface;
 import org.opennms.netmgt.flows.rest.model.FlowSummaryResponse;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 
 public class FlowRestServiceImpl implements FlowRestService {
-    private final FlowRepository flowRepository;
+    private final FlowQueryService flowQueryService;
     private final NodeDao nodeDao;
     private final SnmpInterfaceDao snmpInterfaceDao;
-    private final TransactionOperations transactionOperations;
+    private final SessionUtils sessionUtils;
     private String flowGraphUrl;
 
-    public FlowRestServiceImpl(FlowRepository flowRepository, NodeDao nodeDao,
-                               SnmpInterfaceDao snmpInterfaceDao, TransactionOperations transactionOperations) {
-        this.flowRepository = Objects.requireNonNull(flowRepository);
+    public FlowRestServiceImpl(FlowQueryService flowQueryService, NodeDao nodeDao,
+                               SnmpInterfaceDao snmpInterfaceDao, SessionUtils sessionUtils) {
+        this.flowQueryService = Objects.requireNonNull(flowQueryService);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
-        this.transactionOperations = Objects.requireNonNull(transactionOperations);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }
 
     @Override
     public Long getFlowCount(UriInfo uriInfo) {
-        return waitForFuture(flowRepository.getFlowCount(getFiltersFromQueryString(uriInfo.getQueryParameters())));
+        return waitForFuture(flowQueryService.getFlowCount(getFiltersFromQueryString(uriInfo.getQueryParameters())));
     }
 
     @Override
     public List<FlowNodeSummary> getFlowExporters() {
-        return transactionOperations.execute(status -> this.nodeDao.findAllHavingFlows().stream())
+        return sessionUtils.withReadOnlyTransaction(() -> this.nodeDao.findAllHavingFlows().stream())
                 .map(n -> new FlowNodeSummary(n.getId(),
                         n.getForeignId(), n.getForeignSource(), n.getLabel(),
                         n.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList())))
@@ -112,7 +119,7 @@ public class FlowRestServiceImpl implements FlowRestService {
 
     @Override
     public FlowNodeDetails getFlowExporter(Integer nodeId) {
-        final List<FlowSnmpInterface> ifaces = transactionOperations.execute(status -> this.snmpInterfaceDao.findAllHavingFlows(nodeId)).stream()
+        final List<FlowSnmpInterface> ifaces = sessionUtils.withReadOnlyTransaction(() -> this.snmpInterfaceDao.findAllHavingFlows(nodeId)).stream()
                 .map(iface -> new FlowSnmpInterface(iface.getIfIndex(),
                             iface.getIfName(),
                             iface.getIfAlias(),
@@ -122,18 +129,78 @@ public class FlowRestServiceImpl implements FlowRestService {
         return new FlowNodeDetails(nodeId, ifaces);
     }
 
+    private List<Integer> getFieldValues(LimitedCardinalityField field, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        return waitForFuture(flowQueryService.getFieldValues(field, filters))
+                .stream()
+                .map(Integer::valueOf)
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    private FlowSummaryResponse getFieldSummaries(LimitedCardinalityField field, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+
+        final FlowSummaryResponse response = new FlowSummaryResponse();
+        response.setStart(timeRangeFilter.getStart());
+        response.setEnd(timeRangeFilter.getEnd());
+
+        final List<TrafficSummary<String>> summary = waitForFuture(flowQueryService.getFieldSummaries(field, filters));
+
+        this.<String>defaultSummaryResponseConsumer(field.name(), Object::toString)
+                .apply(response)
+                .accept(summary);
+
+        return response;
+    }
+
+    private FlowSeriesResponse getFieldSeries(LimitedCardinalityField field, long step, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+
+        final FlowSeriesResponse response = new FlowSeriesResponse();
+        response.setStart(timeRangeFilter.getStart());
+        response.setEnd(timeRangeFilter.getEnd());
+
+        final Table<Directional<String>, Long, Double> series = waitForFuture(flowQueryService.getFieldSeries(field, step, filters));
+
+        this.<String>defaultSeriesReponseConsumer(Object::toString)
+                .apply(response)
+                .accept(series);
+
+        populateResponseFromTable(series, response);
+
+        return response;
+    }
+
+    @Override
+    public List<Integer> getDscpValues(UriInfo uriInfo) {
+        return getFieldValues(LimitedCardinalityField.DSCP, uriInfo);
+    }
+
+    @Override
+    public FlowSummaryResponse getDscpSummaries(UriInfo uriInfo) {
+        return getFieldSummaries(LimitedCardinalityField.DSCP, uriInfo);
+    }
+
+    @Override
+    public FlowSeriesResponse getDscpSeries(long step, UriInfo uriInfo) {
+        return getFieldSeries(LimitedCardinalityField.DSCP, step, uriInfo);
+    }
+
     @Override
     public List<String> getApplications(String matchingPrefix, long limit, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
-        return waitForFuture(flowRepository.getApplications(matchingPrefix, limit, filters));
+        return waitForFuture(flowQueryService.getApplications(matchingPrefix, limit, filters));
     }
 
     @Override
     public FlowSummaryResponse getApplicationSummary(Integer N, Set<String> applications, boolean includeOther,
                                                      UriInfo uriInfo) {
         return getSummary(N, applications, uriInfo, "application",
-                filters -> flowRepository.getTopNApplicationSummaries(N, includeOther, filters),
-                filters -> flowRepository.getApplicationSummaries(applications, includeOther, filters),
+                filters -> flowQueryService.getTopNApplicationSummaries(N, includeOther, filters),
+                filters -> flowQueryService.getApplicationSummaries(applications, includeOther, filters),
                 this.defaultSummaryResponseConsumer("Application", Function.identity()));
     }
 
@@ -141,15 +208,15 @@ public class FlowRestServiceImpl implements FlowRestService {
     public FlowSeriesResponse getApplicationSeries(long step, Integer N, Set<String> applications,
                                                    boolean includeOther, UriInfo uriInfo) {
         return getSeries(N, applications, uriInfo, "application",
-                filters -> flowRepository.getTopNApplicationSeries(N, step, includeOther, filters),
-                filters -> flowRepository.getApplicationSeries(applications, step, includeOther, filters),
+                filters -> flowQueryService.getTopNApplicationSeries(N, step, includeOther, filters),
+                filters -> flowQueryService.getApplicationSeries(applications, step, includeOther, filters),
                 this.defaultSeriesReponseConsumer(Function.identity()));
     }
 
     @Override
     public List<String> getHosts(String regex, long limit, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
-        return waitForFuture(flowRepository.getHosts(regex, limit, filters));
+        return waitForFuture(flowQueryService.getHosts(regex, limit, filters));
     }
 
     @Override
@@ -157,8 +224,8 @@ public class FlowRestServiceImpl implements FlowRestService {
         final HostnameMode hostnameMode = getHostnameModeFromQueryString(uriInfo.getQueryParameters());
 
         return getSummary(N, hosts, uriInfo, "host",
-                filters -> flowRepository.getTopNHostSummaries(N, includeOther, filters),
-                filters -> flowRepository.getHostSummaries(hosts, includeOther, filters),
+                filters -> flowQueryService.getTopNHostSummaries(N, includeOther, filters),
+                filters -> flowQueryService.getHostSummaries(hosts, includeOther, filters),
                 this.defaultSummaryResponseConsumer("Host", hostnameMode::buildDisplayName));
     }
 
@@ -168,8 +235,8 @@ public class FlowRestServiceImpl implements FlowRestService {
         final HostnameMode hostnameMode = getHostnameModeFromQueryString(uriInfo.getQueryParameters());
 
         return getSeries(N, hosts, uriInfo, "host",
-                filters -> flowRepository.getTopNHostSeries(N, step, includeOther, filters),
-                filters -> flowRepository.getHostSeries(hosts, step, includeOther, filters),
+                filters -> flowQueryService.getTopNHostSeries(N, step, includeOther, filters),
+                filters -> flowQueryService.getHostSeries(hosts, step, includeOther, filters),
                 this.defaultSeriesReponseConsumer(hostnameMode::buildDisplayName));
     }
 
@@ -178,7 +245,7 @@ public class FlowRestServiceImpl implements FlowRestService {
                                          String upperIPPattern, String applicationPattern, long limit,
                                          UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
-        return waitForFuture(flowRepository.getConversations(locationPattern, protocolPattern, lowerIPPattern,
+        return waitForFuture(flowQueryService.getConversations(locationPattern, protocolPattern, lowerIPPattern,
                 upperIPPattern, applicationPattern, limit, filters));
     }
 
@@ -188,11 +255,11 @@ public class FlowRestServiceImpl implements FlowRestService {
         final HostnameMode hostnameMode = getHostnameModeFromQueryString(uriInfo.getQueryParameters());
 
         return getSummary(N, conversations, uriInfo, "conversation",
-                filters -> flowRepository.getTopNConversationSummaries(N, includeOther, filters),
-                filters -> flowRepository.getConversationSummaries(conversations, includeOther, filters),
+                filters -> flowQueryService.getTopNConversationSummaries(N, includeOther, filters),
+                filters -> flowQueryService.getConversationSummaries(conversations, includeOther, filters),
                 response -> (summary) -> {
                     response.setHeaders(Lists.newArrayList("Location", "Protocol", "Source",
-                            "Dest.", "Application", "Bytes In", "Bytes Out"));
+                            "Dest.", "Application", "Bytes In", "Bytes Out", "ECN"));
                     response.setRows(summary.stream()
                             .map(sum -> {
                                 final Conversation conversation = sum.getEntity();
@@ -200,7 +267,7 @@ public class FlowRestServiceImpl implements FlowRestService {
                                         hostnameMode.buildDisplayName(conversation.getLowerHost()),
                                         hostnameMode.buildDisplayName(conversation.getUpperHost()),
                                         conversation.getApplication(),
-                                        sum.getBytesIn(), sum.getBytesOut());
+                                        sum.getBytesIn(), sum.getBytesOut(), sum.ecnInfo());
                             })
                             .collect(Collectors.toList()));
                 });
@@ -212,8 +279,8 @@ public class FlowRestServiceImpl implements FlowRestService {
         final HostnameMode hostnameMode = getHostnameModeFromQueryString(uriInfo.getQueryParameters());
 
         return getSeries(N, conversations, uriInfo, "conversation",
-                filters -> flowRepository.getTopNConversationSeries(N, step, includeOther, filters),
-                filters -> flowRepository.getConversationSeries(conversations, step, includeOther, filters),
+                filters -> flowQueryService.getTopNConversationSeries(N, step, includeOther, filters),
+                filters -> flowQueryService.getConversationSeries(conversations, step, includeOther, filters),
                 response -> series ->
                     response.setColumns(series.rowKeySet().stream()
                             .map(d -> {
@@ -239,7 +306,7 @@ public class FlowRestServiceImpl implements FlowRestService {
         }
 
         long flowCount = waitForFuture(
-                flowRepository.getFlowCount(getFiltersFromQueryString(uriInfo.getQueryParameters())));
+                flowQueryService.getFlowCount(getFiltersFromQueryString(uriInfo.getQueryParameters())));
         FlowGraphUrlInfo graphUrlInfo = new FlowGraphUrlInfo();
 
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
@@ -315,12 +382,19 @@ public class FlowRestServiceImpl implements FlowRestService {
         return response;
     }
 
-    private <K> Function<FlowSummaryResponse, Consumer<List<TrafficSummary<K>>>> defaultSummaryResponseConsumer(final String entitiesHeader, final Function<K, String> entityLabel) {
+    private <K> Function<FlowSummaryResponse, Consumer<List<TrafficSummary<K>>>> defaultSummaryResponseConsumer(
+            final String entitiesHeader,
+            final Function<K, String> entityLabel
+    ) {
         return response -> summary -> {
-            response.setHeaders(Lists.newArrayList(entitiesHeader, "Bytes In", "Bytes Out"));
-            response.setRows(summary.stream()
-                    .map(sum -> Arrays.asList((Object) entityLabel.apply(sum.getEntity()), sum.getBytesIn(), sum.getBytesOut()))
-                    .collect(Collectors.toList()));
+            response.setHeaders(Lists.newArrayList(entitiesHeader, "Bytes In", "Bytes Out", "ECN"));
+            response.setRows(
+                    summary
+                            .stream()
+                            .map(sum -> Lists.newArrayList((Object) entityLabel.apply(sum.getEntity()), sum.getBytesIn(), sum.getBytesOut(), sum.ecnInfo())
+                            )
+                    .collect(Collectors.toList())
+            );
         };
     }
 
@@ -376,8 +450,39 @@ public class FlowRestServiceImpl implements FlowRestService {
             }
         }
 
+        final List<String> dscpStr = queryParams.get("dscp");
+        if (isNotEmpty(dscpStr)) {
+            filters.add(new DscpFilter(dscpStr.stream().flatMap(str -> {
+                Supplier<Stream<Integer>> s = DSCP_VALUE_SUPPLIER.get(str.toUpperCase());
+                return s != null ? s.get() : Stream.of(Integer.parseInt(str));
+            }).distinct().collect(Collectors.toList())));
+        }
+
         return filters;
     }
+
+    // translate symbolic DSCP names into corresponding numbers
+    // (cf. https://en.wikipedia.org/wiki/Type_of_service#DSCP_and_ECN)
+    // -> additionally support IP precedence groups
+    //    (for P0, P5, and P6 more values are included than specified)
+    private static Map<String, Supplier<Stream<Integer>>> DSCP_VALUE_SUPPLIER = new HashMap<String, Supplier<Stream<Integer>>>() {{
+        for (int p = 0; p < 8; p++) {
+            final int finalP = p;
+            put("P" + finalP, () -> Stream.of(finalP * 8, finalP * 8 + 2, finalP * 8 + 4, finalP * 8 + 6));
+        }
+        for (int c = 0; c < 8; c++) {
+            final int finalC = c;
+            put("CS" + finalC, () -> Stream.of(finalC * 8));
+            if (finalC >= 1 && finalC <= 4) {
+                for (int d = 1; d <= 3; d++) {
+                    final int finalD = d;
+                    put(("AF" + finalC) + finalD, () -> Stream.of(finalC * 8 + finalD * 2));
+                }
+            }
+        }
+        put("LE", () -> Stream.of(1));
+        put("EF", () -> Stream.of(46));
+    }};
 
     private static TimeRangeFilter getRequiredTimeRangeFilter(Collection<Filter> filters) {
         final Optional<TimeRangeFilter> filter = filters.stream()
@@ -472,7 +577,7 @@ public class FlowRestServiceImpl implements FlowRestService {
         response.setTimestamps(timestamps);
         response.setValues(values);
     }
-  
+
     /**
      * Retrieve the first value from the map for the given key and convert this to a blank string
      * if the resulting value is null, or does not exist in the map.

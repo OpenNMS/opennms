@@ -44,6 +44,7 @@ public interface Packets {
     // Other Packets
     Packet NXOS = new Packet(Payload.resource("/payloads/telemetry/cisco-nxos-proto.raw"));
     Packet JTI = new Packet(Payload.resource("/payloads/telemetry/jti-proto.raw"));
+    Packet BMP = new Packet(Payload.resource("/payloads/telemetry/bmp-proto.raw"));
 
     static List<FlowPacket> getFlowPackets() {
         return Lists.newArrayList(Netflow5, Netflow9, Ipfix, SFlow);

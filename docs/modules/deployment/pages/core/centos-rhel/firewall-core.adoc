@@ -1,0 +1,14 @@
+.Enable Masquerade to allow port forwarding
+[source, console]
+----
+sudo firewall-cmd --permanent --add-masquerade
+----
+
+.Forward SNMP Trap UDP port 162 to 10162
+[source, console]
+----
+sudo firewall-cmd --permanent --add-port=162/udp
+sudo firewall-cmd --permanent --add-port=10162/udp
+sudo firewall-cmd --permanent --add-forward-port=port=162:proto=udp:toport=10162
+sudo systemctl reload firewalld
+----

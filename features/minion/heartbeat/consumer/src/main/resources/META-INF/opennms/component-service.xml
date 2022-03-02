@@ -15,6 +15,7 @@
 
     <context:annotation-config />
 
-    <bean id="heartbeatConsumer" class="org.opennms.minion.heartbeat.consumer.HeartbeatConsumer" />
+    <bean id="heartbeatConsumer" class="org.opennms.minion.heartbeat.consumer.HeartbeatConsumer"
+          destroy-method="shutdown"/>
 
 </beans>

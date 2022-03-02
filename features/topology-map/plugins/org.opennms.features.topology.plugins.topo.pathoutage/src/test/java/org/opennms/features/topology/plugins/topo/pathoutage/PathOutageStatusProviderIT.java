@@ -42,7 +42,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -69,6 +69,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -125,6 +127,7 @@ public class PathOutageStatusProviderIT {
 	 * {@link PathOutageStatusProvider} object, responsible for mapping alarms to vertices
 	 */
 	private PathOutageStatusProvider pathOutageStatusProvider;
+	private static int s_serviceTypeCounter = 0;
 
 	@Before
 	public void setUp() {
@@ -153,22 +156,33 @@ public class PathOutageStatusProviderIT {
 		// and that all these statuses are at the moment NORMAL
 		Map<VertexRef, Status> stats = this.calculateStatuses();
 		for (VertexRef vertex : stats.keySet()) {
-			Assert.assertNotNull(stats.get(vertex));
+			assertNotNull(stats.get(vertex));
 			Assert.assertEquals(OnmsSeverity.NORMAL.getLabel().toLowerCase(), stats.get(vertex).computeStatus().toLowerCase());
 		}
 
 		// Also check that the PathOutageProvider calculates the default focus strategy correctly
 		// the list of criteria should always contain exactly 1 vertex (with the worst status)
 		List<Criteria> criteria = this.pathOutageProvider.getDefaults().getCriteria();
-		Assert.assertNotNull(criteria);
+		assertNotNull(criteria);
 		Assert.assertEquals(1, criteria.size());
+
+		OnmsMonitoredService service_1a = createService(this.nodeDao.get(1));
+		monitoredServiceDao.save(service_1a);
+		OnmsMonitoredService service_1b = createService(this.nodeDao.get(1));
+		monitoredServiceDao.save(service_1b);
+		OnmsMonitoredService service_2 = createService(this.nodeDao.get(2));
+		monitoredServiceDao.save(service_2);
+		OnmsMonitoredService service_3 = createService(this.nodeDao.get(3));
+		monitoredServiceDao.save(service_3);
+		OnmsMonitoredService service_4 = createService(this.nodeDao.get(4));
+		monitoredServiceDao.save(service_4);
 
 		// Adding a single path outage with MINOR severity.
 		// PathOutageStatusProvider should be able to find this outage + all other nodes should have a state NORMAL
-		this.outageDao.save(createOutage(EventConstants.NODE_DOWN_EVENT_UEI, address_1, this.nodeDao.get(1), OnmsSeverity.MINOR));
+		this.outageDao.save(createOutage(EventConstants.NODE_DOWN_EVENT_UEI, address_1, this.nodeDao.get(1), OnmsSeverity.MINOR, service_1a));
 		stats = this.calculateStatuses();
 		for (VertexRef vertex : stats.keySet()) {
-			Assert.assertNotNull(stats.get(vertex));
+			assertNotNull(stats.get(vertex));
 			if (vertex.getId().equalsIgnoreCase("1")) {
 				Assert.assertEquals(OnmsSeverity.MINOR.getLabel().toLowerCase(), stats.get(vertex).computeStatus().toLowerCase());
 			} else {
@@ -178,17 +192,17 @@ public class PathOutageStatusProviderIT {
 
 		// List of criteria should contain exactly 1 vertex (with the worst status, meaning that its id should be 1)
 		criteria = this.pathOutageProvider.getDefaults().getCriteria();
-		Assert.assertNotNull(criteria);
+		assertNotNull(criteria);
 		Assert.assertEquals(1, criteria.size());
-		VertexHopGraphProvider.DefaultVertexHopCriteria criterion = (VertexHopGraphProvider.DefaultVertexHopCriteria) criteria.get(0);
+		DefaultVertexHopCriteria criterion = (DefaultVertexHopCriteria) criteria.get(0);
 		Assert.assertEquals("1", criterion.getId());
 
 		// Adding a MAJOR path outage to the same node.
 		// PathOutageStatusProvider should display the alarm with a MAJOR severity level
-		this.outageDao.save(createOutage(EventConstants.NODE_DOWN_EVENT_UEI, address_1, this.nodeDao.get(1), OnmsSeverity.MAJOR));
+		this.outageDao.save(createOutage(EventConstants.NODE_DOWN_EVENT_UEI, address_1, this.nodeDao.get(1), OnmsSeverity.MAJOR, service_1b));
 		stats = this.calculateStatuses();
 		for (VertexRef vertex : stats.keySet()) {
-			Assert.assertNotNull(stats.get(vertex));
+			assertNotNull(stats.get(vertex));
 			if (vertex.getId().equalsIgnoreCase("1")) {
 				Assert.assertEquals(OnmsSeverity.MAJOR.getLabel().toLowerCase(), stats.get(vertex).computeStatus().toLowerCase());
 				break;
@@ -197,19 +211,19 @@ public class PathOutageStatusProviderIT {
 
 		// List of criteria should contain exactly 1 vertex (with the worst status, meaning that its id should still be 1)
 		criteria = this.pathOutageProvider.getDefaults().getCriteria();
-		Assert.assertNotNull(criteria);
+		assertNotNull(criteria);
 		Assert.assertEquals(1, criteria.size());
-		criterion = (VertexHopGraphProvider.DefaultVertexHopCriteria) criteria.get(0);
+		criterion = (DefaultVertexHopCriteria) criteria.get(0);
 		Assert.assertEquals("1", criterion.getId());
 
 		// Adding several more path outages of different types
 		// PathOutageStatusProvider should display them all, plus the one from the previous test
-		this.outageDao.save(createOutage(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, address_2, this.nodeDao.get(2), OnmsSeverity.MINOR));
-		this.outageDao.save(createOutage(EventConstants.INTERFACE_DOWN_EVENT_UEI, address_3 , this.nodeDao.get(3), OnmsSeverity.MINOR));
-		this.outageDao.save(createOutage(EventConstants.PATH_OUTAGE_EVENT_UEI,address_4, this.nodeDao.get(4), OnmsSeverity.MAJOR));
+		this.outageDao.save(createOutage(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, address_2, this.nodeDao.get(2), OnmsSeverity.MINOR, service_2));
+		this.outageDao.save(createOutage(EventConstants.INTERFACE_DOWN_EVENT_UEI, address_3 , this.nodeDao.get(3), OnmsSeverity.MINOR, service_3));
+		this.outageDao.save(createOutage(EventConstants.PATH_OUTAGE_EVENT_UEI,address_4, this.nodeDao.get(4), OnmsSeverity.MAJOR, service_4));
 		stats = this.calculateStatuses();
 		for (VertexRef vertex : stats.keySet()) {
-			Assert.assertNotNull(stats.get(vertex));
+			assertNotNull(stats.get(vertex));
 			if (vertex.getId().equalsIgnoreCase("1")) {
 				Assert.assertEquals(OnmsSeverity.MAJOR.getLabel().toLowerCase(), stats.get(vertex).computeStatus().toLowerCase());
 			} else if (vertex.getId().equalsIgnoreCase("2")) {
@@ -223,9 +237,9 @@ public class PathOutageStatusProviderIT {
 
 		// List of criteria should contain exactly 1 vertex (with the worst status, meaning that its id should be either 1 or 4)
 		criteria = this.pathOutageProvider.getDefaults().getCriteria();
-		Assert.assertNotNull(criteria);
+		assertNotNull(criteria);
 		Assert.assertEquals(1, criteria.size());
-		criterion = (VertexHopGraphProvider.DefaultVertexHopCriteria) criteria.get(0);
+		criterion = (DefaultVertexHopCriteria) criteria.get(0);
 		Assert.assertTrue(criterion.getId().equalsIgnoreCase("1") || criterion.getId().equalsIgnoreCase("4"));
 	}
 
@@ -235,8 +249,8 @@ public class PathOutageStatusProviderIT {
 	 * @return Map with {@link Status} information for all vertices
 	 */
 	private Map<VertexRef, Status> calculateStatuses() {
-		Map<VertexRef, Status> retvals = this.pathOutageStatusProvider.getStatusForVertices(pathOutageProvider,
-				Lists.newArrayList(pathOutageProvider.getVertices()), null);
+		Map<VertexRef, Status> retvals = this.pathOutageStatusProvider.getStatusForVertices(pathOutageProvider.getCurrentGraph(),
+				Lists.newArrayList(pathOutageProvider.getCurrentGraph().getVertices()), null);
 		return retvals;
 	}
 
@@ -307,12 +321,10 @@ public class PathOutageStatusProviderIT {
 	 * @return Resulting outage
 	 * @throws UnknownHostException
 	 */
-	private OnmsOutage createOutage(String uie, String ipaddress, OnmsNode node, OnmsSeverity severity)
+	private OnmsOutage createOutage(String uie, String ipaddress, OnmsNode node, OnmsSeverity severity, OnmsMonitoredService service)
 			throws UnknownHostException {
 		OnmsEvent event = createEvent(uie, ipaddress, node, severity);
 		eventDao.save(event);
-		OnmsMonitoredService service = createService(node);
-		monitoredServiceDao.save(service);
 		OnmsOutage outage = new OnmsOutage(new Date(), event, service);
 		return outage;
 	}
@@ -323,21 +335,13 @@ public class PathOutageStatusProviderIT {
 	 * @return Resulting service
 	 */
 	private OnmsMonitoredService createService(OnmsNode node) {
-		OnmsMonitoredService monitoredService = new OnmsMonitoredService();
-		OnmsServiceType serviceType = createType("someType");
+		OnmsServiceType serviceType = new OnmsServiceType(++s_serviceTypeCounter, "someType" + s_serviceTypeCounter);
 		serviceTypeDao.save(serviceType);
+
+		OnmsMonitoredService monitoredService = new OnmsMonitoredService();
 		monitoredService.setServiceType(serviceType);
-		monitoredService.setIpInterface(node.getIpInterfaces().toArray(new OnmsIpInterface[node.getIpInterfaces().size()])[0]);
+		monitoredService.setIpInterface(node.getIpInterfaces().iterator().next());
 		return monitoredService;
 	}
 
-	/**
-	 * This method generates a service type
-	 * @param name
-	 * @return Resulting service type
-	 */
-	private OnmsServiceType createType(String name) {
-		OnmsServiceType type = new OnmsServiceType(name);
-		return type;
-	}
 }

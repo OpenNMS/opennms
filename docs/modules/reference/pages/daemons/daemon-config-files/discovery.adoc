@@ -1,0 +1,17 @@
+[[ref-daemon-config-files-discovery]]
+= Discovery
+
+.Discovery configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| discovery-configuration.xml
+| Configure generic behavior of Discovery; for example, scan ranges, retry or timeouts, SNMP communities.
+| yes
+| no
+|===

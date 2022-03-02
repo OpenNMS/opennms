@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.support;
 
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -48,8 +49,10 @@ import javax.sql.DataSource;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.spring.BeanUtils;
@@ -237,6 +240,17 @@ public class JdbcFilterDaoIT implements InitializingBean {
     }
 
     @Test
+    public void testGetNodeIPAddressServiceMapMatch() throws Exception {
+        Map<Integer, Map<InetAddress, Set<String>>> nodeMap = m_dao.getNodeIPAddressServiceMap("ipaddr == '192.168.1.1'");
+        assertThat(nodeMap.entrySet(), hasSize(1));
+        Map<InetAddress, Set<String>> map = nodeMap.entrySet().iterator().next().getValue();
+        Set<String> services = map.get(InetAddressUtils.addr("192.168.1.1"));
+        assertEquals("services size", 2, services.size());
+        assertTrue(services.contains("ICMP"));
+        assertTrue(services.contains("SNMP"));
+    }
+
+    @Test
     public void testGetIPAddressServiceMapNoMatch() throws Exception {
         Map<InetAddress, Set<String>> map = m_dao.getIPAddressServiceMap("ipaddr == '1.1.1.1'");
         assertNotNull("returned map should not be null", map);
@@ -346,7 +360,7 @@ public class JdbcFilterDaoIT implements InitializingBean {
     @Test
     public void testVariousWaysToMatchServiceNames() {
         assertEquals("service statement", m_dao.getInterfaceWithServiceStatement("isFooService"), m_dao.getInterfaceWithServiceStatement("serviceName == 'FooService'"));
-        assertEquals("ip service mapping statement", m_dao.getIPServiceMappingStatement("isFooService"), m_dao.getIPServiceMappingStatement("serviceName == 'FooService'"));
+        assertEquals("ip service mapping statement", m_dao.getNodeIPServiceMappingStatement("isFooService"), m_dao.getNodeIPServiceMappingStatement("serviceName == 'FooService'"));
         assertEquals("ip service mapping statement", m_dao.getNodeMappingStatement("isFooService"), m_dao.getNodeMappingStatement("serviceName == 'FooService'"));
 
         // Just make sure this one doesn't hurl

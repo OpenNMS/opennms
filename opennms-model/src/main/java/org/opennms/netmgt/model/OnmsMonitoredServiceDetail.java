@@ -61,6 +61,8 @@ public class OnmsMonitoredServiceDetail implements Serializable, Comparable<Onms
 
     private boolean m_isDown;
 
+    private Integer m_ipInterfaceId;
+
     public OnmsMonitoredServiceDetail() {
     }
 
@@ -73,6 +75,7 @@ public class OnmsMonitoredServiceDetail implements Serializable, Comparable<Onms
         m_statusCode = service.getStatus();
         m_status = service.getStatusLong();
         m_id = service.getXmlId();
+        m_ipInterfaceId = service.getIpInterfaceId();
     }
 
     @XmlElement(name="status")
@@ -138,6 +141,11 @@ public class OnmsMonitoredServiceDetail implements Serializable, Comparable<Onms
 
     public void setId(String id) {
         m_id = id;
+    }
+
+    @XmlAttribute(name="ipInterfaceId")
+    public Integer getIpInterfaceId() {
+        return m_ipInterfaceId;
     }
 
     @Override

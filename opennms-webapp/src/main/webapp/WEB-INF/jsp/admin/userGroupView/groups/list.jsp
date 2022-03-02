@@ -106,6 +106,7 @@
   <input type="hidden" name="operation"/>
   <input type="hidden" name="groupName"/>
   <input type="hidden" name="newName"/>
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
   <div class="card">
     <table class="table table-sm table-bordered">

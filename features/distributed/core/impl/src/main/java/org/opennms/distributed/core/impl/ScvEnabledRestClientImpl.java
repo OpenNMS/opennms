@@ -69,7 +69,7 @@ public class ScvEnabledRestClientImpl implements RestClient {
     private final String scvAlias;
 
     public ScvEnabledRestClientImpl(String url, SecureCredentialsVault scv, String scvAlias) throws MalformedURLException {
-        this.url = new URL(url);
+        this.url = new URL(Objects.requireNonNull(url));
         this.scv = Objects.requireNonNull(scv);
         this.scvAlias = Objects.requireNonNull(scvAlias);
     }

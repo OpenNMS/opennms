@@ -65,6 +65,10 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
 
+    <bean id="snmpInterfaceDao" class="org.opennms.netmgt.dao.hibernate.SnmpInterfaceDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
     <bean id="'monitoredServiceDao" class="org.opennms.netmgt.dao.mock.MockMonitoredServiceDao"/>
 
     <bean id="'filterDao" class="org.opennms.netmgt.dao.mock.MockFilterDao"/>

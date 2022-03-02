@@ -1,0 +1,76 @@
+
+= Web-Based Utility
+
+Complex JMX data collection configurations can be generated from a web based tool.
+The JMX Configuration Generator collects all available MBean Attributes or Composite Data Attributes from a JMX enabled Java application.
+
+The workflow of the tool is:
+
+. Connect with JMX or JMXMP against a MBean Server provided of a Java application
+. Retrieve all MBean and composite data from the application
+. Select specific MBeans and composite data objects which should be collected by {page-component-title}
+. Generate JMX Collectd configuration file and RRD graph definitions for {page-component-title} as downloadable archive
+
+The following connection settings are supported:
+
+* Ability to connect to MBean Server with RMI based JMX
+* Authentication credentials for JMX connection
+* Optional: JMXMP connection
+
+The web based configuration tool can be used in the {page-component-title} Web Application in administration section *Admin -> JMX Configuration Generator*.
+
+== Configure JMX Connection
+
+At the beginning the connection to an MBean Server of a Java application has to be configured.
+
+.JMX connection configuration window
+image::operation/jmx-config-generator/01-webui-connection.png[]
+
+* Service name: The name of the service to bind the JMX data collection for Collectd
+* Host: IP address or FQDN connecting to the MBean Server to load MBeans and composite data into the generation tool
+* Port: Port to connect to the MBean Server
+* Authentication: Enable/disable authentication for JMX connection with username and password
+* Skip non-number values: Skip attributes with non-number values
+* JMXMP: Enable/disable JMX Messaging Protocol instead of using JMX over RMI
+
+By clicking the arrow ( > ) the MBeans and composite data will be retrieved with the given connection settings.
+The data is loaded into the MBeans Configuration screen that lets you select metrics for the data collection configuration.
+
+== Select MBeans and Composite
+
+The MBeans Configuration section is used to assign the MBean and composite data attributes to RRD domain specific data types and data source names.
+
+.Select MBeans or Composite Data for {page-component-title} data collection
+image::operation/jmx-config-generator/02-webui-mbean-selection.png[]
+
+The left sidebar shows the tree with the JMX Domain, MBeans, and composite data hierarchy retrieved from the MBean Server.
+To select or deselect all attributes use *Mouse right click -> select/deselect*.
+
+The right panel shows the MBean Attributes with the RRD-specific mapping, and lets you select or deselect specific MBean Attributes or composite data attributes for the data collection configuration.
+
+.Configure MBean attributes for data collection configuration
+image::operation/jmx-config-generator/03-webui-mbean-details.png[]
+
+.Configure Composite attributes for data collection configuration
+image::operation/jmx-config-generator/04-webui-composite-details.png[]
+
+* MBean Name or composite alias: Identifies the MBean or the composite data object
+* Selected: Enable/disable the MBean attribute or composite member to be included in the data collection configuration
+* Name: Name of the MBean attribute or composite member
+* Alias: the data source name for persisting measurements in RRD or JRobin file
+* Type: Gauge or counter data type for persisting measurements in RRD or JRobin file
+
+The MBean name, composite alias, and name are validated against special characters.
+For the Alias inputs are validated to be not longer then 19 characters and have to be unique in the data collection configuration.
+
+== Download and include configuration
+
+The last step is generating the following configuration files for {page-component-title}:
+
+* `collectd-configuration.xml`: Generated sample configuration assigned to a service with a matching data collection group
+* `jmx-datacollection-config.xml`: Generated JMX data collection configuration with the selected MBeans and composite data
+* `snmp-graph.properties`: Generated default RRD graph definition files for all selected metrics
+
+The content of the configuration files can be copy and pasted or can be downloaded as ZIP archive.
+
+NOTE: If the content of the configuration file exceeds 2,500 lines, the files can only be downloaded as ZIP archive.

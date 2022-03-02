@@ -77,44 +77,44 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  *
  * @author jwhite
  */
-@Command(scope = "metrics", name = "stress", description="Stress the current persistence strategy with generated collection sets.")
+@Command(scope = "opennms", name = "stress-metrics", description="Stress the current persistence strategy with generated collection sets.")
 @Service
 public class StressCommand implements Action {
 
     @Reference
     private PersisterFactory persisterFactory;
 
-    @Option(name="-b", aliases="--burst", description="generate the collection sets in bursts instead of continously inserting them, defaults to false", required=false, multiValued=false)
+    @Option(name="-b", aliases="--burst", description="Generate the collection sets in bursts instead of continously inserting them", required=false, multiValued=false)
     boolean burst = false;
 
-    @Option(name="-i", aliases="--interval", description="interval in seconds at which collection sets will be generated, defaults to 300", required=false, multiValued=false)
+    @Option(name="-i", aliases="--interval", description="Interval in seconds at which collection sets will be generated", required=false, multiValued=false)
     int intervalInSeconds = 300;
 
-    @Option(name="-n", aliases="--nodes", description="number of nodes for which metrics will be generated, defaults to 1000", required=false, multiValued=false)
+    @Option(name="-n", aliases="--nodes", description="Number of nodes for which metrics will be generated", required=false, multiValued=false)
     int numberOfNodes = 1000;
 
-    @Option(name="-f", aliases="--interfaces", description="number of interfaces on each node, defaults to 10", required=false, multiValued=false)
+    @Option(name="-f", aliases="--interfaces", description="Number of interfaces on each node", required=false, multiValued=false)
     int numberOfInterfacesPerNode = 10;
 
-    @Option(name="-g", aliases="--groups", description="number of groups on each interface, defaults to 5", required=false, multiValued=false)
+    @Option(name="-g", aliases="--groups", description="Number of groups on each interface", required=false, multiValued=false)
     int numberOfGroupsPerInterface = 5;
 
-    @Option(name="-a", aliases="--attributes", description="number of number attributes in each group, defaults to 10", required=false, multiValued=false)
+    @Option(name="-a", aliases="--attributes", description="Number of number attributes in each group", required=false, multiValued=false)
     int numberOfNumericAttributesPerGroup = 10;
 
-    @Option(name="-s", aliases="--strings", description="number of string attributes in each group, defaults to 2", required=false, multiValued=false)
+    @Option(name="-s", aliases="--strings", description="Number of string attributes in each group", required=false, multiValued=false)
     int numberOfStringAttributesPerGroup = 2;
 
-    @Option(name="-r", aliases="--report", description="number of seconds after which the report should be generated, defaults to 30", required=false, multiValued=false)
+    @Option(name="-r", aliases="--report", description="Number of seconds after which the report should be generated", required=false, multiValued=false)
     int reportIntervalInSeconds = 30;
 
-    @Option(name="-t", aliases="--threads", description="number of threads that will be used to generate and persist collection sets, defaults to 1", required=false, multiValued=false)
+    @Option(name="-t", aliases="--threads", description="Number of threads that will be used to generate and persist collection sets", required=false, multiValued=false)
     int numberOfGeneratorThreads = 1;
 
-    @Option(name="-z", aliases="--string-variation-factor", description="when set, every n-th group will use unique string attribute values in each batch, defaults to 0", required=false, multiValued=false)
+    @Option(name="-z", aliases="--string-variation-factor", description="When set, every n-th group will use unique string attribute values in each batch", required=false, multiValued=false)
     int stringVariationFactor = 0;
 
-    @Option(name="-x", aliases="--rra", description="Round Robin Archives, defaults to the pritine content on datacollection-config.xml", required=false, multiValued=true)
+    @Option(name="-x", aliases="--rra", description="Round Robin Archives, defaults to the same RRA values as a pristine datacollection-config.xml.\nExample: -x 'RRA:AVERAGE:0.5:1:2016' -x 'RRA:AVERAGE:0.5:12:1488'", required=false, multiValued=true)
     List<String> rras = null;
 
     private RateLimiter rateLimiter;

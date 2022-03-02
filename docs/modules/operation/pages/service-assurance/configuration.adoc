@@ -1,0 +1,76 @@
+
+[[ga-pollerd-configuration]]
+= Pollerd Configuration
+
+.Configuration and log files related to Pollerd.
+[options="header, autowidth"]
+[cols="1,2"]
+|===
+| File
+| Description
+
+| $OPENNMS_HOME/etc/poller-configuration.xml
+| Configuration file for monitors and global daemon configuration
+
+| $OPENNMS_HOME/logs/poller.log
+| Log file for all monitors and the global Pollerd
+
+| $OPENNMS_HOME/etc/response-graph.properties
+| RRD graph definitions for service response time measurements
+
+| $OPENNMS_HOME/etc/events/opennms.events.xml
+| Event definitions for Pollerd.
+  For example, nodeLostService, interfaceDown, or nodeDown
+|===
+
+To change the behavior for service monitoring, the `poller-configuration.xml` can be modified.
+The configuration file is structured in the following parts:
+
+* Global daemon config
+** Define the size of the used Thread Pool to run Service Monitors in parallel.
+** Define and configure the Critical Service for Node Event Correlation.
+* Polling packages
+** Package to allow grouping of configuration parameters for Service Monitors.
+* Downtime Model
+** Configure the behavior of Pollerd to run tests in case of an Outage is detected.
+* Monitor service association
+** Based on the name of the service, the implementation for application or network management protocols are assigned.
+
+.Global configuration parameters for Pollerd
+[source, xml]
+----
+<poller-configuration threads="30" <1>
+                      pathOutageEnabled="false" <2>
+                      serviceUnresponsiveEnabled="false"> <3>
+----
+
+<1> Size of the _Thread Pool_ to run _Service Monitors_ in parallel.
+<2> Enable or Disable _Path Outage_ functionality based on a _Critical Node_ in a network path.
+<3> In case of unresponsive service services a _serviceUnresponsive_ event is generated and not an outage.
+    This prevents the application of the _Downtime Model_ in retesting the service after 30 seconds to help prevent false alarms.
+
+Configuration changes are applied by restarting _OpenNMS_ and _Pollerd_.
+It is also possible to send an _Event_ to _Pollerd_ reloading the configuration.
+An _Event_ can be sent on the _CLI_ or the _Web User Interface_.
+
+.Send configuration reload event on CLI
+[source, shell]
+----
+cd $OPENNMS_HOME/bin
+./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Pollerd'
+----
+
+.Send configuration reload event with the Web User Interface
+image::service-assurance/04_send-event-WebUI.png[]
+
+[[ga-pollerd-configuration-meta-data]]
+== Metadata DSL
+The <<meta-data.adoc#ga-meta-data-dsl, Metadata DSL>>(domain specific language) lets you use dynamic configuration in parameter values to interpolate metadata into the parameter.
+
+The syntax lets you use patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+
+During evaluation of an expression, the following scopes are available:
+
+* Node metadata
+* Interface metadata
+* Service metadata

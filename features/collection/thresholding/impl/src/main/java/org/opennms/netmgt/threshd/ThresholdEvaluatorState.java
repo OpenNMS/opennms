@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
@@ -64,22 +65,29 @@ public interface ThresholdEvaluatorState extends ReinitializableState {
 
     Status evaluate(double dsValue, Long sequenceNumber);
 
+    Status evaluate(double dsValue, ThresholdValues thresholdValues, Long sequenceNumber);
+
     /**
      * @return the value that was evaluated along with the resulting status
      */
-    ValueStatus evaluate(ExpressionThresholdValue valueSupplier, Long sequenceNumber)
+    ValueStatus evaluate(ExpressionThresholdValueSupplier valueSupplier, Long sequenceNumber)
+            throws ThresholdExpressionException;
+
+    /**
+     * @return the value that was evaluated along with the resulting status
+     */
+    ValueStatus evaluate(ThresholdValuesSupplier thresholdValuesSupplier, Long sequenceNumber)
             throws ThresholdExpressionException;
     
     /**
      * <p>getEventForState</p>
-     *
-     * @param status a {@link org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status} object.
-     * @param date a {@link java.util.Date} object.
+     *  @param status a {@link Status} object.
+     * @param date a {@link Date} object.
      * @param dsValue a double.
-     * @param resource a {@link org.opennms.netmgt.threshd.CollectionResourceWrapper} object.
-     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param thresholdValues
+     * @param resource a {@link CollectionResourceWrapper} object.  @return a {@link Event} object.
      */
-    public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource);
+    public Event getEventForState(Status status, Date date, double dsValue, ThresholdValues thresholdValues, CollectionResourceWrapper resource);
     
     /**
      * Return true if current state is TRIGGERED
@@ -114,10 +122,12 @@ public interface ThresholdEvaluatorState extends ReinitializableState {
     class ValueStatus {
         public final double value;
         public final Status status;
+        public final ThresholdValues thresholdValues;
 
-        public ValueStatus(double value, Status status) {
+        public ValueStatus(double value, Status status, ThresholdValues thresholdValues) {
             this.value = value;
             this.status = Objects.requireNonNull(status);
+            this.thresholdValues = thresholdValues;
         }
 
         @Override
@@ -140,6 +150,41 @@ public interface ThresholdEvaluatorState extends ReinitializableState {
                     "value=" + value +
                     ", status=" + status +
                     '}';
+        }
+    }
+
+    class ThresholdValues implements Serializable {
+
+        private static final long serialVersionUID = -788891453989005407L;
+        private final Double threshold;
+        private final Double rearm;
+        private final Integer trigger;
+        private Double dsValue;
+
+        public ThresholdValues(Double threshold, Double rearm, Integer trigger) {
+            this.threshold = threshold;
+            this.rearm = rearm;
+            this.trigger = trigger;
+        }
+
+        public Double getThresholdValue() {
+            return threshold;
+        }
+
+        public Double getRearm() {
+            return rearm;
+        }
+
+        public Integer getTrigger() {
+            return trigger;
+        }
+
+        public Double getDsValue() {
+            return dsValue;
+        }
+
+        public void setDsValue(Double dsValue) {
+            this.dsValue = dsValue;
         }
     }
 }

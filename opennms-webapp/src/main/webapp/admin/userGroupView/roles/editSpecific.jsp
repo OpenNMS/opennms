@@ -59,7 +59,8 @@
       <input type="hidden" name="operation" value="saveEntry"/>
       <input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
       <input type="hidden" name="schedIndex" value="${schedIndex}"/>
-      <input type="hidden" name="timeIndex" value="${timeIndex}" /> 
+      <input type="hidden" name="timeIndex" value="${timeIndex}" />
+      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
       <div class="form-group form-row">
         <label class="col-sm-2">On-Call Role</label>

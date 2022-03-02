@@ -31,8 +31,11 @@ package org.opennms.netmgt.eventd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -348,5 +351,13 @@ public class EventUtilIT {
         // Decode an invalid DateAndTime (wrong length) and verify null is returned
         Date dateInvalid = eventUtil.decodeSnmpV2TcDateAndTime(new BigInteger("deadbeef", 16));
         assertNull("An invalid DateAndTime should return a null", dateInvalid);
+    }
+
+    @Test
+    public void testClearDpName() throws Exception {
+        final String minionId = UUID.randomUUID().toString();
+        m_svcLostEvent.setDistPoller(minionId);
+        String testString = new ExpandableParameter(AbstractEventUtil.TAG_DPNAME, eventUtil).expand(m_svcLostEvent, Maps.newHashMap());
+        assertEquals("", testString);
     }
 }

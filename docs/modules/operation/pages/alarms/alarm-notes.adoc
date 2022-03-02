@@ -1,0 +1,22 @@
+
+[[ga-alarm-notes]]
+= Alarm Notes
+
+{page-component-title} creates an alarm for issues in the network.
+Alarm notes allow you to assign comments to a specific alarm or a whole class of alarms, and share that information with other people on your team.
+
+The figure <<ga-alarm-notes-ui, Alarm Detail View>> shows the component to add these information in memos to the alarm.
+
+[[ga-alarm-notes-ui]]
+.Alarm Detail View
+image::alarms/01_alarm-notes.png[]
+
+Alarm notes let you add two types of notes on an existing alarm or alarm class:
+
+* Sticky Memo: A user-defined note for a specific instance of an alarm.
+                 Deleting the alarm will also delete the sticky memo.
+* Journal Memo: A user-defined note for a whole class of alarms based on the resolved reduction key.
+                  The journal memo will be shown for all alarms matching a specific reduction key.
+                  Deleting an alarm doesn't remove the journal memo, they can be removed by pressing the "Clear" button on an alarm with the existing journal memo.
+
+If an alarm has a sticky and/or a journal memo it is indicated with two icons on the "Alarm list Summary" and "Alarm List Detail".

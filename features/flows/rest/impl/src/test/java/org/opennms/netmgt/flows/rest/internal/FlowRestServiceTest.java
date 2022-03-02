@@ -29,34 +29,32 @@
 package org.opennms.netmgt.flows.rest.internal;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import org.junit.Test;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.api.FlowQueryService;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.NodeCriteria;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
-import org.opennms.netmgt.flows.rest.FlowRestService;
 import org.opennms.netmgt.flows.rest.model.FlowGraphUrlInfo;
-import org.springframework.transaction.support.TransactionOperations;
 
 public class FlowRestServiceTest {
 
@@ -94,12 +92,12 @@ public class FlowRestServiceTest {
     @Test
     public void canGenerateFlowGraphUrlInfo() {
         // Mock the dependencies
-        FlowRepository flowRepository = mock(FlowRepository.class);
-        when(flowRepository.getFlowCount(any())).thenReturn(CompletableFuture.completedFuture(1L));
+        FlowQueryService flowQueryService = mock(FlowQueryService.class);
+        when(flowQueryService.getFlowCount(any())).thenReturn(CompletableFuture.completedFuture(1L));
         NodeDao nodeDao = mock(NodeDao.class);
         SnmpInterfaceDao snmpInterfaceDao = mock(SnmpInterfaceDao.class);
-        TransactionOperations transactionOperations = mock(TransactionOperations.class);
-        FlowRestServiceImpl flowRestService = new FlowRestServiceImpl(flowRepository, nodeDao, snmpInterfaceDao, transactionOperations);
+        SessionUtils sessionUtils = mock(SessionUtils.class);
+        FlowRestServiceImpl flowRestService = new FlowRestServiceImpl(flowQueryService, nodeDao, snmpInterfaceDao, sessionUtils);
 
         // Set the URL
         flowRestService.setFlowGraphUrl("https://grafana:3000/d/eWsVEL6zz/flows?orgId=1&var-node=$nodeId&var-interface=$ifIndex&from=$start&to=$end");

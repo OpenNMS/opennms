@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,6 +48,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -80,7 +81,7 @@ public class ProvisionerTest {
         final AtomicReference<String> locationRef = new AtomicReference<>();
         final Provisioner provisioner = new Provisioner() {
             @Override
-            public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource, String location) {
+            public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource, String location, String monitorKey) {
                 ipAddressRef.set(ipAddress);
                 foreignSourceRef.set(foreignSource);
                 locationRef.set(location);
@@ -105,7 +106,7 @@ public class ProvisionerTest {
                 .getEvent();
 
         // Trigger the newSuspect
-        provisioner.handleNewSuspectEvent(newSuspectEvent);
+        provisioner.handleNewSuspectEvent(ImmutableMapper.fromMutableEvent(newSuspectEvent));
         // Wait for the runnable to complete
         final CountDownLatch latch = new CountDownLatch(1);
         provisioner.getNewSuspectExecutor().execute(latch::countDown);
@@ -136,7 +137,7 @@ public class ProvisionerTest {
             .setInterface(InetAddressUtils.UNPINGABLE_ADDRESS)
             .setService("ICMP").getEvent();
 
-        provisioner.handleDeleteService(event);
+        provisioner.handleDeleteService(ImmutableMapper.fromMutableEvent(event));
 
         verify(provisionService).deleteService(1, InetAddressUtils.UNPINGABLE_ADDRESS, "ICMP", false);
     }
@@ -157,7 +158,7 @@ public class ProvisionerTest {
             .setInterface(InetAddressUtils.UNPINGABLE_ADDRESS)
             .setService("ICMP").addParam(EventConstants.PARM_IGNORE_UNMANAGED, "true").getEvent();
 
-        provisioner.handleDeleteService(event);
+        provisioner.handleDeleteService(ImmutableMapper.fromMutableEvent(event));
 
         verify(provisionService).deleteService(1, InetAddressUtils.UNPINGABLE_ADDRESS, "ICMP", true);
     }

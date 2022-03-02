@@ -28,29 +28,34 @@
 
 package org.opennms.smoketest.health;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.Timeout;
-import org.opennms.smoketest.containers.OpenNMSContainer;
-import org.opennms.smoketest.junit.SentinelTests;
-import org.opennms.smoketest.stacks.IpcStrategy;
-import org.opennms.smoketest.stacks.OpenNMSStack;
-import org.opennms.smoketest.stacks.StackModel;
-import org.opennms.smoketest.utils.SshClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import org.awaitility.core.ConditionTimeoutException;
+import org.hamcrest.Matchers;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.rules.Timeout;
+import org.opennms.core.health.api.Status;
+import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.smoketest.junit.SentinelTests;
+import org.opennms.smoketest.stacks.IpcStrategy;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.stacks.StackModel;
+import org.opennms.smoketest.utils.KarafShellUtils;
+import org.opennms.smoketest.utils.SshClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 @Category(SentinelTests.class)
 public class HealthCheckIT {
@@ -93,39 +98,24 @@ public class HealthCheckIT {
     }
 
     private void verifyHealthCheck(final int expectedHealthCheckServices, final InetSocketAddress sshAddress) {
-        // Ensure we are actually started the sink and are ready to listen for messages
-        await().atMost(5, MINUTES)
-                .pollInterval(5, SECONDS)
-                .until(() -> {
-                    try (final SshClient sshClient = new SshClient(sshAddress, OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD)) {
-                        final PrintStream pipe = sshClient.openShell();
-                        pipe.println("health:check");
-                        pipe.println("logout");
-
-                        // Wait for karaf to process the commands
-                        // each health check times out after 5 seconds, so we wait at least that long
-                        int maxWaitTime = expectedHealthCheckServices * 5;
-                        await().atMost(maxWaitTime, SECONDS).until(sshClient.isShellClosedCallable());
-
-                        // Read stdout and verify
-                        final String shellOutput = sshClient.getStdout();
-
-                        // Log what was read, to help debugging issues
-                        LOG.info("log:display");
-                        LOG.info("{}", shellOutput);
-
-                        final int count = StringUtils.countOccurrencesOf(shellOutput, "Success");
-                        final String overallStatus = getOverallStatus(shellOutput);
-                        LOG.info("{} checks are successful and overall status is {}, expected >= {} and \"Everything is awesome\"", count, overallStatus, expectedHealthCheckServices);
-
-                        // We check if at least the number of expected health
-                        // checks succeeded and overall status is "AWESOME". This way we avoid updating this test each time a new health check is added
-                        return count >= expectedHealthCheckServices && overallStatus.contains("awesome");
-                    } catch (Exception ex) {
-                        LOG.error("Error while trying to verify health:check: {}", ex.getMessage());
-                        return false;
-                    }
-                });
+        final long timeoutMins = 5;
+        try {
+            await().atMost(timeoutMins, MINUTES)
+                    .pollInterval(5, SECONDS)
+                    .ignoreExceptions()
+                    .untilAsserted(() -> {
+                        var result = KarafShellUtils.executeHealthCheck(sshAddress);
+                        final var reason = "health check result: " + result;
+                        assertThat(reason, result.isSuccess());
+                        // the health check may output the some success messages repeatedly
+                        // -> the health check output moves the terminal's cursor and overwrites its former output
+                        // -> count only distinct success messages
+                        var count = (int)result.stdout.stream().filter(s -> s.contains(Status.Success.name())).distinct().count();
+                        assertThat(reason, count, Matchers.greaterThanOrEqualTo(expectedHealthCheckServices));
+                    });
+        } catch (ConditionTimeoutException e) {
+            throw new RuntimeException("health check did not complete as expected after " + timeoutMins + " minutes", e);
+        }
     }
 
     private void verifyMetrics(final InetSocketAddress sshAddress) {
@@ -134,7 +124,7 @@ public class HealthCheckIT {
                 .until(() -> {
                     try (final SshClient sshClient = new SshClient(sshAddress, OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD)) {
                         final PrintStream pipe = sshClient.openShell();
-                        pipe.println("health:metrics-display");
+                        pipe.println("opennms:metrics-display");
                         pipe.println("logout");
 
                         await().atMost(15, SECONDS).until(sshClient.isShellClosedCallable());
@@ -147,7 +137,7 @@ public class HealthCheckIT {
                         LOG.info("{}", shellOutput);
                         return count;
                     } catch (Exception ex) {
-                        LOG.error("Error while trying to verify health:check: {}", ex.getMessage());
+                        LOG.error("Error while trying to verify opennms:health-check: {}", ex.getMessage());
                         return 0;
                     }
                 }, greaterThanOrEqualTo(1));

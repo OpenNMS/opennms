@@ -1,0 +1,14 @@
+{{- /* Upon updating this file please ensure that the schema minion-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+{{range $idx, $elm := ls "/process-env/java-opts" -}}
+{{if not $idx -}}
+#
+# DON'T EDIT THIS FILE :: GENERATED WITH CONFD
+#
+JAVA_OPTS=
+    {{- range $index, $element := getvs "/process-env/java-opts/*" -}}
+        {{- if $index}} {{end -}}
+        {{- $element -}}
+    {{- end}}
+{{end -}}
+{{end -}}

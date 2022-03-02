@@ -1,0 +1,62 @@
+.Add OpenNMS repository GPG key
+[source, console]
+----
+sudo apt-key adv --fetch-keys https://debian.opennms.org/OPENNMS-GPG-KEY
+----
+
+.Add apt repository
+[source, console]
+----
+sudo add-apt-repository -s 'deb https://debian.opennms.org stable main'
+----
+
+NOTE: You can safely ignore the message about conflicting distributions (expected stable but got opennms-xx).
+
+.Install OpenNMS {page-component-title} with built-in dependencies (optional)
+[source, console]
+----
+sudo apt -y install opennms
+----
+
+.Install R packages for trending and forecasting (optional)
+If you want time series trending and forecast functions you have to install the link:https://www.r-project.org/[R project] packages.
+The additional download size for packages is ~152 MB.
+
+[source, console]
+----
+sudo apt -y install r-recommended
+----
+
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+     We recommend that you exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.
+
+[source, console]
+----
+sudo apt-mark hold libopennms-java \
+              libopennmsdeps-java \
+              opennms-common \
+              opennms-db
+----
+
+.Verify directory structure with the tree command
+[source, console]
+----
+sudo apt -y install tree
+tree /usr/share/opennms -L 1
+----
+
+.Directory structure after successful installation
+[source, output]
+----
+/usr/share/opennms
+├── bin
+├── data
+├── deploy
+├── etc -> /etc/opennms
+├── jetty-webapps
+├── lib -> ../java/opennms
+├── logs -> /var/log/opennms
+├── share -> /var/lib/opennms
+└── system
+----

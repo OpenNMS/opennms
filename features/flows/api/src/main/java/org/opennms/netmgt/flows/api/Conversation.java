@@ -157,6 +157,15 @@ public class Conversation {
                 .withApplication(key.getApplication());
     }
 
+    public static Conversation.Builder from(final Conversation convo) {
+        return new Conversation.Builder()
+                .withLocation(convo.location)
+                .withProtocol(convo.protocol)
+                .withLowerHost(Host.from(convo.lowerHost))
+                .withUpperHost(Host.from(convo.upperHost))
+                .withApplication(convo.application);
+    }
+
     public static Conversation.Builder forOther() {
         return Conversation.builder()
                 .withLocation("Other")

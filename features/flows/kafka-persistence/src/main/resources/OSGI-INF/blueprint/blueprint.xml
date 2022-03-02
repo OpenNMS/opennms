@@ -1,0 +1,51 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+  <!-- Enables update of bundle when kafka config is updated -->
+  <cm:property-placeholder id="kafkaForwarderProperties" persistent-id="org.opennms.features.flows.persistence.kafka" update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="topic" value="flowDocuments" />
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
+
+  <!-- Metrics -->
+  <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+  <service ref="metricRegistry" interface="com.codahale.metrics.MetricSet">
+    <service-properties>
+      <entry key="name" value="org.opennms.netmgt.flows.kafka" />
+      <entry key="description" value="Kafka Flow Forwarder" />
+    </service-properties>
+  </service>
+  <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+    <argument ref="metricRegistry"/>
+  </bean>
+  <bean id="metricRegistryDomainedJmxReporterBuilder" factory-ref="metricRegistryJmxReporterBuilder" factory-method="inDomain">
+    <argument value="org.opennms.netmgt.flows.kafka"/>
+  </bean>
+  <bean id="metricRegistryJmxReporter"
+        factory-ref="metricRegistryDomainedJmxReporterBuilder"
+        factory-method="build"
+        init-method="start"
+        destroy-method="stop" />
+
+  <bean id="kafkaFlowForwarder" class="org.opennms.netmgt.flows.persistence.KafkaFlowForwarder"
+        init-method="init" destroy-method="destroy">
+    <argument ref="configurationAdmin"/>
+    <argument ref="metricRegistry"/>
+    <property name="topicName" value="${topic}"/>
+  </bean>
+
+  <service interface="org.opennms.netmgt.flows.api.EnrichedFlowForwarder" ref="kafkaFlowForwarder" />
+
+</blueprint>

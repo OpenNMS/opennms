@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,7 +46,7 @@ import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.annotations.EventPostProcessor;
 import org.opennms.netmgt.events.api.annotations.EventPreProcessor;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -149,11 +149,11 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
+     * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.events.api.model.IEvent)
      */
     /** {@inheritDoc} */
     @Override
-    public void onEvent(final Event event) {
+    public void onEvent(final IEvent event) {
         if (event.getUei() == null) {
             return;
         }
@@ -197,11 +197,11 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     /**
      * <p>postprocessEvent</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      * @throws java.lang.IllegalAccessException if any.
      * @throws java.lang.reflect.InvocationTargetException if any.
      */
-    protected void postprocessEvent(Event event) throws IllegalAccessException,
+    protected void postprocessEvent(IEvent event) throws IllegalAccessException,
             InvocationTargetException {
         for(Method m : m_eventPostProcessors) {
             processEvent(event, m);
@@ -211,12 +211,12 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     /**
      * <p>processEvent</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      * @param method a {@link java.lang.reflect.Method} object.
      * @throws java.lang.IllegalAccessException if any.
      * @throws java.lang.reflect.InvocationTargetException if any.
      */
-    protected void processEvent(Event event, Method method)
+    protected void processEvent(IEvent event, Method method)
             throws IllegalAccessException, InvocationTargetException {
         method.invoke(m_annotatedListener, event);
     }
@@ -224,11 +224,11 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     /**
      * <p>preprocessEvent</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      * @throws java.lang.IllegalAccessException if any.
      * @throws java.lang.reflect.InvocationTargetException if any.
      */
-    protected void preprocessEvent(Event event) throws IllegalAccessException,
+    protected void preprocessEvent(IEvent event) throws IllegalAccessException,
             InvocationTargetException {
         for(Method m : m_eventPreProcessors) {
             processEvent(event, m);
@@ -240,10 +240,10 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     /**
      * <p>handleException</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      * @param cause a {@link java.lang.Throwable} object.
      */
-    protected void handleException(Event event, Throwable cause) {
+    protected void handleException(IEvent event, Throwable cause) {
         
         for(Method method : m_exceptionHandlers) {
             if (ClassUtils.isAssignableValue(method.getParameterTypes()[1], cause)) {
@@ -333,7 +333,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     
     private static void validateMethodAsEventExceptionHandler(Method method) {
         Assert.state(method.getParameterTypes().length == 2, "Invalid number of parameters. EventExceptionHandler methods must take 2 arguments with types (Event, ? extends Throwable)");
-        Assert.state(ClassUtils.isAssignable(Event.class, method.getParameterTypes()[0]), "First parameter of incorrect type. EventExceptionHandler first paramenter must be of type Event");
+        Assert.state(ClassUtils.isAssignable(IEvent.class, method.getParameterTypes()[0]), "First parameter of incorrect type. EventExceptionHandler first paramenter must be of type Event");
         Assert.state(ClassUtils.isAssignable(Throwable.class, method.getParameterTypes()[1]), "Second parameter of incorrect type. EventExceptionHandler second paramenter must be of type ? extends Throwable");
     }
 
@@ -434,7 +434,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
 
     private static void validateMethodAsEventHandler(Method method) {
         Assert.state(method.getParameterTypes().length == 1, "Invalid number of paremeters for method "+method+". EventHandler methods must take a single event argument");
-        Assert.state(method.getParameterTypes()[0].isAssignableFrom(Event.class), "Parameter of incorrent type for method "+method+". EventHandler methods must take a single event argument");
+        Assert.state(method.getParameterTypes()[0].isAssignableFrom(IEvent.class), "Parameter of incorrent type for method "+method+". EventHandler methods must take a single event argument");
     }
     
     /**

@@ -55,7 +55,7 @@ import com.codahale.metrics.MetricRegistry;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 
-@Command(scope = "opennms-kv-blob", name = "benchmark", description = "Benchmark the blob store's throughput")
+@Command(scope = "opennms", name = "kv-benchmark-blob", description = "Benchmark the blob store's throughput")
 @Service
 public class BlobStoreBenchmark implements Action {
     @Reference

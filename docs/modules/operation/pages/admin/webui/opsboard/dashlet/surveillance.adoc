@@ -1,0 +1,17 @@
+
+= Surveillance
+
+This dashlet shows a given <<admin/webui/surveillance-view.adoc#surveillance-view, Surveillance View>> in the xref:admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
+
+.Surveillance dashlet configuration options
+[options="header,autowidth", cols="1,2"]
+|===
+|Field
+|Description
+
+| Boost support
+| not available
+
+| viewName
+| Name of the configured surveillance view
+|===

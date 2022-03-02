@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.web.rest.v1.config.TicketerConfig;
 import org.opennms.web.rest.v1.config.DatetimeformatConfig;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @XmlRootElement(name="info")
 public class InfoDTO {
@@ -42,6 +45,7 @@ public class InfoDTO {
     private String packageDescription;
     private TicketerConfig ticketerConfig;
     private DatetimeformatConfig datetimeformatConfig;
+    private Map<String,String> services = Collections.emptyMap();
 
     public DatetimeformatConfig getDatetimeformatConfig() {
         return datetimeformatConfig;
@@ -90,4 +94,8 @@ public class InfoDTO {
     public TicketerConfig getTicketerConfig() {
         return ticketerConfig;
     }
+
+    public void setServices(final Map<String,String> services) { this.services = services; }
+
+    public Map<String,String> getServices() { return this.services; }
 }

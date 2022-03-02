@@ -138,6 +138,16 @@ public class GrafanaEndpointRestServiceImpl implements GrafanaEndpointRestServic
         }
     }
 
+    @Override
+    public Response getDashboard(final String uid, final String dashboardId) {
+        try {
+            final Dashboard dashboard = grafanaEndpointService.getClient(uid).getDashboardByUid(dashboardId);
+            return Response.ok().entity(new JSONObject(dashboard).toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
+        } catch (final IOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(createErrorObject(ex).toString()).build();
+        }
+    }
+
     private static JSONObject createErrorObject(Exception ex) {
         return createErrorObject(ex.getMessage(), "entity");
     }

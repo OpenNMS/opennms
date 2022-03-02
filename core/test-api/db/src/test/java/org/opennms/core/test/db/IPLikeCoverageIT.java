@@ -28,21 +28,38 @@
 
 package org.opennms.core.test.db;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.DBUtils;
 
-public class IPLikeCoverageIT extends InstallerDbITCase {
+public class IPLikeCoverageIT {
+    private TemporaryDatabasePostgreSQL m_db;
+
+    @Before
+    public void setUp() throws Exception {
+        m_db = new TemporaryDatabasePostgreSQL(null, false);
+        m_db.setPlpgsqlIplike(true);
+        m_db.setPopulateSchema(true);
+        m_db.setupDatabase();
+    }
+    
+    @After
+    public void tearDown() throws Exception {
+        m_db.destroyTestDatabase();
+    }
 
     /*
      * This set of coverage data matches that in https://github.com/OpenNMS/iplike/blob/master/tests.dat
      */
     @Test
     public void testIplikeCoverage() throws Exception {
-        getInstallerDb().updatePlPgsql();
-        getInstallerDb().setPostgresIpLikeLocation(null); // Ensure that we don't try to load the C version
-        getInstallerDb().updateIplike();
-
         // IPv4 basic matches
         checkIplikeRule("1.2.3.4","1.2.3.4",true);
         checkIplikeRule("1.2.3.4","1.2.3.5",false);
@@ -119,14 +136,32 @@ public class IPLikeCoverageIT extends InstallerDbITCase {
         checkIplikeRule("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%4","fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd",true);
         checkIplikeRule("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%4","fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%4",true);
         checkIplikeRule("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd","fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%4",false);
-
-        getInstallerDb().closeConnection();
     }
 
     private void checkIplikeRule(final String value, final String rule, final boolean expected) throws Exception {
-        final Boolean result = getJdbcTemplate().queryForObject("SELECT iplike(CAST(? AS TEXT),CAST(? AS TEXT))", new String[] { value, rule }, Boolean.class);
-        if (expected) {
-            assertTrue("SELECT iplike(" + value + "," + rule + ") === " + expected, result);
+        final DBUtils util = new DBUtils();
+
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            c = m_db.getDataSource().getConnection();
+            util.watch(c);
+
+            st = c.prepareStatement("SELECT iplike(CAST(? AS TEXT),CAST(? AS TEXT))");
+            util.watch(st);
+            st.setString(1, value);
+            st.setString(2, rule);
+
+            st.execute();
+
+            rs = st.getResultSet();
+            util.watch(rs);
+            rs.next();
+            final boolean result = rs.getBoolean(1);
+            assertEquals("SELECT iplike(" + value + "," + rule + ") === " + expected, expected, result);
+        } finally {
+            util.cleanUp();
         }
     }
 

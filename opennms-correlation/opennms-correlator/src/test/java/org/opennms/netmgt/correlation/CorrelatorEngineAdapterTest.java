@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.correlation;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -43,6 +43,7 @@ import org.mockito.ArgumentCaptor;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 
 public class CorrelatorEngineAdapterTest {
@@ -68,17 +69,18 @@ public class CorrelatorEngineAdapterTest {
         EventListener listener = listenerCaptor.getValue();
 
         // Now send a reloadDaemonConfig event targeting a different daemon
-        listener.onEvent(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test")
+        listener.onEvent(ImmutableMapper.fromMutableEvent(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test")
                 .addParam(EventConstants.PARM_DAEMON_NAME, "some-other-name")
-                .getEvent());
+                .getEvent()));
         // No invocations to add/remove event listeners should have been made
         verify(eventIpcManager, never()).removeEventListener(any(EventListener.class));
         verify(eventIpcManager, times(1)).addEventListener(any(EventListener.class), any(String.class));
 
         // Now send a reloadDaemonConfig event targeting our engine
-        listener.onEvent(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test")
+        listener.onEvent(ImmutableMapper.fromMutableEvent(
+                new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test")
                 .addParam(EventConstants.PARM_DAEMON_NAME, listener.getName())
-                .getEvent());
+                .getEvent()));
         // The event listener should have been removed and re-added
         verify(eventIpcManager, times(1)).removeEventListener(any(EventListener.class));
         verify(eventIpcManager, times(2)).addEventListener(any(EventListener.class), any(String.class));

@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
@@ -122,18 +125,26 @@ public abstract class BaseThresholdDefConfigWrapper {
     /**
      * <p>getRearm</p>
      *
-     * @return a double.
+     * @return a Double.
      */
     public Double getRearm() {
+        return StringUtils.parseDouble(m_baseDef.getRearm(), null);
+    }
+
+    public String getRearmString() {
         return m_baseDef.getRearm();
     }
     
     /**
      * <p>getTrigger</p>
      *
-     * @return a int.
+     * @return a Integer.
      */
     public Integer getTrigger() {
+        return StringUtils.parseInt(m_baseDef.getTrigger(), null);
+    }
+
+    public String getTriggerString() {
         return m_baseDef.getTrigger();
     }
     
@@ -149,11 +160,17 @@ public abstract class BaseThresholdDefConfigWrapper {
     /**
      * <p>getValue</p>
      *
-     * @return a double.
+     * @return a Double.
      */
     public Double getValue() {
+        return StringUtils.parseDouble(m_baseDef.getValue(), null);
+    }
+
+
+    public String getValueString() {
         return m_baseDef.getValue();
     }
+
     
     /**
      * <p>hasRearm</p>
@@ -224,9 +241,9 @@ public abstract class BaseThresholdDefConfigWrapper {
                     && Objects.equals(this.getDsLabel(), that.getDsLabel())
                     && Objects.equals(this.getTriggeredUEI(), that.getTriggeredUEI())
                     && Objects.equals(this.getRearmedUEI(), that.getRearmedUEI())
-                    && Objects.equals(this.getValue(), that.getValue())
-                    && Objects.equals(this.getRearm(), that.getRearm())
-                    && Objects.equals(this.getTrigger(), that.getTrigger())
+                    && Objects.equals(this.getValueString(), that.getValueString())
+                    && Objects.equals(this.getRearmString(), that.getRearmString())
+                    && Objects.equals(this.getTriggerString(), that.getTriggerString())
                     && Objects.equals(this.getBasethresholddef().getFilterOperator(), that.getBasethresholddef().getFilterOperator())
                     && Objects.equals(this.getBasethresholddef().getRelaxed(), that.getBasethresholddef().getRelaxed())
                     && Objects.equals(this.getBasethresholddef().getResourceFilters(), that.getBasethresholddef().getResourceFilters());
@@ -250,5 +267,29 @@ public abstract class BaseThresholdDefConfigWrapper {
     }
     
     public abstract void accept(ThresholdDefVisitor thresholdDefVisitor);
+
+    public ThresholdEvaluatorState.ThresholdValues interpolateThresholdValues(Scope scope) {
+        Double thresholdValue = interpolateDoubleValue(getValueString(), scope).orElse(getValue());
+        Double rearm = interpolateDoubleValue(getRearmString(), scope).orElse(getRearm());
+        Integer trigger = interpolateIntegerValue(getTriggerString(), scope).orElse(getTrigger());
+        return new ThresholdEvaluatorState.ThresholdValues(thresholdValue, rearm, trigger);
+    }
+
+    private Optional<Double> interpolateDoubleValue(String value, Scope scope) {
+        if (Interpolator.containsMateData(value)) {
+            String interpolatedValue = Interpolator.interpolate(value, scope).output;
+            return Optional.ofNullable(StringUtils.parseDouble(interpolatedValue, null));
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Integer> interpolateIntegerValue(String value, Scope scope) {
+        if (Interpolator.containsMateData(value)) {
+            String interpolatedValue = Interpolator.interpolate(value, scope).output;
+            return Optional.ofNullable(StringUtils.parseInt(interpolatedValue, null));
+        }
+        return Optional.empty();
+    }
+
 }
 

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Exit immediately if anything returns non-zero
+set -e
+
 # Exit script if a statement returns a non-true return value.
 set -o errexit
 
@@ -11,18 +14,20 @@ cd "$(dirname "$0")"
 # shellcheck disable=SC1091
 source ../set-build-environment.sh
 
-../launch_yum_server.sh "$RPMDIR"
+MINION_TARBALL="$(find ../.. -name \*-minion.tar.gz -type f | grep opennms-assemblies | head -n 1)"
+if [ -z "${MINION_TARBALL}" ]; then
+  echo "unable to find minion tarball in opennms-assemblies"
+  exit 1
+fi
+cp "${MINION_TARBALL}" tarball/minion.tar.gz
 
-cat <<END >rpms/opennms-docker.repo
-[opennms-repo-docker-common]
-name=Local RPMs to Install from Docker
-baseurl=http://${YUM_CONTAINER_NAME}:19990/
-enabled=1
-gpgcheck=0
-END
+sed -e "s,@VERSION@,${VERSION}," \
+  -e "s,@REVISION@,${REVISION}," \
+  -e "s,@BRANCH@,${BRANCH}," \
+  -e "s,@BUILD_NUMBER@,${BUILD_NUMBER}," \
+  minion-config-schema.yml.in > minion-config-schema.yml
 
 docker build -t minion \
-  --network "${BUILD_NETWORK}" \
   --build-arg BUILD_DATE="${BUILD_DATE}" \
   --build-arg VERSION="${VERSION}" \
   --build-arg SOURCE="${SOURCE}" \

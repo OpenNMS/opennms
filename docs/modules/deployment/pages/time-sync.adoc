@@ -1,0 +1,3 @@
+IMPORTANT: Time synchronization is a critical part of operating a monitoring system.
+Ensure you have a functional time synchronization process running with your operating system.
+If you are not familiar with this topic, the knowledgebase article link:https://opennms.discourse.group/t/ensure-time-synchronization-for-your-opennms-components/159[Ensure time synchronization for your OpenNMS components] is a good starting point.

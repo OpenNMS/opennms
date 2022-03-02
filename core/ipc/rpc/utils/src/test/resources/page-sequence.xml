@@ -1,0 +1,15 @@
+<page-sequence>
+    <page path="/opennms/login.jsp"
+          port="8980"
+          successMatch="Password" />
+    <page path="/opennms/j_spring_security_check"
+          port="${ctx1:port|ctx2:port|ctx3:port|8980}"
+          method="POST">
+        <parameter key="j_username" value="${ctx1:user|ctx2:user|ctx3:user|admin}"/>
+        <parameter key="j_password" value="admin"/>
+        <header name="foo" value="bar"/>
+    </page>
+    <page path="/opennms/index.jsp"
+          port="${ctx1:port|ctx2:port|8980}"
+          successMatch="Log Out" />
+</page-sequence>
