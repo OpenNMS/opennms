@@ -126,11 +126,4 @@ public class KeyValueStoreWrapper<T> implements KeyValueStore<T> {
     public CompletableFuture<Void> truncateContextAsync(String context) {
         return store.truncateContextAsync(context);
     }
-
-    @Override
-    public Class<? extends org.opennms.features.distributed.kvstore.api.KeyValueStore> getStoreClass() {
-        return store.getClass();
-    }
-
-
 }

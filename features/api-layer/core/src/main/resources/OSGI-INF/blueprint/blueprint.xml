@@ -40,6 +40,7 @@
   <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" availability="optional"/>
   <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory"/>
   <reference id="graphContainerCache" interface="org.opennms.netmgt.graph.api.service.GraphContainerCache" availability="mandatory"/>
+  <reference id="postgresJsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
@@ -394,9 +395,9 @@
   </reference-list>
   <service ref="uiExtensionRegistry" interface="org.opennms.features.apilayer.uiextension.UIExtensionRegistry" />
   <!--Key-value store -->
-  <bean id="keyValueStoreMapper" class="org.opennms.features.apilayer.common.distributed.KeyValueStoreMapperImpl" />
-  <reference-list interface="org.opennms.features.distributed.kvstore.api.KeyValueStore" availability="optional">
-    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="keyValueStoreMapper"/>
-  </reference-list>
-  <service ref="keyValueStoreMapper" interface="org.opennms.integration.api.v1.distributed.KeyValueStoreMapper" />
+  <service id="keyValueStore" interface="org.opennms.integration.api.v1.distributed.KeyValueStore">
+    <bean class="org.opennms.features.apilayer.common.distributed.KeyValueStoreWrapper">
+      <argument ref="postgresJsonStore"/>
+    </bean>
+  </service>
 </blueprint>
