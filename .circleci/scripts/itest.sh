@@ -90,6 +90,7 @@ sudo apt update && \
             || exit 1
 
 export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64
+export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
 
 echo "#### Building Assembly Dependencies"
 ./compile.pl install -P'!checkstyle' \
