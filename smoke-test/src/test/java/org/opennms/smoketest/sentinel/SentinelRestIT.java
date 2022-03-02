@@ -66,7 +66,7 @@ public class SentinelRestIT {
         RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
     }
 
-    //@Test
+    @Ignore("flapping")
     public void testRestHealthServiceOnSentinel() throws Exception {
 
         LOG.info("testing /sentinel/rest/health .........");
