@@ -68,7 +68,7 @@ public class PollStatus implements Serializable {
 
     private final Map<String, Number> m_properties = Collections.synchronizedMap(new LinkedHashMap<String, Number>());
 
-    private byte[] deviceConfig;
+    private DeviceConfig deviceConfig;
     
     /**
      * <P>
@@ -551,13 +551,12 @@ public class PollStatus implements Serializable {
         return s_statusNames[m_statusCode];
     }
 
-    @XmlAttribute(name="device-config")
-    @Transient
-    public byte[] getDeviceConfig() {
+    @XmlElement(name = "device-config")
+    public DeviceConfig getDeviceConfig() {
         return deviceConfig;
     }
 
-    public void setDeviceConfig(byte[] deviceConfig) {
+    public void setDeviceConfig(DeviceConfig deviceConfig) {
         this.deviceConfig = deviceConfig;
     }
 }

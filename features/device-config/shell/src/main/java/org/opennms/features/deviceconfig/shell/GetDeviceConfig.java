@@ -36,7 +36,6 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
@@ -84,11 +83,15 @@ public class GetDeviceConfig implements Action {
             try {
                 try {
                     byte[] dc = future.get(1, TimeUnit.SECONDS);
-                    return new String(dc, Charset.forName(encoding));
+                    if (dc != null) {
+                        return new String(dc, Charset.forName(encoding));
+                    } else {
+                        System.out.println("Failed to fetch device config");
+                    }
                 } catch (InterruptedException e) {
-                    System.out.print("Interrupted.");
+                    System.out.println("Interrupted.");
                 } catch (ExecutionException e) {
-                    System.out.print("Failed to fetch device config.");
+                    System.out.println("Failed to fetch device config.");
                 }
                 break;
             } catch (TimeoutException e) {

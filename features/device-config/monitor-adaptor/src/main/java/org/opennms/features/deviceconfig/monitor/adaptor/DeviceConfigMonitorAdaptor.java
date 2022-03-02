@@ -64,9 +64,9 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         String configTypeAttribute = getObjectAsString(parameters.get("config-type"));
         String encoding = !Strings.isNullOrEmpty(encodingAttribute) ? encodingAttribute : Charset.defaultCharset().name();
         String configType = !Strings.isNullOrEmpty(configTypeAttribute) ? configTypeAttribute : ConfigType.Default;
-        byte[] deviceConfigBytes = status.getDeviceConfig();
+        var deviceConfig = status.getDeviceConfig();
 
-        if (deviceConfigBytes == null) {
+        if (deviceConfig == null) {
             // Config retrieval failed
             deviceConfigDao.updateDeviceConfigFailure(
                     ipInterface,
@@ -80,7 +80,8 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                     ipInterface,
                     configType,
                     encoding,
-                    deviceConfigBytes
+                    deviceConfig.content,
+                    deviceConfig.filename
             );
         }
 

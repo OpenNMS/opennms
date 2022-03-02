@@ -26,31 +26,45 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.deviceconfig.persistence.api;
+package org.opennms.netmgt.poller;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import java.util.List;
-import java.util.Optional;
+@XmlRootElement(name="device-config")
+@XmlAccessorType(XmlAccessType.NONE)
+public class DeviceConfig {
 
-public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
-    List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, String configType);
+    @XmlAttribute(name="content")
+    public byte[] content;
 
-    Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String configType);
+    @XmlAttribute(name="filename")
+    public String filename;
 
-    void updateDeviceConfigContent(
-            OnmsIpInterface ipInterface,
-            String configType,
-            String encoding,
-            byte[] deviceConfigBytes,
-            String filename
-    );
+    public DeviceConfig(byte[] content, String fileName) {
+        this.content = content;
+        this.filename = fileName;
+    }
 
-    void updateDeviceConfigFailure(
-            OnmsIpInterface ipInterface,
-            String configType,
-            String encoding,
-            String reason
-    );
+    // for JAXB
+    public DeviceConfig() {
+    }
+
+    public byte[] getContent() {
+        return content;
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
 }

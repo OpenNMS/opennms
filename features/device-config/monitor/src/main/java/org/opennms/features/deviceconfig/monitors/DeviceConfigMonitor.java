@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
+import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -90,7 +91,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                         success -> {
                             LOG.debug("Retrieved device configuration - host: " + host);
                             var pollStatus = PollStatus.up();
-                            pollStatus.setDeviceConfig(success.config);
+                            pollStatus.setDeviceConfig(new DeviceConfig(success.config, success.filename));
                             return pollStatus;
                         }
                 )

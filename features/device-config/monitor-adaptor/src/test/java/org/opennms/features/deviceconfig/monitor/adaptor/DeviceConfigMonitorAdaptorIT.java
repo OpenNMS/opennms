@@ -140,7 +140,9 @@ public class DeviceConfigMonitorAdaptorIT {
 
         // Send valid config (Scenario 2)
         byte[] configInBytes = config.getBytes(StandardCharsets.UTF_16);
-        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(configInBytes);
+        var fileName = "fileName";
+        var deviceConfig = new org.opennms.netmgt.poller.DeviceConfig(configInBytes, fileName);
+        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(deviceConfig);
         // Send pollStatus with config to adaptor.
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
 
@@ -168,7 +170,8 @@ public class DeviceConfigMonitorAdaptorIT {
 
         // Send updated config ( Scenario 4)
         configInBytes = "updated-device-config".getBytes(StandardCharsets.UTF_16);
-        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(configInBytes);
+        deviceConfig = new org.opennms.netmgt.poller.DeviceConfig(configInBytes, fileName);
+        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(deviceConfig);
         // Send pollStatus with config to adaptor.
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
         Optional<DeviceConfig> configOnThursday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
@@ -202,7 +205,8 @@ public class DeviceConfigMonitorAdaptorIT {
 
         // Send successful config but that matches old config ( Scenario 7)
         configInBytes = "updated-device-config".getBytes(StandardCharsets.UTF_16);
-        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(configInBytes);
+        deviceConfig = new org.opennms.netmgt.poller.DeviceConfig(configInBytes, fileName);
+        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(deviceConfig);
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
         Optional<DeviceConfig> configOnSunday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
         Assert.assertTrue(configOnSunday.isPresent());

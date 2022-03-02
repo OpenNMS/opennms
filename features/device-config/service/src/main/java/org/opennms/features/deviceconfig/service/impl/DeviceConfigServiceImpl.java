@@ -46,11 +46,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class DeviceConfigServiceImpl implements DeviceConfigService {
 
@@ -87,8 +84,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     public CompletableFuture<byte[]> getDeviceConfig(String ipAddress, String location, String configType, int timeout) throws IOException {
         return pollDeviceConfig(ipAddress, location, configType)
                 .orTimeout(timeout, TimeUnit.MILLISECONDS)
-                .thenApply(resp -> resp.getPollStatus().getDeviceConfig())
-                .whenComplete((bytes, throwable) -> {
+                .thenApply(resp -> {
+                        if(resp.getPollStatus().getDeviceConfig() != null) {
+                            return resp.getPollStatus().getDeviceConfig().content;
+                        }
+                        return null;
+                })
+                .whenComplete((config, throwable) -> {
                     if (throwable != null) {
                         LOG.error("Error while getting device config for IpAddress {} at location {}", ipAddress, location, throwable);
                     }

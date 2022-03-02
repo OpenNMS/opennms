@@ -67,6 +67,10 @@ public class DeviceConfigDispatcher implements TftpFileReceiver, AutoCloseable {
     @Override
     public void onFileReceived(InetAddress address, String fileName, byte[] content) {
         LOG.debug("received - address: " + address.getHostAddress() + "; fileName: " + fileName + "; contentLength: " + content.length);
+        // No need to handle files that are retrieved by monitor.
+        if (fileName.contains("monitor")) {
+            return;
+        }
         var dto = new DeviceConfigSinkDTO(identity.getLocation(), address.getAddress(), fileName, content);
         asyncDispatcher.send(dto).whenComplete((status, throwable) -> {
             if (status != null) {

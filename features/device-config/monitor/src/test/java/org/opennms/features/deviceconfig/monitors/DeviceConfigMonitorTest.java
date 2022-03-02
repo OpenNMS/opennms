@@ -45,6 +45,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
+import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 
@@ -74,15 +75,17 @@ public class DeviceConfigMonitorTest {
         deviceConfigMonitor.setRetriever(retriever);
 
         var config = new byte[] {1, 2, 3};
+        var filename = "filename";
 
         when(retriever.retrieveConfig(any(), any(), any(), any(), any(), anyInt(), any(), any(), any())).thenReturn(
-                CompletableFuture.completedFuture(Either.right(new Retriever.Success(config)))
+                CompletableFuture.completedFuture(Either.right(new Retriever.Success(config, filename)))
         );
 
         var pollStatus = deviceConfigMonitor.poll(svc, params);
 
         assertThat(pollStatus.getStatusCode(), is(PollStatus.SERVICE_AVAILABLE));
-        assertThat(pollStatus.getDeviceConfig(), is(config));
+        assertThat(pollStatus.getDeviceConfig().content, is(config));
+        assertThat(pollStatus.getDeviceConfig().filename, is(filename));
     }
 
     @Test
