@@ -1,4 +1,11 @@
-import { LocalConfiguration, LocalConfigurationWrapper, LocalErrors, LocalSubConfiguration, ProvisionDServerConfiguration } from './configuration.types'
+import {
+  AdvancedOption,
+  LocalConfiguration,
+  LocalConfigurationWrapper,
+  LocalErrors,
+  LocalSubConfiguration,
+  ProvisionDServerConfiguration
+} from './configuration.types'
 import { aciKeys, dnsKeys, openDaylightKeys, prisKeys } from './copy/advancedKeys'
 import {
   RequisitionData,
@@ -14,31 +21,35 @@ import {
   RequisitionPluginSubTypes,
   RequisitionHTTPTypes
 } from './copy/requisitionTypes'
-import { scheduleTypes, weekTypes,dayTypes } from './copy/scheduleTypes'
+import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
 import cronstrue from 'cronstrue'
 
-
 /**
- * 
+ *
  * @param split String array from a crontab, split on a space
  * @returns Human Readable time in 12 hour format.
  */
 const buildFullTime = (split: Array<string>) => {
   const { hour, AM } = parseHour(split)
- 
+
   return withTwoZeros(hour) + ':' + withTwoZeros(split[0]) + (AM ? 'AM' : 'PM')
 }
 
 /**
- * 
+ *
  * @param name The name we're looking for
  * @param existingError Any existing error message that's already been set.
  * @param existingList Our full list of ProvisionD Configuration Items
  * @returns An error message if we found a duplicate name.
  */
-const checkForDuplicateName = (name: string, existingError: string, existingList: Array<ProvisionDServerConfiguration>,activeIndex: number) => {
+const checkForDuplicateName = (
+  name: string,
+  existingError: string,
+  existingList: Array<ProvisionDServerConfiguration>,
+  activeIndex: number
+) => {
   let errorMessage = existingError
-  existingList.some((item,index) => {
+  existingList.some((item, index) => {
     if (name === item[RequisitionData.ImportName] && activeIndex !== index) {
       errorMessage = ErrorStrings.DuplicateName
       return true
@@ -48,7 +59,7 @@ const checkForDuplicateName = (name: string, existingError: string, existingList
 }
 
 /**
- * 
+ *
  * @param cronFormatted A Crontab string
  * @returns A formatted object for display to humans
  */
@@ -56,7 +67,7 @@ const convertCronTabToLocal = (cronFormatted: string) => {
   const split = cronFormatted.split(' ')
   const time = buildFullTime(split)
   let lastDay = false
-  if (split[2] === 'L'){
+  if (split[2] === 'L') {
     lastDay = true
   }
   const monthly = lastDay ? 32 : parseInt(split[2])
@@ -65,16 +76,16 @@ const convertCronTabToLocal = (cronFormatted: string) => {
   const occuranceAdvanced = cronFormatted
   let advancedCrontab = false
   if (
-    time === 'NaN' 
-    || split.length > 5 
-     || (occuranceDetails.occurance.name === 'Daily' && !isNaN(monthly) && isNaN(weekly))
-  || (cronFormatted.includes('?') && !cronFormatted.includes('L'))
-  || cronFormatted.includes('/')
-  || cronFormatted.includes('#')
-  || cronFormatted.includes('-')
-  || cronFormatted.includes(',')
-  || /[A-KM-Za-kM-Z]/.test(cronFormatted)
-  ){
+    time === 'NaN' ||
+    split.length > 5 ||
+    (occuranceDetails.occurance.name === 'Daily' && !isNaN(monthly) && isNaN(weekly)) ||
+    (cronFormatted.includes('?') && !cronFormatted.includes('L')) ||
+    cronFormatted.includes('/') ||
+    cronFormatted.includes('#') ||
+    cronFormatted.includes('-') ||
+    cronFormatted.includes(',') ||
+    /[A-KM-Za-kM-Z]/.test(cronFormatted)
+  ) {
     advancedCrontab = true
   }
   return {
@@ -84,8 +95,26 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     weekly,
     advancedCrontab,
     occuranceAdvanced,
-    ...occuranceDetails,
+    ...occuranceDetails
   }
+}
+
+/**
+ * @param fullURL server URL
+ * @param advancedOptions array of kv pairs
+ * @returns Query string to append to server URL
+ */
+const getQueryStringFromAdvancedOptions = (fullURL: string, advancedOptions: AdvancedOption[]): string => {
+  const hasQueryParams = () => fullURL.includes('?')
+
+  let queryString = ''
+  advancedOptions.forEach((option, index) => {
+    if (option.key.name && option.value) {
+      queryString += `${(index > 0 || hasQueryParams()) ? '&' : '?'}${option.key.name}=${option.value}`
+    }
+  })
+
+  return queryString
 }
 
 /**
@@ -115,16 +144,13 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   }
 
   const fullURL = `${protocol}://${host}`
-  let queryString = !fullURL.includes('?') && localItem.advancedOptions.length > 0 ? '?' : ''
-  localItem.advancedOptions.forEach((option, index) => {
-    queryString += `${index > 0 ? '&' : ''}${option.key.name}=${option.value}`
-  })
+  const queryString = getQueryStringFromAdvancedOptions(fullURL, localItem.advancedOptions)
   return fullURL + queryString
 }
 
 /**
- * This method takes in our local form values and spits out a crontab 
- * value ready for the server. This method makes assumptions based 
+ * This method takes in our local form values and spits out a crontab
+ * value ready for the server. This method makes assumptions based
  * on the provided UI and only lets users set a Daily/Monthy/Weekly
  * schedule which has to assume first day of the week or first day
  * of the month. If additional context options are added to the UI
@@ -133,11 +159,9 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
  * @param time Local Time Value
  * @returns crontab-ready string
  */
-const convertLocalToCronTab = (item:LocalConfiguration) => {
-
+const convertLocalToCronTab = (item: LocalConfiguration) => {
   let schedule = '1 * * * * *'
-  if (!item.advancedCrontab){
-
+  if (!item.advancedCrontab) {
     const occurance = item.occurance
     const time = item.time
     const [hoursd, minutesd] = time.split(':')
@@ -151,13 +175,13 @@ const convertLocalToCronTab = (item:LocalConfiguration) => {
     } else if (occurance.name === 'Monthly') {
       let day: number | string = item.occuranceDay.id
       let final = '*'
-      if (day === 32){
+      if (day === 32) {
         day = 'L'
         final = '?'
       }
       schedule = `${minutes} ${hours} ${day} * ${final}`
     }
-  }else {
+  } else {
     schedule = item.occuranceAdvanced
   }
   return schedule
@@ -208,9 +232,14 @@ const convertServerConfigurationToLocal = (clickedItem: ProvisionDServerConfigur
     rescanBehavior = 2
   }
 
-  const { occurance,occuranceWeek,occuranceDay, twentyFourHour: time, occuranceAdvanced, advancedCrontab } = convertCronTabToLocal(
-    clickedItem[RequisitionData.CronSchedule]
-  )
+  const {
+    occurance,
+    occuranceWeek,
+    occuranceDay,
+    twentyFourHour: time,
+    occuranceAdvanced,
+    advancedCrontab
+  } = convertCronTabToLocal(clickedItem[RequisitionData.CronSchedule])
 
   const urlVars = convertURLToLocal(clickedItem[RequisitionData.ImportURL])
   return {
@@ -239,7 +268,7 @@ const convertURLToLocal = (urlIn: string) => {
   const url = urlIn.split('/')
   const typeRaw = url[0].split(':')[0]
   let urlPath = ''
-  for (let i = 3; i < url.length; i++){
+  for (let i = 3; i < url.length; i++) {
     urlPath += '/' + url[i]
   }
   localConfig.type = findFullType(typeRaw)
@@ -272,11 +301,13 @@ const convertURLToLocal = (urlIn: string) => {
    * remove username/password and attach them as fully-fledged
    * form elements.
    */
-  const advancedOptions = parseAdvancedOptions(urlIn, localConfig.type.name, localConfig.subType.name).filter((item) => {
-    const { newOptions, keepItem } = filterForVMWareValues(localConfig.type.name, item, localConfig)
-    localConfig = newOptions
-    return keepItem
-  })
+  const advancedOptions = parseAdvancedOptions(urlIn, localConfig.type.name, localConfig.subType.name).filter(
+    (item) => {
+      const { newOptions, keepItem } = filterForVMWareValues(localConfig.type.name, item, localConfig)
+      localConfig = newOptions
+      return keepItem
+    }
+  )
 
   return { ...localConfig, advancedOptions }
 }
@@ -298,14 +329,14 @@ const createBlankErrors: () => LocalErrors = () => {
     foreignSource: '',
     occurance: '',
     occuranceWeek: '',
-    occuranceAdvanced:'',
+    occuranceAdvanced: '',
     occuranceDay: '',
     urlPath: ''
   }
 }
 
 /**
- * 
+ *
  * @returns An empty/blank Configuration/ProvisionD Form Object
  */
 const createBlankLocal: () => LocalConfigurationWrapper = () => {
@@ -316,22 +347,21 @@ const createBlankLocal: () => LocalConfigurationWrapper = () => {
       occurance: { name: '', id: 0 },
       occuranceWeek: { name: '', id: 0 },
       occuranceDay: { name: '', id: 0 },
-      occuranceAdvanced:'',
-      advancedCrontab:false,
+      occuranceAdvanced: '',
+      advancedCrontab: false,
       time: '00:00',
       rescanBehavior: 1,
-      advancedOptions: [{ key: { name: '', _text: '' }, value: '', hint: '' }],
+      advancedOptions: [{ key: { name: '', _text: '' }, value: '', hint: '' }]
     },
     errors: createBlankErrors()
   }
 }
 
 /**
- * 
+ *
  * @returns Smaller part of our full Local Configuration item for ProvisionD
  */
 const createBlankSubConfiguration = () => {
-
   return {
     host: '',
     path: '',
@@ -351,22 +381,24 @@ const createBlankSubConfiguration = () => {
 const cronToEnglish = (cronFormatted: string) => {
   try {
     return cronstrue.toString(cronFormatted)
-  }catch(e){
+  } catch (e) {
     return typeof e === 'string' ? e : 'Error Parsing Crontab'
   }
 }
 
-
-
 /**
- * 
+ *
  * @param type Type of Requisition
  * @param item Advanced Option
  * @param fullItem Local Configuration Object
  * @returns Local Configuration Object with attached username/password and boolean
  * indiciating whether or not to filter this result from the list.
  */
-const filterForVMWareValues = (type: string, item: { key: { name: string }, value: string }, fullItem: LocalSubConfiguration) => {
+const filterForVMWareValues = (
+  type: string,
+  item: { key: { name: string }; value: string },
+  fullItem: LocalSubConfiguration
+) => {
   const newOptions = { ...fullItem }
   let keepItem = true
   if (type === RequisitionTypes.VMWare) {
@@ -383,13 +415,12 @@ const filterForVMWareValues = (type: string, item: { key: { name: string }, valu
 }
 
 /**
- * 
+ *
  * @param currentConfig Current Local Configuration Object
  * @param urlIn Full URL In
  * @returns Current Local Configuration with updated DNS Related fields.
  */
 const findDNS = (currentConfig: LocalSubConfiguration, urlIn: string) => {
-
   const localConfig = { ...currentConfig }
 
   const urlPart = urlIn.split(SplitTypes.dns)[1].split('/')
@@ -406,7 +437,7 @@ const findDNS = (currentConfig: LocalSubConfiguration, urlIn: string) => {
 }
 
 /**
- * 
+ *
  * @param typeRaw Find the Server Type from our Local list.
  * @returns The Type value, ready for the ProvisionD Form.
  */
@@ -426,7 +457,7 @@ const findFullType = (typeRaw: string) => {
 }
 
 /**
- * 
+ *
  * @param url A full URL split by '/'
  * @returns The hostname portion of the URL
  */
@@ -442,8 +473,8 @@ const findHost = (url: Array<string>) => {
 }
 
 /**
- * 
- * @param urlIn 
+ *
+ * @param urlIn
  * @returns A File Path from the URL
  */
 const findPath = (urlIn: string) => {
@@ -458,7 +489,7 @@ const findPath = (urlIn: string) => {
 }
 
 /**
- * 
+ *
  * @param url A full URL split by '/'
  * @returns The requisition subtype if it exists
  */
@@ -474,7 +505,7 @@ const findSubType = (url: Array<string>) => {
 
 /**
  * This is a workaround for FeatherInput
- * Attributes are not tracked reactively and 
+ * Attributes are not tracked reactively and
  * therefore do not update after the initial render.
  */
 const forceSetHint = (key: { hint: string }, index: number, wrapperClass = '.hint-label') => {
@@ -488,12 +519,11 @@ const forceSetHint = (key: { hint: string }, index: number, wrapperClass = '.hin
 }
 
 /**
- * 
+ *
  * @param type Currently set Type of Requisition
  * @returns The hint for the host field if there is one.
  */
 const getHostHint = (type: string) => {
-
   let hintText = ''
   if (type === RequisitionTypes.DNS) {
     hintText = 'DNS resolver host to contact. Must allow IXFR or AXFR zone transfers.'
@@ -501,11 +531,10 @@ const getHostHint = (type: string) => {
     hintText = 'Hostname or IP address'
   }
   return hintText
-
 }
 
 /**
- * 
+ *
  * @param fullURL A full URL with query string parameters (advanced options)
  * @returns An Object we can use in our Advanced Options section of the ProvisionD Form
  */
@@ -567,18 +596,18 @@ const parseOccuranceDetails = (monthly: number, weekly: number) => {
   let occurance = scheduleTypes.find((d) => d.name === 'Daily')
   let occuranceWeek
   let occuranceDay
-  if (!isNaN(monthly) && isNaN(weekly)){
+  if (!isNaN(monthly) && isNaN(weekly)) {
     occurance = scheduleTypes.find((d) => d.name === 'Monthly')
     occuranceDay = dayTypes.find((d) => d.id == monthly)
-  }else if (isNaN(monthly) && !isNaN(weekly)){
+  } else if (isNaN(monthly) && !isNaN(weekly)) {
     occurance = scheduleTypes.find((d) => d.name === 'Weekly')
     occuranceWeek = weekTypes.find((d) => d.id == weekly)
   }
 
   return {
-    occurance:occurance || {name:'',id:0},
-    occuranceDay:occuranceDay || {name:'',id:0},
-    occuranceWeek:occuranceWeek || {name:'',id:0}
+    occurance: occurance || { name: '', id: 0 },
+    occuranceDay: occuranceDay || { name: '', id: 0 },
+    occuranceWeek: occuranceWeek || { name: '', id: 0 }
   }
 }
 
@@ -598,31 +627,31 @@ const stripOriginalIndexes = (dataToUpdate: Array<ProvisionDServerConfiguration>
 /**
  * Just ensures that it's a valid quartz crontab.
  * @param cronTab Our advanced crontab field
- * @returns 
+ * @returns
  */
 const validateBasicCron = (cronTab: string) => {
   let error: unknown | string = ''
   try {
     cronstrue.toString(cronTab)
-  }catch(e){
+  } catch (e) {
     error = e
   }
   return error
 }
 
 /**
- * 
+ *
  * @param item LocalConfiguration item (Form Content for ProvisionD)
  * @param oldErrors Our existing error object that will be copied.
  * @returns LocalErrors but with some Cron information
  */
-const validateCronTab = (item: LocalConfiguration,oldErrors:LocalErrors) => {
-  const errors = {...oldErrors}
+const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
+  const errors = { ...oldErrors }
   if (item.occurance.name === 'Monthly') {
     errors.occuranceDay = validateOccuranceDay(item.occuranceDay.name)
-  }else if (item.occurance.name === 'Weekly'){
+  } else if (item.occurance.name === 'Weekly') {
     errors.occuranceWeek = validateOccuranceWeek(item.occuranceWeek.name)
-  }else {
+  } else {
     errors.occurance = validateOccurance(item.occurance.name)
   }
   return errors
@@ -645,7 +674,6 @@ const validateHost = (host: string) => {
   return hostError
 }
 
-
 /**
  * This function validates the local configuration when a
  * user selects Save & Close, or when the user types in any field.
@@ -655,7 +683,12 @@ const validateHost = (host: string) => {
  * @param quickUpdate Just clear the errors when the user starts to type.
  * @returns If the Local Configuration Item is valid (and therefore ready to close the window)
  */
-const validateLocalItem = (localItem: LocalConfiguration, existingList: Array<ProvisionDServerConfiguration>,activeIndex: number, quickUpdate = false): LocalErrors => {
+const validateLocalItem = (
+  localItem: LocalConfiguration,
+  existingList: Array<ProvisionDServerConfiguration>,
+  activeIndex: number,
+  quickUpdate = false
+): LocalErrors => {
   let errors: LocalErrors = createBlankErrors()
 
   if (!quickUpdate) {
@@ -680,11 +713,11 @@ const validateLocalItem = (localItem: LocalConfiguration, existingList: Array<Pr
     if (localItem.type.name === RequisitionTypes.File) {
       errors.path = validatePath(localItem.path)
     }
-    if (!localItem.advancedCrontab){
-      errors = validateCronTab(localItem,errors)
-    }else {
+    if (!localItem.advancedCrontab) {
+      errors = validateCronTab(localItem, errors)
+    } else {
       const errorMessage = validateBasicCron(localItem.occuranceAdvanced)
-      errors.occuranceAdvanced = typeof errorMessage === 'string' ? errorMessage.replace('Error:','') : ''
+      errors.occuranceAdvanced = typeof errorMessage === 'string' ? errorMessage.replace('Error:', '') : ''
     }
   }
 
@@ -699,10 +732,10 @@ const validateLocalItem = (localItem: LocalConfiguration, existingList: Array<Pr
 }
 
 /**
- * 
+ *
  * @param name Name to validate
  * @param nameType Name of 'Name' field so this can be reused for fields not named 'Name'
- * @returns 
+ * @returns
  */
 const validateName = (name: string, nameType: string = RequisitionFields.Name) => {
   let nameError = ''
@@ -720,7 +753,7 @@ const validateName = (name: string, nameType: string = RequisitionFields.Name) =
 }
 
 /**
- * 
+ *
  * @param occuranceName Occurance selected (Monthly/Daily/Weekly)
  * @returns Message if empty, empty string on value.
  */
@@ -729,7 +762,7 @@ const validateOccurance = (occuranceName: string) => {
 }
 
 /**
- * 
+ *
  * @param occuranceName Occurance selected (Monthly/Daily/Weekly)
  * @returns Message if empty, empty string on value.
  */
@@ -738,7 +771,7 @@ const validateOccuranceDay = (occuranceName: string) => {
 }
 
 /**
- * 
+ *
  * @param occuranceName Occurance selected (Monthly/Daily/Weekly)
  * @returns Message if empty, empty string on value.
  */
@@ -747,7 +780,7 @@ const validateOccuranceWeek = (occuranceName: string) => {
 }
 
 /**
- * 
+ *
  * @param path File path to validate
  * @returns Message if error, empty string on valid.
  */
@@ -762,7 +795,7 @@ const validatePath = (path: string) => {
 }
 
 /**
- * 
+ *
  * @param typeName Type selected (File,DNS,HTTP...)
  * @returns Message if empty, empty string on value.
  */
@@ -772,16 +805,42 @@ const validateType = (typeName: string) => {
 }
 
 /**
- * 
+ *
  * @param numZero Number that might not have a leading zero if its less than 10
  * @returns A number that has a leading zero if its less than 10
  */
 const withTwoZeros = (numZero: string | number) => {
-  const minute = typeof numZero === 'string' 
-    ? parseInt(numZero) 
-    : numZero
+  const minute = typeof numZero === 'string' ? parseInt(numZero) : numZero
 
   return minute < 10 ? '0' + numZero : numZero
+}
+
+/**
+ * Allows for copying to clipboard in both HTTPS & HTTP
+ * @param text text to copy
+ * @returns promise
+ */
+const copyToClipboard = (text: string) => {
+  // navigator clipboard api needs a secure context (https)
+  if (navigator.clipboard && window.isSecureContext) {
+    // navigator clipboard api method'
+    return navigator.clipboard.writeText(text)
+  } else {
+    // text area method
+    const textArea = document.createElement('textarea')
+    textArea.value = text
+    // make the textarea out of viewport
+    textArea.style.position = 'fixed'
+    textArea.style.left = '-999999px'
+    textArea.style.top = '-999999px'
+    document.body.appendChild(textArea)
+    textArea.focus()
+    textArea.select()
+    return new Promise<void>((res, rej) => {
+      document.execCommand('copy') ? res() : rej()
+      textArea.remove()
+    })
+  }
 }
 
 export const ConfigurationHelper = {
@@ -805,4 +864,5 @@ export const ConfigurationHelper = {
   validateOccurance,
   validatePath,
   validateType,
+  copyToClipboard
 }

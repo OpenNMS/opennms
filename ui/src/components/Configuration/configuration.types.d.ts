@@ -76,7 +76,7 @@ export type LocalSubConfiguration = {
   password: string
   zone: string
   foreignSource: string
-  subType: { id: number, name: string, value: string },
-  type: { name: string, id: number }
+  subType: { id: number; name: string; value: string }
+  type: { name: string; id: number }
   urlPath: string
 }

@@ -43,8 +43,11 @@
             <ConfigurationCopyPasteDisplay :text="item[RequisitionData.ImportURL]" />
           </td>
           <td>
-            <ConfigurationCopyPasteDisplay :text="ConfigurationHelper.cronToEnglish(item[RequisitionData.CronSchedule])" />
-            </td>
+            <ConfigurationCopyPasteDisplay
+              :showCopyBtn="false"
+              :text="ConfigurationHelper.cronToEnglish(item[RequisitionData.CronSchedule])"
+            />
+          </td>
           <td>{{ rescanToEnglish(item[RequisitionData.RescanExisting]) }}</td>
           <td>
             <div class="flex">
@@ -222,6 +225,6 @@ const rescanToEnglish = (rescanVal: string) => {
   padding: 16px 24px;
 }
 .cron {
-  max-width:260px;
+  max-width: 260px;
 }
 </style>
