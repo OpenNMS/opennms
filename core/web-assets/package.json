@@ -80,7 +80,7 @@
         "angular-bootstrap-checkbox": "^0.5.0",
         "angular-bootstrap-confirm": "^2.5.1",
         "angular-bootstrap-toggle": "0.4.2",
-        "angular-cookies": "~1.5.11",
+        "angular-cookies": "~1.8.2",
         "angular-growl-v2": "https://github.com/JanStevens/angular-growl-2#v0.7.9",
         "angular-loading-bar": "^0.9.0",
         "angular-resource": "~1.5.11",
