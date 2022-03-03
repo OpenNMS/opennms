@@ -33,6 +33,8 @@ import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
 import org.opennms.netmgt.provision.support.RequestBuilder;
 import org.opennms.netmgt.provision.support.ResponseValidator;
 
+import java.util.regex.Pattern;
+
 /**
  * <p>JdbcStoredProcedureDetector class.</p>
  *
@@ -102,7 +104,25 @@ public class JdbcStoredProcedureDetector extends AbstractJdbcDetector {
      * @param storedProcedure a {@link java.lang.String} object.
      */
     public void setStoredProcedure(String storedProcedure) {
-        m_storedProcedure = storedProcedure;
+        if (!isValidProcedureName(storedProcedure)) {
+            throw new IllegalArgumentException(String.format("%s is not a valid procedure name", storedProcedure));
+        }
+        else {
+            m_storedProcedure = storedProcedure;
+        }
+    }
+
+    /**
+     * Simple input validation for procedure names.
+     * Procedure names are considered valid if they contain only alphanumerics and underscores.
+     * SQL allows for other characters if they are properly escaped. We will ignore these for
+     * now.
+     *
+     * @param procedure Procedure name to validate
+     * @return true if valid, false if not
+     */
+    private boolean isValidProcedureName(String procedure) {
+        return Pattern.matches("^[0-9a-zA-Z_]*$", procedure);
     }
 
     /**
