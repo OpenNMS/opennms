@@ -31,15 +31,24 @@ package org.opennms.features.deviceconfig.monitors;
 import static java.util.stream.Collectors.toMap;
 
 import java.time.Duration;
+import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
 import org.opennms.netmgt.poller.DeviceConfig;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,17 +59,60 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     public static final String PORT = "port";
     public static final String TIMEOUT = "timeout";
     public static final String PASSWORD = "password";
+    public static final String CRON_SCHEDULE = "cronSchedule";
+    public static final String DEFAULT_CRON_SCHEDULE = "0 0 0 ? * *";
+    public static final String LAST_RETRIEVAL = "lastRetrieval";
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitor.class);
     private Retriever retriever;
     private static final Duration DEFAULT_DURATION = Duration.ofMinutes(1); // 60sec
     private static final int DEFAULT_SSH_PORT = 22;
 
+    private IpInterfaceDao ipInterfaceDao;
+    private DeviceConfigDao deviceConfigDao;
+
+    @Override
+    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+        if (ipInterfaceDao == null) {
+            ipInterfaceDao = BeanUtils.getBean("daoContext", "ipInterfaceDao", IpInterfaceDao.class);
+        }
+
+        if (deviceConfigDao == null) {
+            deviceConfigDao = BeanUtils.getBean("daoContext", "deviceConfigDao", DeviceConfigDao.class);
+        }
+
+        final Map<String, Object> params = super.getRuntimeAttributes(svc, parameters);
+        final String configType = getKeyedString(parameters, "config-type", "default");
+        final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
+        final Optional<DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
+
+        if (deviceConfigOptional.isPresent()) {
+            params.put(LAST_RETRIEVAL, deviceConfigOptional.get().getLastUpdated().getTime());
+        }
+
+        return params;
+    }
+
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         if (retriever == null) {
             retriever = BeanUtils.getBean("daoContext", "deviceConfigRetriever", Retriever.class);
         }
+
+        final Date lastRun = new Date(getKeyedLong(parameters, LAST_RETRIEVAL, 0L));
+        final String cronSchedule = getKeyedString(parameters, CRON_SCHEDULE, DEFAULT_CRON_SCHEDULE);
+
+        final Trigger trigger = TriggerBuilder.newTrigger()
+                .withSchedule(CronScheduleBuilder.cronSchedule(cronSchedule))
+                .startAt(lastRun)
+                .build();
+
+        final Date nextRun = trigger.getFireTimeAfter(lastRun);
+
+        if (!nextRun.before(new Date())) {
+            return PollStatus.unknown("Skipping. Next retrieval scheduled for " + nextRun);
+        }
+
         String script = getObjectAsStringFromParams(parameters, SCRIPT);
         String user = getObjectAsStringFromParams(parameters, USERNAME);
         String password = getObjectAsStringFromParams(parameters, PASSWORD);

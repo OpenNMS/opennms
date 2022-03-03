@@ -37,8 +37,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.BeforeClass;
@@ -105,6 +108,34 @@ public class DeviceConfigMonitorTest {
 
         assertThat(pollStatus.getStatusCode(), is(PollStatus.SERVICE_UNAVAILABLE));
         assertThat(pollStatus.getReason(), containsString(retrievalFailure));
+    }
+
+    @Test
+    public void testLastRetrieval() {
+        final Instant schedule = Instant.now().minus(5, ChronoUnit.MINUTES);
+        int minute = schedule.atZone(TimeZone.getDefault().toZoneId()).getMinute();
+        int hour = schedule.atZone(TimeZone.getDefault().toZoneId()).getHour();
+
+        final Map<String, Object> params = new HashMap<>(this.params);
+        params.put(DeviceConfigMonitor.CRON_SCHEDULE, "0 " + minute + " " + hour + " ? * *");
+
+        params.put(DeviceConfigMonitor.LAST_RETRIEVAL, String.valueOf(Instant.now().minus(6, ChronoUnit.MINUTES).toEpochMilli()));
+        assertThat(doesItRun(params), is(true));
+
+        params.put(DeviceConfigMonitor.LAST_RETRIEVAL, String.valueOf(Instant.now().minus(3, ChronoUnit.MINUTES).toEpochMilli()));
+        assertThat(doesItRun(params), is(false));
+    }
+
+    public boolean doesItRun(final Map<String, Object> params) {
+        final DeviceConfigMonitor deviceConfigMonitor = new DeviceConfigMonitor();
+        final Retriever retriever = mock(Retriever.class);
+
+        deviceConfigMonitor.setRetriever(retriever);
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), anyInt(), any(), any(), any())).thenReturn(
+                CompletableFuture.completedFuture(Either.left(new Retriever.Failure("didRun")))
+        );
+
+        return !deviceConfigMonitor.poll(svc, params).isUnknown();
     }
 
     @Test
