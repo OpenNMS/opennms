@@ -35,6 +35,7 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -48,12 +49,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
+import org.opennms.features.deviceconfig.service.DeviceConfigService;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -65,6 +69,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionOperations;
+
+import javax.ws.rs.core.Response;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -96,6 +102,8 @@ public class DefaultDeviceConfigRestServiceIT {
 
     private DeviceConfigRestService deviceConfigRestService;
 
+    private DeviceConfigService deviceConfigService;
+
     private static final int INTERFACES = 2;
     private static final int VERSIONS = 35;
 
@@ -112,7 +120,8 @@ public class DefaultDeviceConfigRestServiceIT {
             }
             return null;
         });
-        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, monitoredServiceDao);
+        deviceConfigService = Mockito.mock(DeviceConfigService.class);
+        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, monitoredServiceDao, deviceConfigService);
     }
 
     @After
@@ -241,6 +250,26 @@ public class DefaultDeviceConfigRestServiceIT {
                         .map(String::valueOf).toArray()));
             }
         }
+    }
+
+    @Test
+    public void testBackupConfigService() throws IOException {
+        String ipAddress = "127.0.0.1";
+        String invalidIpAddress = "127.258.1.258";
+        String message = "Invalid Ip Interface";
+        Mockito.doNothing().when(deviceConfigService).triggerConfigBackup(Mockito.eq(ipAddress),
+                Mockito.anyString(), Mockito.anyString());
+        Mockito.doThrow(new IllegalArgumentException(message)).when(deviceConfigService).triggerConfigBackup(Mockito.eq(invalidIpAddress),
+                Mockito.anyString(), Mockito.anyString());
+
+        var dto = new BackupRequestDTO(ipAddress, "MINION", "default");
+        Response response = deviceConfigRestService.triggerDeviceConfigBackup(dto);
+        assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.ACCEPTED));
+
+        dto = new BackupRequestDTO(invalidIpAddress, "MINION", "default");
+        response = deviceConfigRestService.triggerDeviceConfigBackup(dto);
+        assertThat(response.getEntity(), Matchers.is(message));
+
     }
 
     private OnmsIpInterface populateIpInterfaceAndGet(int num) {

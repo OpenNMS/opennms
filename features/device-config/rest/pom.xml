@@ -53,7 +53,11 @@
             <groupId>org.opennms</groupId>
             <artifactId>opennms-web-api</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.opennms.features.device-config</groupId>
+            <artifactId>org.opennms.features.device-config.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-config</artifactId>
