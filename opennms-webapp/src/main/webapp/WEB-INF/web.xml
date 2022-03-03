@@ -216,12 +216,6 @@
     <url-pattern>/nrt/*</url-pattern>
   </filter-mapping>
 
-  <!-- temp workaround to allow integration of local UI with remote onms -->
-  <filter-mapping>
-    <filter-name>CORS Filter</filter-name>
-    <url-pattern>/rest/cm/*</url-pattern>
-  </filter-mapping>
-  
   <!--
   <filter-mapping>
     <filter-name>CORS Filter</filter-name>
