@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class InetAddressXmlAdapter extends XmlAdapter<String, InetAddress> {
 
-    private static Logger LOG = LoggerFactory.getLogger(InetAddressXmlAdapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InetAddressXmlAdapter.class);
 
     /** {@inheritDoc} */
     @Override

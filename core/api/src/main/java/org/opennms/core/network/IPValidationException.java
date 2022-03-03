@@ -35,7 +35,7 @@ import javax.xml.bind.ValidationException;
  *  Sublcass of the generic XML ValidationException that indicates
  *  that an IP address parsed from an XML document is invalid.
  *
- *  See <code>RequisitionNode.validate()</code>
+ *  See {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode#validate()}
  */
 public class IPValidationException extends ValidationException {
 
