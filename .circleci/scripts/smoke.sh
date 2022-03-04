@@ -51,7 +51,7 @@ done
 export MAVEN_OPTS="-Xmx1g -Xms1g"
 
 # Set higher open files limit
-sudo ulimit -n 20480
+ulimit -n 20480
 
 cd ~/project/smoke-test
 if [ $SUITE = "minimal" ]; then
