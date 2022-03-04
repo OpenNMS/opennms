@@ -50,6 +50,9 @@ done
 # The heap size should be sufficient to buffer the output (stdout/stderr) from the test
 export MAVEN_OPTS="-Xmx1g -Xms1g"
 
+# Set higher open files limit
+sudo ulimit -n 20480
+
 cd ~/project/smoke-test
 if [ $SUITE = "minimal" ]; then
   echo "#### Executing minimal set smoke/system tests"
