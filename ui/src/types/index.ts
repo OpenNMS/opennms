@@ -207,6 +207,8 @@ export interface QueryParameters {
   _s?: string
   orderBy?: string
   order?: SORT
+  search?: string
+  groupBy?: string
   [x: string]: any
 }
 
@@ -453,4 +455,16 @@ export interface Plugin {
   menuEntry: string
   moduleFileName: string
   resourceRootPath: string
+}
+
+export interface DeviceConfigBackup {
+  id: string
+  name: string
+  location: string
+  ipAddress: string
+  lastBackup: string
+  lastAttempted: string
+  backupStatus: string
+  scheduleDate: string
+  scheduleInterval: string
 }

@@ -27,6 +27,7 @@ import { getInfo } from './infoService'
 import { getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
 import { getPlugins } from './pluginService'
+import { getDeviceConfigBackups, downloadDeviceConfigById, backupDeviceConfigByIds } from './deviceService'
 
 export default {
   search,
@@ -58,5 +59,8 @@ export default {
   getDefinitionData,
   getResourceForNode,
   getGraphDefinitionsByResourceId,
-  getPlugins
+  getPlugins,
+  getDeviceConfigBackups,
+  downloadDeviceConfigById,
+  backupDeviceConfigByIds
 }

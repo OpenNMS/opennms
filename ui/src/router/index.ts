@@ -80,6 +80,16 @@ const router = createRouter({
       component: () => import('@/containers/OpenAPI.vue')
     },
     {
+      path: '/device-config-backup',
+      name: 'DeviceConfigBackup',
+      component: () => import('@/containers/DeviceConfigBackup.vue')
+    },
+    {
+      path: '/device-config-backup/:id',
+      name: 'DeviceConfigBackupDetails',
+      component: () => import('@/containers/DeviceConfigBackup.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }
