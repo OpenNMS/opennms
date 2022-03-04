@@ -115,7 +115,7 @@ public class HeatMapIT implements InitializingBean {
             Assert.assertEquals(numberOfNodesInCategory.get(heatMapElement.getName()).intValue(), heatMapElement.getNodesTotal());
         }
     }
-
+    
     @Test
     @Transactional
     public void testAlarmsForTestDB() {
@@ -125,4 +125,17 @@ public class HeatMapIT implements InitializingBean {
             Assert.assertEquals(numberOfNodesInCategory.get(heatMapElement.getName()).intValue(), heatMapElement.getNodesTotal());
         }
     }
+
+    @Test (expected = IllegalArgumentException.class)
+    @Transactional
+    public void testAlarmDaoInvalidColumns() {
+        List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("not a column name", "arbitrary", true, null, null);
+    }
+    
+    @Test (expected = IllegalArgumentException.class)
+    @Transactional
+    public void testOutageDaoInvalidColumns() {
+        List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("not a column name", "arbitrary", null, null);
+    }
+
 }
