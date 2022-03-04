@@ -268,6 +268,7 @@ public class DefaultDeviceConfigRestServiceIT {
 
         dto = new BackupRequestDTO(invalidIpAddress, "MINION", "default");
         response = deviceConfigRestService.triggerDeviceConfigBackup(dto);
+        assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.BAD_REQUEST));
         assertThat(response.getEntity(), Matchers.is(message));
 
     }
