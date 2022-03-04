@@ -456,15 +456,3 @@ export interface Plugin {
   moduleFileName: string
   resourceRootPath: string
 }
-
-export interface DeviceConfigBackup {
-  id: string
-  name: string
-  location: string
-  ipAddress: string
-  lastBackup: string
-  lastAttempted: string
-  backupStatus: string
-  scheduleDate: string
-  scheduleInterval: string
-}

@@ -1,8 +1,51 @@
 <template>
   <div class="select-search">
-    <div class="checkbox-with-caption">
-      <FeatherCheckbox v-model="all">{{ `Select All Devices (${totalCountOfDeviceConfigBackups})` }}</FeatherCheckbox>
-      <span class="caption">{{ `Devices selected: ${numberOfSelectedDevices}` }}</span>
+    <div class="config-header">
+      <div class="config-column">
+        <div>Devices:</div>
+        <div>100</div>
+      </div>
+      <div class="config-column">
+        <div>Selected:</div>
+        <div>{{ numberOfSelectedDevices }}</div>
+      </div>
+      <div class="config-column">
+        <div>Configurations:</div>
+        <div>
+          <FeatherButton
+            @click="onViewHistory"
+            :disabled="selectedDeviceConfigNames.length !== 1"
+            text
+          >
+            <template v-slot:icon>
+              <FeatherIcon :icon="History" />
+            </template>
+            View History
+          </FeatherButton>
+
+          <FeatherButton
+            @click="onDownload"
+            :disabled="selectedDeviceConfigNames.length === 0"
+            text
+          >
+            <template v-slot:icon>
+              <FeatherIcon :icon="Download" />
+            </template>
+            Download
+          </FeatherButton>
+
+          <FeatherButton
+            @click="onBackupNow"
+            :disabled="selectedDeviceConfigNames.length === 0"
+            text
+          >
+            <template v-slot:icon>
+              <FeatherIcon :icon="Backup" />
+            </template>
+            Backup Now
+          </FeatherButton>
+        </div>
+      </div>
     </div>
     <DCBSearch class="dcb-search" />
   </div>
@@ -11,12 +54,15 @@
     <table class="tl1 tl2 tl3 tl4 tl5 tl6 tl7 tc8" summary="Device Config Backup">
       <thead>
         <tr>
+          <th>
+            <FeatherCheckbox v-model="all" />
+          </th>
           <FeatherSortHeader
             scope="col"
             property="name"
             :sort="sortStates.name"
             v-on:sort-changed="sortByColumnHandler"
-          >Device Name</FeatherSortHeader>
+          >Node Name</FeatherSortHeader>
 
           <FeatherSortHeader
             scope="col"
@@ -76,28 +122,18 @@
               @update:modelValue="selectCheckbox(config)"
               :modelValue="all || selectedDeviceConfigBackups[config.id]"
             />
-            <router-link :to="`/device-config-backup/${config.id}`">{{ config.name }}</router-link>
-
-            <FeatherDropdown>
-              <template v-slot:trigger>
-                <FeatherButton link href="#" menu-trigger icon="Actions">
-                  <FeatherIcon :icon="MoreVert" />
-                </FeatherButton>
-              </template>
-
-              <FeatherDropdownItem :disabled="numberOfSelectedDevices > 1">View Last Backup</FeatherDropdownItem>
-
-              <FeatherDropdownItem
-                @click="downloadConfigurationHandler(config.id)"
-              >Download Configuration</FeatherDropdownItem>
-
-              <FeatherDropdownItem :disabled="numberOfSelectedDevices === 0" @click="backupNowHandler">Backup Now</FeatherDropdownItem>
-            </FeatherDropdown>
+          </td>
+          <td>
+            <router-link :to="`/device-config-backup/${config.id}`">{{ config.deviceName }}</router-link>
           </td>
           <td>{{ config.ipAddress }}</td>
           <td>{{ config.location }}</td>
-          <td v-date>{{ config.lastBackup }}</td>
-          <td v-date>{{ config.lastAttempted }}</td>
+          <td v-date>{{ config.lastSucceeded }}</td>
+          <td
+            v-date
+            class="last-backup-date pointer"
+            @click="onLastBackupDateClick(config)"
+          >{{ config.lastUpdated }}</td>
           <td>{{ config.backupStatus }}</td>
           <td v-date>{{ config.scheduleDate }}</td>
           <td>{{ config.scheduleInterval }}</td>
@@ -105,28 +141,52 @@
       </tbody>
     </table>
   </div>
+  <DCBModal
+    @close="dcbModalVisible = false"
+    :deviceName="selectedDeviceName"
+    :visible="dcbModalVisible"
+  >
+    <template v-slot:content>
+      <DCBModalLastBackupContent
+        v-if="dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalLastBackupContent"
+      />
+      <DCBModalViewHistoryContentVue v-else />
+    </template>
+  </DCBModal>
 </template>
 
 <script setup lang="ts">
 import { reactive, computed, ref, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useScroll } from '@vueuse/core'
-import { DeviceConfigBackup, QueryParameters } from '@/types'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherSortObject } from '@/types'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
-import MoreVert from '@featherds/icon/navigation/MoreVert'
+import History from '@featherds/icon/action/Restore'
+import Download from '@featherds/icon/action/DownloadFile'
+import Backup from '@featherds/icon/action/Cycle'
 import DCBSearch from '@/components/Device/DCBSearch.vue'
+import DCBModal from './DCBModal.vue'
+import DCBModalLastBackupContent from './DCBModalLastBackupContent.vue'
+import DCBModalViewHistoryContentVue from './DCBModalViewHistoryContent.vue'
+import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
+
+enum DCBModalContentComponentNames {
+  DCBModalLastBackupContent = 'DCBModalLastBackupContent',
+  DCBModalViewHistoryContent = 'DCBModalViewHistoryContent'
+}
 
 const store = useStore()
+const dcbModalVisible = ref(false)
+const dcbModalContentComponentName = ref('')
+const selectedDeviceName = ref('')
 const all = ref(false)
 const tableWrap = ref<HTMLElement | null>(null)
 const defaultQuerySize = 20
 const selectedDeviceConfigBackups = ref<Record<string, boolean>>({})
-const sortStates: any = reactive({
+const sortStates: DeviceConfigQueryParams = reactive({
   name: SORT.ASCENDING,
   ipAddress: SORT.NONE,
   location: SORT.NONE,
@@ -146,11 +206,26 @@ watch(arrivedState, () => {
   }
 })
 
-const deviceConfigBackups = computed(() => store.state.deviceModule.deviceConfigBackups)
-
+const deviceConfigBackups = computed<DeviceConfigBackup[]>(() => store.state.deviceModule.deviceConfigBackups)
 const totalCountOfDeviceConfigBackups = computed(() => 2) // TODO: which endpoint prop will return this?
+const deviceConfigBackupQueryParams = computed<DeviceConfigQueryParams>(() => store.state.deviceModule.deviceConfigBackupQueryParams)
+const selectedDeviceConfigIds = computed<string[]>(() => {
+  return Object.keys(selectedDeviceConfigBackups.value)
+    .filter((id) => selectedDeviceConfigBackups.value[id])
+})
+const selectedDeviceConfigNames = computed<string[]>(() => {
+  const names = []
 
-const deviceConfigBackupQueryParams = computed<QueryParameters>(() => store.state.deviceModule.deviceConfigBackupQueryParams)
+  for (const id of selectedDeviceConfigIds.value) {
+    for (const backup of deviceConfigBackups.value) {
+      if (backup.id.toString() == id) {
+        names.push(backup.deviceName)
+      }
+    }
+  }
+
+  return names
+})
 
 const numberOfSelectedDevices = computed(() => {
   if (all.value) {
@@ -169,7 +244,7 @@ const sortByColumnHandler = (sortObj: FeatherSortObject) => {
 
   sortStates[`${sortObj.property}`] = sortObj.value
 
-  const newQueryParams: QueryParameters = {
+  const newQueryParams: DeviceConfigQueryParams = {
     limit: defaultQuerySize,
     offset: 0,
     order: sortObj.value,
@@ -180,15 +255,29 @@ const sortByColumnHandler = (sortObj: FeatherSortObject) => {
   store.dispatch('deviceModule/getDeviceConfigBackups')
 }
 
-const backupNowHandler = () => {
-  const ids = Object.keys(selectedDeviceConfigBackups.value)
-    .filter((id) => selectedDeviceConfigBackups.value[id])
+const onDownload = () => {
+  store.dispatch('deviceModule/downloadSelectedDevices')
+}
 
+const onViewHistory = () => {
+  selectedDeviceName.value = selectedDeviceConfigNames.value[0]
+  dcbModalContentComponentName.value = DCBModalContentComponentNames.DCBModalViewHistoryContent
+  dcbModalVisible.value = true
+}
+
+const onLastBackupDateClick = (config: DeviceConfigBackup) => {
+  selectedDeviceName.value = config.deviceName
+  dcbModalContentComponentName.value = DCBModalContentComponentNames.DCBModalLastBackupContent
+  dcbModalVisible.value = true
+}
+
+const onBackupNow = () => {
+  const ids = selectedDeviceConfigIds.value
   store.dispatch('deviceModule/backupDeviceConfigByIds', ids)
 }
 
 const getMoreDeviceConfigBackups = () => {
-  const newQueryParams: QueryParameters = {
+  const newQueryParams: DeviceConfigQueryParams = {
     limit: (deviceConfigBackupQueryParams.value.limit || 0) + defaultQuerySize,
     offset: (deviceConfigBackupQueryParams.value.offset || 0) + defaultQuerySize
   }
@@ -197,7 +286,6 @@ const getMoreDeviceConfigBackups = () => {
   store.dispatch('deviceModule/getAndMergeDeviceConfigBackups')
 }
 
-const downloadConfigurationHandler = async (id: string) => store.dispatch('deviceModule/downloadDeviceConfigById', id)
 const selectCheckbox = (config: DeviceConfigBackup) => selectedDeviceConfigBackups.value[config.id] = !selectedDeviceConfigBackups.value[config.id]
 
 onMounted(() => {
@@ -227,12 +315,16 @@ onMounted(() => {
     margin-top: 0px !important;
     @include table;
     @include table-condensed;
+
+    .last-backup-date {
+      color: var($primary);
+    }
   }
 
   thead {
     z-index: 2;
     position: relative;
-    background: var(--feather-surface);
+    background: var($surface);
   }
 }
 
@@ -241,15 +333,19 @@ onMounted(() => {
   justify-content: space-between;
   margin-bottom: 20px;
 
-  .checkbox-with-caption {
+  .config-header {
+    display: flex;
+    flex-direction: row;
+    font-family: var($font-family);
+    @include subtitle2;
+
+    .config-column {
+      display: flex;
+      flex-direction: column;
+      margin-left: 20px;
+    }
     .layout-container {
       margin-bottom: 0px;
-    }
-    .caption {
-      font-family: var($font-family);
-      @include caption;
-      display: block;
-      margin-left: 32px;
     }
   }
 

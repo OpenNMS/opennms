@@ -23,12 +23,12 @@ const getAndMergeDeviceConfigBackups = async (context: ContextWithState) => {
   context.dispatch('spinnerModule/setSpinnerState', false, { root: true })
 }
 
-const downloadDeviceConfigById = async (context: VuexContext, id: string) => {
+const downloadDeviceConfigById = async (context: VuexContext, id: number) => {
   const file = await API.downloadDeviceConfigById(id)
   downloadFile(file)
 }
 
-const backupDeviceConfigByIds = async (context: VuexContext, ids: string[]) => {
+const backupDeviceConfigByIds = async (context: VuexContext, ids: number[]) => {
   return await API.backupDeviceConfigByIds(ids)
 }
 

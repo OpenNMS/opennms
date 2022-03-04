@@ -1,10 +1,10 @@
-import { QueryParameters } from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
 import { v2 } from './axiosInstances'
+import { DeviceConfigQueryParams } from '@/types/deviceConfig'
 
-const endpoint = 'devicesConfigBackup'
+const endpoint = 'device-config'
 
-const getDeviceConfigBackups = async (queryParameters: QueryParameters) => {
+const getDeviceConfigBackups = async (queryParameters: DeviceConfigQueryParams) => {
   try {
     const endpointWithQueryString = queryParametersHandler(queryParameters, endpoint)
     const resp = await v2.get(endpointWithQueryString)
@@ -14,22 +14,22 @@ const getDeviceConfigBackups = async (queryParameters: QueryParameters) => {
     return [
       {
         id: '123',
-        name: 'Cisco-7201',
+        deviceName: 'Cisco-7201',
         location: 'location',
         ipAddress: '10.21.10.81',
-        lastBackup: '1643831118973',
-        lastAttempted: '1643831118973',
+        lastSucceeded: '1643831118973',
+        lastUpdated: '1643831118973',
         backupStatus: 'Completed/Success',
         scheduleDate: '1643831118973',
         scheduleInterval: 'daily'
       },
       {
         id: '1234',
-        name: 'Aruba-7003-1',
+        deviceName: 'Aruba-7003-1',
         location: 'location',
         ipAddress: '10.21.10.81',
-        lastBackup: '1643831118973',
-        lastAttempted: '1643831118973',
+        lastSucceeded: '1643831118973',
+        lastUpdated: '1643831118973',
         backupStatus: 'Failed',
         scheduleDate: '1643831118973',
         scheduleInterval: 'daily'
@@ -38,16 +38,25 @@ const getDeviceConfigBackups = async (queryParameters: QueryParameters) => {
   }
 }
 
-const downloadDeviceConfigById = async (id: string) => {
+const downloadDeviceConfigById = async (id: number) => {
   try {
-    const resp = await v2.post(`${endpoint}/download/${id}`)
+    const resp = await v2.get(`${endpoint}/download/${id}`)
     return resp.data
   } catch (err) {
     return {}
   }
 }
 
-const backupDeviceConfigByIds = async (ids: string[]) => {
+const downloadDeviceConfigs = async (deviceIds: number[]) => {
+  try {
+    const resp = await v2.post(`${endpoint}/download`, deviceIds)
+    return resp.data
+  } catch (err) {
+    return {}
+  }
+}
+
+const backupDeviceConfigByIds = async (ids: number[]) => {
   try {
     const resp = await v2.post(endpoint, { ids })
     return resp.data
@@ -56,4 +65,4 @@ const backupDeviceConfigByIds = async (ids: string[]) => {
   }
 }
 
-export { getDeviceConfigBackups, downloadDeviceConfigById, backupDeviceConfigByIds }
+export { getDeviceConfigBackups, downloadDeviceConfigById, backupDeviceConfigByIds, downloadDeviceConfigs }

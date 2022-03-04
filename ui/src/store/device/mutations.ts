@@ -1,5 +1,5 @@
 import { State } from './state'
-import { DeviceConfigBackup, QueryParameters } from '@/types'
+import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
 
 const SAVE_DEVICE_CONFIG_BACKUPS = (state: State, deviceConfigBackups: DeviceConfigBackup[]) => {
   state.deviceConfigBackups = deviceConfigBackups
@@ -9,7 +9,7 @@ const MERGE_DEVICE_CONFIG_BACKUPS = (state: State, deviceConfigBackups: DeviceCo
   state.deviceConfigBackups = [...state.deviceConfigBackups, ...deviceConfigBackups]
 }
 
-const UPDATE_DEVICE_CONFIG_BACKUP_QUERY_PARAMS = (state: State, newQueryParams: QueryParameters) => {
+const UPDATE_DEVICE_CONFIG_BACKUP_QUERY_PARAMS = (state: State, newQueryParams: DeviceConfigQueryParams) => {
   state.deviceConfigBackupQueryParams = { ...state.deviceConfigBackupQueryParams, ...newQueryParams }
 }
 

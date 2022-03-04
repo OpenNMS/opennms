@@ -1,8 +1,8 @@
-import { DeviceConfigBackup, QueryParameters } from '@/types'
+import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
 
 export interface State {
   deviceConfigBackups: DeviceConfigBackup[]
-  deviceConfigBackupQueryParams: QueryParameters
+  deviceConfigBackupQueryParams: DeviceConfigQueryParams
 }
 
 const state: State = {
