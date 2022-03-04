@@ -83,7 +83,12 @@ sudo apt update && \
             || exit 1
 
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+
 export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
+
+# Set higher open files limit
+ulimit -n 20480
+
 
 echo "#### Building Assembly Dependencies"
 ./compile.pl install -P'!checkstyle' \
