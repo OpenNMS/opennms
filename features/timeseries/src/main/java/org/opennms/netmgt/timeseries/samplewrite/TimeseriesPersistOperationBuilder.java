@@ -190,7 +190,11 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
                     builder.externalTag(entry2.getKey(), entry2.getValue());
                 }
             }
-
+            // TODO: Patrick Test start
+            if(builder.build().getKey().startsWith("name=ns-dskTotalLow_resourceId=snmp/1/dskIndex/_root_fs/")) {
+                builder.externalTag("ns-dskPath", "/");
+            }
+            // TODO Patrick: Test end
             final ImmutableMetric metric = builder.build();
             final Double sampleValue = value.doubleValue();
             samples.add(ImmutableSample.builder().metric(metric).time(time).value(sampleValue).build());
