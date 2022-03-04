@@ -18,15 +18,16 @@ import {
   getPreFabGraphs
 } from './graphService'
 
-import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
-import { getLogs, getLog } from './logsService'
-import { getWhoAmI } from './whoAmIService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { search } from './searchService'
+import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
+import { getLogs, getLog } from './logsService'
+import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
 import { getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
+import { getPlugins } from './pluginService'
 
 export default {
   search,
@@ -60,5 +61,6 @@ export default {
   getPreFabGraphs,
   getDefinitionData,
   getResourceForNode,
-  getGraphDefinitionsByResourceId
+  getGraphDefinitionsByResourceId,
+  getPlugins
 }

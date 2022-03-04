@@ -70,9 +70,9 @@ public class ConfigSwaggerConverterAllTest {
     @Before
     public void init() throws IOException {
         ConfigDefinition def = XsdHelper.buildConfigDefinition(CONFIG_NAME, XSD_PATH, TOP_ELEMENT,
-                ConfigurationManagerService.BASE_PATH);
+                ConfigurationManagerService.BASE_PATH, false);
         ConfigDefinition def2 = XsdHelper.buildConfigDefinition(CONFIG_NAME + "2", XSD2_PATH, TOP_ELEMENT,
-                ConfigurationManagerService.BASE_PATH);
+                ConfigurationManagerService.BASE_PATH, false);
         configurationManagerService.registerConfigDefinition(CONFIG_NAME, def);
         configurationManagerService.registerConfigDefinition(CONFIG_NAME + "2", def2);
     }

@@ -140,7 +140,10 @@
 ** xref:flows/sentinel/sentinel.adoc[]
 ** xref:flows/classification-engine.adoc[]
 ** xref:flows/aggregation.adoc[]
+** xref:flows/data-collection.adoc[]
+** xref:flows/thresholding.adoc[]
 ** xref:flows/nephron.adoc[]
+** xref:flows/troubleshooting.adoc[]
 
 * xref:kafka-producer/kafka-producer.adoc[]
 ** xref:kafka-producer/enable-kafka.adoc[]

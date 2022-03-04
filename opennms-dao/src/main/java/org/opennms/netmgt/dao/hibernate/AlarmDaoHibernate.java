@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,15 +34,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
+import org.hibernate.type.StringType;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
@@ -171,7 +172,30 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
             @Override
             public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
-                return (List<HeatMapElement>) session.createSQLQuery(
+
+                // We can't use a prepared statement here as the variables are column names, and postgres
+                // does not allow for parameter binding of column names.
+                // Instead, we compare the values against all valid column names to validate.
+                List<String> validColumnNames = HibernateUtils.getHibernateTableColumnNames(session, OnmsCategory.class, true);
+                if (!validColumnNames.contains(entityIdColumn.toLowerCase())) {
+                    throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", entityIdColumn));
+                }
+                else if (!validColumnNames.contains(entityNameColumn.toLowerCase())) {
+                    throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", entityNameColumn));
+                }
+                else if (restrictionColumn != null && !validColumnNames.contains(restrictionColumn.toLowerCase())) {
+                    throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", restrictionColumn));
+                }
+                else if (groupByColumns != null && groupByColumns.length > 0) {
+                    for (String groupByColumn : groupByColumns) {
+                        if (!validColumnNames.contains(groupByColumn.toLowerCase())) {
+                            throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", groupByColumn));
+                        }
+                    }
+                }
+
+
+                String queryStr =
                         "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
                                 "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
                                 "count(distinct node.nodeid) as nodeTotalCount, " +
@@ -184,22 +208,30 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                                 "left outer join service on (ifservices.serviceid = service.serviceid) " +
                                 "left outer join alarms on (alarms.nodeid = node.nodeid and alarms.alarmtype in (1,3)) " +
                                 "where nodeType <> 'D' " +
-                                (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')='" + restrictionValue + "' " : "") +
-                                "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0")
-                        .setResultTransformer(new ResultTransformer() {
-                            private static final long serialVersionUID = 5152094813503430377L;
+                                (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')=':restrictionValue' " : "") +
+                                "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
+                
+                Query query = session.createSQLQuery(queryStr);
 
-                            @Override
-                            public Object transformTuple(Object[] tuple, String[] aliases) {
-                                return new HeatMapElement((String) tuple[0], (Number) tuple[1], (Number) tuple[2], (Number) tuple[3], (Number) tuple[4]);
-                            }
+                if (restrictionColumn != null) {
+                    query.setParameter("restrictionValue",  restrictionValue, StringType.INSTANCE);
+                }
 
-                            @SuppressWarnings("rawtypes")
-                            @Override
-                            public List transformList(List collection) {
-                                return collection;
-                            }
-                        }).list();
+                query.setResultTransformer(new ResultTransformer() {
+                        private static final long serialVersionUID = 5152094813503430377L;
+
+                        @Override
+                        public Object transformTuple(Object[] tuple, String[] aliases) {
+                            return new HeatMapElement((String) tuple[0], (Number) tuple[1], (Number) tuple[2], (Number) tuple[3], (Number) tuple[4]);
+                        }
+
+                        @SuppressWarnings("rawtypes")
+                        @Override
+                        public List transformList(List collection) {
+                            return collection;
+                        }
+                });
+                return (List<HeatMapElement>) query.list();
             }
         });
     }

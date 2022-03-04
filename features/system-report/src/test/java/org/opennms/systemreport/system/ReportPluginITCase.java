@@ -67,15 +67,8 @@ public abstract class ReportPluginITCase {
 
     @Before
     public void setUp() {
-        System.err.println("---");
-        m_plugins = new ArrayList<SystemReportPlugin>(m_defaultServiceRegistry.findProviders(SystemReportPlugin.class));
+        m_plugins = new ArrayList<>(m_defaultServiceRegistry.findProviders(SystemReportPlugin.class));
         Collections.sort(m_plugins);
-        for (final SystemReportPlugin plugin : m_plugins) {
-            System.err.println(plugin.getName() + ":");
-            for (final Entry<String, org.springframework.core.io.Resource> entry : plugin.getEntries().entrySet()) {
-                System.err.println("  " + entry.getKey() + ": " + getResourceText(entry.getValue()));
-            }
-        }
     }
 
     protected boolean listContains(Class<? extends SystemReportPlugin> clazz) {
@@ -85,13 +78,6 @@ public abstract class ReportPluginITCase {
             }
         }
         return false;
-    }
-
-    protected String getResourceText(final org.springframework.core.io.Resource r) {
-        if (r instanceof ByteArrayResource) {
-            return new String(((ByteArrayResource) r).getByteArray());
-        }
-        return "Not a string resource.";
     }
 
 }

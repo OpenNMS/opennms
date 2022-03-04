@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -242,7 +242,7 @@ public class NodeRestService extends OnmsRestService {
             LOG.debug("addNode: Adding node {}", node);
             m_nodeDao.save(node);
             
-            final Event e = EventUtils.createNodeAddedEvent("Web", node.getId(), node.getLabel(), null);
+            final Event e = EventUtils.createNodeAddedEvent("Web", node.getId(), node.getLabel(), null, null);
             sendEvent(e);
             
             return Response.created(uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();

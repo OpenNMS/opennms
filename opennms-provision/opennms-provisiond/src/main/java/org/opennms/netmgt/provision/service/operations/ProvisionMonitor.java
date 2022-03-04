@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,50 +28,68 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-import java.util.List;
-
+import org.opennms.netmgt.provision.service.NodeScan;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
 
 public interface ProvisionMonitor {
 
 	/**
-	 * <p>beginProcessingOps</p>
-	 *
-	 * @param deleteCount a int.
-	 * @param updateCount a int.
-	 * @param insertCount a int.
+	 * @return name of the monitor (also act as key in MonitorHolder)
 	 */
-	void beginProcessingOps(int deleteCount, int updateCount, int insertCount);
+	String getName();
 
 	/**
-	 * <p>finishProcessingOps</p>
+	 * capture start time of the monitor
 	 */
-	void finishProcessingOps();
+	void start();
 
 	/**
-	 * <p>beginPreprocessingOps</p>
+	 * capture finish time of the monitor
 	 */
-	void beginPreprocessingOps();
+	void finish();
 
 	/**
-	 * <p>finishPreprocessingOps</p>
+	 * @return total number of nodes in resources
 	 */
-	void finishPreprocessingOps();
+	int getNodeCount();
+	/**
+	 * <p>beginScheduling</p>
+	 */
+	void beginScheduling();
+
+	/**
+	 * <p>finishScheduling</p>
+	 */
+	void finishScheduling();
 
 	/**
 	 * <p>beginPreprocessing</p>
 	 *
 	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
 	 */
-	void beginPreprocessing(ImportOperation oper);
+	void beginScanEvent(ImportOperation oper);
 
 	/**
 	 * <p>finishPreprocessing</p>
 	 *
 	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
 	 */
-	void finishPreprocessing(ImportOperation oper);
+	void finishScanEvent(ImportOperation oper);
+
+	/**
+	 * <p>beginPreprocessing</p>
+	 *
+	 * @param nodeScan a {@link org.opennms.netmgt.provision.service.NodeScan} object.
+	 */
+	void beginScanning(NodeScan nodeScan);
+
+	/**
+	 * <p>finishPreprocessing</p>
+	 *
+	 * @param nodeScan a {@link org.opennms.netmgt.provision.service.NodeScan} object.
+	 */
+	void finishScanning(NodeScan nodeScan);
 
 	/**
 	 * <p>beginPersisting</p>
@@ -90,18 +108,16 @@ public interface ProvisionMonitor {
 	/**
 	 * <p>beginSendingEvents</p>
 	 *
-	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
-	 * @param events a {@link java.util.List} object.
+	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
 	 */
-	void beginSendingEvents(ImportOperation oper, List<Event> events);
+	void beginSendingEvent(Event event);
 
 	/**
 	 * <p>finishSendingEvents</p>
 	 *
-	 * @param oper a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
-	 * @param events a {@link java.util.List} object.
+	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
 	 */
-	void finishSendingEvents(ImportOperation oper, List<Event> events);
+	void finishSendingEvent(Event event);
 
 	/**
 	 * <p>beginLoadingResource</p>
@@ -115,7 +131,7 @@ public interface ProvisionMonitor {
 	 *
 	 * @param resource a {@link org.springframework.core.io.Resource} object.
 	 */
-	void finishLoadingResource(Resource resource);
+	void finishLoadingResource(Resource resource, int nodeCount);
 
 	/**
 	 * <p>beginImporting</p>
@@ -146,5 +162,4 @@ public interface ProvisionMonitor {
 	 * <p>finishRelateNodes</p>
 	 */
 	void finishRelateNodes();
-
 }

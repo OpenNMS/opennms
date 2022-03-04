@@ -83,7 +83,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -151,7 +150,7 @@ public class CollectionResourceWrapperIT {
     @Test(expected=IllegalArgumentException.class)
     public void testBadConstructorCall() throws Throwable {
         try {
-            new CollectionResourceWrapper(null, 1, "127.0.0.1", "HTTP", null, null, null, null, null, null);
+            new CollectionResourceWrapper(null, 1, "127.0.0.1", "HTTP", null, null, null, null);
         } catch (Throwable e) {
             //e.printStackTrace();
             throw e;
@@ -161,7 +160,7 @@ public class CollectionResourceWrapperIT {
     @Test(expected=IllegalArgumentException.class)
     public void testBadderConstructorCall() throws Throwable {
         try {
-            new CollectionResourceWrapper(null, -1, null, null, null, null, null, null, null, null);
+            new CollectionResourceWrapper(null, -1, null, null, null, null, null, null);
         } catch (Throwable e) {
             e.printStackTrace();
             throw e;
@@ -567,7 +566,7 @@ public class CollectionResourceWrapperIT {
     // Wrapper interval value for counter rates calculation should be expressed in seconds.
     private CollectionResourceWrapper createWrapper(SnmpCollectionResource resource, Map<String, CollectionAttribute> attributes, Date timestamp) {
         CollectionResourceWrapper wrapper = new CollectionResourceWrapper(timestamp, 1, "127.0.0.1", "SNMP",
-                getRepository(), resource, attributes, getResourceStorageDao(), m_ifLabelDao, null);
+                                                                          resource, attributes, m_ifLabelDao, null);
         return wrapper;
     }
     
@@ -630,12 +629,6 @@ public class CollectionResourceWrapperIT {
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
         return mibObject;
-    }
-
-    private RrdRepository getRepository() {
-        RrdRepository repo = new RrdRepository();
-        repo.setRrdBaseDir(tempFolder.getRoot());
-        return repo;
     }
 
     private ResourceStorageDao getResourceStorageDao() {
