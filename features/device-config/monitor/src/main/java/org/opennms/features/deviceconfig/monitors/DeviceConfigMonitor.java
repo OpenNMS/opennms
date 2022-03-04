@@ -32,6 +32,7 @@ import static java.util.stream.Collectors.toMap;
 
 import java.time.Duration;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -65,6 +66,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     public static final String CONFIG_TYPE = "config-type";
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitor.class);
+    public static final String TRIGGERED_POLL = "dcbTriggeredPoll";
     private Retriever retriever;
     private static final Duration DEFAULT_DURATION = Duration.ofMinutes(1); // 60sec
     private static final int DEFAULT_SSH_PORT = 22;
@@ -82,13 +84,13 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
             deviceConfigDao = BeanUtils.getBean("daoContext", "deviceConfigDao", DeviceConfigDao.class);
         }
 
-        final Map<String, Object> params = super.getRuntimeAttributes(svc, parameters);
+        final Map<String, Object> params = new HashMap<>();
         final String configType = getKeyedString(parameters, CONFIG_TYPE, ConfigType.Default);
         final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
         final Optional<org.opennms.features.deviceconfig.persistence.api.DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
 
         if (deviceConfigOptional.isPresent()) {
-            params.put(LAST_RETRIEVAL, deviceConfigOptional.get().getLastUpdated().getTime());
+            params.put(LAST_RETRIEVAL, String.valueOf(deviceConfigOptional.get().getLastUpdated().getTime()));
         }
 
         return params;
@@ -100,6 +102,8 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
             retriever = BeanUtils.getBean("daoContext", "deviceConfigRetriever", Retriever.class);
         }
 
+        boolean triggeredPoll = Boolean.parseBoolean(getKeyedString(parameters, TRIGGERED_POLL, "false"));
+
         final Date lastRun = new Date(getKeyedLong(parameters, LAST_RETRIEVAL, 0L));
         final String cronSchedule = getKeyedString(parameters, SCHEDULE, DEFAULT_CRON_SCHEDULE);
 
@@ -110,7 +114,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
         final Date nextRun = trigger.getFireTimeAfter(lastRun);
 
-        if (!nextRun.before(new Date())) {
+        if (!triggeredPoll && !nextRun.before(new Date())) {
             return PollStatus.unknown("Skipping. Next retrieval scheduled for " + nextRun);
         }
 

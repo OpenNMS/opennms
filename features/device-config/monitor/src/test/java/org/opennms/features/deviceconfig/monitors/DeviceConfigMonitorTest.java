@@ -111,6 +111,20 @@ public class DeviceConfigMonitorTest {
     }
 
     @Test
+    public void testTriggeredRetrieval() {
+        final Instant schedule = Instant.now().minus(5, ChronoUnit.MINUTES);
+        int minute = schedule.atZone(TimeZone.getDefault().toZoneId()).getMinute();
+        int hour = schedule.atZone(TimeZone.getDefault().toZoneId()).getHour();
+
+        final Map<String, Object> params = new HashMap<>(this.params);
+        params.put(DeviceConfigMonitor.SCHEDULE, "0 " + minute + " " + hour + " * * ?");
+        params.put(DeviceConfigMonitor.TRIGGERED_POLL, "true");
+
+        params.put(DeviceConfigMonitor.LAST_RETRIEVAL, String.valueOf(Instant.now().minus(3, ChronoUnit.MINUTES).toEpochMilli()));
+        assertThat(doesItRun(params), is(true));
+    }
+
+    @Test
     public void testLastRetrieval() {
         final Instant schedule = Instant.now().minus(5, ChronoUnit.MINUTES);
         int minute = schedule.atZone(TimeZone.getDefault().toZoneId()).getMinute();
