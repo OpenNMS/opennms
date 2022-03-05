@@ -44,6 +44,7 @@ import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.PersistException;
 import org.opennms.netmgt.collection.api.PersistOperationBuilder;
 import org.opennms.netmgt.collection.api.ResourceIdentifier;
 import org.opennms.netmgt.collection.api.TimeKeeper;
@@ -62,10 +63,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
- * Used to collect attribute values and meta-data for a given resource
+ * Used to collect attribute values and meta-data for a given resource group
  * and persist these via the {@link TimeseriesWriter} on {@link #commit()}.
- *
- * @author jwhite
  */
 public class TimeseriesPersistOperationBuilder implements PersistOperationBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(TimeseriesPersistOperationBuilder.class);
@@ -77,20 +76,23 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     private final Map<CollectionAttributeType, Number> declarations = Maps.newLinkedHashMap();
     private final Set<Tag> configuredAdditionalMetaTags;
-    private final Map<ResourcePath, Map<String, String>> stringAttributesByPath = Maps.newLinkedHashMap();
+    private final Map<ResourcePath, Map<String, String>> stringAttributesByPath;
     private final Map<Set<Tag>, Map<String, String>> stringAttributesByResourceIdAndName = Maps.newLinkedHashMap();
     private final Timer commitTimer;
 
     private TimeKeeper timeKeeper = new DefaultTimeKeeper();
 
     public TimeseriesPersistOperationBuilder(TimeseriesWriter writer, RrdRepository repository,
-                                             ResourceIdentifier resource, String groupName, Set<Tag> configuredAdditionalMetaTags,
+                                             ResourceIdentifier resource, String groupName,
+                                             Set<Tag> configuredAdditionalMetaTags,
+                                             final Map<ResourcePath, Map<String, String>> stringAttributesByPath,
                                              MetricRegistry metricRegistry) {
         this.writer = writer;
         rrepository = repository;
         this.resource = resource;
         this.groupName = groupName;
         this.configuredAdditionalMetaTags = configuredAdditionalMetaTags;
+        this.stringAttributesByPath = stringAttributesByPath;
         this.commitTimer = metricRegistry.timer("samples.write.integration");
     }
 
@@ -106,6 +108,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     /**
      * Persists a String attribute that is associated to a ResourcePath (resourceId)
+     * => Resource level attributes.
      */
     public void persistStringAttribute(ResourcePath path, String key, String value) {
         Map<String, String> stringAttributesForPath = stringAttributesByPath.computeIfAbsent(path, k -> Maps.newLinkedHashMap());
@@ -114,6 +117,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     /**
      * Persists a String attribute that is associated to a Metric (resourceId & name)
+     * => Group level attributes
      */
     public void persistStringAttributeForMetricLevel(ResourcePath path, String metricName, String key, String value) {
         Set<Tag> intrinsicTags = Sets.newHashSet(new ImmutableTag(IntrinsicTagNames.resourceId, TimeseriesUtils.toResourceId(path)), new ImmutableTag(IntrinsicTagNames.name, metricName));
@@ -130,7 +134,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     }
 
     @Override
-    public void commit() {
+    public void commit() throws PersistException {
         try(final Timer.Context context = commitTimer.time()) {
             writer.insert(getSamplesToInsert());
         }
@@ -190,11 +194,6 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
                     builder.externalTag(entry2.getKey(), entry2.getValue());
                 }
             }
-            // TODO: Patrick Test start
-            if(builder.build().getKey().startsWith("name=ns-dskTotalLow_resourceId=snmp/1/dskIndex/_root_fs/")) {
-                builder.externalTag("ns-dskPath", "/");
-            }
-            // TODO Patrick: Test end
             final ImmutableMetric metric = builder.build();
             final Double sampleValue = value.doubleValue();
             samples.add(ImmutableSample.builder().metric(metric).time(time).value(sampleValue).build());

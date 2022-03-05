@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.timeseries.samplewrite;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -47,6 +50,7 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Maps;
 
 /**
  * TimeseriesPersister persistence strategy.
@@ -60,7 +64,9 @@ public class TimeseriesPersister extends AbstractPersister {
     private final TimeseriesWriter writer;
     private final MetaTagDataLoader metaDataLoader;
     private final Cache<ResourcePath, Set<Tag>> configuredAdditionalMetaTagCache;
-    private TimeseriesPersistOperationBuilder builder;
+    private TimeseriesPersistOperationBuilder currentBuilder; // builds a group of attributes
+    private List<TimeseriesPersistOperationBuilder> allBuilders; // we need to keep track for commit
+    private Map<ResourcePath, Map<String, String>> resourceLevelStringAttributes;
     private final MetricRegistry metricRegistry;
 
     protected TimeseriesPersister(ServiceParameters params, RrdRepository repository, TimeseriesWriter timeseriesWriter,
@@ -79,6 +85,8 @@ public class TimeseriesPersister extends AbstractPersister {
         super.visitResource(resource);
         // compute user defined meta data for this resource
         this.configuredAdditionalMetaTagCache.put(resource.getPath(), metaDataLoader.load(resource));
+        this.resourceLevelStringAttributes = Maps.newLinkedHashMap();
+        this.allBuilders = new ArrayList<>();
     }
 
     /** {@inheritDoc} */
@@ -89,11 +97,13 @@ public class TimeseriesPersister extends AbstractPersister {
             // Set the builder before any calls to persistNumericAttribute are made
             CollectionResource resource = group.getResource();
             Set<Tag> metaTags = getUserDefinedMetaTags(resource);
-            builder = new TimeseriesPersistOperationBuilder(writer, repository, resource, group.getName(), metaTags, this.metricRegistry);
+            currentBuilder = new TimeseriesPersistOperationBuilder(writer, repository, resource, group.getName(), metaTags,
+                    resourceLevelStringAttributes, this.metricRegistry);
             if (resource.getTimeKeeper() != null) {
-                builder.setTimeKeeper(resource.getTimeKeeper());
+                currentBuilder.setTimeKeeper(resource.getTimeKeeper());
             }
-            setBuilder(builder);
+            setBuilder(currentBuilder);
+            this.allBuilders.add(currentBuilder);
         }
     }
 
@@ -108,16 +118,27 @@ public class TimeseriesPersister extends AbstractPersister {
 
     @Override
     protected void persistStringAttribute(ResourcePath path, String key, String value) throws PersistException {
-        builder.persistStringAttribute(path, key, value);
+        currentBuilder.persistStringAttribute(path, key, value);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public void completeGroup(AttributeGroup group) {
+    public void completeResource(CollectionResource resource) {
         if (shouldPersist()) {
-            commitBuilder();
+            this.allBuilders.forEach(this::commitBuilder);
         }
         popShouldPersist();
+    }
+
+    public void commitBuilder(TimeseriesPersistOperationBuilder builder) {
+        if (isPersistDisabled()) {
+            LOG.debug("Persist disabled for {}", builder.getName());
+            return;
+        }
+        try {
+            builder.commit();
+        } catch (PersistException e) {
+            LOG.error("Unable to persist data for {}", builder.getName(), e);
+        }
     }
 
     @Override // Override to implement our own string attribute handling
@@ -125,10 +146,10 @@ public class TimeseriesPersister extends AbstractPersister {
         boolean shouldIgnorePersist = isIgnorePersist() && AttributeType.COUNTER.equals(attribute.getType());
         LOG.debug("Persisting {} {}", attribute, (shouldIgnorePersist ? ". Ignoring value because of sysUpTime changed." : ""));
         Number value = shouldIgnorePersist ? Double.NaN : attribute.getNumericValue();
-        builder.setAttributeValue(attribute.getAttributeType(), value);
+        currentBuilder.setAttributeValue(attribute.getAttributeType(), value);
         if(attribute.getMetricIdentifier() != null) {
             ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(repository, ResourcePath.get(attribute.getResource().getPath(), attribute.getAttributeType().getGroupType().getName()));
-            this.builder.persistStringAttributeForMetricLevel(path,  attribute.getName(), attribute.getMetricIdentifier(), attribute.getName());
+            this.currentBuilder.persistStringAttributeForMetricLevel(path,  attribute.getName(), attribute.getMetricIdentifier(), attribute.getName());
         }
     }
 }
