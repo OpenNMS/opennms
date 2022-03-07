@@ -12,8 +12,6 @@ Sentinel can do the following:
 .Flow integration with Sentinel
 image::flows/flow_integration_sentinel.png[width=70%]
 
-Follow the procedures below to set up Sentinel to scale your flows data.
-
 == Before you begin
 
 Make sure you have the following:

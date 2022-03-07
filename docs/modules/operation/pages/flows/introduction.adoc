@@ -23,7 +23,7 @@ This section presents a set of procedures to set up flows that progress from a b
 * xref:operation:flows/basic.adoc#flows-basic[Basic setup] (out-of-the-box)
 * Flows data in a xref:operation:flows/distributed.adoc#flows-remote[distributed/remote network] (add a Minion)
 * Processing xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[large volume of flows data] (add Sentinel to scale)
-* Issues with flows at scale and queries taking too long (add the OpenNMS streaming analytics tool)
+* Issues with flows at scale and queries taking too long (add the OpenNMS https://github.com/OpenNMS/nephron[streaming analytics tool])
 
 .Flow integration overview
 image::flows/flow_integration_overview.png[width=70%]
