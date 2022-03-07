@@ -28,13 +28,13 @@
 
 package org.opennms.features.deviceconfig.rest.impl;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
@@ -47,8 +47,10 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
+import org.opennms.features.deviceconfig.service.DeviceConfigService;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
@@ -59,6 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
+
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDeviceConfigRestService.class);
     private static final String REQUISITION_CONTEXT = "requisition";
     private static final String SCHEDULE_METADATA_KEY = "schedule";
@@ -72,6 +75,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     private final DeviceConfigDao deviceConfigDao;
     private final MonitoredServiceDao monitoredServiceDao;
+    private final DeviceConfigService deviceConfigService;
 
     private static class ScheduleInfo {
         private final Date nextScheduledBackup;
@@ -87,9 +91,10 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         }
     }
 
-    public DefaultDeviceConfigRestService(DeviceConfigDao deviceConfigDao, MonitoredServiceDao monitoredServiceDao) {
+    public DefaultDeviceConfigRestService(DeviceConfigDao deviceConfigDao, MonitoredServiceDao monitoredServiceDao, DeviceConfigService deviceConfigService) {
         this.deviceConfigDao = deviceConfigDao;
         this.monitoredServiceDao = monitoredServiceDao;
+        this.deviceConfigService = deviceConfigService;
     }
 
     @Override
@@ -223,6 +228,19 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     @Override
     public Response downloadDeviceConfigs() {
         throw new UnsupportedOperationException("downloadDeviceConfigs not yet implemented.");
+    }
+
+    @Override
+    public Response triggerDeviceConfigBackup(BackupRequestDTO backupRequestDTO) {
+        try {
+            deviceConfigService.triggerConfigBackup(backupRequestDTO.getIpAddress(),
+                    backupRequestDTO.getLocation(), backupRequestDTO.getConfigType());
+        } catch (Exception e) {
+            LOG.error("Unable to trigger config backup for {} at location {} with configType {}",
+                    backupRequestDTO.getIpAddress(), backupRequestDTO.getLocation(), backupRequestDTO.getConfigType());
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+        return Response.accepted().build();
     }
 
     private Criteria getCriteria(
