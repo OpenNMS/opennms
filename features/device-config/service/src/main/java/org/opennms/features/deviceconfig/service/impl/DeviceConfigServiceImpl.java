@@ -67,6 +67,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private static final String DEVICE_CONFIG_SERVICE_NAME_PREFIX = "DeviceConfig-";
     private static final String DEVICE_CONFIG_MONITOR_CLASS_NAME = "org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor";
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigServiceImpl.class);
+    public static final String TRIGGERED_POLL = "dcbTriggeredPoll";
 
     @Autowired
     private LocationAwarePollerClient locationAwarePollerClient;
@@ -144,6 +145,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .withAdaptor(serviceMonitorAdaptor)
                 .withMonitorClassName(DEVICE_CONFIG_MONITOR_CLASS_NAME)
                 .withAttributes(serviceAttributes)
+                .withAttribute(TRIGGERED_POLL, "true")
                 .execute();
     }
 

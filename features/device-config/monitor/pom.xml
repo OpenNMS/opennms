@@ -42,11 +42,21 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.device-config.persistence</groupId>
+            <artifactId>org.opennms.features.device-config.persistence.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.spring</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartzVersion}</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
