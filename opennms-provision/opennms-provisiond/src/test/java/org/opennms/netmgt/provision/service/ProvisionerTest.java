@@ -81,7 +81,7 @@ public class ProvisionerTest {
         final AtomicReference<String> locationRef = new AtomicReference<>();
         final Provisioner provisioner = new Provisioner() {
             @Override
-            public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource, String location) {
+            public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource, String location, String monitorKey) {
                 ipAddressRef.set(ipAddress);
                 foreignSourceRef.set(foreignSource);
                 locationRef.set(location);
