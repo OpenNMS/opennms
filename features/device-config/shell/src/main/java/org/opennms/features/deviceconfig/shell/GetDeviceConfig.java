@@ -90,14 +90,13 @@ public class GetDeviceConfig implements Action {
                 try {
                     DeviceConfig deviceConfig = future.get(1, TimeUnit.SECONDS);
                     if (deviceConfig != null) {
-                        System.out.printf("Received file %s with content .. \n\n", deviceConfig.getFilename());
-                        if (deviceConfig.getFilename().contains(".gz")) {
-                            // Decompress if this is compressed file
-                            byte[] dcBytes = DeviceConfigUtil.decompressGzipToBytes(deviceConfig.getContent());
-                            String config =  new String(dcBytes, Charset.forName(encoding));
-                            System.out.println(config);
+                        byte[] content = deviceConfig.getContent();
+                        if (DeviceConfigUtil.isGzipFile(deviceConfig.getFilename())) {
+                            content = DeviceConfigUtil.decompressGzipToBytes(deviceConfig.getContent());
                         }
-
+                        System.out.printf("Received file %s with content .. \n\n", deviceConfig.getFilename());
+                        String config = new String(content, Charset.forName(encoding));
+                        System.out.println(config);
                     } else {
                         System.out.println("Failed to fetch device config");
                     }

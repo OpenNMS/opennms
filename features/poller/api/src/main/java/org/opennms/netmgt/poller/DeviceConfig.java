@@ -38,10 +38,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DeviceConfig {
 
     @XmlAttribute(name="content")
-    public byte[] content;
+    private byte[] content;
 
     @XmlAttribute(name="filename")
-    public String filename;
+    private String filename;
 
     public DeviceConfig(byte[] content, String fileName) {
         this.content = content;

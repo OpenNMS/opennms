@@ -138,6 +138,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         }
         List<Parameter> parameters = getServiceParamsFromPollerConfig(service);
         Map<String, Object> serviceAttributes = convertParamsToAttributes(parameters);
+        serviceAttributes.put(TRIGGERED_POLL, "true");
         // All the service parameters should be loaded from metadata in PollerRequestBuilderImpl
         // Persistence will be performed in DeviceConfigMonitorAdaptor.
         return locationAwarePollerClient.poll()
@@ -145,7 +146,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .withAdaptor(serviceMonitorAdaptor)
                 .withMonitorClassName(DEVICE_CONFIG_MONITOR_CLASS_NAME)
                 .withAttributes(serviceAttributes)
-                .withAttribute(TRIGGERED_POLL, "true")
                 .execute();
     }
 
@@ -176,7 +176,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private Map<String, Object> convertParamsToAttributes(List<Parameter> parameters) {
         Map<String, Object> attributes = new TreeMap<>();
         if (parameters.isEmpty()) {
-            // If we couldn't load any specific pakage, use dummy parameters
+            // If we couldn't load any specific package, use dummy parameters
             // so that they get overwritten by metadata.
             attributes.put("username", "admin");
             attributes.put("password", "password");

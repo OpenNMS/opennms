@@ -28,11 +28,13 @@
 
 package org.opennms.features.deviceconfig.monitor.adaptor;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -41,15 +43,17 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Strings;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
 
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
     private static final String DEVICE_CONFIG_MONITOR_PREFIX = "DeviceConfig";
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitorAdaptor.class);
 
     @Autowired
     private DeviceConfigDao deviceConfigDao;
@@ -84,17 +88,26 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                         encoding,
                         status.getReason()
                 );
-                sendConfigRetrievalFailedEvent(ipInterface, svc.getSvcName());
+                sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_FAILED_UEI);
             } else {
                 // Config retrieval succeeded
+                // De-compress if content is compressed.
+                byte[] content = deviceConfig.getContent();
+                if (DeviceConfigUtil.isGzipFile(deviceConfig.getFilename())) {
+                    try {
+                        content = DeviceConfigUtil.decompressGzipToBytes(content);
+                    } catch (IOException e) {
+                        LOG.warn("Failed to decompress content from file {}", deviceConfig.getFilename());
+                    }
+                }
                 deviceConfigDao.updateDeviceConfigContent(
                         ipInterface,
                         configType,
                         encoding,
-                        deviceConfig.content,
-                        deviceConfig.filename
+                        content,
+                        deviceConfig.getFilename()
                 );
-                sendConfigRetrievalSucceededEvent(ipInterface, svc.getSvcName());
+                sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI);
             }
         }
 
@@ -120,17 +133,11 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         return null;
     }
 
-    private void sendConfigRetrievalFailedEvent(OnmsIpInterface ipInterface, String serviceName) {
-        EventBuilder bldr = new EventBuilder(EventConstants.DEVICE_CONFIG_RETRIEVAL_FAILED_UEI, "poller");
+    private void sendEvent(OnmsIpInterface ipInterface, String serviceName, String uei) {
+        EventBuilder bldr = new EventBuilder(uei, "poller");
         bldr.setIpInterface(ipInterface);
         bldr.setService(serviceName);
         eventForwarder.sendNow(bldr.getEvent());
     }
 
-    private void sendConfigRetrievalSucceededEvent(OnmsIpInterface ipInterface, String serviceName) {
-        EventBuilder bldr = new EventBuilder(EventConstants.DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI, "poller");
-        bldr.setIpInterface(ipInterface);
-        bldr.setService(serviceName);
-        eventForwarder.sendNow(bldr.getEvent());
-    }
 }
