@@ -1474,7 +1474,7 @@
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
     <opennmsApiVersion>0.8.1-SNAPSHOT</opennmsApiVersion>
-    <opennmsApiVersionOsgi>0.8.0.SNAPSHOT</opennmsApiVersionOsgi>
+    <opennmsApiVersionOsgi>0.8.1.SNAPSHOT</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
