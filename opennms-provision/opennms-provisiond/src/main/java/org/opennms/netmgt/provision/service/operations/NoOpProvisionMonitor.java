@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,117 +28,142 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-import java.util.List;
-
+import org.opennms.netmgt.provision.service.NodeScan;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
+
 public class NoOpProvisionMonitor implements ProvisionMonitor {
-	/** {@inheritDoc} */
-        @Override
-	public void beginProcessingOps(int deleteCount, int updateCount, int insertCount) {
-	}
+    @Override
+    public String getName() {
+        return null;
+    }
 
-	/**
-	 * <p>finishProcessingOps</p>
-	 */
-        @Override
-	public void finishProcessingOps() {
-	}
+    @Override
+    public void start() {
 
-	/**
-	 * <p>beginPreprocessingOps</p>
-	 */
-        @Override
-	public void beginPreprocessingOps() {
-	}
+    }
 
-	/**
-	 * <p>finishPreprocessingOps</p>
-	 */
-        @Override
-	public void finishPreprocessingOps() {
-	}
+    @Override
+    public void finish() {
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginPreprocessing(ImportOperation oper) {
-	}
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishPreprocessing(ImportOperation oper) {
-	}
+    @Override
+    public int getNodeCount() {
+        return 0;
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginPersisting(ImportOperation oper) {
-	}
+    @Override
+    public void beginScheduling() {
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishPersisting(ImportOperation oper) {
-	}
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginSendingEvents(ImportOperation oper, List<Event> events) {
-	}
+    @Override
+    public void finishScheduling() {
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishSendingEvents(ImportOperation oper, List<Event> events) {
-	}
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginLoadingResource(Resource resource) {
-	}
+    @Override
+    public void beginScanEvent(ImportOperation oper) {
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishLoadingResource(Resource resource) {
-	}
+    }
 
-	/**
-	 * <p>beginImporting</p>
-	 */
-        @Override
-	public void beginImporting() {
-	}
+    @Override
+    public void finishScanEvent(ImportOperation oper) {
 
-	/**
-	 * <p>finishImporting</p>
-	 */
-        @Override
-	public void finishImporting() {
-	}
+    }
 
-	/**
-	 * <p>beginAuditNodes</p>
-	 */
-        @Override
-	public void beginAuditNodes() {
-	}
+    @Override
+    public void beginScanning(NodeScan nodeScan) {
 
-	/**
-	 * <p>finishAuditNodes</p>
-	 */
-        @Override
-	public void finishAuditNodes() {
-	}
+    }
 
-	/**
-	 * <p>beginRelateNodes</p>
-	 */
-        @Override
-	public void beginRelateNodes() {
-	}
+    @Override
+    public void finishScanning(NodeScan nodeScan) {
 
-	/**
-	 * <p>finishRelateNodes</p>
-	 */
-        @Override
-	public void finishRelateNodes() {
-	}
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginPersisting(ImportOperation oper) {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finishPersisting(ImportOperation oper) {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginSendingEvent(Event event) {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finishSendingEvent(Event event) {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginLoadingResource(Resource resource) {
+    }
+
+    @Override
+    public void finishLoadingResource(Resource resource, int nodeCount) {
+
+    }
+
+    /**
+     * <p>beginImporting</p>
+     */
+    @Override
+    public void beginImporting() {
+    }
+
+    /**
+     * <p>finishImporting</p>
+     */
+    @Override
+    public void finishImporting() {
+    }
+
+    /**
+     * <p>beginAuditNodes</p>
+     */
+    @Override
+    public void beginAuditNodes() {
+    }
+
+    /**
+     * <p>finishAuditNodes</p>
+     */
+    @Override
+    public void finishAuditNodes() {
+    }
+
+    /**
+     * <p>beginRelateNodes</p>
+     */
+    @Override
+    public void beginRelateNodes() {
+    }
+
+    /**
+     * <p>finishRelateNodes</p>
+     */
+    @Override
+    public void finishRelateNodes() {
+    }
 
 }
