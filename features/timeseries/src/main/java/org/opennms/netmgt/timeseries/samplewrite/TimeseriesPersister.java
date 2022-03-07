@@ -57,6 +57,16 @@ import com.google.common.collect.Maps;
  *
  * Both string and numeric attributes are persisted via {@link TimeseriesPersistOperationBuilder}.
  *
+ * String attributes:
+ * We collect all attributes within a resource and commit them when we finished the collection.
+ * We cannot commit earlier since we need to collect the resource level string attributes.
+ * They can be part of any group within the resource but need to be applied to all metrics in the resource.
+ * Therefore, we need to collect all attributes under the resource
+ * Structure:
+ * - resource
+ *   + group
+ *     + resource level string attribute
+ *     + numeric attributes
  */
 public class TimeseriesPersister extends AbstractPersister {
 
@@ -116,6 +126,9 @@ public class TimeseriesPersister extends AbstractPersister {
         return Collections.emptySet();
     }
 
+    /**
+     * Persists a resource level string attribute.
+     */
     @Override
     protected void persistStringAttribute(ResourcePath path, String key, String value) throws PersistException {
         currentBuilder.persistStringAttribute(path, key, value);
@@ -141,6 +154,9 @@ public class TimeseriesPersister extends AbstractPersister {
         }
     }
 
+    /**
+     * Persists a metric level string attribute.
+     */
     @Override // Override to implement our own string attribute handling
     public void persistNumericAttribute(CollectionAttribute attribute) {
         boolean shouldIgnorePersist = isIgnorePersist() && AttributeType.COUNTER.equals(attribute.getType());
