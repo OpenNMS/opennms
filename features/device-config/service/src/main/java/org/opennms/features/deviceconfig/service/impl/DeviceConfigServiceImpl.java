@@ -46,6 +46,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -71,6 +78,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     @Override
     public void triggerConfigBackup(String ipAddress, String location, String configType) throws IOException {
+
+        try {
+            InetAddress.getByName(ipAddress);
+        } catch (UnknownHostException e) {
+            LOG.error("Unknown/Invalid IpAddress {}", ipAddress);
+            throw new IllegalArgumentException("Unknown/Invalid IpAddress " + ipAddress);
+        }
 
         CompletableFuture<PollerResponse> future = pollDeviceConfig(ipAddress, location, configType);
         future.whenComplete(((pollerResponse, throwable) -> {

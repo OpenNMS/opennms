@@ -5,9 +5,13 @@
     <reference id="deviceConfigDao" interface="org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao" availability="mandatory"/>
     <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
 
-    <bean id="defaultDeviceConfigRestService" class="org.opennms.features.deviceconfig.rest.impl.DefaultDeviceConfigRestService">
-        <argument ref="deviceConfigDao" />
-        <argument ref="monitoredServiceDao" />
+    <reference id="deviceConfigService" interface="org.opennms.features.deviceconfig.service.DeviceConfigService" availability="mandatory"/>
+
+    <bean id="defaultDeviceConfigRestService"
+          class="org.opennms.features.deviceconfig.rest.impl.DefaultDeviceConfigRestService">
+        <argument ref="deviceConfigDao"/>
+        <argument ref="monitoredServiceDao"/>
+        <argument ref="deviceConfigService"/>
     </bean>
 
     <service interface="org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService" ref="defaultDeviceConfigRestService">
