@@ -141,6 +141,7 @@
 ** xref:flows/classification-engine.adoc[]
 ** xref:flows/aggregation.adoc[]
 ** xref:flows/nephron.adoc[]
+** xref:flows/troubleshooting.adoc[]
 
 * xref:geographical-map/introduction.adoc[]
 ** xref:geographical-map/searching.adoc[]
