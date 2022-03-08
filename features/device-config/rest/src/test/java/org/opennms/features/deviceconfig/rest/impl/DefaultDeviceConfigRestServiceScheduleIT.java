@@ -28,6 +28,19 @@
 
 package org.opennms.features.deviceconfig.rest.impl;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.ws.rs.core.Response;
+import net.redhogs.cronparser.CronExpressionDescriptor;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -38,6 +51,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -57,17 +71,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
     "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -80,6 +83,20 @@ import java.util.stream.Collectors;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class DefaultDeviceConfigRestServiceScheduleIT {
+    private static final int RECORD_COUNT = 3;
+
+    private static final List<String> CRON_SCHEDULES = List.of(
+        "0 15 10 ? * *",
+        "0 * 14 * * ?",
+        "0 15 10 ? * 6#3"
+    );
+
+    private static final List<String> EXPECTED_CRON_SCHEDULE_DESCRIPTIONS = List.of(
+        "At 10:15 am",
+        "Every minute, at 2:00 pm",
+        "At 10:15 am, on the third Saturday of the month"
+    );
+
     @Autowired
     private NodeDao nodeDao;
 
@@ -107,8 +124,6 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
     @Test
     @Transactional
     public void testGetDeviceConfigsWithScheduleInfo() {
-        final int RECORD_COUNT = 3;
-
         // Add nodes, interfaces, services
         List<OnmsIpInterface> ipInterfaces = populateDeviceConfigServiceInfo();
         Assert.assertEquals(RECORD_COUNT, ipInterfaces.size());
@@ -131,7 +146,6 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         Assert.assertEquals(RECORD_COUNT, responseList.size());
 
         List<String> expectedConfigTypes = List.of("default", "default", "running");
-        List<String> expectedScheduleIntervals = List.of("daily", "weekly", "monthly");
 
         for (int i = 0; i < RECORD_COUNT; i++) {
             DeviceConfigDTO dto = responseList.get(i);
@@ -145,7 +159,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             Assert.assertEquals(createdTime(version), dto.getLastSucceededDate().getTime());
             Assert.assertNull(dto.getLastFailedDate());
             Assert.assertNull(dto.getFailureReason());
-            Assert.assertEquals(expectedScheduleIntervals.get(i), dto.getScheduledInterval());
+            Assert.assertEquals(EXPECTED_CRON_SCHEDULE_DESCRIPTIONS.get(i), dto.getScheduledInterval());
             assertThat(dto.getNextScheduledBackupDate().after(currentDate), is(true));
         }
     }
@@ -177,8 +191,6 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
     @Test
     @Transactional
     public void testDownloadSingleDeviceConfig() {
-        final int RECORD_COUNT = 3;
-
         // Add nodes, interfaces, services
         List<OnmsIpInterface> ipInterfaces = populateDeviceConfigServiceInfo();
         Assert.assertEquals(RECORD_COUNT, ipInterfaces.size());
@@ -212,8 +224,6 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
     @Test
     @Transactional
     public void testDownloadMultipleDeviceConfigs() {
-        final int RECORD_COUNT = 3;
-
         // Add nodes, interfaces, services
         List<OnmsIpInterface> ipInterfaces = populateDeviceConfigServiceInfo();
         Assert.assertEquals(RECORD_COUNT, ipInterfaces.size());
@@ -297,11 +307,11 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
         List<String> scheduleIntervals = List.of("daily", "weekly", "monthly");
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < RECORD_COUNT; i++) {
             builder.addNode(nodeNames.get(i)).setForeignSource("imported:").setForeignId(foreignIds.get(i)).setType(OnmsNode.NodeType.ACTIVE);
             builder.addInterface(ipAddresses.get(i)).setIsManaged("M").setIsSnmpPrimary("P");
             builder.addService(addOrGetServiceType(serviceNames.get(i)));
-            builder.setServiceMetaDataEntry("requisition", "schedule", scheduleIntervals.get(i));
+            builder.setServiceMetaDataEntry("requisition", "schedule", CRON_SCHEDULES.get(i));
             nodeDao.saveOrUpdate(builder.getCurrentNode());
 
             OnmsIpInterface ipInterface = builder.getCurrentNode().getIpInterfaceByIpAddress(ipAddresses.get(i));

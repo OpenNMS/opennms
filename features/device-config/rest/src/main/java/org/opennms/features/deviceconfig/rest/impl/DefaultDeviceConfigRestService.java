@@ -30,6 +30,7 @@ package org.opennms.features.deviceconfig.rest.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.google.common.base.Strings;
+import net.redhogs.cronparser.CronExpressionDescriptor;
 import org.apache.commons.lang3.StringUtils;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -68,6 +70,8 @@ import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.utils.ResponseUtils;
+import org.quartz.CronExpression;
+import org.quartz.CronScheduleBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -352,11 +356,19 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     }
 
     private ScheduleInfo getScheduleInfo(Date current, String schedulePattern) {
-        // TODO: parse out cron-style schedulePattern and determine values
-        final Date nextScheduledBackup = Date.from(current.toInstant().plus(Duration.ofHours(25)));
-        final String scheduleInterval = schedulePattern;
+        CronExpression cronExpression = null;
+        String cronDescription = "";
 
-        return new ScheduleInfo(nextScheduledBackup, scheduleInterval);
+        try {
+            cronExpression = new CronExpression(schedulePattern);
+            cronDescription = CronExpressionDescriptor.getDescription(schedulePattern);
+        } catch (ParseException pe) {
+            return new ScheduleInfo(null, "unknown");
+        }
+
+        final Date nextScheduledBackup = cronExpression.getNextValidTimeAfter(current);
+
+        return new ScheduleInfo(nextScheduledBackup, cronDescription);
     }
 
     @Override

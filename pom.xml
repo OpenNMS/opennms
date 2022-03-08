@@ -1657,6 +1657,7 @@
     <commonsNetVersion>3.8.0</commonsNetVersion>
     <commonsValidatorVersion>1.6</commonsValidatorVersion>
     <concurrentTreesVersion>2.5.0</concurrentTreesVersion>
+    <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.4</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
     <cxfVersion>3.4.5</cxfVersion>

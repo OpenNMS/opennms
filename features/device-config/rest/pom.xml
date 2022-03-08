@@ -35,6 +35,11 @@
             <artifactId>javax.ws.rs-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>net.redhogs.cronparser</groupId>
+            <artifactId>cron-parser-core</artifactId>
+            <version>${cronParserCoreVersion}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-model</artifactId>
             <version>${project.version}</version>
@@ -69,6 +74,11 @@
             <groupId>org.opennms.features.device-config.persistence</groupId>
             <artifactId>org.opennms.features.device-config.persistence.api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartzVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
