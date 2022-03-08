@@ -65,9 +65,9 @@ It is possible to create a link to the `node-maps` URL that already has a pre-fi
 
 For example, to link to the node label search from the substring match example above write the url like:
 
- `http://your-opennms-ip/opennms/node-maps#search/nodelabel:server`
+`http://opennms-ip/opennms/node-maps#search/nodelabel:server`
 
 
 Or to search for the exact node label match, it would be:
 
-  `http://your-opennms-ip/opennms/node-maps#search/nodelabel=server1.opennms.com`
+`http://opennms-ip/opennms/node-maps#search/nodelabel=server1.opennms.com`
