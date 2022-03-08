@@ -242,7 +242,7 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>5.1.4</version>
+        <version>${maven.bundle.plugin.version}</version>
         <extensions>true</extensions>
         <configuration>
           <obrRepository>NONE</obrRepository>
@@ -1267,6 +1267,7 @@
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
     <maven.install.plugin.version>2.5.2</maven.install.plugin.version>
     <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
+    <maven.bundle.plugin.version>5.1.4</maven.bundle.plugin.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
