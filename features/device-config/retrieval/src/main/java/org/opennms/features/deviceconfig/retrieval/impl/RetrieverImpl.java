@@ -29,9 +29,17 @@
 package org.opennms.features.deviceconfig.retrieval.impl;
 
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -51,6 +59,7 @@ import org.opennms.features.deviceconfig.tftp.TftpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import io.vavr.control.Either;
@@ -61,6 +70,9 @@ import io.vavr.control.Either;
  * Device config uploads are triggered using the SshScriptingService and files received by a tft server are processed.
  */
 public class RetrieverImpl implements Retriever, AutoCloseable {
+
+    public static final String TFTP_SERVER_IPV4_ADDRESS_PROPERTY = "org.opennms.features.deviceconfig.tftpServerIPv4Address";
+    public static final String TFTP_SERVER_IPV6_ADDRESS_PROPERTY = "org.opennms.features.deviceconfig.tftpServerIPv6Address";
 
     private static Logger LOG = LoggerFactory.getLogger(RetrieverImpl.class);
 
@@ -73,19 +85,35 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
     private final SshScriptingService sshScriptingService;
     private final TftpServer tftpServer;
     private final ExecutorService executor;
-    private final String tftpServerIp;
 
-    public RetrieverImpl(SshScriptingService sshScriptingService, TftpServer tftpServer) throws Exception {
+    public RetrieverImpl(SshScriptingService sshScriptingService, TftpServer tftpServer) {
         this.sshScriptingService = sshScriptingService;
         this.tftpServer = tftpServer;
         this.executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("device-config-retriever-%d").build());
-        this.tftpServerIp = determineIp();
     }
 
-    private String determineIp() throws Exception {
+    String determineIp(final String host) throws SocketException, UnknownHostException {
+        // resolve host to an InetAddress instance in order to determine the outgoing interface
+        final InetAddress inetAddress = InetAddress.getByName(host);
+
+        String ipAddress;
+
+        if (inetAddress instanceof Inet4Address) {
+            ipAddress = System.getProperties().getProperty(TFTP_SERVER_IPV4_ADDRESS_PROPERTY);
+        } else {
+            ipAddress = System.getProperties().getProperty(TFTP_SERVER_IPV6_ADDRESS_PROPERTY);
+        }
+
+        // if IP address is specified in properties, use it
+        if (!Strings.isNullOrEmpty(ipAddress)) {
+            return ipAddress;
+        }
+
+        // determine the outgoing interface's IP address
         try(final DatagramSocket socket = new DatagramSocket()) {
-            socket.connect(InetAddressUtils.UNPINGABLE_ADDRESS, 10002);
-            String ipAddress = socket.getLocalAddress().getHostAddress();
+            socket.connect(inetAddress, 10002);
+            ipAddress = socket.getLocalAddress().getHostAddress();
+
             if (ipAddress.equals("0.0.0.0")) {
                 return InetAddress.getLocalHost().getHostAddress();
             }
@@ -115,8 +143,15 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         var filenameSuffix = uniqueFilenameSuffix();
         vs.put(SCRIPT_VAR_FILENAME_SUFFIX, filenameSuffix);
 
+        final String ipAddressToBeUsed;
+        try {
+            ipAddressToBeUsed = determineIp(host);
+        } catch (SocketException | UnknownHostException e) {
+            throw new RuntimeException("Error determining IP address for TFTP server", e);
+        }
+
         // set the ip address and port of the tftp server
-        vs.put(SCRIPT_VAR_TFTP_SERVER_IP, tftpServerIp);
+        vs.put(SCRIPT_VAR_TFTP_SERVER_IP, ipAddressToBeUsed);
         vs.put(SCRIPT_VAR_TFTP_SERVER_PORT, String.valueOf(tftpServer.getPort()));
         vs.put(SCRIPT_VAR_CONFIG_TYPE, configType);
 

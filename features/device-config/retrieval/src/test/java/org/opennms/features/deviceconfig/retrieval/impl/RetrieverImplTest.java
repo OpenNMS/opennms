@@ -42,11 +42,19 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -56,6 +64,54 @@ import org.opennms.features.deviceconfig.tftp.TftpFileReceiver;
 import org.opennms.features.deviceconfig.tftp.TftpServer;
 
 public class RetrieverImplTest {
+
+    private static boolean supportsIPv6() throws SocketException {
+        return Stream.of(NetworkInterface.getNetworkInterfaces().nextElement())
+                .map(NetworkInterface::getInterfaceAddresses)
+                .flatMap(Collection::stream)
+                .map(InterfaceAddress::getAddress)
+                .anyMatch(((Predicate<InetAddress>) InetAddress::isLoopbackAddress).negate().and(address -> address instanceof Inet6Address));
+    }
+
+    @Test
+    public void testDetermineIp() throws Exception {
+        final SshScriptingService sshScriptingService = mock(SshScriptingService.class);
+        final TftpServer tftpServer = mock(TftpServer.class);
+        final RetrieverImpl retriever = new RetrieverImpl(sshScriptingService, tftpServer);
+
+        boolean systemSupportsIPv6 = supportsIPv6();
+
+        String ipAddress;
+
+        // should result in an IPv4 address which is not a loopback address
+        ipAddress = retriever.determineIp("8.8.8.8");
+        assertThat(InetAddress.getByName(ipAddress) instanceof Inet4Address, is(true));
+        assertThat(InetAddress.getByName(ipAddress).isLoopbackAddress(), is(false));
+
+        if (systemSupportsIPv6) {
+            // should result in an IPv6 address which is not a loopback address
+            ipAddress = retriever.determineIp("2001:4860:4860::8888");
+            assertThat(InetAddress.getByName(ipAddress) instanceof Inet6Address, is(true));
+            assertThat(InetAddress.getByName(ipAddress).isLoopbackAddress(), is(false));
+        }
+
+        final String anIPv4Address = "192.168.31.1";
+        final String anIPv6Address = "2001:638:301:11a0::1";
+        System.getProperties().setProperty(RetrieverImpl.TFTP_SERVER_IPV4_ADDRESS_PROPERTY, anIPv4Address);
+        System.getProperties().setProperty(RetrieverImpl.TFTP_SERVER_IPV6_ADDRESS_PROPERTY, anIPv6Address);
+
+        // should result in an IPv6 address which is not a loopback address
+        ipAddress = retriever.determineIp("8.8.8.8");
+        assertThat(InetAddress.getByName(ipAddress) instanceof Inet4Address, is(true));
+        assertThat(InetAddress.getByName(ipAddress).isLoopbackAddress(), is(false));
+        assertThat(ipAddress, is(anIPv4Address));
+
+        // should result in an IPv6 address which is not a loopback address
+        ipAddress = retriever.determineIp("2001:4860:4860::8888");
+        assertThat(InetAddress.getByName(ipAddress) instanceof Inet6Address, is(true));
+        assertThat(InetAddress.getByName(ipAddress).isLoopbackAddress(), is(false));
+        assertThat(ipAddress, is(anIPv6Address));
+    }
 
     @Test
     public void shouldRetrieveConfiguration() throws Exception {
