@@ -72,9 +72,13 @@ public class SshScriptingServiceImplIT {
     }
 
     private Optional<SshScriptingService.Failure> execute(String password, Map<String, String> vars, String... statements) {
+        return execute("localhost", password, vars, statements);
+    }
+
+    private Optional<SshScriptingService.Failure> execute(String host, String password, Map<String, String> vars, String... statements) {
         String script = List.of(statements).stream().collect(Collectors.joining("\n"));
         var ss = new SshScriptingServiceImpl();
-        return ss.execute(script, USER, password, "localhost", sshd.getPort(), vars, Duration.ofMillis(10000));
+        return ss.execute(script, USER, password, host, sshd.getPort(), vars, Duration.ofMillis(10000));
     }
 
     private Optional<SshScriptingService.Failure> execute(String... statements) {
@@ -168,4 +172,25 @@ public class SshScriptingServiceImplIT {
         sshd.start();
     }
 
+    @Test
+    public void testIpAddresses() throws Exception {
+        testIpAddress("::1", "0000:0000:0000:0000:0000:0000:0000:0001");
+        testIpAddress("localhost", "127.0.0.1");
+
+        final String anIPv4Address = "192.168.31.1";
+        System.getProperties().setProperty(SshScriptingServiceImpl.TFTP_SERVER_IPV4_ADDRESS_PROPERTY, anIPv4Address);
+        testIpAddress("localhost", anIPv4Address);
+
+        final String anIPv6Address = "2001:0638:0301:11a0::1";
+        System.getProperties().setProperty(SshScriptingServiceImpl.TFTP_SERVER_IPV6_ADDRESS_PROPERTY, anIPv6Address);
+        testIpAddress("::1", "2001:0638:0301:11a0:0000:0000:0000:0001");
+    }
+
+    public void testIpAddress(final String hostname, final String expectedIp) throws Exception {
+        var result = execute(hostname, PASSWORD, Collections.emptyMap(),
+                "send: ${tftpServerIp}",
+                "await: "+expectedIp
+        );
+        assertThat(result.isPresent(), is(false));
+    }
 }
