@@ -1,0 +1,36 @@
+OpenNMS includes a geographical map which can show nodes with address asset information on a world map, including dynamic alarm status.
+
+The geographical map is located in the `Maps` menu or by going to the page of a node that has an address and/or longitude/latitude defined in its asset fields, and following the `View in Geographical Map` link.
+
+## Markers and Clusters
+
+The geographical maps display each node that has an address, or longitude and latitude in the database. When the geographical map is loaded, it will look at each node. If the node has coordinates, it will display it on the map. If the node has an address, it will use a geolocation service to convert the address to coordinates, and then display it on the map.
+
+The geographical maps will automatically cluster nodes into groups if they are close together. By hovering over a cluster (the circle marker with a number in it), it will show the boundaries of the nodes it contains. Click on a marker to show the summary of the nodes it contains.
+
+## Status
+
+A node's marker will display as the color associated with the most severe alarm for that node.  A cluster's marker will display as the color of the highest severity of the nodes the marker contains.
+
+[options="header"]
+[cols="2*"]
+|====
+| Serverity
+| Symbol
+
+| Normal
+| image::geographical-map/green.png[green marker]
+
+| Warning
+| image::geographical-map/yellow.png[yellow marker] 
+
+| Minor
+| image::geographical-map/orange.png[orange marker]
+
+| Major
+| image::geographical-map/lightred.png[lightred marker]
+
+| Critical
+| image::geographical-map/deepred.png[deepred marker]
+
+|====
