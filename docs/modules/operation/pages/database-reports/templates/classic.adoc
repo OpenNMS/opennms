@@ -1,0 +1,25 @@
+[[classic-report]]
+= Default Classic Report
+
+== Parameters
+
+[options="header"]
+[cols="1,3"]
+
+|===
+| Field
+| Description
+
+| Report Category
+| Type of report:
+
+| End date
+| 
+// need more info on end date.
+
+|===
+
+
+
+
+include::standard.adoc[]

@@ -1,0 +1,23 @@
+[[event-report]]
+= Event Analysis Report
+
+Analyse events based on event source and quantity by nodes.
+
+== Parameters
+
+[options="header"]
+[cols="1,3"]
+
+|===
+| Field
+| Description
+
+| OpenNMS URL base for embedded links
+|
+
+| Report Format
+| Specify PDF or CSV.
+
+|===
+
+include::standard.adoc[]

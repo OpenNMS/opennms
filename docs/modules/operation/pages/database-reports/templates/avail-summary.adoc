@@ -1,0 +1,30 @@
+[[avail-summary-report]]
+= Availability Summary Report
+
+Summary of availability across one or more surveillance categories.
+
+== Parameters
+
+[options="header"]
+[cols="1,3"]
+
+|===
+| Field
+| Description
+
+| Surveillance Category
+| Use the % sign as a placeholder for any string literal.
+
+| Time Range in days from report start date
+| The range in days from the report start date. Must be an integer.
+//what is default behaviour?
+
+| Start Date
+|
+
+| Report Format
+| Specify PDF or CSV.
+
+|===
+
+include::standard.adoc[]

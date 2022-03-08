@@ -1,0 +1,32 @@
+[[total-bytes-report]]
+= Total Bytes Transferred by Interface Report
+Total bytes transferred by interface.
+
+
+// same parameters as response-time.adoc and traffic-rates.adoc
+
+
+== Parameters
+
+[options="header"]
+[cols="1,3"]
+
+|===
+| Field
+| Description
+
+| Surveillance Category
+| Use the % sign as a placeholder for any string literal.
+
+| Report Start Date
+|
+
+| Report End Date
+| Note the report fails if the end date is later than the current time.
+
+| Report Format
+| Specify PDF or CSV.
+
+|===
+
+include::standard.adoc[]

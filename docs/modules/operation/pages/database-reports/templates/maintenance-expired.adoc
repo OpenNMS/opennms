@@ -1,0 +1,29 @@
+[[maintenance-expired-report]]
+= Maintenance Contracts Expired Report
+
+Asset management report shows all maintenance contracts expired.
+
+== Parameters
+
+[options="header"]
+[cols="1,3"]
+
+|===
+| Field
+| Description
+
+| Show expired maintenance contracts
+| Specify true or false.
+
+| Format for expire date
+| Default: YYYY-MM-DD
+
+| Warning threshold for contract expiration
+|
+
+| Report Format
+| Specify PDF or CSV.
+
+|===
+
+include::standard.adoc[]

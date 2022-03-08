@@ -1,0 +1,31 @@
+[[traffic-rate-report]]
+= Average and Peak Traffic Rates for Nodes by Interface Report
+
+Average and peak traffic rates for nodes by interface.
+
+//same parameters as total-bytes.adoc and response-time.adoc
+
+== Parameters
+
+[options="header"]
+[cols="1,3"]
+
+|===
+| Field
+| Description
+
+| Surveillance Category
+| Use the % sign as a placeholder for any string literal.
+
+| Report Start Date
+|
+
+| Report End Date
+| Note the report fails if the end date is later than the current time.
+
+| Report Format
+| Specify PDF or CSV.
+
+|===
+
+include::standard.adoc[]

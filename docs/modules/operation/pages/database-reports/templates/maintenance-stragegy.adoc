@@ -1,0 +1,21 @@
+[[maintenance-strategy-report]]
+= Maintenance Contracts Strategy Report
+
+== Parameters
+
+[options="header"]
+[cols="1,3"]
+
+|===
+| Field
+| Description
+
+| Your date format in maintenance contracts
+| Default: YYYY-MM-DD
+
+| Report Format
+| Specify PDF or CSV.
+
+|===
+
+include::standard.adoc[]

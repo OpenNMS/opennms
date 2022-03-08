@@ -1,0 +1,31 @@
+
+//This file includes standard text for the format and delivery sections of each report template dialog.
+
+In addition, the report screen includes delivery and schedule options.
+Click the *Deliver this report* (for report delivery options) and *Schedule this report* (for the schedule editor) checkboxes to specify this information.
+
+=== Report Delivery Options
+
+Specify the following report delivery options:
+
+* Unique name (must be unique among all scheduled reports)
+* Format (PDF, CSV)
+* Delivery options
+** Save a copy of the report (view in the *Persisted Reports* tab)
+// where is it saved?
+** Email report (use a comma to separate multiple email addresses)
+** Webhook (posts generated report to specified http endpoint)
+
+=== Schedule Editor
+
+Specify the following types of schedule:
+* Daily
+* Days per week (specific day(s) of the week)
+* Days per month (specific day(s) of the month, for example, third Sunday of the month)
+* Cron expression
+
+Each schedule has additional fields associated with it, such as days of the week, interval, and specific time.
+
+Once you set that information, click *Deliver Report* to generate the report and save, email, or webhook the report as specified in the *Report Delivery Options* section of the screen.
+
+Note that a list of scheduled reports appears in the *Report Schedules* tab.
