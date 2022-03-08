@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,6 +46,7 @@ public class NodeScanSchedule {
     private OnmsMonitoringLocation m_location;
     private Duration m_initialDelay;
     private Duration m_scanInterval;
+    private String monitorKey;
     
     /**
      * <p>Constructor for NodeScanSchedule.</p>
@@ -55,14 +56,16 @@ public class NodeScanSchedule {
      * @param foreignId a {@link java.lang.String} object.
      * @param initialDelay a {@link org.joda.time.Duration} object.
      * @param scanInterval a {@link org.joda.time.Duration} object.
+     * @param monitorKey a {@link java.lang.String} object. (optional)
      */
-    public NodeScanSchedule(int nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location, Duration initialDelay, Duration scanInterval) {
+    public NodeScanSchedule(int nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location, Duration initialDelay, Duration scanInterval, String monitorKey) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
         m_location = location;
         m_initialDelay = initialDelay;
         m_scanInterval = scanInterval;
+        this.monitorKey = monitorKey;
     }
 
     /**
@@ -114,6 +117,10 @@ public class NodeScanSchedule {
         return m_scanInterval;
     }
 
+    public String getMonitorKey() {
+        return monitorKey;
+    }
+
     /**
      * <p>toString</p>
      *
@@ -128,6 +135,7 @@ public class NodeScanSchedule {
             .append("location", m_location.getLocationName())
             .append("initial delay", m_initialDelay)
             .append("scan interval", m_scanInterval)
+            .append("monitorKey", monitorKey)
             .toString();
     }
 
@@ -144,6 +152,7 @@ public class NodeScanSchedule {
             .append(m_nodeId)
             .append(m_initialDelay)
             .append(m_scanInterval)
+            .append(monitorKey)
             .toHashCode();
     }
 }
