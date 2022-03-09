@@ -126,7 +126,7 @@
             />
           </td>
           <td>
-            <router-link :to="`/device-config-backup/${config.id}`">{{ config.deviceName }}</router-link>
+            <router-link :to="`/node/${config.id}`">{{ config.deviceName }}</router-link>
           </td>
           <td>{{ config.ipAddress }}</td>
           <td>{{ config.location }}</td>
@@ -217,9 +217,7 @@ const numberOfSelectedDevices = computed(() => {
     return totalCountOfDeviceConfigBackups.value
   }
 
-  return Object.values(selectedDeviceConfigBackups.value)
-    .filter((isSelected) => isSelected)
-    .length
+  return selectedDeviceConfigIds.value.length
 })
 
 const sortByColumnHandler = (sortObj: FeatherSortObject) => {
