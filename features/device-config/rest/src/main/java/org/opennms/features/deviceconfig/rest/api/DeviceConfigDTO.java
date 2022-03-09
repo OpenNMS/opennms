@@ -29,6 +29,8 @@
 package org.opennms.features.deviceconfig.rest.api;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * DTO for response value of DeviceConfigRestService.
@@ -99,7 +101,7 @@ public class DeviceConfigDTO {
     private Date nextScheduledBackupDate;
 
     /** Friendly description of backup schedule interval, parsed from cron schedule data. */
-    private String scheduledInterval;
+    private Map<String, String> scheduledInterval;
 
     public DeviceConfigDTO(
         long id,
@@ -167,7 +169,7 @@ public class DeviceConfigDTO {
 
     public Date getNextScheduledBackupDate() { return this.nextScheduledBackupDate; }
 
-    public String getScheduledInterval() { return this.scheduledInterval; }
+    public Map<String, String> getScheduledInterval() { return this.scheduledInterval; }
 
     public void setDeviceName(String name) { this.deviceName = name; }
 
@@ -185,5 +187,5 @@ public class DeviceConfigDTO {
 
     public void setNextScheduledBackupDate(Date date) { this.nextScheduledBackupDate = date; }
 
-    public void setScheduledInterval(String interval) { this.scheduledInterval = interval; }
+    public void setScheduledInterval(Map<String, String> interval) { this.scheduledInterval = interval; }
 }

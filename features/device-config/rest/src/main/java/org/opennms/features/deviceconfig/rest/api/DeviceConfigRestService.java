@@ -44,8 +44,6 @@ import javax.ws.rs.core.Response;
 
 @Path("/device-config")
 public interface DeviceConfigRestService {
-    public static final String DEVICE_CONFIG_SERVICE_PREFIX = "DeviceConfig";
-
     /**
      * Get device config info for a single item, by DeviceConfig id.
      * @param id database id of device config

@@ -79,7 +79,7 @@ import javax.ws.rs.core.Response;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml"
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -90,12 +90,6 @@ public class DefaultDeviceConfigRestServiceIT {
 
     @Autowired
     private DeviceConfigDao deviceConfigDao;
-
-    @Autowired
-    private ServiceTypeDao serviceTypeDao;
-
-    @Autowired
-    private MonitoredServiceDao monitoredServiceDao;
 
     @Autowired
     private TransactionOperations operations;
@@ -121,7 +115,7 @@ public class DefaultDeviceConfigRestServiceIT {
             return null;
         });
         deviceConfigService = Mockito.mock(DeviceConfigService.class);
-        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, monitoredServiceDao, deviceConfigService);
+        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, deviceConfigService);
     }
 
     @After

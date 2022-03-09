@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -290,6 +291,16 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     @Override
     public List<Monitor> getConfiguredMonitors() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public Package findPackageForService(final String ipAddr, final String serviceName) {
+        return null;
+    }
+
+    @Override
+    public Optional<Package.ServiceMatch> findService(final String ipAddr, final String serviceName) {
+        return Optional.empty();
     }
 
     private Service findService(Package pkg, String svcName) {

@@ -33,6 +33,7 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
@@ -295,7 +296,23 @@ public interface PollerConfig extends PathOutageConfig {
     public List<Package> getPackages();
 
     List<Monitor> getConfiguredMonitors();
-    
+
+    /**
+     * Find the {@link Package} containing the service selevted for the given IP.
+     * @param ipAddr the address to select the package for
+     * @param serviceName the name of the service
+     * @return the found package or {@code null} if no package matches
+     */
+    Package findPackageForService(String ipAddr, String serviceName);
+
+    /**
+     * Find the service for the given IP by service name.
+     * @param ipAddr the address to select the package for
+     * @param serviceName the name of the service
+     * @return the found matching info
+     */
+    Optional<Package.ServiceMatch> findService(String ipAddr, String serviceName);
+
     /**
      * <p>getPackage</p>
      *

@@ -66,8 +66,8 @@ public class GetDeviceConfig implements Action {
     @Option(name = "-n", aliases = "--node-id", description = "Node Id for Service", required = false, multiValued = false)
     int nodeId;
 
-    @Option(name = "-c", aliases = "--config-type", description = "Device Config Type", required = false, multiValued = false)
-    String configType = "default";
+    @Option(name = "-s", aliases = "--service", description = "Device Config Service", required = false, multiValued = false)
+    String service = "DeviceConfig";
 
     @Option(name = "-t", aliases = "--timeout", description = "Timeout for device config retrieval in msec", required = false, multiValued = false)
     int timeout = 60000;
@@ -84,7 +84,7 @@ public class GetDeviceConfig implements Action {
             System.out.printf("Not a valid host %s \n", host);
             return null;
         }
-        CompletableFuture<DeviceConfig> future = deviceConfigService.getDeviceConfig(host, location, configType, timeout);
+        CompletableFuture<DeviceConfig> future = deviceConfigService.getDeviceConfig(host, location, service, timeout);
         while (true) {
             try {
                 try {
