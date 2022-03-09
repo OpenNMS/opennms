@@ -556,33 +556,11 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     private Package findPackageForService(String ipAddr, String serviceName) {
-        Enumeration<Package> en = this.m_pollerConfig.enumeratePackage();
-        Package lastPkg = null;
-
-        while (en.hasMoreElements()) {
-            Package pkg = en.nextElement();
-            if (this.pollableServiceInPackage(ipAddr, serviceName, pkg))
-                lastPkg = pkg;
-        }
-        return lastPkg;
-    }
-
-    public boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
-        if (pkg.getPerspectiveOnly()) {
-            return false;
-        }
-
-        if (!this.m_pollerConfig.isServiceInPackageAndEnabled(serviceName, pkg)) return false;
-
-        boolean inPkg = this.m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
-        if (inPkg) return true;
-
         if (this.m_initialized) {
             this.m_pollerConfig.rebuildPackageIpListMap();
-            return this.m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
-        } else {
-            return false;
         }
+
+        return this.m_pollerConfig.findPackageForService(ipAddr, serviceName);
     }
 
     private void updateServiceStatus(OnmsMonitoredService service, String status) {

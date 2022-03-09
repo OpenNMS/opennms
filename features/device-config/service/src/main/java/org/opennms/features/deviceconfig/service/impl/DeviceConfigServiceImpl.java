@@ -28,17 +28,24 @@
 
 package org.opennms.features.deviceconfig.service.impl;
 
-import com.google.common.base.Strings;
+import static org.opennms.netmgt.poller.support.AbstractServiceMonitor.getKeyedString;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.ReadOnlyPollerConfigManager;
-import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
@@ -51,23 +58,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
 public class DeviceConfigServiceImpl implements DeviceConfigService {
 
-    private static final String DEVICE_CONFIG_SERVICE_NAME_PREFIX = "DeviceConfig-";
-    private static final String DEVICE_CONFIG_MONITOR_CLASS_NAME = "org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor";
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigServiceImpl.class);
+
     public static final String TRIGGERED_POLL = "dcbTriggeredPoll";
 
     @Autowired
@@ -83,12 +77,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private ServiceMonitorAdaptor serviceMonitorAdaptor;
 
     @Autowired
-    private MonitoredServiceDao monitoredServiceDao;
-
+    private PollerConfig pollerConfig;
 
     @Override
-    public void triggerConfigBackup(String ipAddress, String location, String configType) throws IOException {
-
+    public void triggerConfigBackup(String ipAddress, String location, String service) throws IOException {
         try {
             InetAddress.getByName(ipAddress);
         } catch (UnknownHostException e) {
@@ -96,18 +88,18 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             throw new IllegalArgumentException("Unknown/Invalid IpAddress " + ipAddress);
         }
 
-        CompletableFuture<PollerResponse> future = pollDeviceConfig(ipAddress, location, configType);
+        CompletableFuture<PollerResponse> future = pollDeviceConfig(ipAddress, location, service);
         future.whenComplete(((pollerResponse, throwable) -> {
             if (throwable != null) {
-                LOG.info("Error while manually triggering config backup for IpAddress {} at location {} for config-type {}",
-                        ipAddress, location, configType, throwable);
+                LOG.info("Error while manually triggering config backup for IpAddress {} at location {} for service {}",
+                         ipAddress, location, service, throwable);
             }
         }));
     }
 
     @Override
-    public CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String configType, int timeout) throws IOException {
-        return pollDeviceConfig(ipAddress, location, configType)
+    public CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String service, int timeout) throws IOException {
+        return pollDeviceConfig(ipAddress, location, service)
                 .orTimeout(timeout, TimeUnit.MILLISECONDS)
                 .thenApply(resp -> resp.getPollStatus().getDeviceConfig())
                 .whenComplete((config, throwable) -> {
@@ -117,76 +109,85 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 });
     }
 
-    private CompletableFuture<PollerResponse> pollDeviceConfig(String ipAddress, String location, String configType) throws IOException {
-        if (Strings.isNullOrEmpty(configType)) {
-            configType = ConfigType.Default;
-        }
-        String serviceName = DEVICE_CONFIG_SERVICE_NAME_PREFIX + configType;
-        final String configTypeName = configType;
+    @Override
+    public List<RetrivalConfiguration> getRetrivalConfigurations(final String ipAddress, final String location) {
+        final var iface = this.ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
+
+        return iface
+                // Get all device config services defined for this interface
+                .getMonitoredServices().stream()
+
+                // Resolve the service name into service config
+                .flatMap(svc -> this.pollerConfig.findService(InetAddressUtils.str(svc.getIpAddress()), svc.getServiceName()).stream())
+
+                // Filter for the device config monitor
+                .filter(match -> this.pollerConfig.getServiceMonitor(match.service.getName()).getClass() == DeviceConfigMonitor.class)
+
+                // Resolve the parameters
+                .map(match -> {
+                    final var serviceName = match.serviceName;
+
+                    final var pollerParameters = locationAwarePollerClient.poll()
+                                                                          .withService(new SimpleMonitoredService(InetAddressUtils.addr(ipAddress),
+                                                                                                                  iface.getNode().getId(),
+                                                                                                                  iface.getNode().getLabel(),
+                                                                                                                  match.serviceName,
+                                                                                                                  location))
+                                                                          .withAttributes(match.service.getParameterMap())
+                                                                          .withPatternVariables(match.patternVariables)
+                                                                          .getInterpolatedAttributes();
+
+                    return new RetrivalConfiguration() {
+                        @Override
+                        public String getServiceName() {
+                            return serviceName;
+                        }
+
+                        @Override
+                        public String getConfigType() {
+                            return getKeyedString(pollerParameters, DeviceConfigMonitor.CONFIG_TYPE, ConfigType.Default);
+                        }
+
+                        @Override
+                        public String getSchedule() {
+                            return getKeyedString(pollerParameters, DeviceConfigMonitor.SCHEDULE, DeviceConfigMonitor.DEFAULT_CRON_SCHEDULE);
+                        }
+                    };
+                })
+                // Collect to resulting map
+                .collect(Collectors.toList());
+    }
+
+    private CompletableFuture<PollerResponse> pollDeviceConfig(String ipAddress, String location, String serviceName) {
+        final var match = this.pollerConfig.findService(ipAddress, serviceName)
+                .orElseThrow(IllegalArgumentException::new);
+
+        final var monitor = this.pollerConfig.getServiceMonitor(match.service.getName());
+
         MonitoredService service = sessionUtils.withReadOnlyTransaction(() -> {
             OnmsIpInterface ipInterface = ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
             if (ipInterface == null) {
                 return null;
             }
             OnmsNode node = ipInterface.getNode();
-            List<OnmsMonitoredService> services =
-                    monitoredServiceDao.findSimilarServicesOnInterface(node.getId(), ipInterface.getIpAddress(), DEVICE_CONFIG_SERVICE_NAME_PREFIX);
-            if (!services.isEmpty()) {
-                Optional<OnmsMonitoredService> optional =
-                        services.stream().filter(onmsMonitoredService -> onmsMonitoredService.getServiceName().contains(configTypeName)).findFirst();
-                if (optional.isPresent()) {
-                    return new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), optional.get().getServiceName(), location);
-                }
-            }
-            return new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), serviceName, location);
+
+            return new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), match.service.getName(), location);
         });
 
         if (service == null) {
             throw new IllegalArgumentException("No interface found with ipAddress " + ipAddress + " at location " + location);
         }
-        List<Parameter> parameters = getServiceParamsFromPollerConfig(service);
-        Map<String, Object> serviceAttributes = convertParamsToAttributes(parameters);
-        serviceAttributes.put(TRIGGERED_POLL, "true");
+
         // All the service parameters should be loaded from metadata in PollerRequestBuilderImpl
         // Persistence will be performed in DeviceConfigMonitorAdaptor.
         return locationAwarePollerClient.poll()
                 .withService(service)
                 .withAdaptor(serviceMonitorAdaptor)
-                .withMonitorClassName(DEVICE_CONFIG_MONITOR_CLASS_NAME)
-                .withAttributes(serviceAttributes)
+                .withMonitor(monitor)
+                .withPatternVariables(match.patternVariables)
+                .withAttributes(match.service.getParameterMap())
+                .withAttribute(TRIGGERED_POLL, "true")
                 .execute();
-    }
-
-    private List<Parameter> getServiceParamsFromPollerConfig(MonitoredService service) throws IOException {
-
-        List<Parameter> parameters = new ArrayList<>();
-        final PollerConfig pollerConfig = ReadOnlyPollerConfigManager.create();
-        List<String> pkgNames = pollerConfig.getAllPackageMatches(service.getIpAddr());
-        List<org.opennms.netmgt.config.poller.Package> packages =
-                pollerConfig.getPackages().stream().filter(pollerPackage ->
-                        pollerConfig.isServiceInPackageAndEnabled(service.getSvcName(), pollerPackage)).collect(Collectors.toList());
-        Optional<org.opennms.netmgt.config.poller.Package> pkg = packages.stream().filter(pollerPackage ->
-                pkgNames.contains(pollerPackage.getName())).findFirst();
-        pkg.ifPresent(aPackage -> parameters.addAll(aPackage.getService(service.getSvcName()).getParameters()));
-        return parameters;
-    }
-
-    private Map<String, Object> convertParamsToAttributes(List<Parameter> parameters) {
-        Map<String, Object> attributes = new TreeMap<>();
-        if (parameters.isEmpty()) {
-            // If we couldn't load any specific package, use dummy parameters
-            // so that they get overwritten by metadata.
-            attributes.put("username", "admin");
-            attributes.put("password", "password");
-            attributes.put("script", "script");
-        }
-        for (final Parameter parameter : parameters) {
-            String value = parameter.getValue();
-            if (value != null) {
-                attributes.put(parameter.getKey(), value);
-            }
-        }
-        return attributes;
     }
 
     public void setLocationAwarePollerClient(LocationAwarePollerClient locationAwarePollerClient) {
@@ -203,9 +204,5 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     public void setServiceMonitorAdaptor(ServiceMonitorAdaptor serviceMonitorAdaptor) {
         this.serviceMonitorAdaptor = serviceMonitorAdaptor;
-    }
-
-    public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
-        this.monitoredServiceDao = monitoredServiceDao;
     }
 }

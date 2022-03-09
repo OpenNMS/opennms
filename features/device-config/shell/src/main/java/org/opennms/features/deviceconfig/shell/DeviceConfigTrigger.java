@@ -56,8 +56,8 @@ public class DeviceConfigTrigger implements Action {
     @Option(name = "-n", aliases = "--node-id", description = "Node Id for Service", required = false, multiValued = false)
     int nodeId;
 
-    @Option(name = "-c", aliases = "--config-type", description = "Device Config Type", required = false, multiValued = false)
-    String configType = "default";
+    @Option(name = "-s", aliases = "--service", description = "Device Config Service", required = false, multiValued = false)
+    String service = "DeviceConfig";
 
 
     @Override
@@ -69,7 +69,7 @@ public class DeviceConfigTrigger implements Action {
             return null;
         }
         try {
-            deviceConfigService.triggerConfigBackup(host, location, configType);
+            deviceConfigService.triggerConfigBackup(host, location, service);
             System.out.printf("Triggered config backup for %s at location %s", host, location);
         } catch (IOException e) {
             System.out.printf("Exception while triggering device config for %s at location %s, e = %s \n", host, location, e.getMessage());

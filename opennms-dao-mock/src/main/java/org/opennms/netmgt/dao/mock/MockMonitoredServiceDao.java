@@ -183,20 +183,4 @@ public class MockMonitoredServiceDao extends AbstractMockDao<OnmsMonitoredServic
                  .filter(svc -> svc.getNodeId() == nodeId)
                  .collect(Collectors.toList());
     }
-
-    @Override
-    public List<OnmsMonitoredService> findByServiceTypeAndIpInterfaceId(String serviceTypePrefix, List<Integer> ipInterfaceIds) {
-        throw new UnsupportedOperationException("Not yet implemented!");
-    }
-
-    @Override
-    public List<OnmsMonitoredService> findSimilarServicesOnInterface(Integer nodeId, InetAddress ipAddress, String svcNamePrefix) {
-        List<OnmsMonitoredService> matchingServices = new ArrayList<>();
-        for (final OnmsMonitoredService svc : findAll()) {
-            if (nodeId.equals(svc.getNodeId()) && ipAddress.equals(svc.getIpAddress()) && svc.getServiceName().startsWith(svcNamePrefix)) {
-                matchingServices.add(svc);
-            }
-        }
-        return matchingServices;
-    }
 }

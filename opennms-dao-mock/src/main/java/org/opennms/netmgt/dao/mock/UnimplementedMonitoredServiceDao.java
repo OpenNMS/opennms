@@ -169,14 +169,4 @@ public class UnimplementedMonitoredServiceDao implements MonitoredServiceDao {
     public List<OnmsMonitoredService> findByNode(int nodeId) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
-
-    @Override
-    public List<OnmsMonitoredService> findByServiceTypeAndIpInterfaceId(String serviceTypePrefix, List<Integer> ipInterfaceIds) {
-        throw new UnsupportedOperationException("Not yet implemented!");
-    }
-
-    @Override
-    public List<OnmsMonitoredService> findSimilarServicesOnInterface(Integer nodeId, InetAddress ipAddress, String svcNamePrefix) {
-        throw new UnsupportedOperationException("Not yet implemented!");
-    }
 }
