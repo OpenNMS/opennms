@@ -52,7 +52,7 @@ public class InetAddressXmlAdapter extends XmlAdapter<String, InetAddress> {
             return (ipAddr == null || ipAddr.isEmpty()) ? null : new IPAddress(ipAddr).toInetAddress();
         }
         catch (Throwable t) {
-            LOG.warn(String.format("Invalid IP address <%s>", ipAddr));
+            LOG.warn("Invalid IP Address {}", ipAddr);
             return null;
         }
     }
