@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -86,10 +86,6 @@ public class EventNoticesController extends AbstractController {
 
         public String getName() {
             return m_name;
-        }
-
-        public String getEscapedName() {
-            return StringEscapeUtils.escapeJavaScript(m_name);
         }
 
         public boolean getIsOn() {

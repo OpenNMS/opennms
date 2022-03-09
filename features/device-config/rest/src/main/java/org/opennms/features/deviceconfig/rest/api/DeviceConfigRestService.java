@@ -28,6 +28,9 @@
 
 package org.opennms.features.deviceconfig.rest.api;
 
+import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -98,4 +101,10 @@ public interface DeviceConfigRestService {
     @POST
     @Path("/download")
     Response downloadDeviceConfigs();
+
+
+    @POST
+    @Path("/backup")
+    @Consumes({MediaType.APPLICATION_JSON})
+    Response triggerDeviceConfigBackup(BackupRequestDTO backupRequestDTO);
 }

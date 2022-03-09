@@ -46,6 +46,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -54,6 +61,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private static final String DEVICE_CONFIG_SERVICE_NAME_PREFIX = "DeviceConfig-";
     private static final String DEVICE_CONFIG_MONITOR_CLASS_NAME = "org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor";
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigServiceImpl.class);
+    public static final String TRIGGERED_POLL = "dcbTriggeredPoll";
 
     @Autowired
     private LocationAwarePollerClient locationAwarePollerClient;
@@ -70,6 +78,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     @Override
     public void triggerConfigBackup(String ipAddress, String location, String configType) throws IOException {
+
+        try {
+            InetAddress.getByName(ipAddress);
+        } catch (UnknownHostException e) {
+            LOG.error("Unknown/Invalid IpAddress {}", ipAddress);
+            throw new IllegalArgumentException("Unknown/Invalid IpAddress " + ipAddress);
+        }
 
         CompletableFuture<PollerResponse> future = pollDeviceConfig(ipAddress, location, configType);
         future.whenComplete(((pollerResponse, throwable) -> {
@@ -122,6 +137,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .withService(service)
                 .withAdaptor(serviceMonitorAdaptor)
                 .withMonitorClassName(DEVICE_CONFIG_MONITOR_CLASS_NAME)
+                .withAttribute(TRIGGERED_POLL, "true")
                 .execute();
     }
 

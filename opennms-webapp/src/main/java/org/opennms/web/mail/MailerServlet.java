@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,6 +41,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+// import org.apache.commons.validator.routines.EmailValidator;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.StreamUtils;
@@ -66,6 +68,20 @@ public class MailerServlet extends HttpServlet {
     protected String redirectSuccess;
 
     protected String mailProgram;
+
+    protected EmailValidator emailValidator = EmailValidator.getInstance();
+
+    String[] invalidSubstr = new String[]{
+            ";",
+            "\\",
+            "..",
+            "&",
+            "*",
+            "'",
+            "\"",
+            "$",
+            "%"
+    };
 
     /**
      * <p>init</p>
@@ -101,11 +117,18 @@ public class MailerServlet extends HttpServlet {
         if (sendto == null) {
             throw new MissingParameterException("sendto", REQUIRED_FIELDS);
         }
+        else if (!emailValidator.isValid(sendto)) {
+            throw new IllegalArgumentException("sendto is an invalid email address.");
+        }
 
         if (subject == null) {
             throw new MissingParameterException("subject", REQUIRED_FIELDS);
         }
+        else {
+            subject = validate(subject);
+        }
 
+        // Written to mail stdin, don't validate?
         if (msg == null) {
             throw new MissingParameterException("msg", REQUIRED_FIELDS);
         }
@@ -142,5 +165,19 @@ public class MailerServlet extends HttpServlet {
         } else {
             response.sendRedirect(this.redirectSuccess);
         }
+    }
+
+    /**
+     *  Basic attempt at string sanitization
+     * @param str   String to 'sanitize'
+     * @return      'Sanitized' string
+     */
+    private String validate(String str) {
+        for (String invalid : invalidSubstr) {
+            if (str.contains(invalid)) {
+                str = str.replace(invalid, "");
+            }
+        }
+        return str;
     }
 }

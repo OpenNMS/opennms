@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,197 +28,310 @@
 
 package org.opennms.netmgt.provision.service;
 
-import java.util.List;
-
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
-import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * <p>TimeTrackingMonitor class.</p>
+ * <p>TimeTrackingMonitor class. It will append all data into MetricRegistry.</p>
  *
  * @author ranger
  * @version $Id: $
  */
 public class TimeTrackingMonitor implements ProvisionMonitor {
+    private MetricRegistry metricRegistry;
 
-	private WorkDuration m_importDuration = new WorkDuration("Importing");
-	private WorkDuration m_auditDuration = new WorkDuration("Auditing");
-	private WorkDuration m_loadingDuration = new WorkDuration("Loading");
-	private WorkDuration m_processingDuration = new WorkDuration("Processing");
-	private WorkDuration m_preprocessingDuration = new WorkDuration("Scanning");
-	private WorkDuration m_relateDuration = new WorkDuration("Relating");
-	private WorkEffort m_preprocessingEffort = new WorkEffort("Scan Effort");
-	private WorkEffort m_processingEffort = new WorkEffort("Write Effort");
-	private WorkEffort m_eventEffort = new WorkEffort("Event Sending Effort");
-	private int m_deleteCount;
-	private int m_insertCount;
-	private int m_updateCount;
-	private int m_eventCount;
+    private Timer loadingTimer;
+    private Timer auditTimer;
+    private Timer importTimer;
+    private Timer schedulingTimer;
+    private Timer relateTimer;
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginProcessingOps(int deleteCount, int updateCount, int insertCount) {
-	    m_deleteCount = deleteCount;
-	    m_updateCount = updateCount;
-	    m_insertCount = insertCount;
-		m_processingDuration.start();
-	}
+    private Context importDuration;
+    private Context auditDuration;
+    private Context loadingDuration;
+    private Context schedulingDuration;
+    private Context relateDuration;
 
-	/**
-	 * <p>finishProcessingOps</p>
-	 */
-        @Override
-	public void finishProcessingOps() {
-		m_processingDuration.end();
-	}
+    private ObjectKeyTimer scanEventTimer;
+    private ObjectKeyTimer scanningTimer;
 
-	/**
-	 * <p>beginPreprocessingOps</p>
-	 */
-        @Override
-	public void beginPreprocessingOps() {
-		m_preprocessingDuration.start();
-	}
+    private ObjectKeyTimer persistingTimer;
+    private ObjectKeyTimer eventTimer;
 
-	/**
-	 * <p>finishPreprocessingOps</p>
-	 */
-        @Override
-	public void finishPreprocessingOps() {
-		m_preprocessingDuration.end();
-	}
+    // total node count in resources
+    private int nodeCount;
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginPreprocessing(ImportOperation oper) {
-		if (oper instanceof SaveOrUpdateOperation) {
-			m_preprocessingEffort.begin();
-		}
-	}
+    // name of the monitor
+    private String name;
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishPreprocessing(ImportOperation oper) {
-		if (oper instanceof SaveOrUpdateOperation) {
-			m_preprocessingEffort.end();
-		}
-	}
+    private Date startTime;
+    private Date endTime;
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginPersisting(ImportOperation oper) {
-		m_processingEffort.begin();
-		
-	}
+    // current scanning node
+    private Map<NodeScan, Date> currentNodes = new HashMap<>();
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishPersisting(ImportOperation oper) {
-		m_processingEffort.end();
-	}
+    public TimeTrackingMonitor(String name, MetricRegistry metricRegistry) {
+        this.name = name;
+        this.metricRegistry = metricRegistry;
+        this.scanEventTimer = new ObjectKeyTimer(metricRegistry.timer(MetricRegistry.name(name, "Scan Event")));
+        this.persistingTimer = new ObjectKeyTimer(metricRegistry.timer(MetricRegistry.name(name, "Persisting")));
+        this.eventTimer = new ObjectKeyTimer(metricRegistry.timer(MetricRegistry.name(name, "Event")));
+        this.scanningTimer = new ObjectKeyTimer(metricRegistry.timer(MetricRegistry.name(name, "Scanning")));
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginSendingEvents(ImportOperation oper, List<Event> events) {
-		if (events != null) m_eventCount += events.size();
-		m_eventEffort.begin();
-	}
+    public Date getStartTime() {
+        return startTime;
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishSendingEvents(ImportOperation oper, List<Event> events) {
-		m_eventEffort.end();
-	}
+    public Date getEndTime() {
+        return endTime;
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void beginLoadingResource(Resource resource) {
-		m_loadingDuration.setName("Loading Resource: "+resource);
-		m_loadingDuration.start();
-	}
+    @Override
+    public String getName() {
+        return name;
+    }
 
-	/** {@inheritDoc} */
-        @Override
-	public void finishLoadingResource(Resource resource) {
-		m_loadingDuration.end();
-	}
+    @Override
+    public void start() {
+        startTime = new Date();
+    }
 
-	/**
-	 * <p>beginImporting</p>
-	 */
-        @Override
-	public void beginImporting() {
-		m_importDuration.start();
-	}
+    @Override
+    public void finish() {
+        endTime = new Date();
+    }
 
-	/**
-	 * <p>finishImporting</p>
-	 */
-        @Override
-	public void finishImporting() {
-		m_importDuration.end();
-	}
+    public Map<NodeScan, Date> getCurrentNodes() {
+        return currentNodes;
+    }
 
-	/**
-	 * <p>beginAuditNodes</p>
-	 */
-        @Override
-	public void beginAuditNodes() {
-		m_auditDuration.start();
-	}
+    public Timer getLoadingTimer() {
+        return loadingTimer;
+    }
 
-	/**
-	 * <p>finishAuditNodes</p>
-	 */
-        @Override
-	public void finishAuditNodes() {
-		m_auditDuration.end();
-	}
-	
-	/**
-	 * <p>beginRelateNodes</p>
-	 */
-        @Override
-	public void beginRelateNodes() {
-		m_relateDuration.start();
-	}
+    public Timer getAuditTimer() {
+        return auditTimer;
+    }
 
-	/**
-	 * <p>finishRelateNodes</p>
-	 */
-        @Override
-	public void finishRelateNodes() {
-		m_relateDuration.end();
-	}
-	
-	/**
-	 * <p>toString</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-        @Override
-	public String toString() {
-		final StringBuilder stats = new StringBuilder();
-		stats.append("Deletes: ").append(m_deleteCount).append(", ");
-		stats.append("Updates: ").append(m_updateCount).append(", ");
-		stats.append("Inserts: ").append(m_insertCount).append("\n");
-		stats.append(m_importDuration).append(", ");
-		stats.append(m_loadingDuration).append(", ");
-		stats.append(m_auditDuration).append('\n');
-		stats.append(m_preprocessingDuration).append(", ");
-		stats.append(m_processingDuration).append(", ");
-		stats.append(m_relateDuration).append("\n");
-		stats.append(m_preprocessingEffort).append(", ");
-		stats.append(m_processingEffort).append(", ");
-		stats.append(m_eventEffort);
-		if (m_eventCount > 0) {
-			stats.append(", Avg ").append((double)m_eventEffort.getTotalTime()/(double)m_eventCount).append(" ms per event");
-		}
-		
-		return stats.toString();
-	}
+    public Timer getImportTimer() {
+        return importTimer;
+    }
 
+    public Timer getSchedulingTimer() {
+        return schedulingTimer;
+    }
+
+    public Timer getRelateTimer() {
+        return relateTimer;
+    }
+
+    public Timer getScanEventTimer() {
+        return scanEventTimer.getTimer();
+    }
+
+    public Timer getScanningTimer() {
+        return scanningTimer.getTimer();
+    }
+
+    public Timer getPersistingTimer() {
+        return persistingTimer.getTimer();
+    }
+
+    public Timer getEventTimer() {
+        return eventTimer.getTimer();
+    }
+
+    @Override
+    public int getNodeCount() {
+        return nodeCount;
+    }
+
+    /**
+     * <p>beginScheduling</p>
+     */
+    @Override
+    public void beginScheduling() {
+        schedulingTimer = metricRegistry.timer(MetricRegistry.name(name, "Scheduling"));
+        schedulingDuration = schedulingTimer.time();
+    }
+
+    /**
+     * <p>finishScheduling</p>
+     */
+    @Override
+    public void finishScheduling() {
+        if (schedulingDuration != null) {
+            schedulingDuration.stop();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginScanEvent(ImportOperation oper) {
+        scanEventTimer.begin(oper);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finishScanEvent(ImportOperation oper) {
+        scanEventTimer.end(oper);
+
+    }
+
+    @Override
+    public void beginScanning(NodeScan nodeScan) {
+        synchronized (currentNodes) {
+            currentNodes.put(nodeScan, new Date());
+        }
+        scanningTimer.begin(nodeScan);
+    }
+
+    @Override
+    public void finishScanning(NodeScan nodeScan) {
+        scanningTimer.end(nodeScan);
+        synchronized (currentNodes) {
+            currentNodes.remove(nodeScan);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginPersisting(ImportOperation oper) {
+        persistingTimer.begin(oper);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finishPersisting(ImportOperation oper) {
+        persistingTimer.end(oper);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginSendingEvent(Event event) {
+        eventTimer.begin(event);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finishSendingEvent(Event event) {
+        eventTimer.end(event);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginLoadingResource(Resource resource) {
+        loadingTimer = metricRegistry.timer(MetricRegistry.name(name, "Loading", resource.getFilename()));
+        loadingDuration = loadingTimer.time();
+    }
+
+    @Override
+    public void finishLoadingResource(Resource resource, int nodeCount) {
+        if (loadingDuration != null) {
+            loadingDuration.stop();
+        }
+        this.nodeCount = nodeCount;
+    }
+
+    /**
+     * <p>beginImporting</p>
+     */
+    @Override
+    public void beginImporting() {
+        importTimer = metricRegistry.timer(MetricRegistry.name(name, "Importing"));
+        importDuration = importTimer.time();
+    }
+
+    /**
+     * <p>finishImporting</p>
+     */
+    @Override
+    public void finishImporting() {
+        if (importDuration != null) {
+            importDuration.stop();
+        }
+    }
+
+    /**
+     * <p>beginAuditNodes</p>
+     */
+    @Override
+    public void beginAuditNodes() {
+        auditTimer = metricRegistry.timer(MetricRegistry.name(name, "Auditing"));
+        auditDuration = auditTimer.time();
+    }
+
+    /**
+     * <p>finishAuditNodes</p>
+     */
+    @Override
+    public void finishAuditNodes() {
+        if (auditDuration != null) {
+            auditDuration.stop();
+        }
+    }
+
+    /**
+     * <p>beginRelateNodes</p>
+     */
+    @Override
+    public void beginRelateNodes() {
+        relateTimer = metricRegistry.timer(MetricRegistry.name(name, "Relating"));
+        relateDuration = relateTimer.time();
+    }
+
+    /**
+     * <p>finishRelateNodes</p>
+     */
+    @Override
+    public void finishRelateNodes() {
+        if (relateDuration != null) {
+            relateDuration.stop();
+        }
+    }
+
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Override
+    public String toString() {
+        final StringBuilder stats = new StringBuilder();
+        stats.append("NodeCount: ").append(nodeCount).append("\n");
+        stats.append(importDuration).append(", ");
+        stats.append(loadingDuration).append(", ");
+        stats.append(auditDuration).append('\n');
+        stats.append(schedulingDuration).append(", ");
+        stats.append(relateDuration).append("\n");
+        stats.append(scanEventTimer.getTimer().getMeanRate()).append(", ");
+        stats.append(persistingTimer.getTimer().getMeanRate()).append(", ");
+        stats.append(eventTimer.getTimer().getMeanRate());
+
+        return stats.toString();
+    }
 }

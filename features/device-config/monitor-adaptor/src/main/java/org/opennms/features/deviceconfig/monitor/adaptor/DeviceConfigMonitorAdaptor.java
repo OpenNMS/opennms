@@ -66,23 +66,26 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         String configType = !Strings.isNullOrEmpty(configTypeAttribute) ? configTypeAttribute : ConfigType.Default;
         var deviceConfig = status.getDeviceConfig();
 
-        if (deviceConfig == null) {
-            // Config retrieval failed
-            deviceConfigDao.updateDeviceConfigFailure(
-                    ipInterface,
-                    configType,
-                    encoding,
-                    status.getReason()
-            );
-        } else {
-            // Config retrieval succeeded
-            deviceConfigDao.updateDeviceConfigContent(
-                    ipInterface,
-                    configType,
-                    encoding,
-                    deviceConfig.content,
-                    deviceConfig.filename
-            );
+        // unknown means that retrieval was skipped, so nothing to persist
+        if (!status.isUnknown()) {
+            if (deviceConfig == null) {
+                // Config retrieval failed
+                deviceConfigDao.updateDeviceConfigFailure(
+                        ipInterface,
+                        configType,
+                        encoding,
+                        status.getReason()
+                );
+            } else {
+                // Config retrieval succeeded
+                deviceConfigDao.updateDeviceConfigContent(
+                        ipInterface,
+                        configType,
+                        encoding,
+                        deviceConfig.content,
+                        deviceConfig.filename
+                );
+            }
         }
 
         return status;
