@@ -8,24 +8,24 @@
 </template>
 
 <script setup lang="ts">
-import { toRefs, ref } from 'vue'
+import { ref, computed } from 'vue'
 import { FeatherDialog } from '@featherds/dialog'
+import { DeviceConfigBackup } from '@/types/deviceConfig'
+import { useStore } from 'vuex'
 
-const props = defineProps({
+const store = useStore()
+
+defineProps({
   visible: {
     required: true,
     type: Boolean
-  },
-  deviceName: {
-    required: true,
-    type: String
   }
 })
 
-const { deviceName } = toRefs(props)
+const modalDeviceConfigBackup = computed<DeviceConfigBackup>(() => store.state.deviceModule.modalDeviceConfigBackup)
 
 const labels = ref({
-  title: `DeviceName: ${deviceName.value}`,
+  title: `DeviceName: ${modalDeviceConfigBackup.value.deviceName}`,
   close: 'Close'
 })
 </script>
@@ -33,5 +33,6 @@ const labels = ref({
 <style scoped lang="scss">
 .content {
   width: 500px;
+  position: relative;
 }
 </style>

@@ -1,12 +1,17 @@
-import { QueryParameters, VuexContext } from '@/types'
+import { VuexContext } from '@/types'
 import useDownload from '@/hooks/useDownload'
 import API from '@/services'
 import { State } from './state'
+import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
 
 const { downloadFile } = useDownload()
 
 interface ContextWithState extends VuexContext {
   state: State
+}
+
+const getDeviceConfigBackupObjById = (deviceConfigs: DeviceConfigBackup[], id: number) => {
+  return deviceConfigs.filter((dcb) => dcb.id === id)[0]
 }
 
 const getDeviceConfigBackups = async (context: ContextWithState) => {
@@ -23,23 +28,57 @@ const getAndMergeDeviceConfigBackups = async (context: ContextWithState) => {
   context.dispatch('spinnerModule/setSpinnerState', false, { root: true })
 }
 
-const downloadDeviceConfigById = async (context: VuexContext, id: number) => {
-  const file = await API.downloadDeviceConfigById(id)
+const downloadSelectedDevices = async (contextWithState: ContextWithState) => {
+  const ids = contextWithState.state.selectedIds
+  const file = await API.downloadDeviceConfigs(ids)
   downloadFile(file)
 }
 
-const backupDeviceConfigByIds = async (context: VuexContext, ids: number[]) => {
-  return await API.backupDeviceConfigByIds(ids)
+const backupSelectedDevices = async (contextWithState: ContextWithState) => {
+  const ids = contextWithState.state.selectedIds
+  const configs = contextWithState.state.deviceConfigBackups
+
+  if (ids.length === 1) {
+    const config = getDeviceConfigBackupObjById(configs, ids[0])
+    return await API.backupDeviceConfig(config)
+  } else {
+    // backup multiple configs?
+  }
+
 }
 
-const updateDeviceConfigBackupQueryParams = async (context: VuexContext, newQueryParams: QueryParameters) => {
+const updateDeviceConfigBackupQueryParams = async (context: VuexContext, newQueryParams: DeviceConfigQueryParams) => {
   context.commit('UPDATE_DEVICE_CONFIG_BACKUP_QUERY_PARAMS', newQueryParams)
+}
+
+const setModalDeviceConfigBackup = async (context: VuexContext, config: DeviceConfigBackup) => {
+  context.commit('SET_MODAL_DEVICE_CONFIG_BACKUP', config)
+}
+
+const setSelectedIds = (contextWithState: ContextWithState, idsOrAll: number[] | 'all') => {
+  const configs = contextWithState.state.deviceConfigBackups
+
+  if (idsOrAll === 'all') {
+    const selectedIds = configs.map((dcb) => dcb.id)
+    contextWithState.commit('SET_SELECTED_IDS', selectedIds)
+
+    if (configs.length === 1) {
+      contextWithState.commit('SET_MODAL_DEVICE_CONFIG_BACKUP', configs[0])
+    }
+  } else {
+    contextWithState.commit('SET_SELECTED_IDS', idsOrAll)
+    if (idsOrAll.length === 1) {
+      contextWithState.commit('SET_MODAL_DEVICE_CONFIG_BACKUP', getDeviceConfigBackupObjById(configs, idsOrAll[0]))
+    }
+  }
 }
 
 export default {
   getDeviceConfigBackups,
   getAndMergeDeviceConfigBackups,
   updateDeviceConfigBackupQueryParams,
-  downloadDeviceConfigById,
-  backupDeviceConfigByIds
+  downloadSelectedDevices,
+  backupSelectedDevices,
+  setSelectedIds,
+  setModalDeviceConfigBackup
 }

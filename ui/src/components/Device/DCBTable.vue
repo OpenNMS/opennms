@@ -3,18 +3,20 @@
     <div class="config-header">
       <div class="config-column">
         <div>Devices:</div>
-        <div>100</div>
+        <div class="config-number">100</div>
       </div>
+      <div class="divider"></div>
       <div class="config-column">
         <div>Selected:</div>
-        <div>{{ numberOfSelectedDevices }}</div>
+        <div class="config-number">{{ numberOfSelectedDevices }}</div>
       </div>
+      <div class="divider"></div>
       <div class="config-column">
         <div>Configurations:</div>
-        <div>
+        <div class="btn-container">
           <FeatherButton
             @click="onViewHistory"
-            :disabled="selectedDeviceConfigNames.length !== 1"
+            :disabled="(!all && selectedDeviceConfigIds.length !== 1) || (all && deviceConfigBackups.length !== 1)"
             text
           >
             <template v-slot:icon>
@@ -25,7 +27,7 @@
 
           <FeatherButton
             @click="onDownload"
-            :disabled="selectedDeviceConfigNames.length === 0"
+            :disabled="selectedDeviceConfigIds.length === 0 && !all"
             text
           >
             <template v-slot:icon>
@@ -36,7 +38,7 @@
 
           <FeatherButton
             @click="onBackupNow"
-            :disabled="selectedDeviceConfigNames.length === 0"
+            :disabled="selectedDeviceConfigIds.length === 0 && !all"
             text
           >
             <template v-slot:icon>
@@ -55,7 +57,7 @@
       <thead>
         <tr>
           <th>
-            <FeatherCheckbox v-model="all" />
+            <FeatherCheckbox v-model="all" @update:modelValue="selectAll" />
           </th>
           <FeatherSortHeader
             scope="col"
@@ -141,11 +143,7 @@
       </tbody>
     </table>
   </div>
-  <DCBModal
-    @close="dcbModalVisible = false"
-    :deviceName="selectedDeviceName"
-    :visible="dcbModalVisible"
-  >
+  <DCBModal @close="dcbModalVisible = false" :visible="dcbModalVisible">
     <template v-slot:content>
       <DCBModalLastBackupContent
         v-if="dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalLastBackupContent"
@@ -181,7 +179,6 @@ enum DCBModalContentComponentNames {
 const store = useStore()
 const dcbModalVisible = ref(false)
 const dcbModalContentComponentName = ref('')
-const selectedDeviceName = ref('')
 const all = ref(false)
 const tableWrap = ref<HTMLElement | null>(null)
 const defaultQuerySize = 20
@@ -209,22 +206,10 @@ watch(arrivedState, () => {
 const deviceConfigBackups = computed<DeviceConfigBackup[]>(() => store.state.deviceModule.deviceConfigBackups)
 const totalCountOfDeviceConfigBackups = computed(() => 2) // TODO: which endpoint prop will return this?
 const deviceConfigBackupQueryParams = computed<DeviceConfigQueryParams>(() => store.state.deviceModule.deviceConfigBackupQueryParams)
-const selectedDeviceConfigIds = computed<string[]>(() => {
+const selectedDeviceConfigIds = computed<number[]>(() => {
   return Object.keys(selectedDeviceConfigBackups.value)
     .filter((id) => selectedDeviceConfigBackups.value[id])
-})
-const selectedDeviceConfigNames = computed<string[]>(() => {
-  const names = []
-
-  for (const id of selectedDeviceConfigIds.value) {
-    for (const backup of deviceConfigBackups.value) {
-      if (backup.id.toString() == id) {
-        names.push(backup.deviceName)
-      }
-    }
-  }
-
-  return names
+    .map((id) => parseInt(id))
 })
 
 const numberOfSelectedDevices = computed(() => {
@@ -255,25 +240,31 @@ const sortByColumnHandler = (sortObj: FeatherSortObject) => {
   store.dispatch('deviceModule/getDeviceConfigBackups')
 }
 
-const onDownload = () => {
-  store.dispatch('deviceModule/downloadSelectedDevices')
+const selectAll = () => {
+  if (all.value) {
+    store.dispatch('deviceModule/setSelectedIds', 'all')
+  } else {
+    store.dispatch('deviceModule/setSelectedIds', selectedDeviceConfigIds.value)
+  }
 }
 
+const selectCheckbox = (config: DeviceConfigBackup) => {
+  selectedDeviceConfigBackups.value[config.id] = !selectedDeviceConfigBackups.value[config.id]
+  store.dispatch('deviceModule/setSelectedIds', selectedDeviceConfigIds.value)
+}
+
+const onDownload = () => store.dispatch('deviceModule/downloadSelectedDevices')
+const onBackupNow = () => store.dispatch('deviceModule/backupSelectedDevices')
+
 const onViewHistory = () => {
-  selectedDeviceName.value = selectedDeviceConfigNames.value[0]
   dcbModalContentComponentName.value = DCBModalContentComponentNames.DCBModalViewHistoryContent
   dcbModalVisible.value = true
 }
 
 const onLastBackupDateClick = (config: DeviceConfigBackup) => {
-  selectedDeviceName.value = config.deviceName
+  store.dispatch('deviceModule/setModalDeviceConfigBackup', config)
   dcbModalContentComponentName.value = DCBModalContentComponentNames.DCBModalLastBackupContent
   dcbModalVisible.value = true
-}
-
-const onBackupNow = () => {
-  const ids = selectedDeviceConfigIds.value
-  store.dispatch('deviceModule/backupDeviceConfigByIds', ids)
 }
 
 const getMoreDeviceConfigBackups = () => {
@@ -285,8 +276,6 @@ const getMoreDeviceConfigBackups = () => {
   store.dispatch('deviceModule/updateDeviceConfigBackupQueryParams', newQueryParams)
   store.dispatch('deviceModule/getAndMergeDeviceConfigBackups')
 }
-
-const selectCheckbox = (config: DeviceConfigBackup) => selectedDeviceConfigBackups.value[config.id] = !selectedDeviceConfigBackups.value[config.id]
 
 onMounted(() => {
   const wrap = document.getElementById('wrap')
@@ -343,6 +332,22 @@ onMounted(() => {
       display: flex;
       flex-direction: column;
       margin-left: 20px;
+
+      .config-number {
+        margin-top: 5px;
+      }
+
+      .btn-container {
+        .btn {
+          margin-top: 0px;
+        }
+      }
+    }
+
+    .divider {
+      height: 46px;
+      margin: 0px 13px 0px 35px;
+      border-left: 1px solid var($shade-4);
     }
     .layout-container {
       margin-bottom: 0px;

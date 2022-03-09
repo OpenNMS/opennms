@@ -2,12 +2,16 @@ import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfi
 
 export interface State {
   deviceConfigBackups: DeviceConfigBackup[]
-  deviceConfigBackupQueryParams: DeviceConfigQueryParams
+  deviceConfigBackupQueryParams: DeviceConfigQueryParams,
+  modalDeviceConfigBackup: DeviceConfigBackup
+  selectedIds: number[]
 }
 
 const state: State = {
   deviceConfigBackups: [],
-  deviceConfigBackupQueryParams: { offset: 0, limit: 20 }
+  deviceConfigBackupQueryParams: { offset: 0, limit: 20 },
+  modalDeviceConfigBackup: {} as DeviceConfigBackup,
+  selectedIds: []
 }
 
 export default state

@@ -13,8 +13,18 @@ const UPDATE_DEVICE_CONFIG_BACKUP_QUERY_PARAMS = (state: State, newQueryParams: 
   state.deviceConfigBackupQueryParams = { ...state.deviceConfigBackupQueryParams, ...newQueryParams }
 }
 
+const SET_MODAL_DEVICE_CONFIG_BACKUP = (state: State, config: DeviceConfigBackup) => {
+  state.modalDeviceConfigBackup = config
+}
+
+const SET_SELECTED_IDS = (state: State, ids: number[]) => {
+  state.selectedIds = ids
+}
+
 export default {
   SAVE_DEVICE_CONFIG_BACKUPS,
   MERGE_DEVICE_CONFIG_BACKUPS,
-  UPDATE_DEVICE_CONFIG_BACKUP_QUERY_PARAMS
+  UPDATE_DEVICE_CONFIG_BACKUP_QUERY_PARAMS,
+  SET_MODAL_DEVICE_CONFIG_BACKUP,
+  SET_SELECTED_IDS
 }
