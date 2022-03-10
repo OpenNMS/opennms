@@ -6,6 +6,8 @@ export interface State {
   modalDeviceConfigBackup: DeviceConfigBackup
   selectedIds: number[]
   vendorOptions: string[]
+  backupStatusOptions: string[],
+  osImageOptions: string[]
 }
 
 const state: State = {
@@ -13,7 +15,9 @@ const state: State = {
   deviceConfigBackupQueryParams: { offset: 0, limit: 20 },
   modalDeviceConfigBackup: {} as DeviceConfigBackup,
   selectedIds: [],
-  vendorOptions: ['Aruba', 'Cisco', 'Juniper', 'OpenNMS']
+  vendorOptions: ['Aruba', 'Cisco', 'Juniper', 'OpenNMS'],
+  backupStatusOptions: [],
+  osImageOptions: []
 }
 
 export default state

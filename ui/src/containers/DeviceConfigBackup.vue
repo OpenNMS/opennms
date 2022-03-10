@@ -4,7 +4,7 @@
       <div class="feather-col-12">
         <div class="dcb-container">
           <div class="table-container">
-            <p class="title">Device Configuration Backup</p>
+            <p class="title">Device Configuration</p>
             <DCBTable />
           </div>
           <div class="filters-container">
@@ -33,13 +33,14 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
 .card {
   @include elevation(2);
   background: var($surface);
-  padding: 50px;
+  padding: 10px 20px 20px 20px;
 
   .dcb-container {
     display: flex;
 
     .table-container {
-      width: 80%;
+      width: 35rem;
+      flex: auto;
       .title {
         @include headline4;
         margin-left: 19px;
@@ -47,7 +48,7 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
     }
 
     .filters-container {
-      width: 20%
+      width: 15rem
     }
   }
 }

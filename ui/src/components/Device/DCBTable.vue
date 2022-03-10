@@ -52,8 +52,8 @@
     <DCBSearch class="dcb-search" />
   </div>
 
-  <div ref="tableWrap" id="wrap">
-    <table class="tl1 tl2 tl3 tl4 tl5 tl6 tl7 tc8" summary="Device Config Backup">
+  <div ref="tableWrap" id="wrap" class="dcb-table">
+    <table summary="Device Config Backup">
       <thead>
         <tr>
           <th>
@@ -106,14 +106,14 @@
             property="scheduleDate"
             :sort="sortStates.scheduleDate"
             v-on:sort-changed="sortByColumnHandler"
-          >Scheduled Date</FeatherSortHeader>
+          >Schedule Date</FeatherSortHeader>
 
           <FeatherSortHeader
             scope="col"
             property="scheduleInterval"
             :sort="sortStates.scheduleInterval"
             v-on:sort-changed="sortByColumnHandler"
-          >Scheduled Interval</FeatherSortHeader>
+          >Schedule Interval</FeatherSortHeader>
         </tr>
       </thead>
       <tbody>
@@ -136,7 +136,9 @@
             class="last-backup-date pointer"
             @click="onLastBackupDateClick(config)"
           >{{ config.lastUpdated }}</td>
-          <td>{{ config.backupStatus }}</td>
+          <td>
+            <div :class="config.backupStatus.replace(' ', '')">{{ config.backupStatus }}</div>
+          </td>
           <td v-date>{{ config.scheduleDate }}</td>
           <td>{{ config.scheduleInterval }}</td>
         </tr>
@@ -293,18 +295,43 @@ onMounted(() => {
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
 
+@mixin status-bar($color) {
+  height: 43px;
+  line-height: 3.5;
+  padding-left: 15px;
+  background: $color;
+  background: linear-gradient(
+    90deg,
+    $color 1%,
+    rgba(255, 255, 255, 0) 9%
+  );
+}
+
 #wrap {
-  height: calc(100vh - 250px);
+  height: calc(100vh - 310px);
   overflow: auto;
+  white-space: nowrap;
 
   table {
     width: 100%;
     margin-top: 0px !important;
+    font-size: 12px !important;
     @include table;
     @include table-condensed;
+    @include row-striped;
 
     .last-backup-date {
       color: var($primary);
+    }
+
+    .Success {
+      @include status-bar(var($success));
+    }
+    .Failed {
+      @include status-bar(var($error));
+    }
+    .NoBackup {
+      @include status-bar(var($state-color-on-neutral));
     }
   }
 
@@ -347,9 +374,6 @@ onMounted(() => {
       margin: 0px 13px 0px 35px;
       border-left: 1px solid var($shade-4);
     }
-    .layout-container {
-      margin-bottom: 0px;
-    }
   }
 
   .dcb-search {
@@ -368,6 +392,11 @@ onMounted(() => {
 .device-config-checkbox {
   label {
     display: none;
+  }
+}
+.dcb-table {
+  .feather-checkbox {
+    width: 20px;
   }
 }
 </style>

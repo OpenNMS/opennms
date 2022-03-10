@@ -19,7 +19,7 @@ const getDeviceConfigBackups = async (queryParameters: DeviceConfigQueryParams):
         ipAddress: '10.21.10.81',
         lastSucceeded: '1643831118973',
         lastUpdated: '1643831118973',
-        backupStatus: 'Completed/Success',
+        backupStatus: 'Success',
         scheduleDate: '1643831118973',
         scheduleInterval: 'daily'
       } as any,
@@ -33,7 +33,29 @@ const getDeviceConfigBackups = async (queryParameters: DeviceConfigQueryParams):
         backupStatus: 'Failed',
         scheduleDate: '1643831118973',
         scheduleInterval: 'daily'
-      } as any
+      } as any,
+      {
+        id: 122,
+        deviceName: 'Cisco-7201',
+        location: 'location',
+        ipAddress: '10.21.10.81',
+        lastSucceeded: '1643831118973',
+        lastUpdated: '1643831118973',
+        backupStatus: 'Success',
+        scheduleDate: '1643831118973',
+        scheduleInterval: 'daily'
+      } as any,
+      {
+        id: 55,
+        deviceName: 'Aruba-7003-1',
+        location: 'location',
+        ipAddress: '10.21.10.81',
+        lastSucceeded: '1643831118973',
+        lastUpdated: '1643831118973',
+        backupStatus: 'No Backup',
+        scheduleDate: '1643831118973',
+        scheduleInterval: 'daily'
+      } as any,
     ]
   }
 }

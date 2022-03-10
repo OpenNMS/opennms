@@ -4,7 +4,7 @@
 
     <FeatherDropdown class="dropdown">
       <template v-slot:trigger>
-        <FeatherButton link href="#" menu-trigger>
+        <FeatherButton secondary link href="#" menu-trigger>
           <template v-slot:icon>
             Vendor
             <FeatherIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
@@ -16,7 +16,7 @@
 
     <FeatherDropdown class="dropdown">
       <template v-slot:trigger>
-        <FeatherButton link href="#" menu-trigger>
+        <FeatherButton secondary link href="#" menu-trigger>
           <template v-slot:icon>
             Backup Status
             <FeatherIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
@@ -28,7 +28,7 @@
 
     <FeatherDropdown class="dropdown">
       <template v-slot:trigger>
-        <FeatherButton link href="#" menu-trigger>
+        <FeatherButton secondary link href="#" menu-trigger>
           <template v-slot:icon>
             OS Image
             <FeatherIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
@@ -50,8 +50,8 @@ import ArrowDown from '@featherds/icon/navigation/ArrowDropDown'
 import store from '@/store'
 
 const vendorOptions = computed<string[]>(() => store.state.deviceModule.vendorOptions)
-const backupStatusOptions: any = []
-const osImageOptions: any = []
+const backupStatusOptions = computed<string[]>(() => store.state.deviceModule.backupStatusOptions)
+const osImageOptions = computed<string[]>(() => store.state.deviceModule.osImageOptions)
 </script>
 
 <style scoped lang="scss">
@@ -60,7 +60,7 @@ const osImageOptions: any = []
 .group-filters-container {
   display: flex;
   flex-direction: column;
-  margin-left: 40px;
+  margin-left: 20px;
   margin-top: 63px;
   border: 1px solid var($shade-4);
   border-radius: 5px;
