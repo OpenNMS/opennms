@@ -35,6 +35,11 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
+"@dash14/svg-pan-zoom@^3.6.6":
+  version "3.6.6"
+  resolved "https://registry.yarnpkg.com/@dash14/svg-pan-zoom/-/svg-pan-zoom-3.6.6.tgz#77f01e999a3280fb6bfa837aec235f7f1a693189"
+  integrity sha512-HXzIuzvlrNzBw9ENlj3cWFHzhZyNmsIrvutUfZA8cT3Og3WP6rC22eUlVIzezfEC9FRRCrFNKMfumSfx8jd3/A==
+
 "@emmetio/abbreviation@^2.2.3":
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/@emmetio/abbreviation/-/abbreviation-2.2.3.tgz#2b3c0383c1a4652f677d5b56fb3f1616fe16ef10"
@@ -2301,6 +2306,11 @@ minimatch@^3.0.4:
   dependencies:
     brace-expansion "^1.1.7"
 
+mitt@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/mitt/-/mitt-3.0.0.tgz#69ef9bd5c80ff6f57473e8d89326d01c414be0bd"
+  integrity sha512-7dX2/10ITVyqh4aOSVI9gdape+t9l2/8QxHrFmUXu4EEUpdlxl6RudZUPZoc+zuY2hk1j7XxVroIVIan/pD/SQ==
+
 mri@^1.1.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/mri/-/mri-1.2.0.tgz#6721480fec2a11a4889861115a48b6cbe7cc8f0b"
@@ -2902,6 +2912,14 @@ uvu@^0.5.3:
     diff "^5.0.0"
     kleur "^4.0.3"
     sade "^1.7.3"
+
+v-network-graph@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/v-network-graph/-/v-network-graph-0.5.3.tgz#6b115603d22fd7984a0a71d695d3082a540e66af"
+  integrity sha512-NZ8eoYfDTlCPHwtV1BP02OMzs8PPw84pCPqBFD7lOAUHekoLCJgEJe1K3mIx9qJpKUffkKOnL65D+QRuoALViw==
+  dependencies:
+    "@dash14/svg-pan-zoom" "^3.6.6"
+    mitt "^3.0.0"
 
 v8-compile-cache@^2.0.3:
   version "2.3.0"
