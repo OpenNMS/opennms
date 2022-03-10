@@ -178,19 +178,29 @@ public class SshScriptingServiceImplIT {
         testIpAddress("localhost", "127.0.0.1");
 
         final String anIPv4Address = "192.168.31.1";
-        System.getProperties().setProperty(SshScriptingServiceImpl.TFTP_SERVER_IPV4_ADDRESS_PROPERTY, anIPv4Address);
-        testIpAddress("localhost", anIPv4Address);
+        testIpAddress("localhost", anIPv4Address, anIPv4Address, null);
 
         final String anIPv6Address = "2001:0638:0301:11a0::1";
-        System.getProperties().setProperty(SshScriptingServiceImpl.TFTP_SERVER_IPV6_ADDRESS_PROPERTY, anIPv6Address);
-        testIpAddress("::1", "2001:0638:0301:11a0:0000:0000:0000:0001");
+        testIpAddress("::1", "2001:0638:0301:11a0:0000:0000:0000:0001", null, anIPv6Address);
     }
 
     public void testIpAddress(final String hostname, final String expectedIp) throws Exception {
-        var result = execute(hostname, PASSWORD, Collections.emptyMap(),
-                "send: ${tftpServerIp}",
-                "await: "+expectedIp
-        );
+        testIpAddress(hostname, expectedIp, null, null);
+    }
+
+    public void testIpAddress(final String hostname, final String expectedIp, final String ipv4Address, final String ipv6Address) throws Exception {
+        final SshScriptingServiceImpl ss = new SshScriptingServiceImpl();
+
+        ss.setTftpServerIPv4Address(ipv4Address);
+        ss.setTftpServerIPv6Address(ipv6Address);
+
+        final String script = List.of(
+                            "send: ${tftpServerIp}",
+                            "await: "+expectedIp
+                        ).stream().collect(Collectors.joining("\n"));
+
+        final Optional<SshScriptingService.Failure> result = ss.execute(script, USER, PASSWORD, hostname, sshd.getPort(), Collections.emptyMap(), Duration.ofMillis(10000));
+
         assertThat(result.isPresent(), is(false));
     }
 }
