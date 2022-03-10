@@ -119,7 +119,7 @@ if (not $MAVEN_OPTS =~ /UseGCOverheadLimit/) {
 	$MAVEN_OPTS .= " -XX:-UseGCOverheadLimit";
 }
 
-if (not $MAVEN_OPTS =~ /UseParallelGC/) {
+if (not $MAVEN_OPTS =~ /Use.*GC/) {
 	# If (a) peak application performance is the first priority and (b) there are no pause time requirements or pauses
 	# of one second or longer are acceptable, then select the parallel collector with -XX:+UseParallelGC and
 	# (optionally) enable parallel compaction with -XX:+UseParallelOldGC.
@@ -297,7 +297,7 @@ $ENV{'MAVEN_OPTS'} = $MAVEN_OPTS;
 info("JAVA_HOME = $JAVA_HOME") if (defined $JAVA_HOME and $JAVA_HOME ne "");
 info("PATH = " . $ENV{'PATH'});
 info("MVN = $MVN");
-info("MAVEN_OPTS = $MAVEN_OPTS"); 
+info("MAVEN_OPTS = $MAVEN_OPTS");
 
 my $git_branch = "unknown";
 if (exists $ENV{'bamboo_planRepository_branch'}) {

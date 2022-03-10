@@ -28,16 +28,16 @@
 
 package org.opennms.features.config.service.api;
 
+import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
+
 import java.util.Objects;
 
 public class ConfigUpdateInfo {
 
-    public static String DEFAULT_ID = "default";
     public static String WILDCARD_ID = "*";
 
-
-    private String configName;
-    private String configId;
+    final private String configName;
+    final private String configId;
 
     /**
      * ConfigId is nullable, when it is null. It will reload all configIds.
@@ -51,7 +51,7 @@ public class ConfigUpdateInfo {
     }
 
     public ConfigUpdateInfo(String configName) {
-        this(configName, DEFAULT_ID);
+        this(configName, DEFAULT_CONFIG_ID);
     }
 
     public String getConfigName() {

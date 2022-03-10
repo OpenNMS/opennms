@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -118,6 +118,8 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
+import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -202,6 +204,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Autowired
     private DatabasePopulator m_populator;
+
+    @Autowired
+    private MonitorHolder monitorHolder;
 
     private EventAnticipator m_eventAnticipator;
 
@@ -442,7 +447,11 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     }
 
     private void importFromResource(final String path, final String rescanExisting) throws Exception {
-        m_provisioner.importModelFromResource(m_resourceLoader.getResource(path), rescanExisting);
+        importFromResource(path, rescanExisting, new NoOpProvisionMonitor());
+    }
+
+    private void importFromResource(final String path, final String rescanExisting, ProvisionMonitor monitor) throws Exception {
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource(path), rescanExisting, monitor);
         waitForImport();
     }
 
@@ -471,11 +480,18 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test(timeout=300000)
     public void testFindQuery() throws Exception {
-        importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
+        TimeTrackingMonitor monitor = monitorHolder.createMonitor("smalltest");
+        importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString(), monitor);
 
         for (final OnmsAssetRecord assetRecord : getAssetRecordDao().findAll()) {
             LOG.debug("Building = {}", assetRecord.getBuilding());
         }
+        assertEquals(1, monitor.getLoadingTimer().getCount());
+        assertEquals(1, monitor.getRelateTimer().getCount());
+        assertEquals(1, monitor.getAuditTimer().getCount());
+        assertEquals(10, monitor.getNodeCount());
+        assertEquals(10, monitor.getScanEventTimer().getCount());
+        assertEquals(10, monitor.getPersistingTimer().getCount());
     }
 
     @Test(timeout=300000)
@@ -494,7 +510,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     @Test(timeout=300000)
     @JUnitSnmpAgent(host="192.0.2.201", resource="classpath:/snmpTestData1.properties")
     public void testPopulateWithSnmp() throws Exception {
-
         importFromResource("classpath:/tec_dump.xml", Boolean.TRUE.toString());
 
         //Verify distpoller count
@@ -525,7 +540,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:/snmpTestData3.properties")
     })
     public void testPopulateWithSnmpAndNodeScan() throws Exception {
-        importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString());
+        TimeTrackingMonitor monitor = monitorHolder.createMonitor("classpath:/requisition_then_scan2.xml");
+
+        importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString(), monitor);
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -565,11 +582,19 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
 
+        assertEquals(1, monitor.getNodeCount());
+        assertEquals(1, monitor.getScanningTimer().getCount());
+
+        TimeTrackingMonitor monitor2 = monitorHolder.createMonitor("classpath:/nonodes-snmp.xml");
+
         // Node Delete
-        importFromResource("classpath:/nonodes-snmp.xml", Boolean.TRUE.toString());
+        importFromResource("classpath:/nonodes-snmp.xml", Boolean.TRUE.toString(), monitor2);
 
         //Verify node count
         assertEquals(0, getNodeDao().countAll());
+
+        assertEquals(0, monitor2.getNodeCount());
+        assertEquals(0, monitor2.getScanningTimer().getCount());
     }
 
     @Test(timeout=300000)
@@ -1096,7 +1121,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
         assertTrue(m_provisionService.isDiscoveryEnabled());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null, null);
         runScan(scan);
 
         assertEquals(2, m_ipInterfaceDao.findAll().size());
@@ -1126,7 +1151,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
         assertTrue(m_provisionService.isDiscoveryEnabled());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null, null);
         runScan(scan);
 
         assertEquals(1, m_ipInterfaceDao.findAll().size());
@@ -1286,8 +1311,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     @Test(timeout=300000)
     public void testProvisionServiceGetScheduleForNodesCount() throws Exception {
         getScanExecutor().pause();
-        m_provisioner.scheduleRescanForExistingNodes();
-        final List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
+        final List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes(null);
         final int nodeCount = getNodeDao().countAll();
         LOG.debug("NodeCount: {}", nodeCount);
 
@@ -1300,8 +1325,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
-        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
+        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes(null);
 
         assertEquals(10, schedulesForNode.size());
 
@@ -1309,8 +1334,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest.delete", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
-        schedulesForNode = m_provisionService.getScheduleForNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
+        schedulesForNode = m_provisionService.getScheduleForNodes(null);
 
         assertEquals(9, schedulesForNode.size());
         assertEquals(9, m_provisioner.getScheduleLength());
@@ -1318,8 +1343,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         // Check that re-scheduling won't trigger duplicate scheduling for a given node.
         getScanExecutor().resume();
         m_provisioner.addToScheduleQueue(schedulesForNode.get(0));
-        m_provisioner.scheduleRescanForExistingNodes();
-        schedulesForNode = m_provisionService.getScheduleForNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
+        schedulesForNode = m_provisionService.getScheduleForNodes(null);
 
         assertEquals(9, schedulesForNode.size());
         assertEquals(9, m_provisioner.getScheduleLength());
@@ -1329,7 +1354,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     public void testProvisionerAddNodeToSchedule() throws Exception{
         final int nextNodeId = m_nodeDao.getNextNodeId();
 
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
         assertEquals(0, m_provisioner.getScheduleLength());
 
         final OnmsNode node = createNode("empty");
@@ -1350,7 +1375,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
         assertEquals(10, m_provisioner.getScheduleLength());
     }
 
@@ -1361,7 +1386,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         try {
             m_populator.populateDatabase();
 
-            m_provisioner.scheduleRescanForExistingNodes();
+            m_provisioner.scheduleRescanForExistingNodes(null);
 
             // make sure just the provisioned nodes are scheduled
             assertEquals(4, m_provisioner.getScheduleLength());
@@ -1377,7 +1402,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         try {
             m_populator.populateDatabase();
 
-            m_provisioner.scheduleRescanForExistingNodes();
+            m_provisioner.scheduleRescanForExistingNodes(null);
 
             // make sure all the nodes are scheduled (even the discovered ones)
             assertEquals(6, m_provisioner.getScheduleLength());
@@ -1391,7 +1416,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
         assertEquals(10, m_provisioner.getScheduleLength());
 
         final List<OnmsNode> nodes = m_nodeDao.findAll();
@@ -1422,11 +1447,11 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
-        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
+        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes(null);
 
         assertEquals(10, schedulesForNode.size());
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
         assertEquals(10, m_provisioner.getScheduleLength());
     }
 
@@ -1435,9 +1460,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes(null);
         assertEquals(10, schedulesForNode.size());
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
         assertEquals(10, m_provisioner.getScheduleLength());
 
         //reimport with one missing node
@@ -1445,10 +1470,10 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest.delete", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
-        schedulesForNode = m_provisionService.getScheduleForNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
+        schedulesForNode = m_provisionService.getScheduleForNodes(null);
 
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
 
         //check the schedule to make sure that it deletes the node
         assertEquals(schedulesForNode.size(), m_provisioner.getScheduleLength());
@@ -1467,7 +1492,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
-        m_provisioner.scheduleRescanForExistingNodes();
+        m_provisioner.scheduleRescanForExistingNodes(null);
 
         final Collection<OnmsNode> nodes = m_nodeDao.findByLabel(OLD_LABEL);
         assertNotNull(nodes);
@@ -1522,7 +1547,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test(timeout=300000)
     public void testCreateUndiscoveredNode() throws Exception {
-        m_provisionService.createUndiscoveredNode("127.0.0.1", "discovered", null);
+        m_provisionService.createUndiscoveredNode("127.0.0.1", "discovered", null, null);
     }
 
     /**
@@ -1790,7 +1815,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         m_eventAnticipator.anticipateEvent(nodeScanAborted(node.getId()));
         m_eventAnticipator.setDiscardUnanticipated(true);
 
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "should_not_exist", "1", node.getLocation());
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "should_not_exist", "1", node.getLocation(), null);
         runScan(scan);
 
         m_eventAnticipator.verifyAnticipated();

@@ -242,6 +242,11 @@ export interface NodeAvailability {
   'service-down-count': number
 }
 
+export interface FileEditorResponseLog {
+  success: boolean
+  msg: string
+}
+
 export interface BreadCrumb {
   label: string
   to: string
@@ -285,11 +290,6 @@ export interface WhoAmIResponse {
   id: string
   internal: boolean
   roles: string[]
-}
-
-export interface FileEditorResponseLog {
-  success: boolean
-  msg: string
 }
 
 export interface AppInfo {
@@ -444,4 +444,11 @@ export interface Expression {
   consolidate: (metrics: GraphMetricsResponse) => any
   functionName: string
   metricName: string
+}
+
+export interface Plugin {
+  extensionId: string
+  menuEntry: string
+  moduleFileName: string
+  resourceRootPath: string
 }

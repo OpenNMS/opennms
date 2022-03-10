@@ -28,25 +28,37 @@
 
 package org.opennms.features.config.osgi.cm;
 
+import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
+
 import java.util.Objects;
 
+import org.opennms.features.config.service.util.Substring;
+import org.opennms.features.config.exception.ConfigRuntimeException;
+import org.opennms.features.config.osgi.del.MigratedServices;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 
 public class CmIdentifierUtil {
 
-    final static String CONFIG_ID = "default";
-
+    /**
+     * The delimiter between configName and configId is a dash (-).
+     * However, there is no guarantee that the configName or the configId doesn't contain a dash as well.
+     * Therefore, we have to check against the PIDS_MULTI_INSTANCE.
+     */
     public static ConfigUpdateInfo pidToCmIdentifier(String pid) {
         Objects.requireNonNull(pid);
         String configName;
         String configId;
-        int lastIndexOf = pid.lastIndexOf("-");
-        if (lastIndexOf > 0) {
-            configName = pid.substring(0, lastIndexOf);
-            configId = pid.substring(lastIndexOf + 1);
+
+        // Single instance pid
+        if (MigratedServices.PIDS_SINGLE_INSTANCE.contains(pid)) {
+            configName =  pid;
+            configId = DEFAULT_CONFIG_ID;
         } else {
-            configName = pid;
-            configId = CONFIG_ID;
+            // multi instance pid: has a suffix
+            configName = MigratedServices.PIDS_MULTI_INSTANCE.stream().filter(pid::startsWith)
+                    .findAny()
+                    .orElseThrow(() -> new ConfigRuntimeException(String.format("Pid=%s could not be parsed into ConfigUpdateInfo", pid)));
+            configId = new Substring(pid).getAfterLast(configName + "-").toString();
         }
         return new ConfigUpdateInfo(configName, configId);
     }
@@ -54,7 +66,7 @@ public class CmIdentifierUtil {
     public static String cmIdentifierToPid(ConfigUpdateInfo identifier) {
         Objects.requireNonNull(identifier);
         StringBuilder b = new StringBuilder(identifier.getConfigName());
-        if (!CONFIG_ID.equals(identifier.getConfigId())) {
+        if (!DEFAULT_CONFIG_ID.equals(identifier.getConfigId())) {
             b.append("-")
                     .append(identifier.getConfigId());
         }

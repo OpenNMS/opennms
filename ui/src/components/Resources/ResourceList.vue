@@ -52,4 +52,3 @@ onMounted(() => {
   }
 })
 </script>
-  

@@ -29,20 +29,16 @@
 package liquibase.ext2.cm.change;
 
 import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.createConfigItemForProperty;
-import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.findPropertyDefinition;
 import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.getAttributeValueOrThrowException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
-import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +90,7 @@ public class ChangeSchema extends AbstractCmChange {
                     ConfigDefinition definition;
                     definition = definitionOpt.orElseGet(()->{
                         // Create a new one
-                        ConfigDefinition newDefinition = new ConfigDefinition(this.schemaId);
+                        ConfigDefinition newDefinition = new ConfigDefinition(this.schemaId, false);
                         newDefinition.setConfigName(this.schemaId);
                         cm.registerConfigDefinition(this.schemaId, newDefinition);
                         return newDefinition;
@@ -109,12 +105,7 @@ public class ChangeSchema extends AbstractCmChange {
 
                     // 3.) write definition
                     definition.setSchema(builder.build(false));
-                    try {
-                        cm.changeConfigDefinition(this.schemaId, definition);
-                    } catch (ValidationException e) {
-                        LOG.error("Fail to change config definition.", e);
-                        throw new RuntimeException(e);
-                    }
+                    cm.changeConfigDefinition(this.schemaId, definition);
                 })
         };
     }

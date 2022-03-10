@@ -179,7 +179,7 @@ public abstract class RrdResourceAttributeUtils {
     }
 
     private static Properties getStringProperties(File resourceDir) {
-        Assert.notNull(resourceDir, "resourceDir argumnet must not be null");
+        Assert.notNull(resourceDir, "resourceDir argument must not be null");
         return getProperties(new File(resourceDir, STRINGS_PROPERTIES_FILE_NAME));
     }
 

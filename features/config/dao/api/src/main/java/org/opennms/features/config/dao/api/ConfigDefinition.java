@@ -55,9 +55,10 @@ public class ConfigDefinition {
     public static final String TOP_LEVEL_ELEMENT_NAME_TAG = "topLevelElement";
     public static final String XSD_FILENAME_TAG = "xsdFilename";
     public static final String ELEMENT_NAME_TO_VALUE_NAME_TAG = "elementNameToValueName";
+    public static final String DEFAULT_CONFIG_ID = "default";
 
     private String configName;
-    private int maxInstances = 1;
+    private boolean allowMultiple;
     private Map<String, Object> meta = new HashMap<>();
 
     @JsonSerialize(using = OpenAPISerializer.class)
@@ -65,8 +66,10 @@ public class ConfigDefinition {
     protected OpenAPI schema;
 
     @JsonCreator
-    public ConfigDefinition(@JsonProperty("configName") String configName) {
+    public ConfigDefinition(@JsonProperty("configName") String configName,
+                            @JsonProperty("allowMultiple") Boolean allowMultiple) {
         this.configName = configName;
+        this.allowMultiple = allowMultiple == null ? false : allowMultiple;
     }
 
     public OpenAPI getSchema() {
@@ -85,14 +88,6 @@ public class ConfigDefinition {
         this.configName = configName;
     }
 
-    public int getMaxInstances() {
-        return maxInstances;
-    }
-
-    public void setMaxInstances(int maxInstances) {
-        this.maxInstances = maxInstances;
-    }
-
     public Map<String, Object> getMeta() {
         return meta;
     }
@@ -107,6 +102,14 @@ public class ConfigDefinition {
 
     public void setMetaValue(String key, Object value) {
         this.meta.put(key, value);
+    }
+
+    public boolean getAllowMultiple() {
+        return allowMultiple;
+    }
+
+    public void setAllowMultiple(boolean allowMultiple) {
+        this.allowMultiple = allowMultiple;
     }
 
     @JsonIgnore

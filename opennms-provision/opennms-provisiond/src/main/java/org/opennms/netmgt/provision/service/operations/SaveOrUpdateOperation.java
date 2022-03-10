@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,13 +54,14 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     private static final Logger LOG = LoggerFactory.getLogger(SaveOrUpdateOperation.class);
 
     private final OnmsNode m_node;
+    private final String monitorKey;
     private OnmsIpInterface m_currentInterface;
     private OnmsMonitoredService m_currentService;
     
     private ScanManager m_scanManager;
     private String m_rescanExisting = Boolean.TRUE.toString();
 
-    protected SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService, String rescanExisting) {
+    protected SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService, String rescanExisting, String monitorKey) {
         super(provisionService);
 
         m_node = new OnmsNode();
@@ -78,6 +79,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_node.getAssetRecord().setBuilding(building);
         m_node.getAssetRecord().setCity(city);
         m_rescanExisting = rescanExisting;
+        this.monitorKey = monitorKey;
     }
 
 	/**
@@ -183,6 +185,10 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 
     protected String getRescanExisting() {
         return m_rescanExisting;
+    }
+
+    public String getMonitorKey() {
+        return monitorKey;
     }
 
     /**

@@ -28,6 +28,7 @@
 
 package org.opennms.features.config.convert;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.beans.SamePropertyValuesAs;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,13 +48,13 @@ abstract public class CmConfigTest<T> {
     private Class<?> objectClass;
     private T simpleObject;
     private String simpleXml;
-    private ConfigDefinition configDefinition;
+    protected ConfigDefinition configDefinition;
 
     public CmConfigTest(final T sampleObject, final String sampleXml, final String schemaFile, String topLevelElement) {
         this.objectClass = sampleObject.getClass();
         this.simpleObject = sampleObject;
         this.simpleXml = sampleXml;
-        this.configDefinition = XsdHelper.buildConfigDefinition(this.getClass().getName(), schemaFile, topLevelElement, "/cm");
+        this.configDefinition = XsdHelper.buildConfigDefinition(this.getClass().getName(), schemaFile, topLevelElement, "/cm", false);
     }
 
     private String getJsonStr() throws IOException {
@@ -64,7 +65,10 @@ abstract public class CmConfigTest<T> {
     @Test
     public void xmlToObjectWithCompare() throws IOException {
         Object object = ConfigConvertUtil.jsonToObject(getJsonStr(), objectClass);
-        assertThat(simpleObject, new SamePropertyValuesAs(object));
+        // try match with equals if fail back to use SamePropertyValuesAs
+        if(!simpleObject.equals(object)){
+            MatcherAssert.assertThat(simpleObject, new SamePropertyValuesAs(object));
+        }
     }
 
     @Test
