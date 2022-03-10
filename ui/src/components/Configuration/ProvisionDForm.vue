@@ -98,7 +98,7 @@
                     :error="errors.username"
                     :modelValue="config.username"
                     @update:modelValue="(val: string) => updateFormValue('username', val)"
-                    hint="vSphere authentication username"
+                    hint="vSphere username"
                 />
                 <FeatherInput
                     type="password"
@@ -107,7 +107,7 @@
                     :error="errors.password"
                     :modelValue="config.password"
                     @update:modelValue="(val: string) => updateFormValue('password', val)"
-                    hint="vSphere authentication password"
+                    hint="vSphere password"
                 />
             </div>
         </div>
