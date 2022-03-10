@@ -32,6 +32,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -45,13 +49,37 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.session.ClientSession;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.sshscripting.SshScriptingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 public class SshScriptingServiceImpl implements SshScriptingService {
 
     private static Logger LOG = LoggerFactory.getLogger(SshScriptingServiceImpl.class);
+
+    public static final String SCRIPT_VAR_TFTP_SERVER_IP = "tftpServerIp";
+
+    private InetAddress tftpServerIPv4Address;
+    private InetAddress tftpServerIPv6Address;
+
+    public void setTftpServerIPv4Address(final String tftpServerIPv4Address) throws UnknownHostException {
+        if (!Strings.isNullOrEmpty(tftpServerIPv4Address)) {
+            this.tftpServerIPv4Address = InetAddress.getByName(tftpServerIPv4Address);
+        } else {
+            this.tftpServerIPv4Address = null;
+        }
+    }
+
+    public void setTftpServerIPv6Address(final String tftpServerIPv6Address) throws UnknownHostException {
+        if (!Strings.isNullOrEmpty(tftpServerIPv6Address)) {
+            this.tftpServerIPv6Address = InetAddress.getByName(tftpServerIPv6Address);
+        } else {
+            this.tftpServerIPv6Address = null;
+        }
+    }
 
     @Override
     public Optional<Failure> execute(
@@ -69,7 +97,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 ),
                 statements -> {
                     try {
-                        try (var sshInteraction = new SshInteractionImpl(user, password, host, port, vars, timeout)) {
+                        try (var sshInteraction = new SshInteractionImpl(user, password, host, port, vars, timeout, tftpServerIPv4Address, tftpServerIPv6Address)) {
                             for (var statement : statements) {
                                 try {
                                     statement.execute(sshInteraction);
@@ -122,7 +150,9 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 String host,
                 int port,
                 Map<String, String> vars,
-                Duration timeout
+                Duration timeout,
+                InetAddress tftpServerIPv4Address,
+                InetAddress tftpServerIPv6Address
         ) throws Exception {
             sshClient = SshClient.setUpDefaultClient();
             sshClient.start();
@@ -131,8 +161,27 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                         .connect(user, host, port)
                         .verify(timeout)
                         .getSession();
-                try {
 
+                // we use the remote address to check whether we have to use the IPv4 or IPv6 property
+                final InetAddress remoteAddress = ((InetSocketAddress) session.getRemoteAddress()).getAddress();
+
+                final InetAddress localAddress;
+
+                if (remoteAddress instanceof Inet4Address) {
+                    if (tftpServerIPv4Address != null) {
+                        localAddress = tftpServerIPv4Address;
+                    } else {
+                        localAddress = ((InetSocketAddress) session.getLocalAddress()).getAddress();
+                    }
+                } else {
+                    if (tftpServerIPv6Address != null) {
+                        localAddress = tftpServerIPv6Address;
+                    } else {
+                        localAddress = ((InetSocketAddress) session.getLocalAddress()).getAddress();
+                    }
+                }
+
+                try {
                     session.addPasswordIdentity(password);
                     session.auth().verify(timeout);
 
@@ -151,6 +200,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                         channel.setErr(stderr);
                         channel.open().verify(timeout);
                         this.vars.putAll(vars);
+                        this.vars.put(SCRIPT_VAR_TFTP_SERVER_IP, InetAddressUtils.str(localAddress));
                         this.vars.put("user", user);
                         this.vars.put("password", password);
                     } catch (Exception e) {
