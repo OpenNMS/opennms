@@ -1,10 +1,9 @@
 <template>
   <div class="wrapper">
     <div class="wrapper-inner">
-      <div class="title">No Requisition Definitions available.</div>
+      <div class="title">No requisitions available.</div>
       <div class="paragraph">
-        You don't have any requisition definitions right now. You can add a new one to synchronize inventory from an
-        external source.
+        Add a requisition to synchronize external inventory.
       </div>
       <div class="flex button-wrapper">
         <FeatherButton class="button" primary @click="props.newDefinition">

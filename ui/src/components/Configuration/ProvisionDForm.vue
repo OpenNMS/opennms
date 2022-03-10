@@ -4,7 +4,7 @@
             ref="firstInput"
             class="side-input"
             label="Name"
-            hint="Human-friendly name for this definition. Must be unique."
+            hint="Human-friendly name. Must be unique."
             :error="errors.name"
             :modelValue="config.name"
             @update:modelValue="(val: string) => updateFormValue('name', val)"
@@ -13,7 +13,7 @@
             <FeatherSelect
                 class="side-input full-width"
                 textProp="name"
-                hint="Type of URL to use for this definition"
+                hint="Type of URL to use."
                 label="Type"
                 :options="requisitionTypeList"
                 :error="errors.type"

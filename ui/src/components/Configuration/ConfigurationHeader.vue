@@ -3,11 +3,8 @@
     <h1 class="title">{{ props.title }}</h1>
     <h2 class="headline">{{ props.headline }}</h2>
     <p class="body">
-      The
-      <strong>Provisiond</strong> subsystem uses
-      <em>requisitions</em> to keep track of the nodes, interfaces, and services to be monitored.
-      Creating requisition definitions enables recurring synchronization with outside inventory sources.
-      Adjusting thread pool sizes can improve performance.
+      The provision daemon (provisiond) uses requisitions to track the nodes, interfaces, and services to monitor.
+      Create a requisition to enable regular synchronization with outside inventory sources. Adjust the thread pool size to improve performance.
     </p>
   </div>
 </template>

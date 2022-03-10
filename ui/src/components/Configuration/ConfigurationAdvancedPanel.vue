@@ -2,7 +2,7 @@
   <FeatherExpansionPanel
     id="advanced-panel"
     class="expansion-panel advanced-panel"
-    title="Advanced Options (not required)"
+    title="Advanced Options (optional)"
     :modelValue="props.active"
     @update:modelValue="props.activeUpdate"
   >

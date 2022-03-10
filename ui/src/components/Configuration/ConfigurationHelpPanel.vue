@@ -62,9 +62,9 @@ const helpText = computed(() => {
   const subType = props.item.subType.name
 
   let helpVals = {
-    title: 'Requisition Definition',
-    subTitle: 'Requisition definitions enable periodic inventory synchronization from external sources. Each definition consists of a URL, a schedule, and a setting determining which nodes to rescan.',
-    help: 'Detailed information on the options it supports is available in the online documentation:',
+    title: 'Requisition',
+    subTitle: 'Requisitions enable periodic inventory synchronization from external sources. Each definition contains a URL, schedule, and setting to specify the nodes to rescan.',
+    help: 'See the online documentation for detailed information on supported options:',
     linkCopy: 'READ FULL ARTICLE',
     link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
   }
@@ -72,8 +72,8 @@ const helpText = computed(() => {
   if (typeName === RequisitionTypes.File) {
     helpVals = {
       title: 'File',
-      subTitle: 'The file handler imports a properly-formatted requisition definition from an XML file stored locally on the server.',
-      help: 'Detailed information on the options it supports is available in the online documentation:',
+      subTitle: 'The file handler imports a properly formatted requisition from an XML file stored locally on the server.',
+      help: 'See the online documentation for detailed information on supported options:',
       linkCopy: 'READ FULL ARTICLE',
       link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/file.html'
     }
@@ -82,7 +82,7 @@ const helpText = computed(() => {
       helpVals = {
         title: RequisitionTypes.RequisitionPlugin,
         subTitle: '',
-        help: 'Detailed information on the options it supports is available in the online documentation:',
+        help: 'See the online documentation for detailed information on supported options:',
         linkCopy: 'READ FULL ARTICLE',
         link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
       }
@@ -90,7 +90,7 @@ const helpText = computed(() => {
       helpVals = {
         title: 'Open Daylight',
         subTitle: '',
-        help: 'Detailed information on the options it supports is available in the online documentation:',
+        help: 'See the online documentation for detailed information on supported options:',
         linkCopy: 'READ FULL ARTICLE',
         link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
       }
@@ -98,7 +98,7 @@ const helpText = computed(() => {
       helpVals = {
         title: 'ACI',
         subTitle: '',
-        help: 'Detailed information on the options it supports is available in the online documentation:',
+        help: 'See the online documentation for detailed information on supported options:',
         linkCopy: 'READ FULL ARTICLE',
         link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
       }
@@ -106,7 +106,7 @@ const helpText = computed(() => {
       helpVals = {
         title: 'Zabbix',
         subTitle: '',
-        help: 'Detailed information on the options it supports is available in the online documentation:',
+        help: 'See the online documentation for detailed information on supported options:',
         linkCopy: 'READ FULL ARTICLE',
         link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
       }
@@ -114,7 +114,7 @@ const helpText = computed(() => {
       helpVals = {
         title: 'Azure IoT',
         subTitle: '',
-        help: 'Detailed information on the options it supports is available in the online documentation:',
+        help: 'See the online documentation for detailed information on supported options:',
         linkCopy: 'READ FULL ARTICLE',
         link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
       }
@@ -122,7 +122,7 @@ const helpText = computed(() => {
       helpVals = {
         title: 'PRIS',
         subTitle: '',
-        help: 'Detailed information on the options it supports is available in the online documentation:',
+        help: 'See the online documentation for detailed information on supported options:',
         linkCopy: 'READ FULL ARTICLE',
         link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
       }
@@ -130,8 +130,8 @@ const helpText = computed(() => {
   } else if (typeName === RequisitionTypes.VMWare) {
     helpVals = {
       title: RequisitionTypes.VMWare,
-      subTitle: 'The VMware adapter pulls hosts and/or virtual machines from a vCenter server into Horizon. With this adapter, nodes can automatically be added, updated, or removed from your Horizon based on the status of the VMware entity.',
-      help: 'Detailed information on the options it supports is available in the online documentation:',
+      subTitle: 'The VMware adapter pulls hosts and/or virtual machines from a vCenter server into Horizon. With this adapter, you can automatically add, update, or remove nodes from your Horizon based on the status of the VMware entity.',
+      help: 'See the online documentation for detailed information on supported options:',
       linkCopy: 'READ FULL ARTICLE',
       link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/vmware.html'
     }
@@ -139,15 +139,15 @@ const helpText = computed(() => {
     helpVals = {
       title: 'HTTP(S)',
       subTitle: '',
-      help: 'Detailed information on the options it supports is available in the online documentation:',
+      help: 'See the online documentation for detailed information on supported options:',
       linkCopy: 'READ FULL ARTICLE',
       link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/http.html'
     }
   } else if (typeName === RequisitionTypes.DNS) {
     helpVals = {
       title: 'DNS',
-      subTitle: 'The DNS handler requests a zone transfer (AXFR) from a DNS server. The A and AAAA records are retrieved and used to build an import requisition.',
-      help: 'Detailed information on the options it supports is available in the online documentation:',
+      subTitle: 'The DNS handler requests a zone transfer (AXFR) from a DNS server to retrieve the A and AAAA records and build an import requisition.',
+      help: 'See the online documentation for detailed information on supported options:',
       linkCopy: 'READ FULL ARTICLE',
       link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/dns.html'
     }
