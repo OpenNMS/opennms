@@ -93,7 +93,7 @@ public abstract class AbstractPersister extends AbstractCollectionSetVisitor imp
         m_builder = null;
     }
 
-    private boolean isPersistDisabled() {
+    protected boolean isPersistDisabled() {
         return m_params != null &&
                m_params.getParameters().containsKey("storing-enabled") &&
                "false".equals(m_params.getParameters().get("storing-enabled"));
