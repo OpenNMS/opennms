@@ -259,7 +259,9 @@ var config = {
         test: require.resolve('bootstrap/dist/js/bootstrap'),
         use: [{
           loader: 'imports-loader',
-          options: 'define=>false'
+          options: {
+            additionalCode: 'var define = false; /* Disable AMD for misbehaving libraries */',
+          },
         }]
       },
       {
@@ -302,14 +304,18 @@ var config = {
         test: require.resolve('jquery-ui-treemap'),
         use: [{
           loader: 'imports-loader',
-          options: 'define=>false'
+          options: {
+            additionalCode: 'var define = false; /* Disable AMD for misbehaving libraries */',
+          },
         }]
       },
       {
         test: require.resolve('jquery-sparkline/dist/jquery.sparkline'),
         use: [{
           loader: 'imports-loader',
-          options: 'define=>false'
+          options: {
+            additionalCode: 'var define = false; /* Disable AMD for misbehaving libraries */',
+          },
         }]
       },
       {

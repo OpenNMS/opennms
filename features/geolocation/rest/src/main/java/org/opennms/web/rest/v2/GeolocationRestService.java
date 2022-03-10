@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,7 @@ import javax.ws.rs.core.Response;
 
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.features.geolocation.api.GeolocationConfiguration;
 import org.opennms.features.geolocation.api.GeolocationInfo;
 import org.opennms.features.geolocation.api.GeolocationQuery;
@@ -128,16 +129,18 @@ public class GeolocationRestService {
     }
 
     private static void validate(GeolocationQueryDTO query) throws InvalidQueryException {
-        // Validate Strategy
+        // Validate and sanitize Strategy
         if (query.getStrategy() != null) {
+            query.setStrategy(WebSecurityUtils.sanitizeString(query.getStrategy()));
             boolean valid = isValid(query.getStrategy(), NodeStatusCalculationStrategy.values());
             if (!valid) {
                 throw new InvalidQueryException("Strategy '" + query.getStrategy() + "' is not supported");
             }
         }
 
-        // Validate Severity
+        // Validate and sanitize Severity
         if (query.getSeverityFilter() != null) {
+            query.setSeverityFilter(WebSecurityUtils.sanitizeString(query.getSeverityFilter()));
             boolean valid = isValid(query.getSeverityFilter(), OnmsSeverity.values());
             if (!valid) {
                 throw new InvalidQueryException("Severity ' " + query.getSeverityFilter() + "' is not valid. Supported values are: " + Arrays.toString(OnmsSeverity.values()));
