@@ -39,11 +39,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
-import java.io.ByteArrayOutputStream;
 
 public class DeviceConfigUtil {
 
@@ -58,6 +58,7 @@ public class DeviceConfigUtil {
     public static boolean isGzipFile(String fileName) {
         return !Strings.isNullOrEmpty(fileName) && fileName.endsWith(".gz");
     }
+
 
     public static byte[] tarGzipMultipleFiles(Map<String, byte[]> fileNameToDataMap) throws IOException {
         if (fileNameToDataMap == null || fileNameToDataMap.isEmpty()) {
