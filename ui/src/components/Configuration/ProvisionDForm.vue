@@ -13,7 +13,7 @@
             <FeatherSelect
                 class="side-input full-width"
                 textProp="name"
-                hint="Primary scheme type for this definition."
+                hint="Type of URL to use."
                 label="Type"
                 :options="requisitionTypeList"
                 :error="errors.type"
