@@ -16,7 +16,7 @@ const state: State = {
   modalDeviceConfigBackup: {} as DeviceConfigBackup,
   selectedIds: [],
   vendorOptions: ['Aruba', 'Cisco', 'Juniper', 'OpenNMS'],
-  backupStatusOptions: [],
+  backupStatusOptions: ['Success', 'Failed', 'Paused', 'No Backup', 'In Progress'],
   osImageOptions: []
 }
 

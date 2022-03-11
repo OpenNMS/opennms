@@ -41,7 +41,7 @@ const getDeviceConfigBackups = async (queryParameters: DeviceConfigQueryParams):
         ipAddress: '10.21.10.81',
         lastSucceeded: '1643831118973',
         lastUpdated: '1643831118973',
-        backupStatus: 'Success',
+        backupStatus: 'Paused',
         scheduleDate: '1643831118973',
         scheduleInterval: 'daily'
       } as any,

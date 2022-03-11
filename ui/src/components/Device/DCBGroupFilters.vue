@@ -11,10 +11,14 @@
           </template>
         </FeatherButton>
       </template>
-      <FeatherDropdownItem v-for="option of vendorOptions" :key="option">{{ option }}</FeatherDropdownItem>
+      <FeatherDropdownItem
+        v-for="option of vendorOptions"
+        :key="option"
+        @click="onGroupByOptionClick('vendor', option)"
+      >{{ option }}</FeatherDropdownItem>
     </FeatherDropdown>
 
-    <FeatherDropdown class="dropdown">
+    <FeatherDropdown class="dropdown dcb-group-filters-status-dropdown">
       <template v-slot:trigger>
         <FeatherButton secondary link href="#" menu-trigger>
           <template v-slot:icon>
@@ -23,7 +27,13 @@
           </template>
         </FeatherButton>
       </template>
-      <FeatherDropdownItem v-for="option of backupStatusOptions" :key="option">{{ option }}</FeatherDropdownItem>
+      <FeatherDropdownItem
+        v-for="option of backupStatusOptions"
+        :key="option"
+        @click="onGroupByOptionClick('status', option)"
+      >
+        <div class="option" :class="option.replace(' ', '')">{{ option }}</div>
+      </FeatherDropdownItem>
     </FeatherDropdown>
 
     <FeatherDropdown class="dropdown">
@@ -35,7 +45,11 @@
           </template>
         </FeatherButton>
       </template>
-      <FeatherDropdownItem v-for="option of osImageOptions" :key="option">{{ option }}</FeatherDropdownItem>
+      <FeatherDropdownItem
+        v-for="option of osImageOptions"
+        :key="option"
+        @click="onGroupByOptionClick('osImage', option)"
+      >{{ option }}</FeatherDropdownItem>
     </FeatherDropdown>
   </div>
 </template>
@@ -48,10 +62,23 @@ import { FeatherIcon } from '@featherds/icon'
 import ArrowDown from '@featherds/icon/navigation/ArrowDropDown'
 
 import store from '@/store'
+import { DeviceConfigQueryParams } from '@/types/deviceConfig'
 
 const vendorOptions = computed<string[]>(() => store.state.deviceModule.vendorOptions)
 const backupStatusOptions = computed<string[]>(() => store.state.deviceModule.backupStatusOptions)
 const osImageOptions = computed<string[]>(() => store.state.deviceModule.osImageOptions)
+
+const onGroupByOptionClick = (groupBy: string, value: string) => {
+  const newQueryParams: DeviceConfigQueryParams = {
+    limit: 20,
+    offset: 0,
+    groupBy: groupBy,
+    groupByValue: value
+  }
+
+  store.dispatch('deviceModule/updateDeviceConfigBackupQueryParams', newQueryParams)
+  store.dispatch('deviceModule/getDeviceConfigBackups')
+}
 </script>
 
 <style scoped lang="scss">
@@ -73,8 +100,26 @@ const osImageOptions = computed<string[]>(() => store.state.deviceModule.osImage
 
   .dropdown {
     margin-bottom: 15px;
+
+    .option {
+      height: 36px;
+      line-height: 2.5;
+      padding-left: 15px;
+    }
     .btn {
       width: 100%;
+    }
+  }
+}
+</style>
+
+<style lang="scss">
+.dcb-group-filters-status-dropdown {
+  .feather-dropdown {
+    li {
+      a {
+        padding-left: 5px;
+      }
     }
   }
 }

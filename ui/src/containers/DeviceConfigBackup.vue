@@ -30,6 +30,27 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
+
+@mixin status-bar($color) {
+  background: $color;
+  background: linear-gradient(90deg, $color 1%, rgba(255, 255, 255, 0) 9%);
+}
+::v-deep .Success {
+  @include status-bar(var($success));
+}
+::v-deep .Failed {
+  @include status-bar(var($error));
+}
+::v-deep .InProgress {
+  @include status-bar(var($warning));
+}
+::v-deep .Paused {
+  @include status-bar(var($primary-variant));
+}
+::v-deep .NoBackup {
+  @include status-bar(var($secondary-variant));
+}
+
 .card {
   @include elevation(2);
   background: var($surface);
@@ -48,7 +69,7 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
     }
 
     .filters-container {
-      width: 15rem
+      width: 15rem;
     }
   }
 }

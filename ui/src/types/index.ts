@@ -209,6 +209,7 @@ export interface QueryParameters {
   order?: SORT
   search?: string
   groupBy?: string
+  groupByValue?: string
   [x: string]: any
 }
 

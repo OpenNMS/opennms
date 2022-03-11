@@ -94,12 +94,9 @@
             v-on:sort-changed="sortByColumnHandler"
           >Last Attempted</FeatherSortHeader>
 
-          <FeatherSortHeader
-            scope="col"
-            property="backupStatus"
-            :sort="sortStates.backupStatus"
-            v-on:sort-changed="sortByColumnHandler"
-          >Backup Status</FeatherSortHeader>
+          <th>
+            <DCBTableStatusDropdown />
+          </th>
 
           <FeatherSortHeader
             scope="col"
@@ -137,7 +134,10 @@
             @click="onLastBackupDateClick(config)"
           >{{ config.lastUpdated }}</td>
           <td>
-            <div :class="config.backupStatus.replace(' ', '')">{{ config.backupStatus }}</div>
+            <div
+              :class="config.backupStatus.replace(' ', '')"
+              class="option"
+            >{{ config.backupStatus }}</div>
           </td>
           <td v-date>{{ config.scheduleDate }}</td>
           <td>{{ config.scheduleInterval }}</td>
@@ -172,6 +172,7 @@ import DCBModal from './DCBModal.vue'
 import DCBModalLastBackupContent from './DCBModalLastBackupContent.vue'
 import DCBModalViewHistoryContentVue from './DCBModalViewHistoryContent.vue'
 import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
+import DCBTableStatusDropdown from './DCBTableStatusDropdown.vue'
 
 enum DCBModalContentComponentNames {
   DCBModalLastBackupContent = 'DCBModalLastBackupContent',
@@ -191,7 +192,6 @@ const sortStates: DeviceConfigQueryParams = reactive({
   location: SORT.NONE,
   lastBackup: SORT.NONE,
   lastAttempted: SORT.NONE,
-  backupStatus: SORT.NONE,
   scheduleDate: SORT.NONE,
   scheduleInterval: SORT.NONE
 })
@@ -295,18 +295,6 @@ onMounted(() => {
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
 
-@mixin status-bar($color) {
-  height: 43px;
-  line-height: 3.5;
-  padding-left: 15px;
-  background: $color;
-  background: linear-gradient(
-    90deg,
-    $color 1%,
-    rgba(255, 255, 255, 0) 9%
-  );
-}
-
 #wrap {
   height: calc(100vh - 310px);
   overflow: auto;
@@ -324,14 +312,10 @@ onMounted(() => {
       color: var($primary);
     }
 
-    .Success {
-      @include status-bar(var($success));
-    }
-    .Failed {
-      @include status-bar(var($error));
-    }
-    .NoBackup {
-      @include status-bar(var($state-color-on-neutral));
+    .option {
+      height: 43px;
+      line-height: 3.5;
+      padding-left: 15px;
     }
   }
 
