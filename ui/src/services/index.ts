@@ -7,8 +7,6 @@ import {
   getNodeAvailabilityPercentage
 } from './nodeService'
 
-import { getAlarms, modifyAlarm } from './alarmService'
-
 import {
   getGraphNodesNodes,
   getGraphDefinitionsByResourceId,
@@ -17,17 +15,33 @@ import {
   getPreFabGraphs
 } from './graphService'
 
+import {
+  getDeviceConfigBackups,
+  backupDeviceConfig,
+  downloadDeviceConfigs,
+  getVendorOptions,
+  getOsImageOptions
+} from './deviceService'
+
+import {
+  getFileNames,
+  getFile,
+  getSnippets,
+  postFile,
+  deleteFile,
+  getFileExtensions
+} from './configService'
+
+import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { search } from './searchService'
-import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
 import { getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
 import { getPlugins } from './pluginService'
-import { getDeviceConfigBackups, backupDeviceConfig, downloadDeviceConfigs } from './deviceService'
 
 export default {
   search,
@@ -62,5 +76,7 @@ export default {
   getPlugins,
   getDeviceConfigBackups,
   backupDeviceConfig,
-  downloadDeviceConfigs
+  downloadDeviceConfigs,
+  getVendorOptions,
+  getOsImageOptions
 }

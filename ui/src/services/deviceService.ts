@@ -4,63 +4,17 @@ import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfi
 
 const endpoint = 'device-config'
 
-const getDeviceConfigBackups = async (queryParameters: DeviceConfigQueryParams): Promise<DeviceConfigBackup[]>  => {
+const getDeviceConfigBackups = async (queryParameters: DeviceConfigQueryParams): Promise<DeviceConfigBackup[]> => {
   try {
     const endpointWithQueryString = queryParametersHandler(queryParameters, endpoint)
     const resp = await rest.get(endpointWithQueryString)
     return resp.data
   } catch (err) {
-    // mock data
-    return [
-      {
-        id: 123,
-        deviceName: 'Cisco-7201',
-        location: 'location',
-        ipAddress: '10.21.10.81',
-        lastSucceeded: '1643831118973',
-        lastUpdated: '1643831118973',
-        backupStatus: 'Success',
-        scheduleDate: '1643831118973',
-        scheduleInterval: 'daily'
-      } as any,
-      {
-        id: 12,
-        deviceName: 'Aruba-7003-1',
-        location: 'location',
-        ipAddress: '10.21.10.81',
-        lastSucceeded: '1643831118973',
-        lastUpdated: '1643831118973',
-        backupStatus: 'Failed',
-        scheduleDate: '1643831118973',
-        scheduleInterval: 'daily'
-      } as any,
-      {
-        id: 122,
-        deviceName: 'Cisco-7201',
-        location: 'location',
-        ipAddress: '10.21.10.81',
-        lastSucceeded: '1643831118973',
-        lastUpdated: '1643831118973',
-        backupStatus: 'Paused',
-        scheduleDate: '1643831118973',
-        scheduleInterval: 'daily'
-      } as any,
-      {
-        id: 55,
-        deviceName: 'Aruba-7003-1',
-        location: 'location',
-        ipAddress: '10.21.10.81',
-        lastSucceeded: '1643831118973',
-        lastUpdated: '1643831118973',
-        backupStatus: 'No Backup',
-        scheduleDate: '1643831118973',
-        scheduleInterval: 'daily'
-      } as any,
-    ]
+    return []
   }
 }
 
-const downloadDeviceConfigs = async (deviceIds: number[])=> {
+const downloadDeviceConfigs = async (deviceIds: number[]) => {
   const queryString = `?id=${deviceIds.join(',')}`
   try {
     const resp = await rest.get(`${endpoint}/download${queryString}`)
@@ -72,11 +26,35 @@ const downloadDeviceConfigs = async (deviceIds: number[])=> {
 
 const backupDeviceConfig = async (deviceConfig: DeviceConfigBackup) => {
   try {
-    const resp = await rest.post(endpoint, deviceConfig)
+    const resp = await rest.post(`${endpoint}/backup`, deviceConfig)
     return resp.data
   } catch (err) {
     return {}
   }
 }
 
-export { getDeviceConfigBackups, backupDeviceConfig, downloadDeviceConfigs }
+const getVendorOptions = async (): Promise<string[]> => {
+  try {
+    const resp = await rest.get(`${endpoint}/vendor-options`)
+    return resp.data
+  } catch (err) {
+    return []
+  }
+}
+
+const getOsImageOptions = async (): Promise<string[]> => {
+  try {
+    const resp = await rest.get(`${endpoint}/os-image-options`)
+    return resp.data
+  } catch (err) {
+    return []
+  }
+}
+
+export { 
+  getDeviceConfigBackups, 
+  backupDeviceConfig, 
+  downloadDeviceConfigs, 
+  getVendorOptions, 
+  getOsImageOptions 
+}

@@ -21,10 +21,20 @@ const SET_SELECTED_IDS = (state: State, ids: number[]) => {
   state.selectedIds = ids
 }
 
+const SAVE_VENDOR_OPTIONS = (state: State, options: string[]) => {
+  state.vendorOptions = options
+}
+
+const SAVE_OS_IMAGE_OPTIONS = (state: State, options: string[]) => {
+  state.osImageOptions = options
+}
+
 export default {
   SAVE_DEVICE_CONFIG_BACKUPS,
   MERGE_DEVICE_CONFIG_BACKUPS,
   UPDATE_DEVICE_CONFIG_BACKUP_QUERY_PARAMS,
   SET_MODAL_DEVICE_CONFIG_BACKUP,
-  SET_SELECTED_IDS
+  SET_SELECTED_IDS,
+  SAVE_VENDOR_OPTIONS,
+  SAVE_OS_IMAGE_OPTIONS
 }

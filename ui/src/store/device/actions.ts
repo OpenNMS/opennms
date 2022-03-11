@@ -73,6 +73,16 @@ const setSelectedIds = (contextWithState: ContextWithState, idsOrAll: number[] |
   }
 }
 
+const getVendorOptions = async (context: VuexContext) => {
+  const vendorOptions = await API.getVendorOptions()
+  context.commit('SAVE_VENDOR_OPTIONS', vendorOptions)
+}
+
+const getOsImageOptions = async (context: VuexContext) => {
+  const osImageOptions = await API.getOsImageOptions()
+  context.commit('SAVE_OS_IMAGE_OPTIONS', osImageOptions)
+}
+
 export default {
   getDeviceConfigBackups,
   getAndMergeDeviceConfigBackups,
@@ -80,5 +90,7 @@ export default {
   downloadSelectedDevices,
   backupSelectedDevices,
   setSelectedIds,
-  setModalDeviceConfigBackup
+  setModalDeviceConfigBackup,
+  getVendorOptions,
+  getOsImageOptions
 }

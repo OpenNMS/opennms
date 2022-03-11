@@ -24,15 +24,16 @@ defineProps({
 
 const modalDeviceConfigBackup = computed<DeviceConfigBackup>(() => store.state.deviceModule.modalDeviceConfigBackup)
 
+// TODO: Open feather PR to fix issue for reactive modal labels
 const labels = ref({
-  title: `DeviceName: ${modalDeviceConfigBackup.value.deviceName}`,
+  title: 'DeviceName: ...',
   close: 'Close'
 })
 </script>
 
 <style scoped lang="scss">
 .content {
-  width: 500px;
+  min-width: 500px;
   position: relative;
 }
 </style>

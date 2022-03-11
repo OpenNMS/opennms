@@ -3,7 +3,7 @@
     <div class="config-header">
       <div class="config-column">
         <div>Devices:</div>
-        <div class="config-number">100</div>
+        <div class="config-number">N/A</div>
       </div>
       <div class="divider"></div>
       <div class="config-column">
@@ -27,7 +27,7 @@
 
           <FeatherButton
             @click="onDownload"
-            :disabled="selectedDeviceConfigIds.length === 0 && !all"
+            :disabled="(selectedDeviceConfigIds.length === 0 && !all) || (all && !deviceConfigBackups.length)"
             text
           >
             <template v-slot:icon>
@@ -38,7 +38,7 @@
 
           <FeatherButton
             @click="onBackupNow"
-            :disabled="selectedDeviceConfigIds.length === 0 && !all"
+            :disabled="(selectedDeviceConfigIds.length === 0 && !all) || (all && !deviceConfigBackups.length)"
             text
           >
             <template v-slot:icon>
@@ -127,12 +127,12 @@
           </td>
           <td>{{ config.ipAddress }}</td>
           <td>{{ config.location }}</td>
-          <td v-date>{{ config.lastSucceeded }}</td>
+          <td v-date>{{ config.lastSucceededDate }}</td>
           <td
             v-date
             class="last-backup-date pointer"
             @click="onLastBackupDateClick(config)"
-          >{{ config.lastUpdated }}</td>
+          >{{ config.lastUpdatedDate }}</td>
           <td>
             <div
               :class="config.backupStatus.replace(' ', '')"
@@ -195,18 +195,18 @@ const sortStates: DeviceConfigQueryParams = reactive({
   scheduleDate: SORT.NONE,
   scheduleInterval: SORT.NONE
 })
-const { arrivedState } = useScroll(tableWrap, {
+const { arrivedState, directions } = useScroll(tableWrap, {
   offset: { bottom: 300 }
 })
 
-watch(arrivedState, () => {
-  if (arrivedState.bottom) {
+watch(() => directions.bottom, () => {
+  if (!directions.bottom && arrivedState.bottom) {
     getMoreDeviceConfigBackups()
   }
 })
 
 const deviceConfigBackups = computed<DeviceConfigBackup[]>(() => store.state.deviceModule.deviceConfigBackups)
-const totalCountOfDeviceConfigBackups = computed(() => 2) // TODO: which endpoint prop will return this?
+const totalCountOfDeviceConfigBackups = computed(() => 'N/A') // TODO: which endpoint prop will return this?
 const deviceConfigBackupQueryParams = computed<DeviceConfigQueryParams>(() => store.state.deviceModule.deviceConfigBackupQueryParams)
 const selectedDeviceConfigIds = computed<number[]>(() => {
   return Object.keys(selectedDeviceConfigBackups.value)
