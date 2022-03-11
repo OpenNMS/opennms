@@ -1883,6 +1883,7 @@
     <feature name="opennms-deviceconfig-deps" description="OpenNMS :: Features :: Device Config :: Deps" version="${project.version}">
         <feature>commons-net</feature>
         <feature>opennms-util</feature>
+        <feature>commons-compress</feature>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.api/${project.version}</bundle>
     </feature>

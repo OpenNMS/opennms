@@ -41,6 +41,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.device-config</groupId>
+            <artifactId>org.opennms.features.device-config.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.device-config.persistence</groupId>
             <artifactId>org.opennms.features.device-config.persistence.api</artifactId>
             <version>${project.version}</version>
