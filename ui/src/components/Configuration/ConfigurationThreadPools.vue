@@ -26,7 +26,7 @@
       </div>
     </template>
     <div>
-      <p>Thread pool sizes are set based on your configuration. To adjust them, select a value from the drop-down list.</p>
+      <p>Thread pool sizes impact the performance of the provisioning subsystem. Larger systems may require larger values. To adjust them, select a value from the drop-down list.</p>
       <FeatherInput
         :error="getError('importThreads')"
         type="number"
