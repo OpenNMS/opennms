@@ -5,11 +5,11 @@ import store from '@/store'
 
 const appInfo = computed<AppInfo>(() => (store as any).state.infoModule.info)
 const timeZone = computed<string>(
-  () => appInfo.value.datetimeformatConfig.zoneId || Intl.DateTimeFormat().resolvedOptions().timeZone
+  () => appInfo.value.datetimeformatConfig?.zoneId || Intl.DateTimeFormat().resolvedOptions().timeZone
 )
 const formatString = computed<string>(
   // eslint-disable-next-line quotes
-  () => appInfo.value.datetimeformatConfig.datetimeformat || "yyyy-MM-dd'T'HH:mm:ssxxx"
+  () => appInfo.value.datetimeformatConfig?.datetimeformat || "yyyy-MM-dd'T'HH:mm:ssxxx"
 )
 
 const dateFormatDirective = {
