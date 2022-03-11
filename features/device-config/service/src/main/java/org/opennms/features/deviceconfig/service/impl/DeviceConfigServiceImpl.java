@@ -38,7 +38,6 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.DeviceConfig;
@@ -159,26 +158,16 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     }
 
     private List<Parameter> getServiceParamsFromPollerConfig(MonitoredService service) throws IOException {
-        final PollerConfig pollerConfig = ReadOnlyPollerConfigManager.create();
-        List<OnmsMetaData> metaData = sessionUtils.withReadOnlyTransaction(() -> {
-            OnmsMonitoredService monitoredService = monitoredServiceDao.get(service.getNodeId(), service.getAddress(), service.getSvcName());
-            List<OnmsMetaData> metaDataList = monitoredService.getMetaData();
-            return metaDataList.stream().filter(onmsMetaData -> onmsMetaData.getContext().equals("requisition")).collect(Collectors.toList());
-        });
-        Optional<OnmsMetaData> pkgFromMetadata = metaData.stream().filter(onmsMetaData -> onmsMetaData.getKey().equals("package")).findFirst();
+
         List<Parameter> parameters = new ArrayList<>();
-        if(pkgFromMetadata.isPresent()) {
-            org.opennms.netmgt.config.poller.Package pkg = pollerConfig.getPackage(pkgFromMetadata.get().getValue());
-            parameters.addAll(pkg.getService(service.getSvcName()).getParameters());
-        } else {
-            List<String> pkgNames = pollerConfig.getAllPackageMatches(service.getIpAddr());
-            List<org.opennms.netmgt.config.poller.Package> packages =
-                    pollerConfig.getPackages().stream().filter(pollerPackage ->
-                            pollerConfig.isServiceInPackageAndEnabled(service.getSvcName(), pollerPackage)).collect(Collectors.toList());
-            Optional<org.opennms.netmgt.config.poller.Package> pkg = packages.stream().filter(pollerPackage ->
-                    pkgNames.contains(pollerPackage.getName())).findFirst();
-            pkg.ifPresent(aPackage -> parameters.addAll(aPackage.getService(service.getSvcName()).getParameters()));
-        }
+        final PollerConfig pollerConfig = ReadOnlyPollerConfigManager.create();
+        List<String> pkgNames = pollerConfig.getAllPackageMatches(service.getIpAddr());
+        List<org.opennms.netmgt.config.poller.Package> packages =
+                pollerConfig.getPackages().stream().filter(pollerPackage ->
+                        pollerConfig.isServiceInPackageAndEnabled(service.getSvcName(), pollerPackage)).collect(Collectors.toList());
+        Optional<org.opennms.netmgt.config.poller.Package> pkg = packages.stream().filter(pollerPackage ->
+                pkgNames.contains(pollerPackage.getName())).findFirst();
+        pkg.ifPresent(aPackage -> parameters.addAll(aPackage.getService(service.getSvcName()).getParameters()));
         return parameters;
     }
 
