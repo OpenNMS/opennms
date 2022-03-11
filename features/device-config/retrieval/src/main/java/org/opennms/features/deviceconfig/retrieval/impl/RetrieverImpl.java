@@ -28,7 +28,6 @@
 
 package org.opennms.features.deviceconfig.retrieval.impl;
 
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.time.Duration;
 import java.util.HashMap;
@@ -43,7 +42,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 import org.opennms.core.concurrent.FutureUtils;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
 import org.opennms.features.deviceconfig.sshscripting.SshScriptingService;
 import org.opennms.features.deviceconfig.tftp.TftpFileReceiver;
@@ -62,35 +60,22 @@ import io.vavr.control.Either;
  */
 public class RetrieverImpl implements Retriever, AutoCloseable {
 
+
     private static Logger LOG = LoggerFactory.getLogger(RetrieverImpl.class);
 
     // when a
     private static String SCRIPT_VAR_FILENAME_SUFFIX = "filenameSuffix";
-    private static String SCRIPT_VAR_TFTP_SERVER_IP = "tftpServerIp";
     private static String SCRIPT_VAR_TFTP_SERVER_PORT = "tftpServerPort";
     private static String SCRIPT_VAR_CONFIG_TYPE = "configType";
 
     private final SshScriptingService sshScriptingService;
     private final TftpServer tftpServer;
     private final ExecutorService executor;
-    private final String tftpServerIp;
 
-    public RetrieverImpl(SshScriptingService sshScriptingService, TftpServer tftpServer) throws Exception {
+    public RetrieverImpl(SshScriptingService sshScriptingService, TftpServer tftpServer) {
         this.sshScriptingService = sshScriptingService;
         this.tftpServer = tftpServer;
         this.executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("device-config-retriever-%d").build());
-        this.tftpServerIp = determineIp();
-    }
-
-    private String determineIp() throws Exception {
-        try(final DatagramSocket socket = new DatagramSocket()) {
-            socket.connect(InetAddressUtils.UNPINGABLE_ADDRESS, 10002);
-            String ipAddress = socket.getLocalAddress().getHostAddress();
-            if (ipAddress.equals("0.0.0.0")) {
-                return InetAddress.getLocalHost().getHostAddress();
-            }
-            return ipAddress;
-        }
     }
 
     @Override
@@ -116,7 +101,6 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         vs.put(SCRIPT_VAR_FILENAME_SUFFIX, filenameSuffix);
 
         // set the ip address and port of the tftp server
-        vs.put(SCRIPT_VAR_TFTP_SERVER_IP, tftpServerIp);
         vs.put(SCRIPT_VAR_TFTP_SERVER_PORT, String.valueOf(tftpServer.getPort()));
         vs.put(SCRIPT_VAR_CONFIG_TYPE, configType);
 

@@ -91,6 +91,9 @@
     <feature name="commons-collections" version="${commonsCollectionsVersion}" description="Apache :: commons-collections">
         <bundle>mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
     </feature>
+    <feature name="commons-compress" version="1.21" description="Apache :: commons-compress">
+        <bundle>mvn:org.apache.commons/commons-compress/1.21</bundle>
+    </feature>
     <feature name="commons-configuration" version="${commonsConfigurationVersion}" description="Apache :: commons-configuration">
         <feature>commons-beanutils</feature>
         <feature>commons-codec</feature>
@@ -1893,6 +1896,7 @@
     <feature name="opennms-deviceconfig-monitor" description="OpenNMS :: Features :: Device Config :: Monitor" version="${project.version}">
         <feature>opennms-deviceconfig-tftp</feature>
         <feature>quartz</feature>
+        <feature>opennms-util</feature>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.ssh-scripting/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.retrieval/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.monitor/${project.version}</bundle>
@@ -1918,6 +1922,7 @@
     </feature>
 
     <feature name="opennms-deviceconfig-rest" description="OpenNMS :: Features :: Device Config :: Rest" version="${project.version}">
+        <feature>commons-compress</feature>
         <feature>opennms-osgi-core-rest</feature>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.rest/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.api/${project.version}</bundle>

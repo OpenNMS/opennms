@@ -46,8 +46,14 @@ import javax.ws.rs.core.Response;
 public interface DeviceConfigRestService {
     public static final String DEVICE_CONFIG_SERVICE_PREFIX = "DeviceConfig";
 
-    // paging, filter by ipaddressId, last updated time, config created time, last succeeded, last failed, config type
-    // order by last updated time (asc, desc)
+    /**
+     * Get device config info for a single item, by DeviceConfig id.
+     * @param id database id of device config
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{id : \\d+}")
+    Response getDeviceConfig(@PathParam("id") long id);
 
     /**
      * Gets a list of device configs along with backup schedule information.
@@ -79,29 +85,22 @@ public interface DeviceConfigRestService {
         @QueryParam("createdBefore") Long createdBefore
     );
 
-    @GET
-    @Path("{id}")
-    DeviceConfigDTO getDeviceConfig(@PathParam("id") long id);
-
+    /**
+     * Delete a single device config.
+     * @param id
+     */
     @DELETE
-    @Path("{id}")
+    @Path("{id : \\d+}")
     void deleteDeviceConfig(@PathParam("id") long id);
 
     /**
-     * Download the most recent backup configuration for a single device.
+     * Download configurations for the given id or comma-separated list of ids.
+     * Single configurations will be returned as a single file.
+     * Multiple configurations will be returned inside a .tgz file.
      */
     @GET
-    @Path("/download/{id}")
-    Response downloadDeviceConfig(@PathParam("id") long id);
-
-    /**
-     * Download a zip file containing the most recent backup configurations for multiple devices.
-     * POST will be Json
-     */
-    @POST
     @Path("/download")
-    Response downloadDeviceConfigs();
-
+    Response downloadDeviceConfig(@QueryParam("id") @DefaultValue("") String id);
 
     @POST
     @Path("/backup")
