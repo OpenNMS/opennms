@@ -2,11 +2,11 @@ import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfi
 
 export interface State {
   deviceConfigBackups: DeviceConfigBackup[]
-  deviceConfigBackupQueryParams: DeviceConfigQueryParams,
+  deviceConfigBackupQueryParams: DeviceConfigQueryParams
   modalDeviceConfigBackup: DeviceConfigBackup
   selectedIds: number[]
   vendorOptions: string[]
-  backupStatusOptions: string[],
+  backupStatusOptions: string[]
   osImageOptions: string[]
 }
 

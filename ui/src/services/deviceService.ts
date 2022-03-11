@@ -51,10 +51,4 @@ const getOsImageOptions = async (): Promise<string[]> => {
   }
 }
 
-export { 
-  getDeviceConfigBackups, 
-  backupDeviceConfig, 
-  downloadDeviceConfigs, 
-  getVendorOptions, 
-  getOsImageOptions 
-}
+export { getDeviceConfigBackups, backupDeviceConfig, downloadDeviceConfigs, getVendorOptions, getOsImageOptions }

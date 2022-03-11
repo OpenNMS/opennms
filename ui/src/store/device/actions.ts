@@ -44,7 +44,6 @@ const backupSelectedDevices = async (contextWithState: ContextWithState) => {
   } else {
     // backup multiple configs?
   }
-
 }
 
 const updateDeviceConfigBackupQueryParams = async (context: VuexContext, newQueryParams: DeviceConfigQueryParams) => {

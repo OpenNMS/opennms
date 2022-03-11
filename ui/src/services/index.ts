@@ -23,14 +23,7 @@ import {
   getOsImageOptions
 } from './deviceService'
 
-import {
-  getFileNames,
-  getFile,
-  getSnippets,
-  postFile,
-  deleteFile,
-  getFileExtensions
-} from './configService'
+import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
 
 import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'

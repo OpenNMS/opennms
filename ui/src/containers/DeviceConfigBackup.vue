@@ -35,19 +35,19 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
   background: $color;
   background: linear-gradient(90deg, $color 1%, rgba(255, 255, 255, 0) 9%);
 }
-::v-deep .Success {
+:deep(.Success) {
   @include status-bar(var($success));
 }
-::v-deep .Failed {
+:deep(.Failed) {
   @include status-bar(var($error));
 }
-::v-deep .InProgress {
+:deep(.InProgress) {
   @include status-bar(var($warning));
 }
-::v-deep .Paused {
+:deep(.Paused) {
   @include status-bar(var($primary-variant));
 }
-::v-deep .NoBackup {
+:deep(.NoBackup) {
   @include status-bar(var($secondary-variant));
 }
 
