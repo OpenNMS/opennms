@@ -63,7 +63,6 @@ import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
-import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
@@ -72,6 +71,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.utils.ResponseUtils;
 import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -228,7 +229,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
         // TODO: Update MIME type, charset based on 'encoding'
         return Response.ok().type("text/plain;charset=UTF-8")
-            .header("Content-Disposition", "inline; filename=" + fileName)
+            .header("Content-Disposition", "attachment; filename=" + fileName)
             .header("Pragma", "public")
             .header("Cache-Control", "cache")
             .header("Cache-Control", "must-revalidate")
@@ -249,7 +250,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         byte[] gzipBytes = null;
 
         try {
-            gzipBytes = DeviceConfigUtil.tarGzipMultipleFiles(fileNameToDataMap);
+            gzipBytes = CompressionUtils.tarGzipMultipleFiles(fileNameToDataMap);
         } catch (IOException e) {
             var message = "Error compressing multiple files for download.";
             LOG.error(message, e);
@@ -263,7 +264,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         final String fileName = "device-configs-" + timestamp + ".tar.gz";
 
         return Response.ok().type("application/gzip")
-            .header("Content-Disposition", "inline; filename=" + fileName)
+            .header("Content-Disposition", "attachment; filename=" + fileName)
             .header("Pragma", "public")
             .header("Cache-Control", "cache")
             .header("Cache-Control", "must-revalidate")
@@ -366,7 +367,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             return new ScheduleInfo(null, "unknown");
         }
 
-        final Date nextScheduledBackup = cronExpression.getNextValidTimeAfter(current);
+        final Date nextScheduledBackup = getNextRunDate(schedulePattern, current);
 
         return new ScheduleInfo(nextScheduledBackup, cronDescription);
     }
@@ -449,6 +450,16 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     private WebApplicationException getException(final Status status, final String message) {
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(message).build());
+    }
+
+    // This method's implementation should be the same as in DeviceConfigMonitor
+    private Date getNextRunDate(String cronSchedule, Date lastRun) {
+        final Trigger trigger = TriggerBuilder.newTrigger()
+            .withSchedule(CronScheduleBuilder.cronSchedule(cronSchedule))
+            .startAt(lastRun)
+            .build();
+
+        return trigger.getFireTimeAfter(lastRun);
     }
 
     private static DeviceConfigDTO createDeviceConfigDto(DeviceConfig deviceConfig) {

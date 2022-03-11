@@ -30,6 +30,7 @@ package org.opennms.features.deviceconfig.rest.impl;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -61,12 +62,15 @@ import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
-import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.*;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.quartz.CronExpression;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -211,7 +215,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
         String expectedFileName = DefaultDeviceConfigRestService.createDownloadFileName(
             "dcb-2", "192.168.3.2", "default", dc.getCreatedTime());
-        String expectedContentDisposition = "inline; filename=" + expectedFileName;
+        String expectedContentDisposition = "attachment; filename=" + expectedFileName;
         String actualContentDisposition = headerMap.get("Content-Disposition").get(0).toString();
         Assert.assertEquals(expectedContentDisposition, actualContentDisposition);
 
@@ -249,7 +253,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
         String actualContentDisposition = headerMap.get("Content-Disposition").get(0).toString();
 
-        Assert.assertTrue(actualContentDisposition.startsWith("inline; filename="));
+        Assert.assertTrue(actualContentDisposition.startsWith("attachment; filename="));
         Assert.assertTrue(actualContentDisposition.endsWith(".tar.gz"));
 
         var pattern = Pattern.compile(".*?filename=(.+)$");
@@ -267,9 +271,9 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
         try {
             byte[] responseBytes = (byte[]) response.getEntity();
-            fileMap = DeviceConfigUtil.unTarGzipMultipleFiles(responseBytes);
+            fileMap = CompressionUtils.unTarGzipMultipleFiles(responseBytes);
         } catch (IOException e) {
-            Assert.fail("IOException calling DeviceConfigUtil.unTarGzipMultipleFiles");
+            Assert.fail("IOException calling CompressionUtils.unTarGzipMultipleFiles");
         }
 
         Assert.assertNotNull(fileMap);
