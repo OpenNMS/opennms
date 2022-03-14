@@ -1,0 +1,39 @@
+= TCP Service Detector
+
+This detector lets you find TCP-based services for monitoring in your network.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.simple.TcpDetector`
+|===
+
+== Configuration and use
+
+.Optional parameters for the TCP service detector
+[options="header, autowidth"]
+[cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| Port to query.
+| 23
+
+| banner
+| RegEx expression to match.
+| .*
+
+|===
+
+== Example Configuration
+
+[source,xml]
+----
+<detector name="MS-RDP" class="org.opennms.netmgt.provision.detector.simple.TcpDetector">
+  <parameter key="port" value="3389"/>
+</detector>
+----
