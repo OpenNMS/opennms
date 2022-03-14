@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+
 package org.opennms.core.network;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.xml.bind.ValidationException;
 
-import java.net.InetAddress;
+/**
+ *  Sublcass of the generic XML ValidationException that indicates
+ *  that an IP address parsed from an XML document is invalid.
+ *
+ *  See {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode#validate()}
+ */
+public class IPValidationException extends ValidationException {
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
-public class InetAddressXmlAdapter extends XmlAdapter<String, InetAddress> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(InetAddressXmlAdapter.class);
-
-    /** {@inheritDoc} */
-    @Override
-    public String marshal(final InetAddress inetAddr) throws Exception {
-        return inetAddr == null? null : new IPAddress(inetAddr).toDbString();
+    public IPValidationException(String message) {
+        super(message);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public InetAddress unmarshal(final String ipAddr) throws Exception {
-        try {
-            return (ipAddr == null || ipAddr.isEmpty()) ? null : new IPAddress(ipAddr).toInetAddress();
-        }
-        catch (Throwable t) {
-            LOG.warn("Invalid IP Address {}", ipAddr);
-            return null;
-        }
+    public IPValidationException(String message, Throwable cause) {
+        super(message, cause);
     }
-
 }
