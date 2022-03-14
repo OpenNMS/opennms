@@ -59,6 +59,7 @@ import com.google.common.io.ByteStreams;
  * Verifies that the {@link MeasurementApiClient} connects accordingly to the OpenNMS Measurement API and may
  * deal with OpenNMS specifics.
  */
+@net.jcip.annotations.NotThreadSafe
 public class MeasurementApiConnectorIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeasurementApiClientTest.class);
