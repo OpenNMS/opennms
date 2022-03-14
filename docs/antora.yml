@@ -10,7 +10,7 @@ asciidoc:
     source-language: asciidoc@
     xrefstyle: short@
     compatible-centos7: '7.x'
-    compatible-centos8: '8.x'
+    compatible-centos-stream: 'CentOS Stream 9.x'
     compatible-rhel7: '7.x'
     compatible-rhel8: '8.x'
     compatible-ubuntu: '20.04 LTS'

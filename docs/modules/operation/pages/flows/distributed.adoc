@@ -56,7 +56,7 @@ Use the `metaDataNodeLookup` parameter to specify a context-key pair in the form
 The value the lookup uses corresponds to the following fields from each protocol:
 
 [options="header, autowidth"]
-[cols="1,1"]
+[cols="1,2"]
 |===
 | Property
 | Description

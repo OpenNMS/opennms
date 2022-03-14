@@ -5,7 +5,7 @@
 The flow query engine supports rendering Top-N metrics from pre-aggregated documents stored in Elasticsearch.
 Use these to help alleviate compute load on the Elasticsearch cluster, particularly for environments with large volumes of flows (>10,000 flows/sec).
 
-To use this functionality you must enable the Kafka forwarder as described in <<flows/setup.adoc#kafka-forwarder-config, Configure Kafka forwarder>> and set up <<flows/nephron.adoc#ga-nephron, Nephron>> to process flows and persist aggregates in Elasticsearch.
+To use this functionality you must enable the Kafka forwarder as described in <<flows/setup.adoc#kafka-forwarder-config, Configure Kafka forwarder>> and set up the streaming analytics tool to process flows and persist aggregates in Elasticsearch.
 
 Set the following properties in `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to control the query engine to use aggregated flows:
 
