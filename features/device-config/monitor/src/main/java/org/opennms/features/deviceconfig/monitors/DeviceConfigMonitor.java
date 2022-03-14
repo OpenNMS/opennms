@@ -106,13 +106,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
         final Date lastRun = new Date(getKeyedLong(parameters, LAST_RETRIEVAL, 0L));
         final String cronSchedule = getKeyedString(parameters, SCHEDULE, DEFAULT_CRON_SCHEDULE);
-
-        final Trigger trigger = TriggerBuilder.newTrigger()
-                .withSchedule(CronScheduleBuilder.cronSchedule(cronSchedule))
-                .startAt(lastRun)
-                .build();
-
-        final Date nextRun = trigger.getFireTimeAfter(lastRun);
+        final Date nextRun = getNextRunDate(cronSchedule, lastRun);
 
         if (!triggeredPoll && !nextRun.before(new Date())) {
             return PollStatus.unknown("Skipping. Next retrieval scheduled for " + nextRun);
@@ -164,6 +158,15 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
     public void setRetriever(Retriever retriever) {
         this.retriever = retriever;
+    }
+
+    private Date getNextRunDate(String cronSchedule, Date lastRun) {
+        final Trigger trigger = TriggerBuilder.newTrigger()
+            .withSchedule(CronScheduleBuilder.cronSchedule(cronSchedule))
+            .startAt(lastRun)
+            .build();
+
+        return trigger.getFireTimeAfter(lastRun);
     }
 
     private String getObjectAsStringFromParams(Map<String, Object> params, String key) {

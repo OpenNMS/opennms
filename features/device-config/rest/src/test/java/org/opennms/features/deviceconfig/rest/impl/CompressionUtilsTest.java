@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.deviceconfig.service;
+package org.opennms.features.deviceconfig.rest.impl;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -38,14 +38,14 @@ import java.util.stream.IntStream;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DeviceConfigUtilTest {
+public class CompressionUtilsTest {
 
     @Test
     public void gzipMultipleFilesNullTest() {
         byte[] result = null;
 
         try {
-            result = DeviceConfigUtil.tarGzipMultipleFiles(null);
+            result = CompressionUtils.tarGzipMultipleFiles(null);
         } catch (IOException e) {
             Assert.fail("IOException thrown when fileNameToDataMap argument was null");
         }
@@ -58,7 +58,7 @@ public class DeviceConfigUtilTest {
         byte[] result = null;
 
         try {
-            result = DeviceConfigUtil.tarGzipMultipleFiles(new HashMap<String, byte[]>());
+            result = CompressionUtils.tarGzipMultipleFiles(new HashMap<String, byte[]>());
         } catch (IOException e) {
             Assert.fail("IOException thrown when fileNameToDataMap argument was empty");
         }
@@ -77,7 +77,7 @@ public class DeviceConfigUtilTest {
         byte[] result = null;
 
         try {
-            result = DeviceConfigUtil.tarGzipMultipleFiles(fileNameToDataMap);
+            result = CompressionUtils.tarGzipMultipleFiles(fileNameToDataMap);
         } catch (IOException e) {
             Assert.fail("IOException thrown during gzipMultipleFiles");
         }
@@ -87,7 +87,7 @@ public class DeviceConfigUtilTest {
         Map<String,byte[]> resultMap = null;
 
         try {
-            resultMap = DeviceConfigUtil.unTarGzipMultipleFiles(result);
+            resultMap = CompressionUtils.unTarGzipMultipleFiles(result);
         } catch (IOException e) {
             Assert.fail("IOException throw during untarGzipMultipleFiles");
         }
