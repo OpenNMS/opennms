@@ -2,12 +2,12 @@
 # yarn lockfile v1
 
 
-"@apitools/openapi-parser@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@apitools/openapi-parser/-/openapi-parser-0.0.10.tgz#d0ae784f80d2937ecb9f7ddb63ed28c72b1ff21d"
-  integrity sha512-DbMtWbsAOn3TJBKp4fJ+gotI6Y4fG4evAfiYIV0MWXZ02mtMZ5b4lTGJ1aZQ79l4Vlp0Kpu1RsDOtDvqgZp3mA==
+"@apitools/openapi-parser@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@apitools/openapi-parser/-/openapi-parser-0.0.24.tgz#8498e3685ee849e1ec17857c93928240e1129b87"
+  integrity sha512-s1cJort2nFt5B57cCj6aO3MieJxhK4ouyZprYoY8lFlCGPEtRDUlQPai00cpMqt5YrsryyFMp1M0G2QsJa69Vg==
   dependencies:
-    swagger-client "^3.17.0"
+    swagger-client "^3.18.4"
 
 "@babel/helper-validator-identifier@^7.16.7":
   version "7.16.7"
@@ -376,6 +376,11 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
+"@lit/reactive-element@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@lit/reactive-element/-/reactive-element-1.3.0.tgz#c85c5a5fea41d7230e52fb9017307f473ab947ea"
+  integrity sha512-0TKSIuJHXNLM0k98fi0AdMIdUoHIYlDHTP+0Vruc2SOs4T6vU1FinXgSvYd8mSrkt+8R+qdRAXvjpqrMXMyBgw==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -657,6 +662,11 @@
   integrity sha512-H5BgO6UdJRzz5ddRzuGvLBiPSPEuuHXb5ET+7avLLrEx1uc7f5Ut5oLMDQsfvGtHBBAFczt1QNYuDf27wHbvDQ==
   dependencies:
     vue "^2.0.0"
+
+"@types/trusted-types@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.2.tgz#fc25ad9943bcac11cceb8168db4f275e0e72e756"
+  integrity sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==
 
 "@typescript-eslint/eslint-plugin@^5.10.2":
   version "5.12.0"
@@ -1016,7 +1026,7 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
-base64-arraybuffer@^1.0.1:
+base64-arraybuffer@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/base64-arraybuffer/-/base64-arraybuffer-1.0.2.tgz#1c37589a7c4b0746e34bd1feb951da2df01c1bdc"
   integrity sha512-I3yl4r9QB5ZRY3XuJVEPfc2XhZO6YweFPI+UovAzn+8/hb3oJ6lnysaFcjVpkCPfVWFUDvoZ8kmVDP7WyRtYtQ==
@@ -2207,17 +2217,29 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-lit-element@2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.5.1.tgz#3fa74b121a6cd22902409ae3859b7847d01aa6b6"
-  integrity sha512-ogu7PiJTA33bEK0xGu1dmaX5vhcRjBXCFexPja0e7P7jqLhTpNKYRPmE+GmiCaRVAbiQKGkUgkh/i6+bh++dPQ==
+lit-element@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-3.2.0.tgz#9c981c55dfd9a8f124dc863edb62cc529d434db7"
+  integrity sha512-HbE7yt2SnUtg5DCrWt028oaU4D5F4k/1cntAFHTkzY8ZIa8N0Wmu92PxSxucsQSOXlODFrICkQ5x/tEshKi13g==
   dependencies:
-    lit-html "^1.1.1"
+    "@lit/reactive-element" "^1.3.0"
+    lit-html "^2.2.0"
 
-lit-html@1.4.1, lit-html@^1.1.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-1.4.1.tgz#0c6f3ee4ad4eb610a49831787f0478ad8e9ae5e0"
-  integrity sha512-B9btcSgPYb1q4oSOb/PrOT6Z/H+r6xuNzfH4lFli/AWhYwdtrgQkQWBbIc6mdnf6E2IL3gDXdkkqNktpU0OZQA==
+lit-html@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-2.2.0.tgz#99345d944611e34543cd9f153d8cc3163b8bbab8"
+  integrity sha512-dJnevgV8VkCuOXLWrjQopDE8nSy8CzipZ/ATfYQv7z7Dct4abblcKecf50gkIScuwCTzKvRLgvTgV0zzagW4gA==
+  dependencies:
+    "@types/trusted-types" "^2.0.2"
+
+lit@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/lit/-/lit-2.2.0.tgz#1b83a2c1e4c5ecf3be785292b1a13e193597f610"
+  integrity sha512-FDyxUuczo6cJJY/2Bkgfh1872U4ikUvmK1Cb6+lYC1CW+QOo8CaWXCpvPKFzYsz0ojUxoruBLVrECc7VI2f1dQ==
+  dependencies:
+    "@lit/reactive-element" "^1.3.0"
+    lit-element "^3.2.0"
+    lit-html "^2.2.0"
 
 lodash.merge@^4.6.2:
   version "4.6.2"
@@ -2243,7 +2265,7 @@ magic-string@^0.25.7:
   dependencies:
     sourcemap-codec "^1.4.4"
 
-marked@^4.0.10, marked@^4.0.12:
+marked@^4.0.12:
   version "4.0.12"
   resolved "https://registry.yarnpkg.com/marked/-/marked-4.0.12.tgz#2262a4e6fd1afd2f13557726238b69a48b982f7d"
   integrity sha512-hgibXWrEDNBWgGiK18j/4lkS6ihTe9sxtV4Q1OQppb/0zzyPSzoFANBa5MfsG/zgsWklmNnhm0XACZOH/0HBiQ==
@@ -2549,17 +2571,16 @@ queue-microtask@^1.2.2:
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
-rapidoc@^9.1.4:
-  version "9.1.4"
-  resolved "https://registry.yarnpkg.com/rapidoc/-/rapidoc-9.1.4.tgz#f6ead87f1cd3eb4fa2e26d712635ab89b7549acd"
-  integrity sha512-pNb3si/GR49kODzZCuVWwlA4Te7FVxqHgx5WXyRVsWyQ+OirCKQ5Dw0tifHYy3vsUZHiKw1oD0DOWWHsItNmCg==
+rapidoc@^9.2.0:
+  version "9.2.0"
+  resolved "https://registry.yarnpkg.com/rapidoc/-/rapidoc-9.2.0.tgz#fbcfd710d508c047b5f3e139914e6e8b32998721"
+  integrity sha512-liK2AFGJ3jTUkohZrT1nvxUOAGAHNu/CGRRclGVHPFp69TyEpUoAgOejQgIMsgDdtbeHnTRTbPiXK6HpirqnRw==
   dependencies:
-    "@apitools/openapi-parser" "^0.0.10"
-    base64-arraybuffer "^1.0.1"
+    "@apitools/openapi-parser" "^0.0.24"
+    base64-arraybuffer "^1.0.2"
     buffer "^6.0.3"
-    lit-element "2.5.1"
-    lit-html "1.4.1"
-    marked "^4.0.10"
+    lit "^2.2.0"
+    marked "^4.0.12"
     prismjs "^1.26.0"
 
 readdirp@~3.6.0:
@@ -2758,7 +2779,7 @@ svgo@^2.7.0:
     picocolors "^1.0.0"
     stable "^0.1.8"
 
-swagger-client@^3.17.0:
+swagger-client@^3.18.4:
   version "3.18.4"
   resolved "https://registry.yarnpkg.com/swagger-client/-/swagger-client-3.18.4.tgz#71be9df585157a3335a542c407733d2134fa75e9"
   integrity sha512-Wj26oEctONq/u0uM+eSj18675YM5e2vFnx7Kr4neLeXEHKUsfceVQ/OdtrBXdrT3VbtdBbZfMTfl1JOBpix2MA==
