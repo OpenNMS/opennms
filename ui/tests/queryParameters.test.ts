@@ -1,7 +1,6 @@
-import { queryParametersHandler } from '../src/services/serviceHelpers'
-import { QueryParameters } from '../src/types'
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
+import { queryParametersHandler } from '@/services/serviceHelpers'
+import { QueryParameters } from '@/types'
+import { assert, test } from 'vitest'
 
 const testEndpoint = 'my-endpoint'
 
@@ -14,8 +13,5 @@ const testQueryParams: QueryParameters = {
 const expectedResult = 'my-endpoint?search=val1&order=asc&orderBy=property'
 
 test('The query parameter handler', () => {
-  assert.type(queryParametersHandler, 'function')
   assert.equal(queryParametersHandler(testQueryParams, testEndpoint), expectedResult)
 })
-
-test.run()

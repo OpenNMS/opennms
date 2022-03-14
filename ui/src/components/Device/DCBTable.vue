@@ -15,6 +15,7 @@
         <div>Configurations:</div>
         <div class="btn-container">
           <FeatherButton
+            data-test="view-history-btn"
             @click="onViewHistory"
             :disabled="(!all && selectedDeviceConfigIds.length !== 1) || (all && deviceConfigBackups.length !== 1)"
             text
@@ -26,6 +27,7 @@
           </FeatherButton>
 
           <FeatherButton
+            data-test="download-btn"
             @click="onDownload"
             :disabled="(selectedDeviceConfigIds.length === 0 && !all) || (all && !deviceConfigBackups.length)"
             text
@@ -37,6 +39,7 @@
           </FeatherButton>
 
           <FeatherButton
+            data-test="backup-now-btn"
             @click="onBackupNow"
             :disabled="(selectedDeviceConfigIds.length === 0 && !all) || (all && !deviceConfigBackups.length)"
             text
@@ -57,7 +60,7 @@
       <thead>
         <tr>
           <th>
-            <FeatherCheckbox v-model="all" @update:modelValue="selectAll" />
+            <FeatherCheckbox v-model="all" @update:modelValue="selectAll" data-test="all-checkbox" />
           </th>
           <FeatherSortHeader
             scope="col"
@@ -123,7 +126,7 @@
             />
           </td>
           <td>
-            <router-link :to="`/node/${config.id}`">{{ config.deviceName }}</router-link>
+            <router-link :to="`/node/${config.nodeId}`">{{ config.deviceName }}</router-link>
           </td>
           <td>{{ config.ipAddress }}</td>
           <td>{{ config.location }}</td>
@@ -147,10 +150,10 @@
   </div>
   <DCBModal @close="dcbModalVisible = false" :visible="dcbModalVisible">
     <template v-slot:content>
-      <DCBModalLastBackupContent
-        v-if="dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalLastBackupContent"
+      <DCBModalViewHistoryContentVue
+        v-if="dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalViewHistoryContent"
       />
-      <DCBModalViewHistoryContentVue v-else />
+      <DCBModalLastBackupContent v-else />
     </template>
   </DCBModal>
 </template>
@@ -244,8 +247,13 @@ const selectAll = () => {
   if (all.value) {
     store.dispatch('deviceModule/setSelectedIds', 'all')
   } else {
-    store.dispatch('deviceModule/setSelectedIds', selectedDeviceConfigIds.value)
+    clearAllSelectedDevices()
   }
+}
+
+const clearAllSelectedDevices = () => {
+  selectedDeviceConfigBackups.value = {}
+  store.dispatch('deviceModule/setSelectedIds', selectedDeviceConfigIds.value)
 }
 
 const selectCheckbox = (config: DeviceConfigBackup) => {
