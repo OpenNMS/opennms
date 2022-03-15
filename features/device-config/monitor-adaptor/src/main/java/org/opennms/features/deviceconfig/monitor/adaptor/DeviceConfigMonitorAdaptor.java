@@ -51,8 +51,6 @@ import com.google.common.base.Strings;
 
 
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
-
-    private static final String DEVICE_CONFIG_MONITOR_PREFIX = "DeviceConfig";
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitorAdaptor.class);
 
     @Autowired
@@ -66,21 +64,23 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
     @Override
     public PollStatus handlePollResult(MonitoredService svc, Map<String, Object> parameters, PollStatus status) {
+        final var deviceConfig = status.getDeviceConfig();
 
-        if (!svc.getSvcName().startsWith(DEVICE_CONFIG_MONITOR_PREFIX)) {
+        if (deviceConfig == null) {
+            // Not our business
             return status;
         }
+
         // Retrieve interface
         final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
         String encodingAttribute = getObjectAsString(parameters.get("encoding"));
         String configTypeAttribute = getObjectAsString(parameters.get("config-type"));
         String encoding = !Strings.isNullOrEmpty(encodingAttribute) ? encodingAttribute : Charset.defaultCharset().name();
         String configType = !Strings.isNullOrEmpty(configTypeAttribute) ? configTypeAttribute : ConfigType.Default;
-        var deviceConfig = status.getDeviceConfig();
 
         // unknown means that retrieval was skipped, so nothing to persist
         if (!status.isUnknown()) {
-            if (deviceConfig == null) {
+            if (deviceConfig.content == null) {
                 // Config retrieval failed
                 deviceConfigDao.updateDeviceConfigFailure(
                         ipInterface,
