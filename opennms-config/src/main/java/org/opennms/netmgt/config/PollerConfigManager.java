@@ -1075,40 +1075,4 @@ abstract public class PollerConfigManager implements PollerConfig {
     public List<Monitor> getConfiguredMonitors() {
         return m_config.getMonitors();
     }
-
-    @Override
-    public Package findPackageForService(String ipAddr, String serviceName) {
-        Enumeration<Package> en = this.enumeratePackage();
-        Package lastPkg = null;
-
-        while (en.hasMoreElements()) {
-            Package pkg = en.nextElement();
-            if (this.pollableServiceInPackage(ipAddr, serviceName, pkg))
-                lastPkg = pkg;
-        }
-        return lastPkg;
-    }
-
-    public boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
-        if (pkg.getPerspectiveOnly()) {
-            return false;
-        }
-
-        if (!this.isServiceInPackageAndEnabled(serviceName, pkg)) return false;
-
-        boolean inPkg = this.isInterfaceInPackage(ipAddr, pkg);
-        if (inPkg) return true;
-
-        return this.isInterfaceInPackage(ipAddr, pkg);
-    }
-
-    @Override
-    public Optional<Package.ServiceMatch> findService(final String ipAddr, final String serviceName) {
-        final var pkg = this.findPackageForService(ipAddr, serviceName);
-        if (pkg == null) {
-            return Optional.empty();
-        }
-
-        return pkg.findService(serviceName);
-    }
 }

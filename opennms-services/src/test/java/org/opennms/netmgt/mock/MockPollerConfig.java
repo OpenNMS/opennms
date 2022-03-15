@@ -293,16 +293,6 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
         return Collections.emptyList();
     }
 
-    @Override
-    public Package findPackageForService(final String ipAddr, final String serviceName) {
-        return null;
-    }
-
-    @Override
-    public Optional<Package.ServiceMatch> findService(final String ipAddr, final String serviceName) {
-        return Optional.empty();
-    }
-
     private Service findService(Package pkg, String svcName) {
         for (Service svc : pkg.getServices()) {
             if (svcName.equals(svc.getName())) {
