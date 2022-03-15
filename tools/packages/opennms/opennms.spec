@@ -900,6 +900,9 @@ fi
 
 "$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST" "$SHARE_INST" "$LOG_INST"
 
+# assure correct ownership of log directory
+"$ROOT_INST/bin/fix-permissions" -f "$LOG_INST"
+
 if [ "$ROOT_INST/logs" != "$LOG_INST" ]; then
 	printf -- "- making symlink for $ROOT_INST/logs... "
 	if [ -e "$ROOT_INST/logs" ] && [ ! -L "$ROOT_INST/logs" ]; then
