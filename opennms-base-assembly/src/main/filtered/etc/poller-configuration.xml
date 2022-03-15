@@ -355,14 +355,14 @@
          <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
          <parameter key="rrd-base-name" value="device-config"/>
          <!-- match service name suffix with config-type -->
-         <parameter key="config-type" value="${pattern:configType|requisition:config-type|default}"/>
-         <parameter key="username" value="${requisition:username|admin}"/>
-         <parameter key="password" value="${requisition:password|admin}"/>
-         <parameter key="port" value="${requisition:port|22}"/>
+         <parameter key="config-type" value="${pattern:configType|requisition:dcb:configType|default}"/>
+         <parameter key="username" value="${requisition:dcb:username|admin}"/>
+         <parameter key="password" value="${requisition:dcb:password|admin}"/>
+         <parameter key="port" value="${requisition:dcb:port|22}"/>
          <parameter key="timeout" value="${requisition:timeout|60000}"/>
          <!-- schedule is a cron expression -->
-         <parameter key="schedule" value="${requisition:schedule|0 0 0 * * ?}"/>
-         <parameter key="script" value="${requisition:script}"/>
+         <parameter key="schedule" value="${requisition:dcb:schedule|0 0 0 * * ?}"/>
+         <parameter key="script" value="${requisition:dcb:script}"/>
       </service>
       <downtime begin="0" interval="300000"/><!-- 300s -->
    </package>
