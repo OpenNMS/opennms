@@ -164,7 +164,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             DeviceConfigDTO dto = responseList.get(i);
             final int version = i + 1;
 
-            Assert.assertEquals(ipInterfaceIds.get(i).intValue(), dto.getIpInterfaceId());
+            Assert.assertEquals(ipInterfaceIds.get(i).intValue(), dto.getMonitoredServiceId());
             assertThat(expectedConfigTypes.get(i).equalsIgnoreCase(dto.getConfigType()), is(true));
             Assert.assertEquals(Integer.toString(version), dto.getEncoding());
             Assert.assertEquals(createdTime(version), dto.getCreatedTime().getTime());
@@ -385,6 +385,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         dc.setCreatedTime(date);
         dc.setEncoding(String.valueOf(version));
         dc.setIpInterface(ipInterface1);
+        dc.setServiceName("DeviceConfig-" + configType);
         dc.setConfigType(configType);
 
         return dc;

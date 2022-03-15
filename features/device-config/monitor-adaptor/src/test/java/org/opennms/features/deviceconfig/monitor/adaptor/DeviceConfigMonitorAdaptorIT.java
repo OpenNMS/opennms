@@ -130,7 +130,7 @@ public class DeviceConfigMonitorAdaptorIT {
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(null);
         Mockito.when(pollStatus.getReason()).thenReturn("Failed to connect to SSHServer");
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        Optional<DeviceConfig> configOnMonday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Optional<DeviceConfig> configOnMonday = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
         Assert.assertTrue(configOnMonday.isPresent());
         Assert.assertNull(configOnMonday.get().getConfig());
         Assert.assertEquals(configOnMonday.get().getLastFailed(), configOnMonday.get().getLastUpdated());
@@ -146,7 +146,7 @@ public class DeviceConfigMonitorAdaptorIT {
         // Send pollStatus with config to adaptor.
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
 
-        Optional<DeviceConfig> configOnTuesday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Optional<DeviceConfig> configOnTuesday = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
         Assert.assertTrue(configOnTuesday.isPresent());
         byte[] retrievedConfigInBytes = configOnTuesday.get().getConfig();
         // Compare binary values
@@ -161,7 +161,7 @@ public class DeviceConfigMonitorAdaptorIT {
 
         // Try to persist same config again ( Scenario 3)
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        Optional<DeviceConfig> configOnWednesday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Optional<DeviceConfig> configOnWednesday = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
         Assert.assertTrue(configOnWednesday.isPresent());
         // Verify that config doesn't change.
         Assert.assertArrayEquals(configOnWednesday.get().getConfig(), configOnTuesday.get().getConfig());
@@ -174,7 +174,7 @@ public class DeviceConfigMonitorAdaptorIT {
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(deviceConfig);
         // Send pollStatus with config to adaptor.
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        Optional<DeviceConfig> configOnThursday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Optional<DeviceConfig> configOnThursday = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
         Assert.assertTrue(configOnThursday.isPresent());
         // Creates new entry and all created time, succeded and updated are equal
         Assert.assertNotEquals(configOnThursday.get().getId(), configOnWednesday.get().getId());
@@ -185,7 +185,7 @@ public class DeviceConfigMonitorAdaptorIT {
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(null);
         Mockito.when(pollStatus.getReason()).thenReturn("Failed to connect to SSHServer");
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        Optional<DeviceConfig> configOnFriday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Optional<DeviceConfig> configOnFriday = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
         Assert.assertTrue(configOnFriday.isPresent());
         // Verify that failed config doesn't create new entry
         Assert.assertEquals(configOnFriday.get().getId(), configOnThursday.get().getId());
@@ -194,7 +194,7 @@ public class DeviceConfigMonitorAdaptorIT {
 
         // Send failed update again ( Scenario 6)
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        Optional<DeviceConfig> configOnSaturday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Optional<DeviceConfig> configOnSaturday = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
         Assert.assertTrue(configOnSaturday.isPresent());
         // Verify that failed config doesn't create new entry
         Assert.assertEquals(configOnSaturday.get().getId(), configOnFriday.get().getId());
@@ -208,7 +208,7 @@ public class DeviceConfigMonitorAdaptorIT {
         deviceConfig = new org.opennms.netmgt.poller.DeviceConfig(configInBytes, fileName);
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(deviceConfig);
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
-        Optional<DeviceConfig> configOnSunday = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Optional<DeviceConfig> configOnSunday = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
         Assert.assertTrue(configOnSunday.isPresent());
         // Verify that config is same
         Assert.assertArrayEquals(configOnSunday.get().getConfig(), configOnThursday.get().getConfig());
@@ -220,6 +220,7 @@ public class DeviceConfigMonitorAdaptorIT {
         NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("node2").setForeignSource("device-config").setForeignId("2").setType(OnmsNode.NodeType.ACTIVE);
         builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P");
+        builder.addService("DeviceConfig-default");
         nodeDao.saveOrUpdate(builder.getCurrentNode());
         node = nodeDao.get("device-config:2");
         Assert.assertThat(builder.getCurrentNode().getIpInterfaces(), Matchers.hasSize(1));
