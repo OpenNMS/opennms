@@ -28,7 +28,6 @@
 
 package org.opennms.features.deviceconfig.monitor.adaptor;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,11 +36,10 @@ import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -58,7 +56,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -73,7 +70,7 @@ import java.util.Set;
 public class DeviceConfigMonitorAdaptorIT {
 
     @Autowired
-    private IpInterfaceDao ipInterfaceDao;
+    private ServiceTypeDao serviceTypeDao;
 
     @Autowired
     private NodeDao nodeDao;
@@ -121,13 +118,13 @@ public class DeviceConfigMonitorAdaptorIT {
         PollStatus pollStatus = Mockito.mock(PollStatus.class);
         Mockito.when(service.getNodeId()).thenReturn(node.getId());
         Mockito.when(service.getIpAddr()).thenReturn(InetAddressUtils.toIpAddrString(ipInterface.getIpAddress()));
-        Mockito.when(service.getSvcName()).thenReturn("DeviceConfig");
+        Mockito.when(service.getSvcName()).thenReturn("DeviceConfig-default");
         Map<String, Object> attributes = new HashMap<>();
         // Set charset information in attributes.
         attributes.put("encoding", StandardCharsets.UTF_16.name());
 
         // Send failed update first ( scenario 1)
-        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(null);
+        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(new org.opennms.netmgt.poller.DeviceConfig());
         Mockito.when(pollStatus.getReason()).thenReturn("Failed to connect to SSHServer");
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
         Optional<DeviceConfig> configOnMonday = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
@@ -182,7 +179,7 @@ public class DeviceConfigMonitorAdaptorIT {
         Assert.assertEquals(configOnThursday.get().getCreatedTime(), configOnThursday.get().getLastUpdated());
 
         // Send failed update ( Scenario 5)
-        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(null);
+        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(new org.opennms.netmgt.poller.DeviceConfig());
         Mockito.when(pollStatus.getReason()).thenReturn("Failed to connect to SSHServer");
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
         Optional<DeviceConfig> configOnFriday = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
@@ -218,14 +215,11 @@ public class DeviceConfigMonitorAdaptorIT {
 
     private void populateIpInterface() {
         NetworkBuilder builder = new NetworkBuilder();
-        builder.addNode("node2").setForeignSource("device-config").setForeignId("2").setType(OnmsNode.NodeType.ACTIVE);
-        builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P");
-        builder.addService("DeviceConfig-default");
-        nodeDao.saveOrUpdate(builder.getCurrentNode());
-        node = nodeDao.get("device-config:2");
-        Assert.assertThat(builder.getCurrentNode().getIpInterfaces(), Matchers.hasSize(1));
-        Set<OnmsIpInterface> ipInterfaces = builder.getCurrentNode().getIpInterfaces();
-        ipInterface = ipInterfaces.iterator().next();
-        Assert.assertNotNull(ipInterface);
+        node = builder.addNode("node2").setForeignSource("device-config").setForeignId("2").setType(OnmsNode.NodeType.ACTIVE).getNode();
+        ipInterface = builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P").getInterface();
+        final var service = builder.addService("DeviceConfig-default");
+
+        serviceTypeDao.saveOrUpdate(service.getServiceType());
+        nodeDao.save(node);
     }
 }
