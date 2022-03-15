@@ -130,6 +130,7 @@
 *** xref:provisioning/detectors/HttpsDetector.adoc[HTTPS]
 *** xref:provisioning/detectors/ReverseDNSLookupDetector.adoc[Reverse DNS]
 *** xref:provisioning/detectors/SnmpDetector.adoc[SNMP]
+*** xref:provisioning/detectors/TcpDetector.adoc[TCP]
 *** xref:provisioning/detectors/WebDetector.adoc[Web]
 *** xref:provisioning/detectors/Win32ServiceDetector.adoc[Win32 Service]
 *** xref:provisioning/detectors/WmiDetector.adoc[WMI]

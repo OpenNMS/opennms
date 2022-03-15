@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.persister.entity.AbstractEntityPersister;
 
 import java.util.ArrayList;
@@ -39,15 +39,15 @@ public class HibernateUtils {
     /**
      * Uses hibernate to get all appropriate table column names for the given Hibernate model class.
      *
-     * @param session               The active Hibernate session
+     * @param factory               The active Hibernate session
      * @param klass                 The Hibernate model object
      * @param includeTablePrefix    If true, each column name will have the table name added as a prefix
      * @return                      A lower-case list of valid column names for the given model class.
      */
-    public static List<String> getHibernateTableColumnNames(Session session, Class klass, boolean includeTablePrefix) {
+    public static List<String> getHibernateTableColumnNames(SessionFactory factory, Class klass, boolean includeTablePrefix) {
 
         List<String> validColumnNames = new ArrayList<>();
-        AbstractEntityPersister aep = (AbstractEntityPersister) session.getSessionFactory().getClassMetadata(klass);
+        AbstractEntityPersister aep = (AbstractEntityPersister) factory.getClassMetadata(klass);
         for(int propertyIndex = 0; propertyIndex < aep.getPropertyNames().length; propertyIndex++) {
             for (String columnName : aep.getPropertyColumnNames(propertyIndex)) {
                 if (includeTablePrefix) {
@@ -71,5 +71,23 @@ public class HibernateUtils {
         return validColumnNames;
     }
 
-
+    /**
+     * Checks that all given column names, if not null, are appropriate table column names for the given
+     * Hibernate model class.
+     *
+     * @param factory               Active hibernate session factory
+     * @param klass                 Hibernate model object
+     * @param includeTablePrefix    If true, the given column names include the table name as a prefix
+     * @param columnNames           List of column names to check the validity of.
+     *
+     * @throws IllegalArgumentException If any of the column names are invalid.
+     */
+    public static void validateHibernateColumnNames(SessionFactory factory, Class klass, boolean includeTablePrefix, String ... columnNames) {
+        List<String> validColumnNames = getHibernateTableColumnNames(factory, klass, includeTablePrefix);
+        for (String columnName : columnNames) {
+            if (columnName != null && !validColumnNames.contains(columnName)) {
+                throw new IllegalArgumentException(String.format("Invalid column name specified: %s", columnName));
+            }
+        }
+    }
 }
