@@ -110,7 +110,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     }
 
     @Override
-    public List<RetrivalConfiguration> getRetrivalConfigurations(final String ipAddress, final String location) {
+    public List<RetrievalDefinition> getRetrievalDefinitions(final String ipAddress, final String location) {
         final var iface = this.ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
 
         return iface
@@ -137,7 +137,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                                                                           .withPatternVariables(match.patternVariables)
                                                                           .getInterpolatedAttributes();
 
-                    return new RetrivalConfiguration() {
+                    return new RetrievalDefinition() {
                         @Override
                         public String getServiceName() {
                             return serviceName;

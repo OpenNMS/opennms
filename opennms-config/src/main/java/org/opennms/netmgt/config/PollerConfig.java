@@ -298,7 +298,7 @@ public interface PollerConfig extends PathOutageConfig {
     List<Monitor> getConfiguredMonitors();
 
     /**
-     * Find the {@link Package} containing the service selevted for the given IP.
+     * Find the {@link Package} containing the service selected for the given IP.
      * @param ipAddr the address to select the package for
      * @param serviceName the name of the service
      * @return the found package or {@code null} if no package matches

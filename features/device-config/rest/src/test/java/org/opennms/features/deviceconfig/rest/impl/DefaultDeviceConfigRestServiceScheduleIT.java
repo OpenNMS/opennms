@@ -143,9 +143,9 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         // sanity check that nodes and interfaces were created correctly
         List<Integer> ipInterfaceIds = ipInterfaces.stream().map(OnmsIpInterface::getId).collect(Collectors.toList());
 
-        List<DeviceConfigService.RetrivalConfiguration> services = ipInterfaces.stream()
-                                                                               .flatMap(iface -> deviceConfigService.getRetrivalConfigurations(InetAddressUtils.str(iface.getIpAddress()), iface.getNode().getLocation().getLocationName()).stream())
-                                                                               .collect(Collectors.toList());
+        List<DeviceConfigService.RetrievalDefinition> services = ipInterfaces.stream()
+                                                                             .flatMap(iface -> deviceConfigService.getRetrievalDefinitions(InetAddressUtils.str(iface.getIpAddress()), iface.getNode().getLocation().getLocationName()).stream())
+                                                                             .collect(Collectors.toList());
         Assert.assertEquals(RECORD_COUNT, services.size());
 
         // Add DeviceConfig entries mapped to ipInterfaces and services
