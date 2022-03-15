@@ -28,6 +28,7 @@
 
 package org.opennms.features.deviceconfig.sink.consumer;
 
+import java.io.IOException;
 import java.net.InetAddress;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -35,6 +36,7 @@ import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
 import org.opennms.features.deviceconfig.sink.module.DeviceConfigSinkDTO;
 import org.opennms.features.deviceconfig.sink.module.DeviceConfigSinkModule;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -76,13 +78,21 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigSinkDTO
             LOG.debug("handle message - location: " + message.location + "; address: " + address.getHostAddress() + "; fileName: " + message.fileName);
             OnmsIpInterface ipInterface = ipInterfaceDao.findByIpAddressAndLocation(address.getHostAddress(), message.location);
             if (ipInterface != null) {
+                byte[] content = message.config;
+                if (DeviceConfigUtil.isGzipFile(message.fileName)) {
+                    try {
+                        content = DeviceConfigUtil.decompressGzipToBytes(content);
+                    } catch (IOException e) {
+                        LOG.warn("Failed to decompress content from file {}", message.fileName);
+                    }
+                }
                 deviceConfigDao.updateDeviceConfigContent(
                         ipInterface,
                         // use default ConfigType for now
                         // -> later on the config type may be derived from the filename somehow...
                         ConfigType.Default,
                         null,
-                        message.config,
+                        content,
                         message.fileName
                 );
             } else {

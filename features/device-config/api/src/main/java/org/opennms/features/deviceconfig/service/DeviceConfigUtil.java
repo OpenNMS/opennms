@@ -28,25 +28,26 @@
 
 package org.opennms.features.deviceconfig.service;
 
+
+import com.google.common.base.Strings;
+import com.google.common.io.ByteStreams;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
 public class DeviceConfigUtil {
+    
 
     public static byte[] decompressGzipToBytes(byte[] source) throws IOException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-
         try (GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(source))) {
-
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = gis.read(buffer)) > 0) {
-                output.write(buffer, 0, len);
-            }
+            return ByteStreams.toByteArray(gis);
         }
-
-        return output.toByteArray();
     }
+
+    public static boolean isGzipFile(String fileName) {
+        return !Strings.isNullOrEmpty(fileName) && fileName.endsWith(".gz");
+    }
+
 }

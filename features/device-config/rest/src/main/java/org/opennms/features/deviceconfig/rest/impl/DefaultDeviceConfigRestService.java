@@ -152,7 +152,10 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         final List<DeviceConfig> deviceConfigs = deviceConfigDao.findMatching(criteria);
 
         // do initial conversion to DTO with DeviceConfig data
-        final List<DeviceConfigDTO> dtos = deviceConfigs.stream().map(DefaultDeviceConfigRestService::createDeviceConfigDto).collect(Collectors.toList());
+        final List<DeviceConfigDTO> dtos = deviceConfigs.stream()
+                .map(DefaultDeviceConfigRestService::createDeviceConfigDto)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
         final Map<Integer, List<OnmsMonitoredService>> serviceMap = getServiceMapForDTOs(dtos);
         populateScheduleInfo(dtos, serviceMap);
@@ -463,35 +466,40 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     }
 
     private static DeviceConfigDTO createDeviceConfigDto(DeviceConfig deviceConfig) {
-        var dto = new DeviceConfigDTO(
-            deviceConfig.getId(),
-            deviceConfig.getIpInterface().getId(),
-            InetAddressUtils.str(deviceConfig.getIpInterface().getIpAddress()),
-            deviceConfig.getCreatedTime(),
-            deviceConfig.getLastUpdated(),
-            deviceConfig.getLastSucceeded(),
-            deviceConfig.getLastFailed(),
-            deviceConfig.getEncoding(),
-            deviceConfig.getConfigType(),
-            deviceConfig.getFileName(),
-            deviceConfig.getFailureReason()
-        );
+        try {
+            var dto = new DeviceConfigDTO(
+                    deviceConfig.getId(),
+                    deviceConfig.getIpInterface().getId(),
+                    InetAddressUtils.str(deviceConfig.getIpInterface().getIpAddress()),
+                    deviceConfig.getCreatedTime(),
+                    deviceConfig.getLastUpdated(),
+                    deviceConfig.getLastSucceeded(),
+                    deviceConfig.getLastFailed(),
+                    deviceConfig.getEncoding(),
+                    deviceConfig.getConfigType(),
+                    deviceConfig.getFileName(),
+                    deviceConfig.getFailureReason()
+            );
 
-        // determine backup status, not handling all cases for now
-        boolean backupSuccess = determineBackupSuccess(deviceConfig);
-        dto.setIsSuccessfulBackup(backupSuccess);
-        dto.setBackupStatus(backupSuccess ? "success" : "failure");
+            // determine backup status, not handling all cases for now
+            boolean backupSuccess = determineBackupSuccess(deviceConfig);
+            dto.setIsSuccessfulBackup(backupSuccess);
+            dto.setBackupStatus(backupSuccess ? "success" : "failure");
 
-        final OnmsIpInterface ipInterface = deviceConfig.getIpInterface();
-        final OnmsNode node = ipInterface.getNode();
+            final OnmsIpInterface ipInterface = deviceConfig.getIpInterface();
+            final OnmsNode node = ipInterface.getNode();
 
-        dto.setNodeId(node.getId());
-        dto.setNodeLabel(node.getLabel());
-        dto.setDeviceName(node.getLabel());
-        dto.setLocation(node.getLocation().getLocationName());
-        dto.setOperatingSystem(node.getOperatingSystem());
+            dto.setNodeId(node.getId());
+            dto.setNodeLabel(node.getLabel());
+            dto.setDeviceName(node.getLabel());
+            dto.setLocation(node.getLocation().getLocationName());
+            dto.setOperatingSystem(node.getOperatingSystem());
 
-        return dto;
+            return dto;
+        } catch (Exception e) {
+            LOG.error("Exception while mapping device config entity to dto", e);
+            return null;
+        }
     }
 
     private static boolean determineBackupSuccess(DeviceConfig deviceConfig) {

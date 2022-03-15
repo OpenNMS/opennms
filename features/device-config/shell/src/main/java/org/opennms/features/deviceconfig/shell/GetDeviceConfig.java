@@ -35,7 +35,12 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
+import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
+import org.opennms.netmgt.poller.DeviceConfig;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
@@ -43,6 +48,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.zip.GZIPInputStream;
 
 @Command(scope = "opennms", name = "device-config-get", description = "Get device config from a specific Interface")
 @Service
@@ -78,13 +84,19 @@ public class GetDeviceConfig implements Action {
             System.out.printf("Not a valid host %s \n", host);
             return null;
         }
-        CompletableFuture<byte[]> future = deviceConfigService.getDeviceConfig(host, location, configType, timeout);
+        CompletableFuture<DeviceConfig> future = deviceConfigService.getDeviceConfig(host, location, configType, timeout);
         while (true) {
             try {
                 try {
-                    byte[] dc = future.get(1, TimeUnit.SECONDS);
-                    if (dc != null) {
-                        return new String(dc, Charset.forName(encoding));
+                    DeviceConfig deviceConfig = future.get(1, TimeUnit.SECONDS);
+                    if (deviceConfig != null) {
+                        byte[] content = deviceConfig.getContent();
+                        if (DeviceConfigUtil.isGzipFile(deviceConfig.getFilename())) {
+                            content = DeviceConfigUtil.decompressGzipToBytes(deviceConfig.getContent());
+                        }
+                        System.out.printf("Received file %s with content .. \n\n", deviceConfig.getFilename());
+                        String config = new String(content, Charset.forName(encoding));
+                        System.out.println(config);
                     } else {
                         System.out.println("Failed to fetch device config");
                     }
@@ -102,4 +114,5 @@ public class GetDeviceConfig implements Action {
         }
         return null;
     }
+
 }
