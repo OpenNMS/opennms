@@ -58,9 +58,7 @@ import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -157,7 +155,7 @@ public class DefaultDeviceConfigRestServiceIT {
         var res = getDeviceConfigs(null, null, null, null, null, null, null, null, null, null);
         assertThat(res, hasSize(VERSIONS * INTERFACES));
         for (var itf : interfaces) {
-            var set = res.stream().filter(dc -> dc.getIpInterfaceId() == itf.getId()).collect(Collectors.toSet());
+            var set = res.stream().filter(dc -> dc.getMonitoredServiceId() == itf.getId()).collect(Collectors.toSet());
             assertThat(set, hasSize(VERSIONS));
         }
     }
@@ -285,6 +283,7 @@ public class DefaultDeviceConfigRestServiceIT {
         dc.setCreatedTime(new Date(createdTime(version)));
         dc.setEncoding(String.valueOf(version));
         dc.setIpInterface(ipInterface1);
+        dc.setServiceName("DeviceConfig-default");
         dc.setLastUpdated(new Date(createdTime(version)));
         return dc;
     }

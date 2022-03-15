@@ -395,6 +395,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         final OnmsIpInterface ipInterface = deviceConfig.getIpInterface();
         final OnmsNode node = ipInterface.getNode();
 
+        dto.setIpInterfaceId(ipInterface.getId());
         dto.setNodeId(node.getId());
         dto.setNodeLabel(node.getLabel());
         dto.setDeviceName(node.getLabel());

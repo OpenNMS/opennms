@@ -84,6 +84,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                 // Config retrieval failed
                 deviceConfigDao.updateDeviceConfigFailure(
                         ipInterface,
+                        svc.getSvcName(),
                         configType,
                         encoding,
                         status.getReason()
@@ -102,6 +103,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                 }
                 deviceConfigDao.updateDeviceConfigContent(
                         ipInterface,
+                        svc.getSvcName(),
                         configType,
                         encoding,
                         content,

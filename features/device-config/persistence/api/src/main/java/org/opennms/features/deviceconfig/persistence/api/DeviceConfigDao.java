@@ -35,12 +35,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
-    List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, String configType);
+    List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, String serviceName);
 
-    Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String configType);
+    Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String serviceName);
 
     void updateDeviceConfigContent(
             OnmsIpInterface ipInterface,
+            String serviceName,
             String configType,
             String encoding,
             byte[] deviceConfigBytes,
@@ -49,6 +50,7 @@ public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
 
     void updateDeviceConfigFailure(
             OnmsIpInterface ipInterface,
+            String serviceName,
             String configType,
             String encoding,
             String reason
