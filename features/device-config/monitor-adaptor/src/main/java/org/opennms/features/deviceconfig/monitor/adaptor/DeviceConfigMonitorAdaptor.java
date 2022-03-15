@@ -80,7 +80,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
         // unknown means that retrieval was skipped, so nothing to persist
         if (!status.isUnknown()) {
-            if (deviceConfig.content == null) {
+            if (deviceConfig.getContent() == null) {
                 // Config retrieval failed
                 deviceConfigDao.updateDeviceConfigFailure(
                         ipInterface,
