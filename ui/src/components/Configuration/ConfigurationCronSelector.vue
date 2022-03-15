@@ -43,7 +43,7 @@
             <FeatherInput
                 class="advanced-entry"
                 :error="props.errors.occuranceAdvanced"
-                label="Advanced Schedule"
+                label="Advanced (Cron) Schedule"
                 @update:modelValue="(val: string) => updateFormValue('occuranceAdvanced', val)"
                 :modelValue="props.config.occuranceAdvanced"
             />
@@ -53,7 +53,7 @@
                 <FeatherCheckbox
                     :modelValue="props.config.advancedCrontab"
                     @update:modelValue="(val: string) => updateFormValue('advancedCrontab', val)"
-                >Advanced Schedule</FeatherCheckbox>
+                >Advanced (Cron) Schedule</FeatherCheckbox>
             </div>
             <div v-if="props.config.occurance.name" class="pull-up">{{ scheduledTime }}</div>
         </div>

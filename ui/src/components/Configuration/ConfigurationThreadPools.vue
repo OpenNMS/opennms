@@ -26,7 +26,7 @@
       </div>
     </template>
     <div>
-      <p>Thread pool sizes have been set based on your configuration. To adjust them, select a box below.</p>
+      <p>Thread pool sizes impact the performance of the provisioning subsystem. Larger systems may require larger values. To adjust them, select a value from the drop-down list.</p>
       <FeatherInput
         :error="getError('importThreads')"
         type="number"
@@ -58,7 +58,7 @@
       <div class="spinner-button">
         <FeatherButton primary @click="updateThreadpools" :disabled="loading">
           <FeatherSpinner v-if="loading" />
-          <span v-if="!loading">Update Threadpools</span>
+          <span v-if="!loading">Update Thread Pools</span>
         </FeatherButton>
       </div>
     </div>
@@ -150,7 +150,7 @@ const updateThreadpools = async () => {
       await populateProvisionD(store)
       toastMessage = {
         basic: 'Success!',
-        detail: 'Thread Pool data saved.',
+        detail: 'Thread pool data saved.',
         hasErrors: false
       }
     } catch (e) {

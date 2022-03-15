@@ -16,7 +16,7 @@ populateProvisionD(store)
     <ConfigurationToast />
     <ConfigurationHeader 
       title="Configuration" 
-      headline="ProvisionD" 
+      headline="Provisiond" 
     />
     <ConfigurationTableWrapper />
     <div class="spacer"></div>

@@ -11,7 +11,7 @@
     <div class="sideshared" :class="wrapperClass()">
       <div class="side-inner">
         <div class="side-inner-title">
-          <div class="title">{{ editing ? 'Edit' : 'Add New' }} Requisition Definition</div>
+          <div class="title">{{ editing ? 'Edit' : 'Add' }} Requisition</div>
           <div class="icon">
             <FeatherButton icon="Cancel" text @click="props.closePanel">
               <FeatherIcon class="close-icon" :icon="cancelIcon" />
@@ -21,8 +21,8 @@
       </div>
       <div class="slide-outer-body">
         <p class="slide-short">
-          To synchronize inventory automatically from an outside source, build a requisition definition and set a
-          schedule for it.
+          To synchronize inventory automatically from an external source, build a requisition and
+          schedule it.
         </p>
         <div class="slide-inner-body">
           <ProvisionDForm
