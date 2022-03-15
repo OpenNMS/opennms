@@ -31,24 +31,28 @@ package org.opennms.features.deviceconfig.monitors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
-import org.opennms.netmgt.poller.DeviceConfig;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 
@@ -166,6 +170,28 @@ public class DeviceConfigMonitorTest {
         var pollStatus = deviceConfigMonitor.poll(svc, params);
 
         assertThat(pollStatus.getStatusCode(), is(PollStatus.SERVICE_UNAVAILABLE));
+    }
+
+    @Test
+    public void testParsingScriptFile() {
+        DeviceConfigDao deviceConfigDao = mock(DeviceConfigDao.class);
+        IpInterfaceDao ipInterfaceDao = mock(IpInterfaceDao.class);
+        MonitoredService monitoredService = mock(MonitoredService.class);
+        when(deviceConfigDao.getLatestConfigForInterface(Mockito.any(), Mockito.anyString())).thenReturn(Optional.empty());
+        when(ipInterfaceDao.findByNodeIdAndIpAddress(Mockito.anyInt(), Mockito.anyString())).thenReturn(null);
+        String testResourcePath = Paths.get("src","test","resources").toFile().getAbsolutePath();
+        System.setProperty("opennms.home",  testResourcePath);
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("script-file", "test-script.conf");
+
+        var deviceConfigMonitor = new DeviceConfigMonitor();
+        deviceConfigMonitor.setDeviceConfigDao(deviceConfigDao);
+        deviceConfigMonitor.setIpInterfaceDao(ipInterfaceDao);
+        Map<String, Object> params = deviceConfigMonitor.getRuntimeAttributes(monitoredService, parameters);
+        assertFalse(params.isEmpty());
+        String script = (String)params.get("script");
+        String[] scriptArray = script.split("\\\\n|\\n");
+        assertThat(scriptArray.length, is(8));
     }
 
 }

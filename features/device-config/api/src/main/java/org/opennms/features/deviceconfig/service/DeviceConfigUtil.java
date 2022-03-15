@@ -31,7 +31,6 @@ package org.opennms.features.deviceconfig.service;
 
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

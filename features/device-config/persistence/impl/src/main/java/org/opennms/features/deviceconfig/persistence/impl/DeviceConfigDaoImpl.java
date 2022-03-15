@@ -97,6 +97,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             lastDeviceConfig.setCreatedTime(currentTime);
             lastDeviceConfig.setLastUpdated(currentTime);
             lastDeviceConfig.setLastSucceeded(currentTime);
+            lastDeviceConfig.setFailureReason(null);
             saveOrUpdate(lastDeviceConfig);
             LOG.info("Persisted device config - ipInterface: {}; type: {}", ipInterface, configType);
         } else {
