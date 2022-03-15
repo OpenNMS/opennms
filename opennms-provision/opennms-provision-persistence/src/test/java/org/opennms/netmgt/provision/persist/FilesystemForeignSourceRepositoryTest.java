@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,12 +31,14 @@ package org.opennms.netmgt.provision.persist;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static com.jayway.awaitility.Awaitility.await;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -87,6 +89,12 @@ public class FilesystemForeignSourceRepositoryTest extends ForeignSourceReposito
         assertEquals("node name matches", "apknd", v.getNodeReqs().get(0).getNodeLabel());
         
         m_foreignSourceRepository.delete(r);
+
+        // This is a queueing repo, so the delete task is submitted to an Executor. Wait it out.
+        await().atMost(10, TimeUnit.SECONDS).with()
+                .pollInterval(1, TimeUnit.SECONDS)
+                .until(() -> (m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName) == null));
+
         r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
         assertNull(r);
     }

@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.network.IPAddress;
 import org.opennms.netmgt.model.PrimaryType;
 
 import javax.xml.bind.ValidationException;
@@ -97,7 +98,7 @@ public class RequisitionInterfaceTest {
     public void testRequisitionInterfaceExistingPrimarySNMPSameInterface() throws ValidationException {
         RequisitionInterface ifaceMock = Mockito.mock(RequisitionInterface.class);
         when(ifaceMock.getSnmpPrimary()).thenReturn(PrimaryType.PRIMARY);
-        when(ifaceMock.getIpAddr()).thenReturn("0.0.0.0"); // Same as tested object, duplication check should pass
+        when(ifaceMock.getIpAddr()).thenReturn(new IPAddress("0.0.0.0").toInetAddress()); // Same as tested object, duplication check should pass
         when(nodeMock.getInterfaces()).thenReturn(Collections.singletonList(ifaceMock));
 
         iface.setSnmpPrimary(PrimaryType.PRIMARY);
@@ -109,7 +110,7 @@ public class RequisitionInterfaceTest {
         RequisitionInterface ifaceMock = Mockito.mock(RequisitionInterface.class);
 
         when(ifaceMock.getSnmpPrimary()).thenReturn(PrimaryType.PRIMARY);
-        when(ifaceMock.getIpAddr()).thenReturn("1.1.1.1"); // Different from tested object, duplication check should fail
+        when(ifaceMock.getIpAddr()).thenReturn(new IPAddress("1.1.1.1").toInetAddress()); // Different from tested object, duplication check should fail
         when(nodeMock.getInterfaces()).thenReturn(Collections.singletonList(ifaceMock));
 
         iface.setSnmpPrimary(PrimaryType.PRIMARY);

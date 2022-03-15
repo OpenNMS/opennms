@@ -19,6 +19,7 @@
   <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
   <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
   <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory"/>
+  <reference id="jsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
 
   <!-- Runtime -->
   <service interface="org.opennms.integration.api.v1.runtime.RuntimeInfo" >
@@ -67,5 +68,10 @@
   <reference-list interface="org.opennms.integration.api.v1.health.HealthCheck" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="healthCheckManager" />
   </reference-list>
-
+  <!--Key-value store -->
+  <service id="keyValueStore" interface="org.opennms.integration.api.v1.distributed.KeyValueStore">
+    <bean class="org.opennms.features.apilayer.common.distributed.KeyValueStoreWrapper">
+      <argument ref="jsonStore"/>
+    </bean>
+  </service>
 </blueprint>
