@@ -34,11 +34,7 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -50,10 +46,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,9 +70,6 @@ public class MonitoredServiceDaoIT implements InitializingBean {
 
     @Autowired
     private MonitoredServiceDao m_monitoredServiceDao;
-
-    @Autowired
-    private ServiceTypeDao m_ServiceTypeDao;
 
     @Autowired
     private DatabasePopulator m_databasePopulator;
@@ -149,27 +139,6 @@ public class MonitoredServiceDaoIT implements InitializingBean {
         CriteriaBuilder cb = new CriteriaBuilder(OnmsMonitoredService.class);
         cb.alias("applications", "application", JoinType.LEFT_JOIN, Restrictions.eq("application.name", "HelloWorld"));
         m_monitoredServiceDao.findMatching(cb.toCriteria());
-    }
-
-
-    @Test
-    public void testFindSimilarServicesOnInterface() {
-        String serviceName1 = "DeviceConfig-running";
-        String serviceName2 = "DeviceConfig-default";
-        OnmsServiceType deviceConfigDefault = new OnmsServiceType(serviceName1);
-        OnmsServiceType deviceConfigRunning = new OnmsServiceType(serviceName2);
-        m_ServiceTypeDao.saveOrUpdate(deviceConfigDefault);
-        m_ServiceTypeDao.saveOrUpdate(deviceConfigRunning);
-        Optional<OnmsIpInterface> ipInterfaceOptional = m_databasePopulator.getNode1().getIpInterfaces().stream().findFirst();
-        OnmsMonitoredService onmsMonitoredService1 = new OnmsMonitoredService(ipInterfaceOptional.get(), deviceConfigDefault);
-        OnmsMonitoredService onmsMonitoredService2 = new OnmsMonitoredService(ipInterfaceOptional.get(), deviceConfigRunning);
-        m_monitoredServiceDao.saveOrUpdate(onmsMonitoredService1);
-        m_monitoredServiceDao.saveOrUpdate(onmsMonitoredService2);
-        List<OnmsMonitoredService> services = m_monitoredServiceDao.findSimilarServicesOnInterface(ipInterfaceOptional.get().getNodeId(),
-                ipInterfaceOptional.get().getIpAddress(), "DeviceConfig-");
-        Assert.assertThat(services, Matchers.hasSize(2));
-        Assert.assertThat(services.stream().map(OnmsMonitoredService::getServiceName).collect(Collectors.toList()),
-                Matchers.hasItems(serviceName1, serviceName2));
     }
 
 }
