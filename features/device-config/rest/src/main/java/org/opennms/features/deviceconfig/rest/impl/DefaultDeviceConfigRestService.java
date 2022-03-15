@@ -402,9 +402,9 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         dto.setOperatingSystem(node.getOperatingSystem());
 
         // Figure out the schedules for service defined to do backups for this device
-        final var schedules = this.deviceConfigService.getRetrivalConfigurations(dto.getIpAddress(), dto.getLocation()).stream()
+        final var schedules = this.deviceConfigService.getRetrievalDefinitions(dto.getIpAddress(), dto.getLocation()).stream()
                                                       .filter(ret -> Objects.equals(ret.getConfigType(), dto.getConfigType()))
-                                                      .collect(Collectors.toMap(DeviceConfigService.RetrivalConfiguration::getServiceName,
+                                                      .collect(Collectors.toMap(DeviceConfigService.RetrievalDefinition::getServiceName,
                                                                                 ret -> getScheduleInfo(currentDate, ret.getSchedule())));
 
         dto.setScheduledInterval(Maps.transformValues(schedules, ScheduleInfo::getScheduleInterval));

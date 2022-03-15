@@ -58,9 +58,19 @@ public interface DeviceConfigService {
      */
     CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String service, int timeout) throws IOException;
 
-    List<RetrivalConfiguration> getRetrivalConfigurations(String ipAddress, String location);
+    /**
+     * Gets the backup jobs defined for the given interface.
+     *
+     * @param ipAddress the IP address of the interface.
+     * @param location the location of the interface.
+     * @return the {@link RetrievalDefinition}s for this interface
+     */
+    List<RetrievalDefinition> getRetrievalDefinitions(String ipAddress, String location);
 
-    interface RetrivalConfiguration {
+    /**
+     * Definition of a backup job.
+     */
+    interface RetrievalDefinition {
         String getServiceName();
         String getConfigType();
         String getSchedule();
