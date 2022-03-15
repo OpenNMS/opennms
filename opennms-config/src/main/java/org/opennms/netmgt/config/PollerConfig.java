@@ -303,7 +303,28 @@ public interface PollerConfig extends PathOutageConfig {
      * @param serviceName the name of the service
      * @return the found package or {@code null} if no package matches
      */
-    Package findPackageForService(String ipAddr, String serviceName);
+    default Package findPackageForService(final String ipAddr, final String serviceName) {
+        Package lastPkg = null;
+        for (final var pkg : this.getPackages()) {
+            if (pkg.getPerspectiveOnly()) {
+                continue;
+            }
+
+            if (!this.isServiceInPackageAndEnabled(serviceName, pkg)) {
+                continue;
+            }
+
+            if (!this.isInterfaceInPackage(ipAddr, pkg)) {
+                this.rebuildPackageIpListMap();
+                if (!this.isInterfaceInPackage(ipAddr, pkg)) {
+                    continue;
+                }
+            }
+
+            lastPkg = pkg;
+        }
+        return lastPkg;
+    }
 
     /**
      * Find the service for the given IP by service name.
@@ -311,7 +332,14 @@ public interface PollerConfig extends PathOutageConfig {
      * @param serviceName the name of the service
      * @return the found matching info
      */
-    Optional<Package.ServiceMatch> findService(String ipAddr, String serviceName);
+    default Optional<Package.ServiceMatch> findService(final String ipAddr, final String serviceName) {
+        final var pkg = this.findPackageForService(ipAddr, serviceName);
+        if (pkg == null) {
+            return Optional.empty();
+        }
+
+        return pkg.findService(serviceName);
+    }
 
     /**
      * <p>getPackage</p>

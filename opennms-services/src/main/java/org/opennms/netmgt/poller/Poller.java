@@ -556,10 +556,7 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     private Package findPackageForService(String ipAddr, String serviceName) {
-        if (this.m_initialized) {
-            this.m_pollerConfig.rebuildPackageIpListMap();
-        }
-
+        this.m_pollerConfig.rebuildPackageIpListMap();
         return this.m_pollerConfig.findPackageForService(ipAddr, serviceName);
     }
 
