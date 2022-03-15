@@ -1,0 +1,35 @@
+
+[[opendaylight-handler]]
+= OpenDaylight Handler
+
+The OpenDaylight
+
+
+
+The format of the URL for this protocol handler is: `dns://<host>[:port]/<zone>[/<foreign-source>/][?expression=<regex>]`
+
+DNS Import Examples:
+
+== Simple
+
+[source]
+----
+
+----
+
+This URL 
+
+== Using the generic handler
+
+[source]
+----
+dns://my-dns-server/myzone.com/portland/?expression=^por-.*
+----
+
+This URL 
+
+[source]
+----
+dns://my-dns-server/myzone.com/portland/?expression=^por[0-9]%3F
+----
+
