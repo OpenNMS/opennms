@@ -30,10 +30,11 @@ package org.opennms.features.deviceconfig.monitors;
 
 import static java.util.stream.Collectors.toMap;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
@@ -102,20 +103,19 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                 params.put(SCRIPT, script);
             }
         } catch (Exception e) {
-            LOG.error("Error while parsing script file {}", scriptFile);
+            LOG.error("Error while parsing script file {}", scriptFile, e);
         }
         return params;
     }
 
     private static String parseScriptFile(String fileName) throws IOException {
         String opennmsHome = ConfigFileConstants.getHome();
-        File opennmsHomeDir = new File(opennmsHome);
-        if (!opennmsHomeDir.exists()) {
-            LOG.debug("The specified home directory does not exist.");
-            throw new FileNotFoundException("The OpenNMS home directory \"" + opennmsHome + "\" does not exist.");
+        Path script = Paths.get(opennmsHome, "etc", "device-config", fileName);
+        if (script.toFile().exists()) {
+            return Files.readString(script);
+        } else {
+            throw new FileNotFoundException("Couldn't find file " + fileName + " in etc/device-config folder");
         }
-        File scriptFile = new File(opennmsHome + File.separator + "etc" + File.separator + "device-config" + File.separator + fileName);
-        return Files.readString(scriptFile.toPath());
     }
 
     @Override
