@@ -9,7 +9,6 @@
     <bean id="defaultDeviceConfigRestService"
           class="org.opennms.features.deviceconfig.rest.impl.DefaultDeviceConfigRestService">
         <argument ref="deviceConfigDao"/>
-        <argument ref="monitoredServiceDao"/>
         <argument ref="deviceConfigService"/>
     </bean>
 
