@@ -16,7 +16,6 @@
         <property name="sessionUtils" ref="sessionUtils"/>
         <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
         <property name="serviceMonitorAdaptor" ref="deviceConfigMonitorAdaptor"/>
-        <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
     </bean>
 
     <service ref="deviceConfigService" interface="org.opennms.features.deviceconfig.service.DeviceConfigService"/>
