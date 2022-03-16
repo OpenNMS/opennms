@@ -104,6 +104,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
             }
         } catch (Exception e) {
             LOG.error("Error while parsing script file {}", scriptFile, e);
+            throw new RuntimeException(e);
         }
         return params;
     }
