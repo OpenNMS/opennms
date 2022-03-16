@@ -1759,7 +1759,7 @@
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>5.18.4</rocksdbjniVersion>
     <scalaLibraryVersion>2.12.12</scalaLibraryVersion>
-    <scalaLoggingVersion>3.9.2</scalaLoggingVersion>
+    <scalaLoggingVersion>3.9.4</scalaLoggingVersion>
     <scalaVersion>2.12</scalaVersion>
     <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
