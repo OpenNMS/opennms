@@ -59,7 +59,6 @@ const backupSelectedDevices = async (contextWithState: ContextWithState) => {
       }
       contextWithState.dispatch('notificationModule/setToast', failedToast, { root: true })
     }
-
   } else {
     contextWithState.dispatch('spinnerModule/setSpinnerState', false, { root: true })
     // backup multiple configs?
