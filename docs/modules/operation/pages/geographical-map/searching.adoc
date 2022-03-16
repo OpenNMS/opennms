@@ -41,7 +41,7 @@ You can search the following fields:
 
 |====
 
-Note that *all* searches are done in a case-insensitive manner.
+Note that all searches are case-insensitive.
 
 ### Substring Matching Example
 
