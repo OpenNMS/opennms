@@ -25,7 +25,7 @@ defineProps({
 const modalDeviceConfigBackup = computed<DeviceConfigBackup>(() => store.state.deviceModule.modalDeviceConfigBackup)
 
 const labels = reactive({
-  title: '',
+  title: 'DCB',
   close: 'Close'
 })
 
