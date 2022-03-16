@@ -104,6 +104,10 @@ public abstract class Restrictions {
         return new AllRestriction(restrictions);
     }
 
+    public static AllRestriction multipleAnd(boolean isMultipleAnd, final Restriction... restrictions) {
+        return new AllRestriction(isMultipleAnd, restrictions);
+    }
+
     public static AnyRestriction or(final Restriction... restrictions) {
         return new AnyRestriction(restrictions);
     }

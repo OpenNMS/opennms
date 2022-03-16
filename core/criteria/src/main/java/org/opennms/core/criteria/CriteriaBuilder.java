@@ -67,6 +67,8 @@ public class CriteriaBuilder {
 
     private String m_matchType = "all";
 
+    private boolean m_isMultipleAnd = false;
+
     private static final Restriction[] EMPTY_RESTRICTION_ARRAY = new Restriction[0];
 
     public CriteriaBuilder(final Class<?> clazz) {
@@ -86,7 +88,7 @@ public class CriteriaBuilder {
         criteria.setDistinct(m_distinct);
         criteria.setLimit(m_limit);
         criteria.setOffset(m_offset);
-
+        criteria.setMultipleAnd(m_isMultipleAnd);
         if ("any".equals(m_matchType)) {
             criteria.setRestrictions(Collections.singleton(Restrictions.any(m_restrictions.toArray(EMPTY_RESTRICTION_ARRAY))));
         } else {
@@ -307,6 +309,12 @@ public class CriteriaBuilder {
 
     public CriteriaBuilder and(final Restriction... restrictions) {
         addRestriction(Restrictions.and(restrictions));
+        return this;
+    }
+
+    public CriteriaBuilder multipleAnd(final Restriction... restrictions) {
+        m_isMultipleAnd = true;
+        addRestriction(Restrictions.multipleAnd(true, restrictions));
         return this;
     }
 
