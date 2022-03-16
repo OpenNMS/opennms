@@ -1,4 +1,4 @@
-## Searching
+# Map Search
 
 The search bar lets you do a simple text search, as well as searching particular fields associated with the node.
 
