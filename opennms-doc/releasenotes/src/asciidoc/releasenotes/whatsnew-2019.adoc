@@ -319,6 +319,26 @@ For a more complete list of changes included in this release, see the "What's Ne
 
 === Changelog
 
+[[releasenotes-changelog-Meridian-2019.1.31]]
+
+==== Release Meridian-2019.1.31
+
+Release 2019.1.31 contains mostly bug fixes, including some small security-related changes.
+
+The codename for Horizon 2019.1.31 is https://wikipedia.org/wiki/$$HD_212771_b$$[_Victoriapeak_].
+
+===== Bug
+
+* opennms user credentials wrongly exposed (Issue http://issues.opennms.org/browse/NMS-12146[NMS-12146])
+* Support -> System Report exposes credentials in plain text (Issue http://issues.opennms.org/browse/NMS-13831[NMS-13831])
+* Cross site scripting - Reflected (Issue http://issues.opennms.org/browse/NMS-13835[NMS-13835])
+* Password field with autocomplete enabled (Issue http://issues.opennms.org/browse/NMS-13847[NMS-13847])
+* Web UI copyright year needs updating (Issue http://issues.opennms.org/browse/NMS-14037[NMS-14037])
+
+===== Enhancement
+
+* Releases should document third party libraries and their licenses (Issue http://issues.opennms.org/browse/NMS-14004[NMS-14004])
+
 [[releasenotes-changelog-Meridian-2019.1.30]]
 
 ==== Release Meridian-2019.1.30
