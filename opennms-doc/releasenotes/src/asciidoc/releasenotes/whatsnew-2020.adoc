@@ -221,6 +221,26 @@ For a more complete list of major changes included in this release, see the link
 
 === Changelog
 
+[releasenotes-changelog-Meridian-2020.1.20]
+
+==== Release Meridian-2020.1.20
+
+Release 2020.1.20 contains mostly bug fixes, including some small security-related changes.
+
+The codename for Horizon 2020.1.20 is https://wikipedia.org/wiki/$$Headland$$[_Headland_].
+
+===== Bug
+
+* opennms user credentials wrongly exposed (Issue http://issues.opennms.org/browse/NMS-12146[NMS-12146])
+* Support -> System Report exposes credentials in plain text (Issue http://issues.opennms.org/browse/NMS-13831[NMS-13831])
+* Cross site scripting - Reflected (Issue http://issues.opennms.org/browse/NMS-13835[NMS-13835])
+* Password field with autocomplete enabled (Issue http://issues.opennms.org/browse/NMS-13847[NMS-13847])
+* Web UI copyright year needs updating (Issue http://issues.opennms.org/browse/NMS-14037[NMS-14037])
+
+===== Enhancement
+
+* Releases should document third party libraries and their licenses (Issue http://issues.opennms.org/browse/NMS-14004[NMS-14004])
+
 [[releasenotes-changelog-Meridian-2020.1.19]]
 
 ==== Release Meridian-2020.1.19
