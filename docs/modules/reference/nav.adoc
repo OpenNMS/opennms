@@ -112,6 +112,7 @@
 *** xref:provisioning/handlers/dns.adoc[DNS]
 *** xref:provisioning/handlers/file.adoc[File]
 *** xref:provisioning/handlers/http.adoc[HTTP]
+*** xref:provisioning/handlers/opendaylight.adoc[OpenDaylight]
 *** xref:provisioning/handlers/vmware.adoc[VMware]
 ** xref:provisioning/policies.adoc[]
 *** xref:provisioning/policies/ip-interface.adoc[]
