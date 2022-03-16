@@ -1595,8 +1595,7 @@
     <install.perl.bin>/usr/bin/perl</install.perl.bin>
 
     <runMailTests>true</runMailTests>
-    <poller.logfile>/tmp/remote-poller.log</poller.logfile>
-  
+
     <!-- rpm specific -->
     <rpm.install.dir>/opt/opennms</rpm.install.dir>
     <rpm.build.executable>rpmbuild</rpm.build.executable>
