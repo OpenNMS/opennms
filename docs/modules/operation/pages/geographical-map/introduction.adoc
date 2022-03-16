@@ -10,7 +10,7 @@ The geographical maps display each node that has an address, or longitude and la
 
 The geographical map automatically clusters nodes into groups if they are close together. 
 A marker with a number in it indicates a cluster and the number of nodes in in it.
-Hover over a cluster to show the boundaries of the nodes it contains. 
+Hover over a cluster to show the contents of the nodes it contains. 
 Click on a marker to show the summary of the nodes it contains.
 
 ## Status
