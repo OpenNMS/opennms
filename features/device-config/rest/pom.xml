@@ -53,6 +53,11 @@
             <version>${commonsCompressVersion}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.device-config</groupId>
+            <artifactId>org.opennms.features.device-config.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-model</artifactId>
             <version>${project.version}</version>
@@ -96,7 +101,6 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-config</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
@@ -118,6 +122,23 @@
             <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.device-config</groupId>
+            <artifactId>org.opennms.features.device-config.service</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opennms.core.ipc.rpc</groupId>
+          <artifactId>org.opennms.core.ipc.rpc.mock-impl</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opennms.features.poller</groupId>
+          <artifactId>org.opennms.features.poller.client-rpc</artifactId>
+          <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>

@@ -31,17 +31,36 @@ const getAndMergeDeviceConfigBackups = async (context: ContextWithState) => {
 const downloadSelectedDevices = async (contextWithState: ContextWithState) => {
   const ids = contextWithState.state.selectedIds
   const file = await API.downloadDeviceConfigs(ids)
-  downloadFile(file)
+  if (file) downloadFile(file)
 }
 
 const backupSelectedDevices = async (contextWithState: ContextWithState) => {
   const ids = contextWithState.state.selectedIds
   const configs = contextWithState.state.deviceConfigBackups
+  contextWithState.dispatch('spinnerModule/setSpinnerState', true, { root: true })
 
   if (ids.length === 1) {
     const config = getDeviceConfigBackupObjById(configs, ids[0])
-    return await API.backupDeviceConfig(config)
+    const success = await API.backupDeviceConfig(config)
+    contextWithState.dispatch('spinnerModule/setSpinnerState', false, { root: true })
+
+    if (success) {
+      const successToast = {
+        basic: 'Success!',
+        detail: 'Device backup successful.',
+        hasErrors: false
+      }
+      contextWithState.dispatch('notificationModule/setToast', successToast, { root: true })
+    } else {
+      const failedToast = {
+        basic: 'Failed:',
+        detail: 'Device backup unsuccessful.',
+        hasErrors: true
+      }
+      contextWithState.dispatch('notificationModule/setToast', failedToast, { root: true })
+    }
   } else {
+    contextWithState.dispatch('spinnerModule/setSpinnerState', false, { root: true })
     // backup multiple configs?
   }
 }

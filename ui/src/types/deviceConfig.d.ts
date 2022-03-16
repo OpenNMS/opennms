@@ -11,8 +11,7 @@ export interface DeviceConfigBackup {
   lastSucceededDate: string
   lastFailedDate: string
   backupStatus: string
-  scheduleDate: string
-  scheduleInterval: string
+  scheduledInterval: string
   fileName: string
   failureReason: string
   encoding: string

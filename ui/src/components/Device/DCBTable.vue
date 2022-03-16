@@ -15,6 +15,7 @@
         <div>Configurations:</div>
         <div class="btn-container">
           <FeatherButton
+            data-test="view-history-btn"
             @click="onViewHistory"
             :disabled="(!all && selectedDeviceConfigIds.length !== 1) || (all && deviceConfigBackups.length !== 1)"
             text
@@ -26,6 +27,7 @@
           </FeatherButton>
 
           <FeatherButton
+            data-test="download-btn"
             @click="onDownload"
             :disabled="(selectedDeviceConfigIds.length === 0 && !all) || (all && !deviceConfigBackups.length)"
             text
@@ -37,6 +39,7 @@
           </FeatherButton>
 
           <FeatherButton
+            data-test="backup-now-btn"
             @click="onBackupNow"
             :disabled="(selectedDeviceConfigIds.length === 0 && !all) || (all && !deviceConfigBackups.length)"
             text
@@ -57,7 +60,7 @@
       <thead>
         <tr>
           <th>
-            <FeatherCheckbox v-model="all" @update:modelValue="selectAll" />
+            <FeatherCheckbox v-model="all" @update:modelValue="selectAll" data-test="all-checkbox" />
           </th>
           <FeatherSortHeader
             scope="col"
@@ -123,34 +126,35 @@
             />
           </td>
           <td>
-            <router-link :to="`/node/${config.id}`">{{ config.deviceName }}</router-link>
+            <router-link :to="`/node/${config.nodeId}`" target="_blank">{{ config.deviceName }}</router-link>
           </td>
           <td>{{ config.ipAddress }}</td>
           <td>{{ config.location }}</td>
-          <td v-date>{{ config.lastSucceededDate }}</td>
-          <td
-            v-date
-            class="last-backup-date pointer"
-            @click="onLastBackupDateClick(config)"
-          >{{ config.lastUpdatedDate }}</td>
+          <td class="last-backup-date pointer" @click="onLastBackupDateClick(config)">
+            <span v-date>{{ config.lastSucceededDate }}</span>
+            <FeatherButton icon="View">
+              <FeatherIcon :icon="ViewDetails" />
+            </FeatherButton>
+          </td>
+          <td v-date>{{ config.lastUpdatedDate }}</td>
           <td>
             <div
-              :class="config.backupStatus.replace(' ', '')"
+              :class="config.backupStatus.replace(' ', '').toLowerCase()"
               class="option"
             >{{ config.backupStatus }}</div>
           </td>
-          <td v-date>{{ config.scheduleDate }}</td>
-          <td>{{ config.scheduleInterval }}</td>
+          <td v-date>{{ config.nextScheduledBackupDate }}</td>
+          <td>{{ config.scheduledInterval }}</td>
         </tr>
       </tbody>
     </table>
   </div>
   <DCBModal @close="dcbModalVisible = false" :visible="dcbModalVisible">
     <template v-slot:content>
-      <DCBModalLastBackupContent
-        v-if="dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalLastBackupContent"
+      <DCBModalViewHistoryContentVue
+        v-if="dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalViewHistoryContent"
       />
-      <DCBModalViewHistoryContentVue v-else />
+      <DCBModalLastBackupContent v-else />
     </template>
   </DCBModal>
 </template>
@@ -167,6 +171,7 @@ import { FeatherIcon } from '@featherds/icon'
 import History from '@featherds/icon/action/Restore'
 import Download from '@featherds/icon/action/DownloadFile'
 import Backup from '@featherds/icon/action/Cycle'
+import ViewDetails from '@featherds/icon/action/ViewDetails'
 import DCBSearch from '@/components/Device/DCBSearch.vue'
 import DCBModal from './DCBModal.vue'
 import DCBModalLastBackupContent from './DCBModalLastBackupContent.vue'
@@ -244,8 +249,13 @@ const selectAll = () => {
   if (all.value) {
     store.dispatch('deviceModule/setSelectedIds', 'all')
   } else {
-    store.dispatch('deviceModule/setSelectedIds', selectedDeviceConfigIds.value)
+    clearAllSelectedDevices()
   }
+}
+
+const clearAllSelectedDevices = () => {
+  selectedDeviceConfigBackups.value = {}
+  store.dispatch('deviceModule/setSelectedIds', selectedDeviceConfigIds.value)
 }
 
 const selectCheckbox = (config: DeviceConfigBackup) => {
@@ -316,6 +326,7 @@ onMounted(() => {
       height: 43px;
       line-height: 3.5;
       padding-left: 15px;
+      text-transform: capitalize;
     }
   }
 

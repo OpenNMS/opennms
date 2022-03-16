@@ -216,7 +216,7 @@ public class PollableServiceConfigIT {
         Service configuredSvc = new Service();
         configuredSvc.setName("SVC");
         Package pkg = mock(Package.class);
-        when(pkg.findService("SVC")).thenReturn(Optional.of(new Package.ServiceMatch(configuredSvc)));
+        when(pkg.findService("SVC")).thenReturn(Optional.of(new Package.ServiceMatch(pkg, configuredSvc)));
 
         PollerConfig pollerConfig = mock(PollerConfig.class);
         Timer timer = mock(Timer.class);

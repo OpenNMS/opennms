@@ -40,7 +40,9 @@ import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
 import org.opennms.features.deviceconfig.sink.module.DeviceConfigSinkDTO;
 import org.opennms.features.deviceconfig.sink.module.DeviceConfigSinkModule;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,6 +90,7 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigSinkDTO
                 }
                 deviceConfigDao.updateDeviceConfigContent(
                         ipInterface,
+                        null,
                         // use default ConfigType for now
                         // -> later on the config type may be derived from the filename somehow...
                         ConfigType.Default,

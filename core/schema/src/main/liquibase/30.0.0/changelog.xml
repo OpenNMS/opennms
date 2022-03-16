@@ -27,6 +27,9 @@
             <column name="ipinterface_id" type="integer">
                 <constraints nullable="false"/>
             </column>
+	    <column name="service_name" type="varchar(64)">
+                <constraints nullable="true"/>
+	    </column>
             <column name="config" type="bytea"/>
             <column name="encoding" type="varchar(16)">
                 <constraints nullable="true"/>

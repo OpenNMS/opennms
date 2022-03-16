@@ -11,7 +11,7 @@
       :key="option"
       @click="filterByStatus(option)"
     >
-      <div class="option" :class="option.replace(' ', '')">{{ option }}</div>
+      <div class="option" :class="option.replace(' ', '').toLowerCase()">{{ option }}</div>
     </FeatherDropdownItem>
   </FeatherDropdown>
 </template>
@@ -47,6 +47,7 @@ const filterByStatus = (value: string) => {
   height: 36px;
   line-height: 2.5;
   padding-left: 15px;
+  text-transform: capitalize;
 }
 </style>
 
