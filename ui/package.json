@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build --base=/opennms/ui/",
     "serve": "vite preview",
-    "test": "uvu -r tsm tests",
+    "test": "vitest run",
     "lint": "eslint --ignore-path ../.gitignore --ext .ts,.vue .",
     "lint:fix": "eslint --ignore-path ../.gitignore --ext .ts,.vue . --fix",
     "format": "prettier --ignore-path ../.gitignore --write \"**/*.+(ts)\""
@@ -68,14 +68,15 @@
     "@typescript-eslint/parser": "^5.12.0",
     "@vitejs/plugin-vue": "^2.2.0",
     "@vue-leaflet/vue-leaflet": "^0.6.1",
+    "@vue/test-utils": "^2.0.0-rc.17",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.4.0",
     "eslint-plugin-vue": "^8.5.0",
+    "happy-dom": "^2.47.0",
     "prettier": "^2.3.2",
-    "tsm": "^2.1.4",
     "typescript": "^4.5.5",
-    "uvu": "^0.5.3",
     "vite": "^2.8.4",
+    "vitest": "^0.6.1",
     "vue-eslint-parser": "^8.0.1",
     "vue-tsc": "^0.31.4"
   }
