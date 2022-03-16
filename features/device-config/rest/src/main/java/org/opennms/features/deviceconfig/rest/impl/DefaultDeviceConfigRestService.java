@@ -30,6 +30,8 @@ package org.opennms.features.deviceconfig.rest.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -466,7 +468,11 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     }
 
     private static DeviceConfigDTO createDeviceConfigDto(DeviceConfig deviceConfig) {
+        // TODO: Handle different character encodings and also binary data
         try {
+            String config =
+                deviceConfig.getConfigType() == null ? "" : new String(deviceConfig.getConfig(), StandardCharsets.UTF_8);
+
             var dto = new DeviceConfigDTO(
                     deviceConfig.getId(),
                     deviceConfig.getIpInterface().getId(),
@@ -478,6 +484,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
                     deviceConfig.getEncoding(),
                     deviceConfig.getConfigType(),
                     deviceConfig.getFileName(),
+                    config,
                     deviceConfig.getFailureReason()
             );
 

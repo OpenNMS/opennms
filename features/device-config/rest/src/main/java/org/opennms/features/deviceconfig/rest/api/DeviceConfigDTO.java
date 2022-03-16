@@ -34,7 +34,7 @@ import java.util.Date;
  * DTO for response value of DeviceConfigRestService.
  * 'final' properties are retrieved directly from 'device_config' table.
  * Other properties are calculated or from other data sources.
- * The actual configuration data is retrieved separately using this object's 'id' field.
+ * Configuration data itself is returned as text.
  */
 public class DeviceConfigDTO {
     /** Database id of 'device_config' table entry */
@@ -43,7 +43,7 @@ public class DeviceConfigDTO {
     /** Database id of 'ipinterface' table entry */
     private final int ipInterfaceId;
 
-    /** IP address as a string */
+    /** IP address as a text string */
     private final String ipAddress;
 
     /** Date backup config data was last stored. */
@@ -70,6 +70,9 @@ public class DeviceConfigDTO {
 
     /** Filename of the configuration data as received from the device. */
     private final String fileName;
+
+    /** Configuration data as a string */
+    private final String config;
 
     /** Failure reason description, if there was a backup failure. */
     private final String failureReason;
@@ -112,6 +115,7 @@ public class DeviceConfigDTO {
         String encoding,
         String configType,
         String fileName,
+        String config,
         String failureReason
     ) {
         this.id = id;
@@ -124,6 +128,7 @@ public class DeviceConfigDTO {
         this.encoding = encoding;
         this.configType = configType;
         this.fileName = fileName;
+        this.config = config;
         this.failureReason = failureReason;
     }
 
@@ -148,6 +153,8 @@ public class DeviceConfigDTO {
     public String getConfigType() { return this.configType; }
 
     public String getFileName() { return this.fileName; }
+
+    public String getConfig() { return config; }
 
     public String getFailureReason() { return this.failureReason; }
 
