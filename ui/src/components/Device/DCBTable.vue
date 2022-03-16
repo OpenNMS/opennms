@@ -126,24 +126,25 @@
             />
           </td>
           <td>
-            <router-link :to="`/node/${config.nodeId}`">{{ config.deviceName }}</router-link>
+            <router-link :to="`/node/${config.nodeId}`" target="_blank">{{ config.deviceName }}</router-link>
           </td>
           <td>{{ config.ipAddress }}</td>
           <td>{{ config.location }}</td>
-          <td v-date>{{ config.lastSucceededDate }}</td>
-          <td
-            v-date
-            class="last-backup-date pointer"
-            @click="onLastBackupDateClick(config)"
-          >{{ config.lastUpdatedDate }}</td>
+          <td class="last-backup-date pointer" @click="onLastBackupDateClick(config)">
+            <span v-date>{{ config.lastSucceededDate }}</span>
+            <FeatherButton icon="View">
+              <FeatherIcon :icon="ViewDetails" />
+            </FeatherButton>
+          </td>
+          <td v-date>{{ config.lastUpdatedDate }}</td>
           <td>
             <div
-              :class="config.backupStatus.replace(' ', '')"
+              :class="config.backupStatus.replace(' ', '').toLowerCase()"
               class="option"
             >{{ config.backupStatus }}</div>
           </td>
-          <td v-date>{{ config.scheduleDate }}</td>
-          <td>{{ config.scheduleInterval }}</td>
+          <td v-date>{{ config.nextScheduledBackupDate }}</td>
+          <td>{{ config.scheduledInterval }}</td>
         </tr>
       </tbody>
     </table>
@@ -170,6 +171,7 @@ import { FeatherIcon } from '@featherds/icon'
 import History from '@featherds/icon/action/Restore'
 import Download from '@featherds/icon/action/DownloadFile'
 import Backup from '@featherds/icon/action/Cycle'
+import ViewDetails from '@featherds/icon/action/ViewDetails'
 import DCBSearch from '@/components/Device/DCBSearch.vue'
 import DCBModal from './DCBModal.vue'
 import DCBModalLastBackupContent from './DCBModalLastBackupContent.vue'
@@ -324,6 +326,7 @@ onMounted(() => {
       height: 43px;
       line-height: 3.5;
       padding-left: 15px;
+      text-transform: capitalize;
     }
   }
 
