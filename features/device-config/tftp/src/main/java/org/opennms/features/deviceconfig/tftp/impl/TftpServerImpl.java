@@ -467,7 +467,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
      */
     public void launch() throws IOException {
         LOG.info("Starting TFTP Server on port " + port_);
-
+        shutdownServer = false;
         serverTftp_ = new TFTP();
 
         // This is the value used in response to each client.

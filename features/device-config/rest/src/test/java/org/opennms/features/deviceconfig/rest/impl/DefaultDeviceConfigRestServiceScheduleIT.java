@@ -29,8 +29,6 @@
 package org.opennms.features.deviceconfig.rest.impl;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -40,7 +38,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
-import net.redhogs.cronparser.CronExpressionDescriptor;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
@@ -67,10 +64,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.*;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.quartz.CronExpression;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -158,7 +151,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             Assert.assertEquals(ipInterfaceIds.get(i).intValue(), dto.getIpInterfaceId());
             assertThat(expectedConfigTypes.get(i).equalsIgnoreCase(dto.getConfigType()), is(true));
             Assert.assertEquals(Integer.toString(version), dto.getEncoding());
-            Assert.assertEquals(createdTime(version), dto.getCreatedTime().getTime());
+            Assert.assertEquals(createdTime(version), dto.getLastBackupDate().getTime());
             Assert.assertEquals(createdTime(version), dto.getLastUpdatedDate().getTime());
             Assert.assertEquals(createdTime(version), dto.getLastSucceededDate().getTime());
             Assert.assertNull(dto.getLastFailedDate());
