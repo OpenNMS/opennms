@@ -4,7 +4,7 @@ The search bar lets you do a simple text search, as well as searching particular
 
 ### Search Fields
 
-The following fields can be searched:
+You can search the following fields:
 
 [options="header"]
 [cols="2*"]
