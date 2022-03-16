@@ -2,6 +2,29 @@
 
 = Changelog
 
+[[releasenotes-changelog-Meridian-2021.1.12]]
+
+==== Release Meridian-2021.1.12
+
+Release 2021.1.12 contains mostly doc updates and bug fixes, including some small security-related changes.
+
+The codename for Horizon 2021.1.12 is https://wikipedia.org/wiki/$$Kosmos_482$$[_Cosmos 482_].
+
+===== Bug
+
+* opennms user credentials wrongly exposed (Issue http://issues.opennms.org/browse/NMS-12146[NMS-12146])
+* Support -> System Report exposes credentials in plain text (Issue http://issues.opennms.org/browse/NMS-13831[NMS-13831])
+* Cross site scripting - Reflected (Issue http://issues.opennms.org/browse/NMS-13835[NMS-13835])
+* TLS: Diffie-Hellman Key Exchange Insufficient DH Group Strength Vulnerability (Issue http://issues.opennms.org/browse/NMS-13845[NMS-13845])
+* Password field with autocomplete enabled (Issue http://issues.opennms.org/browse/NMS-13847[NMS-13847])
+* Web UI copyright year needs updating (Issue http://issues.opennms.org/browse/NMS-14037[NMS-14037])
+
+===== Enhancement
+
+* Releases should document third party libraries and their licenses (Issue http://issues.opennms.org/browse/NMS-14004[NMS-14004])
+* Expand newts converter documentation (Issue http://issues.opennms.org/browse/NMS-14073[NMS-14073])
+* Add TcpDetector documentation (Issue http://issues.opennms.org/browse/NMS-14074[NMS-14074])
+
 [[releasenotes-changelog-Meridian-2021.1.11]]
 
 == Release Meridian-2021.1.11
