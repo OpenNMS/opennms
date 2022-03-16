@@ -8,7 +8,10 @@ The geographical map is located in the `Maps` menu or by going to the page of a 
 
 The geographical maps display each node that has an address, or longitude and latitude in the database. When the geographical map is loaded, it will look at each node. If the node has coordinates, it will display it on the map. If the node has an address, it will use a geolocation service to convert the address to coordinates, and then display it on the map.
 
-The geographical maps will automatically cluster nodes into groups if they are close together. By hovering over a cluster (the circle marker with a number in it), it will show the boundaries of the nodes it contains. Click on a marker to show the summary of the nodes it contains.
+The geographical map automatically clusters nodes into groups if they are close together. 
+A marker with a number in it indicates a cluster and the number of nodes in in it.
+Hover over a cluster to show the boundaries of the nodes it contains. 
+Click on a marker to show the summary of the nodes it contains.
 
 ## Status
 
