@@ -10,7 +10,8 @@ The geographical maps will automatically cluster nodes into groups if they are c
 
 ## Status
 
-A node's marker will display as the color associated with the most severe alarm for that node.  A cluster's marker will display as the color of the highest severity of the nodes the marker contains.
+A node's marker displays as the color associated with the most severe alarm for that node. 
+A cluster's marker displays as the color of the highest severity of the nodes the marker contains.
 
 [options="header"]
 [cols="2*"]
