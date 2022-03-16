@@ -48,6 +48,7 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 
 @Entity
 @Table(name = "device_config")
@@ -64,6 +65,9 @@ public class DeviceConfig implements Serializable {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "ipinterface_id")
     private OnmsIpInterface ipInterface;
+
+    @Column(name = "service_name", nullable = true)
+    private String serviceName;
 
     @Type(type = "org.hibernate.type.BinaryType")
     @Column(name = "config")
@@ -111,6 +115,14 @@ public class DeviceConfig implements Serializable {
 
     public void setIpInterface(OnmsIpInterface ipInterface) {
         this.ipInterface = ipInterface;
+    }
+
+    public String getServiceName() {
+        return this.serviceName;
+    }
+
+    public void setServiceName(final String serviceName) {
+        this.serviceName = serviceName;
     }
 
     public byte[] getConfig() {
@@ -186,12 +198,22 @@ public class DeviceConfig implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DeviceConfig that = (DeviceConfig) o;
-        return Objects.equals(createdTime, that.createdTime) && Objects.equals(lastUpdated, that.lastUpdated) && Objects.equals(lastFailed, that.lastFailed) && Objects.equals(lastSucceeded, that.lastSucceeded) && Objects.equals(encoding, that.encoding) && Objects.equals(configType, that.configType) && Objects.equals(fileName, that.fileName) && Objects.equals(failureReason, that.failureReason) && Objects.equals(ipInterface, that.ipInterface) && Arrays.equals(config, that.config);
+        return Objects.equals(createdTime, that.createdTime) &&
+               Objects.equals(lastUpdated, that.lastUpdated) &&
+               Objects.equals(lastFailed, that.lastFailed) &&
+               Objects.equals(lastSucceeded, that.lastSucceeded) &&
+               Objects.equals(encoding, that.encoding) &&
+               Objects.equals(configType, that.configType) &&
+               Objects.equals(fileName, that.fileName) &&
+               Objects.equals(failureReason, that.failureReason) &&
+               Objects.equals(ipInterface, that.ipInterface) &&
+               Objects.equals(serviceName, that.serviceName) &&
+               Arrays.equals(config, that.config);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(ipInterface, encoding, configType, fileName, failureReason, createdTime, lastUpdated, lastFailed, lastSucceeded);
+        int result = Objects.hash(ipInterface, serviceName, encoding, configType, fileName, failureReason, createdTime, lastUpdated, lastFailed, lastSucceeded);
         result = 31 * result + Arrays.hashCode(config);
         return result;
     }

@@ -51,8 +51,6 @@ import com.google.common.base.Strings;
 
 
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
-
-    private static final String DEVICE_CONFIG_MONITOR_PREFIX = "DeviceConfig";
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitorAdaptor.class);
 
     @Autowired
@@ -66,30 +64,28 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
     @Override
     public PollStatus handlePollResult(MonitoredService svc, Map<String, Object> parameters, PollStatus status) {
+        final var deviceConfig = status.getDeviceConfig();
 
-        if (!svc.getSvcName().startsWith(DEVICE_CONFIG_MONITOR_PREFIX)) {
+        if (deviceConfig == null) {
+            // Not our business
             return status;
         }
-        // unknown means that retrieval was skipped, so nothing to persist
-        if (status.isUnknown()) {
-            return status;
-        }
+
         // Retrieve interface
         final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
         String encodingAttribute = getObjectAsString(parameters.get("encoding"));
         String configTypeAttribute = getObjectAsString(parameters.get("config-type"));
         String encoding = !Strings.isNullOrEmpty(encodingAttribute) ? encodingAttribute : Charset.defaultCharset().name();
         String configType = !Strings.isNullOrEmpty(configTypeAttribute) ? configTypeAttribute : ConfigType.Default;
-        var deviceConfig = status.getDeviceConfig();
 
-        if (deviceConfig == null) {
+        if (deviceConfig.getContent() == null) {
             // Config retrieval failed
             deviceConfigDao.updateDeviceConfigFailure(
                     ipInterface,
+                    svc.getSvcName(),
                     configType,
                     encoding,
-                    status.getReason()
-            );
+                    status.getReason());
             sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_FAILED_UEI);
         } else {
             // Config retrieval succeeded
@@ -104,11 +100,11 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
             }
             deviceConfigDao.updateDeviceConfigContent(
                     ipInterface,
+                    svc.getSvcName(),
                     configType,
                     encoding,
                     content,
-                    deviceConfig.getFilename()
-            );
+                    deviceConfig.getFilename());
             sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI);
         }
 

@@ -153,28 +153,4 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
                     "where node.id = ?",
                     nodeId);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<OnmsMonitoredService> findByServiceTypeAndIpInterfaceId(String serviceTypePrefix, List<Integer> ipInterfaceIds) {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoredService.class);
-
-        builder.alias("serviceType", "serviceType", Alias.JoinType.LEFT_JOIN);
-        builder.ilike("serviceType.name", serviceTypePrefix + "%");
-
-        if (ipInterfaceIds != null && !ipInterfaceIds.isEmpty()) {
-            builder.in("ipInterface.id", ipInterfaceIds);
-        }
-
-        final Criteria criteria = builder.toCriteria();
-
-        return findMatching(criteria);
-    }
-
-    @Override
-    public List<OnmsMonitoredService> findSimilarServicesOnInterface(Integer nodeId, InetAddress ipAddress, String svcNamePrefix) {
-        return find("from OnmsMonitoredService as svc " +
-                        "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.serviceType.name LIKE ?",
-                nodeId, ipAddress, svcNamePrefix+"%");
-    }
 }

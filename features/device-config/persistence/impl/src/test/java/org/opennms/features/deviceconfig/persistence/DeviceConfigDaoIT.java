@@ -41,6 +41,7 @@ import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,6 @@ import javax.sql.DataSource;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -122,7 +122,7 @@ public class DeviceConfigDaoIT {
 
         List<DeviceConfig> deviceConfigList = deviceConfigDao.findAll();
         Assert.assertEquals(count, deviceConfigList.size());
-        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, ConfigType.Default);
+        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, "DeviceConfig-default");
         Assert.assertEquals(count, deviceConfigList.size());
         DeviceConfig deviceConfig = deviceConfigList.get(0);
         Assert.assertNotNull(deviceConfig);
@@ -132,10 +132,10 @@ public class DeviceConfigDaoIT {
         DeviceConfig middleElement = deviceConfigList.get((count / 2) - 1);
         middleElement.setLastUpdated(Date.from(Instant.now().plus(1, HOURS)));
         deviceConfigDao.saveOrUpdate(middleElement);
-        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, ConfigType.Default);
+        deviceConfigList = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, "DeviceConfig-default");
 
         DeviceConfig retrievedMiddleElement = deviceConfigList.get(0);
-        Optional<DeviceConfig> latestElementOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Optional<DeviceConfig> latestElementOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
 
         Assert.assertTrue(latestElementOptional.isPresent());
         DeviceConfig latestConfig = latestElementOptional.get();
@@ -143,7 +143,7 @@ public class DeviceConfigDaoIT {
 
         // Populate failed retrieval.
         populateFailedRetrievalDeviceConfig();
-        Optional<DeviceConfig> elementWithFailedConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, ConfigType.Default);
+        Optional<DeviceConfig> elementWithFailedConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
         Assert.assertTrue(elementWithFailedConfig.isPresent());
 
         // Verify that last failed got updated and it is same as last updated.
@@ -155,6 +155,7 @@ public class DeviceConfigDaoIT {
         for (int i = 0; i < count; i++) {
             DeviceConfig deviceConfig = new DeviceConfig();
             deviceConfig.setIpInterface(ipInterface);
+            deviceConfig.setServiceName("DeviceConfig-default");
             deviceConfig.setConfig(UUID.randomUUID().toString().getBytes(StandardCharsets.US_ASCII));
             deviceConfig.setEncoding("ASCII");
             deviceConfig.setCreatedTime(Date.from(Instant.now().plusSeconds(i * 60)));
@@ -167,6 +168,7 @@ public class DeviceConfigDaoIT {
     private void populateFailedRetrievalDeviceConfig() {
         DeviceConfig deviceConfig = new DeviceConfig();
         deviceConfig.setIpInterface(ipInterface);
+        deviceConfig.setServiceName("DeviceConfig-default");
         deviceConfig.setEncoding(Charset.defaultCharset().name());
         deviceConfig.setConfigType(ConfigType.Default);
         deviceConfig.setLastUpdated(Date.from(Instant.now().plus(2, HOURS)));

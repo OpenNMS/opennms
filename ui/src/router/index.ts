@@ -1,8 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Nodes from '@/containers/Nodes.vue'
-import NodeDetails from '@/containers/NodeDetails.vue'
+import DeviceConfigBackup from '@/containers/DeviceConfigBackup.vue'
 import FileEditor from '@/containers/FileEditor.vue'
-import Logs from '@/containers/Logs.vue'
 import Resources from '@/components/Resources/Resources.vue'
 import Graphs from '@/components/Resources/Graphs.vue'
 
@@ -17,7 +16,7 @@ const router = createRouter({
     {
       path: '/node/:id',
       name: 'Node Details',
-      component: NodeDetails
+      component: () => import('@/containers/NodeDetails.vue')
     },
     {
       path: '/plugins/:extensionId/:resourceRootPath/:moduleFileName',
@@ -33,7 +32,7 @@ const router = createRouter({
     {
       path: '/logs',
       name: 'Logs',
-      component: Logs
+      component: () => import('@/containers/Logs.vue')
     },
     {
       path: '/map',
@@ -82,7 +81,7 @@ const router = createRouter({
     {
       path: '/device-config-backup',
       name: 'DeviceConfigBackup',
-      component: () => import('@/containers/DeviceConfigBackup.vue')
+      component: DeviceConfigBackup
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

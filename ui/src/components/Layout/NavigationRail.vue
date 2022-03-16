@@ -43,7 +43,7 @@
         :class="{ selected: isSelected('/device-config-backup') }"
         href="#/device-config-backup"
         :icon="MinionProfiles"
-        title="Device Management"
+        title="Configuration Management"
       />
 
       <!-- loop plugin menu items -->

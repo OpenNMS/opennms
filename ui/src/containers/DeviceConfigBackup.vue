@@ -7,12 +7,13 @@
             <p class="title">Device Configuration</p>
             <DCBTable />
           </div>
-          <div class="filters-container">
+          <div v-if="false" class="filters-container">
             <DCBGroupFilters />
           </div>
         </div>
       </div>
     </div>
+    <Toast />
   </div>
 </template>
 
@@ -21,6 +22,7 @@ import { onMounted } from 'vue'
 import { useStore } from 'vuex'
 import DCBTable from '@/components/Device/DCBTable.vue'
 import DCBGroupFilters from '@/components/Device/DCBGroupFilters.vue'
+import Toast from '@/components/Common/Toast.vue'
 
 const store = useStore()
 
@@ -35,19 +37,19 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
   background: $color;
   background: linear-gradient(90deg, $color 1%, rgba(255, 255, 255, 0) 9%);
 }
-:deep(.Success) {
+:deep(.success) {
   @include status-bar(var($success));
 }
-:deep(.Failed) {
+:deep(.failed) {
   @include status-bar(var($error));
 }
-:deep(.InProgress) {
+:deep(.inprogress) {
   @include status-bar(var($warning));
 }
-:deep(.Paused) {
+:deep(.paused) {
   @include status-bar(var($primary-variant));
 }
-:deep(.NoBackup) {
+:deep(.nobackup) {
   @include status-bar(var($secondary-variant));
 }
 

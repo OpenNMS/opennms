@@ -1,7 +1,6 @@
-import { filesToFolders, sortFilesAndFolders, getExtensionFromFilenameSafely } from '../src/components/FileEditor/utils'
+import { filesToFolders, sortFilesAndFolders, getExtensionFromFilenameSafely } from '@/components/FileEditor/utils'
 import { IFile } from '../src/store/fileEditor/state'
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
+import { assert, test, expect } from 'vitest'
 
 test('Creating folders', () => {
   const sample: string[] = [
@@ -40,8 +39,7 @@ test('Creating folders', () => {
     ]
   }
 
-  assert.type(filesToFolders, 'function')
-  assert.equal(filesToFolders(sample), result)
+  expect(filesToFolders(sample)).toEqual(result)
 })
 
 test('Sorting folders and files', () => {
@@ -60,16 +58,12 @@ test('Sorting folders and files', () => {
   const firstFolder = sorted[0].name
   const secondFolderFirstFile = (sorted[1] as Required<IFile>).children[0].name
 
-  assert.type(sortFilesAndFolders, 'function')
-  assert.is(firstFolder, 'Atest')
-  assert.is(secondFolderFirstFile, 'A')
+  assert.equal(firstFolder, 'Atest')
+  assert.equal(secondFolderFirstFile, 'A')
 })
 
 test('Getting the file extension', () => {
-  assert.type(getExtensionFromFilenameSafely, 'function')
   assert.equal(getExtensionFromFilenameSafely('test'), '')
   assert.equal(getExtensionFromFilenameSafely('test.xml'), 'xml')
   assert.equal(getExtensionFromFilenameSafely('test.properties'), 'properties')
 })
-
-test.run()

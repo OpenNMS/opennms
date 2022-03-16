@@ -31,6 +31,7 @@ package org.opennms.features.deviceconfig.service;
 import org.opennms.netmgt.poller.DeviceConfig;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface DeviceConfigService {
@@ -40,20 +41,38 @@ public interface DeviceConfigService {
      *
      * @param ipAddress  specific IpAddress for which we need to fetch device config.
      * @param location   specific minion location at which we need to fetch device config.
-     * @param configType  configType whether it is Default or Running.
+     * @param service    name of the bound service.
      * @throws IOException
      */
-    void triggerConfigBackup(String ipAddress, String location, String configType) throws IOException;
+    void triggerConfigBackup(String ipAddress, String location, String service) throws IOException;
 
     /**
      * Get device config for the given ipAddress at given location.
      *
      * @param ipAddress  specific IpAddress for which we need to fetch device config.
      * @param location   specific minion location at which we need to fetch device config.
-     * @param configType configType whether it is Default or Running.
+     * @param service    name of the bound service.
      * @param timeout    timeout in milliseconds for retrieving device config
      * @throws IOException
      * @return
      */
-    CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String configType, int timeout) throws IOException;
+    CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String service, int timeout) throws IOException;
+
+    /**
+     * Gets the backup jobs defined for the given interface.
+     *
+     * @param ipAddress the IP address of the interface.
+     * @param location the location of the interface.
+     * @return the {@link RetrievalDefinition}s for this interface
+     */
+    List<RetrievalDefinition> getRetrievalDefinitions(String ipAddress, String location);
+
+    /**
+     * Definition of a backup job.
+     */
+    interface RetrievalDefinition {
+        String getServiceName();
+        String getConfigType();
+        String getSchedule();
+    }
 }

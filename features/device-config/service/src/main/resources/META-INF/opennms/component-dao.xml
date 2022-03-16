@@ -1,23 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
-       xsi:schemaLocation="
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
-		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
-	">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
-    <context:annotation-config/>
-    <tx:annotation-driven/>
+    <import resource="classpath:/META-INF/opennms/applicationContext-deviceconfig-service.xml" />
 
-    <bean id="deviceConfigService" class="org.opennms.features.deviceconfig.service.impl.DeviceConfigServiceImpl"/>
-    <onmsgi:service interface="org.opennms.features.deviceconfig.service.DeviceConfigService" ref="deviceConfigService">
-        <onmsgi:service-properties>
-            <entry key="registration.export" value="true"/>
-        </onmsgi:service-properties>
-    </onmsgi:service>
 </beans>

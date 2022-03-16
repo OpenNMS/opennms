@@ -91,11 +91,11 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         }
 
         final Map<String, Object> params = new HashMap<>();
-        final String configType = getKeyedString(parameters, CONFIG_TYPE, ConfigType.Default);
         final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
-        final var deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
+        
+        final var deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
         deviceConfigOptional.ifPresent(deviceConfig -> params.put(LAST_RETRIEVAL, String.valueOf(deviceConfig.getLastUpdated().getTime())));
-
+        
         final String scriptFile = getKeyedString(parameters, SCRIPT_FILE, null);
         try {
             if (scriptFile != null) {
@@ -160,7 +160,9 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                                          + "\nstdout: " + failure.stdout
                                          + "\nstderr: " + failure.stderr;
                             LOG.error(reason);
-                            return PollStatus.unavailable(reason);
+                            final var pollStatus = PollStatus.unavailable(reason);
+                            pollStatus.setDeviceConfig(new DeviceConfig());
+                            return pollStatus;
                         },
                         success -> {
                             LOG.debug("Retrieved device configuration - host: " + host);
