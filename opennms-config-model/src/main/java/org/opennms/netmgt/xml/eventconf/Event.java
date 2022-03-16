@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -96,6 +96,17 @@ public class Event implements Serializable, Comparable<Event> {
      */
     @XmlElement(name="logmsg", required=true)
     private Logmsg m_logmsg;
+
+    @XmlElement(name="collection", required=false)
+    private List<Collection> m_collections = new ArrayList<>();
+
+    public List<Collection> getCollections() {
+        return m_collections;
+    }
+
+    public void setCollections(List<Collection> collections) {
+        this.m_collections = collections;
+    }
 
     /**
      * The event severity

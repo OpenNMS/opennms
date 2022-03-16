@@ -67,6 +67,10 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.core</artifactId>
+    </dependency>
 
     <!-- Test Dependencies -->
     <dependency>

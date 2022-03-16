@@ -103,6 +103,12 @@
           </annotation>
         </element>
 
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:collection">
+          <annotation>
+            <documentation>Sent event to collectd.</documentation>
+          </annotation>
+        </element>
+
         <element maxOccurs="1" minOccurs="1" name="severity" type="string">
           <annotation>
             <documentation>The event severity</documentation>
@@ -372,6 +378,54 @@
     </complexType>
 
 
+  </element>
+
+  <element name="collection">
+    <annotation>
+      <documentation>The event collect configured will trigger message forward to collectd.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+          <annotation>
+            <documentation>Round Robin Archive definitions.</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string">
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*" />
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+        <attribute name="name" type="string" use="required">
+          <annotation>
+            <documentation>Name of the collection.</documentation>
+          </annotation>
+        </attribute>
+        <attribute name="type" default="GAUGE">
+          <annotation>
+            <documentation>Type of data.</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string">
+              <pattern value="(GAUGE|COUNTER|STRING)"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+        <!--attribute name="target" default="interface" >
+          <simpleType>
+            <restriction base="string">
+              <pattern value="(node|interface)"/>
+            </restriction>
+          </simpleType>
+        </attribute-->
+      <attribute name="step" type="int" default="300">
+        <annotation>
+          <documentation>step size for the RRD</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
   </element>
 
   <element name="correlation">
