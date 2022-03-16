@@ -63,7 +63,7 @@ If the search is `nodelabel=server1.opennms.com` it will only match a node's lab
 
 It is possible to create a link to the `node-maps` URL that already has a pre-filled search defintion by adding a `#search/searchtext` into the URL.
 
-For example, to link to the node label search from the substring match example above write the url like:
+For example, to link to the node label search from the substring match example above, write the URL as follows:
 
 `http://opennms-ip/opennms/node-maps#search/nodelabel:server`
 
