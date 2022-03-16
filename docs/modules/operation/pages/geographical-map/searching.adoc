@@ -59,7 +59,7 @@ To search for an exact match of a field, use the following syntax:
 
 If the search is `nodelabel=server1.opennms.com` it will only match a node's label like `server1.opennms.com`.
 
-### Linking To A Search
+### Link to a search
 
 It is possible to create a link to the `node-maps` URL that already has a pre-filled search defintion by adding a `#search/searchtext` into the URL.
 
