@@ -49,7 +49,7 @@ To search for text in one of the fields, use the following syntax:
 
 `fieldname:searchtext`
 
-If the search is `nodelabel:server` it will match a node's label like `server1.opennms.com` or `server2.opennms.com`
+If the search is `nodelabel:server` it will match a node's label like `server1.opennms.com` or `server2.opennms.com`.
 
 ### Exact Matching Example
 
