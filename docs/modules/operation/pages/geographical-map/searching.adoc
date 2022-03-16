@@ -12,31 +12,31 @@ You can search the following fields:
 | Field
 | Description
 
-| `nodeId`
+| nodeId
 | The ID of the node.
 
-| `nodeLabel`
+| nodeLabel
 | A text description.
 
-| `foreignSource`
+| foreignSource
 | The provisioned foreign source, if any.
 
-| `foreignId`
+| foreignId
 | The provisioned foreign ID, if any.
 
-| `ipAddress`
+| ipAddress
 | The primary IP address.
 
-| `severityLabel`
+| severityLabel
 | The severity. ("Normal", "Warning", etc.)
 
-| `description`
+| description
 | The description field from the node's assets.
 
-| `maintContract`
+| maintContract
 | The maintenance contract from the node's assets.
 
-| `category`
+| category
 | Match a category, if any.
 
 |====
