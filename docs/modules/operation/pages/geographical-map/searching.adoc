@@ -1,6 +1,6 @@
 ## Searching
 
-The search bar has the ability to do a simple text search, as well as searching particular fields associated with the node.
+The search bar lets you do a simple text search, as well as searching particular fields associated with the node.
 
 ### Search Fields
 
