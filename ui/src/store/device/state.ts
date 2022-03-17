@@ -15,8 +15,8 @@ const state: State = {
   deviceConfigBackupQueryParams: { offset: 0, limit: 20 },
   modalDeviceConfigBackup: {} as DeviceConfigBackup,
   selectedIds: [],
-  vendorOptions: ['Aruba', 'Cisco', 'Juniper', 'OpenNMS'],
-  backupStatusOptions: ['Success', 'Failed', 'Paused', 'No Backup', 'In Progress'],
+  vendorOptions: [],
+  backupStatusOptions: ['success', 'failed', 'paused', 'no backup', 'in progress'],
   osImageOptions: []
 }
 

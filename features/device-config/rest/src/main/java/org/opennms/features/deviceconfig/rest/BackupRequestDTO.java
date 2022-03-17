@@ -34,16 +34,12 @@ public class BackupRequestDTO {
 
     private String location;
 
-    private String configType;
+    private String serviceName;
 
-    public BackupRequestDTO(String ipAddress, String location) {
-        this(ipAddress, location, "default");
-    }
-
-    public BackupRequestDTO(String ipAddress, String location, String configType) {
+    public BackupRequestDTO(String ipAddress, String location, String serviceName) {
         this.ipAddress = ipAddress;
         this.location = location;
-        this.configType = configType;
+        this.serviceName = serviceName;
     }
 
     public BackupRequestDTO() {
@@ -57,8 +53,8 @@ public class BackupRequestDTO {
         return location;
     }
 
-    public String getConfigType() {
-        return configType;
+    public String getServiceName() {
+        return serviceName;
     }
 
     public void setIpAddress(String ipAddress) {
@@ -69,7 +65,7 @@ public class BackupRequestDTO {
         this.location = location;
     }
 
-    public void setConfigType(String configType) {
-        this.configType = configType;
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 }

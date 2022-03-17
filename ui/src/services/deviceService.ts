@@ -17,19 +17,18 @@ const getDeviceConfigBackups = async (queryParameters: DeviceConfigQueryParams):
 const downloadDeviceConfigs = async (deviceIds: number[]) => {
   const queryString = `?id=${deviceIds.join(',')}`
   try {
-    const resp = await rest.get(`${endpoint}/download${queryString}`)
-    return resp.data
+    return await rest.get(`${endpoint}/download${queryString}`)
   } catch (err) {
-    return {}
+    return false
   }
 }
 
-const backupDeviceConfig = async (deviceConfig: DeviceConfigBackup) => {
+const backupDeviceConfig = async ({ ipAddress, location, configType }: DeviceConfigBackup) => {
   try {
-    const resp = await rest.post(`${endpoint}/backup`, deviceConfig)
+    const resp = await rest.post(`${endpoint}/backup`, { ipAddress, location, configType })
     return resp.data
   } catch (err) {
-    return {}
+    return false
   }
 }
 

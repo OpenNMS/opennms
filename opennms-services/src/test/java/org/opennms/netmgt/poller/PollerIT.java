@@ -264,22 +264,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         MockUtil.println("------------ End Test  --------------------------");
     }
 
-    //
-    // Tests
-    //
-    @Test
-    public void testIsRemotePackage() {
-        Properties p = new Properties();
-        p.setProperty("org.opennms.netmgt.ConfigFileConstants", "ERROR");
-        MockLogAppender.setupLogging(p);
-        Package pkg = new Package();
-        pkg.setName("SFO");
-        pkg.setPerspectiveOnly(true);
-        Poller poller = new Poller();
-        poller.setPollerConfig(new MockPollerConfig(m_network));
-        assertFalse(poller.pollableServiceInPackage(null, null, pkg));
-    }
-
     @Test
     public void testNullInterfaceOnNodeDown() {
         // NODE processing = true;

@@ -52,19 +52,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.deviceconfig.persistence.api.ConfigType;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.model.*;
+import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -74,13 +78,18 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations = {
     "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
     "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+    "classpath:/META-INF/opennms/applicationContext-config-dao.xml",
+    "classpath:/META-INF/opennms/applicationContext-postgresJsonStore.xml",
+    "classpath:/META-INF/opennms/applicationContext-deviceconfig-persistence.xml",
+    "classpath:/META-INF/opennms/applicationContext-deviceconfig-service.xml",
     "classpath:/META-INF/opennms/applicationContext-soa.xml",
     "classpath:/META-INF/opennms/applicationContext-dao.xml",
-    "classpath*:/META-INF/opennms/component-dao.xml",
+    "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
+    "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
     "classpath:/META-INF/opennms/mockEventIpcManager.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(reuseDatabase = false)
 public class DefaultDeviceConfigRestServiceScheduleIT {
     private static final int RECORD_COUNT = 3;
 
@@ -106,22 +115,26 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
     @Autowired
     private NodeDao nodeDao;
+    @Autowired
+    private IpInterfaceDao ipInterfaceDao;
 
     @Autowired
     private DeviceConfigDao deviceConfigDao;
 
     @Autowired
+    private DeviceConfigService deviceConfigService;
+
+    @Autowired
     private ServiceTypeDao serviceTypeDao;
 
     @Autowired
-    private MonitoredServiceDao monitoredServiceDao;
+    private SessionUtils sessionUtils;
 
     private DeviceConfigRestService deviceConfigRestService;
 
     @Before
-    public void before() {
-        DeviceConfigService deviceConfigService = Mockito.mock(DeviceConfigService.class);
-        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, monitoredServiceDao, deviceConfigService);
+    public void before() throws IOException {
+        deviceConfigRestService = new DefaultDeviceConfigRestService(deviceConfigDao, deviceConfigService);
     }
 
     @After
@@ -129,17 +142,20 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
     }
 
     @Test
-    @Transactional
     public void testGetDeviceConfigsWithScheduleInfo() {
+        populateDeviceConfigServiceInfo();
+
+        this.sessionUtils.withTransaction(() -> {
         // Add nodes, interfaces, services
-        List<OnmsIpInterface> ipInterfaces = populateDeviceConfigServiceInfo();
+        List<OnmsIpInterface> ipInterfaces = ipInterfaceDao.findAll();
         Assert.assertEquals(RECORD_COUNT, ipInterfaces.size());
 
         // sanity check that nodes and interfaces were created correctly
         List<Integer> ipInterfaceIds = ipInterfaces.stream().map(OnmsIpInterface::getId).collect(Collectors.toList());
 
-        List<OnmsMonitoredService> services =
-            monitoredServiceDao.findByServiceTypeAndIpInterfaceId(DeviceConfigRestService.DEVICE_CONFIG_SERVICE_PREFIX, ipInterfaceIds);
+        List<DeviceConfigService.RetrievalDefinition> services = ipInterfaces.stream()
+                                                                             .flatMap(iface -> deviceConfigService.getRetrievalDefinitions(InetAddressUtils.str(iface.getIpAddress()), iface.getNode().getLocation().getLocationName()).stream())
+                                                                             .collect(Collectors.toList());
         Assert.assertEquals(RECORD_COUNT, services.size());
 
         // Add DeviceConfig entries mapped to ipInterfaces and services
@@ -147,19 +163,19 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         List<Date> dates = getTestDates(currentDate, 3);
 
         deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(0), "default", dates.get(0), CONFIG_BYTES.get(0)));
-        deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(1), "default", dates.get(1), CONFIG_BYTES.get(1)));
-        deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(2), "running", dates.get(2), CONFIG_BYTES.get(2)));
+        deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(1), "running", dates.get(1), CONFIG_BYTES.get(1)));
+        deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(2), "wurstblinker", dates.get(2), CONFIG_BYTES.get(2)));
 
         List<DeviceConfigDTO> responseList = getDeviceConfigs(10, 0, "lastUpdated", "asc", null, null, null, null, null, null);
 
         Assert.assertEquals(RECORD_COUNT, responseList.size());
 
-        List<String> expectedConfigTypes = List.of("default", "default", "running");
+        List<String> expectedConfigTypes = List.of("default", "running", "wurstblinker");
 
         for (int i = 0; i < RECORD_COUNT; i++) {
             DeviceConfigDTO dto = responseList.get(i);
 
-            Assert.assertEquals(ipInterfaceIds.get(i).intValue(), dto.getIpInterfaceId());
+            Assert.assertEquals(ipInterfaceIds.get(i).intValue(), dto.getMonitoredServiceId());
             assertThat(expectedConfigTypes.get(i).equalsIgnoreCase(dto.getConfigType()), is(true));
             Assert.assertEquals("text/plain", dto.getEncoding());
             Assert.assertEquals(dates.get(i).getTime(), dto.getCreatedTime().getTime());
@@ -168,9 +184,10 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             Assert.assertNull(dto.getLastFailedDate());
             Assert.assertNull(dto.getFailureReason());
             Assert.assertEquals(CONFIG_STRINGS.get(i), dto.getConfig());
-            Assert.assertEquals(EXPECTED_CRON_SCHEDULE_DESCRIPTIONS.get(i), dto.getScheduledInterval());
+            Assert.assertEquals(EXPECTED_CRON_SCHEDULE_DESCRIPTIONS.get(i), dto.getScheduledInterval().get("DeviceConfig-" + expectedConfigTypes.get(i)));
             assertThat(dto.getNextScheduledBackupDate().after(currentDate), is(true));
         }
+        });
     }
 
     @Test
@@ -310,6 +327,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
     }
 
     private List<OnmsIpInterface> populateDeviceConfigServiceInfo() {
+        final var result = this.sessionUtils.withTransaction(() -> {
         List<OnmsIpInterface> ipInterfaces = new ArrayList<>();
         NetworkBuilder builder = new NetworkBuilder();
 
@@ -317,9 +335,9 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         List<String> foreignIds = List.of("21", "22", "23");
         List<String> ipAddresses = List.of("192.168.3.1", "192.168.3.2", "192.168.3.3");
         List<String> serviceNames = List.of(
-            DeviceConfigRestService.DEVICE_CONFIG_SERVICE_PREFIX + "-" + ConfigType.Default,
-            DeviceConfigRestService.DEVICE_CONFIG_SERVICE_PREFIX + "-" + ConfigType.Default,
-            DeviceConfigRestService.DEVICE_CONFIG_SERVICE_PREFIX + "-" + "running");
+            "DeviceConfig-default",
+            "DeviceConfig-running",
+            "DeviceConfig-wurstblinker");
 
         List<String> scheduleIntervals = List.of("daily", "weekly", "monthly");
 
@@ -327,14 +345,21 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             builder.addNode(nodeNames.get(i)).setForeignSource("imported:").setForeignId(foreignIds.get(i)).setType(OnmsNode.NodeType.ACTIVE);
             builder.addInterface(ipAddresses.get(i)).setIsManaged("M").setIsSnmpPrimary("P");
             builder.addService(addOrGetServiceType(serviceNames.get(i)));
-            builder.setServiceMetaDataEntry("requisition", "schedule", CRON_SCHEDULES.get(i));
+            builder.setServiceMetaDataEntry("requisition", "dcb:schedule", CRON_SCHEDULES.get(i));
             nodeDao.saveOrUpdate(builder.getCurrentNode());
 
             OnmsIpInterface ipInterface = builder.getCurrentNode().getIpInterfaceByIpAddress(ipAddresses.get(i));
             ipInterfaces.add(ipInterface);
         }
 
+        nodeDao.flush();
+
         return ipInterfaces;
+        });
+
+        PollerConfigFactory.getInstance().rebuildPackageIpListMap();
+
+        return result;
     }
 
     private OnmsServiceType addOrGetServiceType(final String serviceName) {
@@ -379,6 +404,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         dc.setCreatedTime(date);
         dc.setEncoding("text/plain");
         dc.setIpInterface(ipInterface1);
+        dc.setServiceName("DeviceConfig-" + configType);
         dc.setConfigType(configType);
 
         return dc;

@@ -41,6 +41,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -85,9 +87,8 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         }
 
         final Map<String, Object> params = new HashMap<>();
-        final String configType = getKeyedString(parameters, CONFIG_TYPE, ConfigType.Default);
         final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
-        final Optional<org.opennms.features.deviceconfig.persistence.api.DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, configType);
+        final Optional<org.opennms.features.deviceconfig.persistence.api.DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
 
         if (deviceConfigOptional.isPresent()) {
             params.put(LAST_RETRIEVAL, String.valueOf(deviceConfigOptional.get().getLastUpdated().getTime()));
@@ -137,7 +138,9 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                                          + "\nstdout: " + failure.stdout
                                          + "\nstderr: " + failure.stderr;
                             LOG.error(reason);
-                            return PollStatus.unavailable(reason);
+                            final var pollStatus = PollStatus.unavailable(reason);
+                            pollStatus.setDeviceConfig(new DeviceConfig());
+                            return pollStatus;
                         },
                         success -> {
                             LOG.debug("Retrieved device configuration - host: " + host);

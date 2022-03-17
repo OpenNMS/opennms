@@ -1,10 +1,12 @@
+import { AxiosResponse, AxiosResponseHeaders } from 'axios'
+
 const useDownload = () => {
   /**
    * Download a file from a binary response
    *
-   * @param   {data: BinaryType, headers: Headers}  file  response from the server
+   * @param   {AxiosResponse}  file  response from the server
    */
-  const downloadFile = (file: { data: BinaryType; headers: Headers }): void => {
+  const downloadFile = (file: AxiosResponse): void => {
     const name = getNameFromHeaders(file.headers)
     const extension = name.split('.').pop() || ''
     const blob = generateBlob(file, extension)
@@ -22,9 +24,9 @@ export default useDownload
  * @param   {Headers}  headers  headers from the server
  * @return  {string}            filename
  */
-const getNameFromHeaders = (headers: Headers): string => {
+const getNameFromHeaders = (headers: AxiosResponseHeaders): string => {
   let name = ''
-  const disposition = (<any>headers)['content-disposition']
+  const disposition = (<AxiosResponseHeaders>headers)['content-disposition']
 
   if (disposition && disposition.indexOf('attachment') !== -1) {
     const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
@@ -44,8 +46,8 @@ const getNameFromHeaders = (headers: Headers): string => {
  * @param   {string}   extension filename extension
  * @return  {Blob}               file object
  */
-const generateBlob = (file: { data: BinaryType; headers: Headers }, extension: string): Blob => {
-  const contentType = (<any>file.headers)['content-type']
+const generateBlob = (file: AxiosResponse, extension: string): Blob => {
+  const contentType = (<AxiosResponseHeaders>file.headers)['content-type']
 
   // stringify if it's a JSON file
   if (extension.toLowerCase() === 'json') {

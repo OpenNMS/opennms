@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, reactive, watchEffect } from 'vue'
 import { FeatherDialog } from '@featherds/dialog'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 import { useStore } from 'vuex'
@@ -24,15 +24,17 @@ defineProps({
 
 const modalDeviceConfigBackup = computed<DeviceConfigBackup>(() => store.state.deviceModule.modalDeviceConfigBackup)
 
-// TODO: Open feather PR to fix issue for reactive modal labels
-const labels = ref({
-  title: 'DeviceName: ...',
+const labels = reactive({
+  title: 'DCB',
   close: 'Close'
 })
+
+watchEffect(() => labels.title = modalDeviceConfigBackup.value.deviceName)
 </script>
 
 <style scoped lang="scss">
 .content {
+  min-height: 300px;
   min-width: 500px;
   position: relative;
 }

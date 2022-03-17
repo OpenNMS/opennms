@@ -50,18 +50,18 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     }
 
     @Override
-    public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, String configType) {
+    public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, String serviceName) {
 
-        return find("from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? ORDER BY lastUpdated DESC",
-                ipInterface.getId(), configType);
+        return find("from DeviceConfig dc where dc.ipInterface.id = ? AND serviceName = ? ORDER BY lastUpdated DESC",
+                ipInterface.getId(), serviceName);
     }
 
     @Override
-    public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String configType) {
+    public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String serviceName) {
         List<DeviceConfig> deviceConfigs =
                 findObjects(DeviceConfig.class,
-                        "from DeviceConfig dc where dc.ipInterface.id = ? AND configType = ? " +
-                                "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), configType);
+                        "from DeviceConfig dc where dc.ipInterface.id = ? AND serviceName = ? " +
+                                "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), serviceName);
 
         if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
             return Optional.of(deviceConfigs.get(0));
@@ -72,13 +72,14 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     @Override
     public void updateDeviceConfigContent(
             OnmsIpInterface ipInterface,
+            String serviceName,
             String configType,
             String encoding,
             byte[] deviceConfigBytes,
             String fileName
     ) {
         Date currentTime = new Date();
-        Optional<DeviceConfig> configOptional = getLatestConfigForInterface(ipInterface, configType);
+        Optional<DeviceConfig> configOptional = getLatestConfigForInterface(ipInterface, serviceName);
         DeviceConfig lastDeviceConfig = configOptional.orElse(null);
         // Config retrieval succeeded
         if (lastDeviceConfig != null &&
@@ -88,7 +89,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             lastDeviceConfig.setLastUpdated(currentTime);
             lastDeviceConfig.setLastSucceeded(currentTime);
             saveOrUpdate(lastDeviceConfig);
-            LOG.debug("Device config did not change - ipInterface: {}; type: {}", ipInterface, configType);
+            LOG.debug("Device config did not change - ipInterface: {}; service: {}; type: {}", ipInterface, serviceName, configType);
         } else if (lastDeviceConfig != null
                    // last config was failure, update config now.
                    && lastDeviceConfig.getConfig() == null) {
@@ -98,7 +99,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             lastDeviceConfig.setLastUpdated(currentTime);
             lastDeviceConfig.setLastSucceeded(currentTime);
             saveOrUpdate(lastDeviceConfig);
-            LOG.info("Persisted device config - ipInterface: {}; type: {}", ipInterface, configType);
+            LOG.info("Persisted device config - ipInterface: {}; service: {}; type: {}", ipInterface, serviceName, configType);
         } else {
             // Config changed, or there is no config for the device yet, create new entry.
             DeviceConfig deviceConfig = new DeviceConfig();
@@ -106,24 +107,26 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             deviceConfig.setFileName(fileName);
             deviceConfig.setCreatedTime(currentTime);
             deviceConfig.setIpInterface(ipInterface);
+            deviceConfig.setServiceName(serviceName);
             deviceConfig.setEncoding(encoding);
             deviceConfig.setConfigType(configType);
             deviceConfig.setLastUpdated(currentTime);
             deviceConfig.setLastSucceeded(currentTime);
             saveOrUpdate(deviceConfig);
-            LOG.info("Persisted changed device config - ipInterface: {}; type: {}", ipInterface, configType);
+            LOG.info("Persisted changed device config - ipInterface: {}; service: {}; type: {}", ipInterface, serviceName, configType);
         }
     }
 
     @Override
     public void updateDeviceConfigFailure(
             OnmsIpInterface ipInterface,
+            String serviceName,
             String configType,
             String encoding,
             String reason
     ) {
         Date currentTime = new Date();
-        Optional<DeviceConfig> configOptional = getLatestConfigForInterface(ipInterface, configType);
+        Optional<DeviceConfig> configOptional = getLatestConfigForInterface(ipInterface, serviceName);
         DeviceConfig lastDeviceConfig = configOptional.orElse(null);
         DeviceConfig deviceConfig;
         // If there is config already, update the same entry.
@@ -132,6 +135,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         } else {
             deviceConfig = new DeviceConfig();
             deviceConfig.setIpInterface(ipInterface);
+            deviceConfig.setServiceName(serviceName);
             deviceConfig.setConfigType(configType);
             deviceConfig.setEncoding(encoding);
         }
@@ -139,6 +143,6 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         deviceConfig.setLastFailed(currentTime);
         deviceConfig.setLastUpdated(currentTime);
         saveOrUpdate(deviceConfig);
-        LOG.warn("Persisted device config backup failure - ipInterface: {}; type: {}; reason: {}", ipInterface, configType, reason);
+        LOG.warn("Persisted device config backup failure - ipInterface: {}; service: {}; type: {}; reason: {}", ipInterface, serviceName, configType, reason);
     }
 }

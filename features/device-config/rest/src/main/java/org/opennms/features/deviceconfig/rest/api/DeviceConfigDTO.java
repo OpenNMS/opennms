@@ -29,6 +29,7 @@
 package org.opennms.features.deviceconfig.rest.api;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * DTO for response value of DeviceConfigRestService.
@@ -40,8 +41,8 @@ public class DeviceConfigDTO {
     /** Database id of 'device_config' table entry */
     private final long id;
 
-    /** Database id of 'ipinterface' table entry */
-    private final int ipInterfaceId;
+    /** Database id of monitored service */
+    private final int monitoredServiceId;
 
     /** IP address as a text string */
     private final String ipAddress;
@@ -81,6 +82,9 @@ public class DeviceConfigDTO {
     private String deviceName;
 
     /** Database id of corresponding node table entry. */
+    private Integer ipInterfaceId;
+
+    /** Database id of corresponding node table entry. */
     private Integer nodeId;
 
     /** Label/name of the corresponding node object. */
@@ -102,11 +106,11 @@ public class DeviceConfigDTO {
     private Date nextScheduledBackupDate;
 
     /** Friendly description of backup schedule interval, parsed from cron schedule data. */
-    private String scheduledInterval;
+    private Map<String, String> scheduledInterval;
 
     public DeviceConfigDTO(
         long id,
-        int ipInterfaceId,
+        int monitoredServiceId,
         String ipAddress,
         Date createdTime,
         Date lastUpdated,
@@ -119,7 +123,7 @@ public class DeviceConfigDTO {
         String failureReason
     ) {
         this.id = id;
-        this.ipInterfaceId = ipInterfaceId;
+        this.monitoredServiceId = monitoredServiceId;
         this.ipAddress = ipAddress;
         this.createdTime = createdTime;
         this.lastUpdatedDate = lastUpdated;
@@ -136,7 +140,7 @@ public class DeviceConfigDTO {
         return id;
     }
 
-    public int getIpInterfaceId() { return this.ipInterfaceId; }
+    public int getMonitoredServiceId() { return this.monitoredServiceId; }
 
     public String getIpAddress() { return this.ipAddress; }
 
@@ -160,6 +164,8 @@ public class DeviceConfigDTO {
 
     public String getDeviceName(){ return this.deviceName; }
 
+    public Integer getIpInterfaceId() { return this.ipInterfaceId; }
+
     public Integer getNodeId() { return this.nodeId; }
 
     public String getNodeLabel() { return this.nodeLabel; }
@@ -174,9 +180,11 @@ public class DeviceConfigDTO {
 
     public Date getNextScheduledBackupDate() { return this.nextScheduledBackupDate; }
 
-    public String getScheduledInterval() { return this.scheduledInterval; }
+    public Map<String, String> getScheduledInterval() { return this.scheduledInterval; }
 
     public void setDeviceName(String name) { this.deviceName = name; }
+
+    public void setIpInterfaceId(Integer id) { this.ipInterfaceId = id; }
 
     public void setNodeId(Integer id) { this.nodeId = id; }
 
@@ -192,5 +200,5 @@ public class DeviceConfigDTO {
 
     public void setNextScheduledBackupDate(Date date) { this.nextScheduledBackupDate = date; }
 
-    public void setScheduledInterval(String interval) { this.scheduledInterval = interval; }
+    public void setScheduledInterval(Map<String, String> interval) { this.scheduledInterval = interval; }
 }
