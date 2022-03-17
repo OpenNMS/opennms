@@ -1,10 +1,10 @@
 name: meridian
-version: '2021'
+version: '2021-SNAPSHOT'
 title: Meridian
 prerelease: false
 asciidoc:
   attributes:
-    full-display-version: '2021.1.12'
+    full-display-version: '2021.1.13-SNAPSHOT'
     experimental: true
     prerelease: false
     source-language: asciidoc@
