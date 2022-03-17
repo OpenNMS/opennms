@@ -4,13 +4,13 @@
 
 [[releasenotes-changelog-Meridian-2021.1.12]]
 
-==== Release Meridian-2021.1.12
+== Release Meridian-2021.1.12
 
 Release 2021.1.12 contains mostly doc updates and bug fixes, including some small security-related changes.
 
 The codename for Horizon 2021.1.12 is https://wikipedia.org/wiki/$$Kosmos_482$$[_Cosmos 482_].
 
-===== Bug
+=== Bug
 
 * opennms user credentials wrongly exposed (Issue http://issues.opennms.org/browse/NMS-12146[NMS-12146])
 * Support -> System Report exposes credentials in plain text (Issue http://issues.opennms.org/browse/NMS-13831[NMS-13831])
@@ -19,7 +19,7 @@ The codename for Horizon 2021.1.12 is https://wikipedia.org/wiki/$$Kosmos_482$$[
 * Password field with autocomplete enabled (Issue http://issues.opennms.org/browse/NMS-13847[NMS-13847])
 * Web UI copyright year needs updating (Issue http://issues.opennms.org/browse/NMS-14037[NMS-14037])
 
-===== Enhancement
+=== Enhancement
 
 * Releases should document third party libraries and their licenses (Issue http://issues.opennms.org/browse/NMS-14004[NMS-14004])
 * Expand newts converter documentation (Issue http://issues.opennms.org/browse/NMS-14073[NMS-14073])
