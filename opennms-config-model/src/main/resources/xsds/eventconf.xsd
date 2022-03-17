@@ -397,32 +397,47 @@
             </restriction>
           </simpleType>
         </element>
+        <element maxOccurs="unbounded" minOccurs="0" name="paramValues">
+          <annotation>
+            <documentation>It use to convert KEY (string) into VALUE (number) for rrd. Format KEY:VALUE</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string">
+              <pattern value="\w+:\d"/>
+            </restriction>
+          </simpleType>
+        </element>
       </sequence>
-        <attribute name="name" type="string" use="required">
-          <annotation>
-            <documentation>Name of the collection.</documentation>
-          </annotation>
-        </attribute>
-        <attribute name="type" default="GAUGE">
-          <annotation>
-            <documentation>Type of data.</documentation>
-          </annotation>
-          <simpleType>
-            <restriction base="string">
-              <pattern value="(GAUGE|COUNTER|STRING)"/>
-            </restriction>
-          </simpleType>
-        </attribute>
-        <!--attribute name="target" default="interface" >
-          <simpleType>
-            <restriction base="string">
-              <pattern value="(node|interface)"/>
-            </restriction>
-          </simpleType>
-        </attribute-->
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>Name of the collection.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="type" default="gauge">
+        <annotation>
+          <documentation>Type of data.</documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(gauge|counter|string)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute name="target" default="node" >
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(node|interface)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
       <attribute name="step" type="int" default="300">
         <annotation>
           <documentation>step size for the RRD</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="heartbeat" type="int">
+        <annotation>
+          <documentation>heartbeat for the RRD (default step * 2)</documentation>
         </annotation>
       </attribute>
     </complexType>

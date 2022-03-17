@@ -28,34 +28,41 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
+import org.opennms.core.xml.JaxbMapAdapter;
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.collection.api.AttributeType;
 
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-@XmlRootElement(name="collection")
+@XmlRootElement(name = "collection")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
 public class Collection implements Serializable {
     private static final long serialVersionUID = 2L;
 
-    @XmlAttribute(name="name", required=true)
+    @XmlAttribute(name = "name", required = true)
     private String name;
 
-    @XmlAttribute(name="type", required=true)
-    private String type;
+    @XmlAttribute(name = "type", required = true)
+    private AttributeType type;
 
-    @XmlAttribute(name="step")
+    @XmlAttribute(name = "target", required = false)
+    private String target = "node";
+
+    @XmlAttribute(name = "step")
     private int step = 300;
 
-    @XmlElement(name="rra", required=true)
+    @XmlAttribute(name = "heartbeat")
+    private int heartbeat = -1;
+
+    @XmlElement(name = "rra", required = true)
     private List<String> rras = new ArrayList<>();
 
-//    @XmlAttribute(name="target", required=true)
-//    private String target;
+    @XmlElement(name = "paramValues")
+    private List<String> paramValues = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -65,12 +72,20 @@ public class Collection implements Serializable {
         this.name = name;
     }
 
-    public String getType() {
+    public AttributeType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(AttributeType type) {
         this.type = type;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
     }
 
     public int getStep() {
@@ -81,6 +96,14 @@ public class Collection implements Serializable {
         this.step = step;
     }
 
+    public int getHeartbeat() {
+        return heartbeat == -1 ? this.getStep() * 2 : heartbeat;
+    }
+
+    public void setHeartbeat(int heartbeat) {
+        this.heartbeat = heartbeat;
+    }
+
     public List<String> getRras() {
         return rras;
     }
@@ -89,9 +112,17 @@ public class Collection implements Serializable {
         this.rras = rras;
     }
 
+    public List<String> getParamValues() {
+        return paramValues;
+    }
+
+    public void setParamValues(List<String> paramValues) {
+        this.paramValues = paramValues;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(name, type, step, rras);
+        return Objects.hash(name, type, target, step, rras);
     }
 
     @Override
@@ -103,6 +134,7 @@ public class Collection implements Serializable {
             final Collection that = (Collection) obj;
             return Objects.equals(this.name, that.name) &&
                     Objects.equals(this.type, that.type) &&
+                    Objects.equals(this.target, that.target) &&
                     Objects.equals(this.step, that.step) &&
                     Objects.equals(this.rras, that.rras);
         }

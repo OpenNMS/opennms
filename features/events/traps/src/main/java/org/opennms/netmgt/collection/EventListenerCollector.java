@@ -34,9 +34,7 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
-import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
-import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.collection.support.builder.*;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -57,6 +55,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class EventListenerCollector implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(EventListenerCollector.class);
@@ -99,10 +98,7 @@ public class EventListenerCollector implements EventListener {
 
         OnmsIpInterface iface = ifaceDao.findByNodeIdAndIpAddress(e.getNodeid().intValue(),
                 e.getInterfaceAddress().getHostAddress());
-        final NodeLevelResource nodeResource = new NodeLevelResource(iface.getNodeId());
         CollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, platformTransactionManager);
-        final DeferredGenericTypeResource appResource = new DeferredGenericTypeResource(nodeResource,
-                COLLECTION_GROUP_NAME, e.getUei());
 
         for (IParm parm : parms) {
             Collection collection = getMatchCollection(collections, parm.getParmName());
@@ -111,24 +107,48 @@ public class EventListenerCollector implements EventListener {
                 continue;
             }
             RrdRepository rrdRepository = this.getRrdRepository(collection);
-
             CollectionSetVisitor persister = persisterFactory.createPersister(
                     new ServiceParameters(Collections.emptyMap()), rrdRepository, false, false, false);
-            AttributeType attType = AttributeType.parse(collection.getType());
             var collectionSet = new CollectionSetBuilder(agent).withTimestamp(new Date());
 
-            switch (attType) {
+            final NodeLevelResource nodeLevelResource = new NodeLevelResource(iface.getNodeId());
+            final Resource resource;
+            final String groupName;
+            if ("node".equals(collection.getTarget())) {
+                groupName = "nodeSnmp";
+                resource = nodeLevelResource;
+            } else {
+                groupName = "interfaceSnmp";
+                resource = new InterfaceLevelResource(nodeLevelResource, iface.getIpAddress().getHostAddress());
+            }
+            //final InterfaceLevelResource resource;
+//            final DeferredGenericTypeResource appResource = new DeferredGenericTypeResource(resource,
+//                    COLLECTION_GROUP_NAME, e.getUei());
+
+            List<String> paramValues = collection.getParamValues();
+
+            String value = parm.getValue().getContent();
+            if (!paramValues.isEmpty()){
+                for(var s : paramValues){
+                    var idx = s.indexOf(value);
+                    if ( idx != -1 ){
+                        value = s.substring(idx + value.length() + 1);
+                        break;
+                    }
+                }
+            }
+            switch (collection.getType()) {
                 case GAUGE:
-                    collectionSet = collectionSet.withGauge(appResource, COLLECTION_GROUP_NAME, parm.getParmName(),
-                            Float.parseFloat(parm.getValue().getContent()));
+                    collectionSet = collectionSet.withGauge(resource, groupName, parm.getParmName(),
+                            Float.parseFloat(value));
                     break;
                 case COUNTER:
-                    collectionSet = collectionSet.withCounter(appResource, COLLECTION_GROUP_NAME, parm.getParmName(),
-                            Float.parseFloat(parm.getValue().getContent()));
+                    collectionSet = collectionSet.withCounter(resource, groupName, parm.getParmName(),
+                            Float.parseFloat(value));
                     break;
                 case STRING:
-                    collectionSet = collectionSet.withStringAttribute(appResource, COLLECTION_GROUP_NAME, parm.getParmName(),
-                            parm.getValue().getContent());
+                    collectionSet = collectionSet.withStringAttribute(resource, groupName, parm.getParmName(),
+                            value);
                     break;
             }
             collectionSet.build().visit(persister);
@@ -139,7 +159,7 @@ public class EventListenerCollector implements EventListener {
         RrdRepository repository = new RrdRepository();
         repository.setRrdBaseDir(new File(ResourceTypeUtils.DEFAULT_RRD_ROOT, ResourceTypeUtils.SNMP_DIRECTORY));
         repository.setStep(collection.getStep());
-        repository.setHeartBeat(repository.getStep() * 2);
+        repository.setHeartBeat(repository.getHeartBeat());
         repository.setRraList(collection.getRras());
         return repository;
     }
