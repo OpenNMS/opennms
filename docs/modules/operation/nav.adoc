@@ -142,7 +142,6 @@
 ** xref:flows/aggregation.adoc[]
 ** xref:flows/data-collection.adoc[]
 ** xref:flows/thresholding.adoc[]
-** xref:flows/nephron.adoc[]
 ** xref:flows/troubleshooting.adoc[]
 
 * xref:kafka-producer/kafka-producer.adoc[]

@@ -1,8 +1,8 @@
 
 [[http-handler]]
-= HTTP Handler
+= HTTP(S) Handler
 
-The HTTP handler imports a properly-formatted requisition definition from an XML file stored remotely on a web server.
+The HTTP(S) handler imports a properly-formatted requisition definition from an XML file stored remotely on a web server.
 
 Examples:
 
@@ -11,6 +11,8 @@ Examples:
 [source]
 ----
 http://myinventory.server.org/nodes.cgi
+
+https://myinventory.server.org/nodes.cgi
 ----
 
 == Using the generic handler
@@ -18,6 +20,8 @@ http://myinventory.server.org/nodes.cgi
 [source]
 ----
 requisition://http?url=http%3A%2F%2Fmyinventory.server.org%2Fnodes.cgi
+
+requisition://https?url=http%3A%2F%2Fmyinventory.server.org%2Fnodes.cgi
 ----
 
 TIP: When using the generic handler, the address should be URL encoded.
