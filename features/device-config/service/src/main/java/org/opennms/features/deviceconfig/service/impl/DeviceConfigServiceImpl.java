@@ -40,8 +40,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
+import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.ReadOnlyPollerConfigManager;
@@ -64,7 +64,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigServiceImpl.class);
 
-    public static final String TRIGGERED_POLL = "dcbTriggeredPoll";
+    private static final String DEVICE_CONFIG_SERVICE_CLASS_NAME = "org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor";
 
     @Autowired
     private LocationAwarePollerClient locationAwarePollerClient;
@@ -130,7 +130,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
                 // Filter for the device config monitor
                 .filter(match -> pollerConfig.getServiceMonitor(match.service.getName()).getClass().getCanonicalName()
-                        .equals(DeviceConfigMonitor.class.getCanonicalName()))
+                        .equals(DEVICE_CONFIG_SERVICE_CLASS_NAME))
 
                 // Resolve the parameters
                 .map(match -> {
@@ -154,12 +154,12 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
                         @Override
                         public String getConfigType() {
-                            return getKeyedString(pollerParameters, DeviceConfigMonitor.CONFIG_TYPE, ConfigType.Default);
+                            return getKeyedString(pollerParameters, DeviceConfigConstants.CONFIG_TYPE, ConfigType.Default);
                         }
 
                         @Override
                         public String getSchedule() {
-                            return getKeyedString(pollerParameters, DeviceConfigMonitor.SCHEDULE, DeviceConfigMonitor.DEFAULT_CRON_SCHEDULE);
+                            return getKeyedString(pollerParameters, DeviceConfigConstants.SCHEDULE, DeviceConfigConstants.DEFAULT_CRON_SCHEDULE);
                         }
                     };
                 })
@@ -180,7 +180,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             }
             OnmsNode node = ipInterface.getNode();
 
-            return new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), match.service.getName(), location);
+            return new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), match.serviceName, location);
         });
 
         if (service == null) {
@@ -195,7 +195,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .withMonitor(monitor)
                 .withPatternVariables(match.patternVariables)
                 .withAttributes(match.service.getParameterMap())
-                .withAttribute(TRIGGERED_POLL, "true")
+                .withAttribute(DeviceConfigConstants.TRIGGERED_POLL, "true")
                 .execute();
     }
 
