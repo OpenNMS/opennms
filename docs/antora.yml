@@ -1,10 +1,10 @@
 name: horizon
-version: '29-SNAPSHOT'
+version: '29'
 title: Horizon
 prerelease: true
 asciidoc:
   attributes:
-    full-display-version: '29.0.7-SNAPSHOT'
+    full-display-version: '29.0.7'
     experimental: true
     prerelease: true
     source-language: asciidoc@
