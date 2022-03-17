@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.collection</artifactId>
-    <version>29.0.7</version>
+    <version>29.0.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.collection</groupId>
