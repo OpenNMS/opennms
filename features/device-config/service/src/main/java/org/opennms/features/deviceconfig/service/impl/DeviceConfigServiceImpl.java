@@ -179,7 +179,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             }
             OnmsNode node = ipInterface.getNode();
 
-            return new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), match.serviceName, location);
+            return new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), match.service.getName(), location);
         });
 
         if (service == null) {
