@@ -362,6 +362,7 @@
             </licenseMerge>
             <licenseMerge>
               lgpl_v3
+                | GNU Lesser General Public License, Version 3
                 | GNU Lesser/Library Public License, Version 3.0
                 | GNU Lessor/Library Public License, Version 3.0
                 | GNU LGPLv3
@@ -1134,6 +1135,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
+        <!-- 3.0.0 is out, but we're affected by https://issues.apache.org/jira/browse/MENFORCER-393 -->
         <version>3.0.0-M3</version>
       </plugin>
       <plugin>
@@ -1154,7 +1156,9 @@
              <goal>enforce</goal>
            </goals>
            <configuration>
+             <skip>${enforcer-skip-maven}</skip>
              <rules>
+               <!-- make sure build environment is right -->
                <requireMavenVersion>
                  <version>[3.5,)</version>
                </requireMavenVersion>
@@ -1162,6 +1166,103 @@
                  <version>[11,12)</version>
                </requireJavaVersion>
              </rules>
+           </configuration>
+         </execution>
+         <execution>
+           <id>enforce-banned-dependencies</id>
+           <goals>
+             <goal>enforce</goal>
+           </goals>
+           <configuration>
+             <skip>${enforcer-skip-banned-dependencies}</skip>
+             <rules>
+               <!-- ban dependencies that should be replaced with custom or better stuff -->
+               <bannedDependencies>
+                 <excludes>
+                   <!-- use org.apache.ant:ant -->
+                   <exclude>ant:ant</exclude>
+
+                   <!-- use com.mchange:c3p0 -->
+                   <exclude>c3p0:c3p0</exclude>
+
+                   <!-- use com.codeborne:phantomjsdriver -->
+                   <exclude>com.github.detro:phantomjsdriver</exclude>
+                   <exclude>com.github.detro.ghostdriver:phantomjsdriver</exclude>
+
+                   <!-- use org.slf4j:jcl-over-slf4j -->
+                   <exclude>commons-logging:commons-logging</exclude>
+                   <!-- use org.slf4j:log4j-over-slf4j -->
+                   <exclude>log4j:log4j</exclude>
+
+                   <!-- use org.eclipse.jdt:ecj 3.x -->
+                   <!-- see https://stackoverflow.com/questions/59416574/is-the-standalone-ecj-eclipse-java-compiler-package-no-longer-maintained -->
+                   <exclude>org.eclipse.jdt.core.compiler:ecj</exclude>
+
+                   <!-- use org.javassist:javassist -->
+                   <exclude>javassist:javassist</exclude>
+
+                   <!-- use org.opennms.dependencies:jstl-dependencies:pom -->
+                   <exclude>javax.servlet:jstl</exclude>
+                   <!-- use org.opennms.dependencies:servlet-dependencies:pom -->
+                   <exclude>javax.servlet.jsp:jsp-api</exclude>
+                   <!-- use javax.ws.rs:javax.ws.rs-api -->
+                   <exclude>javax.ws.rs:jsr311-api</exclude>
+
+                   <!-- use org.opennms.dependencies:jaxb-dependencies:pom -->
+                   <exclude>com.sun.xml.bind:*</exclude>
+                   <exclude>com.sun.xml.bind.mvn:*</exclude>
+                   <exclude>org.glassfish.jaxb:jaxb-core</exclude>
+
+                   <!-- use org.apache.servicemix.bundles:org.apache.servicemix.bundles.jdom -->
+                   <exclude>jdom:jdom</exclude>
+
+                   <!-- use org.opennms.dependencies:spring-dependencies -->
+                   <exclude>org.springframework:spring-aop</exclude>
+                   <exclude>org.springframework:spring-asm</exclude>
+                   <exclude>org.springframework:spring-aspects</exclude>
+                   <exclude>org.springframework:spring-beans</exclude>
+                   <exclude>org.springframework:spring-context</exclude>
+                   <exclude>org.springframework:spring-context-support</exclude>
+                   <exclude>org.springframework:spring-core</exclude>
+                   <exclude>org.springframework:spring-expression</exclude>
+                   <exclude>org.springframework:spring-instrument</exclude>
+                   <exclude>org.springframework:spring-jdbc</exclude>
+                   <exclude>org.springframework:spring-jms</exclude>
+                   <exclude>org.springframework:spring-messaging</exclude>
+                   <exclude>org.springframework:spring-orm</exclude>
+                   <exclude>org.springframework:spring-oxm</exclude>
+                   <exclude>org.springframework:spring-tx</exclude>
+
+                   <!-- use org.opennms.dependencies:spring-web-dependencies -->
+                   <exclude>org.springframework:spring-js</exclude>
+                   <exclude>org.springframework:spring-web</exclude>
+                   <exclude>org.springframework:spring-webflow</exclude>
+                   <exclude>org.springframework:spring-webmvc</exclude>
+
+                   <!-- use com.rometools:rome -->
+                   <exclude>rome:rome</exclude>
+
+                   <!-- xml-apis is provided by JDK11+ -->
+                   <exclude>xml-apis:xml-apis</exclude>
+                 </excludes>
+                 <includes>
+                 </includes>
+               </bannedDependencies>
+             </rules>
+           </configuration>
+         </execution>
+         <execution>
+           <id>enforce-dependency-convergence</id>
+           <goals>
+             <goal>enforce</goal>
+           </goals>
+           <configuration>
+             <skip>${enforcer-skip-dependency-convergence}</skip>
+             <rules>
+               <!-- make sure dependencies throughout the project(s) match versions -->
+               <dependencyConvergence/>
+             </rules>
+             <fail>true</fail>
            </configuration>
          </execution>
        </executions>
@@ -1489,6 +1590,11 @@
   </reporting>
 
   <properties>
+    <enforcer-skip-maven>false</enforcer-skip-maven>
+    <enforcer-skip-banned-dependencies>false</enforcer-skip-banned-dependencies>
+    <!-- we have a lot of work to do before this is possible -->
+    <enforcer-skip-dependency-convergence>true</enforcer-skip-dependency-convergence>
+
     <!--
       Surefire forked JVM arguments
       @see http://maven.apache.org/surefire/maven-surefire-plugin/examples/system-properties.html
@@ -1624,7 +1730,6 @@
     <hawtio.version>2.0.0</hawtio.version>
 
     <!-- dependency versions -->
-    <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
     <args4jVersion>2.32</args4jVersion>
     <asmVersion>5.0.4</asmVersion>
     <activemqVersion>5.14.5</activemqVersion>
@@ -1651,7 +1756,6 @@
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.4</commonsLang3Version>
     <commonsNetVersion>3.6</commonsNetVersion>
-    <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsMath3Version>3.5</commonsMath3Version>
     <commonsNetVersion>3.8.0</commonsNetVersion>
     <commonsValidatorVersion>1.6</commonsValidatorVersion>
@@ -1666,7 +1770,7 @@
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.0.0.RELEASE</eclipseGeminiVersion>
-    <eclipselinkVersion>2.5.1</eclipselinkVersion>
+    <eclipselinkVersion>2.5.2</eclipselinkVersion>
     <elasticsearchNettyVersion>4.1.43.Final</elasticsearchNettyVersion>
     <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
     <felixBridgeVersion>4.0.4</felixBridgeVersion>
@@ -1698,6 +1802,7 @@
     <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
+    <jaxbRuntimeVersion>2.3.6</jaxbRuntimeVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.4.44.v20210927</jettyVersion>
@@ -1727,7 +1832,6 @@
     <kafkaVersion>2.8.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
-    <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.17.1</log4j2Version>
     <logbackClassicVersion>1.2.10</logbackClassicVersion>
     <mapstructVersion>1.4.1.Final</mapstructVersion>
@@ -1781,7 +1885,6 @@
     <twitter4jVersion>3.0.6</twitter4jVersion>
     <xalanVersion>2.7.2</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
-    <xmlApisVersion>99.99.99-exclude-provided-by-jdk11-and-up</xmlApisVersion>
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
@@ -4051,16 +4154,6 @@
         <version>3.1.5</version>
       </dependency>
       <dependency>
-        <groupId>com.github.detro.ghostdriver</groupId>
-        <artifactId>phantomjsdriver</artifactId>
-        <version>99.99.99-use-com-github-detro-phantomjsdriver-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>com.github.detro</groupId>
-        <artifactId>phantomjsdriver</artifactId>
-        <version>99.99.99-use-com-codeborne-phantomjsdriver-until-1-2-1-is-released</version>
-      </dependency>
-      <dependency>
         <groupId>com.github.seancfoley</groupId>
         <artifactId>ipaddress</artifactId>
         <version>${ipaddressVersion}</version>
@@ -4073,7 +4166,7 @@
       <dependency>
         <groupId>com.codeborne</groupId>
         <artifactId>phantomjsdriver</artifactId>
-        <version>1.2.1</version>
+        <version>1.5.0</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
@@ -4151,11 +4244,6 @@
         <version>${hibernateValidatorVersion}</version>
       </dependency>
       <dependency>
-        <groupId>javassist</groupId>
-        <artifactId>javassist</artifactId>
-        <version>9999.use-org-javassist-not-javassist</version>
-      </dependency>
-      <dependency>
         <groupId>javax.annotation</groupId>
         <artifactId>jsr250-api</artifactId>
         <version>1.0</version>
@@ -4192,16 +4280,6 @@
         <version>1.6.0</version>
       </dependency>
       <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>jstl</artifactId>
-        <version>99.99.99-exclude-and-use-dependencies-jstl-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet.jsp</groupId>
-        <artifactId>jsp-api</artifactId>
-        <version>99.99.99-exclude-and-use-dependencies-servlet-instead</version>
-      </dependency>
-      <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
         <version>1.0.0.GA</version>
@@ -4211,11 +4289,6 @@
         <artifactId>validation-api</artifactId>
         <version>1.0.0.GA</version>
         <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>jsr311-api</artifactId>
-        <version>99.99.99-exclude-and-use-javax.ws.rs-api-instead</version>
       </dependency>
       <dependency>
         <groupId>javax.ws.rs</groupId>
@@ -4231,21 +4304,6 @@
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
         <version>2.3.3</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-        <version>99.99.99-use-opennms-jaxb</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
-        <version>99.99.99-use-opennms-jaxb</version>
-      </dependency>
-      <dependency>
-        <groupId>jdom</groupId>
-        <artifactId>jdom</artifactId>
-        <version>99.99.99-exclude-and-use-org.apache.servicemix.bundles.jdom-instead</version>
       </dependency>
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>
@@ -4550,86 +4608,6 @@
         <artifactId>log4j-over-slf4j</artifactId>
         <version>${slf4jVersion}</version>
         <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-aop</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-asm</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-aspects</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-beans</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context-support</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-core</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-expression</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-instrument</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-jdbc</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-jms</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-orm</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-oxm</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-tx</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-web</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-webmvc</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>
