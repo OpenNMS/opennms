@@ -33,6 +33,7 @@ import static org.opennms.netmgt.poller.support.AbstractServiceMonitor.getKeyedS
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +44,7 @@ import org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.ReadOnlyPollerConfigManager;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -110,18 +112,24 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     }
 
     @Override
-    public List<RetrievalDefinition> getRetrievalDefinitions(final String ipAddress, final String location) {
+    public List<RetrievalDefinition> getRetrievalDefinitions(final String ipAddress, final String location)  {
         final var iface = this.ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
-
+        PollerConfig pollerConfig;
+        try {
+            pollerConfig = this.getPollerConfig();
+        } catch (IOException e) {
+            LOG.error("Exception while retrieving pollerConfig", e);
+            return new ArrayList<>();
+        }
         return iface
                 // Get all device config services defined for this interface
                 .getMonitoredServices().stream()
 
                 // Resolve the service name into service config
-                .flatMap(svc -> this.pollerConfig.findService(InetAddressUtils.str(svc.getIpAddress()), svc.getServiceName()).stream())
+                .flatMap(svc -> pollerConfig.findService(InetAddressUtils.str(svc.getIpAddress()), svc.getServiceName()).stream())
 
                 // Filter for the device config monitor
-                .filter(match -> this.pollerConfig.getServiceMonitor(match.service.getName()).getClass() == DeviceConfigMonitor.class)
+                .filter(match -> pollerConfig.getServiceMonitor(match.service.getName()).getClass() == DeviceConfigMonitor.class)
 
                 // Resolve the parameters
                 .map(match -> {
@@ -158,11 +166,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .collect(Collectors.toList());
     }
 
-    private CompletableFuture<PollerResponse> pollDeviceConfig(String ipAddress, String location, String serviceName) {
-        final var match = this.pollerConfig.findService(ipAddress, serviceName)
+    private CompletableFuture<PollerResponse> pollDeviceConfig(String ipAddress, String location, String serviceName) throws IOException {
+        final var match = getPollerConfig().findService(ipAddress, serviceName)
                 .orElseThrow(IllegalArgumentException::new);
 
-        final var monitor = this.pollerConfig.getServiceMonitor(match.service.getName());
+        final var monitor = getPollerConfig().getServiceMonitor(match.service.getName());
 
         MonitoredService service = sessionUtils.withReadOnlyTransaction(() -> {
             OnmsIpInterface ipInterface = ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
@@ -171,7 +179,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             }
             OnmsNode node = ipInterface.getNode();
 
-            return new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), match.service.getName(), location);
+            return new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), match.serviceName, location);
         });
 
         if (service == null) {
@@ -204,5 +212,12 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     public void setServiceMonitorAdaptor(ServiceMonitorAdaptor serviceMonitorAdaptor) {
         this.serviceMonitorAdaptor = serviceMonitorAdaptor;
+    }
+
+    public PollerConfig getPollerConfig() throws IOException {
+        if (this.pollerConfig == null) {
+            this.pollerConfig = ReadOnlyPollerConfigManager.create();
+        }
+        return this.pollerConfig;
     }
 }

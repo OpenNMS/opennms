@@ -89,7 +89,7 @@ public class GetDeviceConfig implements Action {
             try {
                 try {
                     DeviceConfig deviceConfig = future.get(1, TimeUnit.SECONDS);
-                    if (deviceConfig != null) {
+                    if (deviceConfig.getContent() != null) {
                         byte[] content = deviceConfig.getContent();
                         if (DeviceConfigUtil.isGzipFile(deviceConfig.getFilename())) {
                             content = DeviceConfigUtil.decompressGzipToBytes(deviceConfig.getContent());
