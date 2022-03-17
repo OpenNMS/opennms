@@ -9,6 +9,12 @@ IMPORTANT: Disabling the `Trapd` service daemon will render {page-component-titl
 
 Event definitions are included with {page-component-title} for traps from many vendors' equipment.
 
+== Trap Value Representation
+
+When octet strings are translated into event parameters, OpenNMS first attempts to treat them as character encodings.
+If all bytes in the string are valid UTF-8 or ISO-8859-1 characters, the string is stored as these characters.
+If this is not possible, the value is encoded as a base-64 string.
+
 == Traps Forwarded via Proxy
 
 When SNMP traps are forwarded through a proxy using SNMPv2c or SNMPv3, preserving the original source IP address is a challenge due to the lack of an `agent-addr` field in the `TRAP-V2` PDU used in those protocol versions.
@@ -26,3 +32,4 @@ To configure {page-component-title} to honor `snmpTrapAddress` when present, set
 <1> Set the SNMP trap daemon listening port to 1162/udp
 <2> Don't create new nodes when receiving a SNMP Trap with an unknown source IP address
 <3> Try using the identifier source IP address from the `snmpTrapAddress` varbind instead of the UDP source IP address
+

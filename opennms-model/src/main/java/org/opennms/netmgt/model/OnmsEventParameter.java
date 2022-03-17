@@ -139,7 +139,7 @@ public class OnmsEventParameter implements Serializable {
     public OnmsEventParameter(OnmsEvent event, Parm parm) {
         this.event = event;
         name = parm.getParmName();
-        value = EventDatabaseConstants.escape(parm.getValue().getContent() == null ? "" : parm.getValue().getContent(), EventDatabaseConstants.NAME_VAL_DELIM);
+        value = parm.getValue().getContent() == null ? "" : parm.getValue().getContent();
         type = parm.getValue().getType();
     }
 
@@ -149,7 +149,7 @@ public class OnmsEventParameter implements Serializable {
                               final String type) {
         this.event = event;
         this.name = name;
-        this.value = EventDatabaseConstants.escape(value == null ? "" : value, EventDatabaseConstants.NAME_VAL_DELIM);
+        this.value = value == null ? "" : value;
         this.type = type;
     }
 
@@ -176,7 +176,7 @@ public class OnmsEventParameter implements Serializable {
      * @return the value
      */
     public String getValue() {
-        return EventDatabaseConstants.escape(value, EventDatabaseConstants.NAME_VAL_DELIM);
+        return value;
     }
 
     /**
@@ -194,7 +194,7 @@ public class OnmsEventParameter implements Serializable {
      * @param value the new value
      */
     public void setValue(String value) {
-        this.value = EventDatabaseConstants.escape(value, EventDatabaseConstants.NAME_VAL_DELIM);
+        this.value = value;
     }
 
     /**
