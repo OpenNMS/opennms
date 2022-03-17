@@ -129,7 +129,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .flatMap(svc -> pollerConfig.findService(InetAddressUtils.str(svc.getIpAddress()), svc.getServiceName()).stream())
 
                 // Filter for the device config monitor
-                .filter(match -> pollerConfig.getServiceMonitor(match.service.getName()).getClass() == DeviceConfigMonitor.class)
+                .filter(match -> pollerConfig.getServiceMonitor(match.service.getName()).getClass().getCanonicalName()
+                        .equals(DeviceConfigMonitor.class.getCanonicalName()))
 
                 // Resolve the parameters
                 .map(match -> {
