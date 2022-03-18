@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,48 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.network;
+package org.opennms.netmgt.dao.hibernate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import java.net.InetAddress;
+@Entity
+@Table(name="mockTableName")
+public class MockHibernateModel {
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+    private Integer m_id;
 
-public class InetAddressXmlAdapter extends XmlAdapter<String, InetAddress> {
+    private String m_name;
 
-    private static final Logger LOG = LoggerFactory.getLogger(InetAddressXmlAdapter.class);
+    private String m_description;
 
-    /** {@inheritDoc} */
-    @Override
-    public String marshal(final InetAddress inetAddr) throws Exception {
-        return inetAddr == null? null : new IPAddress(inetAddr).toDbString();
+    @Id
+    @Column(name="mockId")
+    public Integer getId() {
+        return m_id;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public InetAddress unmarshal(final String ipAddr) throws Exception {
-        try {
-            return (ipAddr == null || ipAddr.isEmpty()) ? null : new IPAddress(ipAddr).toInetAddress();
-        }
-        catch (Throwable t) {
-            LOG.warn("Invalid IP Address {}", ipAddr);
-            return null;
-        }
+    public void setId(Integer id) {
+        m_id = id;
     }
 
+    @Column(name="mockName")
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(String name) {
+        m_name = name;
+    }
+
+    @Column(name="mockDescription")
+    public String getDescription() {
+        return m_description;
+    }
+
+    public void setDescription(String description) {
+        m_description = description;
+    }
 }
