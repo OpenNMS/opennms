@@ -96,7 +96,7 @@
         "cron-parser": "^4.2.1",
         "cross-env": "^7.0.3",
         "d3": "^3.5.17",
-        "flot": "https://github.com/flot/flot.git#v0.8.3",
+        "flot": "^4.2.2",
         "flot-datatable": "https://github.com/RangerRick/flot-datatable.git#master",
         "flot-legend": "https://github.com/OpenNMS/flot-legend.git#master",
         "flot.axislabels": "https://github.com/RangerRick/flot-axislabels.git#master",
