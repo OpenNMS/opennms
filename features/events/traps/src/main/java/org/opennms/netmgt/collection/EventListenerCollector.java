@@ -73,7 +73,7 @@ public class EventListenerCollector implements EventListener {
     private PersisterFactory persisterFactory;
 
     @Autowired
-    private IpInterfaceDao ifaceDao;
+    private IpInterfaceDao ipInterfaceDao;
 
     @Autowired
     private PlatformTransactionManager platformTransactionManager;
@@ -96,9 +96,9 @@ public class EventListenerCollector implements EventListener {
         }
         List<Collection> collections = eventconf.getCollections();
 
-        OnmsIpInterface iface = ifaceDao.findByNodeIdAndIpAddress(e.getNodeid().intValue(),
+        OnmsIpInterface iface = ipInterfaceDao.findByNodeIdAndIpAddress(e.getNodeid().intValue(),
                 e.getInterfaceAddress().getHostAddress());
-        CollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, platformTransactionManager);
+        CollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ipInterfaceDao, platformTransactionManager);
 
         for (IParm parm : e.getParmCollection()) {
 

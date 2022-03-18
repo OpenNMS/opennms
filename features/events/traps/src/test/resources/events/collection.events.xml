@@ -1,0 +1,66 @@
+<!-- pair with etc/examples/snmp-graph.properties.d/event-collection.properties -->
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.22222.2.4.3.12.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue><![CDATA[~.*Time=(?<TIME>[\d]*).*Value=(?<VALUE>[\d]+).*Status=(?<STATUS>[\w]+).*Tag=(?<TAG>[\w.]+).*]]></vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/traps/test/regex</uei>
+      <event-label>test: varbind with regex</event-label>
+      <descr>Testing varbind with regex</descr>
+      <logmsg dest="donotpersist"></logmsg>
+      <collection name="VALUE" type="gauge" step="60" target="node" heartBeat="120">
+        <rra>RRA:AVERAGE:0.5:1:8928</rra>
+      </collection>
+      <collection name="TIME" type="counter" step="60" target="node" heartBeat="120">
+        <rra>RRA:AVERAGE:0.5:1:8928</rra>
+      </collection>
+      <collection name="STATUS" type="counter" step="60" target="interface" heartBeat="120">
+        <rra>RRA:AVERAGE:0.5:1:8928</rra>
+        <paramValues>master:1</paramValues>
+        <paramValues>slave:2</paramValues>
+      </collection>
+      <collection name="TAG" type="string" step="60" target="interface" heartBeat="120">
+        <rra>RRA:AVERAGE:0.5:1:8928</rra>
+      </collection>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.22222.2.4.3.12.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/traps/test/varbind</uei>
+      <event-label>test: full varbind</event-label>
+      <descr>Testing full varbind.</descr>
+      <logmsg dest="donotpersist"></logmsg>
+      <collection name="uei.opennms.org/traps/test/varbind" type="gauge" step="100" heartBeat="200" target="node">
+        <rra>RRA:AVERAGE:0.5:1:8928</rra>
+      </collection>
+      <severity>Normal</severity>
+   </event>
+</events>
