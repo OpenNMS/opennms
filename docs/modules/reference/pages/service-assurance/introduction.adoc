@@ -31,7 +31,26 @@ These minimum configuration parameters are available in all monitors and describ
 | invert-status
 | Invert the up/down behavior of the monitor.
 | false
+
+| ds-name *
+| Name of the RRD data source (DS) name in which to store this service monitor's response-time samples.
+| response-time
+
+| rrd-base-name *
+| The file name of the RRD file (minus the `.rrd` or `.jrb` file extension) within the specified rrd-repository path in which this service monitor's response-time samples will be persisted.
+| value of `ds-name`
+
+| rrd-repository *
+| Base directory of an RRD repository in which to store this service monitor's response-time samples.
+| null
+
+| thresholding-enabled
+| Whether collected response time should be tested against thresholds.
+| false
 |===
+
+
+NOTE: * If RRD properties are provided, the pollerd service will persist response times for the monitored service.
 
 TIP: If the monitor uses SNMP, the default configuration for timeout and retry are taken from the SNMP configuration (`snmp-config.xml`).
 
