@@ -37,9 +37,7 @@
 </template>
   
 <script setup lang="ts">
-import { onMounted, ref, onUnmounted, computed } from 'vue'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
 import { debounce } from 'lodash'
 import { sub, getUnixTime } from 'date-fns'
 

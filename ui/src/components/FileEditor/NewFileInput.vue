@@ -10,11 +10,11 @@
 </template>
 
 <script setup lang=ts>
-import { ref, onMounted, PropType, computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import { IFile } from '@/store/fileEditor/state'
 import { getExtensionFromFilenameSafely } from './utils'
+import { PropType } from 'vue'
 
 const store = useStore()
 const input = ref()
