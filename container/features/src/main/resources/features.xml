@@ -671,7 +671,7 @@
     <feature name="opennms-provisioning-api" version="${project.version}" description="OpenNMS :: Provisioning :: API">
         <feature>opennms-model</feature>
         <bundle dependency="true">mvn:org.apache.mina/mina-core/${minaVersion}</bundle>
-        <bundle dependency="true">mvn:io.netty/netty/3.9.4.Final</bundle>
+        <bundle dependency="true">mvn:io.netty/netty/${netty3Version}</bundle>
         <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
     </feature>
     <feature name="opennms-rrd-api" version="${project.version}" description="OpenNMS :: RRD :: API">
