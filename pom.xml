@@ -1734,7 +1734,7 @@
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
     <owaspEncoderVersion>1.2.1</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
-    <osgiJaxRsVersion>1.0.2.ONMS</osgiJaxRsVersion>
+    <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.31.0</opentracingVersion>
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
