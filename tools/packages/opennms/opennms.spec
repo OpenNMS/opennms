@@ -965,11 +965,10 @@ if [ ! -e "$ROOT_INST/etc/java.conf" ]; then
 fi
 
 echo ""
-echo " *** Installation complete.  You must still run the installer at"
+echo " *** Installation complete. You must still run the installer at"
 echo " *** \$OPENNMS_HOME/bin/install -dis to be sure your database is up"
-echo " *** to date before you start %{_descr}.  See the install guide at"
-echo " *** http://www.opennms.org/wiki/Installation:RPM and the"
-echo " *** release notes for details."
+echo " *** to date before you start OpenNMS. See the install guide and"
+echo " *** release notes for details at https://docs.opennms.com."
 echo ""
 
 %postun -p /bin/bash core
