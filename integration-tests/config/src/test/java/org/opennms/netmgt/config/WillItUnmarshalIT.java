@@ -319,6 +319,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "thresholds.xml", ThresholdingConfig.class, false, null);
         addFile(Source.EXAMPLE, "tl1d-configuration.xml", Tl1dConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, false, null);
+        addFile(Source.EXAMPLE, "events/collection.events.xml", Events.class, true, null);
 
         // Add all event files
         for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "events"),

@@ -57,10 +57,11 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * This collector will convert event into time series data. It depends on eventconf.xsd's collection tag.
+ */
 public class EventListenerCollector implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(EventListenerCollector.class);
-
-    private static final String COLLECTION_GROUP_NAME = "Event";
 
     @Autowired
     private EventConfDao eventConfDao;
@@ -78,7 +79,7 @@ public class EventListenerCollector implements EventListener {
     private PlatformTransactionManager platformTransactionManager;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         eventSubscriptionService.addEventListener(this);
     }
 
@@ -94,24 +95,22 @@ public class EventListenerCollector implements EventListener {
             return;
         }
         List<Collection> collections = eventconf.getCollections();
-        List<IParm> parms = e.getParmCollection();
 
         OnmsIpInterface iface = ifaceDao.findByNodeIdAndIpAddress(e.getNodeid().intValue(),
                 e.getInterfaceAddress().getHostAddress());
         CollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, platformTransactionManager);
 
-        for (IParm parm : parms) {
-            Collection collection = getMatchCollection(collections, parm.getParmName());
+        for (IParm parm : e.getParmCollection()) {
+
+            Collection collection = this.getMatchCollection(e, collections, parm.getParmName());
             if (collection == null) {
                 LOG.debug("Drop parm name: {} \t value: {}", parm.getParmName(), parm.getValue());
                 continue;
             }
-            RrdRepository rrdRepository = this.getRrdRepository(collection);
-            CollectionSetVisitor persister = persisterFactory.createPersister(
-                    new ServiceParameters(Collections.emptyMap()), rrdRepository, false, false, false);
+
             var collectionSet = new CollectionSetBuilder(agent).withTimestamp(new Date());
 
-            final NodeLevelResource nodeLevelResource = new NodeLevelResource(iface.getNodeId());
+            var nodeLevelResource = new NodeLevelResource(iface.getNodeId());
             final Resource resource;
             final String groupName;
             if ("node".equals(collection.getTarget())) {
@@ -121,52 +120,70 @@ public class EventListenerCollector implements EventListener {
                 groupName = "interfaceSnmp";
                 resource = new InterfaceLevelResource(nodeLevelResource, iface.getIpAddress().getHostAddress());
             }
-            //final InterfaceLevelResource resource;
-//            final DeferredGenericTypeResource appResource = new DeferredGenericTypeResource(resource,
-//                    COLLECTION_GROUP_NAME, e.getUei());
 
-            List<String> paramValues = collection.getParamValues();
+            String value = convertParamValue(collection, parm);
 
-            String value = parm.getValue().getContent();
-            if (!paramValues.isEmpty()){
-                for(var s : paramValues){
-                    var idx = s.indexOf(value);
-                    if ( idx != -1 ){
-                        value = s.substring(idx + value.length() + 1);
-                        break;
-                    }
-                }
-            }
             switch (collection.getType()) {
                 case GAUGE:
-                    collectionSet = collectionSet.withGauge(resource, groupName, parm.getParmName(),
-                            Float.parseFloat(value));
+                    collectionSet = collectionSet.withGauge(resource, groupName,
+                            this.getEscapeParamName(collection.getName()), Float.parseFloat(value));
                     break;
                 case COUNTER:
-                    collectionSet = collectionSet.withCounter(resource, groupName, parm.getParmName(),
-                            Float.parseFloat(value));
+                    collectionSet = collectionSet.withCounter(resource, groupName,
+                            this.getEscapeParamName(collection.getName()), Float.parseFloat(value));
                     break;
                 case STRING:
-                    collectionSet = collectionSet.withStringAttribute(resource, groupName, parm.getParmName(),
-                            value);
+                    collectionSet = collectionSet.withStringAttribute(resource, groupName,
+                            this.getEscapeParamName(collection.getName()), value);
                     break;
             }
-            collectionSet.build().visit(persister);
+            collectionSet.build().visit(this.getRrdPersister(collection));
         }
     }
 
-    public RrdRepository getRrdRepository(Collection collection) {
+    private String getEscapeParamName(String name) {
+        return name.replaceAll(File.separator, "_");
+    }
+
+    /**
+     * It will convert param values base on the eventconf's paramValues mapping. If nothing match, it returns the original value.
+     *
+     * @param collection
+     * @param parm
+     * @return converted value
+     */
+    private String convertParamValue(Collection collection, IParm parm) {
+        Objects.requireNonNull(parm);
+        Objects.requireNonNull(collection);
+        String value = parm.getValue().getContent();
+        String searchText = value + ":";
+        List<String> paramValues = collection.getParamValues();
+        for (var s : paramValues) {
+            var idx = s.indexOf(searchText);
+            if (idx != -1) {
+                return s.substring(idx + searchText.length());
+            }
+        }
+        return value;
+    }
+
+    private CollectionSetVisitor getRrdPersister(Collection collection) {
         RrdRepository repository = new RrdRepository();
         repository.setRrdBaseDir(new File(ResourceTypeUtils.DEFAULT_RRD_ROOT, ResourceTypeUtils.SNMP_DIRECTORY));
         repository.setStep(collection.getStep());
-        repository.setHeartBeat(repository.getHeartBeat());
+        repository.setHeartBeat(collection.getHeartBeat());
         repository.setRraList(collection.getRras());
-        return repository;
+        return persisterFactory.createPersister(
+                new ServiceParameters(Collections.emptyMap()), repository, false, false, false);
     }
 
-    private Collection getMatchCollection(List<Collection> collections, String name) {
+    private Collection getMatchCollection(IEvent e, List<Collection> collections, String name) {
         Objects.requireNonNull(name);
         Objects.requireNonNull(collections);
+        // if user set the collection name as uei, it means user want the whole message as value
+        if (collections.size() == 1 && e.getUei().equals(collections.get(0).getName())) {
+            return collections.get(0);
+        }
         for (var collection : collections) {
             if (name.equals(collection.getName()))
                 return collection;

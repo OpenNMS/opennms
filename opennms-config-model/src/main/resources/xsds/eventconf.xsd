@@ -410,7 +410,7 @@
       </sequence>
       <attribute name="name" type="string" use="required">
         <annotation>
-          <documentation>Name of the collection.</documentation>
+          <documentation>Name of the collection. It should match with named expression param name. Use uei as name if you want to use the whole varbind message.</documentation>
         </annotation>
       </attribute>
       <attribute name="type" default="gauge">
@@ -423,7 +423,7 @@
           </restriction>
         </simpleType>
       </attribute>
-      <attribute name="target" default="node" >
+      <attribute name="target" default="node">
         <simpleType>
           <restriction base="string">
             <pattern value="(node|interface)"/>
@@ -435,9 +435,9 @@
           <documentation>step size for the RRD</documentation>
         </annotation>
       </attribute>
-      <attribute name="heartbeat" type="int">
+      <attribute name="heartBeat" type="int">
         <annotation>
-          <documentation>heartbeat for the RRD (default step * 2)</documentation>
+          <documentation>heartBeat for the RRD (default step * 2)</documentation>
         </annotation>
       </attribute>
     </complexType>

@@ -28,14 +28,18 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import org.opennms.core.xml.JaxbMapAdapter;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.collection.api.AttributeType;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @XmlRootElement(name = "collection")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -49,14 +53,14 @@ public class Collection implements Serializable {
     @XmlAttribute(name = "type", required = true)
     private AttributeType type;
 
-    @XmlAttribute(name = "target", required = false)
+    @XmlAttribute(name = "target")
     private String target = "node";
 
     @XmlAttribute(name = "step")
     private int step = 300;
 
-    @XmlAttribute(name = "heartbeat")
-    private int heartbeat = -1;
+    @XmlAttribute(name = "heartBeat")
+    private int heartBeat = -1;
 
     @XmlElement(name = "rra", required = true)
     private List<String> rras = new ArrayList<>();
@@ -96,12 +100,12 @@ public class Collection implements Serializable {
         this.step = step;
     }
 
-    public int getHeartbeat() {
-        return heartbeat == -1 ? this.getStep() * 2 : heartbeat;
+    public int getHeartBeat() {
+        return heartBeat == -1 ? this.getStep() * 2 : heartBeat;
     }
 
-    public void setHeartbeat(int heartbeat) {
-        this.heartbeat = heartbeat;
+    public void setHeartBeat(int heartBeat) {
+        this.heartBeat = heartBeat;
     }
 
     public List<String> getRras() {
