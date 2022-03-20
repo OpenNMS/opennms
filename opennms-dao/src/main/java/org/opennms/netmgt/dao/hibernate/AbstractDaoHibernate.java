@@ -31,19 +31,16 @@ package org.opennms.netmgt.dao.hibernate;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.persistence.Table;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
