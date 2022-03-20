@@ -30,11 +30,21 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.persistence.Table;
 
-import org.apache.commons.collections.list.AbstractLinkedList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
@@ -43,7 +53,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.metadata.ClassMetadata;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.netmgt.dao.api.OnmsDao;
@@ -263,24 +272,30 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     @Override
     public List<T> findMatching(final org.opennms.core.criteria.Criteria criteria) {
         if(criteria.isMultipleAnd()){
-            Collection<Restriction> allRestrictions = criteria.getRestrictions();
-            Collection<Restriction> copyOfAllRestriction = new ArrayList<Restriction>(allRestrictions) ;
             List<T> allRecords = new ArrayList<>();
             Set<T> allUniqueRecords = new LinkedHashSet<>();
-            allRestrictions.stream().filter(restriction -> restriction.getType().equals(Restriction.RestrictionType.MULTIAND))
-                    .forEach(restriction -> {
-                        Collection<Restriction> allMultiAndRestrictions = ((AllRestriction) restriction).getRestrictions();
-                        AllRestriction[] tempRestrictionArray = new AllRestriction[allMultiAndRestrictions.size()];
-                        allMultiAndRestrictions.toArray(tempRestrictionArray);
-                        copyOfAllRestriction.removeIf(restriction::equals);
-                        Arrays.stream(tempRestrictionArray).forEach(tempRestriction -> {
-                            copyOfAllRestriction.add(tempRestriction);
-                            criteria.setRestrictions(copyOfAllRestriction);
-                            final HibernateCallback<List<T>> callback = buildHibernateCallback(criteria);
-                            allUniqueRecords.addAll(getHibernateTemplate().execute(callback));
-                            copyOfAllRestriction.remove(tempRestriction);
-                        });
-                    });
+            Collection<Restriction> allRestrictions = criteria.getRestrictions();
+            //set of multiand restrictions
+            Set<Restriction> multiAndRestirctionSet = allRestrictions.stream().filter(
+                    restriction -> restriction.getType().equals(Restriction.RestrictionType.MULTIAND)).collect(Collectors.toSet());
+            //set of non multiand restrictions
+            Set<Restriction>   nonMultiAndRestirctionSet =  Sets.difference(new HashSet<Restriction>(allRestrictions),multiAndRestirctionSet);
+            //iterating multiand and setting nonmultiand + single multiand restriction in criteria,
+            // retrieve result set, create intersection of each query executed
+            multiAndRestirctionSet.stream().forEach(restriction ->{
+                Collection<Restriction> allMultiAndRestrictions = ((AllRestriction) restriction).getRestrictions();
+                allMultiAndRestrictions.stream().forEach(singleMultiAndRestriction ->{
+                    criteria.setRestrictions(nonMultiAndRestirctionSet);
+                    criteria.addRestriction(singleMultiAndRestriction);
+                    final HibernateCallback<List<T>> callback = buildHibernateCallback(criteria);
+                    if(allUniqueRecords.isEmpty()) {
+                        allUniqueRecords.addAll(getHibernateTemplate().execute(callback));
+                    } else {
+                        allUniqueRecords.addAll(Sets.intersection(allUniqueRecords,
+                                Collections.singleton(new LinkedHashSet<T>(getHibernateTemplate().execute(callback)))));
+                    }
+                });
+            });
             allRecords.addAll(allUniqueRecords);
             return allRecords;
         } else {

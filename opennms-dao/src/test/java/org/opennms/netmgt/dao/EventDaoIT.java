@@ -237,15 +237,15 @@ public class EventDaoIT implements InitializingBean {
         event3.setServiceType(service.getServiceType());
         event3.setIpAddr(iface.getIpAddress());
         event3.setEventParameters(Lists.newArrayList(
-                new OnmsEventParameter(event3, "label", "node3", "string"),
+                new OnmsEventParameter(event3, "label", "node2", "string"),
                 new OnmsEventParameter(event3, "ds", "(memAvailReal + memCached) / memTotalReal * 100.0", "string"),
                 new OnmsEventParameter(event3, "description", "(memAvailReal + memCached) / memTotalReal * 100.0", "string"),
                 new OnmsEventParameter(event3, "value", "4.9", "string"),
-                new OnmsEventParameter(event3, "instance", "node3", "string"),
-                new OnmsEventParameter(event3, "instanceLabel", "node3", "string"),
+                new OnmsEventParameter(event3, "instance", "node2", "string"),
+                new OnmsEventParameter(event3, "instanceLabel", "node2", "string"),
                 new OnmsEventParameter(event3, "resourceId", "node[70].nodeSnmp[]", "string"),
                 new OnmsEventParameter(event3, "threshold", "7.0", "string"),
-                new OnmsEventParameter(event3, "trigger", "4", "string"),
+                new OnmsEventParameter(event3, "trigger", "3", "string"),
                 new OnmsEventParameter(event3, "rearm", "12.0", "string")));
         m_eventDao.save(event3);
 
@@ -254,7 +254,7 @@ public class EventDaoIT implements InitializingBean {
         event4.setEventCreateTime(new Date());
         event4.setEventDescr("event dao test");
         event4.setEventHost("localhost");
-        event4.setEventLog("Y");
+        event4.setEventLog("N");
         event4.setEventDisplay("Y");
         event4.setEventLogGroup("event dao test log group");
         event4.setEventLogMsg("event dao test log msg");
@@ -332,9 +332,9 @@ public class EventDaoIT implements InitializingBean {
                     )
             );
         events = m_eventDao.findMatching(cb.toCriteria());
-        assertEquals(5, events.size());
+        assertEquals(1, events.size());
         assertEquals("uei://org/opennms/test/EventDaoTest1", events.get(0).getEventUei());
-        assertEquals(Integer.toString(6), events.get(4).getId().toString());
+        assertEquals("EventDaoTest1", events.get(0).getEventSource());
     }
 
     @Test
@@ -348,7 +348,7 @@ public class EventDaoIT implements InitializingBean {
                 .multipleAnd(
                         Restrictions.and(
                                 Restrictions.eq("eventParameters.name", "instance"),
-                                Restrictions.eq("eventParameters.value", "node1")
+                                Restrictions.eq("eventParameters.value", "node2")
                         ),
                         Restrictions.and(
                                 Restrictions.eq("eventParameters.name", "trigger"),
@@ -357,8 +357,8 @@ public class EventDaoIT implements InitializingBean {
                 );
         events = m_eventDao.findMatching(cb.toCriteria());
         assertEquals(2, events.size());
-        assertEquals("uei://org/opennms/test/EventDaoTest2", events.get(1).getEventUei());
-        assertEquals("EventDaoTest2", events.get(1).getEventSource());
+        assertEquals("uei://org/opennms/test/EventDaoTest3", events.get(1).getEventUei());
+        assertEquals("EventDaoTest3", events.get(1).getEventSource());
     }
 
     @Test
@@ -370,22 +370,22 @@ public class EventDaoIT implements InitializingBean {
 
         cb.alias("eventParameters", "eventParameters")
                 .and( Restrictions.and(
-                        Restrictions.eq("eventSource", "EventDaoTest2"),
+                        Restrictions.eq("eventSource", "EventDaoTest4"),
                         Restrictions.eq("eventLog", "N")
                 ))
                 .multipleAnd(
                         Restrictions.and(
                                 Restrictions.eq("eventParameters.name", "instance"),
-                                Restrictions.eq("eventParameters.value", "node2")
+                                Restrictions.eq("eventParameters.value", "node4")
                         ),
                         Restrictions.and(
                                 Restrictions.eq("eventParameters.name", "threshold"),
-                                Restrictions.eq("eventParameters.value", "6.0")
+                                Restrictions.eq("eventParameters.value", "8.0")
                         )
                 );
        events = m_eventDao.findMatching(cb.toCriteria());
        assertEquals(1, events.size());
-       assertEquals("uei://org/opennms/test/EventDaoTest2", events.get(0).getEventUei());
-       assertEquals("EventDaoTest2", events.get(0).getEventSource());
+       assertEquals("uei://org/opennms/test/EventDaoTest4", events.get(0).getEventUei());
+       assertEquals("EventDaoTest4", events.get(0).getEventSource());
     }
 }
