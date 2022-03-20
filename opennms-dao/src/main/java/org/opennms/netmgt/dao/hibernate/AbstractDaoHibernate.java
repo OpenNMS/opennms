@@ -117,8 +117,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     /**
      * <p>find</p>
      *
-     * @param query a {@link String} object.
-     * @return a {@link List} object.
+     * @param query a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     @SuppressWarnings("unchecked")
     public List<T> find(final String query) {
@@ -128,9 +128,9 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     /**
      * <p>find</p>
      *
-     * @param query a {@link String} object.
-     * @param values a {@link Object} object.
-     * @return a {@link List} object.
+     * @param query a {@link java.lang.String} object.
+     * @param values a {@link java.lang.Object} object.
+     * @return a {@link java.util.List} object.
      */
     @SuppressWarnings("unchecked")
     public List<T> find(final String query, final Object... values) {
@@ -140,11 +140,11 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     /**
      * <p>findObjects</p>
      *
-     * @param clazz a {@link Class} object.
-     * @param query a {@link String} object.
-     * @param values a {@link Object} object.
+     * @param clazz a {@link java.lang.Class} object.
+     * @param query a {@link java.lang.String} object.
+     * @param values a {@link java.lang.Object} object.
      * @param <S> a S object.
-     * @return a {@link List} object.
+     * @return a {@link java.util.List} object.
      */
     public <S> List<S> findObjects(final Class<S> clazz, final String query, final Object... values) {
         @SuppressWarnings("unchecked")
@@ -155,7 +155,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     /**
      * <p>queryInt</p>
      *
-     * @param query a {@link String} object.
+     * @param query a {@link java.lang.String} object.
      * @return a int.
      */
     protected int queryInt(final String query) {
@@ -172,8 +172,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     /**
      * <p>queryInt</p>
      *
-     * @param queryString a {@link String} object.
-     * @param args a {@link Object} object.
+     * @param queryString a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
      * @return a int.
      */
     protected int queryInt(final String queryString, final Object... args) {
@@ -227,7 +227,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * <p>delete</p>
      *
      * @param entity a T object.
-     * @throws DataAccessException if any.
+     * @throws org.springframework.dao.DataAccessException if any.
      */
     @Override
     public void delete(final T entity) throws DataAccessException {
@@ -238,7 +238,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * <p>delete</p>
      *
      * @param key a K object.
-     * @throws DataAccessException if any.
+     * @throws org.springframework.dao.DataAccessException if any.
      */
     @Override
     public void delete(final K key) throws DataAccessException {
@@ -248,8 +248,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     /**
      * <p>deleteAll</p>
      *
-     * @param entities a {@link Collection} object.
-     * @throws DataAccessException if any.
+     * @param entities a {@link java.util.Collection} object.
+     * @throws org.springframework.dao.DataAccessException if any.
      */
     public void deleteAll(final Collection<T> entities) throws DataAccessException {
         getHibernateTemplate().deleteAll(entities);
@@ -258,8 +258,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     /**
      * <p>findAll</p>
      *
-     * @return a {@link List} object.
-     * @throws DataAccessException if any.
+     * @return a {@link java.util.List} object.
+     * @throws org.springframework.dao.DataAccessException if any.
      */
     @Override
     public List<T> findAll() throws DataAccessException {
@@ -367,10 +367,10 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     /**
      * <p>bulkDelete</p>
      *
-     * @param hql a {@link String} object.
-     * @param values an array of {@link Object} objects.
+     * @param hql a {@link java.lang.String} object.
+     * @param values an array of {@link java.lang.Object} objects.
      * @return a int.
-     * @throws DataAccessException if any.
+     * @throws org.springframework.dao.DataAccessException if any.
      */
     public int bulkDelete(final String hql, final Object[] values ) throws DataAccessException {
         return getHibernateTemplate().bulkUpdate(hql, values);
@@ -381,7 +381,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      *
      * @param id a K object.
      * @return a T object.
-     * @throws DataAccessException if any.
+     * @throws org.springframework.dao.DataAccessException if any.
      */
     @Override
     public T get(final K id) throws DataAccessException {
@@ -393,7 +393,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      *
      * @param id a K object.
      * @return a T object.
-     * @throws DataAccessException if any.
+     * @throws org.springframework.dao.DataAccessException if any.
      */
     @Override
     public T load(final K id) throws DataAccessException {
@@ -420,7 +420,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * <p>saveOrUpdate</p>
      *
      * @param entity a T object.
-     * @throws DataAccessException if any.
+     * @throws org.springframework.dao.DataAccessException if any.
      */
     @Override
     public void saveOrUpdate(final T entity) throws DataAccessException {
@@ -436,7 +436,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * <p>update</p>
      *
      * @param entity a T object.
-     * @throws DataAccessException if any.
+     * @throws org.springframework.dao.DataAccessException if any.
      */
     @Override
     public void update(final T entity) throws DataAccessException {
