@@ -127,7 +127,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <span>OpenNMS System</span>
+        <span>OpenNMS System 123</span>
       </div>
       <div class="card-body">
         <ul class="list-unstyled mb-0">
@@ -151,7 +151,7 @@
             <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP Address</a></li>
             <li><a href="javascript:addInterfacePost()">Manually Add an Interface</a></li>
             <li><a href="javascript:deletePost()">Delete Nodes</a></li>
-            <li><a href="ui/index.html/#/configuration">Configure Provisioning Requisitions</a></li>
+            <li><a href="ui/index.html/#/configuration">Configure Provisioning Subsystem</a></li>
             <li><a href="admin/geoservice/index.jsp">Configure Geocoder Service</a></li>
         </ul>
       </div> <!-- card-body -->
