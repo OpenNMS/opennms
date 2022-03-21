@@ -43,7 +43,6 @@ export default { name: 'MapKeepAlive' }
 </script>
 
 <script setup lang="ts">
-import { onMounted, onActivated, onDeactivated, ref, computed } from 'vue'
 import { useStore } from 'vuex'
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'

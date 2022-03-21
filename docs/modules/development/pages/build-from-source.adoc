@@ -74,7 +74,7 @@ To speed up the build steps, we explicitly disable tests and don't create a sour
 .Compile the source code without executing test tasks and skip the source tarball creation
 [source, console]
 ----
-./compile.pl -Dbuild.skip.tarball=true -DskipTests
+./compile.pl -DskipTests
 ----
 
 .Assemble the build artefacts in the target directory

@@ -56,7 +56,6 @@
   </div>
 </template>
 <script setup lang ="ts">
-import { computed, ref, nextTick } from 'vue'
 import 'leaflet/dist/leaflet.css'
 import {
   LMap,
@@ -69,7 +68,6 @@ import {
 } from '@vue-leaflet/vue-leaflet'
 import MarkerCluster from './MarkerCluster.vue'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
 import { Node } from '@/types'
 import NormalIcon from '@/assets/Normal-icon.png'
 import WarninglIcon from '@/assets/Warning-icon.png'
