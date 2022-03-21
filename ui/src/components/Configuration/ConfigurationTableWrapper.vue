@@ -3,9 +3,7 @@
     <div class="flex title-padding">
       <h3 class="title">Requisition Definitions {{ requisitionDCount }}</h3>
       <div class="flex button-wrapper" v-if="provisionDList?.length > 0">
-        <FeatherButton class="button" text @click="addNew">
-          <FeatherIcon class="buttonIcon" :icon="add" />New Definition
-        </FeatherButton>
+        <FeatherButton class="button" text @click="addNew">Add Requisition</FeatherButton>
       </div>
     </div>
     <ConfigurationTable
