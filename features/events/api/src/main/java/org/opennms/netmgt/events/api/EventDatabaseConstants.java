@@ -71,6 +71,29 @@ public class EventDatabaseConstants extends EventConstants {
     public static final String VALUE_TRUNCATE_INDICATOR = "...";
 
     /**
+     * Cleans any unwanted ISO control characters from the input string by
+     * reformatting them into their <EM>%add</EM> format.
+     * @param inStr
+     *            string that might contain the delimiter
+     * @return The string with any ISO characters reformatted for db ops
+     */
+    public static String sanitize(final String inStr) {
+
+        final StringBuilder buf = new StringBuilder(inStr.length()+16);
+
+        for (final char ch : inStr.toCharArray()) {
+            if (Character.isISOControl(ch) && !Character.isWhitespace(ch)) {
+                buf.append('%');
+                buf.append(String.valueOf((int)ch));
+            } else {
+                buf.append(ch);
+            }
+        }
+
+        return buf.toString();
+    }
+
+    /**
      * This method is used to escape required values from strings that may
      * contain those values. If the passed string contains the passed value then
      * the character is reformatted into its <EM>%dd</EM> format.
