@@ -28,6 +28,7 @@
 
 package org.opennms.features.deviceconfig.rest.impl;
 
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.everyItem;
@@ -170,7 +171,6 @@ public class DefaultDeviceConfigRestServiceIT {
         }
     }
 
-
     @Test
     @Transactional
     public void filterOnCreatedTime() {
@@ -205,8 +205,10 @@ public class DefaultDeviceConfigRestServiceIT {
         for (var itf : interfaces) {
             var res = getDeviceConfigs(null, null, "createdTime", "desc", null, null, itf.getId(), null, null, null);
             assertThat(res, hasSize(VERSIONS));
-            assertThat(res.stream().map(DeviceConfigDTO::getEncoding).collect(Collectors.toList()),
-                    contains(IntStream.range(0, VERSIONS).map(v -> VERSIONS - 1 - v).boxed().map(String::valueOf).toArray()));
+
+            assertThat(
+                res.stream().map(DeviceConfigDTO::getCreatedTime).map(Date::getTime).collect(toList()),
+                contains(IntStream.range(0, VERSIONS).map(i -> VERSIONS - i - 1).boxed().map(DefaultDeviceConfigRestServiceIT::createdTime).toArray()));
         }
     }
 
@@ -216,9 +218,10 @@ public class DefaultDeviceConfigRestServiceIT {
         for (var itf : interfaces) {
             var res = getDeviceConfigs(null, null, "createdTime", "asc", null, null, itf.getId(), null, null, null);
             assertThat(res, hasSize(VERSIONS));
-            assertThat(res.stream().map(DeviceConfigDTO::getEncoding).collect(Collectors.toList()), contains(IntStream.range(0, VERSIONS).boxed()
-                    .map(String::valueOf).toArray()));
 
+            assertThat(
+                res.stream().map(DeviceConfigDTO::getCreatedTime).map(Date::getTime).collect(toList()),
+                contains(IntStream.range(0, VERSIONS).boxed().map(DefaultDeviceConfigRestServiceIT::createdTime).toArray()));
         }
     }
 
@@ -227,19 +230,23 @@ public class DefaultDeviceConfigRestServiceIT {
     public void sortAscWithLimitAndOffset() {
         for (var itf : interfaces) {
             {
-                var limit = 5;
+                final int limit = 5;
                 var res = getDeviceConfigs(limit, 0, "createdTime", "asc", null, null, itf.getId(), null, null, null);
                 assertThat(res, hasSize(limit));
-                assertThat(res.stream().map(DeviceConfigDTO::getEncoding).collect(Collectors.toList()), contains(IntStream.range(0, limit).boxed()
-                        .map(String::valueOf).toArray()));
+
+                assertThat(
+                    res.stream().map(DeviceConfigDTO::getCreatedTime).map(Date::getTime).collect(toList()),
+                    contains(IntStream.range(0, limit).boxed().map(DefaultDeviceConfigRestServiceIT::createdTime).toArray()));
             }
             {
-                var limit = 5;
-                var offset = 10;
+                final int limit = 5;
+                final int offset = 10;
                 var res = getDeviceConfigs(limit, offset, "createdTime", "asc", null, null, itf.getId(), null, null, null);
                 assertThat(res, hasSize(limit));
-                assertThat(res.stream().map(DeviceConfigDTO::getEncoding).collect(Collectors.toList()), contains(IntStream.range(offset, offset + limit).boxed()
-                        .map(String::valueOf).toArray()));
+
+                assertThat(
+                    res.stream().map(DeviceConfigDTO::getCreatedTime).map(Date::getTime).collect(toList()),
+                    contains(IntStream.range(offset, offset + limit).boxed().map(DefaultDeviceConfigRestServiceIT::createdTime).toArray()));
             }
         }
     }
@@ -262,7 +269,6 @@ public class DefaultDeviceConfigRestServiceIT {
         response = deviceConfigRestService.triggerDeviceConfigBackup(dto);
         assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.BAD_REQUEST));
         assertThat(response.getEntity(), Matchers.is(message));
-
     }
 
     private OnmsIpInterface populateIpInterfaceAndGet(int num) {
@@ -281,7 +287,7 @@ public class DefaultDeviceConfigRestServiceIT {
         var dc = new DeviceConfig();
         dc.setConfig(new byte[version]);
         dc.setCreatedTime(new Date(createdTime(version)));
-        dc.setEncoding(String.valueOf(version));
+        dc.setEncoding(DefaultDeviceConfigRestService.DEFAULT_ENCODING);
         dc.setIpInterface(ipInterface1);
         dc.setServiceName("DeviceConfig-default");
         dc.setLastUpdated(new Date(createdTime(version)));
@@ -289,6 +295,6 @@ public class DefaultDeviceConfigRestServiceIT {
     }
 
     private static long createdTime(int num) {
-        return num * 1000l * 60 * 60 * 24;
+        return num * 1000L * 60 * 60 * 24;
     }
 }
