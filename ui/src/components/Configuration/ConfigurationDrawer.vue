@@ -46,7 +46,7 @@
           :advancedKeyUpdate="props.advancedKeyUpdate"
         />
         <ConfigurationGeneratedUrl :item="props.item.config" />
-        <div class="spinner-button">
+        <div class="spinner-button button-align-right">
           <FeatherButton @click="props.saveCurrentState" primary :disabled="loading">
             <FeatherSpinner v-if="loading" />
             <span v-if="!loading">Save &amp; Close</span>
@@ -196,6 +196,10 @@ const toggleHelp = () => {
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
 
+.button-align-right {
+  display: flex;
+  justify-content: flex-end;
+}
 .side-input {
   padding-bottom: 0;
 }
