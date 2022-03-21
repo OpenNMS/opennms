@@ -23,6 +23,8 @@
           layer-type="base"
         />
         <MarkerCluster
+          ref="markerCluster"
+          :onClusterUncluster="onClusterUncluster"
           :options="{ showCoverageOnHover: false, chunkedLoading: true, iconCreateFunction }"
         >
           <LMarker
@@ -30,6 +32,7 @@
             :key="node.label"
             :lat-lng="[node.assetRecord.latitude, node.assetRecord.longitude]"
             :name="node.label"
+            :options="{ id: node.id }"
           >
             <LPopup>
               Node:
@@ -42,7 +45,7 @@
             <LIcon :icon-url="setIcon(node)" :icon-size="iconSize" />
           </LMarker>
           <LPolyline
-            v-for="coordinatePair of edges"
+            v-for="coordinatePair of computedEdges"
             :key="coordinatePair[0].toString()"
             :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
             color="green"
@@ -78,6 +81,8 @@ import { numericSeverityLevel } from './utils'
 import SeverityFilter from './SeverityFilter.vue'
 import { Edges } from 'v-network-graph'
 
+const markerCluster = ref()
+const computedEdges = ref<number[][][]>()
 const store = useStore()
 const map = ref()
 const route = useRoute()
@@ -87,6 +92,7 @@ const zoom = ref<number>(2)
 const iconWidth = 25
 const iconHeight = 42
 const iconSize = [iconWidth, iconHeight]
+const nodeClusterCoords = ref<Record<string, number[]>>({})
 const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => store.state.mapModule.mapCenter[k]))
 const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
 const allNodes = computed<Node[]>(() => store.state.mapModule.nodesWithCoordinates)
@@ -106,12 +112,28 @@ const getHighestSeverity = (severitites: string[]) => {
   return highestSeverity
 }
 
+const onClusterUncluster = (t: any) => {
+  nodeClusterCoords.value = {}
+  t.target.refreshClusters()
+  computeEdges()
+}
+
 // for custom marker cluster icon
 const iconCreateFunction = (cluster: Cluster) => {
+  const clusterLatLng = cluster.getLatLng()
+  const clusterLatLngArr = [clusterLatLng.lat, clusterLatLng.lng]
   const childMarkers = cluster.getAllChildMarkers()
+
   // find highest level of severity
   const severitites = []
   for (const marker of childMarkers) {
+
+    // set cluster latlng to each node id
+    if (clusterLatLngArr.length) {
+      const nodeId = (marker as any).options.id
+      nodeClusterCoords.value[nodeId] = clusterLatLngArr
+    }
+
     const markerSeverity = nodeLabelAlarmServerityMap.value[(marker as any).options.name]
     if (markerSeverity) {
       severitites.push(markerSeverity)
@@ -143,21 +165,32 @@ const setMarkerColor = (severity: string | undefined) => {
   return NormalIcon
 }
 
-const edges = computed(() => {
+const computeEdges = () => {
   const interestedNodesCoordinateMap = getNodeCoordinateMap.value
   const edges: Edges = store.state.topologyModule.edges
 
-  const edgeCoordinatesPairs = []
+  const edgeCoordinatesPairs:number[][][] = []
 
   for (const edge of Object.values(edges)) {
-    const edgeCoordinatesPair = []
-    edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge.source))
-    edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge.target))
-    edgeCoordinatesPairs.push(edgeCoordinatesPair)
+    // attempt to get nodes cluster 
+    let sourceCoord = nodeClusterCoords.value[edge.source]
+    let targetCoord = nodeClusterCoords.value[edge.target]
+
+    // if not in cluser, will be undefined, get regular coords
+    if (!sourceCoord) {
+      sourceCoord = interestedNodesCoordinateMap.get(edge.source)
+    }
+    if (!targetCoord) {
+      targetCoord = interestedNodesCoordinateMap.get(edge.target)
+    }
+
+    if (sourceCoord && targetCoord) {
+      edgeCoordinatesPairs.push([sourceCoord, targetCoord])
+    }
   }
 
-  return edgeCoordinatesPairs
-})
+  computedEdges.value = edgeCoordinatesPairs
+}
 
 const getNodeCoordinateMap = computed(() => {
   const map = new Map()
@@ -265,10 +298,14 @@ defineExpose({ invalidateSizeFn, setBoundingBox, flyToNode })
       &.NORMAL {
         background: var($success);
       }
-      &.WARNING,
-      &.MINOR,
+      &.WARNING {
+        background: #fffb00ea;
+      }
+      &.MINOR {
+        background-color: var($warning);
+      }
       &.MAJOR {
-        background: var($warning);
+        background: #ff3c00;
       }
       &.CRITICAL {
         background: var($error);

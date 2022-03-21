@@ -25,8 +25,12 @@ const props = {
     type: Object,
     default() {
       return {}
-    },
+    }
   },
+  onClusterUncluster: {
+    type: Function,
+    required: true
+  }
 }
 
 export default {
@@ -97,6 +101,10 @@ export default {
         'leaflet.markercluster/dist/leaflet.markercluster-src.js'
       )
       leafletRef.value = new MarkerClusterGroup(props.options)
+
+      leafletRef.value.on('animationend', (markerGroup) => {
+        props.onClusterUncluster(markerGroup)
+      })
 
       const listeners = remapEvents(context.attrs)
       DomEvent.on(leafletRef.value, listeners)
