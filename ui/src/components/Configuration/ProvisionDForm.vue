@@ -48,7 +48,7 @@
                 :error="errors.host"
                 :modelValue="config.host"
                 @update:modelValue="(val: string) => updateFormValue('host', val)"
-                :hint="hostHint || ' '"
+                :hint="hostHint || 'vCenter server host or IP address'"
             />
         </div>
         <div v-if="RequisitionHTTPTypes.includes(config.type.name)">
