@@ -95,7 +95,7 @@ angular.module('onms-resources', [
     if (reports) {
       $scope.reports = reports;
     }
-    if (endUrl) {
+    if (endUrl && endUrl !== "null") {
       $scope.url = endUrl;
     }
 
