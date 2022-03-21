@@ -36,7 +36,7 @@
         </FeatherButton>
       </div>
       <div class="button-wrapper">
-        <FeatherButton @click="addAdvancedOption" primary>Add Advanced Option</FeatherButton>
+        <FeatherButton @click="addAdvancedOption" primary>Add</FeatherButton>
       </div>
     </div>
   </FeatherExpansionPanel>
