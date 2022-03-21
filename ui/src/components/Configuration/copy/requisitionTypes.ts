@@ -12,11 +12,11 @@ export const RequisitionTypes = {
 }
 
 export const RequisitionPluginSubTypes = {
-  OpenDaylight: 'OpenDaylight',
   ACI: 'ACI',
-  Zabbix: 'Zabbix',
+  AzureIot: 'Azure IoT',
+  OpenDaylight: 'OpenDaylight',
   PRIS: 'PRIS',
-  AzureIot: 'Azure IoT'
+  Zabbix: 'Zabbix'
 }
 export const RequisitionHTTPTypes = [RequisitionTypes.HTTP, RequisitionTypes.HTTPS]
 export const RequsitionTypesUsingHost = [
@@ -94,19 +94,9 @@ export const requisitionTypeList = [
 
 export const requisitionSubTypes = [
   {
-    id: 1,
-    name: RequisitionPluginSubTypes.OpenDaylight,
-    value: 'opendaylight'
-  },
-  {
     id: 2,
     name: RequisitionPluginSubTypes.ACI,
     value: 'aci'
-  },
-  {
-    id: 3,
-    name: RequisitionPluginSubTypes.Zabbix,
-    value: 'zabbix-lab'
   },
   {
     id: 4,
@@ -114,8 +104,18 @@ export const requisitionSubTypes = [
     value: 'azure-iot'
   },
   {
+    id: 1,
+    name: RequisitionPluginSubTypes.OpenDaylight,
+    value: 'opendaylight'
+  },
+  {
     id: 5,
     name: RequisitionPluginSubTypes.PRIS,
     value: 'pris'
+  },
+  {
+    id: 3,
+    name: RequisitionPluginSubTypes.Zabbix,
+    value: 'zabbix-lab'
   }
 ]
