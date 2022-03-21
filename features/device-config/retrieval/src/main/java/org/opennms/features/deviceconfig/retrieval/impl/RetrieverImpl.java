@@ -184,8 +184,8 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             // -> if triggering the upload failed then complete the future with that failure
             try {
                 if (uploadTrigger.get().isFailed()) {
-                    SshScriptingService.Result failure = uploadTrigger.get();
-                    fail(scriptingFailureMsg(host, port, failure.message), failure.stdout, failure.stderr);
+                    final SshScriptingService.Result result = uploadTrigger.get();
+                    fail(scriptingFailureMsg(host, port, result.message), result.stdout, result.stderr);
                 }
             } catch (Throwable e) {
                 var msg = scriptingFailureMsg(host, port, e.getMessage());
