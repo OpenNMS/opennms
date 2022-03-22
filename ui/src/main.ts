@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 
 import '@featherds/styles'
-import '@featherds/styles/themes/open-light.css'
+import '@featherds/styles/themes/open-light.scss'
 
 import dateFormatDirective from './directives/v-date'
 
