@@ -2,7 +2,7 @@
 [[http-handler]]
 = HTTP(S) Handler
 
-The HTTP(S) handler imports a properly-formatted requisition definition from an XML file stored remotely on a web server.
+The HTTP(S) handler imports a properly-formatted requisition definition from an XML document served by a remote web server.
 
 Examples:
 
