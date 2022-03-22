@@ -50,6 +50,7 @@ const results = computed(() => {
 .menubar-search {
   width: 350px !important;
   margin-right: 20px;
+  margin-top: 30px;
   .feather-input-border {
     background: var($surface);
   }

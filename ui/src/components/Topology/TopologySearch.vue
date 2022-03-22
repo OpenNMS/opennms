@@ -1,5 +1,6 @@
 <template>
   <FeatherAutocomplete
+    class="search-bar"
     :modelValue="focusedSearchBarNodes"
     type="multi"
     :results="results"

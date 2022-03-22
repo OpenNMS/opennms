@@ -1,21 +1,36 @@
 <template>
   <div class="context-menu">
-    <div class="menu-btn" @click="addContextNodeToFocus" v-if="!nodeIsFocused">Add To Focus</div>
-    <div class="menu-btn" @click="removeContextNodeFromFocus" v-else>Remove From Focus</div>
-    <div class="menu-btn" @click="setContextNodeAsFocus">Set As Focal Point</div>
-    <div class="menu-btn" @click="openNodeInfoPage">Node Info</div>
-    <div class="menu-btn" @click="openNodeResourcePage">Resource Graphs</div>
-  </div>
+    <!-- <div v-if="contextMenu === ContextMenuType.node"> -->
+      <div class="menu-btn" @click="addContextNodeToFocus" v-if="!nodeIsFocused">Add To Focus</div>
+      <div class="menu-btn" @click="removeContextNodeFromFocus" v-else>Remove From Focus</div>
+      <div class="menu-btn" @click="setContextNodeAsFocus">Set As Focal Point</div>
+      <div class="menu-btn" @click="openNodeInfoPage">Node Info</div>
+      <div class="menu-btn" @click="openNodeResourcePage">Resource Graphs</div>
+    </div>
+  <!-- </div> -->
+  <!-- <div v-if="contextMenu === ContextMenuType.background">
+    <div class="menu-btn" @click="clearFocus">Clear Focus</div>
+    <div class="menu-btn" @click="refreshNow">Refresh Now</div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
 import { Node, SearchResultResponse } from '@/types'
 import { useStore } from 'vuex'
+import { ContextMenuType } from './topology.constants'
 
 const store = useStore()
 const router = useRouter()
 
 const props = defineProps({
+  contextMenuType: {
+    required: true,
+    type: String
+  },
+  refresh: {
+    required: true,
+    type: Function
+  },
   nodeId: {
     required: true,
     type: String
@@ -88,6 +103,9 @@ const openNodeResourcePage = async () => {
   }
   props.closeContextMenu()
 }
+
+const clearFocus = () => store.dispatch('topologyModule/setFocusedSearchBarNodes', [])
+const refreshNow = () => props.refresh()
 </script>
 
 <style scoped lang="scss">
@@ -101,7 +119,7 @@ const openNodeResourcePage = async () => {
   height: auto;
   width: auto;
   min-width: 100px;
-  min-height: 150px;
+  min-height: 100px;
   display: block;
   position: absolute;
   z-index: 3;

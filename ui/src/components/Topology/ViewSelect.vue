@@ -29,6 +29,6 @@ const onViewSelect = () => store.dispatch('topologyModule/setSelectedView', sele
 
 <style scoped lang="scss">
 .view-select {
-  width: 100%;
+  width: 15rem;
 }
 </style>

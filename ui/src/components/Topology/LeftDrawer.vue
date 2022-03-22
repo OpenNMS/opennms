@@ -2,7 +2,7 @@
   <FeatherDrawer
     id="map-left-drawer"
     :left="true"
-    :modelValue="isOpen" 
+    :modelValue="isOpen"
     @update:modelValue="closeDrawer"
     :labels="{ close: 'close', title: 'View and Search' }"
     width="20em"
@@ -44,6 +44,9 @@ onMounted(() => {
 #map-left-drawer {
   .container {
     padding: 20px;
+    .search-bar {
+      width: 15rem;
+    }
   }
   .content {
     height: auto;

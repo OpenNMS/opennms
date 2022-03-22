@@ -1,5 +1,5 @@
 <template>
-  <NetworkGraph v-if="displayGraph" />
+  <NetworkGraph v-if="displayGraph" :refresh="refreshGraph" />
   <SideControls :refreshGraph="refreshGraph" />
 </template>
 

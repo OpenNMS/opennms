@@ -2,6 +2,7 @@
   <div class="tooltip-wrapper">
     <VNetworkGraph
       ref="graph"
+      v-model:selectedNodes="selectedNodes"
       :layouts="layout"
       :nodes="verticies"
       :edges="edges"
@@ -18,26 +19,35 @@
   <ContextMenu
     ref="contextMenu"
     v-if="showContextMenu"
+    :refresh="refresh"
+    :contextMenuType="contextMenuType"
     :x="menuXPos"
     :y="menuYPos"
     :nodeId="contextNodeId"
     :closeContextMenu="closeContextMenu"
-    v-model:selectedNodes="selectedNodes"
   />
 </template>
 
 <script setup lang="ts">
 import 'v-network-graph/lib/style.css'
 import { useStore } from 'vuex'
-import { VNetworkGraph, defineConfigs, Layouts, Edges, Nodes, SimpleLayout, EventHandlers, NodeEvent, Instance } from 'v-network-graph'
+import { VNetworkGraph, defineConfigs, Layouts, Edges, Nodes, SimpleLayout, EventHandlers, NodeEvent, Instance, ViewEvent } from 'v-network-graph'
 import { ForceLayout, ForceNodeDatum, ForceEdgeDatum } from 'v-network-graph/lib/force-layout'
-import { SimulationNodeDatum } from 'd3'
 import ContextMenu from './ContextMenu.vue'
 import { onClickOutside } from '@vueuse/core'
+import { SimulationNodeDatum } from 'd3'
+import { ContextMenuType } from './topology.constants'
 
 interface d3Node extends Required<SimulationNodeDatum> {
   id: string
 }
+
+defineProps({
+  refresh: {
+    type: Function,
+    required: true
+  }
+})
 
 const store = useStore()
 const zoomLevel = ref(1)
@@ -51,6 +61,7 @@ const d3Nodes = ref<d3Node[]>([])
 const contextMenu = ref(null)
 const showContextMenu = ref(false)
 const contextNodeId = ref()
+const contextMenuType = ref()
 const menuXPos = ref(0)
 const menuYPos = ref(0)
 const NODE_RADIUS = 20
@@ -59,7 +70,7 @@ const getD3NodeCoords = () => d3Nodes.value.filter((d3Node) => d3Node.id === tar
 const closeContextMenu = () => showContextMenu.value = false
 onClickOutside(contextMenu, () => closeContextMenu())
 
-const verticies = computed<Nodes>(() => { console.log(store.state.topologyModule.verticies); return store.state.topologyModule.verticies })
+const verticies = computed<Nodes>(() => store.state.topologyModule.verticies)
 const edges = computed<Edges>(() => store.state.topologyModule.edges)
 const layout = computed<Layouts>(() => store.getters['topologyModule/getLayout'])
 
@@ -81,9 +92,16 @@ const tooltipPos = computed(() => {
 })
 
 const eventHandlers: EventHandlers = {
+  // on right clicking background
+  'view:contextmenu': ({ event }: ViewEvent<any>) => {
+    event.preventDefault()
+    contextMenuType.value = ContextMenuType.background
+    showContextMenu.value = true
+  },
   // on right clicking node
   'node:contextmenu': ({ node, event }: NodeEvent<any>) => {
     event.preventDefault()
+    contextMenuType.value = ContextMenuType.node
     contextNodeId.value = node
     menuXPos.value = event.layerX
     menuYPos.value = event.layerY
