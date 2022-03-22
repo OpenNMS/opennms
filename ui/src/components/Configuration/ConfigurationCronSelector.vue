@@ -55,7 +55,7 @@
                     @update:modelValue="(val: string) => updateFormValue('advancedCrontab', val)"
                 >Advanced (Cron) Schedule</FeatherCheckbox>
             </div>
-            <div v-if="props.config.occurance.name" class="pull-up">{{ scheduledTime + (scheduledTime ? '.' : '') }}</div>
+            <div v-if="props.config.occurance.name" class="pull-up">{{ scheduledTime }}</div>
         </div>
         <div v-if="props.config.advancedCrontab">
             <a target="_blank" class="link" href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html">Quartz Scheduler Documentation</a>
