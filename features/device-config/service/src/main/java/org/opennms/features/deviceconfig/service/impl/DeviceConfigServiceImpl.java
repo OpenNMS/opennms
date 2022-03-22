@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -129,7 +130,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .flatMap(svc -> pollerConfig.findService(InetAddressUtils.str(svc.getIpAddress()), svc.getServiceName()).stream())
 
                 // Filter for the device config monitor
-                .filter(match -> pollerConfig.getServiceMonitor(match.service.getName()).getClass().getCanonicalName()
+                .filter(match -> Objects.nonNull(pollerConfig.getServiceMonitor(match.service.getName())))
+                .filter( serviceMonitor -> serviceMonitor.getClass().getCanonicalName()
                         .equals(DEVICE_CONFIG_SERVICE_CLASS_NAME))
 
                 // Resolve the parameters
