@@ -9,10 +9,8 @@
 </template>
 
 <script setup lang="ts">
-import { SearchResultResponse } from '@/types'
-import { toRefs, computed } from 'vue'
+import { Node, SearchResultResponse } from '@/types'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
 
 const store = useStore()
 const router = useRouter()
@@ -36,32 +34,37 @@ const props = defineProps({
   }
 })
 
+watchEffect(() => store.dispatch('nodesModule/getNodeById', props.nodeId))
+
 const { x, y } = toRefs(props)
 const compX = computed(() => x.value + 'px')
 const compY = computed(() => y.value + 'px')
+const node = computed<Node>(() => store.state.nodesModule.node)
 
 const nodeIsFocused = computed(() => store.state.topologyModule.focusedNodeIds.includes(props.nodeId))
 
 const addContextNodeToFocus = async () => {
-  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', props.nodeId)
-  if (results) {
-    store.dispatch('topologyModule/addFocusedSearchBarNode', results[0].results[0])
-    store.dispatch('topologyModule/addContextNodeToFocus', props.nodeId)
-  }
+  if (!node.value.label) return
+  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', node.value.label)
+
+  store.dispatch('topologyModule/addFocusedSearchBarNode', results[0].results[0])
+  store.dispatch('topologyModule/addContextNodeToFocus', props.nodeId)
   props.closeContextMenu()
 }
 
 const removeContextNodeFromFocus = async () => {
-  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', props.nodeId)
-  if (results) {
-    store.dispatch('topologyModule/removeFocusedSearchBarNode', results[0].results[0])
-    store.dispatch('topologyModule/removeContextNodeFromFocus', props.nodeId)
-  }
+  if (!node.value.label) return
+  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', node.value.label)
+
+  store.dispatch('topologyModule/removeFocusedSearchBarNode', results[0].results[0])
+  store.dispatch('topologyModule/removeContextNodeFromFocus', props.nodeId)
   props.closeContextMenu()
 }
 
 const setContextNodeAsFocus = async () => {
-  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', props.nodeId)
+  if (!node.value.label) return
+  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', node.value.label)
+
   if (results) {
     store.dispatch('topologyModule/setFocusedSearchBarNodes', [results[0].results[0]])
     store.dispatch('topologyModule/addFocusedNodeIds', [props.nodeId])
@@ -76,7 +79,9 @@ const openNodeInfoPage = () => {
 }
 
 const openNodeResourcePage = async () => {
-  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', props.nodeId)
+  if (!node.value.label) return
+  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', node.value.label)
+
   if (results) {
     const route = router.resolve(`/resource-graphs/${results[0].results[0].identifier}`)
     window.open(route.href, '_blank')

@@ -49,8 +49,6 @@ const eventHandlers: EventHandlers = {
     menuXPos.value = event.layerX
     menuYPos.value = event.layerY
     showContextMenu.value = true
-    console.log(event)
-    console.log(node)
   }
 }
 
