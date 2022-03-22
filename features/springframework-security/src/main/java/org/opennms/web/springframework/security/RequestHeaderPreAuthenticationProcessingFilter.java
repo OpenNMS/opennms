@@ -84,18 +84,20 @@ public class RequestHeaderPreAuthenticationProcessingFilter extends AbstractPreA
         public WebAuthenticationDetails buildDetails(HttpServletRequest context) {
             return new PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails(context, getGrantedAuthorities(context));
         }
+    }
 
-        private Collection<? extends GrantedAuthority> getGrantedAuthorities(HttpServletRequest context) {
-            String roles = "";
-            if (m_authoritiesHeader != null) {
-                roles = context.getHeader(m_authoritiesHeader);
-            }
-            if (StringUtils.isBlank(roles)) {
-                return Collections.emptyList();
-            }
-            return Arrays.stream(roles.split(","))
-                    .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    protected Collection<? extends GrantedAuthority> getGrantedAuthorities(HttpServletRequest context) {
+        String roles = "";
+        if (m_authoritiesHeader != null) {
+            roles = context.getHeader(m_authoritiesHeader);
         }
+        if (StringUtils.isBlank(roles)) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(roles.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
     @Override
