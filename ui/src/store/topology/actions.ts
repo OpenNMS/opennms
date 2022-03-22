@@ -17,7 +17,7 @@ const parseVerticesAndEdges = (resp: VerticesAndEdges, context: VuexContext) => 
   }
 
   for (const vertex of resp.vertices) {
-    vertices[vertex.id] = { name: vertex.label }
+    vertices[vertex.id] = { name: vertex.label, id: vertex.id, tooltip: vertex.tooltipText }
   }
 
   context.commit('SAVE_NODE_EDGES', edges)
