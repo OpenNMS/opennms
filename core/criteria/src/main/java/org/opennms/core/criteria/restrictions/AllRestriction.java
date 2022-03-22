@@ -34,7 +34,7 @@ public class AllRestriction extends VarargsRestrictionRestriction {
         super(RestrictionType.ALL, restrictions);
     }
 
-    public AllRestriction(boolean isMultipleAnd,final Restriction... restrictions) {
+    public AllRestriction(boolean isMultipleAnd, final Restriction... restrictions) {
         super(RestrictionType.MULTIAND, restrictions);
     }
 
