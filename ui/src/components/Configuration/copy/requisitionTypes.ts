@@ -82,10 +82,15 @@ export const requisitionTypeList = [
     id: 5,
     name: RequisitionTypes.HTTPS
   },
-  {
+  /**
+   * Cleanup-work #23 - Remove all Requisition Plugin items from the UI for H30
+   * Remove temporary the Requisition Plugin form the list. It will be put back
+   * once the plugins are ready to real use.
+   */
+  /* {
     id: 6,
     name: RequisitionTypes.RequisitionPlugin
-  },
+  }, */
   {
     id: 1,
     name: RequisitionTypes.VMWare
