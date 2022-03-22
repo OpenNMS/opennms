@@ -85,7 +85,7 @@ export const requisitionTypeList = [
   /**
    * Cleanup-work #23 - Remove all Requisition Plugin items from the UI for H30
    * Remove temporary the Requisition Plugin from the list. It will be put back
-   * once the plugins are ready to real use.
+   * once the plugins are ready for real use.
    */
   /* {
     id: 6,
