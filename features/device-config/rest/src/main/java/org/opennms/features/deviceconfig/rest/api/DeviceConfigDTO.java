@@ -48,7 +48,7 @@ public class DeviceConfigDTO {
     private final String ipAddress;
 
     /** Date backup config data was last stored. */
-    private final Date createdTime;
+    private final Date lastBackupDate;
 
     /** Date of last backup attempt. */
     private final Date lastUpdatedDate;
@@ -121,7 +121,7 @@ public class DeviceConfigDTO {
         this.id = id;
         this.monitoredServiceId = monitoredServiceId;
         this.ipAddress = ipAddress;
-        this.createdTime = createdTime;
+        this.lastBackupDate = createdTime;
         this.lastUpdatedDate = lastUpdated;
         this.lastSucceededDate = lastSucceeded;
         this.lastFailedDate = lastFailed;
@@ -139,7 +139,7 @@ public class DeviceConfigDTO {
 
     public String getIpAddress() { return this.ipAddress; }
 
-    public Date getCreatedTime() { return this.createdTime; }
+    public Date getLastBackupDate() { return this.lastBackupDate; }
 
     public Date getLastUpdatedDate() { return this.lastUpdatedDate; }
 

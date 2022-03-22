@@ -167,7 +167,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             Assert.assertEquals(ipInterfaceIds.get(i).intValue(), dto.getMonitoredServiceId());
             assertThat(expectedConfigTypes.get(i).equalsIgnoreCase(dto.getConfigType()), is(true));
             Assert.assertEquals(Integer.toString(version), dto.getEncoding());
-            Assert.assertEquals(createdTime(version), dto.getCreatedTime().getTime());
+            Assert.assertEquals(createdTime(version), dto.getLastBackupDate().getTime());
             Assert.assertEquals(createdTime(version), dto.getLastUpdatedDate().getTime());
             Assert.assertEquals(createdTime(version), dto.getLastSucceededDate().getTime());
             Assert.assertNull(dto.getLastFailedDate());
@@ -326,7 +326,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             builder.addNode(nodeNames.get(i)).setForeignSource("imported:").setForeignId(foreignIds.get(i)).setType(OnmsNode.NodeType.ACTIVE);
             builder.addInterface(ipAddresses.get(i)).setIsManaged("M").setIsSnmpPrimary("P");
             builder.addService(addOrGetServiceType(serviceNames.get(i)));
-            builder.setServiceMetaDataEntry("requisition", "schedule", CRON_SCHEDULES.get(i));
+            builder.setServiceMetaDataEntry("requisition", "dcb:schedule", CRON_SCHEDULES.get(i));
             nodeDao.saveOrUpdate(builder.getCurrentNode());
 
             OnmsIpInterface ipInterface = builder.getCurrentNode().getIpInterfaceByIpAddress(ipAddresses.get(i));
@@ -339,7 +339,6 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         });
 
         PollerConfigFactory.getInstance().rebuildPackageIpListMap();
-
         return result;
     }
 

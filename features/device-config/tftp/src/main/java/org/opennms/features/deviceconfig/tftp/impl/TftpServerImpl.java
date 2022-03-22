@@ -86,33 +86,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
         public TFTPTransfer(final TFTPPacket tftpPacket) {
             tftpPacket_ = tftpPacket;
         }
-
-        /*
-         * recursively create subdirectories
-         */
-        private void createDirectory(final File file) throws IOException {
-            final File parent = file.getParentFile();
-            if (parent == null) {
-                throw new IOException("Unexpected error creating requested directory");
-            }
-            if (!parent.exists()) {
-                // recurse...
-                createDirectory(parent);
-            }
-
-            if (!parent.isDirectory()) {
-                throw new IOException(
-                        "Invalid directory path - file in the way of requested folder");
-            }
-            if (file.isDirectory()) {
-                return;
-            }
-            final boolean result = file.mkdir();
-            if (!result) {
-                throw new IOException("Couldn't create requested directory");
-            }
-        }
-
+        
         /*
          * handle a tftp write request.
          */
@@ -467,7 +441,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
      */
     public void launch() throws IOException {
         LOG.info("Starting TFTP Server on port " + port_);
-
+        shutdownServer = false;
         serverTftp_ = new TFTP();
 
         // This is the value used in response to each client.

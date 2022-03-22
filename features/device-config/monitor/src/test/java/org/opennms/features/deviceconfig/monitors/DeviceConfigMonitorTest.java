@@ -52,6 +52,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
+import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -65,7 +66,7 @@ public class DeviceConfigMonitorTest {
         put(DeviceConfigMonitor.SCRIPT, "");
         put(DeviceConfigMonitor.USERNAME, "");
         put(DeviceConfigMonitor.PASSWORD, "");
-        put(DeviceConfigMonitor.TIMEOUT, 1000);
+        put(DeviceConfigMonitor.SSH_TIMEOUT, 1000);
     }};
 
     @BeforeClass
@@ -121,8 +122,8 @@ public class DeviceConfigMonitorTest {
         int hour = schedule.atZone(TimeZone.getDefault().toZoneId()).getHour();
 
         final Map<String, Object> params = new HashMap<>(this.params);
-        params.put(DeviceConfigMonitor.SCHEDULE, "0 " + minute + " " + hour + " * * ?");
-        params.put(DeviceConfigMonitor.TRIGGERED_POLL, "true");
+        params.put(DeviceConfigConstants.SCHEDULE, "0 " + minute + " " + hour + " * * ?");
+        params.put(DeviceConfigConstants.TRIGGERED_POLL, "true");
 
         params.put(DeviceConfigMonitor.LAST_RETRIEVAL, String.valueOf(Instant.now().minus(3, ChronoUnit.MINUTES).toEpochMilli()));
         assertThat(doesItRun(params), is(true));
@@ -135,7 +136,7 @@ public class DeviceConfigMonitorTest {
         int hour = schedule.atZone(TimeZone.getDefault().toZoneId()).getHour();
 
         final Map<String, Object> params = new HashMap<>(this.params);
-        params.put(DeviceConfigMonitor.SCHEDULE, "0 " + minute + " " + hour + " * * ?");
+        params.put(DeviceConfigConstants.SCHEDULE, "0 " + minute + " " + hour + " * * ?");
 
         params.put(DeviceConfigMonitor.LAST_RETRIEVAL, String.valueOf(Instant.now().minus(6, ChronoUnit.MINUTES).toEpochMilli()));
         assertThat(doesItRun(params), is(true));
