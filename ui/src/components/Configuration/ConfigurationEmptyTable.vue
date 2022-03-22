@@ -13,10 +13,7 @@
 </template>
 
 <script lang="ts" setup>
-import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
-
-import Add from '@featherds/icon/action/Add'
 
 /**
  * Props

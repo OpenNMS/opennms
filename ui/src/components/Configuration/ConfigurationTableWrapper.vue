@@ -41,7 +41,6 @@
 import { computed, reactive } from 'vue'
 import { useStore } from 'vuex'
 
-import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 
 import Add from '@featherds/icon/action/Add'
@@ -62,7 +61,6 @@ const store = useStore()
 /**
  * Local State
  */
-const add = computed(() => Add)
 const sidePanelState = reactive({ isActive: false })
 
 const currentPage = reactive({ page: 1 })

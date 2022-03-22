@@ -36,21 +36,20 @@
         </FeatherButton>
       </div>
       <div class="button-wrapper">
-        <FeatherButton @click="addAdvancedOption" primary>Add</FeatherButton>
+        <FeatherButton :disabled="buttonAddDisabled" @click="addAdvancedOption" primary>Add</FeatherButton>
       </div>
     </div>
   </FeatherExpansionPanel>
 </template>
 
 <script setup lang="ts">
-import { reactive, PropType, watch } from 'vue'
+import { reactive, PropType, watch, computed } from 'vue'
 
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import { FeatherInput } from '@featherds/input'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
-import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
 
 import { advancedKeys, dnsKeys, openDaylightKeys, aciKeys, zabbixKeys, prisKeys } from './copy/advancedKeys'
@@ -79,6 +78,19 @@ const props = defineProps({
 const results = reactive({
   list: [[{}]]
 })
+
+/**
+ * Disabled when last item (key.name and value) is null,
+ * hence preventing from adding new item.
+ */
+const buttonAddDisabled = computed(() => {
+  const itemsLength = props.items.length
+
+  if(!itemsLength) return false; // enabled
+
+  const { key, value } = props.items[itemsLength - 1] // last item
+  return !(key.name && value) // disabled
+});
 
 /**
  * Depending on which Type is selected, we have different 
