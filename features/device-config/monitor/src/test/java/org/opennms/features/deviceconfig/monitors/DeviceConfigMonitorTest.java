@@ -31,24 +31,29 @@ package org.opennms.features.deviceconfig.monitors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
-import org.opennms.netmgt.poller.DeviceConfig;
+import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 
@@ -61,7 +66,7 @@ public class DeviceConfigMonitorTest {
         put(DeviceConfigMonitor.SCRIPT, "");
         put(DeviceConfigMonitor.USERNAME, "");
         put(DeviceConfigMonitor.PASSWORD, "");
-        put(DeviceConfigMonitor.TIMEOUT, 1000);
+        put(DeviceConfigMonitor.SSH_TIMEOUT, 1000);
     }};
 
     @BeforeClass
@@ -117,8 +122,8 @@ public class DeviceConfigMonitorTest {
         int hour = schedule.atZone(TimeZone.getDefault().toZoneId()).getHour();
 
         final Map<String, Object> params = new HashMap<>(this.params);
-        params.put(DeviceConfigMonitor.SCHEDULE, "0 " + minute + " " + hour + " * * ?");
-        params.put(DeviceConfigMonitor.TRIGGERED_POLL, "true");
+        params.put(DeviceConfigConstants.SCHEDULE, "0 " + minute + " " + hour + " * * ?");
+        params.put(DeviceConfigConstants.TRIGGERED_POLL, "true");
 
         params.put(DeviceConfigMonitor.LAST_RETRIEVAL, String.valueOf(Instant.now().minus(3, ChronoUnit.MINUTES).toEpochMilli()));
         assertThat(doesItRun(params), is(true));
@@ -131,7 +136,7 @@ public class DeviceConfigMonitorTest {
         int hour = schedule.atZone(TimeZone.getDefault().toZoneId()).getHour();
 
         final Map<String, Object> params = new HashMap<>(this.params);
-        params.put(DeviceConfigMonitor.SCHEDULE, "0 " + minute + " " + hour + " * * ?");
+        params.put(DeviceConfigConstants.SCHEDULE, "0 " + minute + " " + hour + " * * ?");
 
         params.put(DeviceConfigMonitor.LAST_RETRIEVAL, String.valueOf(Instant.now().minus(6, ChronoUnit.MINUTES).toEpochMilli()));
         assertThat(doesItRun(params), is(true));
@@ -166,6 +171,28 @@ public class DeviceConfigMonitorTest {
         var pollStatus = deviceConfigMonitor.poll(svc, params);
 
         assertThat(pollStatus.getStatusCode(), is(PollStatus.SERVICE_UNAVAILABLE));
+    }
+
+    @Test
+    public void testParsingScriptFile() {
+        DeviceConfigDao deviceConfigDao = mock(DeviceConfigDao.class);
+        IpInterfaceDao ipInterfaceDao = mock(IpInterfaceDao.class);
+        MonitoredService monitoredService = mock(MonitoredService.class);
+        when(deviceConfigDao.getLatestConfigForInterface(Mockito.any(), Mockito.anyString())).thenReturn(Optional.empty());
+        when(ipInterfaceDao.findByNodeIdAndIpAddress(Mockito.anyInt(), Mockito.anyString())).thenReturn(null);
+        String testResourcePath = Paths.get("src","test","resources").toFile().getAbsolutePath();
+        System.setProperty("opennms.home",  testResourcePath);
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("script-file", "test-script.conf");
+
+        var deviceConfigMonitor = new DeviceConfigMonitor();
+        deviceConfigMonitor.setDeviceConfigDao(deviceConfigDao);
+        deviceConfigMonitor.setIpInterfaceDao(ipInterfaceDao);
+        Map<String, Object> params = deviceConfigMonitor.getRuntimeAttributes(monitoredService, parameters);
+        assertFalse(params.isEmpty());
+        String script = (String)params.get("script");
+        String[] scriptArray = script.split("\\\\n|\\n");
+        assertThat(scriptArray.length, is(8));
     }
 
 }

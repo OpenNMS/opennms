@@ -28,25 +28,10 @@
 
 package org.opennms.features.deviceconfig.service;
 
+public interface DeviceConfigConstants {
 
-import com.google.common.base.Strings;
-import com.google.common.io.ByteStreams;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.zip.GZIPInputStream;
-
-public class DeviceConfigUtil {
-    
-
-    public static byte[] decompressGzipToBytes(byte[] source) throws IOException {
-        try (GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(source))) {
-            return ByteStreams.toByteArray(gis);
-        }
-    }
-
-    public static boolean isGzipFile(String fileName) {
-        return !Strings.isNullOrEmpty(fileName) && fileName.endsWith(".gz");
-    }
-
+    String TRIGGERED_POLL = "dcbTriggeredPoll";
+    String CONFIG_TYPE = "config-type";
+    String SCHEDULE = "schedule";
+    String DEFAULT_CRON_SCHEDULE = "0 0 0 * * ?";
 }

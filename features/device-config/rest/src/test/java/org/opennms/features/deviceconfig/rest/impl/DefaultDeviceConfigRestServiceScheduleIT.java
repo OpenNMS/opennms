@@ -195,7 +195,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 assertThat(dto.getMonitoredServiceId(), equalTo(ipInterfaceIds.get(i)));
                 assertThat(CONFIG_TYPES.get(i).equalsIgnoreCase(dto.getConfigType()), is(true));
                 assertThat(dto.getEncoding(), equalTo(DefaultDeviceConfigRestService.DEFAULT_ENCODING));
-                assertThat(dto.getCreatedTime().getTime(), equalTo(dates.get(i).getTime()));
+                assertThat(dto.getLastBackupDate().getTime(), equalTo(dates.get(i).getTime()));
                 assertThat(dto.getLastUpdatedDate().getTime(), equalTo(dates.get(i).getTime()));
                 assertThat(dto.getLastSucceededDate().getTime(), equalTo(dates.get(i).getTime()));
                 assertThat(dto.getLastFailedDate(), nullValue());
@@ -442,7 +442,6 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         });
 
         PollerConfigFactory.getInstance().rebuildPackageIpListMap();
-
         return result;
     }
 

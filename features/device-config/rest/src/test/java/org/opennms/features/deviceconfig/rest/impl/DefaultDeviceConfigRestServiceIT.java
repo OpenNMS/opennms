@@ -173,28 +173,28 @@ public class DefaultDeviceConfigRestServiceIT {
 
     @Test
     @Transactional
-    public void filterOnCreatedTime() {
+    public void filterOnLastBackupDate() {
         for (var itf : interfaces) {
             {
                 var createdAfter = createdTime(5);
                 List<DeviceConfigDTO> configList = getDeviceConfigs(null, null, null, null, null, null, itf.getId(), null, null, null);
                 var res = getDeviceConfigs(null, null, null, null, null, null, itf.getId(), null, createdAfter, null);
                 assertThat(res, hasSize(VERSIONS - 5));
-                assertThat(res, everyItem(hasProperty("createdTime", Matchers.greaterThanOrEqualTo(new Date(createdAfter)))));
+                assertThat(res, everyItem(hasProperty("lastBackupDate", Matchers.greaterThanOrEqualTo(new Date(createdAfter)))));
             }
             {
                 var createdBefore = createdTime(5);
                 var res = getDeviceConfigs(null, null, null, null, null, null, itf.getId(), null, null, createdBefore);
                 assertThat(res, hasSize(6));
-                assertThat(res, everyItem(hasProperty("createdTime", Matchers.lessThanOrEqualTo(new Date(createdBefore)))));
+                assertThat(res, everyItem(hasProperty("lastBackupDate", Matchers.lessThanOrEqualTo(new Date(createdBefore)))));
             }
             {
                 var createdAfter = createdTime(5);
                 var createdBefore = createdTime(10);
                 var res = getDeviceConfigs(null, null, null, null, null, null, itf.getId(), null, createdAfter, createdBefore);
                 assertThat(res, hasSize(6));
-                assertThat(res, everyItem(hasProperty("createdTime", Matchers.greaterThanOrEqualTo(new Date(createdAfter)))));
-                assertThat(res, everyItem(hasProperty("createdTime", Matchers.lessThanOrEqualTo(new Date(createdBefore)))));
+                assertThat(res, everyItem(hasProperty("lastBackupDate", Matchers.greaterThanOrEqualTo(new Date(createdAfter)))));
+                assertThat(res, everyItem(hasProperty("lastBackupDate", Matchers.lessThanOrEqualTo(new Date(createdBefore)))));
             }
         }
     }

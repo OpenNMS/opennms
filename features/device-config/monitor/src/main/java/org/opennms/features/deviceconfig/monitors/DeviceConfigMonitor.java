@@ -30,19 +30,23 @@ package org.opennms.features.deviceconfig.monitors;
 
 import static java.util.stream.Collectors.toMap;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -59,16 +63,13 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
     public static final String SCRIPT = "script";
     public static final String USERNAME = "username";
-    public static final String PORT = "port";
-    public static final String TIMEOUT = "timeout";
+    public static final String SSH_PORT = "ssh-port";
+    public static final String SSH_TIMEOUT = "ssh-timeout";
     public static final String PASSWORD = "password";
-    public static final String SCHEDULE = "schedule";
-    public static final String DEFAULT_CRON_SCHEDULE = "0 0 0 * * ?";
     public static final String LAST_RETRIEVAL = "lastRetrieval";
-    public static final String CONFIG_TYPE = "config-type";
+    public static final String SCRIPT_FILE = "script-file";
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitor.class);
-    public static final String TRIGGERED_POLL = "dcbTriggeredPoll";
     private Retriever retriever;
     private static final Duration DEFAULT_DURATION = Duration.ofMinutes(1); // 60sec
     private static final int DEFAULT_SSH_PORT = 22;
@@ -88,13 +89,31 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
         final Map<String, Object> params = new HashMap<>();
         final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
-        final Optional<org.opennms.features.deviceconfig.persistence.api.DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
-
-        if (deviceConfigOptional.isPresent()) {
-            params.put(LAST_RETRIEVAL, String.valueOf(deviceConfigOptional.get().getLastUpdated().getTime()));
+        
+        final var deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
+        deviceConfigOptional.ifPresent(deviceConfig -> params.put(LAST_RETRIEVAL, String.valueOf(deviceConfig.getLastUpdated().getTime())));
+        
+        final String scriptFile = getKeyedString(parameters, SCRIPT_FILE, null);
+        try {
+            if (scriptFile != null) {
+                String script = parseScriptFile(scriptFile);
+                params.put(SCRIPT, script);
+            }
+        } catch (Exception e) {
+            LOG.error("Error while parsing script file {}", scriptFile, e);
+            throw new RuntimeException(e);
         }
-
         return params;
+    }
+
+    private static String parseScriptFile(String fileName) throws IOException {
+        String opennmsHome = ConfigFileConstants.getHome();
+        Path script = Paths.get(opennmsHome, "etc", "device-config", fileName);
+        if (script.toFile().exists()) {
+            return Files.readString(script);
+        } else {
+            throw new FileNotFoundException("Couldn't find file " + fileName + " in etc/device-config folder");
+        }
     }
 
     @Override
@@ -103,10 +122,10 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
             retriever = BeanUtils.getBean("daoContext", "deviceConfigRetriever", Retriever.class);
         }
 
-        boolean triggeredPoll = Boolean.parseBoolean(getKeyedString(parameters, TRIGGERED_POLL, "false"));
+        boolean triggeredPoll = Boolean.parseBoolean(getKeyedString(parameters, DeviceConfigConstants.TRIGGERED_POLL, "false"));
 
         final Date lastRun = new Date(getKeyedLong(parameters, LAST_RETRIEVAL, 0L));
-        final String cronSchedule = getKeyedString(parameters, SCHEDULE, DEFAULT_CRON_SCHEDULE);
+        final String cronSchedule = getKeyedString(parameters, DeviceConfigConstants.SCHEDULE, DeviceConfigConstants.DEFAULT_CRON_SCHEDULE);
         final Date nextRun = getNextRunDate(cronSchedule, lastRun);
 
         if (!triggeredPoll && !nextRun.before(new Date())) {
@@ -116,9 +135,9 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         String script = getObjectAsStringFromParams(parameters, SCRIPT);
         String user = getObjectAsStringFromParams(parameters, USERNAME);
         String password = getObjectAsStringFromParams(parameters, PASSWORD);
-        Integer port = getKeyedInteger(parameters, PORT, DEFAULT_SSH_PORT);
-        String configType = getKeyedString(parameters, CONFIG_TYPE, ConfigType.Default);
-        Long timeout = getKeyedLong(parameters, TIMEOUT, DEFAULT_DURATION.toMillis());
+        Integer port = getKeyedInteger(parameters, SSH_PORT, DEFAULT_SSH_PORT);
+        String configType = getKeyedString(parameters, DeviceConfigConstants.CONFIG_TYPE, ConfigType.Default);
+        Long timeout = getKeyedLong(parameters, SSH_TIMEOUT, DEFAULT_DURATION.toMillis());
         var host = svc.getIpAddr();
         var stringParameters = parameters.entrySet().stream().collect(toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue())));
         var future = retriever.retrieveConfig(
@@ -161,6 +180,14 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
     public void setRetriever(Retriever retriever) {
         this.retriever = retriever;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        this.ipInterfaceDao = ipInterfaceDao;
+    }
+
+    public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
+        this.deviceConfigDao = deviceConfigDao;
     }
 
     private Date getNextRunDate(String cronSchedule, Date lastRun) {

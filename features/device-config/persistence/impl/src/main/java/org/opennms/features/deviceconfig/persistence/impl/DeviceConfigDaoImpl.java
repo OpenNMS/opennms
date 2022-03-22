@@ -84,10 +84,10 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         // Config retrieval succeeded
         if (lastDeviceConfig != null &&
             // Config didn't change, just update last updated field.
-            Arrays.equals(lastDeviceConfig.getConfig(), deviceConfigBytes) &&
-            Objects.equals(lastDeviceConfig.getFileName(), fileName)) {
+            Arrays.equals(lastDeviceConfig.getConfig(), deviceConfigBytes)) {
             lastDeviceConfig.setLastUpdated(currentTime);
             lastDeviceConfig.setLastSucceeded(currentTime);
+            lastDeviceConfig.setFileName(fileName);
             saveOrUpdate(lastDeviceConfig);
             LOG.debug("Device config did not change - ipInterface: {}; service: {}; type: {}", ipInterface, serviceName, configType);
         } else if (lastDeviceConfig != null
@@ -98,6 +98,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             lastDeviceConfig.setCreatedTime(currentTime);
             lastDeviceConfig.setLastUpdated(currentTime);
             lastDeviceConfig.setLastSucceeded(currentTime);
+            lastDeviceConfig.setFailureReason(null);
             saveOrUpdate(lastDeviceConfig);
             LOG.info("Persisted device config - ipInterface: {}; service: {}; type: {}", ipInterface, serviceName, configType);
         } else {
