@@ -326,7 +326,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             builder.addNode(nodeNames.get(i)).setForeignSource("imported:").setForeignId(foreignIds.get(i)).setType(OnmsNode.NodeType.ACTIVE);
             builder.addInterface(ipAddresses.get(i)).setIsManaged("M").setIsSnmpPrimary("P");
             builder.addService(addOrGetServiceType(serviceNames.get(i)));
-            builder.setServiceMetaDataEntry("requisition", "dcb:schedule", CRON_SCHEDULES.get(i));
+            builder.setServiceMetaDataEntry("requisition", "schedule", CRON_SCHEDULES.get(i));
             nodeDao.saveOrUpdate(builder.getCurrentNode());
 
             OnmsIpInterface ipInterface = builder.getCurrentNode().getIpInterfaceByIpAddress(ipAddresses.get(i));

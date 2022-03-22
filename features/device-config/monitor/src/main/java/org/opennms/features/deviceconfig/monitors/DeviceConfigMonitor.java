@@ -67,7 +67,6 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     public static final String SSH_TIMEOUT = "ssh-timeout";
     public static final String PASSWORD = "password";
     public static final String LAST_RETRIEVAL = "lastRetrieval";
-
     public static final String SCRIPT_FILE = "script-file";
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitor.class);
