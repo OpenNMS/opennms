@@ -30,19 +30,22 @@ package org.opennms.features.deviceconfig.monitors;
 
 import static java.util.stream.Collectors.toMap;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -66,6 +69,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     public static final String DEFAULT_CRON_SCHEDULE = "0 0 0 * * ?";
     public static final String LAST_RETRIEVAL = "lastRetrieval";
     public static final String CONFIG_TYPE = "config-type";
+    public static final String SCRIPT_FILE = "script-file";
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitor.class);
     public static final String TRIGGERED_POLL = "dcbTriggeredPoll";
@@ -88,13 +92,31 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
         final Map<String, Object> params = new HashMap<>();
         final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
-        final Optional<org.opennms.features.deviceconfig.persistence.api.DeviceConfig> deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
-
-        if (deviceConfigOptional.isPresent()) {
-            params.put(LAST_RETRIEVAL, String.valueOf(deviceConfigOptional.get().getLastUpdated().getTime()));
+        
+        final var deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
+        deviceConfigOptional.ifPresent(deviceConfig -> params.put(LAST_RETRIEVAL, String.valueOf(deviceConfig.getLastUpdated().getTime())));
+        
+        final String scriptFile = getKeyedString(parameters, SCRIPT_FILE, null);
+        try {
+            if (scriptFile != null) {
+                String script = parseScriptFile(scriptFile);
+                params.put(SCRIPT, script);
+            }
+        } catch (Exception e) {
+            LOG.error("Error while parsing script file {}", scriptFile, e);
+            throw new RuntimeException(e);
         }
-
         return params;
+    }
+
+    private static String parseScriptFile(String fileName) throws IOException {
+        String opennmsHome = ConfigFileConstants.getHome();
+        Path script = Paths.get(opennmsHome, "etc", "device-config", fileName);
+        if (script.toFile().exists()) {
+            return Files.readString(script);
+        } else {
+            throw new FileNotFoundException("Couldn't find file " + fileName + " in etc/device-config folder");
+        }
     }
 
     @Override
@@ -161,6 +183,14 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
     public void setRetriever(Retriever retriever) {
         this.retriever = retriever;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        this.ipInterfaceDao = ipInterfaceDao;
+    }
+
+    public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
+        this.deviceConfigDao = deviceConfigDao;
     }
 
     private Date getNextRunDate(String cronSchedule, Date lastRun) {

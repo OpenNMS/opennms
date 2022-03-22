@@ -361,8 +361,8 @@
          <parameter key="port" value="${requisition:dcb:port|22}"/>
          <parameter key="timeout" value="${requisition:timeout|60000}"/>
          <!-- schedule is a cron expression -->
-         <parameter key="schedule" value="${requisition:dcb:schedule|0 0 0 * * ?}"/>
-         <parameter key="script" value="${requisition:dcb:script}"/>
+         <parameter key="schedule" value="${requisition:schedule|0 0 0 * * ?}"/>
+         <parameter key="script-file" value="${requisition:script-file|assets:operating-system|node:os|default}.dcb"/>
       </service>
       <downtime begin="0" interval="300000"/><!-- 300s -->
    </package>

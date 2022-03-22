@@ -78,39 +78,34 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         String encoding = !Strings.isNullOrEmpty(encodingAttribute) ? encodingAttribute : Charset.defaultCharset().name();
         String configType = !Strings.isNullOrEmpty(configTypeAttribute) ? configTypeAttribute : ConfigType.Default;
 
-        // unknown means that retrieval was skipped, so nothing to persist
-        if (!status.isUnknown()) {
-            if (deviceConfig.getContent() == null) {
-                // Config retrieval failed
-                deviceConfigDao.updateDeviceConfigFailure(
-                        ipInterface,
-                        svc.getSvcName(),
-                        configType,
-                        encoding,
-                        status.getReason()
-                );
-                sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_FAILED_UEI);
-            } else {
-                // Config retrieval succeeded
-                // De-compress if content is compressed.
-                byte[] content = deviceConfig.getContent();
-                if (DeviceConfigUtil.isGzipFile(deviceConfig.getFilename())) {
-                    try {
-                        content = DeviceConfigUtil.decompressGzipToBytes(content);
-                    } catch (IOException e) {
-                        LOG.warn("Failed to decompress content from file {}", deviceConfig.getFilename());
-                    }
+        if (deviceConfig.getContent() == null) {
+            // Config retrieval failed
+            deviceConfigDao.updateDeviceConfigFailure(
+                    ipInterface,
+                    svc.getSvcName(),
+                    configType,
+                    encoding,
+                    status.getReason());
+            sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_FAILED_UEI);
+        } else {
+            // Config retrieval succeeded
+            // De-compress if content is compressed.
+            byte[] content = deviceConfig.getContent();
+            if (DeviceConfigUtil.isGzipFile(deviceConfig.getFilename())) {
+                try {
+                    content = DeviceConfigUtil.decompressGzipToBytes(content);
+                } catch (IOException e) {
+                    LOG.warn("Failed to decompress content from file {}", deviceConfig.getFilename());
                 }
-                deviceConfigDao.updateDeviceConfigContent(
-                        ipInterface,
-                        svc.getSvcName(),
-                        configType,
-                        encoding,
-                        content,
-                        deviceConfig.getFilename()
-                );
-                sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI);
             }
+            deviceConfigDao.updateDeviceConfigContent(
+                    ipInterface,
+                    svc.getSvcName(),
+                    configType,
+                    encoding,
+                    content,
+                    deviceConfig.getFilename());
+            sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI);
         }
 
         return status;
