@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao.hibernate;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -269,36 +270,41 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     @Override
     public List<T> findMatching(final org.opennms.core.criteria.Criteria criteria) {
         if(criteria.isMultipleAnd()){
-            List<T> allRecords = new ArrayList<>();
-            Set<T> allUniqueRecords = new LinkedHashSet<>();
-            Collection<Restriction> allRestrictions = criteria.getRestrictions();
-            //set of multiand restrictions
-            Set<Restriction> multiAndRestirctionSet = allRestrictions.stream().filter(
-                    restriction -> restriction.getType().equals(Restriction.RestrictionType.MULTIAND)).collect(Collectors.toSet());
-            //set of non multiand restrictions
-            Set<Restriction>   nonMultiAndRestirctionSet =  Sets.difference(new HashSet<Restriction>(allRestrictions),multiAndRestirctionSet);
-            //iterating multiand and setting nonmultiand + single multiand restriction in criteria,
-            // retrieve result set, create intersection of each query executed
-            multiAndRestirctionSet.stream().forEach(restriction ->{
-                Collection<Restriction> allMultiAndRestrictions = ((AllRestriction) restriction).getRestrictions();
-                allMultiAndRestrictions.stream().forEach(singleMultiAndRestriction ->{
-                    criteria.setRestrictions(nonMultiAndRestirctionSet);
-                    criteria.addRestriction(singleMultiAndRestriction);
-                    final HibernateCallback<List<T>> callback = buildHibernateCallback(criteria);
-                    if(allUniqueRecords.isEmpty()) {
-                        allUniqueRecords.addAll(getHibernateTemplate().execute(callback));
-                    } else {
-                        allUniqueRecords.addAll(Sets.intersection(allUniqueRecords,
-                                Collections.singleton(new LinkedHashSet<T>(getHibernateTemplate().execute(callback)))));
-                    }
-                });
-            });
-            allRecords.addAll(allUniqueRecords);
-            return allRecords;
+            return findMultiAndMatching(criteria);
         } else {
             final HibernateCallback<List<T>> callback = buildHibernateCallback(criteria);
             return getHibernateTemplate().execute(callback);
         }
+    }
+
+    private List<T> findMultiAndMatching(final org.opennms.core.criteria.Criteria criteria){
+        Set<T> allUniqueRecords = new LinkedHashSet<>();
+        Collection<Restriction> allRestrictions = criteria.getRestrictions();
+
+        //set of multiand restrictions
+        Set<Restriction> multiAndRestirctionSet = allRestrictions.stream().filter(
+                restriction -> restriction.getType().equals(Restriction.RestrictionType.MULTIAND)).collect(Collectors.toSet());
+
+        //set of non multiand restrictions
+        Set<Restriction>   nonMultiAndRestirctionSet =  Sets.difference(new HashSet<Restriction>(allRestrictions),multiAndRestirctionSet);
+
+        //iterating multiand and setting nonmultiand + single multiand restriction in criteria,
+        // retrieve result set, create intersection of each query executed
+        multiAndRestirctionSet.stream().forEach(restriction ->{
+            Collection<Restriction> allMultiAndRestrictions = ((AllRestriction) restriction).getRestrictions();
+            allMultiAndRestrictions.stream().forEach(singleMultiAndRestriction ->{
+                criteria.setRestrictions(nonMultiAndRestirctionSet);
+                criteria.addRestriction(singleMultiAndRestriction);
+                final HibernateCallback<List<T>> callback = buildHibernateCallback(criteria);
+                if(allUniqueRecords.isEmpty()) {
+                    allUniqueRecords.addAll(getHibernateTemplate().execute(callback));
+                } else {
+                    allUniqueRecords.addAll(Sets.intersection(allUniqueRecords,
+                            Collections.singleton(new LinkedHashSet<T>(getHibernateTemplate().execute(callback)))));
+                }
+            });
+        });
+        return (List<T>) Arrays.asList(allUniqueRecords.toArray());
     }
 
     protected <T> HibernateCallback<List<T>> buildHibernateCallback(org.opennms.core.criteria.Criteria criteria) {
