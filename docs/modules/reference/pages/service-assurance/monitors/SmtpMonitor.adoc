@@ -47,10 +47,6 @@ QUIT
 | retry
 | Number of attempts to find the service available.
 | 0
-
-| timeout
-| Timeout in milliseconds for the underlying socket's connect and read operations.
-| 3000
 |===
 
 == Examples
