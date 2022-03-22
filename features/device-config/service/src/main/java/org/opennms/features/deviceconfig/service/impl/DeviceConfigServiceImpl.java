@@ -35,7 +35,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -54,6 +53,7 @@ import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollerResponse;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 import org.slf4j.Logger;
@@ -130,9 +130,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .flatMap(svc -> pollerConfig.findService(InetAddressUtils.str(svc.getIpAddress()), svc.getServiceName()).stream())
 
                 // Filter for the device config monitor
-                .filter(match -> Objects.nonNull(pollerConfig.getServiceMonitor(match.service.getName())))
-                .filter( serviceMonitor -> serviceMonitor.getClass().getCanonicalName()
-                        .equals(DEVICE_CONFIG_SERVICE_CLASS_NAME))
+                .filter(match -> {
+                    ServiceMonitor serviceMonitor = pollerConfig.getServiceMonitor(match.service.getName());
+                    if (serviceMonitor != null) {
+                        return serviceMonitor.getClass().getCanonicalName().equals(DEVICE_CONFIG_SERVICE_CLASS_NAME);
+                    }
+                    return false;
+                })
 
                 // Resolve the parameters
                 .map(match -> {
