@@ -6,7 +6,7 @@ ARG BASE_IMAGE_VERSION="11.0.14.0.9-b8239"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as sentinel-base
 
-ARG REQUIRED_RPMS="wget gettext openssh-clients"
+ARG REQUIRED_RPMS="hostname wget gettext openssh-clients"
 
 ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
 ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
