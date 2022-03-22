@@ -207,7 +207,7 @@ public class DefaultDeviceConfigRestServiceIT {
             assertThat(res, hasSize(VERSIONS));
 
             assertThat(
-                res.stream().map(DeviceConfigDTO::getCreatedTime).map(Date::getTime).collect(toList()),
+                res.stream().map(DeviceConfigDTO::getLastBackupDate).map(Date::getTime).collect(toList()),
                 contains(IntStream.range(0, VERSIONS).map(i -> VERSIONS - i - 1).boxed().map(DefaultDeviceConfigRestServiceIT::createdTime).toArray()));
         }
     }
@@ -220,7 +220,7 @@ public class DefaultDeviceConfigRestServiceIT {
             assertThat(res, hasSize(VERSIONS));
 
             assertThat(
-                res.stream().map(DeviceConfigDTO::getCreatedTime).map(Date::getTime).collect(toList()),
+                res.stream().map(DeviceConfigDTO::getLastBackupDate).map(Date::getTime).collect(toList()),
                 contains(IntStream.range(0, VERSIONS).boxed().map(DefaultDeviceConfigRestServiceIT::createdTime).toArray()));
         }
     }
@@ -235,7 +235,7 @@ public class DefaultDeviceConfigRestServiceIT {
                 assertThat(res, hasSize(limit));
 
                 assertThat(
-                    res.stream().map(DeviceConfigDTO::getCreatedTime).map(Date::getTime).collect(toList()),
+                    res.stream().map(DeviceConfigDTO::getLastBackupDate).map(Date::getTime).collect(toList()),
                     contains(IntStream.range(0, limit).boxed().map(DefaultDeviceConfigRestServiceIT::createdTime).toArray()));
             }
             {
@@ -245,7 +245,7 @@ public class DefaultDeviceConfigRestServiceIT {
                 assertThat(res, hasSize(limit));
 
                 assertThat(
-                    res.stream().map(DeviceConfigDTO::getCreatedTime).map(Date::getTime).collect(toList()),
+                    res.stream().map(DeviceConfigDTO::getLastBackupDate).map(Date::getTime).collect(toList()),
                     contains(IntStream.range(offset, offset + limit).boxed().map(DefaultDeviceConfigRestServiceIT::createdTime).toArray()));
             }
         }
