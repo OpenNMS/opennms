@@ -42,15 +42,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.regex.Pattern;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.base.Strings;
 import net.redhogs.cronparser.CronExpressionDescriptor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
@@ -74,6 +76,7 @@ import com.google.common.collect.Maps;
 public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDeviceConfigRestService.class);
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
+    public static final String BINARY_ENCODING = "binary";
 
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
         "lastupdated", "lastUpdated",
@@ -361,8 +364,9 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private DeviceConfigDTO createDeviceConfigDto(DeviceConfig deviceConfig) {
         Date currentDate = new Date();
 
-        Charset charset = getEncodingCharset(deviceConfig.getEncoding());
-        String config = deviceConfig.getConfig() != null ? new String(deviceConfig.getConfig(), charset) : "";
+        Pair<String,String> pair = configToText(deviceConfig.getEncoding(), deviceConfig.getConfig());
+        String encoding = pair.getLeft();
+        String config = pair.getRight();
 
         var dto = new DeviceConfigDTO(
             deviceConfig.getId(),
@@ -372,7 +376,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             deviceConfig.getLastUpdated(),
             deviceConfig.getLastSucceeded(),
             deviceConfig.getLastFailed(),
-            charset.name(),
+            encoding,
             deviceConfig.getConfigType(),
             deviceConfig.getFileName(),
             config,
@@ -419,6 +423,29 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             .build();
 
         return trigger.getFireTimeAfter(lastRun);
+    }
+
+    /**
+     * Given an encoding and byte array from a {@link DeviceConfig } object, determine the proper encoding
+     * and convert the config to a text representation. Handles various text encodings as well as
+     * binary encoding.
+     * @param encoding
+     * @param configBytes
+     * @return a {@link org.apache.commons.lang3.tuple.Pair} object with the actual encoding used
+     * and the text representation of the config.
+     */
+    private static Pair<String,String> configToText(String encoding, byte[] configBytes) {
+        boolean isBinaryEncoding = !Strings.isNullOrEmpty(encoding) && encoding.equals(BINARY_ENCODING);
+
+        if (isBinaryEncoding) {
+            String config = configBytes != null ? DatatypeConverter.printHexBinary(configBytes) : "";
+            return Pair.of(BINARY_ENCODING, config);
+        } else {
+            Charset charset = getEncodingCharset(encoding);
+            String config = configBytes != null ? new String(configBytes, charset) : "";
+
+            return Pair.of(charset.name(), config);
+        }
     }
 
     private static Charset getEncodingCharset(String encoding) {

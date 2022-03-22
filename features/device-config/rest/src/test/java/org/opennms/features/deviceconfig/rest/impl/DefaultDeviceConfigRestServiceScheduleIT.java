@@ -238,6 +238,39 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
     }
 
     @Test
+    public void testGetDeviceConfigsWithBinaryConfig() {
+        populateDeviceConfigServiceInfo();
+
+        this.sessionUtils.withTransaction(() -> {
+            // Add nodes, interfaces, services
+            List<OnmsIpInterface> ipInterfaces = ipInterfaceDao.findAll();
+            assertThat(ipInterfaces.size(), equalTo(RECORD_COUNT));
+
+            // Add DeviceConfig entries mapped to ipInterfaces and services
+            Date currentDate = new Date();
+            List<Date> dates = getTestDates(currentDate, 3);
+
+            final byte[] configBytes = new byte[] { 0, 1, 2, 3, 11, 25, 127 };
+            final String expectedConfig = "000102030B197F";
+            DeviceConfig dc = createDeviceConfig(ipInterfaces.get(0), CONFIG_TYPES.get(0), dates.get(0), configBytes);
+            dc.setEncoding(DefaultDeviceConfigRestService.BINARY_ENCODING);
+            deviceConfigDao.saveOrUpdate(dc);
+
+            var response = deviceConfigRestService.getDeviceConfig(dc.getId());
+
+            assertThat(response, notNullValue());
+            assertThat(response.hasEntity(), is(true));
+
+            DeviceConfigDTO dto = (DeviceConfigDTO) response.getEntity();
+
+            assertThat(dc.getId(), equalTo(dto.getId()));
+            assertThat(CONFIG_TYPES.get(0).equalsIgnoreCase(dto.getConfigType()), is(true));
+            assertThat(dto.getEncoding(), equalTo(DefaultDeviceConfigRestService.BINARY_ENCODING));
+            assertThat(dto.getConfig(), equalTo(expectedConfig));
+        });
+    }
+
+    @Test
     public void testDownloadNoDeviceConfig() {
         List<String> idParams = new ArrayList<>();
         idParams.add(null);
