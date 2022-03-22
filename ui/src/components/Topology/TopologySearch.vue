@@ -24,7 +24,8 @@ const loading = ref(false)
 const defaultLabels = { noResults: 'Searching...' }
 const labels = ref(defaultLabels)
 
-const selectItem = (items: { url: string }[]) => {
+// add any here to fix feather TS issue
+const selectItem: any = (items: { url: string }[]) => {
   const ids = items.map((item) => item.url.split('=')[1])
   store.dispatch('topologyModule/addFocusedNodeIds', ids)
   store.dispatch('topologyModule/setFocusedSearchBarNodes', items)

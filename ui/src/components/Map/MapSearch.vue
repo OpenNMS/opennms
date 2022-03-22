@@ -25,7 +25,8 @@ const loading = ref(false)
 const defaultLabels = { noResults: 'Searching...' }
 const labels = ref(defaultLabels)
 
-const selectItem = (items: { label: string }[]) => {
+// add any here to fix feather TS issue
+const selectItem: any = (items: { label: string }[]) => {
   const nodeLabels = items.map((item) => item.label)
   store.dispatch('mapModule/setSearchedNodeLabels', nodeLabels)
   if (nodeLabels.length) {

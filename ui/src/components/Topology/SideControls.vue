@@ -13,11 +13,12 @@ import SemanticZoomLevelControl from './SemanticZoomLevelControl.vue'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import RefreshIcon from '@featherds/icon/navigation/Refresh'
+import { PropType } from 'vue'
 
 defineProps({
   refreshGraph: {
     required: true,
-    type: Function
+    type: Function as PropType<(payload: MouseEvent) => void>
   }
 })
 
