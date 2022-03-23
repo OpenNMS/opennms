@@ -2751,10 +2751,10 @@ uvu@^0.5.3:
     kleur "^4.0.3"
     sade "^1.7.3"
 
-v-network-graph@^0.5.3:
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/v-network-graph/-/v-network-graph-0.5.5.tgz#ad28a8ed5b3c6d57541d2a97cf78ec198a448b78"
-  integrity sha512-C5mUBA9oQA6R+bFkFftwTipLgKSBNnuloeNSj8l+NmeWX370lVD+Rd6/NOBBSW5LtS0A08Jpi75Std8Aadw5cQ==
+v-network-graph@^0.5.7:
+  version "0.5.7"
+  resolved "https://registry.yarnpkg.com/v-network-graph/-/v-network-graph-0.5.7.tgz#8628ae71e24d91b50c740d074c690bcc5f3ada0d"
+  integrity sha512-EKpDedYbuHBbwsStN9CFihSv4v2J+k85e/6EAhgoWhOacsPXWi3UAXKMGsesqJERFFM1WixeobjeVB5M/18YZw==
   dependencies:
     "@dash14/svg-pan-zoom" "^3.6.6"
     mitt "^3.0.0"
