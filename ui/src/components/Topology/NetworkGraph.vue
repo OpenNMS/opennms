@@ -12,7 +12,7 @@
       v-if="trigger"
     />
     <!-- Tooltip -->
-    <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos, opacity: tooltipOpacity }">
+    <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos, display: tooltipDisplay }">
       <div v-html="verticies[targetNodeId]?.tooltip ?? ''"></div>
     </div>
   </div>
@@ -24,6 +24,9 @@
     :x="menuXPos"
     :y="menuYPos"
     :nodeId="contextNodeId"
+    :selectedNodeObjects="selectedNodeObjects"
+    :selectedNodes="selectedNodes"
+    :groupClick="groupClick"
     :closeContextMenu="closeContextMenu"
   />
 </template>
@@ -31,7 +34,7 @@
 <script setup lang="ts">
 import 'v-network-graph/lib/style.css'
 import { useStore } from 'vuex'
-import { VNetworkGraph, defineConfigs, Layouts, Edges, Nodes, SimpleLayout, EventHandlers, NodeEvent, Instance, ViewEvent } from 'v-network-graph'
+import { VNetworkGraph, defineConfigs, Layouts, Edges, Nodes, SimpleLayout, EventHandlers, NodeEvent, Instance, ViewEvent, Node } from 'v-network-graph'
 import { ForceLayout, ForceNodeDatum, ForceEdgeDatum } from 'v-network-graph/lib/force-layout'
 import ContextMenu from './ContextMenu.vue'
 import { onClickOutside } from '@vueuse/core'
@@ -52,9 +55,10 @@ defineProps({
 const store = useStore()
 const zoomLevel = ref(1)
 const graph = ref<Instance>()
-const selectedNodes = ref<string[]>([])
+const selectedNodes = ref<string[]>([]) // string ids
+const selectedNodeObjects = ref<Node>([]) // full nodes
 const tooltip = ref<HTMLDivElement>()
-const tooltipOpacity = ref(0) // 0 or 1
+const tooltipDisplay = ref('none')
 const cancelTooltipDebounce = ref(false)
 const targetNodeId = ref('')
 const d3Nodes = ref<d3Node[]>([])
@@ -64,7 +68,7 @@ const contextNodeId = ref()
 const contextMenuType = ref()
 const menuXPos = ref(0)
 const menuYPos = ref(0)
-const NODE_RADIUS = 20
+const groupClick = ref(false)
 
 const getD3NodeCoords = () => d3Nodes.value.filter((d3Node) => d3Node.id === targetNodeId.value).map((d3Node) => ({ x: d3Node.x, y: d3Node.y }))[0]
 const closeContextMenu = () => showContextMenu.value = false
@@ -80,14 +84,14 @@ const tooltipPos = computed(() => {
 
   // attempt to get the node position from the layout. If layout is d3, use the function
   const nodePos = layout.value.nodes ? layout.value.nodes[targetNodeId.value] : getD3NodeCoords()
+  if (!nodePos) return { x: 0, y: 0 }
 
   // translate coordinates: SVG -> DOM
   const domPoint = graph.value.translateFromSvgToDomCoordinates(nodePos)
 
-  // calculates top-left position of the tooltip.
   return {
-    left: domPoint.x - tooltip.value.offsetWidth / 2 + 'px',
-    top: domPoint.y - NODE_RADIUS - tooltip.value.offsetHeight - 10 + 'px',
+    left: domPoint.x - 120 + 'px',
+    top: domPoint.y - 130 + 'px',
   }
 })
 
@@ -96,11 +100,23 @@ const eventHandlers: EventHandlers = {
   'view:contextmenu': ({ event }: ViewEvent<any>) => {
     event.preventDefault()
     contextMenuType.value = ContextMenuType.background
+    menuXPos.value = event.layerX
+    menuYPos.value = event.layerY
     showContextMenu.value = true
   },
   // on right clicking node
   'node:contextmenu': ({ node, event }: NodeEvent<any>) => {
     event.preventDefault()
+
+    // if right clicking on a selected group of nodes
+    if (selectedNodes.value.length > 1 && selectedNodes.value.includes(node)) {
+      groupClick.value = true
+      getNodesFromSelectedIds()
+    } else {
+      groupClick.value = false
+      selectedNodeObjects.value = []
+    }
+
     contextMenuType.value = ContextMenuType.node
     contextNodeId.value = node
     menuXPos.value = event.layerX
@@ -114,16 +130,22 @@ const eventHandlers: EventHandlers = {
 
     const showTooltip = useDebounceFn(() => {
       if (!cancelTooltipDebounce.value) {
-        tooltipOpacity.value = 1 // show
+        tooltipDisplay.value = 'block' // show
       }
-    }, 500)
+    }, 1000)
 
     showTooltip()
   },
   'node:pointerout': () => {
     cancelTooltipDebounce.value = true
-    tooltipOpacity.value = 0 // hide
+    tooltipDisplay.value = 'none' // hide
   }
+}
+
+const getNodesFromSelectedIds = () => {
+  selectedNodeObjects.value = selectedNodes.value.map((nodeId) => {
+    return verticies.value[nodeId]
+  })
 }
 
 const forceLayout = new ForceLayout({
@@ -196,7 +218,7 @@ const configs = reactive(
     @include subtitle1;
     top: 0;
     left: 0;
-    opacity: 0;
+    display: "none";
     position: absolute;
     width: auto;
     min-width: 100px;
@@ -207,7 +229,6 @@ const configs = reactive(
     font-size: 12px;
     background-color: var($surface);
     border: 1px solid var($primary);
-    transition: opacity 0.2s linear;
   }
 }
 </style>
