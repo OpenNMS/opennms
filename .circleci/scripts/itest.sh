@@ -89,11 +89,9 @@ export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
 # Set higher open files limit
 ulimit -n 65536
 
-
 echo "#### Building Assembly Dependencies"
 ./compile.pl install -P'!checkstyle' \
            -Pbuild-bamboo \
-           -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
            -Dmaven.test.skip.exec=true \
            -DskipTests=true \
@@ -107,7 +105,6 @@ echo "#### Building Assembly Dependencies"
 echo "#### Executing tests"
 ./compile.pl install -P'!checkstyle' \
            -Pbuild-bamboo \
-           -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
            -DfailIfNoTests=false \
            -DskipITs=false \
