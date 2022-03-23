@@ -26,20 +26,12 @@ The monitor offers the following functionalities:
 | Description
 | Default
 
-| retry
-| Number of attempts to get a response.
-| 3
-
-| timeout
-| Time in milliseconds to wait for a response.
-| ?
-
 | port
 | Destination port where the JMX requests will be sent.
 | from jmx-config.xml
 
 | factory
- Set this to PASSWORD-CLEAR if credentials are required.
+| Set this to PASSWORD-CLEAR if credentials are required.
 | STANDARD
 
 | protocol
