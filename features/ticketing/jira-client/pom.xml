@@ -123,8 +123,10 @@
     <repositories>
         <repository>
             <id>atlassian-public</id>
-            <name>Atlassian public repo</name>
             <url>https://maven.opennms.org/content/repositories/atlassian-public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 </project>

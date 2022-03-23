@@ -175,7 +175,6 @@ commands:
             command: |
               ./compile.pl -t \
                 -Dbuild.skip.tarball=true \
-                -DupdatePolicy=never \
                 --update-plugins \
                 -Daether.connector.resumeDownloads=false \
                 -Daether.connector.basic.threads=1 \
@@ -342,7 +341,6 @@ commands:
                 ;;
             esac
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
-              -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -1083,7 +1081,6 @@ jobs:
             # general assembly
             date
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
-              -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \

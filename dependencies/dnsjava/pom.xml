@@ -21,20 +21,13 @@
       <version>${dnsjavaVersion}</version>
     </dependency>
   </dependencies>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>central</id>
-      <name>Maven Central</name>
-      <url>https://repo1.maven.org/maven2/</url>
-    </pluginRepository>
-  </pluginRepositories>
   <repositories>
     <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
       <id>sonatype-public-repo</id>
-      <name>Sonatype Public Maven Repository</name>
       <url>https://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
   </repositories>
 </project>
