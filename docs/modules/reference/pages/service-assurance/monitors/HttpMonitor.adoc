@@ -62,9 +62,11 @@ The user and password parameters are ignored when the basic-authentication param
 | port
 | A list of TCP ports to try to connect to.
 | 80,8080,8888
+
 | retry
 | Number of attempts to get a valid HTTP response/response-text.
 | 0
+
 | resolve-ip
 | If the host-name parameter is not set and this parameter is set to true, {page-component-title} uses DNS to resolve the node interface's IP address, and uses the result to set the Host header's value.
 When set to false and the host-name parameter is not set, {page-component-title} tries to use the nodelabel-host-name parameter to set the Host header's value.

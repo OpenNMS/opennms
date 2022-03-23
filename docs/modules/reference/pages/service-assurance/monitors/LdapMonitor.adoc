@@ -51,6 +51,7 @@ The LDAP monitor uses the com.novell.ldap.LDAPConnection class, and supports mos
 | searchfilter
 | The LDAP search's filter.
 | (objectclass=*)
+
 | version
 | The version of the LDAP protocol to use, specified as an integer. +
 Note: Only LDAPv3 is supported.
