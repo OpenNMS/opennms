@@ -134,6 +134,9 @@
         <pluginRepository>
             <id>onejar-maven-plugin.googlecode.com</id>
             <url>https://maven.opennms.org/content/repositories/onejar-maven-plugin.googlecode.com/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </pluginRepository>
     </pluginRepositories>
 </project>
