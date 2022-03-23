@@ -30,6 +30,8 @@ package org.opennms.features.deviceconfig.rest.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -40,15 +42,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.regex.Pattern;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.base.Strings;
 import net.redhogs.cronparser.CronExpressionDescriptor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
@@ -71,6 +75,8 @@ import com.google.common.collect.Maps;
 
 public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDeviceConfigRestService.class);
+    public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
+    public static final String BINARY_ENCODING = "binary";
 
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
         "lastupdated", "lastUpdated",
@@ -132,39 +138,35 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         var criteria = getCriteria(limit, offset, orderBy, order, deviceName, ipAddress, ipInterfaceId, configType, createdAfter, createdBefore);
 
         List<DeviceConfigDTO> dtos = this.deviceConfigDao.findMatching(criteria)
-                                                         .stream()
-                                                         .map(this::createDeviceConfigDto)
-                                                         .filter(Objects::nonNull)
-                                                         .collect(Collectors.toList());
+             .stream()
+             .map(this::createDeviceConfigDto)
+             .filter(Objects::nonNull)
+             .collect(Collectors.toList());
+
+        final long offsetToUse = offset != null ? offset.longValue() : 0L;
+        int totalCount = dtos.size();
 
         if (limit != null || offset != null) {
             criteria.setLimit(null);
             criteria.setOffset(null);
-            final int total = deviceConfigDao.countMatching(criteria);
-
-            return ResponseUtils.createResponse(dtos, offset, total);
-        } else {
-            if (dtos.isEmpty()) {
-                return Response.noContent().build();
-            } else {
-                return Response.ok(dtos).build();
-            }
+            totalCount = deviceConfigDao.countMatching(criteria);
         }
+
+        return ResponseUtils.createResponse(dtos, offsetToUse, totalCount);
     }
 
     /** {@inheritDoc} */
     @Override
     public void deleteDeviceConfig(long id) {
-        deviceConfigDao.delete(id);
+        throw new UnsupportedOperationException("Delete device config not yet supported.");
+        // deviceConfigDao.delete(id);
     }
 
     /** {@inheritDoc} */
     @Override
     public Response downloadDeviceConfig(String id) {
-        LOG.debug("In downloadDeviceConfig");
-
         if (Strings.isNullOrEmpty(id)) {
-            LOG.debug("empty or null id supplied by request");
+            LOG.debug("downloadDeviceConfig: empty or null id supplied by request");
             return Response.noContent().build();
         }
 
@@ -173,7 +175,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         var matcher = pattern.matcher(id);
 
         if (!matcher.matches()) {
-            LOG.debug("invalid id param supplied by request");
+            LOG.debug("downloadDeviceConfig: invalid id param supplied by request");
             return Response.status(Status.BAD_REQUEST).entity("Invalid 'id' parameter").build();
         }
 
@@ -183,7 +185,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             .collect(Collectors.toList());
 
         if (ids.isEmpty()) {
-            LOG.debug("no ids supplied by request");
+            LOG.debug("downloadDeviceConfig: no ids supplied by request");
             return Response.noContent().build();
         }
 
@@ -206,9 +208,9 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         outputStream.write(dc.getConfig(), 0, dc.getConfig().length);
 
         final String fileName = createDownloadFileName(dc);
+        final Charset charset = getEncodingCharset(dc.getEncoding());
 
-        // TODO: Update MIME type, charset based on 'encoding'
-        return Response.ok().type("text/plain;charset=UTF-8")
+        return Response.ok().type("text/plain;charset=" + charset.name())
             .header("Content-Disposition", "attachment; filename=" + fileName)
             .header("Pragma", "public")
             .header("Cache-Control", "cache")
@@ -237,7 +239,6 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             throw getException(Status.INTERNAL_SERVER_ERROR, message);
         }
 
-        // TODO: better file name; check if all same node then use common nodelabel; add timestamp
         final var currentTime = new Date();
         final var formatter = new SimpleDateFormat("YYYYMMdd-HHmmss");
         final String timestamp = formatter.format(currentTime);
@@ -360,18 +361,12 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(message).build());
     }
 
-    // This method's implementation should be the same as in DeviceConfigMonitor
-    private static Date getNextRunDate(String cronSchedule, Date lastRun) {
-        final Trigger trigger = TriggerBuilder.newTrigger()
-            .withSchedule(CronScheduleBuilder.cronSchedule(cronSchedule))
-            .startAt(lastRun)
-            .build();
-
-        return trigger.getFireTimeAfter(lastRun);
-    }
-
     private DeviceConfigDTO createDeviceConfigDto(DeviceConfig deviceConfig) {
-        final Date currentDate = new Date();
+        Date currentDate = new Date();
+
+        Pair<String,String> pair = configToText(deviceConfig.getEncoding(), deviceConfig.getConfig());
+        String encoding = pair.getLeft();
+        String config = pair.getRight();
 
         var dto = new DeviceConfigDTO(
             deviceConfig.getId(),
@@ -381,9 +376,10 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             deviceConfig.getLastUpdated(),
             deviceConfig.getLastSucceeded(),
             deviceConfig.getLastFailed(),
-            deviceConfig.getEncoding(),
+            encoding,
             deviceConfig.getConfigType(),
             deviceConfig.getFileName(),
+            config,
             deviceConfig.getFailureReason()
         );
 
@@ -417,6 +413,45 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
                 .ifPresent(dto::setNextScheduledBackupDate);
 
         return dto;
+    }
+
+    // This method's implementation should be the same as in DeviceConfigMonitor
+    private static Date getNextRunDate(String cronSchedule, Date lastRun) {
+        final Trigger trigger = TriggerBuilder.newTrigger()
+            .withSchedule(CronScheduleBuilder.cronSchedule(cronSchedule))
+            .startAt(lastRun)
+            .build();
+
+        return trigger.getFireTimeAfter(lastRun);
+    }
+
+    /**
+     * Given an encoding and byte array from a {@link DeviceConfig } object, determine the proper encoding
+     * and convert the config to a text representation. Handles various text encodings as well as
+     * binary encoding.
+     * @param encoding
+     * @param configBytes
+     * @return a {@link org.apache.commons.lang3.tuple.Pair} object with the actual encoding used
+     * and the text representation of the config.
+     */
+    private static Pair<String,String> configToText(String encoding, byte[] configBytes) {
+        boolean isBinaryEncoding = !Strings.isNullOrEmpty(encoding) && encoding.equals(BINARY_ENCODING);
+
+        if (isBinaryEncoding) {
+            String config = configBytes != null ? DatatypeConverter.printHexBinary(configBytes) : "";
+            return Pair.of(BINARY_ENCODING, config);
+        } else {
+            Charset charset = getEncodingCharset(encoding);
+            String config = configBytes != null ? new String(configBytes, charset) : "";
+
+            return Pair.of(charset.name(), config);
+        }
+    }
+
+    private static Charset getEncodingCharset(String encoding) {
+        return
+            !Strings.isNullOrEmpty(encoding) && Charset.isSupported(encoding)
+            ? Charset.forName(encoding) : Charset.defaultCharset();
     }
 
     private static boolean determineBackupSuccess(DeviceConfig deviceConfig) {
