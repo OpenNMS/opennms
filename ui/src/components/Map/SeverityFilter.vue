@@ -33,7 +33,7 @@ const onSeveritySelect = () => store.dispatch('mapModule/setSelectedSeverity', s
   position: absolute;
   width: 250px;
   right: 51px;
-  top: -12px;
+  top: 11px;
   z-index: 1000;
   .feather-input-wrapper {
     background: var($primary-text-on-color);
