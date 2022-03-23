@@ -192,7 +192,7 @@ final public class SystemExecuteMonitor extends AbstractServiceMonitor {
 
         File scriptFile = new File(script);
         if (!scriptFile.exists()) {
-            return "Script file dose not exist: " + script;
+            return "Script file does not exist: " + script;
         }
 
         return null;
