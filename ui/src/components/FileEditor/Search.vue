@@ -36,7 +36,7 @@ const save = () => store.dispatch('fileEditorModule/saveModifiedFile')
     width: 100%;
     .feather-input-container {
       padding: 0px;
-      margin-top: -8px;
+      margin-bottom: -26px;
     }
   }
   .save,
