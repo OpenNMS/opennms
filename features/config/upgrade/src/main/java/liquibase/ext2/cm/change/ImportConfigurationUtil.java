@@ -32,6 +32,8 @@ import static liquibase.ext2.cm.change.ConfigFileUtil.asString;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import org.opennms.features.config.dao.api.ConfigDefinition;
@@ -86,8 +88,11 @@ public class ImportConfigurationUtil {
             LOG.info("Configuration {} imported.", configurationIdentifier);
             if(configResource.getURL().getFile().endsWith("/etc/" + configResource.getFilename())) {
                 Path etcFile = configResource.getFile().getAbsoluteFile().toPath();
+
                 // we imported a user defined config file => move to archive
-                Path archiveFile = Path.of(archivePath + "/" + etcFile.getFileName());
+                // in order to prevent file exist exception, append data time sting at the end
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+                Path archiveFile = Path.of(archivePath.toString(), etcFile.getFileName() + "." + formatter.format(LocalDateTime.now()));
                 Files.move(etcFile, archiveFile);
                 LOG.info("Configuration file {} moved to {}", etcFile, archivePath);
             }
