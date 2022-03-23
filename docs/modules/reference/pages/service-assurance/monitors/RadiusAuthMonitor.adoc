@@ -55,7 +55,7 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
 | 5000
 
 | retry
-| Placeholder for the second optional monitor parameter description.
+| Number of attempts to test a service’s status (up or down).
 | 0
 
 | authport
