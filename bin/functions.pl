@@ -524,7 +524,6 @@ sub get_dependencies {
 		org\.opennms\:jrrd-api
 		org\.opennms\:rancid-api
 		org\.opennms\.lib
-		org\.opennms\.smslib\:smslib
 	);
 
 	my $old_version;
