@@ -17,7 +17,7 @@ const getVerticesAndEdges = async (queryParameters?: QueryParameters): Promise<V
 
     // no content from server
     if (resp.status === 204) {
-      return { vertices: [], edges: [] }
+      return { vertices: [], edges: [], defaultFocus: { type: '', vertexIds: [{} as any] } }
     }
 
     return resp.data
@@ -32,7 +32,7 @@ const getTopologyDataByLevelAndFocus = async (payload: SZLRequest): Promise<Vert
 
     // no content from server
     if (resp.status === 204) {
-      return { vertices: [], edges: [] }
+      return { vertices: [], edges: [], focus: { semanticZoomLevel: 1, vertices: [] } }
     }
 
     return resp.data

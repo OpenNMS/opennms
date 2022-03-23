@@ -1,6 +1,18 @@
 export interface VerticesAndEdges {
+  defaultFocus?: DefaultFocus
+  focus?: Focus
   vertices: ResponseVertex[]
   edges: ResponseEdge[]
+}
+
+interface DefaultFocus {
+  type: string
+  vertexIds: { namespace: string; id: string }[]
+}
+
+interface Focus {
+  semanticZoomLevel: number
+  vertices: string[]
 }
 
 // From response

@@ -91,7 +91,13 @@ const contextMenu = computed<ContextMenuType>(() => contextMenuType.value)
 const node = computed<Node>(() => store.state.nodesModule.node)
 
 const nodeIsFocused = computed(() => {
-  const idsToCheck = [...props.selectedNodes, props.nodeId]
+  let idsToCheck
+
+  if (props.groupClick) {
+    idsToCheck = props.selectedNodes
+  } else {
+    idsToCheck = [props.nodeId]
+  }
 
   for (const id of idsToCheck) {
     if (store.state.topologyModule.focusedNodeIds.includes(id)) {

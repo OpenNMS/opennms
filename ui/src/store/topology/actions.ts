@@ -20,6 +20,22 @@ const parseVerticesAndEdges = (resp: VerticesAndEdges, context: VuexContext) => 
     vertices[vertex.id] = { name: vertex.label, id: vertex.id, tooltip: vertex.tooltipText }
   }
 
+  if (resp.defaultFocus) {
+    const defaultId = resp.defaultFocus.vertexIds[0].id
+    if (defaultId) {
+      const defaultNode = vertices[defaultId]
+      context.commit('SAVE_DEFAULT_NODE', defaultNode)
+    }
+  }
+
+  if (resp.focus) {
+    const defaultId = resp.focus.vertices[0]
+    if (defaultId) {
+      const defaultNode = vertices[defaultId]
+      context.commit('SAVE_DEFAULT_NODE', defaultNode)
+    }
+  }
+
   context.commit('SAVE_NODE_EDGES', edges)
   context.commit('SAVE_NODE_VERTICIES', vertices)
 }

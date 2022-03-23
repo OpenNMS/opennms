@@ -1,6 +1,6 @@
 import { SearchResult } from '@/types'
 import { NodePoint } from '@/types/topology'
-import { Edges, Nodes } from 'v-network-graph'
+import { Edges, Node, Nodes } from 'v-network-graph'
 
 export interface State {
   isTopologyView: boolean
@@ -12,6 +12,7 @@ export interface State {
   focusedNodeIds: string[]
   layout: Record<string, NodePoint>
   focusedSearchBarNodes: SearchResult[]
+  defaultNode: Node
 }
 
 const state: State = {
@@ -23,7 +24,8 @@ const state: State = {
   isLeftDrawerOpen: true,
   focusedNodeIds: [],
   layout: {},
-  focusedSearchBarNodes: []
+  focusedSearchBarNodes: [],
+  defaultNode: {}
 }
 
 export default state

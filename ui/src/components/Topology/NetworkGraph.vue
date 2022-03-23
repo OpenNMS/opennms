@@ -9,13 +9,14 @@
       :configs="configs"
       :zoomLevel="zoomLevel"
       :eventHandlers="eventHandlers"
-      v-if="trigger"
+      v-if="trigger && focusedNodeIds.length !== 0"
     />
     <!-- Tooltip -->
     <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos, display: tooltipDisplay }">
       <div v-html="verticies[targetNodeId]?.tooltip ?? ''"></div>
     </div>
   </div>
+  <NoFocusMsg :useDefaultFocus="useDefaultFocus" v-if="focusedNodeIds.length === 0" />
   <ContextMenu
     ref="contextMenu"
     v-if="showContextMenu"
@@ -37,9 +38,11 @@ import { useStore } from 'vuex'
 import { VNetworkGraph, defineConfigs, Layouts, Edges, Nodes, SimpleLayout, EventHandlers, NodeEvent, Instance, ViewEvent, Node } from 'v-network-graph'
 import { ForceLayout, ForceNodeDatum, ForceEdgeDatum } from 'v-network-graph/lib/force-layout'
 import ContextMenu from './ContextMenu.vue'
+import NoFocusMsg from './NoFocusMsg.vue'
 import { onClickOutside } from '@vueuse/core'
 import { SimulationNodeDatum } from 'd3'
 import { ContextMenuType } from './topology.constants'
+import { useFocus } from './composables'
 
 interface d3Node extends Required<SimulationNodeDatum> {
   id: string
@@ -53,6 +56,7 @@ defineProps({
 })
 
 const store = useStore()
+const { setContextNodeAsFocus } = useFocus()
 const zoomLevel = ref(1)
 const graph = ref<Instance>()
 const selectedNodes = ref<string[]>([]) // string ids
@@ -77,6 +81,8 @@ onClickOutside(contextMenu, () => closeContextMenu())
 const verticies = computed<Nodes>(() => store.state.topologyModule.verticies)
 const edges = computed<Edges>(() => store.state.topologyModule.edges)
 const layout = computed<Layouts>(() => store.getters['topologyModule/getLayout'])
+const defaultNode = computed<Node>(() => store.state.topologyModule.defaultNode)
+const focusedNodeIds = computed<string[]>(() => store.state.topologyModule.focusedNodeIds)
 
 const tooltipPos = computed(() => {
   if (!graph.value || !tooltip.value) return { x: 0, y: 0 }
@@ -203,6 +209,10 @@ const configs = reactive(
     }
   })
 )
+
+// sets the default focused node
+const useDefaultFocus = () => setContextNodeAsFocus(defaultNode.value)
+onMounted(() => useDefaultFocus())
 </script>
 
 <style lang="scss" scoped>

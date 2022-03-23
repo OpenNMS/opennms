@@ -1,5 +1,5 @@
 import { SearchResult } from '@/types'
-import { Edges, Nodes } from 'v-network-graph'
+import { Edges, Node, Nodes } from 'v-network-graph'
 import { State } from './state'
 
 const SAVE_NODE_EDGES = (state: State, edges: Edges) => {
@@ -8,6 +8,10 @@ const SAVE_NODE_EDGES = (state: State, edges: Edges) => {
 
 const SAVE_NODE_VERTICIES = (state: State, verticies: Nodes) => {
   state.verticies = verticies
+}
+
+const SAVE_DEFAULT_NODE = (state: State, defaultNode: Node) => {
+  state.defaultNode = defaultNode
 }
 
 const SET_SEMANTIC_ZOOM_LEVEL = (state: State, SML: number) => {
@@ -58,5 +62,6 @@ export default {
   REMOVE_NODE_FROM_FOCUS_IDS,
   SET_FOCUSED_SEARCH_BAR_NODES,
   ADD_FOCUSED_SEARCH_BAR_NODE,
-  REMOVE_FOCUSED_SEARCH_BAR_NODE
+  REMOVE_FOCUSED_SEARCH_BAR_NODE,
+  SAVE_DEFAULT_NODE
 }
