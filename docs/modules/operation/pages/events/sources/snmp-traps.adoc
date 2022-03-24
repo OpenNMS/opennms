@@ -13,7 +13,7 @@ Event definitions are included with {page-component-title} for traps from many v
 
 When octet strings are translated into event parameters, OpenNMS first attempts to treat them as character encodings.
 If all bytes in the string are valid UTF-8 or ISO-8859-1 characters, the string is stored as these characters.
-If this is not possible, the value is encoded as a base-64 string.
+If this is not possible, the value is encoded as a Base64 string.
 
 == Traps Forwarded via Proxy
 
