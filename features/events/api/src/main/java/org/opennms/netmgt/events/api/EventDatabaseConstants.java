@@ -79,7 +79,7 @@ public class EventDatabaseConstants extends EventConstants {
      */
     public static String sanitize(final String inStr) {
 
-        final StringBuilder buf = new StringBuilder(inStr.length()+16);
+        final StringBuilder buf = new StringBuilder();
 
         for (final char ch : inStr.toCharArray()) {
             if (Character.isISOControl(ch) && !Character.isWhitespace(ch)) {
