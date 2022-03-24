@@ -14,7 +14,7 @@
           textProp="name"
           @search="(query: string) => search(query, props.type, props.subType, index)"
           v-model="item.key"
-          @update:modelValue="(key: { hint: string }) => {
+          @update:modelValue="(key: { hint: string }, index: number): any => {
             ConfigurationHelper.forceSetHint(key, index);
             props.advancedKeyUpdate(key, index)
           }"
@@ -64,7 +64,7 @@ const props = defineProps({
   items: { type: Array as PropType<Array<AdvancedOption>>, required: true },
   type: { type: String, required: true },
   subType: { type: String, required: true },
-  addAdvancedOption: { type: Function, required: true },
+  addAdvancedOption: { type: Function as PropType<(payload: MouseEvent) => void>, required: true },
   advancedKeyUpdate: { type: Function, required: true },
   deleteAdvancedOption: { type: Function, required: true },
   active: { type: Boolean, required: true },
@@ -148,7 +148,6 @@ const search = (searchVal: string, type: string, subType: string, index: number)
   })
   results.list[index] = [...newResu]
 }
-
 
 /**
  * Fills in the <textarea> within the FeatherAutocomplete.

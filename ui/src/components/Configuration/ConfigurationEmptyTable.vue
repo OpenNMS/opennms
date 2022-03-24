@@ -13,13 +13,14 @@
 </template>
 
 <script lang="ts" setup>
+import { PropType } from 'vue'
 import { FeatherButton } from '@featherds/button'
 
 /**
  * Props
  */
 const props = defineProps({
-  newDefinition: Function
+  newDefinition: { type: Function as PropType<(payload: MouseEvent) => void> }
 })
 
 </script>
