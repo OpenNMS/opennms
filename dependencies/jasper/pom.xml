@@ -21,6 +21,10 @@
           <artifactId>castor-xml</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>org.eclipse.jdt.core.compiler</groupId>
+          <artifactId>ecj</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>eclipse</groupId>
           <artifactId>jdtcore</artifactId>
         </exclusion>
@@ -104,7 +108,7 @@
       <artifactId>commons-digester</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.jdt.core.compiler</groupId>
+      <groupId>org.eclipse.jdt</groupId>
       <artifactId>ecj</artifactId>
     </dependency>
   </dependencies>

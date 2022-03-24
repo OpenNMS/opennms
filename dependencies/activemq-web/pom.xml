@@ -18,6 +18,10 @@
       <scope>compile</scope>
       <exclusions>
         <exclusion>
+          <groupId>rome</groupId>
+          <artifactId>rome</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
@@ -86,6 +90,10 @@
           <artifactId>jsp-2.1</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.rometools</groupId>
+      <artifactId>rome</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

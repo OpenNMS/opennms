@@ -70,6 +70,17 @@
             <artifactId>cassandra-unit</artifactId>
             <version>${cassandraUnitVersion}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.jdt.core.compiler</groupId>
+                    <artifactId>ecj</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jdt</groupId>
+            <artifactId>ecj</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.newts</groupId>

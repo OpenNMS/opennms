@@ -205,8 +205,8 @@
     <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
         <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
         <bundle dependency="true">mvn:com.google.guava/guava/16.0.1</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.10.0</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.10.0</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-client/2.9.1</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-framework/2.9.1</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-recipes/2.9.1</bundle>
@@ -239,7 +239,7 @@
     
     <feature name="fst" description="FST" version="${project.version}">
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.6.6</bundle>
-        <bundle dependency="true">mvn:org.javassist/javassist/3.19.0-GA</bundle>
+        <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
         <bundle dependency="true">mvn:org.objenesis/objenesis/2.4</bundle>
         <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>
     </feature>

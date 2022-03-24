@@ -172,6 +172,10 @@
           <groupId>org.eclipse.jdt.core.compiler</groupId>
           <artifactId>ecj</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jdt</groupId>
+          <artifactId>ecj</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -404,7 +408,18 @@
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
-      <version>${cxfServiceDescriptionOpenapiVersion}</version>
+      <version>${cxfVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.cxf</groupId>
+          <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-rs-service-description-swagger-ui</artifactId>
+      <version>${cxfVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.cxf</groupId>
@@ -416,6 +431,12 @@
       <groupId>org.webjars</groupId>
       <artifactId>swagger-ui</artifactId>
       <version>${swaggerUIVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.cxf</groupId>
+          <artifactId>cxf-rt-rs-service-description-swagger-ui</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 

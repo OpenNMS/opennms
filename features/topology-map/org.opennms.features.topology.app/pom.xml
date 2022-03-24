@@ -147,6 +147,13 @@
             <groupId>org.opennms</groupId>
             <artifactId>opennms-dao</artifactId>
             <scope>compile</scope>
+            <exclusions>
+              <!-- this pollutes the imports with a compile dependency because of the version override in the top-level POM -->
+              <exclusion>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.sf.jung</groupId>
@@ -231,6 +238,13 @@
             <artifactId>jinjava</artifactId>
             <version>2.1.0</version>
             <scope>provided</scope>
+            <exclusions>
+              <!-- this pollutes the imports with a compile dependency because of the version override in the top-level POM -->
+              <exclusion>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.opennms.core</groupId>

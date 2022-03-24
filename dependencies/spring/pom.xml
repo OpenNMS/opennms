@@ -154,9 +154,8 @@
       <version>1.1.1</version>
     </dependency>
     <dependency>
-       <groupId>org.javassist</groupId>
-       <artifactId>javassist</artifactId>
-       <version>3.18.2-GA</version>
+      <groupId>org.javassist</groupId>
+      <artifactId>javassist</artifactId>
     </dependency>
   </dependencies>
 </project>

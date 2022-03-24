@@ -18,13 +18,29 @@
     <dependency>
       <groupId>org.apache.servicemix.bundles</groupId>
       <artifactId>org.apache.servicemix.bundles.dnsjava</artifactId>
+      <version>${dnsjavaVersion}_1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>dnsjava</groupId>
+          <artifactId>dnsjava</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!--
+      This is dumb, but servicemix bundle for some reason depends on the *source* bundle of dnsjava
+      as well as the binary one, and I can't find any reason for it to be there.  So I excluded it
+      above, and then re-added it here.
+    -->
+    <dependency>
+      <groupId>dnsjava</groupId>
+      <artifactId>dnsjava</artifactId>
       <version>${dnsjavaVersion}</version>
     </dependency>
   </dependencies>
   <repositories>
     <repository>
-      <id>sonatype-public-repo</id>
-      <url>https://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
+      <id>central</id>
+      <url>https://repo1.maven.org/maven2/</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>

@@ -102,7 +102,8 @@
       <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <!-- <include>org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2</include> -->
-        <include>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl</include>
+        <include>org.glassfish.jaxb:jaxb-core:jar:${jaxbCoreVersion}</include>
+        <include>org.glassfish.jaxb:jaxb-runtime:jar:${jaxbRuntimeVersion}</include>
       </includes>
     </dependencySet>
     <dependencySet>
@@ -110,7 +111,6 @@
       <outputDirectory>lib</outputDirectory>
       <useStrictFiltering>true</useStrictFiltering>
       <excludes>
-        <exclude>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl</exclude>
         <exclude>org.opennms:opennms-bootstrap</exclude>
         <exclude>org.opennms:opennms-install</exclude>
         <exclude>org.opennms.features:org.opennms.features.system-report</exclude>
