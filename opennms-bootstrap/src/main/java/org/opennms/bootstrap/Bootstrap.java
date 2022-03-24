@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -488,14 +488,14 @@ public abstract class Bootstrap {
         String dir = System.getProperty("opennms.classpath");
         if (dir == null) {
             final String home = System.getProperty(OPENNMS_HOME_PROPERTY);
-            dir = Paths.get(home, "lib", "endorsed").toString() + File.pathSeparator
+            dir = Paths.get(home, "lib", "jdk9plus").toString() + File.pathSeparator
                     + Paths.get(home, "classes").toString() + File.pathSeparator
                     + Paths.get(home, "lib").toString() + File.pathSeparator
                     + Paths.get(home, "etc").toString();
         }
 
         // Add the JDK tools.jar to the classpath so that we can use the Attach API
-        final Path toolsJar = Paths.get(System.getProperty("java.home"), "..", "lib", "tools.jar").toAbsolutePath();
+        final Path toolsJar = Paths.get(System.getProperty("java.home"), "lib", "tools.jar").toAbsolutePath();
         if (toolsJar.toFile().exists()) {
             dir += File.pathSeparator + toolsJar.toString();
         }

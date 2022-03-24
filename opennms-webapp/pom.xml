@@ -41,22 +41,6 @@
               <excludes>META-INF/**</excludes>
             </configuration>
           </execution>
-          <execution>
-            <id>copy-jaxb-dependencies</id>
-            <phase>test-compile</phase>
-            <goals><goal>copy</goal></goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.dependencies</groupId>
-                  <artifactId>jaxb-dependencies</artifactId>
-                  <type>pom</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>${basedir}/target/endorsed</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
       <plugin>

@@ -233,7 +233,8 @@ install: build
 	##
 	mv debian/temp/lib/opennms*.jar debian/libopennms-java/usr/share/java/opennms/
 	mv debian/temp/lib/endorsed     debian/libopennms-java/usr/share/java/opennms/
-	chmod 644 debian/libopennms-java/usr/share/java/opennms/*.jar debian/libopennms-java/usr/share/java/opennms/endorsed/*.jar
+	mv debian/temp/lib/jdk9plus     debian/libopennms-java/usr/share/java/opennms/
+	find debian/libopennms-java/usr/share/java/opennms -name \*.jar -print0 | xargs -0 chmod 644
 	sed -e 's,@PACKAGE@,libopennms-java,g' debian/package-permissions.sh > debian/libopennms-java.postinst
 
 	##
