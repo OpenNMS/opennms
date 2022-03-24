@@ -37,15 +37,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
+import org.apache.sshd.util.test.EchoShellFactory;
 import org.junit.After;
 import org.junit.Before;
-import org.apache.sshd.server.SshServer;
-import org.apache.sshd.util.test.EchoShellFactory;
 import org.junit.Test;
 import org.opennms.features.deviceconfig.sshscripting.SshScriptingService;
 
@@ -71,17 +70,17 @@ public class SshScriptingServiceImplIT {
         }
     }
 
-    private Optional<SshScriptingService.Failure> execute(String password, Map<String, String> vars, String... statements) {
+    private SshScriptingService.Result execute(String password, Map<String, String> vars, String... statements) {
         return execute("localhost", password, vars, statements);
     }
 
-    private Optional<SshScriptingService.Failure> execute(String host, String password, Map<String, String> vars, String... statements) {
+    private SshScriptingService.Result execute(String host, String password, Map<String, String> vars, String... statements) {
         String script = List.of(statements).stream().collect(Collectors.joining("\n"));
         var ss = new SshScriptingServiceImpl();
         return ss.execute(script, USER, password, host, sshd.getPort(), vars, Duration.ofMillis(10000));
     }
 
-    private Optional<SshScriptingService.Failure> execute(String... statements) {
+    private SshScriptingService.Result execute(String... statements) {
         return execute(PASSWORD, Collections.emptyMap(), statements);
     }
 
@@ -92,7 +91,7 @@ public class SshScriptingServiceImplIT {
                 PASSWORD,
                 Collections.emptyMap()
         );
-        assertThat(result.isEmpty(), is(true));
+        assertThat(result.isSuccess(), is(true));
     }
 
     @Test
@@ -102,7 +101,7 @@ public class SshScriptingServiceImplIT {
                 PASSWORD + "x",
                 Collections.emptyMap()
         );
-        assertThat(result.isPresent(), is(true));
+        assertThat(result.isFailed(), is(true));
     }
 
     @Test
@@ -113,7 +112,7 @@ public class SshScriptingServiceImplIT {
                 "send: uvw",
                 "await: uvw"
         );
-        assertThat(result.isEmpty(), is(true));
+        assertThat(result.isSuccess(), is(true));
     }
 
     @Test
@@ -128,7 +127,7 @@ public class SshScriptingServiceImplIT {
                 "send: ${user} ${password} ${x}",
                 "await: " + USER + " " + PASSWORD + " ${x}"
         );
-        assertThat(result.isEmpty(), is(true));
+        assertThat(result.isSuccess(), is(true));
     }
 
     @Test
@@ -142,9 +141,9 @@ public class SshScriptingServiceImplIT {
                 ).stream().collect(Collectors.joining("\n"));
 
         var result = ss.execute(script, USER, PASSWORD, "localhost", sshd.getPort(), Collections.emptyMap(), Duration.ofMillis(4000));
-        assertThat(result.isPresent(), is(true));
-        assertThat(result.get().stdout.isPresent(), is(true));
-        assertThat(result.get().stdout.get(), is("abc\nuvw\n"));
+        assertThat(result.isFailed(), is(true));
+        assertThat(result.stdout.isPresent(), is(true));
+        assertThat(result.stdout.get(), is("abc\nuvw\n"));
     }
 
     @Test
@@ -159,7 +158,7 @@ public class SshScriptingServiceImplIT {
                 ).stream().collect(Collectors.joining("\n"));
 
         var result = ss.execute(script, USER, PASSWORD, "localhost", sshd.getPort(), Collections.emptyMap(), Duration.ofMillis(4000));
-        assertThat(result.isEmpty(), is(true));
+        assertThat(result.isSuccess(), is(true));
     }
 
     private void setupSSHServer() throws IOException {
@@ -199,8 +198,8 @@ public class SshScriptingServiceImplIT {
                             "await: "+expectedIp
                         ).stream().collect(Collectors.joining("\n"));
 
-        final Optional<SshScriptingService.Failure> result = ss.execute(script, USER, PASSWORD, hostname, sshd.getPort(), Collections.emptyMap(), Duration.ofMillis(10000));
+        final SshScriptingService.Result result = ss.execute(script, USER, PASSWORD, hostname, sshd.getPort(), Collections.emptyMap(), Duration.ofMillis(10000));
 
-        assertThat(result.isPresent(), is(false));
+        assertThat(result.isSuccess(), is(true));
     }
 }

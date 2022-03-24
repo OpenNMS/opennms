@@ -41,7 +41,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.output.TeeOutputStream;
@@ -82,7 +81,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
     }
 
     @Override
-    public Optional<Failure> execute(
+    public Result execute(
             String script,
             String user,
             String password,
@@ -92,9 +91,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
             Duration timeout
     ) {
         return Statement.parseScript(script).fold(
-                errorLines -> Optional.of(
-                        new Failure(errorLines.stream().collect(Collectors.joining("\n", "unrecognized statements:\n", "")), null, null)
-                ),
+                errorLines -> Result.failure(errorLines.stream().collect(Collectors.joining("\n", "unrecognized statements:\n", ""))),
                 statements -> {
                     try {
                         try (var sshInteraction = new SshInteractionImpl(user, password, host, port, vars, timeout, tftpServerIPv4Address, tftpServerIPv6Address)) {
@@ -108,19 +105,13 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                                               "\n### script ###\n" + script +
                                               "\n### stdout ###\n" + stdout +
                                               "\n### stderr ###\n" + stderr, e);
-                                    return Optional.of(
-                                            new Failure(
-                                                    "ssh scripting exception - msg: " + e.getMessage() + "; statement: \"" + statement + "\"; script:\n" + script,
-                                                    Optional.of(stdout),
-                                                    Optional.of(stderr)
-                                            )
-                                    );
+                                    return Result.failure("ssh scripting exception - msg: " + e.getMessage() + "; statement: \"" + statement + "\"; script:\n" + script, stdout, stderr);
                                 }
                             }
-                            return Optional.empty();
+                            return Result.success("Script execution succeeded",  sshInteraction.stdout.toString(StandardCharsets.UTF_8),  sshInteraction.stderr.toString(StandardCharsets.UTF_8));
                         }
                     } catch (Exception e) {
-                        return Optional.of(new Failure(e.getMessage(), Optional.empty(), Optional.empty()));
+                        return Result.failure(e.getMessage());
                     }
                 }
         );

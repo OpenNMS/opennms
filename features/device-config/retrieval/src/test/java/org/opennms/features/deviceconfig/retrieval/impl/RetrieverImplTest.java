@@ -46,7 +46,6 @@ import java.net.InetAddress;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -70,7 +69,7 @@ public class RetrieverImplTest {
         //    (because it must be called with file content)
         var varsCaptor = ArgumentCaptor.forClass(Map.class);
         var receiverCaptor = ArgumentCaptor.forClass(TftpFileReceiver.class);
-        when(sshScriptingService.execute(any(), any(), any(), any(), anyInt(), varsCaptor.capture(), any())).thenReturn(Optional.empty());
+        when(sshScriptingService.execute(any(), any(), any(), any(), anyInt(), varsCaptor.capture(), any())).thenReturn(SshScriptingService.Result.success("Success"));
         doNothing().when(tftpServer).register(receiverCaptor.capture());
 
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
@@ -148,7 +147,7 @@ public class RetrieverImplTest {
         var tftpServer = mock(TftpServer.class);
         var receiverCaptor = ArgumentCaptor.forClass(TftpFileReceiver.class);
         var scriptingFailureMessage = "scripting exception";
-        when(sshScriptingService.execute(any(), any(), any(), any(), anyInt(), any(), any())).thenReturn(Optional.of(new SshScriptingService.Failure(scriptingFailureMessage, Optional.empty(), Optional.empty())));
+        when(sshScriptingService.execute(any(), any(), any(), any(), anyInt(), any(), any())).thenReturn(SshScriptingService.Result.failure(scriptingFailureMessage));
         doNothing().when(tftpServer).register(receiverCaptor.capture());
 
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
@@ -178,7 +177,7 @@ public class RetrieverImplTest {
         var sshScriptingService = mock(SshScriptingService.class);
         var tftpServer = mock(TftpServer.class);
         var receiverCaptor = ArgumentCaptor.forClass(TftpFileReceiver.class);
-        when(sshScriptingService.execute(any(), any(), any(), any(), anyInt(), any(), any())).thenReturn(Optional.empty());
+        when(sshScriptingService.execute(any(), any(), any(), any(), anyInt(), any(), any())).thenReturn(SshScriptingService.Result.success("Success"));
         doNothing().when(tftpServer).register(receiverCaptor.capture());
 
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
@@ -209,7 +208,7 @@ public class RetrieverImplTest {
         var tftpServer = mock(TftpServer.class);
         var varsCaptor = ArgumentCaptor.forClass(Map.class);
         var receiverCaptor = ArgumentCaptor.forClass(TftpFileReceiver.class);
-        when(sshScriptingService.execute(any(), any(), any(), any(), anyInt(), varsCaptor.capture(), any())).thenReturn(Optional.empty());
+        when(sshScriptingService.execute(any(), any(), any(), any(), anyInt(), varsCaptor.capture(), any())).thenReturn(SshScriptingService.Result.success("Success"));
         doNothing().when(tftpServer).register(receiverCaptor.capture());
 
         var retriever = new RetrieverImpl(sshScriptingService, tftpServer);

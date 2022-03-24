@@ -155,7 +155,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         private final String host;
         private final int port;
         private final String fileNameSuffix;
-        private final Supplier<Optional<SshScriptingService.Failure>> uploadTrigger;
+        private final Supplier<SshScriptingService.Result> uploadTrigger;
 
         private volatile CompletableFuture<Either<Failure, Success>> future;
 
@@ -163,7 +163,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                 String host,
                 int port,
                 String filenameSuffix,
-                Supplier<Optional<SshScriptingService.Failure>> uploadTrigger
+                Supplier<SshScriptingService.Result> uploadTrigger
         ) {
             this.host = host;
             this.port = port;
@@ -183,10 +183,10 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             // trigger the upload
             // -> if triggering the upload failed then complete the future with that failure
             try {
-                uploadTrigger
-                        .get()
-                        .stream()
-                        .forEach(failure -> fail(scriptingFailureMsg(host, port, failure.message), failure.stdout, failure.stderr));
+                if (uploadTrigger.get().isFailed()) {
+                    final SshScriptingService.Result result = uploadTrigger.get();
+                    fail(scriptingFailureMsg(host, port, result.message), result.stdout, result.stderr);
+                }
             } catch (Throwable e) {
                 var msg = scriptingFailureMsg(host, port, e.getMessage());
                 LOG.error(msg, e);

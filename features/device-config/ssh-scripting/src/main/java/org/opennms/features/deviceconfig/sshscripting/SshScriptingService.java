@@ -46,7 +46,7 @@ public interface SshScriptingService {
      * @param timeout used when establishing the ssh interaction and for await statements
      * @return
      */
-    Optional<Failure> execute(
+    Result execute(
             String script,
             String user,
             String password,
@@ -56,17 +56,41 @@ public interface SshScriptingService {
             Duration timeout
     );
 
-    class Failure {
-
+    class Result {
         public final String message;
         public final Optional<String> stdout;
         public final Optional<String> stderr;
+        public final boolean success;
 
-        public Failure(String message, Optional<String> stdout, Optional<String> stderr) {
+        private Result(final boolean success, final String message, final Optional<String> stdout, final Optional<String> stderr) {
+            this.success = success;
             this.message = message;
             this.stdout = stdout;
             this.stderr = stderr;
         }
-    }
 
+        public static Result success(final String message, final String stdout, final String stderr) {
+            return new Result(true, message, Optional.of(stdout), Optional.of(stderr));
+        }
+
+        public static Result success(final String message) {
+            return new Result(true, message, Optional.empty(), Optional.empty());
+        }
+
+        public static Result failure(final String message, final String stdout, final String stderr) {
+            return new Result(false, message, Optional.of(stdout), Optional.of(stderr));
+        }
+
+        public static Result failure(final String message) {
+            return new Result(false, message, Optional.empty(), Optional.empty());
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public boolean isFailed() {
+            return !success;
+        }
+    }
 }
