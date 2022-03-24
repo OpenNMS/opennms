@@ -127,7 +127,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <span>OpenNMS System 123</span>
+        <span>OpenNMS System</span>
       </div>
       <div class="card-body">
         <ul class="list-unstyled mb-0">
