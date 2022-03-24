@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>29.0.8</version>
+  <version>29.0.9-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skip.surefire.tests>false</skip.surefire.tests>
