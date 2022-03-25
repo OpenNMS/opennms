@@ -1138,6 +1138,12 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <!-- 3.0.0 is out, but we're affected by https://issues.apache.org/jira/browse/MENFORCER-393 -->
+        <version>3.0.0-M3</version>
+      </plugin>
+      <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>structure-maven-plugin</artifactId>
         <version>1.0</version>
@@ -1145,6 +1151,60 @@
     </plugins>
   </pluginManagement>
    <plugins>
+     <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-enforcer-plugin</artifactId>
+       <executions>
+         <execution>
+           <id>enforce-maven</id>
+           <goals>
+             <goal>enforce</goal>
+           </goals>
+           <configuration>
+             <skip>${enforcer-skip-maven}</skip>
+             <rules>
+               <!-- make sure the build environment is acceptable -->
+               <requireMavenVersion>
+                 <version>[3.5,)</version>
+               </requireMavenVersion>
+               <requireJavaVersion>
+                 <version>[1.8.0,9)</version>
+               </requireJavaVersion>
+             </rules>
+           </configuration>
+         </execution>
+         <execution>
+           <id>enforce-banned-dependencies</id>
+           <goals>
+             <goal>enforce</goal>
+           </goals>
+           <configuration>
+             <skip>${enforcer-skip-banned-dependencies}</skip>
+             <rules>
+               <!-- ban dependencies that should be replaced with custom or better stuff -->
+               <bannedDependencies>
+                 <excludes>
+                 </excludes>
+               </bannedDependencies>
+             </rules>
+           </configuration>
+         </execution>
+         <execution>
+           <id>enforce-dependency-convergence</id>
+           <goals>
+             <goal>enforce</goal>
+           </goals>
+           <configuration>
+             <skip>${enforcer-skip-dependency-convergence}</skip>
+             <rules>
+               <!-- make sure dependencies throughout the project(s) match versions -->
+               <dependencyConvergence/>
+             </rules>
+             <fail>true</fail>
+           </configuration>
+         </execution>
+       </executions>
+     </plugin>
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-clean-plugin</artifactId>
@@ -1476,6 +1536,11 @@
   </reporting>
 
   <properties>
+    <enforcer-skip-maven>false</enforcer-skip-maven>
+    <enforcer-skip-banned-dependencies>false</enforcer-skip-banned-dependencies>
+    <!-- we have a lot of work to do before this is possible -->
+    <enforcer-skip-dependency-convergence>true</enforcer-skip-dependency-convergence>
+
     <!--
       Surefire forked JVM arguments
       @see http://maven.apache.org/surefire/maven-surefire-plugin/examples/system-properties.html
