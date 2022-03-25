@@ -1680,7 +1680,7 @@
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
-    <groovyVersion>2.4.5</groovyVersion>
+    <groovyVersion>2.4.21</groovyVersion>
     <grpcVersion>1.30.0</grpcVersion>
     <gsonVersion>2.8.5</gsonVersion>
     <guavaVersion>18.0</guavaVersion>
