@@ -21,6 +21,10 @@ deb https://debian.opennms.org stable main
 deb-src https://debian.opennms.org stable main
 END
 
+if [ ! -d "debs" ]; then
+  mkdir debs
+fi
+
 if [ -d "${DEBDIR}" ]; then
   echo "Copy debs ${DEBDIR} to debs/"
   cp -v ${DEBDIR}/*.deb debs/
