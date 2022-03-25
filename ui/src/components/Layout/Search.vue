@@ -23,7 +23,7 @@ const store = useStore()
 const searchStr = ref()
 const loading = ref(false)
 
-// add any here to fix feather TS issue
+// any to fix feather TS issue
 const selectItem: any = (value: { url: string }) => {
   if (!value) return
   // parse selected item url and redirect
