@@ -1,5 +1,5 @@
 import API from '@/services'
-import { Node, QueryParameters, VuexContext } from '@/types'
+import { QueryParameters, VuexContext } from '@/types'
 
 const getNodes = async (context: VuexContext, queryParameters?: QueryParameters) => {
   const resp = await API.getNodes(queryParameters)
@@ -9,11 +9,9 @@ const getNodes = async (context: VuexContext, queryParameters?: QueryParameters)
   }
 }
 
-const getNodeById = async (context: VuexContext, node: Node) => {
-  const resp = await API.getNodeById(node.id)
-  if (resp) {
-    context.commit('SAVE_NODE_DETAILS_TO_STATE', resp)
-  }
+const getNodeById = async (context: VuexContext, nodeId: string) => {
+  const resp = await API.getNodeById(nodeId)
+  context.commit('SAVE_NODE_DETAILS_TO_STATE', resp)
 }
 
 const getNodeSnmpInterfaces = async (

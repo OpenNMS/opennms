@@ -9,13 +9,7 @@ import {
 
 import { getAlarms, modifyAlarm } from './alarmService'
 
-import {
-  getGraphNodesNodes,
-  getGraphDefinitionsByResourceId,
-  getDefinitionData,
-  getGraphMetrics,
-  getPreFabGraphs
-} from './graphService'
+import { getGraphDefinitionsByResourceId, getDefinitionData, getGraphMetrics, getPreFabGraphs } from './graphService'
 
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
@@ -28,7 +22,8 @@ import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
 import { getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
-import { getPlugins, togglePlugin, getEnabledPlugins } from './pluginService'
+import { getVerticesAndEdges, getTopologyDataByLevelAndFocus } from './topologyService'
+import { getPlugins } from './pluginService'
 
 export default {
   search,
@@ -40,7 +35,7 @@ export default {
   getNodeById,
   getNodeOutages,
   getNodeIfServices,
-  getGraphNodesNodes,
+  getVerticesAndEdges,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage,
@@ -65,6 +60,5 @@ export default {
   getResourceForNode,
   getGraphDefinitionsByResourceId,
   getPlugins,
-  togglePlugin,
-  getEnabledPlugins
+  getTopologyDataByLevelAndFocus,
 }

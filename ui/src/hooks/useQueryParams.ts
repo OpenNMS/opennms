@@ -1,5 +1,4 @@
 import { FeatherSortObject, QueryParameters } from '@/types'
-import { ref } from 'vue'
 import { useStore } from 'vuex'
 
 const useQueryParameters = (

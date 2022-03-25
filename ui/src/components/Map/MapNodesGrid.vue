@@ -108,7 +108,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import { reactive, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { Coordinates, Node, FeatherSortObject } from '@/types'
 import { FeatherSortHeader, SORT } from '@featherds/table'
@@ -182,10 +181,14 @@ thead {
   padding-left: 12px;
   border-left: 4px solid var($success);
 }
-.WARNING,
-.MINOR,
-.MAJOR {
+.WARNING {
+  border-left: 4px solid #fffb00ea
+}
+.MINOR {
   border-left: 4px solid var($warning);
+}
+.MAJOR {
+  border-left: 4px solid #ff3c00;
 }
 
 .CRITICAL {

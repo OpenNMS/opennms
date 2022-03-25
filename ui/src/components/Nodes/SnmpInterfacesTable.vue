@@ -36,10 +36,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
 import useQueryParameters from '@/hooks/useQueryParams'
 
 const store = useStore()

@@ -901,7 +901,9 @@ public abstract class EventConstants {
     public static final String PARM_FOREIGN_ID = "foreignId";
     /** Constant <code>PARM_RESCAN_EXISTING="rescanExisting"</code> */
     public static final String PARM_RESCAN_EXISTING = "rescanExisting";
-    
+    /** Constant <code>PARM_RESCAN_EXISTING="monitorKey"</code> */
+    public static final String PARM_MONITOR_KEY = "monitorKey";
+
     /**
      * Parms used for configureSnmp events
      */

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?> <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <!-- OpenNMS Top-Level POM -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
@@ -164,6 +163,277 @@
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>2.0.0</version>
+        <inherited>true</inherited>
+<!--        <executions>
+          <execution>
+            <id>module-third-party</id>
+            <goals>
+              <goal>add-third-party</goal>
+            </goals>
+            <phase>generate-resources</phase>
+          </execution>
+        </executions>-->
+        <configuration>
+          <acceptPomPackaging>true</acceptPomPackaging>
+          <errorRemedy>xmlOutput</errorRemedy>
+          <excludedArtifacts>^.*opennms.*$</excludedArtifacts>
+          <excludedScopes>system,test</excludedScopes>
+          <deployMissingFile>true</deployMissingFile>
+          <failOnBlacklist>true</failOnBlacklist>
+          <failOnMissing>true</failOnMissing>
+          <sortArtifactByName>true</sortArtifactByName>
+          <sortByGroupIdAndArtifactId>true</sortByGroupIdAndArtifactId>
+          <useDefaultContentSanitizers>true</useDefaultContentSanitizers>
+          <useDefaultUrlReplacements>true</useDefaultUrlReplacements>
+          <useMissingFile>true</useMissingFile>
+          <!-- normalize license names for sanity -->
+          <licenseMerges>
+            <licenseMerge>
+              agpl_v3
+                | AGPL-3.0
+                | GNU Affero General Public License
+            </licenseMerge>
+            <!-- the "similar to apache" one is JDOM -->
+            <licenseMerge>
+              apache
+                | Apache
+                | Apache License
+                | Apache Software Licenses
+                | Similar to Apache License but with the acknowledgment clause removed
+            </licenseMerge>
+            <licenseMerge>
+              apache_v1_1
+                | Apache-1.1
+                | Apache Software License, version 1.1
+            </licenseMerge>
+            <!-- Atomikos artifacts downloaded from Maven are available as Apache 2.0 -->
+            <licenseMerge>
+              apache_v2
+                | ALv2
+                | Apache 2
+                | Apache-2.0
+                | Apache 2.0
+                | Apache 2.0 License
+                | Apache License 2.0
+                | Apache License, Version 2.0
+                | Apache License, version 2.0
+                | Apache License V2.0
+                | Apache License v2.0
+                | Apache License Version 2.0
+                | Apache License version 2.0
+                | Apache Software License 2.0
+                | Apache Software License - Version 2.0
+                | Apache Software License, version 2.0
+                | ASF 2.0
+                | ASL, version 2
+                | Atomikos Multiple Licensing Scheme
+                | GWT Terms
+                | The Apache License, Version 2.0
+                | The Apache Software License, Version 2.0
+                | This material is licensed under the Apache Software License, Version 2.0
+            </licenseMerge>
+            <licenseMerge>
+              bsd
+                | BSD
+                | BSD License
+                | BSD licence
+                | BSD license
+                | BSD style
+                | ISC/BSD License
+                | The BSD License
+            </licenseMerge>
+            <licenseMerge>
+              bsd_2
+                | BSD-2-Clause
+                | BSD 2-Clause
+                | BSD 2-Clause License
+                | The BSD 2-Clause License
+            </licenseMerge>
+            <!-- license.txt is here because Hibernate JPA (Eclipse Distribution 1.0) has their license metadata set to a URL that's a link to local file (that doesn't exist) -->
+            <licenseMerge>
+              bsd_3
+                | 3-Clause BSD License
+                | BSD 3-Clause
+                | BSD-3-Clause
+                | DOM4J
+                | DOM4J License (BSD-like)
+                | Eclipse Distribution License - v 1.0
+                | Eclipse Distribution License v. 1.0
+                | EDL 1.0
+                | license.txt
+                | New BSD License
+                | Revised BSD
+                | The BSD 3-Clause License
+                | The New BSD License
+                | The OpenLDAP Public License
+            </licenseMerge>
+            <licenseMerge>
+              cddl_v1
+                | CDDL
+                | CDDL 1.0
+                | CDDL license
+                | CDDL-1.0
+                | COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
+                | Common Development And Distribution License (CDDL) Version 1.0
+            </licenseMerge>
+            <licenseMerge>
+              cddl_v1_1
+                | CDDL 1.1
+                | CDDL-1.1
+                | COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1
+                | Common Development And Distribution License (CDDL) Version 1.1
+            </licenseMerge>
+            <licenseMerge>
+              cddl_v1 or gpl_v2_cpe
+                | CDDL+GPL License
+                | CDDL/GPLv2+CE
+                | CDDL-1.0 + GPL-2.0+CPE
+                | CDDL + GPLv2 with classpath exception
+            </licenseMerge>
+            <licenseMerge>
+              cpl_v1
+                | Common Public License - v 1.0
+                | CPL
+                | CPL-1.0
+            </licenseMerge>
+            <licenseMerge>
+              epl_v1
+                | EPL 1.0
+                | EPL-1.0
+                | Eclipse Public License
+                | Eclipse Public License - Version 1.0
+                | Eclipse Public License - v 1.0
+                | Eclipse Public License, Version 1.0
+                | Eclipse Public License 1.0
+                | Eclipse Public License v1.0
+            </licenseMerge>
+            <licenseMerge>
+              epl_v2
+                | EPL 2.0
+                | EPL-2.0
+                | Eclipse Public License - v 2.0
+            </licenseMerge>
+            <licenseMerge>
+              gpl_v2
+                | GPL-2
+                | GNU GENERAL PUBLIC LICENSE Version 2, June 1991
+                | GNU General Public Library
+                | GNU General Public License Version 2
+                | GNU General Public License, Version 2
+                | GNU General Public License, version 2
+            </licenseMerge>
+            <licenseMerge>
+              gpl_v2_cpe
+                | GNU General Public License (GPL), version 2, with the Classpath exception
+                | GPL-2.0+CPE
+                | GPL2 w/ CPE
+                | GPLv2 with classpath exception
+                | GPLv2+CE
+            </licenseMerge>
+            <licenseMerge>
+              gpl_v3
+                | GPL-3.0
+                | GNU Public License, Version 3.0
+            </licenseMerge>
+            <licenseMerge>
+              indiana_extreme_v1_1_1
+                | Indiana Extreme 1.1.1
+                | Indiana University Extreme! Lab Software License, vesion 1.1.1
+            </licenseMerge>
+            <licenseMerge>
+              lgpl_v2_1
+                | GNU LESSER GENERAL PUBLIC LICENSE
+                | GNU Lesser General Public License
+                | GNU Lesser General Public Licence
+                | GNU Lesser General Public License (LGPL), Version 2.1
+                | GNU Lesser General Public License Version 2.1
+                | GNU Lesser General Public License, Version 2.1
+                | GNU Lesser General Public License, version 2.1
+                | GNU Lesser General Public License, Version 2
+                | GNU Lesser Public License
+                | GNU Library General Public License v2.1 or later
+                | LGPL
+                | LGPL 2.1
+                | LGPL license
+                | LGPL, version 2.1
+                | LGPL-2
+                | LGPL-2.1
+            </licenseMerge>
+            <licenseMerge>
+              lgpl_v3
+                | GNU Lesser/Library Public License, Version 3.0
+                | GNU Lessor/Library Public License, Version 3.0
+                | GNU LGPLv3
+                | LGPL-3.0
+                | LGPL-3.0-or-later
+                | Lesser General Public License, version 3 or greater
+            </licenseMerge>
+            <licenseMerge>
+              mit
+                | Bouncy Castle Licence
+                | ICU License
+                | MIT
+                | MIT License
+                | MIT license
+                | The JSON License
+                | The MIT License
+                | provided without support or warranty
+            </licenseMerge>
+            <licenseMerge>
+              mpl
+                | Mozilla Public License
+                | MPL
+            </licenseMerge>
+            <licenseMerge>
+              mpl_1_1
+                | MPL 1.1
+                | MPL-1.1
+                | Mozilla Public License 1.1
+                | Mozilla Public License version 1.1
+            </licenseMerge>
+            <licenseMerge>
+              mpl_2_0
+                | Mozilla Public License 2.0
+                | Mozilla Public License version 2.0
+            </licenseMerge>
+            <licenseMerge>
+              mpl_2_0 or epl_1_0
+                | MPL 2.0 or EPL 1.0
+            </licenseMerge>
+            <licenseMerge>
+              public_domain
+                | Public Domain
+                | Public Domain, per Creative Commons CC0
+                | Public domain, Sun Microsoystems
+                | The SAX License
+                | WTFPL
+            </licenseMerge>
+            <licenseMerge>
+              spl_v1_0
+                | SPL-1.0
+            </licenseMerge>
+            <licenseMerge>
+              sun_entitlement
+                | Sun Entitlement
+                | Sun Microsystems, Inc. ("Sun") ENTITLEMENT for SOFTWARE
+            </licenseMerge>
+            <licenseMerge>
+              w3c
+                | The W3C License
+                | The W3C Software License
+                | W3C Software Copyright Notice and License
+                | W3C Software License
+            </licenseMerge>
+          </licenseMerges>
+          <licenseUrlFileNames>
+            <spdx/>
+          </licenseUrlFileNames>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
         <artifactId>keytool-maven-plugin</artifactId>
         <version>1.5</version>
         <executions>
@@ -242,7 +512,7 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>5.1.4</version>
+        <version>${maven.bundle.plugin.version}</version>
         <extensions>true</extensions>
         <configuration>
           <obrRepository>NONE</obrRepository>
@@ -1229,7 +1499,7 @@
       Set java.security.egd so that entropy exhaustion doesn't cause
       problematic pauses when starting MockSnmpAgent in unit tests.
     -->
-    <argLineMemory>-Xmx1536m</argLineMemory>
+    <argLineMemory>-Xmx2g</argLineMemory>
     <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom</argLine>
     <skipITs>true</skipITs>
 
@@ -1267,6 +1537,7 @@
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
     <maven.install.plugin.version>2.5.2</maven.install.plugin.version>
     <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
+    <maven.bundle.plugin.version>5.1.4</maven.bundle.plugin.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
@@ -1315,7 +1586,7 @@
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
 
     <runMailTests>true</runMailTests>
-  
+
     <!-- rpm specific -->
     <rpm.install.dir>/opt/opennms</rpm.install.dir>
     <rpm.build.executable>rpmbuild</rpm.build.executable>
@@ -1346,7 +1617,9 @@
     <test.keypass>${webstart.keypass}</test.keypass>
     <test.dnameCn>cn=${webstart.dnameCn}</test.dnameCn>
 
-    <updatePolicy>interval:60</updatePolicy> <!-- 60 minutes -->
+    <!-- whether to enable snapshot dependencies when building -->
+    <enable.snapshots>false</enable.snapshots>
+
     <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
     <karaf.servicemix.specs.version>2.9.0</karaf.servicemix.specs.version>
@@ -1407,13 +1680,13 @@
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
-    <groovyVersion>2.4.5</groovyVersion>
+    <groovyVersion>2.4.21</groovyVersion>
     <grpcVersion>1.30.0</grpcVersion>
     <gsonVersion>2.8.5</gsonVersion>
     <guavaVersion>18.0</guavaVersion>
     <guavagRPCVersion>28.2-jre</guavagRPCVersion>
     <guavaOldVersion>17.0</guavaOldVersion>
-    <gwtVersion>2.8.2</gwtVersion>
+    <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
     <hawtioVersion>1.4.68</hawtioVersion>
@@ -1436,14 +1709,19 @@
     <jestVersion>5.3.3</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
+    <jicmpVersion>2.0.4</jicmpVersion>
+    <jicmp6Version>2.0.3</jicmp6Version>
     <jinteropVersion>3.1.0</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
     <jmhVersion>1.33</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>4.4.0</jnaVersion>
-    <jqwikVersion>1.3.10</jqwikVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
+    <jqwikVersion>1.3.10</jqwikVersion>
+    <jrrdVersion>1.1.0</jrrdVersion>
+    <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
+    <jschVersion>0.1.72</jschVersion>
     <jsonVersion>20171018</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
@@ -1456,8 +1734,8 @@
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.17.1</log4j2Version>
-    <logbackClassicVersion>1.2.3</logbackClassicVersion>
+    <log4j2Version>2.17.2</log4j2Version>
+    <logbackClassicVersion>1.2.10</logbackClassicVersion>
     <mapstructVersion>1.4.1.Final</mapstructVersion>
     <minaVersion>2.1.5</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
@@ -1473,8 +1751,8 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
-    <opennmsApiVersion>0.8.0-SNAPSHOT</opennmsApiVersion>
-    <opennmsApiVersionOsgi>0.8.0.SNAPSHOT</opennmsApiVersionOsgi>
+    <opennmsApiVersion>0.8.1-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersionOsgi>0.8.1.SNAPSHOT</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
@@ -1487,7 +1765,7 @@
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
     <lz4JavaVersion>1.7.1</lz4JavaVersion>
     <quartzVersion>2.2.3</quartzVersion>
-    <rancidApiVersion>1.0.5</rancidApiVersion>
+    <rancidApiVersion>2.0.0</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.1</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>6.19.3</rocksdbjniVersion>
@@ -1561,19 +1839,79 @@
 
   <profiles>
     <profile>
+      <id>enable.license</id>
+      <activation>
+        <property><name>enable.license</name><value>true</value></property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>enable.snapshots</id>
       <activation>
-        <property><name>enable.snapshots</name><value>true</value></property>
+        <property>
+          <name>enable.snapshots</name>
+          <value>true</value>
+        </property>
       </activation>
+      <!--
+        Whether to enable pulling snapshot dependencies from remote maven.
+
+        This should match <repositories> in the default reactor, *plus*
+        add the `opennms-snapshots` repo. (We skip the eclipse repository
+        as it's a special case.)
+      -->
       <repositories>
         <repository>
-          <snapshots><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-          <releases><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+          <id>central</id>
+          <name>Maven Central</name>
+          <url>https://repo1.maven.org/maven2/</url>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+        <repository>
           <id>opennms-snapshots</id>
           <name>OpenNMS Snapshot Maven Repository</name>
           <url>https://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
         </repository>
       </repositories>
+      <!--
+        Whether to enable pulling snapshot plugin dependencies from remote maven.
+      -->
+      <pluginRepositories>
+        <pluginRepository>
+          <id>central</id>
+          <name>Maven Central</name>
+          <url>https://repo1.maven.org/maven2/</url>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>opennms-snapshots</id>
+          <name>OpenNMS Snapshot Maven Repository</name>
+          <url>https://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
     </profile>
     <profile>
       <id>opt-local-rrdtool</id>
@@ -2610,12 +2948,6 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>servlet-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>smslib-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -4026,9 +4358,9 @@
         <version>${servletApiVersion}</version>
       </dependency>
       <dependency>
-        <groupId>com.jcraft</groupId>
+        <groupId>com.github.mwiede</groupId>
         <artifactId>jsch</artifactId>
-        <version>0.1.51</version>
+        <version>${jschVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
@@ -4478,29 +4810,42 @@
       <id>central</id>
       <name>Maven Central</name>
       <url>https://repo1.maven.org/maven2/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </pluginRepository>
     <pluginRepository>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>https://maven.opennms.org/content/groups/opennms.org-release/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </pluginRepository>
   </pluginRepositories>
-  <!--
-    This is required to override the effective POM's definition of Maven Central.
-    Versions of Maven *prior* to 3.2.3 will access Maven Central via HTTP.
-    In 3.2.3 (and newer), HTTPS is used.
-    Refer to: http://maven.apache.org/docs/3.2.3/release-notes.html
-  -->
   <repositories>
+    <!--
+      This is required to override the effective POM's definition of Maven Central.
+      Versions of Maven *prior* to 3.2.3 will access Maven Central via HTTP.
+      In 3.2.3 (and newer), HTTPS is used.
+      Refer to: http://maven.apache.org/docs/3.2.3/release-notes.html
+    -->
     <repository>
       <id>central</id>
       <name>Maven Central</name>
       <url>https://repo1.maven.org/maven2/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
+    <!-- Override `eclipse-repository` as it is broken in dependent POMs -->
     <repository>
       <id>eclipse-repository</id>
       <name>Eclipse</name>
       <url>https://repo1.maven.org/maven2/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
   </repositories>
 </project>

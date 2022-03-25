@@ -40,6 +40,7 @@ import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.exception.ConfigAlreadyExistsException;
+import org.opennms.features.config.exception.ConfigRuntimeException;
 import org.opennms.features.config.exception.SchemaAlreadyExistsException;
 import org.opennms.features.config.exception.SchemaNotFoundException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
@@ -50,6 +51,8 @@ import org.opennms.features.config.service.util.OpenAPIConfigHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
 
 @Component
 public class ConfigurationManagerServiceImpl implements ConfigurationManagerService {
@@ -76,9 +79,12 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) {
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configDefinition);
-        if (this.getRegisteredConfigDefinition(configName).isEmpty()) {
+        final Optional<ConfigDefinition> existingDefinition = this.getRegisteredConfigDefinition(configName);
+        if (existingDefinition.isEmpty()) {
             throw new SchemaNotFoundException(String.format("Schema with configName=%s is not present. Use registerSchema instead.", configName));
         }
+        //allowMultiple must be preserved. It is set only once on creation
+        configDefinition.setAllowMultiple(existingDefinition.get().getAllowMultiple());
         configStoreDao.updateConfigDefinition(configDefinition);
     }
 
@@ -102,17 +108,31 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
      * {@inheritDoc}
      */
     @Override
-    public void registerConfiguration(final String configName, final String configId, JsonAsString configObject) {
-        Objects.requireNonNull(configId);
+    public void registerConfiguration(final String configName, final String inConfigId, JsonAsString configObject) {
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configObject);
         Optional<ConfigDefinition> configDefinition = this.getRegisteredConfigDefinition(configName);
         if (configDefinition.isEmpty()) {
             throw new SchemaNotFoundException(String.format("Unknown service with configName: %s.", configName));
         }
-        if (this.getJSONConfiguration(configName, configId).isPresent()) {
+        String configId = inConfigId;
+        if (configId == null) {
+            configId = DEFAULT_CONFIG_ID;
+        }
+        final Set<String> configIds = this.getConfigIds(configName);
+        if (configIds.contains(configId)) {
             throw new ConfigAlreadyExistsException(String.format(
                     "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
+        }
+        if (!configDefinition.get().getAllowMultiple()) {
+            if (!DEFAULT_CONFIG_ID.equals(configId)) {
+                throw new ConfigRuntimeException(String.format(
+                        "For the service '%s' is only one configuration with id='%s' allowed; provided was id '%s'", configName, DEFAULT_CONFIG_ID, configId));
+            }
+            if (!configIds.isEmpty()) {
+                throw new ConfigAlreadyExistsException(String.format(
+                        "For the service '%s' found existing configuration(s) with id(s) other than '%s'", configName, DEFAULT_CONFIG_ID));
+            }
         }
 
         configStoreDao.addConfig(configName, configId, new JSONObject(configObject.toString()));

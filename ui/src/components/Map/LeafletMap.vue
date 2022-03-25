@@ -1,6 +1,5 @@
 <template>
   <div class="geo-map">
-    <MapSearch class="search-bar" @fly-to-node="flyToNode" @set-bounding-box="setBoundingBox" />
     <SeverityFilter />
     <LMap
       ref="map"
@@ -24,6 +23,8 @@
           layer-type="base"
         />
         <MarkerCluster
+          ref="markerCluster"
+          :onClusterUncluster="onClusterUncluster"
           :options="{ showCoverageOnHover: false, chunkedLoading: true, iconCreateFunction }"
         >
           <LMarker
@@ -31,6 +32,7 @@
             :key="node.label"
             :lat-lng="[node.assetRecord.latitude, node.assetRecord.longitude]"
             :name="node.label"
+            :options="{ id: node.id }"
           >
             <LPopup>
               Node:
@@ -42,21 +44,18 @@
             </LPopup>
             <LIcon :icon-url="setIcon(node)" :icon-size="iconSize" />
           </LMarker>
-          <!-- Disable polylines until they work -->
-          <!-- <LPolyline
-              v-if="zoom > 5"
-              v-for="coordinatePair of edges"
-              :key="coordinatePair[0].toString()"
-              :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
-              color="green"
-          />-->
+          <LPolyline
+            v-for="coordinatePair of computedEdges"
+            :key="coordinatePair[0].toString()"
+            :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
+            color="green"
+          />
         </MarkerCluster>
       </template>
     </LMap>
   </div>
 </template>
 <script setup lang ="ts">
-import { computed, ref, nextTick } from 'vue'
 import 'leaflet/dist/leaflet.css'
 import {
   LMap,
@@ -65,11 +64,10 @@ import {
   LIcon,
   LPopup,
   LControlLayers,
-  // LPolyline,
+  LPolyline,
 } from '@vue-leaflet/vue-leaflet'
 import MarkerCluster from './MarkerCluster.vue'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
 import { Node } from '@/types'
 import NormalIcon from '@/assets/Normal-icon.png'
 import WarninglIcon from '@/assets/Warning-icon.png'
@@ -77,10 +75,12 @@ import MinorIcon from '@/assets/Minor-icon.png'
 import MajorIcon from '@/assets/Major-icon.png'
 import CriticalIcon from '@/assets/Critical-icon.png'
 import { Map as LeafletMap, divIcon, MarkerCluster as Cluster } from 'leaflet'
-import MapSearch from './MapSearch.vue'
 import { numericSeverityLevel } from './utils'
 import SeverityFilter from './SeverityFilter.vue'
+import { Edges } from 'v-network-graph'
 
+const markerCluster = ref()
+const computedEdges = ref<number[][][]>()
 const store = useStore()
 const map = ref()
 const route = useRoute()
@@ -90,6 +90,7 @@ const zoom = ref<number>(2)
 const iconWidth = 25
 const iconHeight = 42
 const iconSize = [iconWidth, iconHeight]
+const nodeClusterCoords = ref<Record<string, number[]>>({})
 const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => store.state.mapModule.mapCenter[k]))
 const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
 const allNodes = computed<Node[]>(() => store.state.mapModule.nodesWithCoordinates)
@@ -109,12 +110,28 @@ const getHighestSeverity = (severitites: string[]) => {
   return highestSeverity
 }
 
+const onClusterUncluster = (t: any) => {
+  nodeClusterCoords.value = {}
+  t.target.refreshClusters()
+  computeEdges()
+}
+
 // for custom marker cluster icon
 const iconCreateFunction = (cluster: Cluster) => {
+  const clusterLatLng = cluster.getLatLng()
+  const clusterLatLngArr = [clusterLatLng.lat, clusterLatLng.lng]
   const childMarkers = cluster.getAllChildMarkers()
+
   // find highest level of severity
   const severitites = []
   for (const marker of childMarkers) {
+
+    // set cluster latlng to each node id
+    if (clusterLatLngArr.length) {
+      const nodeId = (marker as any).options.id
+      nodeClusterCoords.value[nodeId] = clusterLatLngArr
+    }
+
     const markerSeverity = nodeLabelAlarmServerityMap.value[(marker as any).options.name]
     if (markerSeverity) {
       severitites.push(markerSeverity)
@@ -146,17 +163,32 @@ const setMarkerColor = (severity: string | undefined) => {
   return NormalIcon
 }
 
-// const edges = computed(() => {
-//   const ids: string[] = nodes.value.map((node: Node) => node.id)
-//   const interestedNodesCoordinateMap = getNodeCoordinateMap.value
-//   return store.state.mapModule.edges.filter((edge: [number, number]) => ids.includes(edge[0].toString()) && ids.includes(edge[1].toString()))
-//     .map((edge: [number, number]) => {
-//       let edgeCoordinatesPair = []
-//       edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[0]))
-//       edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[1]))
-//       return edgeCoordinatesPair
-//     })
-// })
+const computeEdges = () => {
+  const interestedNodesCoordinateMap = getNodeCoordinateMap.value
+  const edges: Edges = store.state.topologyModule.edges
+
+  const edgeCoordinatesPairs:number[][][] = []
+
+  for (const edge of Object.values(edges)) {
+    // attempt to get nodes cluster 
+    let sourceCoord = nodeClusterCoords.value[edge.source]
+    let targetCoord = nodeClusterCoords.value[edge.target]
+
+    // if not in cluser, will be undefined, get regular coords
+    if (!sourceCoord) {
+      sourceCoord = interestedNodesCoordinateMap.get(edge.source)
+    }
+    if (!targetCoord) {
+      targetCoord = interestedNodesCoordinateMap.get(edge.target)
+    }
+
+    if (sourceCoord && targetCoord) {
+      edgeCoordinatesPairs.push([sourceCoord, targetCoord])
+    }
+  }
+
+  computedEdges.value = edgeCoordinatesPairs
+}
 
 const getNodeCoordinateMap = computed(() => {
   const map = new Map()
@@ -235,16 +267,10 @@ const tileProviders = [
   },
 ]
 
-defineExpose({ invalidateSizeFn })
+defineExpose({ invalidateSizeFn, setBoundingBox, flyToNode })
 </script>
 
 <style scoped>
-.search-bar {
-  position: absolute;
-  margin-left: 10px;
-  margin-bottom: 23px;
-  margin-top: -5px;
-}
 .geo-map {
   height: 100%;
 }
@@ -270,10 +296,14 @@ defineExpose({ invalidateSizeFn })
       &.NORMAL {
         background: var($success);
       }
-      &.WARNING,
-      &.MINOR,
+      &.WARNING {
+        background: #fffb00ea;
+      }
+      &.MINOR {
+        background-color: var($warning);
+      }
       &.MAJOR {
-        background: var($warning);
+        background: #ff3c00;
       }
       &.CRITICAL {
         background: var($error);

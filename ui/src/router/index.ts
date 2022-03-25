@@ -18,11 +18,6 @@ const router = createRouter({
       component: () => import('@/containers/NodeDetails.vue')
     },
     {
-      path: '/plugin-management',
-      name: 'Plugin Management',
-      component: () => import('@/containers/PluginManagement.vue')
-    },
-    {
       path: '/plugins/:extensionId/:resourceRootPath/:moduleFileName',
       name: 'Plugin',
       props: true,
@@ -46,6 +41,12 @@ const router = createRouter({
           component: () => import('@/components/Inventory/StepSchedule.vue')
         }
       ]
+    },
+    {
+      path: '/plugins/:extensionId/:resourceRootPath/:moduleFileName',
+      name: 'Plugin',
+      props: true,
+      component: () => import('@/containers/Plugin.vue')
     },
     {
       path: '/file-editor',
@@ -75,7 +76,7 @@ const router = createRouter({
       ]
     },
     {
-      path: '/resource-graphs',
+      path: '/resource-graphs/:name?',
       name: 'ResourceGraphs',
       component: () => import('@/containers/ResourceGraphs.vue'),
       children: [

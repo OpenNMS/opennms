@@ -23,17 +23,21 @@ aliases:
       esac
       echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
       echo "export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=\"$DCT_DELEGATE_KEY_PASSPHRASE\"" >> $BASH_ENV
-      echo "export MINION_IMAGE=docker.io/opennms/minion" >> $BASH_ENV
+      echo "export MINION_DK_REPO=docker.io/opennms/minion" >> $BASH_ENV
       echo "export MINION_IMAGE_VERSION=\"$MINION_IMAGE_VERSION\"" >> $BASH_ENV
+      echo "export MINION_AZ_REPO=opennmspubacr.azurecr.io/opennms/minion" >> $BASH_ENV
+      echo "export KEY_FOLDER=~/.docker/trust/private" >> $BASH_ENV
   - &setup_dct_key
     name: Setup DCT key
     command: |
-      KEY_FOLDER=~/.docker/trust/private
       mkdir -p $KEY_FOLDER
       # the key that is used to sign single-arch images
       echo "$DCT_DELEGATE_KEY" | base64 -d > $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
       # the key that is used by Notary to sign the multi-arch minion image
       echo "$DCT_REPO_MINION_KEY" | base64 -d > $KEY_FOLDER/$DCT_REPO_MINION_KEY_NAME.key
+      # Azure - key IDs has to match the original IDs
+      echo "$AZURE_DCT_CI_KEY" | base64 -d > $KEY_FOLDER/$AZURE_DCT_CI_KEY_ID.key
+      echo "$AZURE_DCT_REPO_MINION_KEY" | base64 -d > $KEY_FOLDER/$AZURE_DCT_REPO_MINION_KEY_ID.key
       chmod 600 $KEY_FOLDER/*
       # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
       # that is required for loading the
@@ -110,7 +114,6 @@ commands:
             command: |
               ./compile.pl -t \
                 -Dbuild.skip.tarball=true \
-                -DupdatePolicy=never \
                 --update-plugins \
                 -Daether.connector.resumeDownloads=false \
                 -Daether.connector.basic.threads=1 \
@@ -137,15 +140,15 @@ commands:
             command: find core/web-assets -name package\*.json -o -name bower.json | grep -v /target/ | sort -u | xargs cat > nodejs-dependency-json-cache.key
         - restore_cache:
             keys:
-              - nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
-              - nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-
+              - nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+              - nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
   save-nodejs-cache:
     description: "NodeJS: Save cache"
     steps:
       - save_cache:
-          key: nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+          key: nodejs-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
           paths:
-            - core/web-assets/node_modules
+            - ~/.npm
   restore-sonar-cache:
       description: "Sonar: Restore sonar cache"
       steps:
@@ -169,6 +172,18 @@ commands:
               docker login -u ${DOCKERHUB_LOGIN} -p ${DOCKERHUB_PASS}
             else
               echo "WARNING: dockerhub login not found. Assuming this is a PR or other external branch build."
+            fi
+  acr-login:
+    description: "Connect to Azure Container Registry"
+    steps:
+      - run:
+          name: Login to ACR
+          command: |
+            PUBACR=opennmspubacr.azurecr.io
+            if [ -n "${AZURE_SP_PASSWORD}" ]; then
+              docker login -u ${AZURE_SP} -p ${AZURE_SP_PASSWORD} ${PUBACR}
+            else
+              echo "WARNING: Azure credentials not found. Assuming this is a PR or other external branch build."
             fi
   run-smoke-tests:
     description: "Run the smoke tests"
@@ -269,7 +284,7 @@ commands:
             .circleci/scripts/configure-signing.sh
             ./clean.pl
             << parameters.node-memory >>
-            export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             MAVEN_TARGETS="install"
             case "${CIRCLE_BRANCH}" in
               "master-"*|"release-"*|develop|jira/NMS-13820)
@@ -278,7 +293,6 @@ commands:
                 ;;
             esac
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
-              -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -565,7 +579,9 @@ workflows:
           matrix:
             parameters:
               architecture: [linux/amd64,linux/arm64,linux/arm/v7]
-          context: "docker-content-trust"
+          context:
+            - docker-content-trust
+            - azure-sp-dct
           requires:
             - horizon-deb-build
             - minion-deb-build
@@ -583,7 +599,9 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
       - minion-image-multi-arch:
-          context: "docker-content-trust"
+          context:
+            - docker-content-trust
+            - azure-sp-dct
           requires:
             - minion-image-single-arch
           filters:
@@ -872,7 +890,7 @@ jobs:
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
-    resource_class: large
+    resource_class: xlarge
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     parameters:
@@ -895,14 +913,14 @@ jobs:
             sudo chmod a+x /usr/local/bin/docker-buildx
             sudo systemctl restart docker
       - dockerhub-login
+      - acr-login
       - run:
           name: Assemble tarballs and related artifacts
           command: |
-            export MAVEN_OPTS="-Xmx4g -Xms4g"
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             # general assembly
             date
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
-              -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -982,6 +1000,7 @@ jobs:
             sudo chmod a+x /usr/local/bin/docker-buildx
             sudo systemctl restart docker
       - dockerhub-login
+      - acr-login
       - run: *setup_dct_env
       - run: *setup_dct_key
       - run:
@@ -996,7 +1015,13 @@ jobs:
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
-            docker push ${MINION_IMAGE}:${TAG}
+            docker push ${MINION_DK_REPO}:${TAG}
+            echo "pushed to DK"
+            docker tag ${MINION_DK_REPO}:${TAG} ${MINION_AZ_REPO}:${TAG}
+            export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${AZURE_DCT_CI_PASSPHRASE}
+            docker trust key load $KEY_FOLDER/$AZURE_DCT_CI_KEY_ID.key
+            docker push ${MINION_AZ_REPO}:${TAG}
+            echo "pushed to AZ"
 
   minion-image-multi-arch:
     machine:
@@ -1007,6 +1032,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - dockerhub-login
+      - acr-login
       - run: *setup_dct_env
       - run: *setup_dct_key
       - run:
@@ -1017,38 +1043,61 @@ jobs:
       - run:
           name: Create & push multi-arch manifest
           command: |
-            IMAGE_REF="${MINION_IMAGE}:${MINION_IMAGE_VERSION}"
-            docker manifest create ${IMAGE_REF} \
-              ${IMAGE_REF}-linux-amd64 \
-              ${IMAGE_REF}-linux-arm64 \
-              ${IMAGE_REF}-linux-arm-v7 \
-              --amend
-            SHA_256="$(docker manifest push "${IMAGE_REF}" --purge | cut -d ':' -f 2)"
-            echo "Manifest SHA-256: ${SHA_256}"
-            echo "Image-Ref: ${IMAGE_REF}"
-            MANIFEST_FROM_REG="$(docker manifest inspect "${IMAGE_REF}" -v)";
-            BYTES_SIZE="$(printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor.size' | uniq)";
-            echo "Manifest-inspect BYTES: ${BYTES_SIZE}";
-            echo "Manifest contents:\n";
-            printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor | "Architecture: " + .platform.architecture + .platform.variant + ", digest: " + .digest';
+            create_and_push_manifest(){
+              IMAGE_REF="${1}:${MINION_IMAGE_VERSION}"
+              docker manifest create ${IMAGE_REF} \
+                ${IMAGE_REF}-linux-amd64 \
+                ${IMAGE_REF}-linux-arm64 \
+                ${IMAGE_REF}-linux-arm-v7 \
+                --amend
+              SHA_256="$(docker manifest push "${IMAGE_REF}" --purge | cut -d ':' -f 2)"
+              echo "Manifest SHA-256: ${SHA_256}"
+              echo "Image-Ref: ${IMAGE_REF}"
+              MANIFEST_FROM_REG="$(docker manifest inspect "${IMAGE_REF}" -v)";
+              BYTES_SIZE="$(printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor.size' | uniq)";
+              echo "Manifest-inspect BYTES: ${BYTES_SIZE}";
+              echo "Manifest contents:\n";
+              printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor | "Architecture: " + .platform.architecture + .platform.variant + ", digest: " + .digest';
+              export SHA_256_${2}="${SHA_256}"
+              export BYTES_SIZE_${2}="${BYTES_SIZE}"
+            }
+
+            # Docker multi-arch manifest
+            create_and_push_manifest $MINION_DK_REPO DK
+
+            # Azure multi-arch manifest
+            create_and_push_manifest $MINION_AZ_REPO AZ
+
+            # Notary sign on Docker
             export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
-            echo "Sign ${SHA_256} with the notary"
+            echo "Sign ${SHA_256_DK} with Docker notary"
             # when the multi-arch image is signed by the delegate key then docker pull reports "No valid trust data..."
             # -> the following lines can not be used:
             #
             # export NOTARY_DELEGATION_PASSPHRASE="${DCT_DELEGATE_KEY_PASSPHRASE}"
-            # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" 946 --sha256 "${SHA_256}" --roles targets/opennms-circle-delegate --publish --verbose
+            # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_DK_REPO}" "${MINION_IMAGE_VERSION}" 946 --sha256 "${SHA_256_DK}" --roles targets/opennms-circle-delegate --publish --verbose
             #
             # -> use the targets key of the minion repository to sign the multi-arch image instead
             export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
-            notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
-            echo "Done!"
-            # notary -s https://notary.docker.io list "${IMAGE}"
+            notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_DK_REPO}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE_DK}" --sha256 "${SHA_256_DK}" --publish --verbose
+            echo "Dockerhub Done!"
+            # notary -d ~/.docker/trust/ -s https://notary.docker.io list "${MINION_DK_REPO}"
+
+            # Notary sign on Azure
+            NOTARY_AZ_SERVER="https://opennmspubacr.azurecr.io"
+            export NOTARY_AUTH="$(printf "${AZURE_SP}:${AZURE_SP_PASSWORD}" | base64 -w0)"
+
+            # publishing a new manifests requires targets key
+            export NOTARY_TARGETS_PASSPHRASE="${AZURE_DCT_REPO_MINION_KEY_PASSPHRASE}"
+            echo "Sign ${SHA_256_AZ} with Azure notary"
+            notary -d ~/.docker/trust/ -s "${NOTARY_AZ_SERVER}" addhash "${MINION_AZ_REPO}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE_AZ}" --sha256 "${SHA_256_AZ}" --publish --verbose
+            echo "ACR Done!"
+            # notary -d ~/.docker/trust/ -s "${NOTARY_AZ_SERVER}" list "${MINION_AZ_REPO}"
 
   horizon-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1060,6 +1109,7 @@ jobs:
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
@@ -1089,7 +1139,7 @@ jobs:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     # Will need to increase resource class if horizon-rpm-build is under 15 min
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1102,6 +1152,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
@@ -1118,7 +1169,7 @@ jobs:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     # Will need to increase resource class if horizon-rpm-build is under 19 min
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1131,6 +1182,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
@@ -1175,6 +1227,7 @@ jobs:
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=2
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makedeb.sh opennms
       - sign-packages/sign-debs:
           skip_if_forked_pr: true
@@ -1203,7 +1256,7 @@ jobs:
           source_path: target/debs
   minion-deb-build:
     executor: debian-build-executor
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1216,6 +1269,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makedeb.sh minion
       - sign-packages/sign-debs:
           skip_if_forked_pr: true
@@ -1230,7 +1284,7 @@ jobs:
           source_path: target/debs
   sentinel-deb-build:
     executor: debian-build-executor
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1243,6 +1297,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makedeb.sh sentinel
       - sign-packages/sign-debs:
           skip_if_forked_pr: true
@@ -1262,6 +1317,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
+      - acr-login
       - load-oci:
           key: horizon
       - run:
@@ -1277,6 +1333,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
+      - acr-login
       - load-oci:
           key: sentinel
       - run:
@@ -1288,6 +1345,7 @@ jobs:
   integration-test:
     executor: integration-test-executor
     parallelism: 8
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1296,6 +1354,7 @@ jobs:
   integration-test-with-coverage:
     executor: integration-test-executor
     parallelism: 10
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -1321,7 +1380,7 @@ jobs:
           name: Run SonarQube Code Analysis
           when: always
           command: |
-            export MAVEN_OPTS="-Xms3G -Xmx3G"
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/sonar.sh
       - save-sonar-cache
   smoke-test-core:
@@ -1512,4 +1571,3 @@ jobs:
           name: Publish Packages
           command: |
             .circleci/scripts/publish-cloudsmith.sh
-

@@ -45,19 +45,13 @@
         :icon="Reporting"
         title="Resource Graphs"
       />
-      <FeatherRailItem
-        :class="{ selected: isSelected('/plugin-management') }"
-        href="#/plugin-management"
-        :icon="UpdateUtilities"
-        title="Plugin Management"
-      />
 
       <!-- loop plugin menu items -->
       <FeatherRailItem
-        v-for="plugin of enabledPlugins"
-        :key="plugin.extensionID"
-        :class="{ selected: isSelected(`/plugins/${plugin.extensionID}/${plugin.resourceRootPath}/${plugin.moduleFileName}`) }"
-        :href="`#/plugins/${plugin.extensionID}/${plugin.resourceRootPath}/${plugin.moduleFileName}`"
+        v-for="plugin of plugins"
+        :key="plugin.extensionId"
+        :class="{ selected: isSelected(`/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`) }"
+        :href="`#/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`"
         :title="plugin.menuEntry"
         :icon="UpdateUtilities"
       />
@@ -65,9 +59,7 @@
   </FeatherNavigationRail>
 </template>
 <script setup lang=ts>
-import { computed } from 'vue'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
 import Instances from '@featherds/icon/hardware/Instances'
 import VirtualMachineAlt from '@featherds/icon/hardware/VirtualMachineAlt'
 import AddNote from '@featherds/icon/action/AddNote'
@@ -84,14 +76,17 @@ import { Plugin } from '@/types'
 
 const store = useStore()
 const route = useRoute()
-const enabledPlugins = computed<Plugin[]>(() => store.state.pluginModule.enabledPlugins)
+const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
 const isAdmin = computed(() => store.getters['authModule/isAdmin'])
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRailOpen.value)
 const isSelected = (path: string) => path === route.fullPath
 </script>
 
-<style scopes lang="scss">
+<style lang="scss">
+.nav-rail {
+  z-index: 999;
+}
 .nav-header {
   display: none !important;
 }

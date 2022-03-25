@@ -18,6 +18,7 @@ import helpModule from './help'
 import notificationModule from './notification'
 import resourceModule from './resource'
 import graphModule from './graph'
+import topologyModule from './topology'
 import pluginModule from './plugin'
 
 export default createStore({
@@ -39,6 +40,7 @@ export default createStore({
     notificationModule,
     resourceModule,
     graphModule,
+    topologyModule,
     pluginModule
   }
 })

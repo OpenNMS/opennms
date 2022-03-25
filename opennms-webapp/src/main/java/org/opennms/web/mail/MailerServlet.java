@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,9 @@
 
 package org.opennms.web.mail;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
-import java.io.StringWriter;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -41,10 +38,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.validator.routines.EmailValidator;
+import org.opennms.core.utils.StreamUtils;
+import org.opennms.javamail.JavaMailer;
+import org.opennms.javamail.JavaMailerException;
+import org.opennms.web.servlet.MissingParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.utils.StreamUtils;
-import org.opennms.web.servlet.MissingParameterException;
 
 /**
  * <p>MailerServlet class.</p>
@@ -61,11 +61,11 @@ public class MailerServlet extends HttpServlet {
     private static final long serialVersionUID = -6241742874510146572L;
 
     /** Constant <code>REQUIRED_FIELDS="new String[] { sendto, subject, usernam"{trunked}</code> */
-    protected static final String[] REQUIRED_FIELDS = new String[] { "sendto", "subject", "username", "msg" };
+    protected static final String[] REQUIRED_FIELDS = new String[] { "sendto", "subject", "msg" };
 
     protected String redirectSuccess;
 
-    protected String mailProgram;
+    protected EmailValidator emailValidator = EmailValidator.getInstance();
 
     /**
      * <p>init</p>
@@ -77,14 +77,9 @@ public class MailerServlet extends HttpServlet {
         ServletConfig config = this.getServletConfig();
 
         this.redirectSuccess = config.getInitParameter("redirect.success");
-        this.mailProgram = config.getInitParameter("mail.program");
 
         if (this.redirectSuccess == null) {
             throw new ServletException("Missing required init parameter: redirect.success");
-        }
-
-        if (this.mailProgram == null) {
-            throw new ServletException("Missing required init parameter: mail.program");
         }
     }
 
@@ -101,6 +96,9 @@ public class MailerServlet extends HttpServlet {
         if (sendto == null) {
             throw new MissingParameterException("sendto", REQUIRED_FIELDS);
         }
+        else if (!emailValidator.isValid(sendto)) {
+            throw new IllegalArgumentException("sendto is an invalid email address.");
+        }
 
         if (subject == null) {
             throw new MissingParameterException("subject", REQUIRED_FIELDS);
@@ -110,37 +108,21 @@ public class MailerServlet extends HttpServlet {
             throw new MissingParameterException("msg", REQUIRED_FIELDS);
         }
 
-        if (username == null) {
-            username = "";
-        }
-
-        String[] cmdArgs = { this.mailProgram, "-s", subject, sendto };
-        Process process = Runtime.getRuntime().exec(cmdArgs);
-
-        // send the message to the stdin of the mail command
-        PrintWriter stdinWriter = new PrintWriter(process.getOutputStream());
-        stdinWriter.print(msg);
-        stdinWriter.close();
-
-        // get the stderr to see if the command failed
-        BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-
-        if (err.ready()) {
-            // get the error message
-            StringWriter tempErr = new StringWriter();
-            StreamUtils.streamToStream(err, tempErr);
-            String errorMessage = tempErr.toString();
-
-            // log the error message
-            LOG.warn("Read from stderr: {}", errorMessage);
-
-            // send the error message to the client
-            response.setContentType("text/plain");
-            PrintWriter out = response.getWriter();
-            StreamUtils.streamToStream(new StringReader(errorMessage), out);
-            out.close();
-        } else {
+        try {
+            // All other settings are handled internal to JavaMailer via
+            // javamail-configuration.properties
+            JavaMailer mailer = new JavaMailer();
+            mailer.setTo(sendto);
+            mailer.setSubject(subject);
+            mailer.setMessageText(msg);
+            mailer.mailSend();
             response.sendRedirect(this.redirectSuccess);
+        }
+        catch (JavaMailerException jme) {
+            LOG.warn("Issue encountered when sending email", jme);
+            PrintWriter out = response.getWriter();
+            StreamUtils.streamToStream(new StringReader(jme.getMessage()), out);
+            out.close();
         }
     }
 }

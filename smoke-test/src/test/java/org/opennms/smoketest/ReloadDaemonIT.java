@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.smoketest;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.opennms.netmgt.events.api.EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI;
 
@@ -73,7 +74,7 @@ public class ReloadDaemonIT {
         }
 
         final EventDao eventDao = stack.postgres().getDaoFactory().getDao(EventDaoHibernate.class);
-        await().atMost(45, SECONDS).pollInterval(2, SECONDS).until(new Callable<Boolean>() {
+        await().atMost(2, MINUTES).pollInterval(2, SECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 long eventCount = eventDao.findMatching(

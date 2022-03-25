@@ -50,7 +50,6 @@ The service is considered available if a successful connection is made.
 | client-id
 | The client ID to use when connecting to the ActiveMQ broker.
 | n/a
-
 |===
 
 This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

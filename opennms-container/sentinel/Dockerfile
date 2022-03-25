@@ -2,11 +2,11 @@
 # Use Java base image and setup required RPMS as cacheable image.
 ##
 ARG BASE_IMAGE="opennms/openjdk"
-ARG BASE_IMAGE_VERSION="11.0.13.0.0.8-b8171"
+ARG BASE_IMAGE_VERSION="11.0.14.0.9-b8239"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as sentinel-base
 
-ARG REQUIRED_RPMS="wget gettext openssh-clients"
+ARG REQUIRED_RPMS="hostname wget gettext openssh-clients"
 
 ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
 ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
@@ -126,7 +126,6 @@ ENV SENTINEL_HOME="/opt/sentinel" \
     SENTINEL_ID="" \
     SENTINEL_LOCATION="SENTINEL" \
     OPENNMS_BROKER_URL="tcp://127.0.0.1:61616" \
-    OPENNMS_HTTP_URL="http://127.0.0.1:8980/opennms" \
     OPENNMS_HTTP_USER="minion" \
     OPENNMS_HTTP_PASS="minion" \
     OPENNMS_BROKER_USER="minion" \

@@ -7,9 +7,7 @@ Sentinel can do the following:
 
 * Persist network flow messages with Sentinel to Elasticsearch
 * Consume flow messages from Minions through a message broker (ActiveMQ or Apache Kafka)
-* Generate and send events to Horizon Core instance via message broker
-
-Follow the procedures below to set up Sentinel to scale your flows data.
+* Generate and send events to the {page-component-title} core instance via message broker
 
 .Flow integration with Sentinel
 image::flows/flow_integration_sentinel.png[width=70%]
@@ -20,9 +18,9 @@ Make sure you have the following:
 
 * xref:operation:flows/basic.adoc#flows-basic[Basic flows environment] set up
 * xref:deployment:sentinel/runtime/install.adoc#install-sentinel[Sentinel installed] on your system
-* PostgreSQL, Elasticsearch, and REST endpoint to {page-component-title} Core instance running and reachable from the Sentinel node
+* PostgreSQL, Elasticsearch, and REST endpoint to {page-component-title} core instance running and reachable from the Sentinel node
 * Message broker (ActiveMQ or Apache Kafka) running and reachable from the Sentinel node
-* Credentials for authentication configured for the REST endpoint in the {page-component-title} Core instance, message broker, Elasticsearch, and the PostgreSQL database
+* Credentials for authentication configured for the REST endpoint in the {page-component-title} core instance, message broker, Elasticsearch, and the PostgreSQL database
 
 NOTE: You must set configuration in the `etc` directory relative to the {page-component-title} Sentinel home directory.
       Depending on your operating system, the home directory is `/usr/share/sentinel` for Debian/Ubuntu or `/opt/sentinel` for CentOS/RHEL.

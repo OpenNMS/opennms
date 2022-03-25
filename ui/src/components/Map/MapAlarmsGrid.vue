@@ -90,9 +90,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { computed } from 'vue'
 import { Alarm, AlarmQueryParameters, FeatherSortObject } from '@/types'
 import { FeatherSelect } from '@featherds/select'
 import { FeatherCheckbox } from '@featherds/checkbox'
@@ -228,7 +226,7 @@ thead {
   width: 300px;
   position: absolute;
   right: 30px;
-  top: -15px;
+  top: 7px;
 }
 .first-th {
   padding-left: 20px;
@@ -236,10 +234,14 @@ thead {
 .first-td {
   border-left: 4px solid var($success);
 }
-.WARNING,
-.MINOR,
-.MAJOR {
+.WARNING {
+  border-left: 4px solid #fffb00ea
+}
+.MINOR {
   border-left: 4px solid var($warning);
+}
+.MAJOR {
+  border-left: 4px solid #ff3c00;
 }
 
 .CRITICAL {

@@ -73,13 +73,6 @@ categories:
             description: "Message broker connection URL"
             key: "/broker-url"
             example: "ActiveMQ: failover:[tcp,ssl]://my-activemq-ip:61616, Kafka: broker-01:9092, broker-02:9092"
-          - name: "http-url"
-            type:
-              name: "url"
-            label: "Core base URL"
-            description: "Core instance web application base URL"
-            key: "/http-url"
-            example: "http://my-opennms-instance-ip:8980/opennms"
   # Dominion
   - name: "dominion"
     label: "Dominion"

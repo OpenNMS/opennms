@@ -319,6 +319,7 @@ public class GraphResults {
         m_generatedId = generatedId;
     }
 
+    /** Represents a group of graphs within a resource. */
     public class GraphResultSet {
         private List<Graph> m_graphs = null;
         

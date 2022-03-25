@@ -81,12 +81,17 @@ sudo apt update && \
                 jicmp \
                 jicmp6 \
             || exit 1
+
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+
+export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
+
+# Set higher open files limit
+ulimit -n 65536
 
 echo "#### Building Assembly Dependencies"
 ./compile.pl install -P'!checkstyle' \
            -Pbuild-bamboo \
-           -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
            -Dmaven.test.skip.exec=true \
            -DskipTests=true \
@@ -100,7 +105,6 @@ echo "#### Building Assembly Dependencies"
 echo "#### Executing tests"
 ./compile.pl install -P'!checkstyle' \
            -Pbuild-bamboo \
-           -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
            -DfailIfNoTests=false \
            -DskipITs=false \

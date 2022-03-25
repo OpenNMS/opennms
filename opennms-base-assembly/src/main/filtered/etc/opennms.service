@@ -12,8 +12,8 @@ Type=forking
 RuntimeDirectory=opennms
 PIDFile=${install.pid.file}
 
-ExecStart=${install.init.dir}/opennms -s start
-ExecStop=${install.init.dir}/opennms stop
+ExecStart=${install.bin.dir}/opennms -s start
+ExecStop=${install.bin.dir}/opennms stop
 
 [Install]
 WantedBy=multi-user.target

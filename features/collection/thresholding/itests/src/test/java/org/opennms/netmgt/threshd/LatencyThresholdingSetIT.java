@@ -64,6 +64,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
@@ -145,8 +146,6 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
     @Autowired
     private ApplicationContext m_context;
 
-    private FilesystemResourceStorageDao m_resourceStorageDao;
-
     private IfLabel m_ifLabelDao;
 
     private Map<String, String> mockIfInfo;
@@ -169,7 +168,6 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
     
     @Autowired
     private OverrideableThresholdingDao thresholdingDao;
-
 
     private static final Comparator<Parm> PARM_COMPARATOR = new Comparator<Parm>() {
         @Override
@@ -252,14 +250,12 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         BeanUtils.setStaticApplicationContext(m_context);
 
         // Resets Counters Cache Data
+        AbstractThresholdEvaluatorState.serdesMap.clear();
         CollectionResourceWrapper.s_cache.clear();
 
         MockLogAppender.setupLogging();
 
         m_fileAnticipator = new FileAnticipator();
-
-        m_resourceStorageDao = new FilesystemResourceStorageDao();
-        m_resourceStorageDao.setRrdDirectory(m_fileAnticipator.getTempDir());
 
         // Use a mock FilterDao that always returns 127.0.0.1 in the active IP list
         FilterDao filterDao = mock(FilterDao.class);
@@ -327,7 +323,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, IfLabel.NO_IFLABEL, "127.0.0.1[HTTP]", "http", IfLabel.NO_IFLABEL, null,
                  m_eventIpcManager.getEventAnticipator(), m_anticipatedEvents);
 
-        ThresholdingSession session = m_thresholdingService.createSession(m_nodeId, m_ipAddress, m_svcName, getRepository(), m_serviceParams);
+        ThresholdingSession session = m_thresholdingService.createSession(m_nodeId, m_ipAddress, m_svcName, m_serviceParams);
         for (int i = 0; i < 5; i++) {
             session.accept(collectionSet);
         }
@@ -361,7 +357,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
                  m_eventIpcManager.getEventAnticipator(), m_anticipatedEvents);
 
         ServiceParameters serviceParams = new ServiceParameters(Collections.emptyMap());
-        ThresholdingSession session = m_thresholdingService.createSession(m_nodeId, m_ipAddress, "StrafePing", getRepository(), serviceParams);
+        ThresholdingSession session = m_thresholdingService.createSession(m_nodeId, m_ipAddress, "StrafePing", serviceParams);
         CollectionSet collectionSet = getCollectionSet(1, m_ipAddress, "StrafePing", m_location, getRepository(), attributes);
         session.accept(collectionSet);
 
@@ -383,7 +379,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         when(m_ifLabelDao.getIfLabel(anyInt(), any(InetAddress.class))).thenReturn(ifName);
         when(m_ifLabelDao.getInterfaceInfoFromIfLabel(anyInt(), anyString())).thenReturn(mockIfInfo);
 
-        ThresholdingSession session = m_thresholdingService.createSession(m_nodeId, m_ipAddress, m_svcName, getRepository(), m_serviceParams);
+        ThresholdingSession session = m_thresholdingService.createSession(m_nodeId, m_ipAddress, m_svcName, m_serviceParams);
 
         Map<String, Double> attributes = new HashMap<String, Double>();
         attributes.put("http", 90.0);
@@ -431,7 +427,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         when(m_ifLabelDao.getIfLabel(anyInt(), any(InetAddress.class))).thenReturn(ifName);
         when(m_ifLabelDao.getInterfaceInfoFromIfLabel(anyInt(), anyString())).thenReturn(mockIfInfo);
 
-        ThresholdingSession session = m_thresholdingService.createSession(m_nodeId, m_ipAddress, m_svcName, getRepository(), m_serviceParams);
+        ThresholdingSession session = m_thresholdingService.createSession(m_nodeId, m_ipAddress, m_svcName, m_serviceParams);
 
         Map<String, Double> attributes = new HashMap<String, Double>();
         attributes.put("http", 90.0);

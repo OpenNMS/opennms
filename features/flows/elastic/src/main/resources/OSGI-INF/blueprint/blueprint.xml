@@ -31,6 +31,8 @@
             <cm:property name="nodeCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
             <cm:property name="nodeCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
             <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
+            <cm:property name="flowThreshold.stepSizeMs" value="300000"/>
+            <cm:property name="flowThreshold.idleTimeoutMs" value="900000"/>
             <cm:property name="skipElasticsearchPersistence" value="false"/> <!-- Set to false to disable persisting flows to ES. -->
 
             <!-- Bulk Action settings -->
@@ -133,6 +135,7 @@
     <!-- Enrichment -->
     <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
     <reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory" />
@@ -141,6 +144,7 @@
         <argument ref="flowRepositoryMetricRegistry" />
         <argument ref="classificationEngine" />
         <argument ref="nodeDao" />
+        <argument ref="ipInterfaceDao" />
         <argument ref="interfaceToNodeCache" />
         <argument ref="sessionUtils" />
         <argument ref="nodeCacheConfig" />
@@ -206,6 +210,26 @@
     </bean>
     <service interface="org.opennms.netmgt.flows.api.FlowQueryService" ref="smartQueryService" />
 
+    <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
+    <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"/>
+    <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
+    <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao"/>
+
+    <!-- Thresholding -->
+    <bean id="flowThresholding" class="org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding" destroy-method="close">
+        <argument ref="thresholdingService"/>
+        <argument ref="collectionAgentFactory"/>
+        <argument ref="persisterFactory"/>
+        <argument ref="ipInterfaceDao"/>
+        <argument ref="distPollerDao"/>
+        <argument ref="snmpInterfaceDao"/>
+        <argument ref="filterDao"/>
+
+        <property name="stepSizeMs" value="${flowThreshold.stepSizeMs}"/>
+        <property name="idleTimeoutMs" value="${flowThreshold.idleTimeoutMs}"/>
+    </bean>
+
     <!-- The repository -->
     <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository"
           init-method="start" destroy-method="stop">
@@ -220,6 +244,7 @@
         <argument ref="tracerRegistry"/>
         <argument ref="enrichedFlowForwarder"/>
         <argument ref="rawIndexSettings"/>
+        <argument ref="flowThresholding"/>
 
         <property name="enableFlowForwarding" value="${enableForwarding}"/>
         <property name="bulkRetryCount" value="${bulkRetryCount}"/>

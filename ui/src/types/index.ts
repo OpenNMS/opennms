@@ -14,14 +14,16 @@ export interface SearchResultResponse {
   }
   empty: boolean
   more: boolean
-  results: {
-    identifier: string
-    label: string
-    matches: any
-    properties: any
-    url: string
-    weight: number
-  }[]
+  results: SearchResult[]
+}
+
+export interface SearchResult {
+  identifier: string
+  label: string
+  matches: any
+  properties: any
+  url: string
+  weight: number
 }
 
 export interface ApiResponse {
@@ -39,10 +41,6 @@ export interface EventApiResponse extends ApiResponse {
 
 export interface AlarmApiResponse extends ApiResponse {
   alarm: Alarm[]
-}
-export interface GraphNodesApiResponse {
-  vertices: Vertice[]
-  edges: Edge[]
 }
 
 export interface SnmpInterfaceApiResponse extends ApiResponse {
@@ -354,11 +352,6 @@ export interface WhoAmIResponse {
   roles: string[]
 }
 
-export interface FileEditorResponseLog {
-  success: boolean
-  msg: string
-}
-
 export interface AppInfo {
   datetimeformatConfig: {
     zoneId: string
@@ -514,9 +507,8 @@ export interface Expression {
 }
 
 export interface Plugin {
-  extensionID: string
+  extensionId: string
   menuEntry: string
   moduleFileName: string
   resourceRootPath: string
-  enabled: boolean
 }

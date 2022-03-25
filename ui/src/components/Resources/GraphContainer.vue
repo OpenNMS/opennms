@@ -21,7 +21,7 @@
   
 <script setup lang=ts>
 import { StartEndTime } from '@/types'
-import { PropType, computed } from 'vue'
+import { PropType } from 'vue'
 import Graph from './Graph.vue'
 
 defineEmits(['addGraphDefinition'])

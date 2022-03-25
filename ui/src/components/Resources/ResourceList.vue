@@ -9,6 +9,7 @@
       <FeatherList>
         <FeatherListHeader>Resources</FeatherListHeader>
         <FeatherListItem
+          :class="{ selected: resource.name === selectedResourceName }"
           v-for="resource in resources"
           :key="resource.label"
           @click="selectResource(resource.name)"
@@ -19,7 +20,6 @@
 </template>
   
 <script setup lang=ts>
-import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import {
@@ -28,20 +28,26 @@ import {
   FeatherList
 } from '@featherds/list'
 import { Resource } from '@/types'
+import { useRoute } from 'vue-router'
 
 const store = useStore()
-
+const route = useRoute()
 const searchValue = ref('')
-
+const selectedResourceName = ref('')
 const resources = computed<Resource[]>(() => store.getters['resourceModule/getFilteredResourcesList'])
 
 const search = (val: string) => store.dispatch('resourceModule/setSearchValue', val || '')
-const selectResource = (name: string) => { 
+const selectResource = (name: string) => {
   store.dispatch('resourceModule/getResourcesForNode', name)
   store.dispatch('graphModule/getPreFabGraphs', name)
+  selectedResourceName.value = name
 }
+
+onMounted(() => {
+  const defaultSelectedResource = route.params.name as string
+  if (defaultSelectedResource) {
+    selectResource(defaultSelectedResource)
+    selectedResourceName.value = defaultSelectedResource
+  }
+})
 </script>
-  
-<style scoped lang="scss">
-</style>
-  
