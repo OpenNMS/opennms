@@ -67,6 +67,11 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>org.opennms.dependencies</groupId>
+			<artifactId>jaxb-dependencies</artifactId>
+			<type>pom</type>
+		</dependency>
+		<dependency>
 			<groupId>org.opennms.features.ticketing</groupId>
 			<artifactId>org.opennms.features.ticketing.api</artifactId>
 		</dependency>

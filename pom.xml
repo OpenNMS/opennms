@@ -1179,6 +1179,12 @@
                <!-- ban dependencies that should be replaced with custom or better stuff -->
                <bannedDependencies>
                  <excludes>
+
+                   <!-- use org.opennms.dependencies:jaxb-dependencies:pom -->
+                   <exclude>com.sun.xml.bind:*</exclude>
+                   <exclude>com.sun.xml.bind.mvn:*</exclude>
+                   <exclude>org.glassfish.jaxb:jaxb-core</exclude>
+
                  </excludes>
                </bannedDependencies>
              </rules>
@@ -1737,6 +1743,10 @@
     <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
+    <!-- this should match what's in Karaf's lib/jdk9plus directory -->
+    <jaxbRuntimeVersion>2.3.3</jaxbRuntimeVersion>
+    <!-- this should match what's in Karaf's lib/jdk9plus directory -->
+    <jakartaXmlBindVersion>2.3.3</jakartaXmlBindVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.4.44.v20210927</jettyVersion>
@@ -3877,6 +3887,10 @@
           </exclusion>
           <exclusion>
             <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
           </exclusion>
         </exclusions>
@@ -4189,6 +4203,24 @@
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernateValidatorVersion}</version>
       </dependency>
+      <!-- this should match what's in Karaf's lib/jdk9plus directory -->
+      <dependency>
+        <groupId>com.sun.istack</groupId>
+        <artifactId>istack-commons-runtime</artifactId>
+        <version>3.0.10</version>
+      </dependency>
+      <!-- this should match what's in Karaf's lib/jdk9plus directory -->
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>txw2</artifactId>
+        <version>${jaxbRuntimeVersion}</version>
+      </dependency>
+      <!-- this should match what's in Karaf's lib/jdk9plus directory -->
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>1.3.1</version>
+      </dependency>
       <dependency>
         <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
@@ -4198,6 +4230,12 @@
         <groupId>javax.annotation</groupId>
         <artifactId>jsr250-api</artifactId>
         <version>1.0</version>
+      </dependency>
+      <!-- this should match what's in Karaf's lib/jdk9plus directory -->
+      <dependency>
+        <groupId>com.sun.activation</groupId>
+        <artifactId>javax.activation</artifactId>
+        <version>1.2.0</version>
       </dependency>
       <dependency>
         <groupId>javax.activation</groupId>
@@ -4213,6 +4251,18 @@
         <groupId>com.sun.mail</groupId>
         <artifactId>jakarta.mail</artifactId>
         <version>1.6.7</version>
+      </dependency>
+      <!-- functionally identical to com.sun.activation:javax.activation:1.2.0, don't upgrade further until we can excise other versions -->
+      <!-- yes, that means even 1.2.2, which added a module-info.java and technically could change some things, in theory (at least until it's out of $OPENNMS_HOME/lib) -->
+      <dependency>
+        <groupId>com.sun.activation</groupId>
+        <artifactId>jakarta.activation</artifactId>
+        <version>1.2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.activation</groupId>
+        <artifactId>jakarta.activation-api</artifactId>
+        <version>1.2.2</version>
       </dependency>
       <!-- we want to use JPA 2.0. Do not add javax.persistence/persistence-api! -->
       <dependency>
@@ -4269,17 +4319,7 @@
       <dependency>
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
-        <version>2.3.3</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-        <version>99.99.99-use-opennms-jaxb</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
-        <version>99.99.99-use-opennms-jaxb</version>
+        <version>${jakartaXmlBindVersion}</version>
       </dependency>
       <dependency>
         <groupId>jdom</groupId>
