@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 import javax.persistence.Table;
 
 import com.google.common.collect.Sets;
-import org.apache.commons.lang.SerializationUtils;
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
@@ -52,7 +51,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.metadata.ClassMetadata;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.netmgt.dao.api.OnmsDao;
@@ -62,6 +60,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateQueryException;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 /**
@@ -300,21 +299,18 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         multiAndRestrictionSet.stream().forEach(restriction ->{
             Collection<Restriction> allMultiAndRestrictions = ((AllRestriction) restriction).getRestrictions();
             allMultiAndRestrictions.stream().forEach(singleMultiAndRestriction ->{
-                org.opennms.core.criteria.Criteria copyOfCriteria = new org.opennms.core.criteria.Criteria(OnmsEvent.class);
-                copyOfCriteria.setOrders(criteria.getOrders());
-                copyOfCriteria.setAliases(criteria.getAliases());
-                copyOfCriteria.setFetchTypes(criteria.getFetchTypes());
-                copyOfCriteria.setDistinct(criteria.isDistinct());
-                copyOfCriteria.setLimit(criteria.getLimit());
-                copyOfCriteria.setOffset(criteria.getOffset());
-                copyOfCriteria.setMultipleAnd(criteria.isMultipleAnd());
+                org.opennms.core.criteria.Criteria copyOfCriteria = criteria.clone();
                 copyOfCriteria.setRestrictions(nonMultiAndRestrictionSet);
                 copyOfCriteria.addRestriction(singleMultiAndRestriction);
-                if(allUniqueRecords.isEmpty()) {
-                    allUniqueRecords.addAll(getQueryResult(copyOfCriteria));
-                } else {
-                    allUniqueRecords.addAll(Sets.intersection(allUniqueRecords,
-                            Collections.singleton(new LinkedHashSet<T>(getQueryResult(copyOfCriteria)))));
+                try {
+                    if(allUniqueRecords.isEmpty()) {
+                        allUniqueRecords.addAll(getQueryResult(copyOfCriteria));
+                    } else {
+                        allUniqueRecords.addAll(Sets.intersection(allUniqueRecords,
+                                Collections.singleton(new LinkedHashSet<T>(getQueryResult(copyOfCriteria)))));
+                    }
+                } catch (Exception ex){
+                    LOG.error("Error in execution of query",ex);
                 }
             });
         });

@@ -388,4 +388,40 @@ public class EventDaoIT implements InitializingBean {
        assertEquals("uei://org/opennms/test/EventDaoTest4", events.get(0).getEventUei());
        assertEquals("EventDaoTest4", events.get(0).getEventSource());
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Transactional
+    public void testGetEventsForEventParameters_Case4() {
+        this.setEventsData();
+        List<OnmsEvent> events = null;
+        final CriteriaBuilder cb = new CriteriaBuilder(OnmsEvent.class);
+
+        cb.alias("eventParameters", "eventParameters")
+                .multipleAnd(
+                        Restrictions.and(
+                                Restrictions.eq("eventParameters.name", "instance"),
+                                Restrictions.eq("eventParameters.value", "node1")
+                        ),
+                        Restrictions.and(
+                                Restrictions.eq("eventParameters.name", "trigger"),
+                                Restrictions.eq("eventParameters.value", "2")
+                        ),
+                        Restrictions.and(
+                                Restrictions.eq("eventParameters.name", "ds"),
+                                Restrictions.like("eventParameters.value", "%(memAvailReal + memCached) / memTotalReal * 100.0%")
+                        ),
+                        Restrictions.multipleAnd(
+                                Restrictions.and(
+                                        Restrictions.eq("eventParameters.name", "trigger"),
+                                        Restrictions.eq("eventParameters.value", "2")
+                                ),
+                                Restrictions.and(
+                                        Restrictions.eq("eventParameters.name", "ds"),
+                                        Restrictions.like("eventParameters.value", "%(memAvailReal + memCached) / memTotalReal * 100.0%")
+                                )
+                        )
+
+                );
+        events = m_eventDao.findMatching(cb.toCriteria());
+    }
 }

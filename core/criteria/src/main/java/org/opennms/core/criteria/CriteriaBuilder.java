@@ -32,9 +32,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Fetch.FetchType;
+import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
@@ -94,8 +97,29 @@ public class CriteriaBuilder {
         } else {
             criteria.setRestrictions(m_restrictions);
         }
-
+        if(isNestedMultipleAnd(m_restrictions)){
+            throw new IllegalArgumentException("Use of nested 'multiAnd' is not allowed");
+        }
         return criteria;
+    }
+    private boolean isNestedMultipleAnd(Collection<? extends Restriction> allRestrictions){
+        AtomicBoolean result = new AtomicBoolean(false);
+        //set of multiand allRestrictions
+        Set<Restriction> multiAndRestrictionSet = allRestrictions.stream().filter(
+                restriction -> restriction.getType().equals(Restriction.RestrictionType.MULTIAND)).collect(Collectors.toSet());
+        //iterate over "multiAnd"
+        multiAndRestrictionSet.stream().forEach(restriction ->{
+            //Get all inner restrictions
+            Collection<Restriction> allMultiAndRestrictions = ((AllRestriction) restriction).getRestrictions();
+            //iterate over inner restrictions
+            allMultiAndRestrictions.stream().forEach(singleMultiAndRestriction ->{
+                //check if any "multiAnd" present, then set result true
+                if(singleMultiAndRestriction.getType().equals(Restriction.RestrictionType.MULTIAND)){
+                    result.set(true);
+                }
+            });
+        });
+        return result.get();
     }
 
     public CriteriaBuilder match(final String type) {
@@ -314,7 +338,7 @@ public class CriteriaBuilder {
 
     public CriteriaBuilder multipleAnd(final Restriction... restrictions) {
         m_isMultipleAnd = true;
-        addRestriction(Restrictions.multipleAnd(true, restrictions));
+        addRestriction(Restrictions.multipleAnd(restrictions));
         return this;
     }
 
