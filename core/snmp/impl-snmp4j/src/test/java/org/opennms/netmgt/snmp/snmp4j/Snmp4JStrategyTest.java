@@ -36,6 +36,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
+import org.snmp4j.ScopedPDU;
 
 public class Snmp4JStrategyTest {
 
@@ -70,11 +71,12 @@ public class Snmp4JStrategyTest {
         assertEquals(config.getTimeout(), timeout);
         assertEquals(config.getRetries(), retries);
 
+        pdu = new ScopedPDU();
+
         config = strat.buildAgentConfig(address, port, securityLevel, securityName, authPassPhrase, authProtocol, privPassPhrase, privProocol, pdu);
         assertTrue(InetAddressUtils.str(config.getAddress()).equals(address));
         assertEquals(config.getPort(), port);
-        assertEquals(config.getReadCommunity(), community);
-        assertEquals(config.getVersion(), 1);
+        assertEquals(config.getVersion(), 3);
         assertEquals(config.getSecurityLevel(), securityLevel);
         assertEquals(config.getSecurityName(), securityName);
         assertEquals(config.getAuthPassPhrase(), authPassPhrase);
@@ -85,8 +87,7 @@ public class Snmp4JStrategyTest {
         config = strat.buildAgentConfig(address, port, timeout, retries, securityLevel, securityName, authPassPhrase, authProtocol, privPassPhrase, privProocol, pdu);
         assertTrue(InetAddressUtils.str(config.getAddress()).equals(address));
         assertEquals(config.getPort(), port);
-        assertEquals(config.getReadCommunity(), community);
-        assertEquals(config.getVersion(), 1);
+        assertEquals(config.getVersion(), 3);
         assertEquals(config.getTimeout(), timeout);
         assertEquals(config.getRetries(), retries);
         assertEquals(config.getSecurityLevel(), securityLevel);
