@@ -46,6 +46,12 @@ public interface OspfElementDao extends OnmsDao<OspfElement, Integer> {
 
     public List<OspfElement> findAllByRouterId(InetAddress routerId);
 
+    /**
+     * Returns all OspfElements that have an ospfRouterId that matches an ospfRemRouterId of an OspfLink related to the given
+     * node. Used to retrieve all OspfElements that need to be accessed when finding Ospf links of a node.
+     */
+    List<OspfElement> findByRouterIdOfRelatedOspfLink(int nodeId);
+
     public void deleteByNodeId(Integer nodeId);
 
 }

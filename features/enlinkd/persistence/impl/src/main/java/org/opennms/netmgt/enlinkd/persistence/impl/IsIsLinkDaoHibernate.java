@@ -78,6 +78,13 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
     }
 
     @Override
+    public List<IsIsLink> findBySysIdAndAdjAndCircIndex(int nodeId) {
+        return find("from IsIsLink r where exists (from IsIsElement e, IsIsLink l where " +
+                    "r.node.id = e.node.id AND r.isisISAdjIndex = l.isisISAdjIndex AND r.isisCircIndex = l.isisCircIndex AND " +
+                    "e.isisSysID = l.isisISAdjNeighSysID AND l.node.id = ?)", nodeId);
+    }
+
+    @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
         getHibernateTemplate().bulkUpdate("delete from IsIsLink isisLink where isisLink.node.id = ? and isisLinkLastPollTime < ?",
                                   new Object[] {nodeId, now});
