@@ -583,7 +583,7 @@ workflows:
             - docker-content-trust
             - azure-sp-dct
           requires:
-            - horizon-deb-build
+            - horizon-rpm-build
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
@@ -610,7 +610,17 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
-      - horizon-rpm-build:
+      - horizon-image-single-arch:
+          requires:
+            - horizon-deb-build
+          matrix:
+            parameters:
+              architecture: [linux/arm64]
+          filters:
+            branches:
+              only:
+                - /.*NMS-14096/
+      - horizon-deb-build:
           requires:
             - build
           filters:
@@ -641,7 +651,7 @@ workflows:
       - smoke-test-core:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
+            - horizon-deb-build
             - minion-rpm-build
             - sentinel-rpm-build
           filters:
@@ -657,7 +667,7 @@ workflows:
       - smoke-test-flaky:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
+            - horizon-deb-build
             - minion-rpm-build
             - sentinel-rpm-build
           filters:
@@ -673,7 +683,7 @@ workflows:
       - smoke-test-minion:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
+            - horizon-deb-build
             - minion-rpm-build
             - sentinel-rpm-build
           filters:
@@ -689,7 +699,7 @@ workflows:
       - smoke-test-sentinel:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
+            - horizon-deb-build
             - tarball-assembly
             - sentinel-rpm-build
           filters:
@@ -705,7 +715,7 @@ workflows:
       - smoke-test-minimal:
           requires:
             - tarball-assembly
-            - horizon-rpm-build
+            - horizon-deb-build
             - tarball-assembly
             - sentinel-rpm-build
           filters:
@@ -755,7 +765,7 @@ workflows:
                 - /^release-.*/
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
-      - horizon-deb-build:
+      - horizon-rpm-build:
           requires:
             - integration-test
           filters:
@@ -780,7 +790,7 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-deb-build
+            - horizon-rpm-build
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
@@ -804,7 +814,7 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-deb-build
+            - horizon-rpm-build
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
@@ -820,7 +830,7 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-deb-build
+            - horizon-rpm-build
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
@@ -835,7 +845,7 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-deb-build
+            - horizon-rpm-build
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
@@ -1116,25 +1126,45 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Fetch RPM artifacts and build Horizon container image
-          command: |
-            cd opennms-container/horizon
-            ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/horizon/images/container.oci
-          destination: horizon.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
       - cache-workflow-assets:
           cache_prefix: rpm-horizon
           source_path: target/rpm/RPMS/noarch
-      - cache-oci:
-          key: horizon
-          path: opennms-container/horizon/images/
+
+  horizon-image-single-arch:
+    parameters:
+      architecture:
+        type: string
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: multiarch/qemu-user-static
+          command: docker run --privileged multiarch/qemu-user-static --reset -p yes
+      - run:
+          name: Install Docker buildx
+          command: |
+            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
+            sudo chmod a+x /usr/local/bin/docker-buildx
+            sudo systemctl restart docker
+      - dockerhub-login
+      - acr-login
+      - run:
+          name: Fetch DEB artifacts and build Horizon container image
+          command: |
+            cd opennms-container/horizon
+            env DOCKER_ARCH="<< parameters.architecture >>" ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/horizon/images/container.oci
+          destination: horizon.oci
+
+
   minion-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -1251,9 +1281,22 @@ jobs:
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Fetch DEB artifacts and build Horizon container image
+          command: |
+            cd opennms-container/horizon
+            ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/horizon/images/container.oci
+          destination: horizon.oci
       - cache-workflow-assets:
           cache_prefix: deb-horizon
           source_path: target/debs
+      - cache-oci:
+          key: horizon
+          path: opennms-container/horizon/images/
   minion-deb-build:
     executor: debian-build-executor
     resource_class: xlarge

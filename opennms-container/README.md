@@ -39,7 +39,7 @@ The build can be customized with `--build-arg key=value`.
 | `REPO_KEY_URL`       | URL for the GPG key for RPM repository                                        | optional | `https://yum.opennms.org/OPENNMS-GPG-KEY`
 | `REPO_RPM`           | URL for the repository RPM                                                    | optional | https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
 | `ONMS_PACKAGES`      | OpenNMS packages to install. This is ignored when built from tarball.         | optional | `opennms-core opennms-webapp-jetty opennms-webapp-hawtio`
-| `ADD_YUM_PACKAGES`   | If you want to add additional arbitrary yum packages                          | optional | `-`
+| `ADD_DEB_PACKAGES`   | If you want to add additional arbitrary yum packages                          | optional | `-`
 | `CONFD_VERSION`      | Version of [confd](https://github.com/kelseyhightower/confd/releases) used to customize the configuration | optional | latest stable
 | `CONFD_URL`          | Download URL for confd.                                                       | optional | `https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64`
 | `BUILD_DATE`         | Date the image is created in [RFC 3339](https://tools.ietf.org/html/rfc3339#section-5.6) format | optional | `1970-01-01T00:00:00+0000`
