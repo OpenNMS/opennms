@@ -1722,7 +1722,7 @@
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <junitVintageEngineVersion>5.6.2</junitVintageEngineVersion>
-    <karafVersion>4.3.2</karafVersion>
+    <karafVersion>4.3.6</karafVersion>
     <kafkaBundleVersion>2.8.0_1</kafkaBundleVersion>
     <kafkaVersion>2.8.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
