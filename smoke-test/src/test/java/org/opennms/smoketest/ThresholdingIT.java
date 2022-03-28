@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,6 +37,7 @@ import static org.opennms.netmgt.events.api.EventConstants.ABSOLUTE_CHANGE_THRES
 import static org.opennms.netmgt.events.api.EventConstants.HIGH_THRESHOLD_EVENT_UEI;
 
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -175,7 +176,7 @@ public class ThresholdingIT {
 
         // Wait for the high threshold to appear
         LOG.info("Waiting for absolute change threshold event...");
-        await().atMost(2, TimeUnit.MINUTES).pollInterval(10, TimeUnit.SECONDS).pollDelay(0, TimeUnit.SECONDS)
+        await().atMost(2, TimeUnit.MINUTES).pollInterval(10, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS)
                 .until(() -> {
                     // Keep increasing the value until the threshold is hit
                     setServiceJitter(currentValue.getAndAdd(absoluteChangeThreshold), TimeUnit.SECONDS);
