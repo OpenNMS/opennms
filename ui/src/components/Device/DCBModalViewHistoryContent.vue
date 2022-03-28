@@ -42,7 +42,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref, onMounted } from 'vue'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'

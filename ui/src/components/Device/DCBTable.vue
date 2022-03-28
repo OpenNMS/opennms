@@ -160,9 +160,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, ref, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { useScroll } from '@vueuse/core'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherSortObject } from '@/types'
 import { FeatherCheckbox } from '@featherds/checkbox'

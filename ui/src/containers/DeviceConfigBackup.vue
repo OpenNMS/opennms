@@ -18,7 +18,6 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { useStore } from 'vuex'
 import DCBTable from '@/components/Device/DCBTable.vue'
 import DCBGroupFilters from '@/components/Device/DCBGroupFilters.vue'

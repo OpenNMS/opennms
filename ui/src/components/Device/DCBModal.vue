@@ -8,7 +8,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, watchEffect } from 'vue'
 import { FeatherDialog } from '@featherds/dialog'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 import { useStore } from 'vuex'

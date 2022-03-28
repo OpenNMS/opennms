@@ -55,7 +55,6 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'

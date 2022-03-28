@@ -19,7 +19,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, reactive, watch } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'

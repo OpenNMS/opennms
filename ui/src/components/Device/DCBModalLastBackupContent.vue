@@ -4,7 +4,6 @@
 
 <script setup lang="ts">
 import { DeviceConfigBackup } from '@/types/deviceConfig'
-import { computed } from 'vue'
 import { useStore } from 'vuex'
 
 const store = useStore()
