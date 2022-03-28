@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.model;
 
-import org.opennms.core.utils.InetAddressUtils;
+import java.net.InetAddress;
+
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
+
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 /**
  * <p>SnmpInterfaceBuilder class.</p>
@@ -145,7 +148,11 @@ public class SnmpInterfaceBuilder {
     }
 
     public InterfaceBuilder addIpInterface(final String ipAddress) {
-    	final OnmsIpInterface iface = new OnmsIpInterface(InetAddressUtils.addr(ipAddress), m_snmpIf.getNode());
+        return addIpInterface(addr(ipAddress));
+    }
+
+    public InterfaceBuilder addIpInterface(final InetAddress ipAddress) {
+    	final OnmsIpInterface iface = new OnmsIpInterface(ipAddress, m_snmpIf.getNode());
     	m_snmpIf.addIpInterface(iface);
     	return new InterfaceBuilder(iface);
     }

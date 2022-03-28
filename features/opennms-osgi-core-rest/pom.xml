@@ -58,11 +58,11 @@
     <!-- Required for com.eclipsesource.jaxrs/* -->
     <repositories>
         <repository>
-            <snapshots><enabled>false</enabled></snapshots>
-            <releases><enabled>true</enabled></releases>
             <id>opennms-repo</id>
-            <name>OpenNMS Repository</name>
-            <url>https://maven.opennms.org/content/groups/opennms.org-release</url>
+            <url>https://maven.opennms.org/content/groups/opennms.org-release/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 </project>

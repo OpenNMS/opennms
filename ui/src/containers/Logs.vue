@@ -16,7 +16,6 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { useStore } from 'vuex'
 import Editor from '@/components/Logs/Editor.vue'
 import Logs from '@/components/Logs/Logs.vue'

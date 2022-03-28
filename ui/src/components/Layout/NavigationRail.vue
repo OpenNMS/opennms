@@ -59,9 +59,7 @@
   </FeatherNavigationRail>
 </template>
 <script setup lang=ts>
-import { computed } from 'vue'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
 import Instances from '@featherds/icon/hardware/Instances'
 import MinionProfiles from '@featherds/icon/hardware/MinionProfiles'
 import AddNote from '@featherds/icon/action/AddNote'
