@@ -1,4 +1,12 @@
-#!/bin/sh -e
+#!/bin/sh
+
+set -e
+
+# attempt to work around repository flakiness
+retry()
+{
+	"$@" || "$@"
+}
 
 find_tests()
 {
@@ -54,8 +62,8 @@ sudo rm -f /etc/apt/sources.list.d/*
 
 # kill other apt commands first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt || true && \
-            sudo apt update && \
-            sudo env DEBIAN_FRONTEND=noninteractive apt -y --no-install-recommends install \
+            retry sudo apt update && \
+            retry sudo env DEBIAN_FRONTEND=noninteractive apt -y --no-install-recommends install \
                 ca-certificates \
                 tzdata \
                 software-properties-common \
@@ -77,10 +85,10 @@ sudo add-apt-repository "deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb $(ls
 # add the R repository
 sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
 
-sudo apt update && \
+retry sudo apt update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
             echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
-            sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
+            retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
                 adoptopenjdk-8-hotspot \
                 nsis \
                 r-base \
@@ -90,13 +98,11 @@ sudo apt update && \
                 jicmp6 \
             || exit 1
 
-
 export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64
 export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
 
-# Set higher open files limit
+# shellcheck disable=SC3045
 ulimit -n 65536
-
 
 echo "#### Building Assembly Dependencies"
 ./compile.pl install -P'!checkstyle' \
