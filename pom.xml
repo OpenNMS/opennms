@@ -1666,7 +1666,7 @@
     <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
     <karaf.servicemix.specs.version>2.9.0</karaf.servicemix.specs.version>
-    <hawtio.version>2.0.0</hawtio.version>
+    <hawtio.version>2.14.5</hawtio.version>
 
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
@@ -1731,7 +1731,6 @@
     <gwtVersion>2.8.2</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
-    <hawtioVersion>1.4.68</hawtioVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
     <hikaricpVersion>2.5.1</hikaricpVersion>
     <httpcoreVersion>4.4.4</httpcoreVersion>
