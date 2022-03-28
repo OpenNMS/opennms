@@ -71,6 +71,11 @@ public class OspfElementDaoHibernate extends AbstractDaoHibernate<OspfElement, I
     }
 
     @Override
+    public List<OspfElement> findByRouterIdOfRelatedOspfLink(int nodeId) {
+        return find("from OspfElement rec where rec.ospfRouterId in (select l.ospfRemRouterId from OspfLink l where l.node.id = ?)", nodeId);
+    }
+
+    @Override
     public void deleteByNodeId(Integer nodeId) {
         getHibernateTemplate().bulkUpdate("delete from OspfElement rec where rec.node.id = ? ",
                                  new Object[] {nodeId});

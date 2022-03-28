@@ -380,7 +380,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             d.cleanUp();
         }
 
-        LOG.debug("Filter.getIPAddressList({}): resultList = {}", rule, resultList);
+        LOG.debug("Filter.getIPAddressList({}): resultList.size = {}", rule, resultList.size());
         return resultList;
     }
 
