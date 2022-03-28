@@ -26,7 +26,7 @@ const downloadDeviceConfigs = async (deviceIds: number[]) => {
 
 const backupDeviceConfig = async ({ ipAddress, location, configType }: DeviceConfigBackup) => {
   try {
-    const serviceName = `DeviceConfig-${configType}` 
+    const serviceName = `DeviceConfig-${configType}`
     const resp = await rest.post(`${endpoint}/backup`, { ipAddress, location, serviceName })
     return resp.data
   } catch (err) {
@@ -62,4 +62,11 @@ const getHistoryByIpInterface = async (ipInterfaceId: number): Promise<DeviceCon
   }
 }
 
-export { getDeviceConfigBackups, backupDeviceConfig, downloadDeviceConfigs, getVendorOptions, getOsImageOptions, getHistoryByIpInterface }
+export {
+  getDeviceConfigBackups,
+  backupDeviceConfig,
+  downloadDeviceConfigs,
+  getVendorOptions,
+  getOsImageOptions,
+  getHistoryByIpInterface
+}

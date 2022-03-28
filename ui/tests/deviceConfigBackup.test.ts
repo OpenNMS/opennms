@@ -11,46 +11,48 @@ const mockDeviceConfigBackups: DeviceConfigBackup[] = [
     deviceName: 'Cisco-7201',
     location: 'location',
     ipAddress: '10.21.10.81',
-    lastSucceededDate: '1643831118973',
-    lastUpdatedDate: '1643831118973',
+    lastSucceededDate: 1643831118973,
+    lastUpdatedDate: 1643831118973,
     backupStatus: 'success',
-    nextScheduledBackupDate: '1643831118973',
-    scheduledInterval: 'daily',
+    nextScheduledBackupDate: 1643831118973,
+    scheduledInterval: { deviceConfig: 'daily' },
     config: 'mock cisco config',
     configType: 'running',
     ipInterfaceId: 1,
-    createdTime: '1643831118973',
-    lastFailedDate: '1643831118973',
+    lastBackupDate: 1643831118973,
+    lastFailedDate: 1643831118973,
     fileName: 'filename',
     failureReason: 'reason',
     encoding: '',
     nodeId: 1,
     nodeLabel: 'node1',
     operatingSystem: '',
-    isSuccessfulBackup: true
+    isSuccessfulBackup: true,
+    monitoredServiceId: 1
   },
   {
     id: 12,
     deviceName: 'Aruba-7003-1',
     location: 'location',
     ipAddress: '10.21.10.81',
-    lastSucceededDate: '1643831118973',
-    lastUpdatedDate: '1643831118973',
+    lastSucceededDate: 1643831118973,
+    lastUpdatedDate: 1643831118973,
     backupStatus: 'failed',
-    nextScheduledBackupDate: '1643831118973',
-    scheduledInterval: 'daily',
+    nextScheduledBackupDate: 1643831118973,
+    scheduledInterval: { deviceConfig: 'daily' },
     config: 'mock aruba config',
     configType: 'default',
     ipInterfaceId: 1,
-    createdTime: '1643831118973',
-    lastFailedDate: '1643831118973',
+    lastBackupDate: 1643831118973,
+    lastFailedDate: 1643831118973,
     fileName: 'filename',
     failureReason: 'reason',
     encoding: '',
     nodeId: 1,
     nodeLabel: 'node1',
     operatingSystem: '',
-    isSuccessfulBackup: true
+    isSuccessfulBackup: true,
+    monitoredServiceId: 1
   }
 ]
 
@@ -127,7 +129,7 @@ test('the modal opens and displays the config property and device title', async 
   //expect cisco config and title
   expect(dialog.attributes('style')).not.toBe('display: none;')
   expect(dialogContent.text()).toBe('mock cisco config')
-  expect(headerText.text()).toBe('Cisco-7201')
+  expect(headerText.text()).toBe('Device Name: Cisco-7201')
 
   await closeModalBtn.trigger('click')
   expect(dialog.attributes('style')).toBe('display: none;')
