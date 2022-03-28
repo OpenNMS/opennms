@@ -1,0 +1,20 @@
+
+= Housekeeping Tasks
+
+There are a number of housekeeping tasks you may want to do regularly to ensure optimum system performance.
+We also recommend you complete these housekeeping tasks before upgrading {page-component-title}.
+
+== Delete cache folder
+Run the Fix Karaf script to delete cached items so that your system is cleaned up, especially before upgrade.
+
+
+== Run a diff on configuration files
+Run the config diff command in the /bin directory to identify differences from the default configuration to what you have running.
+Identifying these differences allow you to make a better guess on what you need to merge as part of an upgrade.
+
+== Update permissions (if upgrading from pre-29 versions)
+
+== Delete older events
+
+== Assess event table size
+
