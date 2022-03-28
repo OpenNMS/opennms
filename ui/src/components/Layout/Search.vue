@@ -25,7 +25,7 @@ const store = useStore()
 const searchStr = ref()
 const loading = ref(false)
 
-const selectItem = (value: { url: string }) => {
+const selectItem: any = (value: { url: string }) => {
   if (!value) return
   // parse selected item url and redirect
   const path = value.url.split('?')[1].split('=')

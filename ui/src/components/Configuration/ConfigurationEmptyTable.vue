@@ -6,25 +6,21 @@
         Add a requisition to synchronize external inventory.
       </div>
       <div class="flex button-wrapper">
-        <FeatherButton class="button" primary @click="props.newDefinition">
-          <FeatherIcon class="button-icon" :icon="Add" />New Definition
-        </FeatherButton>
+        <FeatherButton class="button" primary @click="props.newDefinition">Add Requisition</FeatherButton>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { FeatherIcon } from '@featherds/icon'
+import { PropType } from 'vue'
 import { FeatherButton } from '@featherds/button'
-
-import Add from '@featherds/icon/action/Add'
 
 /**
  * Props
  */
 const props = defineProps({
-  newDefinition: Function
+  newDefinition: { type: Function as PropType<(payload: MouseEvent) => void> }
 })
 
 </script>

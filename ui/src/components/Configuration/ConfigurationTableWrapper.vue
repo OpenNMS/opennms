@@ -3,9 +3,7 @@
     <div class="flex title-padding">
       <h3 class="title">Requisition Definitions {{ requisitionDCount }}</h3>
       <div class="flex button-wrapper" v-if="provisionDList?.length > 0">
-        <FeatherButton class="button" text @click="addNew">
-          <FeatherIcon class="buttonIcon" :icon="add" />New Definition
-        </FeatherButton>
+        <FeatherButton class="button" text @click="addNew">Add Requisition</FeatherButton>
       </div>
     </div>
     <ConfigurationTable
@@ -43,7 +41,6 @@
 import { computed, reactive } from 'vue'
 import { useStore } from 'vuex'
 
-import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 
 import Add from '@featherds/icon/action/Add'
@@ -64,7 +61,6 @@ const store = useStore()
 /**
  * Local State
  */
-const add = computed(() => Add)
 const sidePanelState = reactive({ isActive: false })
 
 const currentPage = reactive({ page: 1 })

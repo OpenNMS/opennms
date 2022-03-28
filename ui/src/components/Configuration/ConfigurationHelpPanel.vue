@@ -1,7 +1,7 @@
 <template>
   <div class="config-help-panel" :class="props?.active ? 'config-help-panel-open' : ''">
     <div class="config-help-close">
-      <FeatherButton class="button" text icon @click="onClose">
+      <FeatherButton class="button" text icon="" @click="onClose">
         <FeatherIcon class="buttonIcon" :icon="chevronRight" />
       </FeatherButton>
     </div>
@@ -42,7 +42,7 @@ import { LocalConfiguration } from './configuration.types'
  */
 const props = defineProps({
   active: Boolean,
-  onClose: Function,
+  onClose: { type: Function as PropType<(payload: MouseEvent) => void> },
   item: { type: Object as PropType<LocalConfiguration>, required: true }
 })
 

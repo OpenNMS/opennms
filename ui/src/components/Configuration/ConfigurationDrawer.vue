@@ -46,7 +46,7 @@
           :advancedKeyUpdate="props.advancedKeyUpdate"
         />
         <ConfigurationGeneratedUrl :item="props.item.config" />
-        <div class="spinner-button">
+        <div class="spinner-button flex button-align-right mt-20">
           <FeatherButton @click="props.saveCurrentState" primary :disabled="loading">
             <FeatherSpinner v-if="loading" />
             <span v-if="!loading">Save &amp; Close</span>
@@ -81,10 +81,10 @@ const props = defineProps({
   closePanel: { type: Function as PropType<(payload: MouseEvent) => void>, required: true },
   item: { type: Object as PropType<LocalConfigurationWrapper>, required: true },
   advancedActive: Boolean,
-  addAdvancedOption: { type: Function, required: true },
+  addAdvancedOption: { type: Function as PropType<(payload: MouseEvent) => void>, required: true },
   advancedKeyUpdate: { type: Function, required: true },
   deleteAdvancedOption: { type: Function, required: true },
-  saveCurrentState: Function,
+  saveCurrentState: { type: Function as PropType<(payload: MouseEvent) => void>, required: true },
   edit: Boolean,
   helpState: { type: Object, required: true },
   updateFormValue: { type: Function, required: true },
@@ -196,6 +196,15 @@ const toggleHelp = () => {
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
 
+.flex {
+  display: flex;
+}
+.button-align-right {
+  justify-content: flex-end;
+}
+.mt-20 {
+  margin-top: 20px;
+}
 .side-input {
   padding-bottom: 0;
 }

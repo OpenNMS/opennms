@@ -14,7 +14,7 @@
           textProp="name"
           @search="(query: string) => search(query, props.type, props.subType, index)"
           v-model="item.key"
-          @update:modelValue="(key: { hint: string }) => {
+          @update:modelValue="(key: { hint: string }, index: number): any => {
             ConfigurationHelper.forceSetHint(key, index);
             props.advancedKeyUpdate(key, index)
           }"
@@ -36,23 +36,20 @@
         </FeatherButton>
       </div>
       <div class="button-wrapper">
-        <FeatherButton @click="addAdvancedOption" primary>
-          <FeatherIcon :icon="Add" class="button-icon" />Add Advanced Option
-        </FeatherButton>
+        <FeatherButton :disabled="buttonAddDisabled" @click="addAdvancedOption" primary>Add</FeatherButton>
       </div>
     </div>
   </FeatherExpansionPanel>
 </template>
 
 <script setup lang="ts">
-import { reactive, PropType, watch } from 'vue'
+import { reactive, PropType, watch, computed } from 'vue'
 
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import { FeatherInput } from '@featherds/input'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
-import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
 
 import { advancedKeys, dnsKeys, openDaylightKeys, aciKeys, zabbixKeys, prisKeys } from './copy/advancedKeys'
@@ -67,7 +64,7 @@ const props = defineProps({
   items: { type: Array as PropType<Array<AdvancedOption>>, required: true },
   type: { type: String, required: true },
   subType: { type: String, required: true },
-  addAdvancedOption: { type: Function, required: true },
+  addAdvancedOption: { type: Function as PropType<(payload: MouseEvent) => void>, required: true },
   advancedKeyUpdate: { type: Function, required: true },
   deleteAdvancedOption: { type: Function, required: true },
   active: { type: Boolean, required: true },
@@ -81,6 +78,19 @@ const props = defineProps({
 const results = reactive({
   list: [[{}]]
 })
+
+/**
+ * Disabled when last item (key.name and value) is null,
+ * hence preventing from adding new item.
+ */
+const buttonAddDisabled = computed(() => {
+  const itemsLength = props.items.length
+
+  if(!itemsLength) return false; // enabled
+
+  const { key, value } = props.items[itemsLength - 1] // last item
+  return !(key.name && value) // disabled
+});
 
 /**
  * Depending on which Type is selected, we have different 
@@ -138,7 +148,6 @@ const search = (searchVal: string, type: string, subType: string, index: number)
   })
   results.list[index] = [...newResu]
 }
-
 
 /**
  * Fills in the <textarea> within the FeatherAutocomplete.
