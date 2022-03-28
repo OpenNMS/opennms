@@ -13,6 +13,7 @@
         <service-properties>
             <entry key="type"
                    value="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor" />
+            <entry key="registration.export" value="true"/>
         </service-properties>
     </service>
 
