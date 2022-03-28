@@ -1579,7 +1579,7 @@
     <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
     <karaf.servicemix.specs.version>2.9.0</karaf.servicemix.specs.version>
-    <hawtio.version>2.16.3</hawtio.version>
+    <hawtio.version>2.17.5</hawtio.version>
 
     <!-- dependency versions -->
     <accessorsSmartVersion>2.4.8</accessorsSmartVersion>
