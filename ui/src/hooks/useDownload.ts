@@ -26,7 +26,7 @@ export default useDownload
  */
 const getNameFromHeaders = (headers: AxiosResponseHeaders): string => {
   let name = ''
-  const disposition = (<AxiosResponseHeaders>headers)['content-disposition']
+  const disposition = headers['content-disposition']
 
   if (disposition && disposition.indexOf('attachment') !== -1) {
     const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/

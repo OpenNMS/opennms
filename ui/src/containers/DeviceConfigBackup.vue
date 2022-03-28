@@ -46,9 +46,6 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
 :deep(.inprogress) {
   @include status-bar(var($warning));
 }
-:deep(.paused) {
-  @include status-bar(var($primary-variant));
-}
 :deep(.nobackup) {
   @include status-bar(var($secondary-variant));
 }

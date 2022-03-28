@@ -6,12 +6,12 @@ export interface DeviceConfigBackup {
   ipAddress: string
   deviceName: string
   location: string
-  createdTime: string
-  lastUpdatedDate: string
-  lastSucceededDate: string
-  lastFailedDate: string
+  lastBackupDate: number
+  lastUpdatedDate: number
+  lastSucceededDate: number
+  lastFailedDate: number
   backupStatus: string
-  scheduledInterval: string
+  scheduledInterval: Record<string, string>
   fileName: string
   failureReason: string
   encoding: string
@@ -20,8 +20,9 @@ export interface DeviceConfigBackup {
   nodeLabel: string
   operatingSystem: string
   isSuccessfulBackup: boolean
-  nextScheduledBackupDate: string
+  nextScheduledBackupDate: number
   config: string
+  monitoredServiceId: number
 }
 
 export interface DeviceConfigQueryParams extends QueryParameters {

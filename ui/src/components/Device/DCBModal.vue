@@ -29,7 +29,7 @@ const labels = reactive({
   close: 'Close'
 })
 
-watchEffect(() => labels.title = modalDeviceConfigBackup.value.deviceName)
+watchEffect(() => labels.title = `Device Name: ${modalDeviceConfigBackup.value.deviceName}`)
 </script>
 
 <style scoped lang="scss">
