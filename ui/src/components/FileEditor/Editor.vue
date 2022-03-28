@@ -17,7 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watchEffect, watch } from 'vue'
 import { getExtensionFromFilenameSafely } from './utils'
 import { useStore } from 'vuex'
 import { VAceEditor } from 'vue3-ace-editor'

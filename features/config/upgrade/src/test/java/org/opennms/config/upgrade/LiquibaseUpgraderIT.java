@@ -39,7 +39,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
-import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
 import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
 
@@ -55,7 +54,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -197,9 +199,9 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
             // check if xml file was moved into archive folder
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"))); // should be gone since we moved the file
-            assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_EVENTD + "-configuration.xml")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive", SCHEMA_NAME_EVENTD + "-configuration.xml"));
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"))); // should be gone since we moved the file
-            assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive", SCHEMA_NAME_PROVISIOND + "-configuration.xml"));
 
             // check if schema changes work properly
             Optional<ConfigDefinition> configDefinition = this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROPERTIES);
@@ -231,16 +233,16 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             assertTrue(config.isPresent());
             assertEquals("b", config.get().get("graphLocation"));
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_GRAPHML + "-a.cfg"))); // should be gone since we moved the file
-            assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_GRAPHML + "-a.cfg")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive", SCHEMA_NAME_GRAPHML + "-a.cfg"));
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_GRAPHML + "-b.cfg"))); // should be gone since we moved the file
-            assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_GRAPHML + "-b.cfg")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive", SCHEMA_NAME_GRAPHML + "-b.cfg"));
         } finally {
             this.db.cleanUp();
         }
     }
 
     @Test
-    public void shouldAbortInCaseOfValidationError() throws URISyntaxException, IOException {
+    public void shouldAbortInCaseOfValidationError() {
         try {
             ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class);
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
@@ -276,5 +278,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         assertTrue(result.getBoolean(1));
     }
 
-
+    private boolean checkFileWithDateTimeSuffix(String path, String fileName){
+        List<File> files = Stream.of(new File(path).listFiles())
+                .filter(file -> file.getName().matches(String.format("%s\\.[0-9]+", fileName)))
+                .collect(Collectors.toList());
+        return files.size() == 1 && files.get(0).isFile();
+    }
 }

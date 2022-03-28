@@ -14,10 +14,8 @@
 </template>
   
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 import { debounce } from 'lodash'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 
 const router = useRouter()
@@ -25,7 +23,8 @@ const store = useStore()
 const searchStr = ref()
 const loading = ref(false)
 
-const selectItem = (value: { url: string }) => {
+// any to fix feather TS issue
+const selectItem: any = (value: { url: string }) => {
   if (!value) return
   // parse selected item url and redirect
   const path = value.url.split('?')[1].split('=')
@@ -52,6 +51,7 @@ const results = computed(() => {
 .menubar-search {
   width: 350px !important;
   margin-right: 20px;
+  margin-top: 30px;
   .feather-input-border {
     background: var($surface);
   }

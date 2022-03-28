@@ -48,6 +48,7 @@ import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.HashBasedTable;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.BeanItem;
@@ -155,7 +156,7 @@ public class BusinessServiceTreeTable extends TreeTable {
                                 .withOkLabel("Delete anyway")
                                 .withCancelLabel("Cancel")
                                 .withCaption("Warning")
-                                .withDescription("This entry is referencing or is referenced by other Business Services! Do you really want to delete this entry?")
+                                .withDescription("The entry '" + SafeHtmlUtils.htmlEscape(businessService.getName()) + "' is referencing or is referenced by other Business Services! Do you really want to delete this entry?")
                                 .open();
                     }
                 });

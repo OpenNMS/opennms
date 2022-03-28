@@ -34,7 +34,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType, watch } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherIcon } from '@featherds/icon'
 import Open from '@featherds/icon/navigation/ExpandMore'
@@ -42,6 +41,7 @@ import Close from '@featherds/icon/navigation/ChevronRight'
 import Remove from '@featherds/icon/action/Remove'
 import NewFileInput from './NewFileInput.vue'
 import { IFile } from '@/store/fileEditor/state'
+import { PropType } from 'vue'
 
 const store = useStore()
 const props = defineProps({

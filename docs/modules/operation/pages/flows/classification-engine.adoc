@@ -8,7 +8,7 @@ Group flows by a combination of parameters: source/destination port, source/dest
 Use classification to help you determine how the flows associated with a particular appliance, service, and so on affect your network (for example, all YouTube traffic or all flows to port 80 marked as `http`).
 
 To classify a flow, you must define a rule.
-A rule includes at least a name for the flow and additional parameters that must match for successful classification.
+A rule includes at least a name for the classified flows and additional parameters that must match for successful classification.
 
 Use the Classification UI to define new rules:
 menu:Gears icon[Flow Management > Manage Flow Classification].
@@ -164,7 +164,7 @@ To verify that a complex set of rules is configured correctly, navigate to the c
 Define values in the screen and click *Classify*.
 (You are basically crafting an IP packet by hand.)
 
-This simulates sending a flow to the Classification Engine.
+This simulates sending a flow to the classification engine.
 
 If the configuration is correct, the name of the associated rule appears in the bottom left of the *Test Classification* dialog:
 

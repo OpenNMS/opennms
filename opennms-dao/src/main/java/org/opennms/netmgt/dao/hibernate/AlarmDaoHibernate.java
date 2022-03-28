@@ -30,6 +30,8 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.math.BigInteger;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -176,24 +178,13 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                 // We can't use a prepared statement here as the variables are column names, and postgres
                 // does not allow for parameter binding of column names.
                 // Instead, we compare the values against all valid column names to validate.
-                List<String> validColumnNames = HibernateUtils.getHibernateTableColumnNames(session, OnmsCategory.class, true);
-                if (!validColumnNames.contains(entityIdColumn.toLowerCase())) {
-                    throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", entityIdColumn));
+                List<String> columns = new ArrayList<>(Arrays.asList(groupByColumns));
+                columns.add(entityIdColumn);
+                columns.add(entityNameColumn);
+                if (restrictionColumn != null) {
+                    columns.add(restrictionColumn);
                 }
-                else if (!validColumnNames.contains(entityNameColumn.toLowerCase())) {
-                    throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", entityNameColumn));
-                }
-                else if (restrictionColumn != null && !validColumnNames.contains(restrictionColumn.toLowerCase())) {
-                    throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", restrictionColumn));
-                }
-                else if (groupByColumns != null && groupByColumns.length > 0) {
-                    for (String groupByColumn : groupByColumns) {
-                        if (!validColumnNames.contains(groupByColumn.toLowerCase())) {
-                            throw new IllegalArgumentException(String.format("Invalid column name specified <%s>", groupByColumn));
-                        }
-                    }
-                }
-
+                HibernateUtils.validateHibernateColumnNames(session.getSessionFactory(), OnmsCategory.class, true, columns.toArray(new String[0]));
 
                 String queryStr =
                         "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +

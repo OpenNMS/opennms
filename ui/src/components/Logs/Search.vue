@@ -8,7 +8,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 
@@ -24,7 +23,7 @@ const search = () => store.dispatch('logsModule/setSearchValue', searchValue.val
     width: 100%;
     .feather-input-container {
       padding: 0px;
-      margin-top: -8px;
+      margin-bottom: -26px;
     }
   }
 }
