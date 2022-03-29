@@ -8,7 +8,6 @@ SENTINELHOME="/usr/share/sentinel"
 SENTINELDATA="/var/lib/sentinel"
 SENTINELLOG="/var/log/sentinel"
 
-rm -rf "${SENTINELHOME}/data"/* || true
 
 if [ ! -f "${ETCDIR}/host.key" ]; then
 	ssh-keygen -m PEM -t rsa -N "" -b 4096 -f "${ETCDIR}/host.key"
@@ -16,6 +15,9 @@ if [ ! -f "${ETCDIR}/host.key" ]; then
 fi
 
 "${SENTINELHOME}/bin/update-package-permissions" "opennms-sentinel"
+
+# move behind fix permission to prevent error in fix permission
+rm -rf "${SENTINELHOME}/data"/* || true
 
 # Remove the directory used as the local Maven repo cache
 rm -rf "${SENTINELHOME}/.local"
