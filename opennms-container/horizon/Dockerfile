@@ -22,19 +22,10 @@ SHELL ["/bin/bash", "-c"]
 RUN curl --retry 5 --fail -L ${CONFD_URL} -o /usr/bin/confd && \
     chmod +x /usr/bin/confd
 
-#RUN dnf -y install dnf-plugins-core && \
-#    dnf config-manager --set-enabled powertools && \
-#    rpm --import "${REPO_KEY_URL}" && \
-#    dnf -y install epel-release && \
-#    dnf -y install "${REPO_RPM}" && \
-#    dnf -y install ${REQUIRED_RPMS} && \
-#    dnf clean all && \
-#    rm -rf /var/cache/yum
-
 # import keys
 RUN apt-get update && \
-    apt-get install -y gnupg ca-certificates
-RUN curl -fsSL https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add
+    apt-get install -y gnupg ca-certificates && \
+    curl -fsSL https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add
 
 COPY opennms.list /etc/apt/sources.list.d
 RUN apt-get update && \
@@ -74,8 +65,8 @@ ARG REVISION
 
 # Install repositories, system and OpenNMS packages and do some cleanup
 # 1. Try to install from tarball
-# 2. Try to install from local RPMS
-# 3. Try to install from public yum repository
+# 2. Try to install from local DEBS 
+# 3. Try to install from public apt repository
 #
 # To avoid different behavior, between a DEB or tarball installation,
 # the directory structure is unified, the links for /opt/opennms/share
@@ -83,33 +74,21 @@ ARG REVISION
 
 RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
-        mkdir -p /opt/opennms && \
-        tar -xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && \
-        chown -R 10001:0 /opt/opennms && \
-        cp -r /opt/opennms/etc /opt/opennms/share/etc-pristine; \
+        mkdir -p /usr/share/opennms && \
+        tar -xzf /tmp/tarball/opennms-*.tar.gz -C /usr/share/opennms && \
+        chown -R 10001:0 /usr/share/opennms && \
+        cp -r /usr/share/opennms/etc /usr/share/opennms/share/etc-pristine; \
     elif [[ "$(ls -1 /tmp/debs/*.deb 2>/dev/null | wc -l)" != 0 ]]; then \
         echo "installing local DEBs from filesystem" && \
         apt-get -yq install /tmp/debs/*.deb; \
-#        rm -rf /opt/opennms/logs 
-#               /opt/opennms/share  
-#        mv /var/opennms /opt/opennms/share && \
-#        mv /var/log/opennms /opt/opennms/logs; \
     elif [[ -e /tmp/debs/opennms.list ]]; then \
         echo "installing local DEBs over HTTP" && \
-        mv -f /tmp/debs/opennms.list /etc/apt-get/sources.list.d && \
+        mv -f /tmp/debs/opennms.list /etc/apt/sources.list.d && \
         apt-get update && \
         apt-get install -y ${ONMS_PACKAGES}; \
-#        rm -rf /opt/opennms/logs \
-#               /opt/opennms/share && \
-#        mv /var/opennms /opt/opennms/share && \
-#        mv /var/log/opennms /opt/opennms/logs; \
     else \
         echo "installing remote DEBs from stable" && \
         apt-get -yq install ${ONMS_PACKAGES}; \
-#        rm -rf /opt/opennms/logs \
-#               /opt/opennms/share && \
-#        mv /var/opennms /opt/opennms/share && \
-#        mv /var/log/opennms /opt/opennms/logs; \
     fi && \
     if [[ -n ${ADD_DEB_PACKAGES} ]]; then apt-get -yq install ${ADD_DEB_PACKAGES}; fi && \
     rm -rf /tmp/debs /tmp/tarball && \
@@ -127,6 +106,8 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     ln -s /opennms-data/rrd /usr/share/opennms/share/rrd && \
     ln -s /opennms-data/reports /usr/share/opennms/share/reports && \
     ln -s /opennms-data/mibs /usr/share/opennms/share/mibs && \
+# Align with old opennms path
+    ln -s /usr/share/opennms /opt/opennms && \
     chown 10001:10001 -R /usr/share/opennms \
                          /opennms-data \
                          /opt/opennms-overlay \

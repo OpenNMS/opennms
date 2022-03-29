@@ -34,12 +34,15 @@ fi
 [ -n "${BUILD_URL}"               ] || BUILD_URL="${CIRCLE_BUILD_URL}"
 
 [ -n "${YUM_CONTAINER_NAME}"      ] || YUM_CONTAINER_NAME="yum-repo"
+[ -n "${APT_CONTAINER_NAME}"      ] || APT_CONTAINER_NAME="apt-repo"
 [ -n "${RPMDIR}"                  ] || RPMDIR="${TOPDIR}/../target/rpm/RPMS/noarch"
 [ -n "${DEBDIR}"                  ] || DEBDIR="${TOPDIR}/../target/debs"
 
 [ -n "${CONTAINER_PROJECT}"       ] || CONTAINER_PROJECT="$(basename "${TOPDIR}")"
 [ -n "${CONTAINER_REGISTRY}"      ] || CONTAINER_REGISTRY="docker.io"
 [ -n "${CONTAINER_REGISTRY_REPO}" ] || CONTAINER_REGISTRY_REPO="opennms"
+
+[ -n "${REPO_PORT}"               ] || REPO_PORT="19990"
 
 [ -n "${DOCKER_ARCH}" ] || DOCKER_ARCH="linux/amd64"
 
