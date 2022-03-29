@@ -1734,6 +1734,7 @@
     <mapstructVersion>1.4.1.Final</mapstructVersion>
     <minaVersion>2.1.5</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
+    <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.48.Final</netty4Version>
     <newtsVersion>1.5.5</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
