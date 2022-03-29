@@ -1,20 +1,32 @@
 
+[[housekeeping]]
 = Housekeeping Tasks
 
 There are a number of housekeeping tasks you may want to do regularly to ensure optimum system performance.
 We also recommend you complete these housekeeping tasks before upgrading {page-component-title}.
 
-== Delete cache folder
-Run the Fix Karaf script to delete cached items so that your system is cleaned up, especially before upgrade.
-
-
+[[run_diff]]
 == Run a diff on configuration files
-Run the config diff command in the /bin directory to identify differences from the default configuration to what you have running.
+Run config-diff.sh
+
+
+command in the /bin directory to identify differences from the default configuration to what you have running.
 Identifying these differences allow you to make a better guess on what you need to merge as part of an upgrade.
 
+[[non-root-permissions]]
 == Update permissions (if upgrading from pre-29 versions)
+Since version 29, {page-component-title} runs as the opennms user rather than root by default.
+If you are upgrading from a version of {page-component-title} older than 29, you must fix the ownership of your files before upgrading.
 
+For information on how to do this, see https://docs.opennms.com/horizon/29/releasenotes/whatsnew.html?q=non-root#running-as-non-root[Running as non-root].
+
+[[delete-old-events]]
 == Delete older events
 
+[[event-table-size]]
 == Assess event table size
 
+[[delete-cache-folder]]
+== Delete cache folder
+Run the Fix Karaf script to delete cached items so that your system is cleaned up.
+We recommend doing this after an upgrade. 
