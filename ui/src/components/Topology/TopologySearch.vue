@@ -14,7 +14,6 @@
 </template>
   
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 import { debounce } from 'lodash'
 import { useStore } from 'vuex'
 import { FeatherAutocomplete } from '@featherds/autocomplete'

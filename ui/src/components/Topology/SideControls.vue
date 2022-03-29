@@ -1,15 +1,18 @@
 <template>
   <div class="topology-side-controls">
-    <SemanticZoomLevelControl />
+    <CtrlSemanticZoomLevel />
 
     <FeatherButton class="refresh-btn" icon="Refresh" @click="refreshGraph">
       <FeatherIcon :icon="RefreshIcon" />
     </FeatherButton>
+
+    <CtrlHighlightFocusedNode />
   </div>
 </template>
 
 <script setup lang="ts">
-import SemanticZoomLevelControl from './SemanticZoomLevelControl.vue'
+import CtrlSemanticZoomLevel from './CtrlSemanticZoomLevel.vue'
+import CtrlHighlightFocusedNode from './CtrlHighlightFocusedNodes.vue'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import RefreshIcon from '@featherds/icon/navigation/Refresh'

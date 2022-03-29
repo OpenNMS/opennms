@@ -38,6 +38,7 @@ const parseVerticesAndEdges = (resp: VerticesAndEdges, context: VuexContext) => 
 
   context.commit('SAVE_NODE_EDGES', edges)
   context.commit('SAVE_NODE_VERTICIES', vertices)
+  context.dispatch('updateNodesFocusedProperty')
 }
 
 const getVerticesAndEdges = async (context: VuexContext, queryParameters?: QueryParameters) => {
@@ -102,6 +103,35 @@ const removeFocusedSearchBarNode = (context: VuexContext, node: SearchResult) =>
   context.commit('REMOVE_FOCUSED_SEARCH_BAR_NODE', node)
 }
 
+const updateNodesFocusedProperty = (context: ContextWithState) => {
+  const vertices = context.state.verticies
+  const edges = context.state.edges
+  const focusedIds = context.state.focusedNodeIds
+
+  for (const vertex of Object.values(vertices)) {
+    if (focusedIds.includes(vertex.id)) {
+      vertex.focused = true
+    } else {
+      vertex.focused = false
+    }
+  }
+
+  for (const edge of Object.values(edges)) {
+    if (focusedIds.includes(edge.target) && focusedIds.includes(edge.source)) {
+      edge.focused = true
+    } else {
+      edge.focused = false
+    }
+  }
+
+  context.commit('SAVE_NODE_VERTICIES', vertices)
+  context.commit('SAVE_NODE_EDGES', edges)
+}
+
+const highlightFocusedNodes = (context: ContextWithState, bool: boolean) => {
+  context.commit('SET_HIGHLIGHT_FOCUSED_NODES', bool)
+}
+
 export default {
   getVerticesAndEdges,
   setSemanticZoomLevel,
@@ -114,5 +144,7 @@ export default {
   removeContextNodeFromFocus,
   setFocusedSearchBarNodes,
   addFocusedSearchBarNode,
-  removeFocusedSearchBarNode
+  removeFocusedSearchBarNode,
+  highlightFocusedNodes,
+  updateNodesFocusedProperty
 }

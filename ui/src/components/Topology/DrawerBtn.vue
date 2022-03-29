@@ -7,7 +7,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'

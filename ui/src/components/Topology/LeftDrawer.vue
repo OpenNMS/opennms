@@ -15,7 +15,6 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherDrawer } from '@featherds/drawer'
 

@@ -51,6 +51,10 @@ const REMOVE_FOCUSED_SEARCH_BAR_NODE = (state: State, node: SearchResult) => {
   state.focusedSearchBarNodes = state.focusedSearchBarNodes.filter((focusedNode) => focusedNode.label !== node.label)
 }
 
+const SET_HIGHLIGHT_FOCUSED_NODES = (state: State, bool: boolean) => {
+  state.highlightFocusedNodes = bool
+}
+
 export default {
   SAVE_NODE_EDGES,
   SAVE_NODE_VERTICIES,
@@ -63,5 +67,6 @@ export default {
   SET_FOCUSED_SEARCH_BAR_NODES,
   ADD_FOCUSED_SEARCH_BAR_NODE,
   REMOVE_FOCUSED_SEARCH_BAR_NODE,
-  SAVE_DEFAULT_NODE
+  SAVE_DEFAULT_NODE,
+  SET_HIGHLIGHT_FOCUSED_NODES
 }
