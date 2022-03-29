@@ -375,9 +375,9 @@ commands:
           when: always
           command: |
             mkdir -p ~/generated-tests
-            cp ./surefire_classname* ~/generated-tests/
-            cp ./failsafe_classname* ~/generated-tests/
-            cp /tmp/this_node* ~/generated-tests/
+            cp ./surefire_classname* ~/generated-tests/ || :
+            cp ./failsafe_classname* ~/generated-tests/ || :
+            cp /tmp/this_node* ~/generated-tests/       || :
       - when:
           condition: << parameters.run-code-coverage >>
           steps:
