@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import 'v-network-graph/lib/style.css'
 import { useStore } from 'vuex'
-import { VNetworkGraph, defineConfigs, Layouts, Edges, Nodes, SimpleLayout, EventHandlers, NodeEvent, Instance, ViewEvent, Node } from 'v-network-graph'
+import { VNetworkGraph, defineConfigs, Layouts, Edges, Nodes, SimpleLayout, EventHandlers, NodeEvent, Instance, ViewEvent, Node, Edge } from 'v-network-graph'
 import { ForceLayout, ForceNodeDatum, ForceEdgeDatum } from 'v-network-graph/lib/force-layout'
 import ContextMenu from './ContextMenu.vue'
 import NoFocusMsg from './NoFocusMsg.vue'
@@ -83,6 +83,7 @@ const edges = computed<Edges>(() => store.state.topologyModule.edges)
 const layout = computed<Layouts>(() => store.getters['topologyModule/getLayout'])
 const defaultNode = computed<Node>(() => store.state.topologyModule.defaultNode)
 const focusedNodeIds = computed<string[]>(() => store.state.topologyModule.focusedNodeIds)
+const highlightFocusedNodes = computed<boolean>(() => store.state.topologyModule.highlightFocusedNodes)
 
 const tooltipPos = computed(() => {
   if (!graph.value || !tooltip.value) return { x: 0, y: 0 }
@@ -199,13 +200,38 @@ watch(layout, async (layout) => {
   trigger.value = true
 })
 
+const setNodeColor = (node: Node) => {
+  if (highlightFocusedNodes.value && !node.focused) {
+    return 'rgb(39, 49, 128, 0.5)'
+  }
+
+  return 'rgb(39, 49, 128)' // feather primary
+}
+
+const setEdgeColor = (edge: Edge) => {
+  if (highlightFocusedNodes.value && !edge.focused) {
+    return 'rgb(39, 49, 128, 0.5)'
+  }
+
+  return 'rgb(39, 49, 128)' // feather primary
+}
+
 const configs = reactive(
   defineConfigs({
     view: {
       layoutHandler: store.state.topologyModule.selectedView === 'd3' ? forceLayout : new SimpleLayout()
     },
     node: {
-      selectable: true
+      selectable: true,
+      normal: {
+        type: 'circle',
+        color: node => setNodeColor(node),
+      },
+    },
+    edge: {
+      normal: {
+        color: edge => setEdgeColor(edge)
+      }
     }
   })
 )

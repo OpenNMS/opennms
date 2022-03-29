@@ -13,6 +13,7 @@ export interface State {
   layout: Record<string, NodePoint>
   focusedSearchBarNodes: SearchResult[]
   defaultNode: Node
+  highlightFocusedNodes: boolean
 }
 
 const state: State = {
@@ -25,7 +26,8 @@ const state: State = {
   focusedNodeIds: [],
   layout: {},
   focusedSearchBarNodes: [],
-  defaultNode: {}
+  defaultNode: {},
+  highlightFocusedNodes: false
 }
 
 export default state
