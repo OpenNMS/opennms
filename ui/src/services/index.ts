@@ -20,7 +20,8 @@ import {
   backupDeviceConfig,
   downloadDeviceConfigs,
   getVendorOptions,
-  getOsImageOptions
+  getOsImageOptions,
+  getHistoryByIpInterface
 } from './deviceService'
 
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
@@ -71,5 +72,6 @@ export default {
   backupDeviceConfig,
   downloadDeviceConfigs,
   getVendorOptions,
-  getOsImageOptions
+  getOsImageOptions,
+  getHistoryByIpInterface
 }

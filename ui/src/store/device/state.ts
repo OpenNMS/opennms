@@ -8,6 +8,8 @@ export interface State {
   vendorOptions: string[]
   backupStatusOptions: string[]
   osImageOptions: string[]
+  deviceConfigTotal: string
+  historyModalBackups: DeviceConfigBackup[]
 }
 
 const state: State = {
@@ -16,8 +18,10 @@ const state: State = {
   modalDeviceConfigBackup: {} as DeviceConfigBackup,
   selectedIds: [],
   vendorOptions: [],
-  backupStatusOptions: ['success', 'failed', 'paused', 'no backup', 'in progress'],
-  osImageOptions: []
+  backupStatusOptions: ['success', 'failed', 'no backup', 'in progress'],
+  osImageOptions: [],
+  deviceConfigTotal: 'N/A',
+  historyModalBackups: []
 }
 
 export default state

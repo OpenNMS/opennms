@@ -132,7 +132,7 @@
           <td>{{ config.location }}</td>
           <td class="last-backup-date pointer" @click="onLastBackupDateClick(config)">
             <span v-date>{{ config.lastSucceededDate }}</span>
-            <FeatherButton icon="View">
+            <FeatherButton icon="View" v-if="config.lastBackupDate">
               <FeatherIcon :icon="ViewDetails" />
             </FeatherButton>
           </td>
@@ -144,7 +144,7 @@
             >{{ config.backupStatus }}</div>
           </td>
           <td v-date>{{ config.nextScheduledBackupDate }}</td>
-          <td>{{ config.scheduledInterval }}</td>
+          <td>{{ Object.values(config.scheduledInterval)[0] }}</td>
         </tr>
       </tbody>
     </table>
@@ -160,9 +160,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, ref, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { useScroll } from '@vueuse/core'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherSortObject } from '@/types'
 import { FeatherCheckbox } from '@featherds/checkbox'
@@ -211,7 +209,7 @@ watch(() => directions.bottom, () => {
 })
 
 const deviceConfigBackups = computed<DeviceConfigBackup[]>(() => store.state.deviceModule.deviceConfigBackups)
-const totalCountOfDeviceConfigBackups = computed(() => 'N/A') // TODO: which endpoint prop will return this?
+const totalCountOfDeviceConfigBackups = computed(() => store.state.deviceModule.deviceConfigTotal)
 const deviceConfigBackupQueryParams = computed<DeviceConfigQueryParams>(() => store.state.deviceModule.deviceConfigBackupQueryParams)
 const selectedDeviceConfigIds = computed<number[]>(() => {
   return Object.keys(selectedDeviceConfigBackups.value)

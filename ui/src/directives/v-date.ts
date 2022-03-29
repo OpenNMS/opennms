@@ -1,4 +1,3 @@
-import { computed } from 'vue'
 import { format as fnsFormat } from 'date-fns-tz'
 import { AppInfo } from '@/types'
 import store from '@/store'

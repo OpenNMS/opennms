@@ -1,16 +1,17 @@
 import { queryParametersHandler } from './serviceHelpers'
 import { rest } from './axiosInstances'
 import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
+import { AxiosResponse } from 'axios'
+import { orderBy } from 'lodash'
 
 const endpoint = 'device-config'
 
-const getDeviceConfigBackups = async (queryParameters: DeviceConfigQueryParams): Promise<DeviceConfigBackup[]> => {
+const getDeviceConfigBackups = async (queryParameters: DeviceConfigQueryParams): Promise<AxiosResponse | false> => {
   try {
     const endpointWithQueryString = queryParametersHandler(queryParameters, endpoint)
-    const resp = await rest.get(endpointWithQueryString)
-    return resp.data
+    return await rest.get(endpointWithQueryString)
   } catch (err) {
-    return []
+    return false
   }
 }
 
@@ -25,7 +26,8 @@ const downloadDeviceConfigs = async (deviceIds: number[]) => {
 
 const backupDeviceConfig = async ({ ipAddress, location, configType }: DeviceConfigBackup) => {
   try {
-    const resp = await rest.post(`${endpoint}/backup`, { ipAddress, location, configType })
+    const serviceName = `DeviceConfig-${configType}`
+    const resp = await rest.post(`${endpoint}/backup`, { ipAddress, location, serviceName })
     return resp.data
   } catch (err) {
     return false
@@ -50,4 +52,21 @@ const getOsImageOptions = async (): Promise<string[]> => {
   }
 }
 
-export { getDeviceConfigBackups, backupDeviceConfig, downloadDeviceConfigs, getVendorOptions, getOsImageOptions }
+const getHistoryByIpInterface = async (ipInterfaceId: number): Promise<DeviceConfigBackup[]> => {
+  try {
+    const resp: { data: DeviceConfigBackup[] } = await rest.get(`${endpoint}?ipInterfaceId=${ipInterfaceId}`)
+    const devicesWithBackupDate = resp.data.filter((device) => device.lastBackupDate)
+    return orderBy(devicesWithBackupDate, 'lastBackupDate', 'desc')
+  } catch (err) {
+    return []
+  }
+}
+
+export {
+  getDeviceConfigBackups,
+  backupDeviceConfig,
+  downloadDeviceConfigs,
+  getVendorOptions,
+  getOsImageOptions,
+  getHistoryByIpInterface
+}

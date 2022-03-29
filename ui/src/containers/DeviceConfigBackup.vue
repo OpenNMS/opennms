@@ -18,7 +18,6 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { useStore } from 'vuex'
 import DCBTable from '@/components/Device/DCBTable.vue'
 import DCBGroupFilters from '@/components/Device/DCBGroupFilters.vue'
@@ -45,9 +44,6 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
 }
 :deep(.inprogress) {
   @include status-bar(var($warning));
-}
-:deep(.paused) {
-  @include status-bar(var($primary-variant));
 }
 :deep(.nobackup) {
   @include status-bar(var($secondary-variant));
