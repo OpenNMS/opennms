@@ -11,9 +11,9 @@ set -o pipefail
 
 DEBDIR="$1"; shift || :
 PORT="$1"; shift || :
-TMP_PATH="$1"; shift || :
+APT_VOLUME="$1"; shift || :
 OCI="ubuntu:focal"
-MOUNT_POINT="/tmp/deb"
+MOUNT_PATH="/repo"
 
 [ -n "${APT_CONTAINER_NAME}" ] || APT_CONTAINER_NAME="apt-repo"
 [ -n "${BUILD_NETWORK}"      ] || BUILD_NETWORK="opennms-build-network"
@@ -44,26 +44,36 @@ MYDIR="$(cd "$MYDIR"; pwd -P)"
 
 cd "$MYDIR"
 
-echo "=== stopping old yum server, if necessary ==="
-./stop_apt_server.sh $TMP_PATH >/dev/null 2>&1 || :
+echo "=== stopping old apt server, if necessary ==="
+./stop_apt_server.sh $APT_CONTAINER_NAME $APT_VOLUME >/dev/null 2>&1 || :
 
 echo "=== creating ${BUILD_NETWORK} network, if necessary ==="
 ./create_network.sh "${BUILD_NETWORK}"
 
+echo "=== creating ${APT_VOLUME} volume ==="
+docker volume rm --force "${APT_VOLUME}" || :
+docker volume create --name "${APT_VOLUME}"
+
 echo "=== copying DEBs from ${DEBDIR} to temporary volume ==="
-cp -v apt/* $TMP_PATH/
-mkdir -p "${TMP_PATH}/dists/stable/main/binary-all"
-cp -v "${DEBDIR}"/*.deb "${TMP_PATH}/dists/stable/main/binary-all"
+docker create -v "${APT_VOLUME}:${MOUNT_PATH}" --name "${APT_CONTAINER_NAME}-helper" busybox
+mkdir -p dists/stable/main/binary-all
+docker cp dists "${APT_CONTAINER_NAME}-helper:${MOUNT_PATH}"
+rmdir -p dists/stable/main/binary-all
+for FILE in "${DEBDIR}"/*.deb; do
+  echo "* ${FILE}"
+  docker cp "${FILE}" "${APT_CONTAINER_NAME}-helper:${MOUNT_PATH}/dists/stable/main/binary-all"
+done
+for FILE in apt/*; do
+  echo "* ${FILE}"
+  docker cp "${FILE}" "${APT_CONTAINER_NAME}-helper:${MOUNT_PATH}"
+done
+docker rm -f "${APT_CONTAINER_NAME}-helper"
 
 echo "=== launching apt server ==="
-#docker run --rm -it -v /Users/freddy/git/opennms/opennms-container/horizon/deb.bak:/tmp/deb --publish "8080:8080"  --publish "8081:8081" ubuntu:focal /tmp/deb/setup.sh
-echo docker run --rm --detach --name "${APT_CONTAINER_NAME}" --volume "$TMP_PATH:$MOUNT_POINT" --network "${BUILD_NETWORK}" --publish "${PORT}:${PORT}" "${OCI}" ${MOUNT_POINT}/entrypoint.sh $MOUNT_POINT $PORT
-echo "FIND $TMP_PATH"
-find $TMP_PATH
-echo "FIND $MOUNT_POINT"
-docker run --rm --volume "$TMP_PATH:$MOUNT_POINT" --network "${BUILD_NETWORK}" --publish "${PORT}:${PORT}" "${OCI}" find $MOUNT_POINT
+echo "FIND $MOUNT_PATH"
+docker run --rm --volume "$APT_VOLUME:$MOUNT_PATH" --network "${BUILD_NETWORK}" --publish "${PORT}:${PORT}" "${OCI}" find $MOUNT_PATH
 echo "END"
-docker run --rm --detach --name "${APT_CONTAINER_NAME}" --volume ${TMP_PATH}:${MOUNT_POINT} --network "${BUILD_NETWORK}" --publish "${PORT}:${PORT}" --entrypoint ${MOUNT_POINT}/entrypoint.sh "${OCI}" $MOUNT_POINT $PORT
+docker run --rm --detach --name "${APT_CONTAINER_NAME}" --volume ${APT_VOLUME}:${MOUNT_PATH} --network "${BUILD_NETWORK}" --publish "${PORT}:${PORT}" --entrypoint ${MOUNT_PATH}/entrypoint.sh "${OCI}" $MOUNT_PATH $PORT
 
 echo "=== waiting for server to be available ==="
 COUNT=0

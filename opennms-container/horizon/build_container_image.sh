@@ -14,11 +14,14 @@ cd "$(dirname "$0")"
 # shellcheck disable=SC1091
 source "../set-build-environment.sh"
 
-CURRENT_PATH=$(pwd)
-TMP_PATH=$(mktemp -d "${CURRENT_PATH}/apt-XXXX")
-../launch_apt_server.sh "$DEBDIR" "$REPO_PORT" "$TMP_PATH"
+APT_VOLUME="${APT_CONTAINER_NAME}-volume"
+../launch_apt_server.sh "$DEBDIR" "$REPO_PORT" "$APT_VOLUME"
 
-cp "${TMP_PATH}/pgp-key.public" debs/
+if [ ! -d debs ]; then
+  mkdir debs
+fi
+
+docker cp "${APT_CONTAINER_NAME}:/repo/pgp-key.public" debs/
 
 # for install jicmp jrrd etc.
 cat <<END >opennms.list
@@ -63,4 +66,4 @@ fi
 docker image save horizon -o images/container.oci
 
 rm -f opennms.list debs/opennms.list debs/pgp-key.public
-../stop_apt_server.sh $TMP_PATH
+../stop_apt_server.sh $APT_CONTAINER_NAME $APT_VOLUME

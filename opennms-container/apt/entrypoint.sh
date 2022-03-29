@@ -24,14 +24,13 @@ cd $BASE_PATH
 dpkg-scanpackages dists/stable/main/binary-all > dists/stable/main/binary-all/Packages 
 
 cd $BASE_PATH/dists/stable
-/tmp/deb/generate-release.sh stable > Release
+$BASE_PATH/generate-release.sh stable > Release
 
 echo "Sign Release by temp gpg"
 export GNUPGHOME="$(mktemp -d /tmp/pgpkeys-XXXXXX)"
-gpg --no-tty --batch --gen-key /tmp/deb/temp-pgp-key.batch
-gpg --armor --export tempkey > /tmp/deb/pgp-key.public
+gpg --no-tty --batch --gen-key ${BASE_PATH}/temp-pgp-key.batch
+gpg --armor --export tempkey > ${BASE_PATH}/pgp-key.public
 cat Release | gpg --default-key tempkey -abs --clearsign > InRelease
-
 
 echo "Start apt server @ $PORT"
 cd $BASE_PATH
