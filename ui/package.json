@@ -16,7 +16,7 @@
     "@featherds/app-layout": "0.10.1",
     "@featherds/autocomplete": "0.10.1",
     "@featherds/button": "0.10.1",
-    "@featherds/checkbox": "0.10.1",
+    "@featherds/checkbox": "0.10.2",
     "@featherds/chips": "0.10.1",
     "@featherds/date-input": "0.10.1",
     "@featherds/dialog": "0.10.1",
