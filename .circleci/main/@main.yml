@@ -488,6 +488,19 @@ commands:
               echo "Loading ${FILE} into Docker..."
               docker image load -i "$FILE"
             done
+  qemu-user-static:
+    steps:
+      - run:
+          name: multiarch/qemu-user-static
+          command: docker run --privileged multiarch/qemu-user-static --reset -p yes
+  install-buildx:
+    steps:
+      - run:
+          name: Install Docker buildx
+          command: |
+            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
+            sudo chmod a+x /usr/local/bin/docker-buildx
+            sudo systemctl restart docker
 
 workflows:
   weekly-coverage:
@@ -619,7 +632,7 @@ workflows:
           filters:
             branches:
               only:
-                - /.*NMS-14096/
+                - /.*NMS-14098.*/
       - horizon-deb-build:
           requires:
             - build
@@ -636,7 +649,7 @@ workflows:
                 - /^merge-foundation.*/
       - sentinel-rpm-build:
           requires:
-            - build
+            - integration-test
           filters:
             branches:
               ignore:
@@ -781,11 +794,21 @@ workflows:
                 - /^merge-foundation.*/
       - sentinel-deb-build:
           requires:
-            - integration-test
+            - build
           filters:
             branches:
               ignore:
                 - /^merge-foundation.*/
+      - sentinel-image-single-arch:
+          requires:
+            - sentinel-deb-build
+          matrix:
+            parameters:
+              architecture: [linux/arm64]
+          filters:
+            branches:
+              only:
+                - /.*NMS-14098.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -913,15 +936,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run:
-          name: multiarch/qemu-user-static
-          command: docker run --privileged multiarch/qemu-user-static --reset -p yes
-      - run:
-          name: Install Docker buildx
-          command: |
-            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
-            sudo chmod a+x /usr/local/bin/docker-buildx
-            sudo systemctl restart docker
+      - qemu-user-static
+      - install-buildx
       - dockerhub-login
       - acr-login
       - run:
@@ -1000,15 +1016,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run:
-          name: multiarch/qemu-user-static
-          command: docker run --privileged multiarch/qemu-user-static --reset -p yes
-      - run:
-          name: Install Docker buildx
-          command: |
-            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
-            sudo chmod a+x /usr/local/bin/docker-buildx
-            sudo systemctl restart docker
+      - qemu-user-static
+      - install-buildx
       - dockerhub-login
       - acr-login
       - run: *setup_dct_env
@@ -1132,7 +1141,6 @@ jobs:
       - cache-workflow-assets:
           cache_prefix: rpm-horizon
           source_path: target/rpm/RPMS/noarch
-
   horizon-image-single-arch:
     parameters:
       architecture:
@@ -1144,15 +1152,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run:
-          name: multiarch/qemu-user-static
-          command: docker run --privileged multiarch/qemu-user-static --reset -p yes
-      - run:
-          name: Install Docker buildx
-          command: |
-            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
-            sudo chmod a+x /usr/local/bin/docker-buildx
-            sudo systemctl restart docker
+      - qemu-user-static
+      - install-buildx
       - dockerhub-login
       - acr-login
       - run:
@@ -1163,8 +1164,6 @@ jobs:
       - store_artifacts:
           path: ~/project/opennms-container/horizon/images/container.oci
           destination: horizon.oci
-
-
   minion-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -1221,23 +1220,12 @@ jobs:
           packages: target/rpm/RPMS/noarch/*.rpm
       - setup_remote_docker:
           docker_layer_caching: true
-      - run:
-          name: Fetch RPM artifacts and build Sentinel container image
-          command: |
-            cd opennms-container/sentinel
-            ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/sentinel/images/container.oci
-          destination: sentinel.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
       - cache-workflow-assets:
           cache_prefix: rpm-sentinel
           source_path: target/rpm/RPMS/noarch
-      - cache-oci:
-          key: sentinel
-          path: opennms-container/sentinel/images/
   horizon-deb-build:
     executor: debian-build-executor
     resource_class: xlarge
@@ -1347,12 +1335,47 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
+      - run:
+          name: Fetch debs artifacts and build Sentinel container image
+          command: |
+            cd opennms-container/sentinel
+            ./build_container_image.sh
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
+      - store_artifacts:
+          path: ~/project/opennms-container/sentinel/images/container.oci
+          destination: sentinel.oci
       - cache-workflow-assets:
           cache_prefix: deb-sentinel
           source_path: target/debs
+      - cache-oci:
+          key: sentinel
+          path: opennms-container/sentinel/images/
+  sentinel-image-single-arch:
+    parameters:
+      architecture:
+        type: string
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - attach_workspace:
+          at: ~/
+      - qemu-user-static
+      - install-buildx
+      - dockerhub-login
+      - acr-login
+      - run:
+          name: Fetch DEB artifacts and build Horizon container image
+          command: |
+            cd opennms-container/sentinel
+            env DOCKER_ARCH="<< parameters.architecture >>" ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/sentinel/images/container.oci
+          destination: sentinel.oci
+
   horizon-publish-oci:
     executor: centos-build-executor
     steps:

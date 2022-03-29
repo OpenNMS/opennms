@@ -1,25 +1,23 @@
 ##
-# Use Java base image and setup required RPMS as cacheable image.
+# Use Java base image and setup required DEBS as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/openjdk"
-ARG BASE_IMAGE_VERSION="11.0.14.0.9-b8239"
+ARG BASE_IMAGE="opennms/deploy-base"
+ARG BASE_IMAGE_VERSION="jre-1.2.0.b105"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as sentinel-base
 
-ARG REQUIRED_RPMS="hostname wget gettext openssh-clients"
+ARG REQUIRED_DEBS="hostname wget gettext openssh-client"
 
-ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
-ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
+ARG REPO_KEY_URL="https://debian.opennms.org/OPENNMS-GPG-KEY"
 
 SHELL ["/bin/bash", "-c"]
 
 # Collect generic steps in a layer for caching
-RUN rpm --import "${REPO_KEY_URL}" && \
-    dnf -y install epel-release && \
-    dnf -y install "${REPO_RPM}" && \
-    dnf -y install ${REQUIRED_RPMS} && \
-    dnf clean all && \
-    rm -rf /var/cache/yum
+# import keys & install required debs
+RUN apt-get update && \
+    apt-get install -y gnupg ca-certificates && \
+    curl -fsSL https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add && \
+    apt-get install -yq ${REQUIRED_DEBS}
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
@@ -28,65 +26,71 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
 
 # Create Sentinel user with a specific group ID
 RUN groupadd -g 10001 sentinel && \
-    adduser -u 10001 -g 10001 -d /opt/sentinel -s /usr/bin/bash sentinel
+    adduser --uid 10001 --gid 10001 --home /usr/share/sentinel --shell /usr/bin/bash sentinel
 
 # Create SSH Key-Pair to use with the Karaf Shell
-RUN mkdir /opt/sentinel/.ssh && \
-    chmod 700 /opt/sentinel/.ssh && \
-    ssh-keygen -t rsa -f /opt/sentinel/.ssh/id_rsa -q -N ""
+RUN mkdir /usr/share/sentinel/.ssh && \
+    chmod 700 /usr/share/sentinel/.ssh && \
+    ssh-keygen -t rsa -f /usr/share/sentinel/.ssh/id_rsa -q -N ""
 
 ##
-# Install and setup OpenNMS Sentinel RPMS
+# Install and setup OpenNMS Sentinel DEBS
 ##
 FROM sentinel-base
 
 # A default which installs the minimum required Minion packages
 ARG SENTINEL_PACKAGES="opennms-sentinel"
 
-# Allow to install optional packages via YUM
-ARG ADD_YUM_PACKAGES
+# Allow to install optional packages via DEB
+ARG ADD_DEB_PACKAGES
 
-COPY ./rpms /tmp/rpms
+COPY ./debs /tmp/debs
+
+# Prevent setup prompt
+ENV DEBIAN_FRONTEND=noninteractive
 
 SHELL ["/bin/bash", "-c"]
 
 # we want these to break the caching so yum will re-install now that
-# we're not copying RPMs into /tmp/rpms by default
+# we're not copying DEBs into /tmp/debs by default
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG REVISION
 
+RUN id sentinel
+RUN  getent group sentinel
+RUN  getent passwd sentinel
+
 # Install repositories, system and OpenNMS packages and do some cleanup
 RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
-    if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
-        echo "installing local RPMs from filesystem" && \
-        dnf -y install /tmp/rpms/*.rpm; \
-    elif [[ -e /tmp/rpms/opennms-docker.repo ]]; then \
-        echo "installing local RPMs over HTTP" && \
-        dnf -y install 'dnf-command(config-manager)' && \
-        dnf -y config-manager --add-repo /tmp/rpms/*.repo && \
-        dnf -y config-manager --set-enabled opennms-repo-docker-common && \
-        dnf -y --disablerepo=opennms-repo-stable-common install ${SENTINEL_PACKAGES}; \
+    if [[ "$(ls -1 /tmp/debs/*.deb 2>/dev/null | wc -l)" != 0 ]]; then \
+        echo "installing local DEBs from filesystem" && \
+        apt -y install /tmp/debs/*.deb; \
+    elif [[ -e /tmp/debs/opennms.list ]]; then \
+        echo "installing local DEBs over HTTP" && \
+        mv -f /tmp/debs/opennms.list /etc/apt/sources.list.d && \
+        apt-get update && \
+        apt-get install -yq ${SENTINEL_PACKAGES}; \
     else \
-        echo "installing remote RPMs from stable" && \
-        dnf -y install ${SENTINEL_PACKAGES}; \
+        echo "installing remote DEBs from stable" && \
+        apt-get install -yq ${SENTINEL_PACKAGES}; \
     fi && \
-    if [[ -n ${ADD_YUM_PACKAGES} ]]; then dnf -y install ${ADD_YUM_PACKAGES}; fi && \
-    rm -rf /tmp/rpms && \
-    dnf clean all && \
-    rm -rf /var/cache/yum && \
-    mkdir -p /opt/sentinel/data/{log,tmp} && \
-    echo sentinel=$(cat /opt/sentinel/.ssh/id_rsa.pub | awk '{print $2}'),viewer > /opt/sentinel/etc/keys.properties && \
-    echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /opt/sentinel/etc/keys.properties && \
-    chown 10001:10001 -R /opt/sentinel && \
-    chgrp -R 0 /opt/sentinel && \
-    chmod -R g=u /opt/sentinel && \
-    chmod 600 /opt/sentinel/.ssh/id_rsa
+    if [[ -n ${ADD_DEB_PACKAGES} ]]; then apt-get install -yq ${ADD_DEB_PACKAGES}; fi && \
+    rm -rf /tmp/debs && \
+    apt clean && \
+    mkdir -p /usr/share/sentinel/data/{log,tmp} && \
+    echo sentinel=$(cat /usr/share/sentinel/.ssh/id_rsa.pub | awk '{print $2}'),viewer > /usr/share/sentinel/etc/keys.properties && \
+    echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /usr/share/sentinel/etc/keys.properties && \
+    chown 10001:10001 -R /usr/share/sentinel && \
+    chgrp -R 0 /usr/share/sentinel && \
+    chmod -R g=u /usr/share/sentinel && \
+    chmod 600 /usr/share/sentinel/.ssh/id_rsa && \
+    ln -s /usr/share/sentinel /opt/sentinel
 
 COPY ./assets/* /
 
-VOLUME [ "/opt/sentinel/deploy", "/opt/sentinel/etc", "/opt/sentinel/data" ]
+VOLUME [ "/usr/share/sentinel/deploy", "/usr/share/sentinel/etc", "/usr/share/sentinel/data" ]
 
-WORKDIR /opt/sentinel
+WORKDIR /usr/share/sentinel
 
 ### Containers should NOT run as root as a good practice
 USER 10001
@@ -122,7 +126,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
 ### Runtime information and not relevant at build time
 
 # TODO MVR SENTINEL_LOCATION is not used at the moment
-ENV SENTINEL_HOME="/opt/sentinel" \
+ENV SENTINEL_HOME="/usr/share/sentinel" \
     SENTINEL_ID="" \
     SENTINEL_LOCATION="SENTINEL" \
     OPENNMS_BROKER_URL="tcp://127.0.0.1:61616" \

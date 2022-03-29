@@ -14,7 +14,6 @@ cd "$(dirname "$0")"
 # shellcheck disable=SC1091
 source "../set-build-environment.sh"
 
-APT_VOLUME="${APT_CONTAINER_NAME}-volume"
 ../launch_apt_server.sh "$DEBDIR" "$REPO_PORT" "$APT_VOLUME"
 
 if [ ! -d debs ]; then

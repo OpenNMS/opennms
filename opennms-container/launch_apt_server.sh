@@ -70,9 +70,6 @@ done
 docker rm -f "${APT_CONTAINER_NAME}-helper"
 
 echo "=== launching apt server ==="
-echo "FIND $MOUNT_PATH"
-docker run --rm --volume "$APT_VOLUME:$MOUNT_PATH" --network "${BUILD_NETWORK}" --publish "${PORT}:${PORT}" "${OCI}" find $MOUNT_PATH
-echo "END"
 docker run --rm --detach --name "${APT_CONTAINER_NAME}" --volume ${APT_VOLUME}:${MOUNT_PATH} --network "${BUILD_NETWORK}" --publish "${PORT}:${PORT}" --entrypoint ${MOUNT_PATH}/entrypoint.sh "${OCI}" $MOUNT_PATH $PORT
 
 echo "=== waiting for server to be available ==="

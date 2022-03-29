@@ -24,12 +24,12 @@ RUN curl --retry 5 --fail -L ${CONFD_URL} -o /usr/bin/confd && \
 
 # import keys
 RUN apt-get update && \
-    apt-get install -y gnupg ca-certificates && \
+    apt-get install -yq gnupg ca-certificates && \
     curl -fsSL https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add
 
 COPY opennms.list /etc/apt/sources.list.d
 RUN apt-get update && \
-    apt-get install -y ${REQUIRED_DEBS}
+    apt-get install -yq ${REQUIRED_DEBS}
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
@@ -38,7 +38,7 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
 
 # Create OpenNMS user with a specific group ID
 RUN groupadd -g 10001 opennms && \
-    adduser --uid 10001 --gid 10001 --home /opt/opennms --shell /usr/bin/bash opennms
+    adduser --uid 10001 --gid 10001 --no-create-home --home /opt/opennms --shell /usr/bin/bash opennms
 ##
 # Install and setup OpenNMS RPMS
 ##
@@ -68,9 +68,8 @@ ARG REVISION
 # 2. Try to install from local DEBS 
 # 3. Try to install from public apt repository
 #
-# To avoid different behavior, between a DEB or tarball installation,
-# the directory structure is unified, the links for /opt/opennms/share
-# and /opt/opennms/logs introduced by DEB installs are removed.
+# To avoid different behavior, between a debain to centos install.
+# A symlink is created from /usr/share/opennms > /opt/opennms
 
 RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
@@ -80,17 +79,17 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
         cp -r /usr/share/opennms/etc /usr/share/opennms/share/etc-pristine; \
     elif [[ "$(ls -1 /tmp/debs/*.deb 2>/dev/null | wc -l)" != 0 ]]; then \
         echo "installing local DEBs from filesystem" && \
-        apt-get -yq install /tmp/debs/*.deb; \
+        apt-get install -yq /tmp/debs/*.deb; \
     elif [[ -e /tmp/debs/opennms.list ]]; then \
         echo "installing local DEBs over HTTP" && \
         mv -f /tmp/debs/opennms.list /etc/apt/sources.list.d && \
         apt-get update && \
-        apt-get install -y ${ONMS_PACKAGES}; \
+        apt-get install -yq ${ONMS_PACKAGES}; \
     else \
         echo "installing remote DEBs from stable" && \
-        apt-get -yq install ${ONMS_PACKAGES}; \
+        apt-get install -yq ${ONMS_PACKAGES}; \
     fi && \
-    if [[ -n ${ADD_DEB_PACKAGES} ]]; then apt-get -yq install ${ADD_DEB_PACKAGES}; fi && \
+    if [[ -n ${ADD_DEB_PACKAGES} ]]; then apt-get install -yq ${ADD_DEB_PACKAGES}; fi && \
     rm -rf /tmp/debs /tmp/tarball && \
     apt-get autoclean && \
     apt-get clean && \
@@ -107,7 +106,7 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     ln -s /opennms-data/reports /usr/share/opennms/share/reports && \
     ln -s /opennms-data/mibs /usr/share/opennms/share/mibs && \
 # Align with old opennms path
-    ln -s /usr/share/opennms /opt/opennms && \
+    ln -s /usr/share/opennms /opt && \
     chown 10001:10001 -R /usr/share/opennms \
                          /opennms-data \
                          /opt/opennms-overlay \
