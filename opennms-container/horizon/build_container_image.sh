@@ -40,7 +40,9 @@ BUILDER_NAME=horizon-build
 if [ $(docker buildx ls | grep -c "${BUILDER_NAME}") -gt 0 ]; then
   docker buildx rm $BUILDER_NAME
 fi
-docker buildx create --name $BUILDER_NAME --driver docker-container --driver-opt network="${BUILD_NETWORK}" --use
+
+docker context create tls-environment
+docker buildx create --name $BUILDER_NAME --driver docker-container --driver-opt network="${BUILD_NETWORK}" --use tls-environment
 
 docker buildx build -t horizon \
   --builder $BUILDER_NAME \
@@ -67,3 +69,5 @@ docker image save horizon -o images/container.oci
 
 rm -f opennms.list debs/opennms.list debs/pgp-key.public
 ../stop_apt_server.sh $APT_CONTAINER_NAME $APT_VOLUME
+
+docker context rm tls-environment
