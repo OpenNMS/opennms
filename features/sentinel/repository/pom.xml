@@ -87,7 +87,7 @@
                                 <feature>sentinel-plugin-sample</feature>
 
                                 <!-- Other features -->
-                                <feature>hawtio-offline</feature>
+                                <feature>hawtio</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
