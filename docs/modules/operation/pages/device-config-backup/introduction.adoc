@@ -47,7 +47,9 @@ Scripts can reference the following variables by using `${varname}` notation:
 | config type as described above
 |===
 
-Note: Uploaded configuration files should specify their file type by including the corresponding filename extension like `.zip` or `.gz`. In addition, a `.` and the script variable `filenameSuffix` has to be appended to the filename that is used for upload. The server uses that additional suffix to identify incoming uploads.
+Note: Uploaded configuration files should specify their file type by including the corresponding filename extension like `.zip` or `.gz`.
+In addition, a `.` and the script variable `filenameSuffix` must be appended to the filename that is used for upload.
+{page-component-title} uses that additional suffix to identify incoming uploads.
 
 Example script:
 
