@@ -510,10 +510,10 @@ commands:
     steps:
       - attach_workspace:
           at: ~/
-      - qemu-user-static
-      - install-buildx
       - setup_remote_docker:
           docker_layer_caching: true
+      - qemu-user-static
+      - install-buildx
       - run:
           name: Fetch DEB artifacts and build << parameters.container_name >> container image
           command: |

@@ -80,7 +80,7 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     mkdir -p /usr/share/sentinel/data/{log,tmp} && \
     echo sentinel=$(cat /usr/share/sentinel/.ssh/id_rsa.pub | awk '{print $2}'),viewer > /usr/share/sentinel/etc/keys.properties && \
     echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /usr/share/sentinel/etc/keys.properties && \
-    chown 10001:10001 -R /usr/share/sentinel && \
+    chown 10001:10001 -R /usr/share/sentinel /var/lib/sentinel && \
     chgrp -R 0 /usr/share/sentinel && \
     chmod -R g=u /usr/share/sentinel && \
     chmod 600 /usr/share/sentinel/.ssh/id_rsa && \
