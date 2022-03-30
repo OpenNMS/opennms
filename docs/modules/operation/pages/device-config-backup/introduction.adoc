@@ -51,9 +51,9 @@ Note: Uploaded configuration files should specify their file type by including t
 In addition, a `.` and the script variable `filenameSuffix` must be appended to the filename that is used for upload.
 {page-component-title} uses that additional suffix to identify incoming uploads.
 
-Example script:
-
-```
+.Example script
+[source, script]
+----
 await: >
 send: configure
 await: Entering configuration mode
@@ -69,6 +69,6 @@ await: >
 send: delete config saved config.gz.${filenameSuffix}
 await: Successfully removed config.gz.${filenameSuffix}
 await: >
-```
+----
 
 == Poller configuration
