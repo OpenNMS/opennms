@@ -237,29 +237,6 @@
   </profiles>
 
   <dependencies>
-    <!-- Dependencies to put into the endorsed classpath -->
-
-    <!-- We don't need the JAXB 2.2 API because Java 8 already has it -->
-    <!-- And Apache Karaf puts it into the endorsed directory anyway ;) -->
-    <!--
-    <dependency>
-        <groupId>org.apache.servicemix.specs</groupId>
-        <artifactId>org.apache.servicemix.specs.jaxb-api-2.2</artifactId>
-        <version>2.4.0</version>
-    </dependency>
-    -->
-    <dependency>
-      <groupId>org.apache.servicemix.bundles</groupId>
-      <artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
-      <!--
-      ActiveMQ 5.12 updated their JAXB dependency past the version
-      that is included with... pretty much any JVM so we have to add the
-      updated version to the endorsed classpath.
-      -->
-      <version>2.2.11_1</version>
-    </dependency>
-
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-ackd</artifactId>

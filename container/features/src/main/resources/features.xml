@@ -1184,7 +1184,6 @@
         <bundle>wrap:mvn:org.jvnet.opendmk/jmxremote_optional/${jmxremote.optional.version}</bundle>
         <bundle>mvn:org.apache.velocity/velocity/1.7</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.name-cutter/${project.version}</bundle>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
     </feature>
     <feature name="vaadin-jmxconfiggenerator" version="${project.version}" description="OpenNMS :: Features :: JMX Config Generator :: Web UI">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
