@@ -37,6 +37,10 @@
                 @update:modelValue="(val: string) => updateFormValue('time', val)"
                 :modelValue="props.config.time"
             />
+            <span
+                v-if="props.config.occurance.name"
+                class="feather-input-hint-custom"
+            >{{ scheduledTime }}</span>
         </div>
 
         <div class="flex" v-if="props.config.advancedCrontab">
@@ -46,6 +50,7 @@
                 label="Advanced (Cron) Schedule"
                 @update:modelValue="(val: string) => updateFormValue('occuranceAdvanced', val)"
                 :modelValue="props.config.occuranceAdvanced"
+                :hint="props.config.occurance.name ? scheduledTime : ''"
             />
         </div>
         <div class="flex">
@@ -55,10 +60,9 @@
                     @update:modelValue="(val: string) => updateFormValue('advancedCrontab', val)"
                 >Advanced (Cron) Schedule</FeatherCheckbox>
             </div>
-            <div v-if="props.config.occurance.name" class="pull-up">{{ scheduledTime }}</div>
         </div>
         <div v-if="props.config.advancedCrontab">
-            <a target="_blank" class="link" href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html">Quartz Scheduler Documentation</a>
+            <a target="_blank" class="link mb-20" href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html">Quartz Scheduler Documentation</a>
         </div>
     </div>
 </template>
@@ -96,9 +100,35 @@ const scheduledTime = computed(() => {
 })
 
 </script>
+<style lang="scss">
+.advanced-entry {
+    .feather-input-sub-text {
+        padding-right: 0;
+        .feather-input-hint {
+            text-align: right;
+        }
+    }
+}
+</style>
 <style lang="scss" scoped>
+@import "@featherds/styles/themes/variables";
+@import "@featherds/styles/mixins/typography";
+
+.feather-input-hint-custom {
+    flex: 1;
+    @include caption();
+    color: var($secondary-text-on-surface);
+    margin: -20px 16px 0 0;
+    display: flex;
+    justify-content: flex-end;
+}
 div a.link {
     color:var(--feather-clickable);
+    display: block;
+    text-decoration: underline;
+    &:hover {
+        text-decoration: none;
+    }
 }
 .flex {
     display: flex;
@@ -114,9 +144,7 @@ div a.link {
         }
     }
 }
-.pull-up {
-    width:50%;
-    transform:translateY(-12px);
-    text-align:right;
+.mb-20 {
+    margin-bottom: 20px;
 }
 </style>

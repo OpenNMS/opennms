@@ -2,7 +2,7 @@
     <div>
         <FeatherInput
             ref="firstInput"
-            class="side-input"
+            class="side-input mb-16"
             label="Name"
             hint="Human-friendly name. Must be unique."
             :error="errors.name"
@@ -11,7 +11,7 @@
         />
         <div class="flex-center">
             <FeatherSelect
-                class="side-input full-width"
+                class="side-input full-width mb-16"
                 textProp="name"
                 hint="Type of URL to use."
                 label="Type"
@@ -44,7 +44,7 @@
         <div v-if="RequsitionTypesUsingHost.includes(config.type.name)">
             <FeatherInput
                 label="Host"
-                class="side-input host-update"
+                class="side-input host-update mb-16"
                 :error="errors.host"
                 :modelValue="config.host"
                 @update:modelValue="(val: string) => updateFormValue('host', val)"
@@ -54,7 +54,7 @@
         <div v-if="RequisitionHTTPTypes.includes(config.type.name)">
             <FeatherInput
                 label="Path"
-                class="side-input"
+                class="side-input mb-16"
                 :error="errors.urlPath"
                 :modelValue="config.urlPath"
                 @update:modelValue="(val: string) => updateFormValue('urlPath', val)"
@@ -63,7 +63,7 @@
         </div>
         <div v-if="[RequisitionTypes.RequisitionPlugin].includes(config.type.name)">
             <FeatherSelect
-                class="side-input"
+                class="side-input mb-16"
                 textProp="name"
                 hint
                 label="Requisition Plugin"
@@ -75,7 +75,7 @@
         <div v-if="[RequisitionTypes.DNS].includes(config.type.name)">
             <FeatherInput
                 label="Zone"
-                class="side-input"
+                class="side-input mb-16"
                 :error="errors.zone"
                 :modelValue="config.zone"
                 @update:modelValue="(val: string) => updateFormValue('zone', val)"
@@ -83,7 +83,7 @@
             />
             <FeatherInput
                 label="Foreign Source"
-                class="side-input"
+                class="side-input mb-16"
                 :error="errors.foreignSource"
                 :modelValue="config.foreignSource"
                 @update:modelValue="(val: string) => updateFormValue('foreignSource', val)"
@@ -94,7 +94,7 @@
             <div class="flex-center side-input">
                 <FeatherInput
                     label="Username"
-                    class="side-input full-width margin-right"
+                    class="side-input full-width mr-16 mb-16"
                     :error="errors.username"
                     :modelValue="config.username"
                     @update:modelValue="(val: string) => updateFormValue('username', val)"
@@ -103,7 +103,7 @@
                 <FeatherInput
                     type="password"
                     label="Password"
-                    class="side-input full-width"
+                    class="side-input full-width mb-16"
                     :error="errors.password"
                     :modelValue="config.password"
                     @update:modelValue="(val: string) => updateFormValue('password', val)"
@@ -114,7 +114,7 @@
         <div v-if="[RequisitionTypes.File].includes(config.type.name)">
             <FeatherInput
                 label="Path"
-                class="side-input"
+                class="side-input mb-16"
                 :error="errors.path"
                 :modelValue="config.path"
                 @update:modelValue="(val: string) => updateFormValue('path', val)"
@@ -205,7 +205,10 @@ const updateCronValue = (type:string,val:string) => {
 .full-width {
     width: 100%;
 }
-.margin-right {
+.mr-16 {
     margin-right: 16px;
+}
+.mb-16 {
+    margin-bottom: 16px;
 }
 </style>
