@@ -34,16 +34,16 @@ Scripts can reference the following variables by using `${varname}` notation:
 | Name
 | Description
 
-| `tftpServerIp`
+| tftpServerIp
 | IP address of the TFTP server
 
-| `tftpServerPort`
+| tftpServerPort
 | port number of the TFTP server
 
-| `filenameSuffix`
+| filenameSuffix
 | suffix that must be appended to the filename for uploading
 
-| `configType`
+| configType
 | config type as described above
 |===
 
