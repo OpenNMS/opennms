@@ -505,8 +505,6 @@ commands:
     parameters:
       architecture:
         type: string
-      cache_prefix:
-        type: string
       container_name:
         type: string
     steps:
@@ -514,19 +512,16 @@ commands:
           at: ~/
       - qemu-user-static
       - install-buildx
-      - dockerhub-login
-      - acr-login
-      - restore-workflow-assets:
-          cache_prefix: << parameters.cache_prefix >>
-          target_path: "target/debs"
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
-          name: Fetch DEB artifacts and build Horizon container image
+          name: Fetch DEB artifacts and build << parameters.container_name >> container image
           command: |
             cd opennms-container/<< parameters.container_name >>
             env DOCKER_ARCH="<< parameters.architecture >>" ./build_container_image.sh
       - store_artifacts:
           path: ~/project/opennms-container/<< parameters.container_name >>/images/container.oci
-          destination: container_name.oci
+          destination: << parameters.container_name>>.oci
 
 workflows:
   weekly-coverage:
@@ -1067,6 +1062,11 @@ jobs:
             docker trust key load $KEY_FOLDER/$AZURE_DCT_CI_KEY_ID.key
             docker push ${MINION_AZ_REPO}:${TAG}
             echo "pushed to AZ"
+      - store_artifacts:
+          when:
+            - equal: [ "linux/arm64", << parameters.architecture >> ]
+          path: ~/project/opennms-container/minion/images/minion.oci
+          destination: minion.oci
 
   minion-image-multi-arch:
     machine:
@@ -1167,19 +1167,6 @@ jobs:
       - cache-workflow-assets:
           cache_prefix: rpm-horizon
           source_path: target/rpm/RPMS/noarch
-  horizon-image-single-arch:
-    parameters:
-      architecture:
-        type: string
-    machine:
-      image: ubuntu-2004:202010-01
-    environment:
-      DOCKER_CLI_EXPERIMENTAL: enabled
-    steps:
-      - build-image-single-arch:
-          architecture: << parameters.architecture >>
-          cache_prefix: deb-horizon
-          container_name: horizon
 
   minion-rpm-build:
     executor: centos-build-executor
@@ -1235,8 +1222,6 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
-      - setup_remote_docker:
-          docker_layer_caching: true
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
@@ -1286,16 +1271,9 @@ jobs:
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Fetch DEB artifacts and build Horizon container image
-          command: |
-            cd opennms-container/horizon
-            ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/horizon/images/container.oci
-          destination: horizon.oci
+      - build-image-single-arch:
+          architecture: linux/amd64
+          container_name: horizon
       - cache-workflow-assets:
           cache_prefix: deb-horizon
           source_path: target/debs
@@ -1352,25 +1330,34 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Fetch debs artifacts and build Sentinel container image
-          command: |
-            cd opennms-container/sentinel
-            ./build_container_image.sh
+      - build-image-single-arch:
+          architecture: linux/amd64
+          container_name: sentinel
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
-      - store_artifacts:
-          path: ~/project/opennms-container/sentinel/images/container.oci
-          destination: sentinel.oci
       - cache-workflow-assets:
           cache_prefix: deb-sentinel
           source_path: target/debs
       - cache-oci:
           key: sentinel
           path: opennms-container/sentinel/images/
+
+  horizon-image-single-arch:
+    parameters:
+      architecture:
+        type: string
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - restore-workflow-assets:
+          cache_prefix: deb-horizon
+          target_path: "target/debs"
+      - build-image-single-arch:
+          architecture: << parameters.architecture >>
+          container_name: horizon
   sentinel-image-single-arch:
     parameters:
       architecture:
@@ -1380,9 +1367,11 @@ jobs:
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
+      - restore-workflow-assets:
+          cache_prefix: deb-sentinel
+          target_path: "target/debs"
       - build-image-single-arch:
           architecture: << parameters.architecture >>
-          cache_prefix: deb-sentinel
           container_name: sentinel
 
   horizon-publish-oci:
