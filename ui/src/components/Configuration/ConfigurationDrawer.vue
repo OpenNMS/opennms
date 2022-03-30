@@ -245,8 +245,7 @@ const toggleHelp = () => {
 }
 
 .slide-inner-body {
-  padding: 4px 20px;
-  margin-top: 20px;
+  padding: 20px 20px 4px;
   background-color: var(--feather-background);
   @include elevation(1);
 }
