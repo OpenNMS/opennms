@@ -654,6 +654,7 @@ workflows:
             branches:
               only:
                 - /.*NMS-14098.*/
+                - /.*arm64.*/
       - horizon-deb-build:
           requires:
             - build
@@ -687,7 +688,7 @@ workflows:
             - tarball-assembly
             - horizon-deb-build
             - minion-rpm-build
-            - sentinel-rpm-build
+            - sentinel-deb-build
           filters:
             branches:
               only:
@@ -703,7 +704,7 @@ workflows:
             - tarball-assembly
             - horizon-deb-build
             - minion-rpm-build
-            - sentinel-rpm-build
+            - sentinel-deb-build
           filters:
             branches:
               only:
@@ -719,7 +720,7 @@ workflows:
             - tarball-assembly
             - horizon-deb-build
             - minion-rpm-build
-            - sentinel-rpm-build
+            - sentinel-deb-build
           filters:
             branches:
               only:
@@ -735,7 +736,7 @@ workflows:
             - tarball-assembly
             - horizon-deb-build
             - tarball-assembly
-            - sentinel-rpm-build
+            - sentinel-deb-build
           filters:
             branches:
               only:
@@ -751,7 +752,7 @@ workflows:
             - tarball-assembly
             - horizon-deb-build
             - tarball-assembly
-            - sentinel-rpm-build
+            - sentinel-deb-build
           filters:
             branches:
               ignore:
@@ -830,6 +831,7 @@ workflows:
             branches:
               only:
                 - /.*NMS-14098.*/
+                - /.*arm64.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -1062,11 +1064,6 @@ jobs:
             docker trust key load $KEY_FOLDER/$AZURE_DCT_CI_KEY_ID.key
             docker push ${MINION_AZ_REPO}:${TAG}
             echo "pushed to AZ"
-      - store_artifacts:
-          when:
-            - equal: [ "linux/arm64", << parameters.architecture >> ]
-          path: ~/project/opennms-container/minion/images/minion.oci
-          destination: minion.oci
 
   minion-image-multi-arch:
     machine:
@@ -1264,6 +1261,13 @@ jobs:
             (free -m || :) > ~/build-results/system-logs/free 2>&1
             (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
             cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Fetch DEB artifacts and build horizon container image
+          command: |
+            cd opennms-container/horizon
+            env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
       - store_artifacts:
           when: always
           path: ~/build-results
@@ -1271,9 +1275,9 @@ jobs:
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
-      - build-image-single-arch:
-          architecture: linux/amd64
-          container_name: horizon
+      - store_artifacts:
+          path: ~/project/opennms-container/horizon/images/container.oci
+          destination: horizon.oci
       - cache-workflow-assets:
           cache_prefix: deb-horizon
           source_path: target/debs
@@ -1330,12 +1334,19 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
-      - build-image-single-arch:
-          architecture: linux/amd64
-          container_name: sentinel
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Fetch DEB artifacts and build sentinel container image
+          command: |
+            cd opennms-container/sentinel
+            env DOCKER_ARCH="linux/amd64" ./build_container_image.sh
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
+      - store_artifacts:
+          path: ~/project/opennms-container/sentinel/images/container.oci
+          destination: sentinel.oci
       - cache-workflow-assets:
           cache_prefix: deb-sentinel
           source_path: target/debs
