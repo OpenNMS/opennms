@@ -51,7 +51,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
         "lastupdated", "last_updated",
         "devicename", "nodelabel",
-        "createdtime", "created_time",
+        "lastbackup", "created_time",
         "ipaddress", "ipaddr"
     );
 

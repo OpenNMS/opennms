@@ -85,7 +85,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
         "lastupdated", "lastUpdated",
         "devicename", "ipInterface.node.label",
-        "createdtime", "createdTime",
+        "lastbackup", "createdTime",
         "ipaddress", "ipInterface.ipAddr"
     );
 
