@@ -501,6 +501,32 @@ commands:
             sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
             sudo chmod a+x /usr/local/bin/docker-buildx
             sudo systemctl restart docker
+  build-image-single-arch:
+    parameters:
+      architecture:
+        type: string
+      cache_prefix:
+        type: string
+      container_name:
+        type: string
+    steps:
+      - attach_workspace:
+          at: ~/
+      - qemu-user-static
+      - install-buildx
+      - dockerhub-login
+      - acr-login
+      - restore-workflow-assets:
+          cache_prefix: << parameters.cache_prefix >>
+          target_path: "target/debs"
+      - run:
+          name: Fetch DEB artifacts and build Horizon container image
+          command: |
+            cd opennms-container/<< parameters.container_name >>
+            env DOCKER_ARCH="<< parameters.architecture >>" ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/<< parameters.container_name >>/images/container.oci
+          destination: container_name.oci
 
 workflows:
   weekly-coverage:
@@ -1150,20 +1176,11 @@ jobs:
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
-      - attach_workspace:
-          at: ~/
-      - qemu-user-static
-      - install-buildx
-      - dockerhub-login
-      - acr-login
-      - run:
-          name: Fetch DEB artifacts and build Horizon container image
-          command: |
-            cd opennms-container/horizon
-            env DOCKER_ARCH="<< parameters.architecture >>" ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/horizon/images/container.oci
-          destination: horizon.oci
+      - build-image-single-arch:
+          architecture: << parameters.architecture >>
+          cache_prefix: deb-horizon
+          container_name: horizon
+
   minion-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -1335,6 +1352,8 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           name: Fetch debs artifacts and build Sentinel container image
           command: |
@@ -1361,20 +1380,10 @@ jobs:
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
-      - attach_workspace:
-          at: ~/
-      - qemu-user-static
-      - install-buildx
-      - dockerhub-login
-      - acr-login
-      - run:
-          name: Fetch DEB artifacts and build Horizon container image
-          command: |
-            cd opennms-container/sentinel
-            env DOCKER_ARCH="<< parameters.architecture >>" ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/sentinel/images/container.oci
-          destination: sentinel.oci
+      - build-image-single-arch:
+          architecture: << parameters.architecture >>
+          cache_prefix: deb-sentinel
+          container_name: sentinel
 
   horizon-publish-oci:
     executor: centos-build-executor
