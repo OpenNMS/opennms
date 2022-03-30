@@ -77,6 +77,13 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     if [[ -n ${ADD_DEB_PACKAGES} ]]; then apt-get install -yq ${ADD_DEB_PACKAGES}; fi && \
     rm -rf /tmp/debs && \
     apt clean && \
+    # make sure entrypoint.sh able to do cp -r with origional path
+    rm /usr/share/sentinel/{data,etc,deploy} && \
+    mv /var/lib/sentinel/{data,deploy} /usr/share/sentinel && \
+    mv /etc/sentinel /usr/share/sentinel/etc && \
+    ln -s /usr/share/sentinel/data /var/lib/sentinel/data && \
+    ln -s /usr/share/sentinel/deploy /var/lib/sentinel/deploy && \
+    ln -s /usr/share/sentinel/etc /etc/sentinel && \
     mkdir -p /usr/share/sentinel/data/{log,tmp} && \
     echo sentinel=$(cat /usr/share/sentinel/.ssh/id_rsa.pub | awk '{print $2}'),viewer > /usr/share/sentinel/etc/keys.properties && \
     echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /usr/share/sentinel/etc/keys.properties && \

@@ -505,15 +505,18 @@ commands:
     parameters:
       architecture:
         type: string
+      cache_prefix:
+        type: string
       container_name:
         type: string
     steps:
       - attach_workspace:
           at: ~/
-      - setup_remote_docker:
-          docker_layer_caching: true
       - qemu-user-static
       - install-buildx
+      - restore-workflow-assets:
+          cache_prefix: << parameters.cache_prefix >>
+          target_path: "target/debs"
       - run:
           name: Fetch DEB artifacts and build << parameters.container_name >> container image
           command: |
@@ -521,7 +524,7 @@ commands:
             env DOCKER_ARCH="<< parameters.architecture >>" ./build_container_image.sh
       - store_artifacts:
           path: ~/project/opennms-container/<< parameters.container_name >>/images/container.oci
-          destination: << parameters.container_name>>.oci
+          destination: << parameters.container_name >>.oci
 
 workflows:
   weekly-coverage:
@@ -1363,11 +1366,9 @@ jobs:
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
-      - restore-workflow-assets:
-          cache_prefix: deb-horizon
-          target_path: "target/debs"
       - build-image-single-arch:
           architecture: << parameters.architecture >>
+          cache_prefix: deb-horizon
           container_name: horizon
   sentinel-image-single-arch:
     parameters:
@@ -1378,11 +1379,9 @@ jobs:
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
-      - restore-workflow-assets:
-          cache_prefix: deb-sentinel
-          target_path: "target/debs"
       - build-image-single-arch:
           architecture: << parameters.architecture >>
+          cache_prefix: deb-sentinel
           container_name: sentinel
 
   horizon-publish-oci:
