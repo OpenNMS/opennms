@@ -1,0 +1,37 @@
+
+[[run_diff]]
+= Run a diff on Configuration Files
+Run the config-diff tool in the /bin directory to identify differences between the default configuration and what you have running.
+Identifying these differences allows you to determine what you need to migrate as part of an upgrade.
+
+[source, console]
+----
+cd ${OPENNMS_HOME}/bin
+./config-diff.sh -d
+----
+
+Save and migrate the configuration files that appear in the config-diff.sh output.
+
+== List files we have added and do not exist in a pristine install
+
+[source, console]
+----
+cd /opt/opennms
+diff -rq -EBbw ./etc share/etc-pristine | grep "Only in ./etc[/|:]"
+----
+
+== List files we have changed and need to be merged manually
+
+[source, console]
+----
+cd /opt/opennms
+diff -rq -EBbw ./etc share/etc-pristine | grep "differ"
+----
+
+== List files we have deleted and exist in a pristine install
+
+[source, console]
+----
+cd /opt/opennms
+diff -rq -EBbw ./etc share/etc-pristine | grep "Only in share/etc-pristine[/|:]"
+----

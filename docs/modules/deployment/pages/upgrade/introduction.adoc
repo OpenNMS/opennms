@@ -1,0 +1,25 @@
+
+[[upgrade]]
+= Upgrade {page-component-title}
+
+<introduction>
+
+<basic process>
+
+Depending on your set up, a basic upgrade with one instance takes about an hour.
+It will take longer depending on the amount of customization you have done through the configuration files, or the complexity of your set up.
+
+== Before you begin
+
+There are a number of tasks you should complete before starting an upgrade:
+
+* Check the release notes for breaking changes in each release between your current version and the version you want to upgrade to.
+Address any issues that might affect you.
+* Stop OpenNMS and PostgreSQL
+* xref:operation:admin/housekeeping/introduction.adoc#prune-events[Prune unneeded events]
+* Back up your database (same day/state)
+* Back up RRD files (same day/state)
+
+* Back up the opennms /etc directory smf software (opennms folder) (same day/state)
+* Assess the Events table size (especially important if you have a particularly large network)
+* Identify the configuration files you have changed to determine what you need to migrate as part of an upgrade.
