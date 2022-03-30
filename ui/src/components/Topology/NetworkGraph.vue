@@ -237,7 +237,11 @@ const configs = reactive(
 )
 
 // sets the default focused node
-const useDefaultFocus = () => setContextNodeAsFocus(defaultNode.value)
+const useDefaultFocus = () => {
+  if (defaultNode.value) {
+    setContextNodeAsFocus(defaultNode.value)
+  }
+}
 onMounted(() => useDefaultFocus())
 </script>
 

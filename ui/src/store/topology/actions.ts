@@ -20,7 +20,7 @@ const parseVerticesAndEdges = (resp: VerticesAndEdges, context: VuexContext) => 
     vertices[vertex.id] = { name: vertex.label, id: vertex.id, tooltip: vertex.tooltipText }
   }
 
-  if (resp.defaultFocus) {
+  if (resp.defaultFocus && resp.defaultFocus.vertexIds.length) {
     const defaultId = resp.defaultFocus.vertexIds[0].id
     if (defaultId) {
       const defaultNode = vertices[defaultId]
