@@ -200,16 +200,8 @@ watch(layout, async (layout) => {
   trigger.value = true
 })
 
-const setNodeColor = (node: Node) => {
-  if (highlightFocusedNodes.value && !node.focused) {
-    return 'rgb(39, 49, 128, 0.5)'
-  }
-
-  return 'rgb(39, 49, 128)' // feather primary
-}
-
-const setEdgeColor = (edge: Edge) => {
-  if (highlightFocusedNodes.value && !edge.focused) {
+const setColor = (item: Node | Edge) => {
+  if (highlightFocusedNodes.value && !item.focused) {
     return 'rgb(39, 49, 128, 0.5)'
   }
 
@@ -225,12 +217,12 @@ const configs = reactive(
       selectable: true,
       normal: {
         type: 'circle',
-        color: node => setNodeColor(node),
+        color: node => setColor(node),
       },
     },
     edge: {
       normal: {
-        color: edge => setEdgeColor(edge)
+        color: edge => setColor(edge)
       }
     }
   })
