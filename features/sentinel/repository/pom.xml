@@ -83,7 +83,7 @@
 
 
                                 <!-- Other features -->
-                                <feature>hawtio-offline</feature>
+                                <feature>hawtio</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
