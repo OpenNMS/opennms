@@ -106,7 +106,7 @@
         "hash.js": "^1.1.7",
         "holderjs": "^2.9.6",
         "ionicons": "^2.0.1",
-        "ip-address": "^6.4.0",
+        "ip-address": "^8.1.0",
         "jquery": "^3.6.0",
         "jquery-migrate": "^3.3.2",
         "jquery-sparkline": "https://github.com/kapusta/jquery.sparkline#2.1.3",

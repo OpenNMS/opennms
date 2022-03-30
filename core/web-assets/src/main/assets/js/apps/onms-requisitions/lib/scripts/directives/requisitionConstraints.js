@@ -1,6 +1,4 @@
-const ip = require('vendor/ipaddress-js');
-const Address4 = ip.Address4;
-const Address6 = ip.Address6;
+const { isValidIPAddress } = require('vendor/ipaddress-js');
 const _ = require('lodash');
 
 /**
@@ -35,22 +33,12 @@ const _ = require('lodash');
             ctrl.$setValidity('valid', false);
             return undefined;
           }
-          var isValid = false;
-          var ipv4 = new Address4(ipAddress);
-          if (ipv4.isValid()) {
-            isValid = true;
-          } else {
-            var ipv6 = new Address6(ipAddress);
-            if (ipv6.isValid()) {
-                isValid = true;
-            }
+          if (isValidIPAddress(ipAddress)) {
+            ctrl.$setValidity('valid', true);
+            return ipAddress;
           }
-          if (!isValid) {
-            ctrl.$setValidity('valid', false);
-            return undefined;
-          }
-          ctrl.$setValidity('valid', true);
-          return ipAddress;
+          ctrl.$setValidity('valid', false);
+          return undefined;
         });
       }
     };
