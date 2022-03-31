@@ -37,10 +37,6 @@
                 @update:modelValue="(val: string) => updateFormValue('time', val)"
                 :modelValue="props.config.time"
             />
-            <span
-                v-if="props.config.occurance.name"
-                class="feather-input-hint-custom"
-            >{{ scheduledTime }}</span>
         </div>
 
         <div class="flex" v-if="props.config.advancedCrontab">
@@ -50,8 +46,10 @@
                 label="Advanced (Cron) Schedule"
                 @update:modelValue="(val: string) => updateFormValue('occuranceAdvanced', val)"
                 :modelValue="props.config.occuranceAdvanced"
-                :hint="props.config.occurance.name ? scheduledTime : ''"
             />
+        </div>
+        <div class="feather-input-hint-custom">
+            {{ props.config.occurance.name && !props.errors.occuranceAdvanced ? scheduledTime : '' }}
         </div>
         <div class="flex">
             <div>
@@ -118,13 +116,15 @@ const scheduledTime = computed(() => {
     flex: 1;
     @include caption();
     color: var($secondary-text-on-surface);
-    margin: -20px 16px 0 0;
+    margin-top: -20px;
     display: flex;
     justify-content: flex-end;
+    min-height: 1.5rem;
+    padding: 0.25rem 0 0.25rem 1rem;
 }
 div a.link {
     color:var(--feather-clickable);
-    display: block;
+    display: inline-block;
     text-decoration: underline;
     &:hover {
         text-decoration: none;
@@ -141,6 +141,9 @@ div a.link {
         &:last-child {
             width: calc(33.33%);
             margin-right: 0;
+        }
+        &.advanced-entry{
+            flex: 0 0 100%;
         }
     }
 }
