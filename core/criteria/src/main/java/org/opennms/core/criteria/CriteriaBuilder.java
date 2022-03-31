@@ -103,23 +103,14 @@ public class CriteriaBuilder {
         return criteria;
     }
     private boolean isNestedMultipleAnd(Collection<? extends Restriction> allRestrictions){
-        AtomicBoolean result = new AtomicBoolean(false);
         //set of multiand allRestrictions
         Set<Restriction> multiAndRestrictionSet = allRestrictions.stream().filter(
                 restriction -> restriction.getType().equals(Restriction.RestrictionType.MULTIAND)).collect(Collectors.toSet());
-        //iterate over "multiAnd"
-        multiAndRestrictionSet.stream().forEach(restriction ->{
-            //Get all inner restrictions
-            Collection<Restriction> allMultiAndRestrictions = ((AllRestriction) restriction).getRestrictions();
-            //iterate over inner restrictions
-            allMultiAndRestrictions.stream().forEach(singleMultiAndRestriction ->{
-                //check if any "multiAnd" present, then set result true
-                if(singleMultiAndRestriction.getType().equals(Restriction.RestrictionType.MULTIAND)){
-                    result.set(true);
-                }
-            });
-        });
-        return result.get();
+        //Get all inner restrictions
+        Set<Restriction> allInnerRestrictions = multiAndRestrictionSet.stream().flatMap(restriction ->
+                ((AllRestriction) restriction).getRestrictions().stream()).collect(Collectors.toSet());
+        //check if any "multiAnd" present, then return true
+        return allInnerRestrictions.stream().anyMatch(restriction -> restriction.getType().equals(Restriction.RestrictionType.MULTIAND));
     }
 
     public CriteriaBuilder match(final String type) {

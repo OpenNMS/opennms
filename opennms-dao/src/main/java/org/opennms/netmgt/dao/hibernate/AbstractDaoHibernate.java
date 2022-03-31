@@ -302,15 +302,11 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                 org.opennms.core.criteria.Criteria copyOfCriteria = criteria.clone();
                 copyOfCriteria.setRestrictions(nonMultiAndRestrictionSet);
                 copyOfCriteria.addRestriction(singleMultiAndRestriction);
-                try {
-                    if(allUniqueRecords.isEmpty()) {
-                        allUniqueRecords.addAll(getQueryResult(copyOfCriteria));
-                    } else {
-                        allUniqueRecords.addAll(Sets.intersection(allUniqueRecords,
-                                Collections.singleton(new LinkedHashSet<T>(getQueryResult(copyOfCriteria)))));
-                    }
-                } catch (Exception ex){
-                    LOG.error("Error in execution of query",ex);
+                if(allUniqueRecords.isEmpty()) {
+                    allUniqueRecords.addAll(getQueryResult(copyOfCriteria));
+                } else {
+                    allUniqueRecords.addAll(Sets.intersection(allUniqueRecords,
+                            Set.copyOf(getQueryResult(copyOfCriteria))));
                 }
             });
         });
@@ -318,8 +314,13 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     }
 
     private List<T> getQueryResult( org.opennms.core.criteria.Criteria criteria){
-        final HibernateCallback<List<T>> callback = buildHibernateCallback(criteria);
-        return getHibernateTemplate().execute(callback);
+        try {
+            final HibernateCallback<List<T>> callback = buildHibernateCallback(criteria);
+            return getHibernateTemplate().execute(callback);
+        } catch (Exception ex){
+            LOG.error("Error in execution of query",ex);
+            return Collections.emptyList();
+        }
     }
 
     protected <T> HibernateCallback<List<T>> buildHibernateCallback(org.opennms.core.criteria.Criteria criteria) {
