@@ -52,6 +52,7 @@
     "splitpanes": "^3.1.1",
     "vite-svg-loader": "^3.1.2",
     "vue": "^3.2.29",
+    "vue-diff": "^1.1.4",
     "vue-router": "4",
     "vue3-ace-editor": "^2.2.2",
     "vuex": "^4.0.2"
@@ -69,17 +70,17 @@
     "@vitejs/plugin-vue": "^2.2.4",
     "@vue-leaflet/vue-leaflet": "^0.6.1",
     "@vue/test-utils": "^2.0.0-rc.17",
-    "happy-dom": "^2.47.0",
-    "vitest": "^0.6.1",
     "eslint": "^8.11.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-vue": "^8.5.0",
+    "happy-dom": "^2.47.0",
     "prettier": "^2.6.0",
     "tsm": "^2.1.4",
     "typescript": "^4.6.2",
     "unplugin-auto-import": "^0.6.6",
     "uvu": "^0.5.3",
     "vite": "^2.8.6",
+    "vitest": "^0.6.1",
     "vue-eslint-parser": "^8.3.0",
     "vue-tsc": "^0.33.7"
   }

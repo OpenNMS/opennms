@@ -15,7 +15,7 @@ export interface DeviceConfigBackup {
   fileName: string
   failureReason: string
   encoding: string
-  configType?: defaultConfig | runningConfig
+  configType: defaultConfig | runningConfig
   nodeId: number
   nodeLabel: string
   operatingSystem: string

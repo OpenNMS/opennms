@@ -53,14 +53,13 @@ const store = useStore()
 const selectedTab = ref<defaultConfig | runningConfig>('default')
 const selectedConfig = ref<DeviceConfigBackup>()
 
-const modalDeviceConfigBackup = computed<DeviceConfigBackup>(() => store.state.deviceModule.modalDeviceConfigBackup)
 const historyModalBackups = computed<DeviceConfigBackup[]>(() => store.state.deviceModule.historyModalBackups)
 const defaultConfigTypeBackups = computed<DeviceConfigBackup[]>(() => historyModalBackups.value.filter((config) => config.configType === 'default'))
 const otherConfigTypeBackups = computed<DeviceConfigBackup[]>(() => historyModalBackups.value.filter((config) => config.configType !== 'default'))
 const hasOnlyDefaultConfigs = computed<boolean>(() => historyModalBackups.value.length === defaultConfigTypeBackups.value.length)
 
 const onDownload = () => store.dispatch('deviceModule/downloadByConfig', selectedConfig.value)
-const getHistoryBackups = () => store.dispatch('deviceModule/getHistoryByIpInterface', modalDeviceConfigBackup.value.ipInterfaceId)
+const getHistoryBackups = () => store.dispatch('deviceModule/getHistoryByIpInterface')
 const setSelectedConfig = (config: DeviceConfigBackup) => selectedConfig.value = config
 const setSelectedTab = (configType: defaultConfig | runningConfig) => {
   selectedTab.value = configType

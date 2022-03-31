@@ -24,8 +24,9 @@ const getDeviceConfigBackups = async (context: ContextWithState) => {
   context.dispatch('spinnerModule/setSpinnerState', false, { root: true })
 }
 
-const getHistoryByIpInterface = async (context: VuexContext, ipInterfaceId: number) => {
-  const historyModalBackups = await API.getHistoryByIpInterface(ipInterfaceId)
+const getHistoryByIpInterface = async (context: ContextWithState) => {
+  const modalDeviceConfigIpInterface = context.state.modalDeviceConfigBackup.ipInterfaceId
+  const historyModalBackups = await API.getHistoryByIpInterface(modalDeviceConfigIpInterface)
   context.commit('SET_HISTORY_MODAL_BACKUPS', historyModalBackups)
 }
 
