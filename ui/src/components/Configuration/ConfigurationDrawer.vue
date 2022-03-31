@@ -22,7 +22,7 @@
       <div class="slide-outer-body">
         <p class="slide-short">
           To synchronize inventory automatically from an external source, build a requisition and
-          schedule it.
+          schedule it. The requisition provides a URL that specifies where OpenNMS can get this input information.
         </p>
         <div class="slide-inner-body">
           <ProvisionDForm
