@@ -1,8 +1,14 @@
 
 [[run_diff]]
-= Run a diff on Configuration Files
-Run the config-diff tool in the /bin directory to identify differences between the default configuration and what you have running.
-Identifying these differences allows you to determine what you need to migrate as part of an upgrade.
+= Identify Changed Configuration Files
+
+During an upgrade, {page-component-title} overwrites configuration files, so any customization you may have done will be lost.
+You need to backup your customized configuration files so that you can merge them into your upgraded system.
+
+The config-diff tool identifies differences between the default {page-component-title} configuration and what you are running.
+Identifying these differences helps you to determine what you need to migrate as part of an upgrade.
+
+Run the config-diff tool in the /bin directory to determine changes from a pristine installation:
 
 [source, console]
 ----
@@ -10,7 +16,19 @@ cd ${OPENNMS_HOME}/bin
 ./config-diff.sh -d
 ----
 
-Save and migrate the configuration files that appear in the config-diff.sh output.
+TIP: The colordiff command, available in Debian and Red Hat distributions, colors the output for better legibility of changes.
+
+Note the following in the config-diff.sh output:
+
+ * Files you added
+ * Files you modified
+ * Files you deleted
+
+Back up the changed and added files so that you can merge (##include link##) them later as part of the upgrade process.
+Note the deleted files so that you can remove them after the upgrade.
+
+##the topics/commands below were on Discourse.
+Do we need to include them here, or does the config-diff.sh -d command cover everything?##
 
 == List files we have added and do not exist in a pristine install
 

@@ -2,13 +2,13 @@
 [[upgrade]]
 = Upgrade {page-component-title}
 
-<introduction>
+This section outlines the steps to follow to upgrade to a newer version of {page-component-title}.
+You may need to complete additional steps to upgrade in a more complex setup (running more than one OpenNMS instance, database migration requirements, age of current version, and so on).
 
-<basic process>
+A basic upgrade with one instance takes about an hour.
+This time varies, and will be longer depending on how customized and complex your setup is.
 
-Depending on your set up, a basic upgrade with one instance takes about an hour.
-It will take longer depending on the amount of customization you have done through the configuration files, or the complexity of your set up.
-
+[[byb_upgrade]]
 == Before you begin
 
 There are a number of tasks you should complete before starting an upgrade:
@@ -17,9 +17,38 @@ There are a number of tasks you should complete before starting an upgrade:
 Address any issues that might affect you.
 * Stop OpenNMS and PostgreSQL
 * xref:operation:admin/housekeeping/introduction.adoc#prune-events[Prune unneeded events]
-* Back up your database (same day/state)
-* Back up RRD files (same day/state)
+* xref:operation:admin/housekeeping/introduction.adoc#non-root-permissions[Update permissions] (if upgrading from pre-29 Horizon or pre-2022 Meridian)
+* ##Back up your database## (same day/state)
+* ##Back up RRD files## (same day/state)
+* ##Back up the opennms /etc directory## (opennms folder) (same day/state)
+* <<events-table,Assess the events table size>> (especially important if you have a particularly large network)
+* xref:deployment:upgrade/diff.adoc#run_diff[Identify the configuration files] you have changed to determine what you need to migrate as part of an upgrade.
 
-* Back up the opennms /etc directory smf software (opennms folder) (same day/state)
-* Assess the Events table size (especially important if you have a particularly large network)
-* Identify the configuration files you have changed to determine what you need to migrate as part of an upgrade.
+[[non-root-permissions]]
+== Update permissions (if upgrading from pre-29 versions)
+
+ifeval::["{page-component-title}" == "Horizon"]
+Since version 29, {page-component-title} runs as the opennms user rather than root by default.
+If you are upgrading from a pre-29 version of {page-component-title}, you must fix the ownership of your files before upgrading.
+
+For information on how to do this, see https://docs.opennms.com/horizon/29/releasenotes/whatsnew.html?q=non-root#running-as-non-root[Running as non-root].
+endif::[]
+
+ifeval::["{page-component-title}" == "Meridian"]
+Since {page-component-title} 2022, {page-component-title} runs as the opennms user rather than root by default.
+If you are upgrading from a pre-2022 {page-component-title} version, you must fix the ownership of your files before upgrading.
+
+For information on how to do this, see https://docs.opennms.com/meridian/2022/releasenotes/whatsnew.html[Running as non-root].
+endif::[]
+
+##Events table size topic seems in the wrong place, but not sure where to put it yet##
+[[events-table]]
+== Assess Events Table Size
+If, after pruning, you have a large number of events, you may need to increase the amount of memory passed to the OpenNMS install tool.
+For example, if you have 250k events, you will need almost 600MB of heap.
+When you ##upgrade## and have the available memory, choose a large value to pass to the install, as in the following:
+
+[source, console]
+----
+install -Xms1024m -Xmx2048m -dis
+----

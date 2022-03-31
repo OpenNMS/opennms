@@ -189,4 +189,4 @@
 ** xref:admin/restart.adoc[]
 ** xref:admin/daemon-config-files.adoc[]
 
-* xref:admin/housekeeping/introduction.adoc[]
+** xref:admin/housekeeping/introduction.adoc[]
