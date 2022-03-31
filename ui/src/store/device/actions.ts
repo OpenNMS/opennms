@@ -37,9 +37,19 @@ const getAndMergeDeviceConfigBackups = async (context: ContextWithState) => {
   context.dispatch('spinnerModule/setSpinnerState', false, { root: true })
 }
 
-const downloadByConfig = async (context: VuexContext, config: DeviceConfigBackup) => {
-  const file = await API.downloadDeviceConfigs([config.id])
-  if (file) downloadFile(file)
+const downloadByConfig = async (context: VuexContext, config: DeviceConfigBackup | DeviceConfigBackup[]) => {
+  const isSingleDeviceBackup = (config: DeviceConfigBackup | DeviceConfigBackup[]): config is DeviceConfigBackup => {
+    return (config as DeviceConfigBackup).id !== undefined
+  }
+
+  if (isSingleDeviceBackup(config)) {
+    const file = await API.downloadDeviceConfigs([config.id])
+    if (file) downloadFile(file)
+  } else {
+    const ids = config.map((x) => x.id)
+    const file = await API.downloadDeviceConfigs(ids)
+    if (file) downloadFile(file)
+  }
 }
 
 const downloadSelectedDevices = async (contextWithState: ContextWithState) => {

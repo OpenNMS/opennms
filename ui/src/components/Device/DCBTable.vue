@@ -163,13 +163,15 @@
   </div>
   <DCBModal @close="dcbModalVisible = false" :visible="dcbModalVisible">
     <template v-slot:content>
-      <DCBModalViewHistoryContentVue
-        v-if="dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalViewHistoryContent"
+      <DCBModalViewHistoryContentVue @onCompare="onCompare"
+        v-if="dcbModalVisible && dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalViewHistoryContent"
       />
       <DCBModalLastBackupContent
-        v-else-if="dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalLastBackupContent"
+        v-if="dcbModalVisible && dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalLastBackupContent"
       />
-      <DCBModalConfigDiffContent v-else />
+      <DCBModalConfigDiffContent
+        v-if="dcbModalVisible && dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalConfigDiffContent"
+      />
     </template>
   </DCBModal>
 </template>

@@ -3,6 +3,7 @@
     :prev="config1.config"
     :current="config2.config"
     :theme="theme"
+    :mode="mode"
   />
 </template>
 
@@ -21,6 +22,10 @@ defineProps({
   config2: {
     type: Object as PropType<DeviceConfigBackup>,
     required: true
+  },
+  mode: {
+    type: String,
+    default: 'split'
   }
 })
 
