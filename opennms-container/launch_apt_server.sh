@@ -29,7 +29,7 @@ err_report() {
 trap 'err_report $LINENO' ERR SIGHUP SIGINT SIGTERM
 
 if [ -z "$DEBDIR" ]; then
-  echo "usage: $0 <rpmdir> [port]"
+  echo "usage: $0 <debdir> [port]"
   echo ""
   exit 1
 fi

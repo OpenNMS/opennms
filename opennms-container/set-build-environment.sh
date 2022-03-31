@@ -33,10 +33,8 @@ fi
 [ -n "${BUILD_NUMBER}"            ] || BUILD_NUMBER="${CIRCLE_BUILD_NUM:-0}"
 [ -n "${BUILD_URL}"               ] || BUILD_URL="${CIRCLE_BUILD_URL}"
 
-[ -n "${YUM_CONTAINER_NAME}"      ] || YUM_CONTAINER_NAME="yum-repo"
 [ -n "${APT_CONTAINER_NAME}"      ] || APT_CONTAINER_NAME="apt-repo"
 [ -n "${APT_VOLUME}"              ] || APT_VOLUME="${APT_CONTAINER_NAME}-volume"
-[ -n "${RPMDIR}"                  ] || RPMDIR="${TOPDIR}/../target/rpm/RPMS/noarch"
 [ -n "${DEBDIR}"                  ] || DEBDIR="${TOPDIR}/../target/debs"
 
 [ -n "${CONTAINER_PROJECT}"       ] || CONTAINER_PROJECT="$(basename "${TOPDIR}")"

@@ -656,7 +656,6 @@ workflows:
           filters:
             branches:
               only:
-                - /.*NMS-14098.*/
                 - /.*arm64.*/
       - horizon-deb-build:
           requires:
@@ -833,7 +832,6 @@ workflows:
           filters:
             branches:
               only:
-                - /.*NMS-14098.*/
                 - /.*arm64.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish

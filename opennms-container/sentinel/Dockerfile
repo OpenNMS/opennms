@@ -16,7 +16,7 @@ SHELL ["/bin/bash", "-c"]
 # import keys & install required debs
 RUN apt-get update && \
     apt-get install -y gnupg ca-certificates && \
-    curl -fsSL https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add && \
+    curl -fsSL ${REPO_KEY_URL} | apt-key add && \
     apt-get install -yq ${REQUIRED_DEBS}
 
 # Allow to send ICMP messages as non-root user
@@ -76,8 +76,9 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     fi && \
     if [[ -n ${ADD_DEB_PACKAGES} ]]; then apt-get install -yq ${ADD_DEB_PACKAGES}; fi && \
     rm -rf /tmp/debs && \
-    apt clean && \
-    # make sure entrypoint.sh able to do cp -r with origional path
+    apt-get autoclean && \
+    apt-get clean && \
+    # make sure entrypoint.sh able to do cp -r with original path
     rm /usr/share/sentinel/{data,etc,deploy} && \
     mv /var/lib/sentinel/{data,deploy} /usr/share/sentinel && \
     mv /etc/sentinel /usr/share/sentinel/etc && \

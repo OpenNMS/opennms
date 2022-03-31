@@ -7,14 +7,11 @@ ARG BASE_IMAGE_VERSION="jre-1.2.0.b105"
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-base
 
 ARG REQUIRED_DEBS="rrdtool jrrd2 jicmp jicmp6 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
-#ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl jq diffutils hostname"
-
-ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
-ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
 
 ARG CONFD_ARCH="linux-amd64"
 ARG CONFD_VERSION="0.16.0"
 ARG CONFD_URL="https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-${CONFD_ARCH}"
+ARG REPO_KEY_URL="https://debian.opennms.org/OPENNMS-GPG-KEY"
 
 SHELL ["/bin/bash", "-c"]
 
@@ -25,11 +22,12 @@ RUN curl --retry 5 --fail -L ${CONFD_URL} -o /usr/bin/confd && \
 # import keys
 RUN apt-get update && \
     apt-get install -yq gnupg ca-certificates && \
-    curl -fsSL https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add
+    curl -fsSL ${REPO_KEY_URL} | apt-key add
 
 COPY opennms.list /etc/apt/sources.list.d
 RUN apt-get update && \
-    apt-get install -yq ${REQUIRED_DEBS}
+    apt-get install -yq ${REQUIRED_DEBS} && \
+    apt-get clean
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
