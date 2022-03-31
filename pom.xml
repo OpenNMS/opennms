@@ -1786,7 +1786,7 @@
     <newtsVersion>1.5.5</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxLoggingVersion>2.0.14</paxLoggingVersion>
-    <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
+    <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
     <paxWebVersion>7.3.16</paxWebVersion>
     <protobufVersion>3.16.1</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
