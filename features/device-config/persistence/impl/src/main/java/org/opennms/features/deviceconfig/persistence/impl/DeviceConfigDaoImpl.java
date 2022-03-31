@@ -35,7 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import joptsimple.internal.Strings;
+import com.google.common.base.Strings;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.ResultTransformer;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
@@ -43,6 +43,7 @@ import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigQueryResult;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,8 +94,8 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     }
 
     @Override
-    public List<DeviceConfigQueryResult> getLatestConfigs(Integer limit, Integer offset, String orderBy,
-        String sortOrder, String searchTerm) {
+    public List<DeviceConfigQueryResult> getLatestConfigForEachInterface(Integer limit, Integer offset, String orderBy,
+                                                                         String sortOrder, String searchTerm) {
 
         var criteria = createSqlQueryCriteria(limit, offset, orderBy, sortOrder, searchTerm);
 
@@ -142,11 +143,15 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
                  public Object transformTuple(Object[] objects, String[] strings) {
                      if (objects != null && objects.length >= 2) {
                          // 'objects' is a tuple of DeviceConfig, OnmsIpInterface
-                         DeviceConfig dc = (DeviceConfig) objects[0];
-                         OnmsIpInterface ip = (OnmsIpInterface) objects[1];
-                         OnmsNode n = ip.getNode();
+                         final DeviceConfig dc = (DeviceConfig) objects[0];
+                         final OnmsIpInterface ip = (OnmsIpInterface) objects[1];
+                         final OnmsNode n = ip.getNode();
 
-                         return new DeviceConfigQueryResult(dc, ip, n);
+                         final String serviceType = "DeviceConfig-" + dc.getConfigType();
+                         final OnmsMonitoredService service = ip.getMonitoredServiceByServiceType(serviceType);
+                         final Integer monitoredServiceId = service != null ? service.getId() : null;
+
+                         return new DeviceConfigQueryResult(dc, ip, n, monitoredServiceId);
                      }
 
                      return null;

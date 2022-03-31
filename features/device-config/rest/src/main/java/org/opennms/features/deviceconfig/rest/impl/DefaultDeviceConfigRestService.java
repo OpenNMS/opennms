@@ -165,7 +165,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         } else {
-            dtos = this.deviceConfigDao.getLatestConfigs(limit, offset, orderBy, order, searchTerm)
+            dtos = this.deviceConfigDao.getLatestConfigForEachInterface(limit, offset, orderBy, order, searchTerm)
                 .stream()
                 .map(this::createDeviceConfigDto)
                 .filter(Objects::nonNull)
@@ -398,7 +398,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
         var dto = new DeviceConfigDTO(
             queryResult.getId(),
-            queryResult.getIpInterfaceId(),
+            queryResult.getMonitoredServiceId(),
             queryResult.getIpAddr(),
             queryResult.getCreatedTime(),
             queryResult.getLastUpdated(),

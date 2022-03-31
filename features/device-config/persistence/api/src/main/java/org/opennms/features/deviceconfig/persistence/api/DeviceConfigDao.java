@@ -39,7 +39,7 @@ public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
 
     Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String serviceName);
 
-    List<DeviceConfigQueryResult> getLatestConfigs(Integer limit, Integer offset, String orderBy,
+    List<DeviceConfigQueryResult> getLatestConfigForEachInterface(Integer limit, Integer offset, String orderBy,
         String sortOrder, String searchTerm);
 
     void updateDeviceConfigContent(

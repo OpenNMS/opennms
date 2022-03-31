@@ -199,7 +199,8 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             for (int i = 0; i < RECORD_COUNT; i++) {
                 final DeviceConfigDTO dto = responseList.get(i);
 
-                assertThat(dto.getMonitoredServiceId(), equalTo(ipInterfaceIds.get(i)));
+                final var actualMonitoredService = ipInterfaces.get(i).getMonitoredServiceByServiceType("DeviceConfig-" + CONFIG_TYPES.get(i));
+                assertThat(dto.getMonitoredServiceId(), equalTo(actualMonitoredService.getId()));
                 assertThat(CONFIG_TYPES.get(i).equalsIgnoreCase(dto.getConfigType()), is(true));
                 assertThat(dto.getEncoding(), equalTo(DefaultDeviceConfigRestService.DEFAULT_ENCODING));
                 assertThat(dto.getLastBackupDate().getTime(), equalTo(dates.get(i).getTime()));
@@ -299,7 +300,8 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
             DeviceConfigDTO dto = responseList.get(0);
 
-            assertThat(dto.getMonitoredServiceId(), equalTo(ipInterfaceIds.get(1)));
+            final var actualMonitoredService = ipInterfaces.get(1).getMonitoredServiceByServiceType("DeviceConfig-" + CONFIG_TYPES.get(1));
+            assertThat(dto.getMonitoredServiceId(), equalTo(actualMonitoredService.getId()));
             assertThat(CONFIG_TYPES.get(1).equalsIgnoreCase(dto.getConfigType()), is(true));
             assertThat(dto.getEncoding(), equalTo(DefaultDeviceConfigRestService.DEFAULT_ENCODING));
             assertThat(dto.getLastBackupDate().getTime(), equalTo(dates.get(1).getTime()));
