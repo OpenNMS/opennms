@@ -18,6 +18,7 @@
     <karafVersion>4.3.6</karafVersion>
     <selenium.version>3.141.59</selenium.version>
     <testcontainers.version>1.15.2</testcontainers.version>
+    <jna.version>5.8.0</jna.version>
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
@@ -633,6 +634,13 @@
       <artifactId>org.opennms.core.health.shell</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
+    </dependency>
+    <!-- for m1 -->
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>${jna.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <repositories>
