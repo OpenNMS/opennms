@@ -34,6 +34,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -58,6 +59,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigQueryResult;
 import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
@@ -75,13 +77,15 @@ import com.google.common.collect.Maps;
 
 public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDeviceConfigRestService.class);
+    public static final String BACKUP_STATUS_SUCCESS = "success";
+    public static final String BACKUP_STATUS_FAILED = "failed";
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
     public static final String BINARY_ENCODING = "binary";
 
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
         "lastupdated", "lastUpdated",
         "devicename", "ipInterface.node.label",
-        "createdtime", "createdTime",
+        "lastbackup", "createdTime",
         "ipaddress", "ipInterface.ipAddr"
     );
 
@@ -132,21 +136,47 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             String ipAddress,
             Integer ipInterfaceId,
             String configType,
+            String searchTerm,
             Long createdAfter,
             Long createdBefore
     ) {
-        var criteria = getCriteria(limit, offset, orderBy, order, deviceName, ipAddress, ipInterfaceId, configType, createdAfter, createdBefore);
+        // If ipInterfaceId is present, it's assumed this is a 'history' query
+        // Otherwise it's assumed this is a general query for main results display
+        final boolean isHistoryQuery = ipInterfaceId != null && ipInterfaceId > 0;
 
-        List<DeviceConfigDTO> dtos = this.deviceConfigDao.findMatching(criteria)
-             .stream()
-             .map(this::createDeviceConfigDto)
-             .filter(Objects::nonNull)
-             .collect(Collectors.toList());
+        List<DeviceConfigDTO> dtos = new ArrayList<DeviceConfigDTO>();
 
+        var criteria = getCriteria(
+            limit,
+            offset,
+            isHistoryQuery ? "lastUpdated" : orderBy,
+            isHistoryQuery ? "desc" : order,
+            deviceName,
+            ipAddress,
+            ipInterfaceId,
+            configType,
+            createdAfter,
+            createdBefore);
+
+        if (isHistoryQuery) {
+            dtos = this.deviceConfigDao.findMatching(criteria)
+                .stream()
+                .map(this::createDeviceConfigDto)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        } else {
+            dtos = this.deviceConfigDao.getLatestConfigForEachInterface(limit, offset, orderBy, order, searchTerm)
+                .stream()
+                .map(this::createDeviceConfigDto)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        }
+
+        // TODO: Get total count for 'getLatestConfigs' call and optimize it
         final long offsetToUse = offset != null ? offset.longValue() : 0L;
         int totalCount = dtos.size();
 
-        if (limit != null || offset != null) {
+        if (isHistoryQuery && (limit != null || offset != null)) {
             criteria.setLimit(null);
             criteria.setOffset(null);
             totalCount = deviceConfigDao.countMatching(criteria);
@@ -361,8 +391,44 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(message).build());
     }
 
+    private DeviceConfigDTO createDeviceConfigDto(DeviceConfigQueryResult queryResult) {
+        Pair<String,String> pair = configToText(queryResult.getEncoding(), queryResult.getConfig());
+        String encoding = pair.getLeft();
+        String config = pair.getRight();
+
+        var dto = new DeviceConfigDTO(
+            queryResult.getId(),
+            queryResult.getMonitoredServiceId(),
+            queryResult.getIpAddr(),
+            queryResult.getCreatedTime(),
+            queryResult.getLastUpdated(),
+            queryResult.getLastSucceeded(),
+            queryResult.getLastFailed(),
+            encoding,
+            queryResult.getConfigType(),
+            queryResult.getFilename(),
+            config,
+            queryResult.getFailureReason()
+        );
+
+        // determine backup status, not handling all cases for now
+        boolean backupSuccess = determineBackupSuccess(queryResult.getLastSucceeded(), queryResult.getLastUpdated());
+        dto.setIsSuccessfulBackup(backupSuccess);
+        dto.setBackupStatus(backupSuccess ? BACKUP_STATUS_SUCCESS : BACKUP_STATUS_FAILED);
+
+        dto.setIpInterfaceId(queryResult.getIpInterfaceId());
+        dto.setNodeId(queryResult.getNodeId());
+        dto.setNodeLabel(queryResult.getNodeLabel());
+        dto.setDeviceName(queryResult.getNodeLabel());
+        dto.setLocation(queryResult.getLocation());
+        dto.setOperatingSystem(queryResult.getOperatingSystem());
+
+        populateScheduleInfo(dto);
+
+        return dto;
+    }
+
     private DeviceConfigDTO createDeviceConfigDto(DeviceConfig deviceConfig) {
-        Date currentDate = new Date();
 
         Pair<String,String> pair = configToText(deviceConfig.getEncoding(), deviceConfig.getConfig());
         String encoding = pair.getLeft();
@@ -384,9 +450,9 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         );
 
         // determine backup status, not handling all cases for now
-        boolean backupSuccess = determineBackupSuccess(deviceConfig);
+        boolean backupSuccess = determineBackupSuccess(deviceConfig.getLastSucceeded(), deviceConfig.getLastUpdated());
         dto.setIsSuccessfulBackup(backupSuccess);
-        dto.setBackupStatus(backupSuccess ? "success" : "failure");
+        dto.setBackupStatus(backupSuccess ? BACKUP_STATUS_SUCCESS : BACKUP_STATUS_FAILED);
 
         final OnmsIpInterface ipInterface = deviceConfig.getIpInterface();
         final OnmsNode node = ipInterface.getNode();
@@ -398,21 +464,26 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         dto.setLocation(node.getLocation().getLocationName());
         dto.setOperatingSystem(node.getOperatingSystem());
 
+        populateScheduleInfo(dto);
+
+        return dto;
+    }
+
+    private void populateScheduleInfo(DeviceConfigDTO dto) {
         // Figure out the schedules for service defined to do backups for this device
+        Date currentDate = new Date();
         final var schedules = this.deviceConfigService.getRetrievalDefinitions(dto.getIpAddress(), dto.getLocation()).stream()
-                                                      .filter(ret -> Objects.equals(ret.getConfigType(), dto.getConfigType()))
-                                                      .collect(Collectors.toMap(DeviceConfigService.RetrievalDefinition::getServiceName,
-                                                                                ret -> getScheduleInfo(currentDate, ret.getSchedule())));
+            .filter(ret -> Objects.equals(ret.getConfigType(), dto.getConfigType()))
+            .collect(Collectors.toMap(DeviceConfigService.RetrievalDefinition::getServiceName,
+                ret -> getScheduleInfo(currentDate, ret.getSchedule())));
 
         dto.setScheduledInterval(Maps.transformValues(schedules, ScheduleInfo::getScheduleInterval));
 
         // Calculate next scheduled date over all services
         schedules.values().stream()
-                .map(ScheduleInfo::getNextScheduledBackup)
-                .min(Date::compareTo)
-                .ifPresent(dto::setNextScheduledBackupDate);
-
-        return dto;
+            .map(ScheduleInfo::getNextScheduledBackup)
+            .min(Date::compareTo)
+            .ifPresent(dto::setNextScheduledBackupDate);
     }
 
     // This method's implementation should be the same as in DeviceConfigMonitor
@@ -454,11 +525,15 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             ? Charset.forName(encoding) : Charset.defaultCharset();
     }
 
-    private static boolean determineBackupSuccess(DeviceConfig deviceConfig) {
+    /**
+     * Currently, backup status is {@link BACKUP_STATUS_SUCCESS} if a backup config exists
+     * for this device and there have been no failures since last backup,
+     * otherwise status is {@link BACKUP_STATUS_FAILED}.
+     */
+    private static boolean determineBackupSuccess(Date lastSucceeded, Date lastUpdated) {
         return
-            deviceConfig.getLastSucceeded() != null &&
-            (deviceConfig.getLastSucceeded().getTime() == deviceConfig.getLastUpdated().getTime() ||
-             deviceConfig.getLastSucceeded().after(deviceConfig.getLastUpdated()));
+            lastSucceeded != null &&
+            lastSucceeded.getTime() >= lastUpdated.getTime();
     }
 
     private static String createDownloadFileName(DeviceConfig dc) {

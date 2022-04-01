@@ -59,10 +59,11 @@ public interface DeviceConfigRestService {
      * @param offset used for paging; defaults to 0
      * @param orderBy used for paging; defaults to "lastUpdated"
      * @param order used for paging; defaults to "desc"
-     * @param deviceName filter results by device name
-     * @param ipAddress filter results by device IP address
-     * @param ipInterfaceId database id of OnmsIpInterface instance
-     * @param configType Configuration type, 'default' or 'running'
+     * @param deviceName filter results by device name. Should use 'searchTerm' instead.
+     * @param ipAddress filter results by device IP address. Should use 'searchTerm' instead.
+     * @param ipInterfaceId database id of OnmsIpInterface instance. This will retrieve a record history.
+     * @param configType Configuration type, typically 'default' or 'running'
+     * @param searchTerm A search term, currently to search by device name or IP address.
      * @param createdAfter If set, only return items with saved backup after this date in epoch millis
      * @param createdBefore If set, only return items with saved backup before this date in epoch millis
      * @return Json response containing a list of device configs in the
@@ -79,6 +80,7 @@ public interface DeviceConfigRestService {
         @QueryParam("ipAddress") String ipAddress,
         @QueryParam("ipInterfaceId") Integer ipInterfaceId,
         @QueryParam("configType") String configType,
+        @QueryParam("search") String searchTerm,
         @QueryParam("createdAfter") Long createdAfter,
         @QueryParam("createdBefore") Long createdBefore
     );
