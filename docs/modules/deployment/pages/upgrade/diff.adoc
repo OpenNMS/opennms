@@ -24,32 +24,5 @@ Note the following in the config-diff.sh output:
  * Files you modified
  * Files you deleted
 
-Back up the changed and added files so that you can merge (##include link##) them later as part of the upgrade process.
+Back up the changed and added files so that you can merge them later as part of the upgrade process.
 Note the deleted files so that you can remove them after the upgrade.
-
-##the topics/commands below were on Discourse.
-Do we need to include them here, or does the config-diff.sh -d command cover everything?##
-
-== List files we have added and do not exist in a pristine install
-
-[source, console]
-----
-cd /opt/opennms
-diff -rq -EBbw ./etc share/etc-pristine | grep "Only in ./etc[/|:]"
-----
-
-== List files we have changed and need to be merged manually
-
-[source, console]
-----
-cd /opt/opennms
-diff -rq -EBbw ./etc share/etc-pristine | grep "differ"
-----
-
-== List files we have deleted and exist in a pristine install
-
-[source, console]
-----
-cd /opt/opennms
-diff -rq -EBbw ./etc share/etc-pristine | grep "Only in share/etc-pristine[/|:]"
-----

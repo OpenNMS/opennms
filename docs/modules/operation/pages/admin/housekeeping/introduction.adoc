@@ -13,8 +13,6 @@ We also recommend doing this before you begin the {page-component-title} upgrade
 
 For example, run the following to delete events older than six weeks that have no associated outages:
 
-##do we have a better example?##
-
 [source, sql]
 ----
 --# this deletes any events that are not associated with outages
@@ -25,11 +23,6 @@ SELECT svcregainedeventid FROM outages WHERE svcregainedeventid = events.eventid
 UNION
 SELECT eventid FROM notifications WHERE eventid
 ----
-
-[[delete-old-events]]
-== Delete older events
-
-##how to do this?##
 
 [[delete-cache-folder]]
 == Delete cache folder

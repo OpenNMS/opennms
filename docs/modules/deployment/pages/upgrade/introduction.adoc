@@ -18,9 +18,9 @@ Address any issues that might affect you.
 * Stop OpenNMS and PostgreSQL
 * xref:operation:admin/housekeeping/introduction.adoc#prune-events[Prune unneeded events]
 * xref:operation:admin/housekeeping/introduction.adoc#non-root-permissions[Update permissions] (if upgrading from pre-29 Horizon or pre-2022 Meridian)
-* ##Back up your database## (same day/state)
-* ##Back up RRD files## (same day/state)
-* ##Back up the opennms /etc directory## (opennms folder) (same day/state)
+* Back up your database (same day/state)
+* Back up RRD files (same day/state)
+* Back up the opennms /etc directory (opennms folder) (same day/state)
 * <<events-table,Assess the events table size>> (especially important if you have a particularly large network)
 * xref:deployment:upgrade/diff.adoc#run_diff[Identify the configuration files] you have changed to determine what you need to migrate as part of an upgrade.
 
@@ -41,12 +41,11 @@ If you are upgrading from a pre-2022 {page-component-title} version, you must fi
 For information on how to do this, see https://docs.opennms.com/meridian/2022/releasenotes/whatsnew.html[Running as non-root].
 endif::[]
 
-##Events table size topic seems in the wrong place, but not sure where to put it yet##
 [[events-table]]
 == Assess Events Table Size
 If, after pruning, you have a large number of events, you may need to increase the amount of memory passed to the OpenNMS install tool.
 For example, if you have 250k events, you will need almost 600MB of heap.
-When you ##upgrade## and have the available memory, choose a large value to pass to the install, as in the following:
+When you upgrade and have the available memory, choose a large value to pass to the install, as in the following:
 
 [source, console]
 ----
