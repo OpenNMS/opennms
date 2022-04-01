@@ -35,13 +35,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigQueryResult;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -82,14 +85,11 @@ public class DeviceConfigDaoIT {
 
     private OnmsIpInterface ipInterface;
 
-    @Before
-    public void init() {
-        ipInterface = populateIpInterfaceAndGet();
-    }
 
     @Test
     @Transactional
     public void testPersistenceOfDeviceConfig() {
+        populateIpInterface();
         Date currentDate = new Date();
 
         DeviceConfig deviceConfig = new DeviceConfig();
@@ -117,8 +117,9 @@ public class DeviceConfigDaoIT {
 
     @Test
     public void testFetchDeviceConfigSortedByDate() {
+        populateIpInterface();
         final int count = 10;
-        populateDeviceConfigs(count);
+        populateDeviceConfigs(count, ipInterface);
 
         List<DeviceConfig> deviceConfigList = deviceConfigDao.findAll();
         Assert.assertEquals(count, deviceConfigList.size());
@@ -142,7 +143,7 @@ public class DeviceConfigDaoIT {
         Assert.assertArrayEquals(retrievedMiddleElement.getConfig(), latestConfig.getConfig());
 
         // Populate failed retrieval.
-        populateFailedRetrievalDeviceConfig();
+        populateFailedRetrievalDeviceConfig(ipInterface);
         Optional<DeviceConfig> elementWithFailedConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
         Assert.assertTrue(elementWithFailedConfig.isPresent());
 
@@ -151,13 +152,50 @@ public class DeviceConfigDaoIT {
         Assert.assertEquals(retrievedConfig.getLastUpdated(), retrievedConfig.getLastFailed());
     }
 
-    private void populateDeviceConfigs(int count) {
+    @Test
+    public void testGetLatestConfigOnEachInterface() {
+        Set<OnmsIpInterface> ipInterfaces = populateIpInterfaces();
+        int count = 10;
+        ipInterfaces.forEach(ipInterface -> populateDeviceConfigs(count, ipInterface));
+        List<DeviceConfigQueryResult> results = deviceConfigDao.getLatestConfigForEachInterface(null,
+                null, null, null, null);
+        Assert.assertThat(results, Matchers.hasSize(5));
+        Iterator<OnmsIpInterface> iterator = ipInterfaces.iterator();
+        Assert.assertArrayEquals(results.get(0).getConfig(),
+                (iterator.next().getInterfaceId() + ":" + (count - 1)).getBytes(Charset.defaultCharset()));
+        Assert.assertArrayEquals(results.get(1).getConfig(),
+                (iterator.next().getInterfaceId() + ":" + (count - 1)).getBytes(Charset.defaultCharset()));
+
+        // Should give one result.
+        results = deviceConfigDao.getLatestConfigForEachInterface(null,
+                null, null, null, InetAddressUtils.str(iterator.next().getIpAddress()));
+        Assert.assertThat(results, Matchers.hasSize(1));
+
+        // Should give no results.
+        results = deviceConfigDao.getLatestConfigForEachInterface(null,
+                null, null, null, "192.168.32.254");
+        Assert.assertThat(results, Matchers.hasSize(0));
+
+        // Should give all 5 interfaces
+        results = deviceConfigDao.getLatestConfigForEachInterface(null,
+                null, null, null, iterator.next().getNode().getLabel());
+        Assert.assertThat(results, Matchers.hasSize(5));
+
+        ipInterfaces.forEach(this::populateFailedRetrievalDeviceConfig);
+
+        results = deviceConfigDao.getLatestConfigForEachInterface(null,
+                null, null, null, iterator.next().getNode().getLabel());
+
+        Assert.assertThat(results.get(0).getFailureReason(), Matchers.notNullValue());
+    }
+
+    private void populateDeviceConfigs(int count, OnmsIpInterface ipInterface) {
         for (int i = 0; i < count; i++) {
             DeviceConfig deviceConfig = new DeviceConfig();
             deviceConfig.setIpInterface(ipInterface);
             deviceConfig.setServiceName("DeviceConfig-default");
-            deviceConfig.setConfig(UUID.randomUUID().toString().getBytes(StandardCharsets.US_ASCII));
-            deviceConfig.setEncoding("ASCII");
+            deviceConfig.setConfig((ipInterface.getInterfaceId() + ":" + i).getBytes(Charset.defaultCharset()));
+            deviceConfig.setEncoding(Charset.defaultCharset().name());
             deviceConfig.setCreatedTime(Date.from(Instant.now().plusSeconds(i * 60)));
             deviceConfig.setConfigType(ConfigType.Default);
             deviceConfig.setLastUpdated(Date.from(Instant.now().plusSeconds(i * 60)));
@@ -165,7 +203,7 @@ public class DeviceConfigDaoIT {
         }
     }
 
-    private void populateFailedRetrievalDeviceConfig() {
+    private void populateFailedRetrievalDeviceConfig(OnmsIpInterface ipInterface) {
         DeviceConfig deviceConfig = new DeviceConfig();
         deviceConfig.setIpInterface(ipInterface);
         deviceConfig.setServiceName("DeviceConfig-default");
@@ -177,7 +215,7 @@ public class DeviceConfigDaoIT {
         deviceConfigDao.saveOrUpdate(deviceConfig);
     }
 
-    private OnmsIpInterface populateIpInterfaceAndGet() {
+    private void populateIpInterface() {
         NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType(OnmsNode.NodeType.ACTIVE);
         builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P");
@@ -189,6 +227,21 @@ public class DeviceConfigDaoIT {
         OnmsIpInterface ipInterface = ipInterfaces.iterator().next();
         Assert.assertNotNull(ipInterface);
 
-        return ipInterface;
+        this.ipInterface = ipInterface;
+    }
+
+
+    private Set<OnmsIpInterface> populateIpInterfaces() {
+        NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType(OnmsNode.NodeType.ACTIVE);
+        builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P");
+        builder.addInterface("192.168.2.2").setIsManaged("M");
+        builder.addInterface("192.168.2.3").setIsManaged("M");
+        builder.addInterface("192.168.2.4").setIsManaged("M");
+        builder.addInterface("192.168.2.5").setIsManaged("M");
+        nodeDao.saveOrUpdate(builder.getCurrentNode());
+
+        Assert.assertThat(builder.getCurrentNode().getIpInterfaces(), Matchers.hasSize(5));
+        return builder.getCurrentNode().getIpInterfaces();
     }
 }
