@@ -31,19 +31,43 @@ package org.opennms.features.deviceconfig.persistence.impl;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
+import com.google.common.base.Strings;
+import org.hibernate.SQLQuery;
+import org.hibernate.transform.ResultTransformer;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigQueryResult;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long> implements DeviceConfigDao {
+    private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
+        "lastupdated", "last_updated",
+        "devicename", "nodelabel",
+        "lastbackup", "created_time",
+        "ipaddress", "ipaddr"
+    );
 
     private static Logger LOG = LoggerFactory.getLogger(DeviceConfigDaoImpl.class);
+
+    private static int DEFAULT_LIMIT = 20;
+
+    private static class DeviceConfigQueryCriteria {
+        public String filter;
+        public boolean hasFilter;
+        public String searchTerm;
+        public String orderBy;
+        public boolean hasOrderBy;
+        public String limitOffset;
+    }
 
     public DeviceConfigDaoImpl() {
         super(DeviceConfig.class);
@@ -67,6 +91,111 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             return Optional.of(deviceConfigs.get(0));
         }
         return Optional.empty();
+    }
+
+    @Override
+    public List<DeviceConfigQueryResult> getLatestConfigForEachInterface(Integer limit, Integer offset, String orderBy,
+                                                                         String sortOrder, String searchTerm) {
+
+        var criteria = createSqlQueryCriteria(limit, offset, orderBy, sortOrder, searchTerm);
+
+        // NOTE: '{dc.*}' and '{ip.*}' needed for Hibernate to map to entities
+        // Explicit columns needed to do sort/filter/search outside the inner query since Hibernate
+        // makes aliases for all the columns
+        final String queryString =
+            "SELECT * FROM (\n" +
+            "    SELECT\n" +
+            "        DISTINCT ON(dc.ipinterface_id, dc.config_type)\n" +
+            "        {dc.*},\n" +
+            "        {ip.*},\n" +
+            "        dc.last_updated,\n" +
+            "        dc.created_time,\n" +
+            "        ip.ipaddr,\n" +
+            "        n.nodeid,\n" +
+            "        n.nodelabel,\n" +
+            "        n.operatingsystem,\n" +
+            "        n.location\n" +
+            "    FROM device_config dc\n" +
+            "    JOIN ipinterface ip\n" +
+            "        ON dc.ipinterface_id = ip.id\n" +
+            "    JOIN node n\n" +
+            "        ON ip.nodeid = n.nodeid\n" +
+            "    ORDER BY dc.ipinterface_id, dc.config_type, dc.last_updated DESC\n" +
+            ") q\n" +
+            (criteria.hasFilter ? (criteria.filter + "\n") : "") +
+            (criteria.hasOrderBy ? criteria.orderBy + "\n" : "") +
+            criteria.limitOffset;
+
+        LOG.debug("DeviceConfigDaoImpl.getLatestConfigs, query string:");
+        LOG.debug(queryString);
+
+        final List<DeviceConfigQueryResult> resultList = getHibernateTemplate().executeWithNativeSession(session -> {
+            SQLQuery queryObject = session.createSQLQuery(queryString)
+                .addEntity("dc", DeviceConfig.class)
+                .addJoin("ip", "dc.ipInterface");
+
+            if (criteria.hasFilter && !Strings.isNullOrEmpty(criteria.searchTerm)) {
+                queryObject.setParameter("searchTerm", criteria.searchTerm);
+            }
+
+            List<?> queryList = queryObject.setResultTransformer(new ResultTransformer() {
+                 @Override
+                 public Object transformTuple(Object[] objects, String[] strings) {
+                     if (objects != null && objects.length >= 2) {
+                         // 'objects' is a tuple of DeviceConfig, OnmsIpInterface
+                         final DeviceConfig dc = (DeviceConfig) objects[0];
+                         final OnmsIpInterface ip = (OnmsIpInterface) objects[1];
+                         final OnmsNode n = ip.getNode();
+
+                         final OnmsMonitoredService service = ip.getMonitoredServiceByServiceType(dc.getServiceName());
+                         final Integer monitoredServiceId = service != null ? service.getId() : null;
+
+                         return new DeviceConfigQueryResult(dc, ip, n, monitoredServiceId);
+                     }
+
+                     return null;
+                 }
+
+                 @Override
+                 public List transformList(List list) {
+                     return list;
+                 }
+            }
+            ).list();
+
+            return (List<DeviceConfigQueryResult>) queryList;
+        });
+
+        return resultList;
+    }
+
+    private DeviceConfigQueryCriteria createSqlQueryCriteria(Integer limit, Integer offset,
+        String orderBy, String order, String searchTerm) {
+        var criteria = new DeviceConfigQueryCriteria();
+
+        if (!Strings.isNullOrEmpty(searchTerm)) {
+            criteria.hasFilter = true;
+            criteria.searchTerm = "%" + searchTerm + "%";
+            criteria.filter = "WHERE nodelabel LIKE :searchTerm OR ipaddr LIKE :searchTerm";
+        }
+
+        if (!Strings.isNullOrEmpty(orderBy) &&
+            ORDERBY_QUERY_PROPERTY_MAP.containsKey(orderBy.toLowerCase(Locale.ROOT))) {
+            String orderByValue = ORDERBY_QUERY_PROPERTY_MAP.get(orderBy.toLowerCase(Locale.ROOT));
+            boolean isOrderDescending = !Strings.isNullOrEmpty(order) && "desc".equals(order);
+
+            String orderByClause = String.format("ORDER BY %s%s", orderByValue, isOrderDescending ? " DESC" : "");
+
+            criteria.hasOrderBy = true;
+            criteria.orderBy = orderByClause;
+        }
+
+        int limitToUse = limit != null && limit > 0 ? limit : DEFAULT_LIMIT;
+        int offsetToUse = offset != null && offset > 0 ? offset : 0;
+
+        criteria.limitOffset = String.format("LIMIT %d OFFSET %d", limitToUse, offsetToUse);
+
+        return criteria;
     }
 
     @Override

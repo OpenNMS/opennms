@@ -76,10 +76,15 @@
           </th>
           <FeatherSortHeader
             scope="col"
-            property="name"
-            :sort="sortStates.name"
+            property="deviceName"
+            :sort="sortStates.deviceName"
             v-on:sort-changed="sortByColumnHandler"
           >Node Name</FeatherSortHeader>
+
+          <FeatherSortHeader
+            scope="col"
+            property="configType"
+          >Config Type</FeatherSortHeader>
 
           <FeatherSortHeader
             scope="col"
@@ -104,8 +109,8 @@
 
           <FeatherSortHeader
             scope="col"
-            property="lastAttempted"
-            :sort="sortStates.lastAttempted"
+            property="lastUpdated"
+            :sort="sortStates.lastUpdated"
             v-on:sort-changed="sortByColumnHandler"
           >Last Attempted</FeatherSortHeader>
 
@@ -140,6 +145,7 @@
           <td>
             <router-link :to="`/node/${config.nodeId}`" target="_blank">{{ config.deviceName }}</router-link>
           </td>
+          <td>{{ config.configType }}</td>
           <td>{{ config.ipAddress }}</td>
           <td>{{ config.location }}</td>
           <td class="last-backup-date pointer" @click="onLastBackupDateClick(config)">
@@ -210,11 +216,11 @@ const tableWrap = ref<HTMLElement | null>(null)
 const defaultQuerySize = 20
 const selectedDeviceConfigBackups = ref<Record<string, boolean>>({})
 const sortStates: DeviceConfigQueryParams = reactive({
-  name: SORT.ASCENDING,
+  deviceName: SORT.ASCENDING,
   ipAddress: SORT.NONE,
   location: SORT.NONE,
   lastBackup: SORT.NONE,
-  lastAttempted: SORT.NONE,
+  lastUpdated: SORT.NONE,
   scheduleDate: SORT.NONE,
   scheduleInterval: SORT.NONE
 })
