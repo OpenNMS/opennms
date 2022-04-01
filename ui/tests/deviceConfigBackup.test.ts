@@ -110,32 +110,3 @@ test('action btns enable and disable correctly', async () => {
   expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
   expect(allCheckbox.attributes('aria-checked')).toBe('false')
 })
-
-test('the modal opens and displays the config property and device title', async () => {
-  const viewHistoryBtn = wrapper.get('[data-test="view-history-btn"]')
-  const lastBackupDateBtn = wrapper.get('.last-backup-date')
-  const deviceConfigCheckboxes = wrapper.findAll('.device-config-checkbox')
-  const secondDeviceConfig = deviceConfigCheckboxes[1].get('.feather-checkbox')
-  const dialog = wrapper.get('.feather-dialog')
-  const closeModalBtn = wrapper.get('[data-ref-id="dialog-close"]')
-  const dialogContent = wrapper.get('.dialog-content > .content')
-  const headerText = wrapper.get('[data-ref-id="feather-dialog-header"]')
-
-  // modal starts hidden
-  expect(dialog.attributes('style')).toBe('display: none;')
-
-  // clicks the first backup date link
-  await lastBackupDateBtn.trigger('click')
-  //expect cisco config and title
-  expect(dialog.attributes('style')).not.toBe('display: none;')
-  expect(dialogContent.text()).toBe('mock cisco config')
-  expect(headerText.text()).toBe('Device Name: Cisco-7201')
-
-  await closeModalBtn.trigger('click')
-  expect(dialog.attributes('style')).toBe('display: none;')
-
-  // click second device config checkbox and then view hitory btn
-  await secondDeviceConfig.trigger('click')
-  await viewHistoryBtn.trigger('click')
-  expect(dialog.attributes('style')).not.toBe('display: none;')
-})
