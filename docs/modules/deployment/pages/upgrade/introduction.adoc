@@ -35,7 +35,7 @@ For information on how to do this, see https://docs.opennms.com/horizon/29/relea
 endif::[]
 
 ifeval::["{page-component-title}" == "Meridian"]
-Since {page-component-title} 2022, {page-component-title} runs as the opennms user rather than root by default.
+Starting with {page-component-title} 2022, {page-component-title} runs as the `opennms` user rather than root by default.
 If you are upgrading from a pre-2022 {page-component-title} version, you must fix the ownership of your files before upgrading.
 
 For information on how to do this, see https://docs.opennms.com/meridian/2022/releasenotes/whatsnew.html[Running as non-root].
