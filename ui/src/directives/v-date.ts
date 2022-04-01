@@ -1,4 +1,5 @@
 import { format as fnsFormat } from 'date-fns-tz'
+import { parseISO } from 'date-fns'
 import { AppInfo } from '@/types'
 import store from '@/store'
 
@@ -13,7 +14,8 @@ const formatString = computed<string>(
 
 const dateFormatDirective = {
   mounted(el: Element) {
-    const date = Number(el.innerHTML) || el.innerHTML
+    if (!el.innerHTML) return
+    const date = Number(el.innerHTML) || parseISO(el.innerHTML)
     if (!date) return
     const formattedDate = fnsFormat(date, formatString.value, { timeZone: timeZone.value })
     el.innerHTML = formattedDate

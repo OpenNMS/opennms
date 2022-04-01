@@ -18,18 +18,27 @@
   </FeatherButton>
 
   <p class="select-msg" v-if="numberOfSelectedConfigs < 2">Select two dates to compare.</p>
+  <p
+    class="select-msg"
+    v-if="!defaultConfigTypeBackups.length && !otherConfigTypeBackups.length"
+  >No dates are available.</p>
 
-  <FeatherChipList condensed label="Compare selected configurations.">
-    <FeatherChip v-if="config1">
+  <FeatherChipList
+    class="dcb-date-chips"
+    condensed
+    label="Compare selected configurations."
+    v-if="config1 && config2"
+  >
+    <FeatherChip>
       <span v-date>{{ config1.lastBackupDate }}</span>
     </FeatherChip>
-    <FeatherChip v-if="config2">
+    <FeatherChip>
       <span v-date>{{ config2.lastBackupDate }}</span>
     </FeatherChip>
   </FeatherChipList>
 
   <div class="flex-container" v-if="!isCompareView">
-    <FeatherCheckboxGroup label="Startup" vertical>
+    <FeatherCheckboxGroup label="Startup" vertical v-if="defaultConfigTypeBackups.length">
       <div class="history-dates-column">
         <FeatherCheckbox
           class="history-date"
@@ -58,9 +67,14 @@
     </FeatherCheckboxGroup>
   </div>
 
-  <div class="compare-container">
-    <DCBDiff :config1="config1" :config2="config2" v-if="config1 && config2 && isCompareView" />
-  </div>  
+  <div class="compare-container" v-if="config1 && config2 && isCompareView">
+    <p class="changes">
+      DIFFERENCES: 
+      <span class="deletions">-{{ changes.deletions }}</span>
+      <span class="additions"> +{{ changes.additions }}</span>
+    </p>
+    <DCBDiff :config1="config1" :config2="config2" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -74,6 +88,7 @@ import { FeatherIcon } from '@featherds/icon'
 import Compare from '@featherds/icon/action/ContentCopy'
 import Restore from '@featherds/icon/action/Restore'
 import Download from '@featherds/icon/action/DownloadFile'
+import { diffLines } from 'diff'
 import { orderBy } from 'lodash'
 
 const store = useStore()
@@ -82,6 +97,7 @@ const selectedConfigs = ref<Record<number, boolean>>({})
 const config1 = ref<DeviceConfigBackup | null>(null)
 const config2 = ref<DeviceConfigBackup | null>(null)
 const isCompareView = ref(false)
+const changes = ref<{ additions: number; deletions: number }>({ additions: 0, deletions: 0 })
 
 const historyModalBackups = computed<DeviceConfigBackup[]>(() => store.state.deviceModule.historyModalBackups)
 const defaultConfigTypeBackups = computed<DeviceConfigBackup[]>(() => historyModalBackups.value.filter((config) => config.configType === 'default'))
@@ -96,6 +112,7 @@ const onCheckbox = (config: DeviceConfigBackup) => {
   setConfig(config)
   updateCheckboxes()
   orderByDates()
+  calculateChanges()
 }
 
 const orderByDates = () => {
@@ -124,6 +141,15 @@ const updateCheckboxes = () => {
   }
 }
 
+/**
+ * Sets the config1 or config2 variables, which are
+ * used for updating which checkboxes are true,
+ * displaying the selected date chips, and the
+ *  prev/current configuration text comparison.
+ * 
+ * @param config device config from checkbox clicked
+ * @returns void
+ */
 const setConfig = (config: DeviceConfigBackup) => {
   // if there is a config1, compare ids
   if (config1.value && config1.value.id === config.id) {
@@ -159,6 +185,19 @@ const setConfig = (config: DeviceConfigBackup) => {
   return
 }
 
+const calculateChanges = () => {
+  if (config1.value && config2.value) {
+    const diff = diffLines(config1.value.config, config2.value.config)
+    const additions = diff.filter((item) => item.added).length
+    const deletions = diff.filter((item) => item.removed).length
+
+    changes.value = {
+      additions,
+      deletions
+    }
+  }
+}
+
 const getHistoryBackups = () => store.dispatch('deviceModule/getHistoryByIpInterface')
 onMounted(() => getHistoryBackups())
 </script>
@@ -191,11 +230,26 @@ onMounted(() => getHistoryBackups())
   overflow: auto;
 }
 .select-msg {
-  @include body-small;
+  @include subtitle1;
   color: var($primary);
   padding-left: 15px;
+  margin-bottom: 33px;
 }
 
+.dcb-date-chips {
+  margin-bottom: 23px;
+}
+.changes {
+  @include button;
+
+  .deletions {
+    color: var($error);
+  }
+
+  .additions {
+    color: var($success);
+  }
+}
 .compare-btn,
 .return-btn {
   position: absolute;

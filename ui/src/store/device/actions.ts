@@ -25,9 +25,11 @@ const getDeviceConfigBackups = async (context: ContextWithState) => {
 }
 
 const getHistoryByIpInterface = async (context: ContextWithState) => {
+  context.dispatch('spinnerModule/setSpinnerState', true, { root: true })
   const modalDeviceConfigIpInterface = context.state.modalDeviceConfigBackup.ipInterfaceId
   const historyModalBackups = await API.getHistoryByIpInterface(modalDeviceConfigIpInterface)
   context.commit('SET_HISTORY_MODAL_BACKUPS', historyModalBackups)
+  context.dispatch('spinnerModule/setSpinnerState', false, { root: true })
 }
 
 const getAndMergeDeviceConfigBackups = async (context: ContextWithState) => {
@@ -42,6 +44,8 @@ const downloadByConfig = async (context: VuexContext, config: DeviceConfigBackup
     return (config as DeviceConfigBackup).id !== undefined
   }
 
+  context.dispatch('spinnerModule/setSpinnerState', true, { root: true })
+
   if (isSingleDeviceBackup(config)) {
     const file = await API.downloadDeviceConfigs([config.id])
     if (file) downloadFile(file)
@@ -50,12 +54,18 @@ const downloadByConfig = async (context: VuexContext, config: DeviceConfigBackup
     const file = await API.downloadDeviceConfigs(ids)
     if (file) downloadFile(file)
   }
+
+  context.dispatch('spinnerModule/setSpinnerState', false, { root: true })
 }
 
 const downloadSelectedDevices = async (contextWithState: ContextWithState) => {
+  contextWithState.dispatch('spinnerModule/setSpinnerState', true, { root: true })
+
   const ids = contextWithState.state.selectedIds
   const file = await API.downloadDeviceConfigs(ids)
   if (file) downloadFile(file)
+
+  contextWithState.dispatch('spinnerModule/setSpinnerState', false, { root: true })
 }
 
 const backupSelectedDevices = async (contextWithState: ContextWithState) => {

@@ -59,6 +59,7 @@
   },
   "devDependencies": {
     "@types/d3": "^7.1.0",
+    "@types/diff": "^5.0.2",
     "@types/leaflet": "^1.7.9",
     "@types/leaflet.markercluster": "^1.4.6",
     "@types/lodash": "^4.14.180",

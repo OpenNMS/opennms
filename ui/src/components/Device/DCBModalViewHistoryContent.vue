@@ -1,5 +1,5 @@
 <template>
-  <FeatherButton class="compare-btn" icon="Compare configs" @click="$emit('onCompare')">
+  <FeatherButton class="compare-btn" icon="Compare configs" @click="emit('onCompare')">
     <FeatherIcon :icon="Compare" />
   </FeatherButton>
 
@@ -82,13 +82,20 @@ import { useStore } from 'vuex'
 import { DeviceConfigBackup, defaultConfig, runningConfig } from '@/types/deviceConfig'
 import DCBDiff from './DCBDiff.vue'
 
+const emit = defineEmits(['onCompare'])
+
 const store = useStore()
 const selectedConfig = ref<DeviceConfigBackup>()
 
+const modalDeviceConfigBackup = computed<DeviceConfigBackup>(() => store.state.deviceModule.modalDeviceConfigBackup)
 const historyModalBackups = computed<DeviceConfigBackup[]>(() => store.state.deviceModule.historyModalBackups)
 const defaultConfigTypeBackups = computed<DeviceConfigBackup[]>(() => historyModalBackups.value.filter((config) => config.configType === 'default'))
 const otherConfigTypeBackups = computed<DeviceConfigBackup[]>(() => historyModalBackups.value.filter((config) => config.configType !== 'default'))
-const hasOnlyDefaultConfigs = computed<boolean>(() => historyModalBackups.value.length === defaultConfigTypeBackups.value.length)
+const hasOnlyDefaultConfigs = computed<boolean>(() => {
+  return Boolean(modalDeviceConfigBackup.value.configType === 'default' ||
+    (defaultConfigTypeBackups.value.length === historyModalBackups.value.length)
+  )
+})
 
 const onDownload = () => store.dispatch('deviceModule/downloadByConfig', selectedConfig.value)
 const getHistoryBackups = () => store.dispatch('deviceModule/getHistoryByIpInterface')

@@ -1,16 +1,11 @@
 <template>
-   <Diff
-    :prev="config1.config"
-    :current="config2.config"
-    :theme="theme"
-    :mode="mode"
-  />
+  <Diff :prev="config1.config" :current="config2.config" :theme="theme" :mode="mode" />
 </template>
 
 <script setup lang="ts">
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 import { PropType } from 'vue'
-import {useStore} from 'vuex'
+import { useStore } from 'vuex'
 
 const store = useStore()
 
