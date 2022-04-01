@@ -15,7 +15,7 @@ For example, run the following to delete events older than six weeks that have n
 
 ##do we have a better example?##
 
-[source, console]
+[source, sql]
 ----
 --# this deletes any events that are not associated with outages
 DELETE FROM events WHERE NOT EXISTS
