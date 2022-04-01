@@ -147,8 +147,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
                          final OnmsIpInterface ip = (OnmsIpInterface) objects[1];
                          final OnmsNode n = ip.getNode();
 
-                         final String serviceType = "DeviceConfig-" + dc.getConfigType();
-                         final OnmsMonitoredService service = ip.getMonitoredServiceByServiceType(serviceType);
+                         final OnmsMonitoredService service = ip.getMonitoredServiceByServiceType(dc.getServiceName());
                          final Integer monitoredServiceId = service != null ? service.getId() : null;
 
                          return new DeviceConfigQueryResult(dc, ip, n, monitoredServiceId);
