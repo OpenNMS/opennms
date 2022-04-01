@@ -839,7 +839,7 @@ workflows:
           requires:
             - horizon-rpm-build
             - minion-deb-build
-            - sentinel-deb-build
+            - sentinel-rpm-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -863,7 +863,7 @@ workflows:
           requires:
             - horizon-rpm-build
             - minion-deb-build
-            - sentinel-deb-build
+            - sentinel-rpm-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
@@ -894,7 +894,7 @@ workflows:
           requires:
             - horizon-rpm-build
             - minion-deb-build
-            - sentinel-deb-build
+            - sentinel-rpm-build
             - integration-test
             - smoke-test-core
             - smoke-test-flaky
