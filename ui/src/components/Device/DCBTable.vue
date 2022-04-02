@@ -49,6 +49,18 @@
             </template>
             Backup Now
           </FeatherButton>
+
+          <FeatherButton
+            data-test="compare-btn"
+            @click="onCompare"
+            :disabled="(!all && selectedDeviceConfigIds.length !== 1) || (all && deviceConfigBackups.length !== 1)"
+            text
+          >
+            <template v-slot:icon>
+              <FeatherIcon :icon="Compare" />
+            </template>
+            Compare
+          </FeatherButton>
         </div>
       </div>
     </div>
@@ -157,10 +169,15 @@
   </div>
   <DCBModal @close="dcbModalVisible = false" :visible="dcbModalVisible">
     <template v-slot:content>
-      <DCBModalViewHistoryContentVue
-        v-if="dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalViewHistoryContent"
+      <DCBModalViewHistoryContentVue @onCompare="onCompare"
+        v-if="dcbModalVisible && dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalViewHistoryContent"
       />
-      <DCBModalLastBackupContent v-else />
+      <DCBModalLastBackupContent
+        v-if="dcbModalVisible && dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalLastBackupContent"
+      />
+      <DCBModalConfigDiffContent
+        v-if="dcbModalVisible && dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalConfigDiffContent"
+      />
     </template>
   </DCBModal>
 </template>
@@ -176,16 +193,19 @@ import History from '@featherds/icon/action/Restore'
 import Download from '@featherds/icon/action/DownloadFile'
 import Backup from '@featherds/icon/action/Cycle'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
+import Compare from '@featherds/icon/action/ContentCopy'
 import DCBSearch from '@/components/Device/DCBSearch.vue'
 import DCBModal from './DCBModal.vue'
 import DCBModalLastBackupContent from './DCBModalLastBackupContent.vue'
 import DCBModalViewHistoryContentVue from './DCBModalViewHistoryContent.vue'
+import DCBModalConfigDiffContent from './DCBModalConfigDiffContent.vue'
 import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
 import DCBTableStatusDropdown from './DCBTableStatusDropdown.vue'
 
 enum DCBModalContentComponentNames {
   DCBModalLastBackupContent = 'DCBModalLastBackupContent',
-  DCBModalViewHistoryContent = 'DCBModalViewHistoryContent'
+  DCBModalViewHistoryContent = 'DCBModalViewHistoryContent',
+  DCBModalConfigDiffContent = 'DCBModalConfigDiffContent'
 }
 
 const store = useStore()
@@ -272,6 +292,11 @@ const onBackupNow = () => store.dispatch('deviceModule/backupSelectedDevices')
 
 const onViewHistory = () => {
   dcbModalContentComponentName.value = DCBModalContentComponentNames.DCBModalViewHistoryContent
+  dcbModalVisible.value = true
+}
+
+const onCompare = () => {
+  dcbModalContentComponentName.value = DCBModalContentComponentNames.DCBModalConfigDiffContent
   dcbModalVisible.value = true
 }
 

@@ -1,8 +1,16 @@
 <template>
-  <div class="content">{{ modalDeviceConfigBackup.config }}</div>
+  <div class="content">
+    <!-- We can use the diff editor display for a single config -->
+    <DCBDiff
+      :config1="modalDeviceConfigBackup"
+      :config2="modalDeviceConfigBackup"
+      :mode="'unified'"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
+import DCBDiff from './DCBDiff.vue'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 import { useStore } from 'vuex'
 
