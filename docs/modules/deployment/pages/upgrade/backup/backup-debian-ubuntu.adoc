@@ -1,0 +1,36 @@
+[[backup-debian-ubuntu]]
+= Backup OpenNMS {page-component-title} in Debian / Ubuntu installations
+
+.Stop OpenNMS {page-component-title} Service
+[source, console]
+----
+sudo systemctl stop opennms
+----
+
+.Create Backup Folder
+[source, console]
+----
+sudo mkdir /backup
+----
+
+.Backup OpenNMS {page-component-title} binaries, logs, RRD archives, configurations
+[source, console]
+----
+sudo tar --exclude='usr/share/opennms/data/cache' -cvzf /backup/opennms.tar.gz /usr/share/opennms && \
+sudo tar -cvzf /backup/etc-opennms.tar.gz /etc/opennms && \
+sudo tar -cvzf /backup/var-lib-opennms.tar.gz /var/lib/opennms && \
+sudo tar -cvzf /backup/usr-share-java-opennms.tar.gz /usr/share/java/opennms
+----
+
+.Create PostgreSQL database backup
+[source, console]
+----
+sudo runuser -l postgres -c 'pg_dump -W -U opennms -Fc -h localhost -p 5432 -f /backup/opennms_postgres.dmp opennms'
+----
+
+.OpenNMS {page-component-title} Operating system user
+[source, console]
+----
+sudo grep opennms /etc/passwd > /backup/opennms-passwd.txt
+sudo grep opennms /etc/group > /backup/opennms-group.txt
+----
