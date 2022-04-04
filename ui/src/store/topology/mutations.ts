@@ -55,6 +55,10 @@ const SET_HIGHLIGHT_FOCUSED_NODES = (state: State, bool: boolean) => {
   state.highlightFocusedNodes = bool
 }
 
+const SET_MODAL_STATE = (state: State, bool: boolean) => {
+  state.modalState = bool
+}
+
 export default {
   SAVE_NODE_EDGES,
   SAVE_NODE_VERTICIES,
@@ -68,5 +72,6 @@ export default {
   ADD_FOCUSED_SEARCH_BAR_NODE,
   REMOVE_FOCUSED_SEARCH_BAR_NODE,
   SAVE_DEFAULT_NODE,
-  SET_HIGHLIGHT_FOCUSED_NODES
+  SET_HIGHLIGHT_FOCUSED_NODES,
+  SET_MODAL_STATE
 }

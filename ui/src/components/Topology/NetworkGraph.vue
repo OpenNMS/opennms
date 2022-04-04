@@ -12,11 +12,12 @@
       v-if="trigger && focusedNodeIds.length !== 0"
     />
     <!-- Tooltip -->
-    <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos, display: tooltipDisplay }">
+    <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos }">
       <div v-html="verticies[targetNodeId]?.tooltip ?? ''"></div>
     </div>
   </div>
   <NoFocusMsg :useDefaultFocus="useDefaultFocus" v-if="focusedNodeIds.length === 0" />
+  <TopologyModal />
   <ContextMenu
     ref="contextMenu"
     v-if="showContextMenu"
@@ -43,6 +44,7 @@ import { onClickOutside } from '@vueuse/core'
 import { SimulationNodeDatum } from 'd3'
 import { ContextMenuType } from './topology.constants'
 import { useFocus } from './composables'
+import TopologyModal from './TopologyModal.vue'
 
 interface d3Node extends Required<SimulationNodeDatum> {
   id: string
@@ -62,7 +64,7 @@ const graph = ref<Instance>()
 const selectedNodes = ref<string[]>([]) // string ids
 const selectedNodeObjects = ref<Node>([]) // full nodes
 const tooltip = ref<HTMLDivElement>()
-const tooltipDisplay = ref('none')
+const displayTooltip = ref(false)
 const cancelTooltipDebounce = ref(false)
 const targetNodeId = ref('')
 const d3Nodes = ref<d3Node[]>([])
@@ -97,8 +99,8 @@ const tooltipPos = computed(() => {
   const domPoint = graph.value.translateFromSvgToDomCoordinates(nodePos)
 
   return {
-    left: domPoint.x - 120 + 'px',
-    top: domPoint.y - 130 + 'px',
+    left: displayTooltip.value ? (domPoint.x - 120 + 'px') : (-9999 + 'px'),
+    top: displayTooltip.value ? (domPoint.y - 130 + 'px') : ( -9999 + 'px')
   }
 })
 
@@ -137,7 +139,7 @@ const eventHandlers: EventHandlers = {
 
     const showTooltip = useDebounceFn(() => {
       if (!cancelTooltipDebounce.value) {
-        tooltipDisplay.value = 'block' // show
+        displayTooltip.value = true
       }
     }, 1000)
 
@@ -145,7 +147,7 @@ const eventHandlers: EventHandlers = {
   },
   'node:pointerout': () => {
     cancelTooltipDebounce.value = true
-    tooltipDisplay.value = 'none' // hide
+    displayTooltip.value = false
   }
 }
 

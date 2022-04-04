@@ -8,6 +8,11 @@
       >Add To Focus</div>
       <div
         class="menu-btn"
+        @click="openIconModal"
+        v-if="!groupClick"
+      >Change Icon</div>
+      <div
+        class="menu-btn"
         @click="() => groupClick ? removeContextNodesFromFocus() : removeContextNodeFromFocus()"
         v-else
       >Remove From Focus</div>
@@ -210,9 +215,8 @@ const clearFocus = () => {
   store.dispatch('topologyModule/addFocusedNodeIds', [])
 }
 
-const refreshNow = () => {
-  props.refresh()
-}
+const refreshNow = () => props.refresh()
+const openIconModal = () => store.dispatch('topologyModule/setModalState', true)
 </script>
 
 <style scoped lang="scss">

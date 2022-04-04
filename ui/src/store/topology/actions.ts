@@ -132,6 +132,10 @@ const highlightFocusedNodes = (context: ContextWithState, bool: boolean) => {
   context.commit('SET_HIGHLIGHT_FOCUSED_NODES', bool)
 }
 
+const setModalState = (context: VuexContext, bool: boolean) => {
+  context.commit('SET_MODAL_STATE', bool)
+}
+
 export default {
   getVerticesAndEdges,
   setSemanticZoomLevel,
@@ -146,5 +150,6 @@ export default {
   addFocusedSearchBarNode,
   removeFocusedSearchBarNode,
   highlightFocusedNodes,
-  updateNodesFocusedProperty
+  updateNodesFocusedProperty,
+  setModalState
 }
