@@ -24,6 +24,8 @@ import {
 import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
 import cronstrue from 'cronstrue'
 
+const cronSixthPartErrorMessage = 'Error: Expression has only 5 parts. At least 6 parts are required.'
+
 /**
  *
  * @param split String array from a crontab, split on a space
@@ -160,7 +162,8 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
  * @returns crontab-ready string
  */
 const convertLocalToCronTab = (item: LocalConfiguration) => {
-  let schedule = '1 * * * * *'
+  let schedule = '0 0 0 * * *'
+
   if (!item.advancedCrontab) {
     const occurance = item.occurance
     const time = item.time
@@ -168,10 +171,10 @@ const convertLocalToCronTab = (item: LocalConfiguration) => {
     const hours = parseInt(hoursd)
     const minutes = parseInt(minutesd)
     if (occurance.name === 'Daily') {
-      schedule = `${minutes} ${hours} * * *`
+      schedule = `0 ${minutes} ${hours} * * *`
     } else if (occurance.name === 'Weekly') {
       const week = item.occuranceWeek.id
-      schedule = `${minutes} ${hours} * * ${week}`
+      schedule = `0 ${minutes} ${hours} * * ${week}`
     } else if (occurance.name === 'Monthly') {
       let day: number | string = item.occuranceDay.id
       let final = '*'
@@ -179,11 +182,12 @@ const convertLocalToCronTab = (item: LocalConfiguration) => {
         day = 'L'
         final = '?'
       }
-      schedule = `${minutes} ${hours} ${day} * ${final}`
+      schedule = `0 ${minutes} ${hours} ${day} * ${final}`
     }
   } else {
     schedule = item.occuranceAdvanced
   }
+
   return schedule
 }
 
@@ -379,11 +383,19 @@ const createBlankSubConfiguration = () => {
  * Convert our Cron Schedules to Human Readable String.
  */
 const cronToEnglish = (cronFormatted: string) => {
-  try {
-    return cronstrue.toString(cronFormatted)
-  } catch (e) {
-    return typeof e === 'string' ? e : 'Error Parsing Crontab'
+  let error: string = ''
+
+  if (isApiCronFormatInvalid(cronFormatted)) {
+    error = cronSixthPartErrorMessage
+  } else {
+    try {
+      error = cronstrue.toString(cronFormatted)
+    } catch (e) {
+      error = typeof e === 'string' ? e : 'Error Parsing Crontab'
+    }
   }
+
+  return error
 }
 
 /**
@@ -625,17 +637,30 @@ const stripOriginalIndexes = (dataToUpdate: Array<ProvisionDServerConfiguration>
 }
 
 /**
+ * Server API expects at least 6 parts (server quartz format support).
+ * @param cronTab Our advanced crontab field
+ * @returns 
+ */
+const isApiCronFormatInvalid = (cronTab: string) => (cronTab.replace(/\s$/, '').split(' ').length === 5)
+
+/**
  * Just ensures that it's a valid quartz crontab.
  * @param cronTab Our advanced crontab field
  * @returns
  */
 const validateBasicCron = (cronTab: string) => {
   let error: unknown | string = ''
-  try {
-    cronstrue.toString(cronTab)
-  } catch (e) {
-    error = e
+
+  if (isApiCronFormatInvalid(cronTab)) {
+    error = cronSixthPartErrorMessage
+  } else {
+    try {
+      cronstrue.toString(cronTab)
+    } catch (e) {
+      error = e
+    }
   }
+
   return error
 }
 

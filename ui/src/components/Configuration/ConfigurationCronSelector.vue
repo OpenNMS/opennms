@@ -48,9 +48,9 @@
                 :modelValue="props.config.occuranceAdvanced"
             />
         </div>
-        <div class="feather-input-hint-custom">
-            {{ props.config.occurance.name && !props.errors.occuranceAdvanced ? scheduledTime : '' }}
-        </div>
+        <div
+            class="feather-input-hint-custom"
+        >{{ !props.errors.occuranceAdvanced ? scheduledTime : '' }}</div>
         <div class="flex">
             <div>
                 <FeatherCheckbox
@@ -60,7 +60,11 @@
             </div>
         </div>
         <div v-if="props.config.advancedCrontab">
-            <a target="_blank" class="link mb-20" href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html">Quartz Scheduler Documentation</a>
+            <a
+                target="_blank"
+                class="link mb-20"
+                href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html"
+            >Quartz Scheduler Documentation</a>
         </div>
     </div>
 </template>
@@ -75,26 +79,29 @@ import { ConfigurationHelper } from './ConfigurationHelper'
 import cronstrue from 'cronstrue'
 
 const updateFormValue = (type: string, value: string) => {
-  props.updateValue(type, value)
+    props.updateValue(type, value)
 }
 
 const props = defineProps({
-  config: { type: Object as PropType<LocalConfiguration>, required: true },
-  errors: { type: Object as PropType<LocalErrors>, required: true },
-  updateValue: { type: Function, required: true }
+    config: { type: Object as PropType<LocalConfiguration>, required: true },
+    errors: { type: Object as PropType<LocalErrors>, required: true },
+    updateValue: { type: Function, required: true }
 })
+
 const scheduledTime = computed(() => {
-  let ret = ''
-  if (props.config.advancedCrontab) {
-    ret = ConfigurationHelper.cronToEnglish(props.config.occuranceAdvanced)
-  } else {
-    try {
-      ret = cronstrue.toString(ConfigurationHelper.convertLocalToCronTab(props.config))
-    }catch(e){
-      ret = ''
+    let ret = ''
+
+    if (props.config.advancedCrontab) {
+        ret = ConfigurationHelper.cronToEnglish(props.config.occuranceAdvanced)
+    } else {
+        try {
+            ret = cronstrue.toString(ConfigurationHelper.convertLocalToCronTab(props.config))
+        } catch (e) {
+            ret = ''
+        }
     }
-  }
-  return ret
+
+    return ret
 })
 
 </script>
@@ -116,14 +123,14 @@ const scheduledTime = computed(() => {
     flex: 1;
     @include caption();
     color: var($secondary-text-on-surface);
-    margin-top: -20px;
+    margin-top: -24px;
     display: flex;
     justify-content: flex-end;
     min-height: 1.5rem;
     padding: 0.25rem 0 0.25rem 1rem;
 }
 div a.link {
-    color:var(--feather-clickable);
+    color: var(--feather-clickable);
     display: inline-block;
     text-decoration: underline;
     &:hover {
@@ -142,7 +149,7 @@ div a.link {
             width: calc(33.33%);
             margin-right: 0;
         }
-        &.advanced-entry{
+        &.advanced-entry {
             flex: 0 0 100%;
         }
     }
