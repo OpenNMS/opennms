@@ -12,6 +12,7 @@
     "createApp": true,
     "createEventHook": true,
     "createGlobalState": true,
+    "createInjectionState": true,
     "createReactiveFn": true,
     "createSharedComposable": true,
     "createUnrefFn": true,

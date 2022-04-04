@@ -95,7 +95,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     @Override
     public PollerRequestBuilder withMonitorClassName(String className) {
         this.className = className;
-        this.serviceMonitor = client.getRegistry().getMonitorByClassName(className);
+        this.serviceMonitor = client.getRegistry().getMonitorFutureByClassName(className).getNow(null);
         return this;
     }
 

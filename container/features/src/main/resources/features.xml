@@ -679,7 +679,7 @@
     <feature name="opennms-provisioning-api" version="${project.version}" description="OpenNMS :: Provisioning :: API">
         <feature>opennms-model</feature>
         <bundle dependency="true">mvn:org.apache.mina/mina-core/${minaVersion}</bundle>
-        <bundle dependency="true">mvn:io.netty/netty/3.9.4.Final</bundle>
+        <bundle dependency="true">mvn:io.netty/netty/${netty3Version}</bundle>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
         <feature>opentracing-api</feature>
         <feature>commons-lang</feature>
@@ -1202,7 +1202,6 @@
         <bundle>wrap:mvn:org.jvnet.opendmk/jmxremote_optional/${jmxremote.optional.version}</bundle>
         <bundle>mvn:org.apache.velocity/velocity/1.7</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.name-cutter/${project.version}</bundle>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
     </feature>
     <feature name="vaadin-jmxconfiggenerator" version="${project.version}" description="OpenNMS :: Features :: JMX Config Generator :: Web UI">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
@@ -1539,14 +1538,14 @@
     <feature name="opennms-jest" version="${project.version}" description="OpenNMS :: Features :: Jest :: Feature definition">
         <details>Feature definition for Jest (ElasticSearch Java ReST Client)</details>
         <bundle>mvn:com.google.code.gson/gson/${jestGsonVersion}</bundle>
-        <bundle>wrap:mvn:org.apache.httpcomponents/httpcore-nio/4.4.6</bundle>
+        <bundle>wrap:mvn:org.apache.httpcomponents/httpcore-nio/${httpcoreVersion}</bundle>
         <bundle>mvn:org.opennms.features.jest/org.opennms.features.jest.client/${project.version}</bundle>
         <bundle>mvn:io.searchbox/jest-complete-osgi/${jestVersion}</bundle>
         <bundle>mvn:com.google.guava/guava/21.0</bundle>
         <bundle>mvn:commons-codec/commons-codec/1.9</bundle>
-        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/4.4.6</bundle>
-        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/4.5.3</bundle>
-        <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/4.1.3</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/${httpasyncclientVersion}</bundle>
     </feature>
     <feature name="opennms-search" version="${project.version}" description="OpenNMS :: Features :: Search">
         <details>OpenNMS :: Features :: Search</details>

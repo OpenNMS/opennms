@@ -5,6 +5,7 @@ import store from './store'
 import VueDiff from 'vue-diff'
 
 import '@featherds/styles'
+import '@featherds/styles/themes/open-light.css'
 
 import 'vue-diff/dist/index.css'
 
