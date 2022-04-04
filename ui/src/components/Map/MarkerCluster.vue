@@ -6,14 +6,6 @@
 
 <script>
 import 'leaflet.markercluster/dist/MarkerCluster.css'
-import {
-  inject,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  provide,
-  ref,
-} from 'vue'
 import { propsBinder, remapEvents } from '@vue-leaflet/vue-leaflet/src/utils'
 import {
   render,

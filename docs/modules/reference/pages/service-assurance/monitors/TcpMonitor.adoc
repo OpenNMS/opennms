@@ -46,6 +46,7 @@ SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2 <1>
 | retry
 | Number of retries before the service is marked as down.
 | 0
+
 | banner
 | Evaluation of the service connection banner with regular expression.
 By default any banner result is valid.

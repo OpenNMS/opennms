@@ -25,15 +25,12 @@
 </template>
   
 <script setup lang=ts>
-import { computed, reactive, watch, onMounted, onBeforeMount, ref } from 'vue'
 import { useStore } from 'vuex'
 import GraphContainer from './GraphContainer.vue'
 import TimeControls from './TimeControls.vue'
 import { sub, getUnixTime } from 'date-fns'
 import { StartEndTime } from '@/types'
-import { useScroll, useDebounceFn } from '@vueuse/core'
 import { FeatherInput } from '@featherds/input'
-import { useRouter } from 'vue-router'
 
 const el = document.getElementById('card')
 const { arrivedState } = useScroll(el, { offset: { bottom: 100 } })
@@ -126,7 +123,7 @@ onMounted(() => {
 
 onBeforeMount(() => {
   if (props.singleGraphDefinition) return
-  
+
   // if no resources, route to resource selection
   const resources = store.state.resourceModule.resources
 
@@ -143,7 +140,8 @@ onBeforeMount(() => {
 
   .search-input {
     width: 230px;
-    margin-top: -15px;
+    margin-top: 5px;
+    margin-bottom: -7px;
   }
 }
 </style>

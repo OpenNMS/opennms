@@ -14,7 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import { FeatherButton } from '@featherds/button'
@@ -37,7 +36,7 @@ const save = () => store.dispatch('fileEditorModule/saveModifiedFile')
     width: 100%;
     .feather-input-container {
       padding: 0px;
-      margin-top: -8px;
+      margin-bottom: -26px;
     }
   }
   .save,

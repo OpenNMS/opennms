@@ -17,7 +17,6 @@
 </template>
 
 <script setup lang=ts>
-import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'

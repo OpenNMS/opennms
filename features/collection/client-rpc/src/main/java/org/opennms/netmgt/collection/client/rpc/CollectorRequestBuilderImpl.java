@@ -92,7 +92,7 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
     @Override
     public CollectorRequestBuilder withCollectorClassName(String className) {
         this.className = className;
-        this.serviceCollector = client.getRegistry().getCollectorByClassName(className);
+        this.serviceCollector = client.getRegistry().getCollectorFutureByClassName(className).getNow(null);
         return this;
     }
 

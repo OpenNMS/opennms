@@ -21,7 +21,6 @@
 </template>
   
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Menubar from './components/Layout/Menubar.vue'

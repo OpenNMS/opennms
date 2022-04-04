@@ -13,7 +13,7 @@
          <rra>RRA:MAX:0.5:288:366</rra>
          <rra>RRA:MIN:0.5:288:366</rra>
       </rrd>
-      <service name="SvcToThreshold" interval="5000" user-defined="true" status="on">
+      <service name="SvcToThreshold" interval="3000" user-defined="true" status="on">
          <parameter key="script" value="/opt/opennms/bin/thresholding-test-monitor.sh"/>
          <parameter key="banner" value="OK"/>
          <parameter key="retry" value="0"/>
@@ -25,7 +25,7 @@
          <parameter key="ds-name" value="svc-to-thresh"/>
       </service>
       <!-- Query every 5 seconds always -->
-      <downtime begin="0" interval="5000"/><!-- 5s -->
+      <downtime begin="0" interval="3000"/><!-- 5s -->
    </package>
 
    <monitor service="SvcToThreshold" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
