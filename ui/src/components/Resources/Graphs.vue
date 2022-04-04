@@ -123,7 +123,7 @@ onMounted(() => {
 
 onBeforeMount(() => {
   if (props.singleGraphDefinition) return
-  
+
   // if no resources, route to resource selection
   const resources = store.state.resourceModule.resources
 
@@ -140,7 +140,8 @@ onBeforeMount(() => {
 
   .search-input {
     width: 230px;
-    margin-top: -15px;
+    margin-top: 5px;
+    margin-bottom: -7px;
   }
 }
 </style>

@@ -69,7 +69,7 @@
         "ts-jest": "^24.3.0",
         "typescript": "^4.5.5",
         "webpack": "^4.46.0",
-        "webpack-bundle-analyzer": "^3.9.0",
+        "webpack-bundle-analyzer": "^4.5.0",
         "webpack-cli": "^3.3.12",
         "yargs": "^14.2.3"
     },
@@ -106,7 +106,7 @@
         "hash.js": "^1.1.7",
         "holderjs": "^2.9.6",
         "ionicons": "^2.0.1",
-        "ip-address": "^6.4.0",
+        "ip-address": "^8.1.0",
         "jquery": "^3.6.0",
         "jquery-migrate": "^3.3.2",
         "jquery-sparkline": "https://github.com/kapusta/jquery.sparkline#2.1.3",

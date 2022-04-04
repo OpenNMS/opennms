@@ -2,6 +2,25 @@
 
 = Changelog
 
+[[releasenotes-changelog-29.0.8]]
+
+== Release 29.0.8
+
+Release 29.0.8 contains a few small bug fixes mostly relating to upgrades, as well
+as a bug in graphing, and an improvement to support pre-auth HTTP headers.
+
+The codename for Horizon 29.0.8 is https://wikipedia.org/wiki/$$Chickadee$$[_Chickadee_].
+
+=== Bug
+
+* Upgrading opennms ignores RUNAS when setting ownership on logs directory (Issue http://issues.opennms.org/browse/NMS-14000[NMS-14000])
+* Minion installation from Debian packages failed with missing dir /var/lib/minion/data/tmp (Issue http://issues.opennms.org/browse/NMS-14019[NMS-14019])
+* OpenNMS points to the wrong URL when trying to generate graphs (Issue http://issues.opennms.org/browse/NMS-14057[NMS-14057])
+
+=== Enhancement
+
+* Add support for pre-authorization via HTTP header (to be used with pre-authentication) (Issue http://issues.opennms.org/browse/NMS-14059[NMS-14059])
+
 [[releasenotes-changelog-29.0.7]]
 
 == Release 29.0.7

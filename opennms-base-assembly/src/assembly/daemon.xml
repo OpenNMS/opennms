@@ -98,19 +98,9 @@
     </dependencySet>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
-      <outputDirectory>lib/endorsed</outputDirectory>
-      <useStrictFiltering>true</useStrictFiltering>
-      <includes>
-        <!-- <include>org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2</include> -->
-        <include>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl</include>
-      </includes>
-    </dependencySet>
-    <dependencySet>
-      <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
       <useStrictFiltering>true</useStrictFiltering>
       <excludes>
-        <exclude>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl</exclude>
         <exclude>org.opennms:opennms-bootstrap</exclude>
         <exclude>org.opennms:opennms-install</exclude>
         <exclude>org.opennms.features:org.opennms.features.system-report</exclude>

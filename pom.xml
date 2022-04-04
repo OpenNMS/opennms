@@ -363,6 +363,7 @@
             </licenseMerge>
             <licenseMerge>
               lgpl_v3
+                | GNU Lesser General Public License, Version 3
                 | GNU Lesser/Library Public License, Version 3.0
                 | GNU Lessor/Library Public License, Version 3.0
                 | GNU LGPLv3
@@ -1135,6 +1136,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
+        <!-- 3.0.0 is out, but we're affected by https://issues.apache.org/jira/browse/MENFORCER-393 -->
         <version>3.0.0-M3</version>
       </plugin>
       <plugin>
@@ -1155,7 +1157,9 @@
              <goal>enforce</goal>
            </goals>
            <configuration>
+             <skip>${enforcer-skip-maven}</skip>
              <rules>
+               <!-- make sure the build environment is acceptable -->
                <requireMavenVersion>
                  <version>[3.5,)</version>
                </requireMavenVersion>
@@ -1163,6 +1167,42 @@
                  <version>[11,12)</version>
                </requireJavaVersion>
              </rules>
+           </configuration>
+         </execution>
+         <execution>
+           <id>enforce-banned-dependencies</id>
+           <goals>
+             <goal>enforce</goal>
+           </goals>
+           <configuration>
+             <skip>${enforcer-skip-banned-dependencies}</skip>
+             <rules>
+               <!-- ban dependencies that should be replaced with custom or better stuff -->
+               <bannedDependencies>
+                 <excludes>
+
+                   <!-- use org.opennms.dependencies:jaxb-dependencies:pom -->
+                   <exclude>com.sun.xml.bind:*</exclude>
+                   <exclude>com.sun.xml.bind.mvn:*</exclude>
+                   <exclude>org.glassfish.jaxb:jaxb-core</exclude>
+
+                 </excludes>
+               </bannedDependencies>
+             </rules>
+           </configuration>
+         </execution>
+         <execution>
+           <id>enforce-dependency-convergence</id>
+           <goals>
+             <goal>enforce</goal>
+           </goals>
+           <configuration>
+             <skip>${enforcer-skip-dependency-convergence}</skip>
+             <rules>
+               <!-- make sure dependencies throughout the project(s) match versions -->
+               <dependencyConvergence/>
+             </rules>
+             <fail>true</fail>
            </configuration>
          </execution>
        </executions>
@@ -1490,6 +1530,11 @@
   </reporting>
 
   <properties>
+    <enforcer-skip-maven>false</enforcer-skip-maven>
+    <enforcer-skip-banned-dependencies>false</enforcer-skip-banned-dependencies>
+    <!-- we have a lot of work to do before this is possible -->
+    <enforcer-skip-dependency-convergence>true</enforcer-skip-dependency-convergence>
+
     <!--
       Surefire forked JVM arguments
       @see http://maven.apache.org/surefire/maven-surefire-plugin/examples/system-properties.html
@@ -1617,11 +1662,13 @@
     <test.keypass>${webstart.keypass}</test.keypass>
     <test.dnameCn>cn=${webstart.dnameCn}</test.dnameCn>
 
-    <updatePolicy>interval:60</updatePolicy> <!-- 60 minutes -->
+    <!-- whether to enable snapshot dependencies when building -->
+    <enable.snapshots>false</enable.snapshots>
+
     <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
     <karaf.servicemix.specs.version>2.9.0</karaf.servicemix.specs.version>
-    <hawtio.version>2.0.0</hawtio.version>
+    <hawtio.version>2.14.5</hawtio.version>
 
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
@@ -1640,7 +1687,7 @@
     <cassandraVersion>3.5.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
-    <commonsCodecVersion>1.10</commonsCodecVersion>
+    <commonsCodecVersion>1.15</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
@@ -1678,20 +1725,19 @@
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
-    <groovyVersion>2.4.5</groovyVersion>
+    <groovyVersion>2.4.21</groovyVersion>
     <grpcVersion>1.30.0</grpcVersion>
     <gsonVersion>2.8.5</gsonVersion>
     <guavaVersion>18.0</guavaVersion>
     <guavagRPCVersion>28.2-jre</guavagRPCVersion>
     <guavaOldVersion>17.0</guavaOldVersion>
-    <gwtVersion>2.8.2</gwtVersion>
+    <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
-    <hawtioVersion>1.4.68</hawtioVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
     <hikaricpVersion>2.5.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
-    <httpcoreVersion>4.4.4</httpcoreVersion>
+    <httpcoreVersion>4.4.15</httpcoreVersion>
     <httpclientVersion>4.5.13</httpclientVersion>
     <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
     <ipaddressVersion>5.3.3</ipaddressVersion>
@@ -1701,19 +1747,27 @@
     <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
+    <!-- this should match what's in Karaf's lib/jdk9plus directory -->
+    <jaxbRuntimeVersion>2.3.3</jaxbRuntimeVersion>
+    <!-- this should match what's in Karaf's lib/jdk9plus directory -->
+    <jakartaXmlBindVersion>2.3.3</jakartaXmlBindVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.4.44.v20210927</jettyVersion>
     <jestVersion>5.3.3</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
+    <jicmpVersion>2.0.4</jicmpVersion>
+    <jicmp6Version>2.0.3</jicmp6Version>
     <jinteropVersion>3.1.0</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
     <jmhVersion>1.33</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>4.4.0</jnaVersion>
-    <jqwikVersion>1.3.10</jqwikVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
+    <jqwikVersion>1.6.5</jqwikVersion>
+    <jrrdVersion>1.1.0</jrrdVersion>
+    <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
     <jschVersion>0.1.72</jschVersion>
     <jsonVersion>20171018</jsonVersion>
@@ -1733,7 +1787,8 @@
     <mapstructVersion>1.4.1.Final</mapstructVersion>
     <minaVersion>2.1.5</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
-    <netty4Version>4.1.69.Final</netty4Version>
+    <netty3Version>3.10.6.Final</netty3Version>
+    <netty4Version>4.1.75.Final</netty4Version>
     <newtsVersion>1.5.5</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxLoggingVersion>2.0.14</paxLoggingVersion>
@@ -1759,7 +1814,7 @@
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
     <lz4JavaVersion>1.7.1</lz4JavaVersion>
     <quartzVersion>2.2.3</quartzVersion>
-    <rancidApiVersion>1.0.5</rancidApiVersion>
+    <rancidApiVersion>2.0.0</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.1</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>6.19.3</rocksdbjniVersion>
@@ -1768,7 +1823,7 @@
     <scalaVersion>2.13</scalaVersion>
     <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
-    <slf4jVersion>1.7.30</slf4jVersion>
+    <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
     <snappyJavaVersion>1.1.8.1</snappyJavaVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
@@ -1849,17 +1904,63 @@
     <profile>
       <id>enable.snapshots</id>
       <activation>
-        <property><name>enable.snapshots</name><value>true</value></property>
+        <property>
+          <name>enable.snapshots</name>
+          <value>true</value>
+        </property>
       </activation>
+      <!--
+        Whether to enable pulling snapshot dependencies from remote maven.
+
+        This should match <repositories> in the default reactor, *plus*
+        add the `opennms-snapshots` repo. (We skip the eclipse repository
+        as it's a special case.)
+      -->
       <repositories>
         <repository>
-          <snapshots><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-          <releases><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+          <id>central</id>
+          <name>Maven Central</name>
+          <url>https://repo1.maven.org/maven2/</url>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+        <repository>
           <id>opennms-snapshots</id>
           <name>OpenNMS Snapshot Maven Repository</name>
           <url>https://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
         </repository>
       </repositories>
+      <!--
+        Whether to enable pulling snapshot plugin dependencies from remote maven.
+      -->
+      <pluginRepositories>
+        <pluginRepository>
+          <id>central</id>
+          <name>Maven Central</name>
+          <url>https://repo1.maven.org/maven2/</url>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>opennms-snapshots</id>
+          <name>OpenNMS Snapshot Maven Repository</name>
+          <url>https://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
     </profile>
     <profile>
       <id>opt-local-rrdtool</id>
@@ -2901,12 +3002,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>smslib-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
         <artifactId>spring-security-core-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -3678,12 +3773,28 @@
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore-nio</artifactId>
+        <version>${httpcoreVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-osgi</artifactId>
         <version>${httpcoreVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
+        <version>${httpclientVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient-cache</artifactId>
         <version>${httpclientVersion}</version>
         <exclusions>
           <exclusion>
@@ -3703,6 +3814,39 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpmime</artifactId>
+        <version>${httpclientVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpasyncclient</artifactId>
+        <version>${httpasyncclientVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+     </dependency>
+     <dependency>
+       <groupId>org.apache.httpcomponents</groupId>
+       <artifactId>httpasyncclient-cache</artifactId>
+       <version>${httpasyncclientVersion}</version>
+       <exclusions>
+         <exclusion>
+           <groupId>commons-logging</groupId>
+           <artifactId>commons-logging</artifactId>
+         </exclusion>
+       </exclusions>
+     </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpasyncclient-osgi</artifactId>
@@ -3805,6 +3949,10 @@
           <exclusion>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
           </exclusion>
           <exclusion>
             <groupId>com.sun.xml.bind</groupId>
@@ -4118,6 +4266,24 @@
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernateValidatorVersion}</version>
       </dependency>
+      <!-- this should match what's in Karaf's lib/jdk9plus directory -->
+      <dependency>
+        <groupId>com.sun.istack</groupId>
+        <artifactId>istack-commons-runtime</artifactId>
+        <version>3.0.10</version>
+      </dependency>
+      <!-- this should match what's in Karaf's lib/jdk9plus directory -->
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>txw2</artifactId>
+        <version>${jaxbRuntimeVersion}</version>
+      </dependency>
+      <!-- this should match what's in Karaf's lib/jdk9plus directory -->
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>1.3.1</version>
+      </dependency>
       <dependency>
         <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
@@ -4127,6 +4293,12 @@
         <groupId>javax.annotation</groupId>
         <artifactId>jsr250-api</artifactId>
         <version>1.0</version>
+      </dependency>
+      <!-- this should match what's in Karaf's lib/jdk9plus directory -->
+      <dependency>
+        <groupId>com.sun.activation</groupId>
+        <artifactId>javax.activation</artifactId>
+        <version>1.2.0</version>
       </dependency>
       <dependency>
         <groupId>javax.activation</groupId>
@@ -4142,6 +4314,18 @@
         <groupId>com.sun.mail</groupId>
         <artifactId>jakarta.mail</artifactId>
         <version>1.6.7</version>
+      </dependency>
+      <!-- functionally identical to com.sun.activation:javax.activation:1.2.0, don't upgrade further until we can excise other versions -->
+      <!-- yes, that means even 1.2.2, which added a module-info.java and technically could change some things, in theory (at least until it's out of $OPENNMS_HOME/lib) -->
+      <dependency>
+        <groupId>com.sun.activation</groupId>
+        <artifactId>jakarta.activation</artifactId>
+        <version>1.2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.activation</groupId>
+        <artifactId>jakarta.activation-api</artifactId>
+        <version>1.2.2</version>
       </dependency>
       <!-- we want to use JPA 2.0. Do not add javax.persistence/persistence-api! -->
       <dependency>
@@ -4198,17 +4382,7 @@
       <dependency>
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
-        <version>2.3.3</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-        <version>99.99.99-use-opennms-jaxb</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
-        <version>99.99.99-use-opennms-jaxb</version>
+        <version>${jakartaXmlBindVersion}</version>
       </dependency>
       <dependency>
         <groupId>jdom</groupId>
@@ -4769,29 +4943,42 @@
       <id>central</id>
       <name>Maven Central</name>
       <url>https://repo1.maven.org/maven2/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </pluginRepository>
     <pluginRepository>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>https://maven.opennms.org/content/groups/opennms.org-release/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </pluginRepository>
   </pluginRepositories>
-  <!--
-    This is required to override the effective POM's definition of Maven Central.
-    Versions of Maven *prior* to 3.2.3 will access Maven Central via HTTP.
-    In 3.2.3 (and newer), HTTPS is used.
-    Refer to: http://maven.apache.org/docs/3.2.3/release-notes.html
-  -->
   <repositories>
+    <!--
+      This is required to override the effective POM's definition of Maven Central.
+      Versions of Maven *prior* to 3.2.3 will access Maven Central via HTTP.
+      In 3.2.3 (and newer), HTTPS is used.
+      Refer to: http://maven.apache.org/docs/3.2.3/release-notes.html
+    -->
     <repository>
       <id>central</id>
       <name>Maven Central</name>
       <url>https://repo1.maven.org/maven2/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
+    <!-- Override `eclipse-repository` as it is broken in dependent POMs -->
     <repository>
       <id>eclipse-repository</id>
       <name>Eclipse</name>
       <url>https://repo1.maven.org/maven2/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
   </repositories>
 </project>

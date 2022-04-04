@@ -98,13 +98,4 @@
       </exclusions>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>coova</id>
-      <name>Coova Repository</name>
-      <url>https://maven.opennms.org/content/repositories/coova/</url>
-    </repository>
-  </repositories>
 </project>

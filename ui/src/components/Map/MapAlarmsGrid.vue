@@ -226,7 +226,7 @@ thead {
   width: 300px;
   position: absolute;
   right: 30px;
-  top: -15px;
+  top: 7px;
 }
 .first-th {
   padding-left: 20px;

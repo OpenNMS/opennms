@@ -44,8 +44,8 @@
   String reports = request.getParameter("reports");
   String endUrl = request.getParameter("endUrl");
   pageContext.setAttribute("node", node == null ? "null" : node);
-  pageContext.setAttribute("reports", reports == null ? "null" : reports);
-  pageContext.setAttribute("endUrl", endUrl == null ? "null" : endUrl);
+  pageContext.setAttribute("reports", reports == null ? "" : reports);
+  pageContext.setAttribute("endUrl", endUrl == null ? "" : endUrl);
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
