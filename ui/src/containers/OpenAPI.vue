@@ -16,7 +16,6 @@
 </template>
   
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useStore } from 'vuex'
 import 'rapidoc'
 

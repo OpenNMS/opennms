@@ -60,7 +60,6 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed } from 'vue'
 import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
 import { QueryParameters } from '@/types'

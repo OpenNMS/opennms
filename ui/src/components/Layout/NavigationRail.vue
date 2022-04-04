@@ -59,9 +59,7 @@
   </FeatherNavigationRail>
 </template>
 <script setup lang=ts>
-import { computed } from 'vue'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
 import Instances from '@featherds/icon/hardware/Instances'
 import AddNote from '@featherds/icon/action/AddNote'
 import LoggerConfigs from '@featherds/icon/action/LoggerConfigs'

@@ -90,9 +90,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { computed } from 'vue'
 import { Alarm, AlarmQueryParameters, FeatherSortObject } from '@/types'
 import { FeatherSelect } from '@featherds/select'
 import { FeatherCheckbox } from '@featherds/checkbox'

@@ -108,7 +108,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import { reactive, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { Coordinates, Node, FeatherSortObject } from '@/types'
 import { FeatherSortHeader, SORT } from '@featherds/table'

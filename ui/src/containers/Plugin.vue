@@ -6,7 +6,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as Vue from 'vue/dist/vue.esm-bundler'
-import { onMounted, watch, ref } from 'vue'
 import { addStylesheet } from '@/components/Plugin/utils'
 import Container from '@/components/Plugin/Container.vue'
 window.Vue = Vue

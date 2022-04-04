@@ -24,9 +24,7 @@
 </template>
   
 <script setup lang=ts>
-import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
 import { groupBy } from 'lodash'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherButton } from '@featherds/button'
