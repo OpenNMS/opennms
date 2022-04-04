@@ -13,11 +13,11 @@ This time varies, and will be longer depending on how customized and complex you
 
 There are a number of tasks you should complete before starting an upgrade:
 
-* Check the release notes for breaking changes in each release between your current version and the version you want to upgrade to.
+* Check the https://vault.opennms.com/docs/opennms/releases/index.html[release notes] for breaking changes in each release between your current version and the version you want to upgrade to.
 Address any issues that might affect you.
 * Stop OpenNMS and PostgreSQL
 * xref:operation:admin/housekeeping/introduction.adoc#prune-events[Prune unneeded events]
-* xref:operation:admin/housekeeping/introduction.adoc#non-root-permissions[Update permissions] (if upgrading from pre-29 Horizon or pre-2022 Meridian)
+* <<non-root-permissions, Update permissions>> (if upgrading from pre-29 Horizon or pre-2022 Meridian)
 * Back up your database (same day/state)
 * Back up RRD files (same day/state)
 * Back up the opennms /etc directory (opennms folder) (same day/state)
@@ -43,7 +43,7 @@ endif::[]
 
 [[events-table]]
 == Assess Events Table Size
-If, after pruning, you have a large number of events, you may need to increase the amount of memory passed to the OpenNMS install tool.
+If, after xref:operation:admin/housekeeping/introduction.adoc#prune-events[pruning unneeded events], you still have a large number of events, you may need to increase the amount of memory passed to the OpenNMS install tool.
 For example, if you have 250k events, you will need almost 600MB of heap.
 When you upgrade and have the available memory, choose a large value to pass to the install, as in the following:
 

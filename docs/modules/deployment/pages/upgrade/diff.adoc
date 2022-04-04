@@ -3,7 +3,7 @@
 = Identify Changed Configuration Files
 
 During an upgrade, {page-component-title} overwrites configuration files, so any customization you may have done will be lost.
-You need to backup your customized configuration files so that you can merge them into your upgraded system.
+You need to back up your customized configuration files so that you can merge them into your upgraded system.
 
 The config-diff tool identifies differences between the default {page-component-title} configuration and what you are running.
 Identifying these differences helps you to determine what you need to migrate as part of an upgrade.

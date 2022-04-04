@@ -28,7 +28,12 @@ SELECT eventid FROM notifications WHERE eventid
 == Delete cache folder
 Run the Fix Karaf script to delete cached items so that your system is cleaned up.
 We recommend doing this after an upgrade.
+This script tries to fix Karaf configuration problems by pruning `opt/opennms/data` and restoring all Karaf-related configuration files to a pristine state.
 
-##please advise##
+NOTE: Back up `/opt/opennms/etc` before running the script.
 
-I see `shutdown -cc` as an option to restart Karaf and clean the cache.
+[source, shell]
+----
+/opt/opennms/bin/fix-karaf-setup.sh
+----
+
