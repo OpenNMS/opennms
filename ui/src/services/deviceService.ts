@@ -8,7 +8,7 @@ const endpoint = 'device-config'
 
 const getDeviceConfigBackups = async (queryParameters: DeviceConfigQueryParams): Promise<AxiosResponse | false> => {
   try {
-    const endpointWithQueryString = queryParametersHandler(queryParameters, endpoint)
+    const endpointWithQueryString = queryParametersHandler(queryParameters, `${endpoint}/latest`)
     return await rest.get(endpointWithQueryString)
   } catch (err) {
     return false
@@ -54,7 +54,7 @@ const getOsImageOptions = async (): Promise<string[]> => {
 
 const getHistoryByIpInterface = async (ipInterfaceId: number): Promise<DeviceConfigBackup[]> => {
   try {
-    const resp: { data: DeviceConfigBackup[] } = await rest.get(`${endpoint}?ipInterfaceId=${ipInterfaceId}`)
+    const resp: { data: DeviceConfigBackup[] } = await rest.get(`${endpoint}/interface/${ipInterfaceId}`)
     const devicesWithBackupDate = resp.data.filter((device) => device.lastBackupDate)
     return orderBy(devicesWithBackupDate, 'lastBackupDate', 'desc')
   } catch (err) {
