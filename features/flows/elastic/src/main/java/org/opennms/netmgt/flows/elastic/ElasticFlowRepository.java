@@ -28,24 +28,26 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.swrve.ratelimitedlogger.RateLimitedLog;
-import io.opentracing.Scope;
-import io.opentracing.Tracer;
-import io.opentracing.util.GlobalTracer;
-import io.searchbox.client.JestClient;
-import io.searchbox.core.Bulk;
-import io.searchbox.core.Index;
+import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
+import java.util.function.ToLongFunction;
+import java.util.stream.Collectors;
+
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
@@ -67,25 +69,41 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TimerTask;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
+
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+import io.searchbox.client.JestClient;
+import io.searchbox.core.Bulk;
+import io.searchbox.core.Index;
 
 public class ElasticFlowRepository implements FlowRepository {
+
+    public static class SequenceTrace {
+        private static final Logger LOG = LoggerFactory.getLogger(ElasticFlowRepository.class);
+
+        public static <T> void log(final String step, final Collection<T> bulk, final ToLongFunction<T> map) {
+            if (LOG.isTraceEnabled()) {
+                final var ids = bulk.stream()
+                                    .mapToLong(map)
+                                    .mapToObj(Long::toString)
+                                    .distinct().collect(Collectors.joining(","));
+                LOG.trace("{}: {}", step, ids);
+            }
+        }
+    }
 
     public static final String TRACER_FLOW_MODULE = "ElasticFlow";
 
@@ -305,6 +323,8 @@ public class ElasticFlowRepository implements FlowRepository {
 
     @Override
     public void persist(final Collection<Flow> flows, final FlowSource source) throws FlowException {
+        SequenceTrace.log("Processing", flows, Flow::getFlowSeqNum);
+
         // Track the number of flows per call
         flowsPerLog.update(flows.size());
         if (flows.isEmpty()) {
@@ -405,6 +425,8 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private void persistBulk(final List<FlowDocument> bulk) throws FlowException {
         LOG.debug("Persisting {} flow documents.", bulk.size());
+        SequenceTrace.log("Persisting", bulk, FlowDocument::getFlowSeqNum);
+
         final Tracer tracer = getTracer();
         try (final Timer.Context ctx = logPersistingTimer.time();
              Scope scope = tracer.buildSpan(TRACER_FLOW_MODULE).startActive(true)) {
@@ -434,6 +456,7 @@ public class ElasticFlowRepository implements FlowRepository {
                 throw new FlowException(ex.getMessage(), ex);
             }
             flowsPersistedMeter.mark(bulk.size());
+            SequenceTrace.log("Persisted", bulk, FlowDocument::getFlowSeqNum);
 
             bulk.clear();
         }
