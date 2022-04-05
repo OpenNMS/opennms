@@ -442,21 +442,20 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         final String encoding = pair.getLeft();
         final String config = pair.getRight();
 
-        var dto = new DeviceConfigDTO(
-            queryResult.getId(),
-            queryResult.getMonitoredServiceId(),
-            queryResult.getIpAddr(),
-            queryResult.getCreatedTime(),
-            queryResult.getLastUpdated(),
-            queryResult.getLastSucceeded(),
-            queryResult.getLastFailed(),
-            encoding,
-            queryResult.getConfigType(),
-            queryResult.getFilename(),
-            config,
-            queryResult.getFailureReason(),
-            queryResult.getServiceName()
-        );
+        var dto = new DeviceConfigDTO();
+        dto.setId(queryResult.getId());
+        dto.setIpInterfaceId(queryResult.getIpInterfaceId());
+        dto.setMonitoredServiceId(queryResult.getMonitoredServiceId());
+        dto.setIpAddress(queryResult.getIpAddr());
+        dto.setLastBackupDate(queryResult.getCreatedTime());
+        dto.setLastUpdatedDate(queryResult.getLastUpdated());
+        dto.setLastSucceededDate(queryResult.getLastSucceeded());
+        dto.setLastFailedDate(queryResult.getLastFailed());
+        dto.setEncoding(encoding);
+        dto.setConfigType(queryResult.getConfigType());
+        dto.setFileName(queryResult.getFilename());
+        dto.setConfig(config);
+        dto.setFailureReason(queryResult.getFailureReason());
 
         // determine backup status, not handling all cases for now
         boolean backupSuccess = determineBackupSuccess(queryResult.getLastSucceeded(), queryResult.getLastUpdated());
@@ -480,21 +479,20 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         final String encoding = pair.getLeft();
         final String config = pair.getRight();
 
-        var dto = new DeviceConfigDTO(
-            deviceConfig.getId(),
-            deviceConfig.getIpInterface().getId(),
-            InetAddressUtils.str(deviceConfig.getIpInterface().getIpAddress()),
-            deviceConfig.getCreatedTime(),
-            deviceConfig.getLastUpdated(),
-            deviceConfig.getLastSucceeded(),
-            deviceConfig.getLastFailed(),
-            encoding,
-            deviceConfig.getConfigType(),
-            deviceConfig.getFileName(),
-            config,
-            deviceConfig.getFailureReason(),
-            deviceConfig.getServiceName()
-        );
+        var dto = new DeviceConfigDTO();
+        dto.setId(deviceConfig.getId());
+        dto.setIpInterfaceId(deviceConfig.getIpInterface().getId());
+        dto.setMonitoredServiceId(deviceConfig.getIpInterface().getMonitoredServiceByServiceType(deviceConfig.getServiceName()).getId());
+        dto.setIpAddress(InetAddressUtils.str(deviceConfig.getIpInterface().getIpAddress()));
+        dto.setLastBackupDate(deviceConfig.getCreatedTime());
+        dto.setLastUpdatedDate(deviceConfig.getLastUpdated());
+        dto.setLastSucceededDate(deviceConfig.getLastSucceeded());
+        dto.setLastFailedDate(deviceConfig.getLastFailed());
+        dto.setEncoding(encoding);
+        dto.setConfigType(deviceConfig.getConfigType());
+        dto.setFileName(deviceConfig.getFileName());
+        dto.setConfig(config);
+        dto.setFailureReason(deviceConfig.getFailureReason());
 
         // determine backup status, not handling all cases for now
         boolean backupSuccess = determineBackupSuccess(deviceConfig.getLastSucceeded(), deviceConfig.getLastUpdated());
