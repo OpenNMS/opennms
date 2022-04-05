@@ -1,6 +1,4 @@
 [[restore-debian-ubuntu]]
-= Restore OpenNMS {page-component-title} in Debian / Ubuntu installations
-
 .Restore User/Group definition
 
 [source, console]
