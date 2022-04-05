@@ -39,6 +39,7 @@ const parseVerticesAndEdges = (resp: VerticesAndEdges, context: VuexContext) => 
   context.commit('SAVE_NODE_EDGES', edges)
   context.commit('SAVE_NODE_VERTICIES', vertices)
   context.dispatch('updateNodesFocusedProperty')
+  context.dispatch('updateVerticesIconPaths')
 }
 
 const getVerticesAndEdges = async (context: VuexContext, queryParameters?: QueryParameters) => {
@@ -136,6 +137,22 @@ const setModalState = (context: VuexContext, bool: boolean) => {
   context.commit('SET_MODAL_STATE', bool)
 }
 
+const changeIcon = (context: ContextWithState, nodeIdIconKey: Record<string, string>) => {
+  context.commit('UPDATE_NODE_ICONS', nodeIdIconKey)
+  context.dispatch('updateVerticesIconPaths')
+}
+
+const updateVerticesIconPaths = (context: ContextWithState) => {
+  const vertices = context.state.verticies
+  const nodeIcons = context.state.nodeIcons
+
+  for (const [id, iconKey] of Object.entries(nodeIcons)) {
+    vertices[id]['icon'] = iconKey
+  }
+
+  context.commit('SAVE_NODE_VERTICIES', vertices)
+}
+
 export default {
   getVerticesAndEdges,
   setSemanticZoomLevel,
@@ -151,5 +168,7 @@ export default {
   removeFocusedSearchBarNode,
   highlightFocusedNodes,
   updateNodesFocusedProperty,
-  setModalState
+  setModalState,
+  changeIcon,
+  updateVerticesIconPaths
 }

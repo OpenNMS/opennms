@@ -10,14 +10,61 @@
       :zoomLevel="zoomLevel"
       :eventHandlers="eventHandlers"
       v-if="trigger && focusedNodeIds.length !== 0"
-    />
+    >
+      <defs>
+        <!--
+        Define the path for clipping the image.
+        To change the size of the applied node as it changes,
+        add the `clipPathUnits="objectBoundingBox"` attribute
+        and specify the relative size (0.0~1.0).
+        -->
+        <clipPath id="iconCircle" clipPathUnits="objectBoundingBox">
+          <circle cx="0.5" cy="0.5" r="0.5" />
+        </clipPath>
+      </defs>
+
+      <!-- Replace the node component -->
+      <template #override-node="{ nodeId, scale, config, ...slotProps }">
+        <!-- circle for filling background -->
+        <circle
+          class="node-circle"
+          :r="config.radius * scale"
+          :fill="setColor(verticies[nodeId])"
+          v-bind="slotProps"
+        />
+        <!--
+        The base position of the <image /> is top left. The node's
+        center should be (0,0), so slide it by specifying x and y.
+        -->
+        <image
+          v-if="ICON_PATHS[verticies[nodeId].icon]"
+          :class="{ 'unfocused' : highlightFocusedNodes && !verticies[nodeId].focused }"
+          class="node-icon"
+          :x="-config.radius * scale"
+          :y="-config.radius * scale"
+          :width="config.radius * scale * 2"
+          :height="config.radius * scale * 2"
+          :xlink:href="ICON_PATHS[verticies[nodeId].icon]"
+          clip-path="url(#iconCircle)"
+        />
+        <!-- circle for drawing stroke -->
+        <circle
+          class="node-circle"
+          :r="config.radius * scale"
+          fill="none"
+          :stroke="setColor(verticies[nodeId])"
+          :stroke-width="1 * scale"
+          v-bind="slotProps"
+        />
+      </template>
+    </VNetworkGraph>
     <!-- Tooltip -->
     <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos }">
       <div v-html="verticies[targetNodeId]?.tooltip ?? ''"></div>
     </div>
   </div>
   <NoFocusMsg :useDefaultFocus="useDefaultFocus" v-if="focusedNodeIds.length === 0" />
-  <TopologyModal />
+  <TopologyModal :nodeId="contextNodeId" v-if="contextNodeId" />
   <ContextMenu
     ref="contextMenu"
     v-if="showContextMenu"
@@ -45,6 +92,7 @@ import { SimulationNodeDatum } from 'd3'
 import { ContextMenuType } from './topology.constants'
 import { useFocus } from './composables'
 import TopologyModal from './TopologyModal.vue'
+import ICON_PATHS from './icons/iconPaths'
 
 interface d3Node extends Required<SimulationNodeDatum> {
   id: string
@@ -100,7 +148,7 @@ const tooltipPos = computed(() => {
 
   return {
     left: displayTooltip.value ? (domPoint.x - 120 + 'px') : (-9999 + 'px'),
-    top: displayTooltip.value ? (domPoint.y - 130 + 'px') : ( -9999 + 'px')
+    top: displayTooltip.value ? (domPoint.y - 130 + 'px') : (-9999 + 'px')
   }
 })
 
@@ -242,6 +290,17 @@ onMounted(() => useDefaultFocus())
 <style lang="scss" scoped>
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
+
+// transitions when scaling on mouseover.
+.node-circle,
+.node-icon {
+  transition: all 0.1s linear;
+}
+
+.unfocused {
+  opacity: 0.5;
+  background: var($state-color-on-surface);
+}
 
 .tooltip-wrapper {
   position: relative;

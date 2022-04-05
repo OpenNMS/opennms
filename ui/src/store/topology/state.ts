@@ -15,6 +15,7 @@ export interface State {
   defaultNode: Node | null
   highlightFocusedNodes: boolean,
   modalState: boolean
+  nodeIcons: Record<string, string>
 }
 
 const state: State = {
@@ -29,7 +30,8 @@ const state: State = {
   focusedSearchBarNodes: [],
   defaultNode: null,
   highlightFocusedNodes: false,
-  modalState: false
+  modalState: false,
+  nodeIcons: {}
 }
 
 export default state

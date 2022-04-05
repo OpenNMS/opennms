@@ -18,6 +18,12 @@ iconArray.forEach(icon => {
   ICON_PATHS[icon.id] = 'data:image/svg+xml;base64,' + window.btoa(svgStr)
 })
 
+for (const key in ICON_PATHS) {
+  if (!key.includes('_icon')) {
+    delete ICON_PATHS[key]
+  }
+}
+
 console.log(ICON_PATHS)
 
 export default ICON_PATHS

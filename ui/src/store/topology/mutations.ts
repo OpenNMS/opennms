@@ -59,6 +59,10 @@ const SET_MODAL_STATE = (state: State, bool: boolean) => {
   state.modalState = bool
 }
 
+const UPDATE_NODE_ICONS = (state: State, nodeIdIconKey: Record<string, string>) => {
+  state.nodeIcons = { ...state.nodeIcons, ...nodeIdIconKey }
+}
+
 export default {
   SAVE_NODE_EDGES,
   SAVE_NODE_VERTICIES,
@@ -73,5 +77,6 @@ export default {
   REMOVE_FOCUSED_SEARCH_BAR_NODE,
   SAVE_DEFAULT_NODE,
   SET_HIGHLIGHT_FOCUSED_NODES,
-  SET_MODAL_STATE
+  SET_MODAL_STATE,
+  UPDATE_NODE_ICONS
 }
