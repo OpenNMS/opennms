@@ -1,7 +1,7 @@
 [[backup-debian-ubuntu]]
 = Backup OpenNMS {page-component-title} in Debian / Ubuntu installations
 
-.Stop OpenNMS {page-component-title} Service
+.Stop OpenNMS {page-component-title} service
 [source, console]
 ----
 sudo systemctl stop opennms
