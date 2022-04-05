@@ -75,8 +75,9 @@ const backupSelectedDevices = async (contextWithState: ContextWithState) => {
 
   if (ids.length === 1) {
     const config = getDeviceConfigBackupObjById(configs, ids[0])
-    const success = await API.backupDeviceConfig(config)
+    const resp = await API.backupDeviceConfig(config)
     contextWithState.dispatch('spinnerModule/setSpinnerState', false, { root: true })
+    const success = resp && (resp.status === 200 || resp.status === 202)
 
     if (success) {
       const successToast = {

@@ -27,7 +27,7 @@ const downloadDeviceConfigs = async (deviceIds: number[]) => {
 const backupDeviceConfig = async ({ ipAddress, location, serviceName }: DeviceConfigBackup) => {
   try {
     const resp = await rest.post(`${endpoint}/backup`, { ipAddress, location, serviceName })
-    return resp.data
+    return resp
   } catch (err) {
     return false
   }
