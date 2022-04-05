@@ -1,7 +1,7 @@
 [[backup]]
 = Back up OpenNMS {page-component-title}
 
-OpenNMS {page-component-title} configurations and performance data storage methods can differ a lot depending on the customer needs.
+OpenNMS {page-component-title} configurations and performance data storage methods can differ a lot depending on customer needs.
 This article describes the backup process of a default installation of OpenNMS {page-component-title}.
 OpenNMS {page-component-title} binaries, logs, RRD archives, configurations and the database will be backed up.
 NOTE: In this example the backup storage path is `/backup` for demonstration purposes.
