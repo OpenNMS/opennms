@@ -44,6 +44,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -97,7 +99,6 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         private final String scheduleInterval;
 
         public Date getNextScheduledBackup() { return this.nextScheduledBackup; }
-
         public String getScheduleInterval() { return this.scheduleInterval; }
 
         public ScheduleInfo(Date nextScheduledBackup, String scheduleInterval) {
@@ -120,9 +121,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             return Response.noContent().build();
         }
 
-        final DeviceConfigDTO dto = createDeviceConfigDto(dc);
-
-        return Response.ok(dto).build();
+        return Response.ok(createDeviceConfigDto(dc)).build();
     }
 
     /** {@inheritDoc} */
@@ -140,17 +139,11 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             Long createdAfter,
             Long createdBefore
     ) {
-        // If ipInterfaceId is present, it's assumed this is a 'history' query
-        // Otherwise it's assumed this is a general query for main results display
-        final boolean isHistoryQuery = ipInterfaceId != null && ipInterfaceId > 0;
-
-        List<DeviceConfigDTO> dtos = new ArrayList<DeviceConfigDTO>();
-
         var criteria = getCriteria(
             limit,
             offset,
-            isHistoryQuery ? "lastUpdated" : orderBy,
-            isHistoryQuery ? "desc" : order,
+            orderBy,
+            order,
             deviceName,
             ipAddress,
             ipInterfaceId,
@@ -158,29 +151,70 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             createdAfter,
             createdBefore);
 
-        if (isHistoryQuery) {
-            dtos = this.deviceConfigDao.findMatching(criteria)
-                .stream()
-                .map(this::createDeviceConfigDto)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        } else {
-            dtos = this.deviceConfigDao.getLatestConfigForEachInterface(limit, offset, orderBy, order, searchTerm)
-                .stream()
-                .map(this::createDeviceConfigDto)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        }
+        List<DeviceConfigDTO> dtos = this.deviceConfigDao.findMatching(criteria)
+            .stream()
+            .map(this::createDeviceConfigDto)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
 
-        // TODO: Get total count for 'getLatestConfigs' call and optimize it
         final long offsetToUse = offset != null ? offset.longValue() : 0L;
         int totalCount = dtos.size();
 
-        if (isHistoryQuery && (limit != null || offset != null)) {
+        if (limit != null || offset != null) {
             criteria.setLimit(null);
             criteria.setOffset(null);
             totalCount = deviceConfigDao.countMatching(criteria);
         }
+
+        return ResponseUtils.createResponse(dtos, offsetToUse, totalCount);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Response getLatestDeviceConfigsForDeviceAndConfigType(
+        Integer limit,
+        Integer offset,
+        String orderBy,
+        String order,
+        String searchTerm
+    ) {
+        List<DeviceConfigDTO> dtos =
+            this.deviceConfigDao.getLatestConfigForEachInterface(limit, offset, orderBy, order, searchTerm)
+                .stream()
+                .map(this::createDeviceConfigDto)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        // TODO: Get total count for 'getLatestConfigForEachInterface' call and optimize it
+        final long offsetToUse = offset != null ? offset.longValue() : 0L;
+        final int totalCount = dtos.size();
+
+        return ResponseUtils.createResponse(dtos, offsetToUse, totalCount);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Response getDeviceConfigsByInterface(Integer ipInterfaceId) {
+        var criteria = getCriteria(
+            null,
+            null,
+            "lastUpdated",
+            "desc",
+            null,
+            null,
+            ipInterfaceId,
+            null,
+            null,
+            null);
+
+        List<DeviceConfigDTO> dtos = this.deviceConfigDao.findMatching(criteria)
+            .stream()
+            .map(this::createDeviceConfigDto)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+
+        final long offsetToUse = 0;
+        final int totalCount = dtos.size();
 
         return ResponseUtils.createResponse(dtos, offsetToUse, totalCount);
     }
@@ -211,7 +245,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
         List<Long> ids = Arrays.stream(id.split(","))
             .filter(s -> !Strings.isNullOrEmpty(s))
-            .map(s -> Long.parseLong(s))
+            .map(Long::parseLong)
             .collect(Collectors.toList());
 
         if (ids.isEmpty()) {
@@ -250,7 +284,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     private Response downloadMultipleDeviceCofigs(List<Long> ids) {
         final Map<String, byte[]> fileNameToDataMap = ids.stream()
-            .map(id -> deviceConfigDao.get(id))
+            .map(deviceConfigDao::get)
             .filter(dc -> dc != null && dc.getConfig() != null && dc.getConfig().length > 0)
             .collect(Collectors.toMap(dc -> createDownloadFileName(dc), dc -> dc.getConfig()));
 
@@ -393,8 +427,8 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     private DeviceConfigDTO createDeviceConfigDto(DeviceConfigQueryResult queryResult) {
         Pair<String,String> pair = configToText(queryResult.getEncoding(), queryResult.getConfig());
-        String encoding = pair.getLeft();
-        String config = pair.getRight();
+        final String encoding = pair.getLeft();
+        final String config = pair.getRight();
 
         var dto = new DeviceConfigDTO(
             queryResult.getId(),
@@ -429,10 +463,9 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     }
 
     private DeviceConfigDTO createDeviceConfigDto(DeviceConfig deviceConfig) {
-
         Pair<String,String> pair = configToText(deviceConfig.getEncoding(), deviceConfig.getConfig());
-        String encoding = pair.getLeft();
-        String config = pair.getRight();
+        final String encoding = pair.getLeft();
+        final String config = pair.getRight();
 
         var dto = new DeviceConfigDTO(
             deviceConfig.getId(),
@@ -506,7 +539,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
      * and the text representation of the config.
      */
     private static Pair<String,String> configToText(String encoding, byte[] configBytes) {
-        boolean isBinaryEncoding = !Strings.isNullOrEmpty(encoding) && encoding.equals(BINARY_ENCODING);
+        final boolean isBinaryEncoding = !Strings.isNullOrEmpty(encoding) && encoding.equals(BINARY_ENCODING);
 
         if (isBinaryEncoding) {
             String config = configBytes != null ? DatatypeConverter.printHexBinary(configBytes) : "";

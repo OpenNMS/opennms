@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -67,7 +68,6 @@ import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
 import org.opennms.netmgt.config.PollerConfigFactory;
-import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -151,7 +151,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
     }
 
     @Test
-    public void testGetDeviceConfigsWithScheduleInfo() {
+    public void testGetLatestDeviceConfigsForDeviceAndConfigType() {
         populateDeviceConfigServiceInfo();
 
         this.sessionUtils.withTransaction(() -> {
@@ -169,18 +169,18 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
             // Add DeviceConfig entries mapped to ipInterfaces and services
             Date currentDate = new Date();
-            List<Date> dates = getTestDates(currentDate, 3);
+            List<Date> dates = getTestDates(currentDate, RECORD_COUNT);
 
-            deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(0), CONFIG_TYPES.get(0), dates.get(0), CONFIG_BYTES.get(0)));
-            deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(1), CONFIG_TYPES.get(1), dates.get(1), CONFIG_BYTES.get(1)));
-            deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(2), CONFIG_TYPES.get(2), dates.get(2), CONFIG_BYTES.get(2)));
+            IntStream.range(0, RECORD_COUNT).forEach(idx -> {
+                deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(idx), CONFIG_TYPES.get(idx), dates.get(idx), CONFIG_BYTES.get(idx)));
+            });
 
             // Older item, this one should NOT show up as it is an older item for same ipInterfaceId and configType as index 1 above
             Date olderDate = Date.from(dates.get(1).toInstant().minusSeconds(1));
             byte[] olderConfig = "older".getBytes(StandardCharsets.UTF_8);
             deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(1), CONFIG_TYPES.get(1), olderDate, olderConfig));
 
-            final var response = deviceConfigRestService.getDeviceConfigs(10, 0, "lastUpdated", "asc", null, null, null, null, null, null, null);
+            final var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, "lastUpdated", "asc", null);
             assertThat(response, notNullValue());
             assertThat(response.hasEntity(), is(true));
 
@@ -188,15 +188,15 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
             assertThat(responseHeaders.containsKey("Content-Range"), is(true));
 
-            final String contentRange = responseHeaders.get("Content-Range").get(0).toString();
-            final String expectedContentRange = String.format("items %d-%d/%d", 0, RECORD_COUNT - 1, RECORD_COUNT);
+            final String contentRange = getHeaderAsString(responseHeaders, "Content-Range");
+            final String expectedContentRange = getContentRange(0, RECORD_COUNT - 1, RECORD_COUNT);
             assertThat(contentRange, equalTo(expectedContentRange));
 
             final List<DeviceConfigDTO> responseList = (List<DeviceConfigDTO>) response.getEntity();
             assertThat(responseList.size(), equalTo(RECORD_COUNT));
             final List<String> expectedOperatingSystems = List.of("alpine", "centos", "redhat");
 
-            for (int i = 0; i < RECORD_COUNT; i++) {
+            IntStream.range(0, RECORD_COUNT).forEach(i -> {
                 final DeviceConfigDTO dto = responseList.get(i);
 
                 final var actualMonitoredService = ipInterfaces.get(i).getMonitoredServiceByServiceType("DeviceConfig-" + CONFIG_TYPES.get(i));
@@ -214,10 +214,10 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 assertThat(dto.getScheduledInterval().get("DeviceConfig-" + CONFIG_TYPES.get(i)),
                     equalTo(EXPECTED_CRON_SCHEDULE_DESCRIPTIONS.get(i)));
                 assertThat(dto.getNextScheduledBackupDate().after(currentDate), is(true));
-            }
+            });
 
             // Now do a 'history' search which should return 2 items for index 1 "dcb-2", having 2 different backup dates
-            final var historyResponse = deviceConfigRestService.getDeviceConfigs(10, 0, null, null, null, null, ipInterfaceIds.get(1), null, null, null, null);
+            final var historyResponse = deviceConfigRestService.getDeviceConfigsByInterface(ipInterfaceIds.get(1));
             assertThat(historyResponse, notNullValue());
             assertThat(historyResponse.hasEntity(), is(true));
 
@@ -226,14 +226,14 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             assertThat(historyResponseHeaders.containsKey("Content-Range"), is(true));
 
             final String historyContentRange = historyResponseHeaders.get("Content-Range").get(0).toString();
-            final String expectedHistoryContentRange = String.format("items %d-%d/%d", 0, 1, 2);
+            final String expectedHistoryContentRange = getContentRange(0, 1, 2);
             assertThat(historyContentRange, equalTo(expectedHistoryContentRange));
 
             final List<DeviceConfigDTO> historyResponseList = (List<DeviceConfigDTO>) historyResponse.getEntity();
             assertThat(historyResponseList.size(), equalTo(2));
 
             // check for common values
-            for (int i = 0; i < 2; i++) {
+            IntStream.range(0, 2).forEach(i -> {
                 DeviceConfigDTO dto = historyResponseList.get(i);
 
                 assertThat(dto.getMonitoredServiceId(), equalTo(ipInterfaceIds.get(1)));
@@ -246,7 +246,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 assertThat(dto.getScheduledInterval().get("DeviceConfig-" + CONFIG_TYPES.get(1)),
                     equalTo(EXPECTED_CRON_SCHEDULE_DESCRIPTIONS.get(1)));
                 assertThat(dto.getNextScheduledBackupDate().after(currentDate), is(true));
-            }
+            });
 
             // check for different values
             final DeviceConfigDTO newerDto = historyResponseList.get(0);
@@ -265,7 +265,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
     }
 
     @Test
-    public void testGetDeviceConfigsWithSearchTerm() {
+    public void testGetLatestDeviceConfigsWithSearchTerm() {
         populateDeviceConfigServiceInfo();
 
         this.sessionUtils.withTransaction(() -> {
@@ -275,23 +275,23 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
             // Add DeviceConfig entries mapped to ipInterfaces and services
             Date currentDate = new Date();
-            List<Date> dates = getTestDates(currentDate, 3);
+            List<Date> dates = getTestDates(currentDate, RECORD_COUNT);
 
-            deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(0), CONFIG_TYPES.get(0), dates.get(0), CONFIG_BYTES.get(0)));
-            deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(1), CONFIG_TYPES.get(1), dates.get(1), CONFIG_BYTES.get(1)));
-            deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(2), CONFIG_TYPES.get(2), dates.get(2), CONFIG_BYTES.get(2)));
+            IntStream.range(0, RECORD_COUNT).forEach(idx -> {
+                deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(idx), CONFIG_TYPES.get(idx), dates.get(idx), CONFIG_BYTES.get(idx)));
+            });
 
             // Search for "dcb-2", should only retrieve the one record, index '1'
-            var response = deviceConfigRestService.getDeviceConfigs(10, 0, null, null, null, null, null, null, "dcb-2", null, null);
+            var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, null, null, "dcb-2");
             assertThat(response, notNullValue());
             assertThat(response.hasEntity(), is(true));
 
-            var responseHeaders = response.getHeaders();
+            final var responseHeaders = response.getHeaders();
             assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
             assertThat(responseHeaders.containsKey("Content-Range"), is(true));
 
-            String contentRange = responseHeaders.get("Content-Range").get(0).toString();
-            String expectedContentRange = String.format("items %d-%d/%d", 0, 0, 1);
+            String contentRange = getHeaderAsString(responseHeaders, "Content-Range");
+            String expectedContentRange = getContentRange(0, 0, 1);
             assertThat(contentRange, equalTo(expectedContentRange));
 
             List<DeviceConfigDTO> responseList = (List<DeviceConfigDTO>) response.getEntity();
@@ -328,22 +328,19 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             assertThat(ipInterfaces.size(), equalTo(RECORD_COUNT));
 
             // Add DeviceConfig entries mapped to ipInterfaces and services
-            Date currentDate = new Date();
-            List<Date> dates = getTestDates(currentDate, 3);
+            List<Date> dates = getTestDates(new Date(), RECORD_COUNT);
 
-            deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(0), CONFIG_TYPES.get(0), dates.get(0), CONFIG_BYTES.get(0)));
-            deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(1), CONFIG_TYPES.get(1), dates.get(1), CONFIG_BYTES.get(1)));
-            deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(2), CONFIG_TYPES.get(2), dates.get(2), CONFIG_BYTES.get(2)));
+            IntStream.range(0, RECORD_COUNT).forEach(idx -> {
+                deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(idx), CONFIG_TYPES.get(idx), dates.get(idx), CONFIG_BYTES.get(idx)));
+            });
 
             final int nonExistingIpInterfaceId = ipInterfaces.stream().mapToInt(OnmsIpInterface::getId).max().orElse(9999) + 1;
 
-            var response = deviceConfigRestService.getDeviceConfigs(10, 0, "lastUpdated", "asc", null, null, nonExistingIpInterfaceId, null, null, null, null);
+            final var response = deviceConfigRestService.getDeviceConfigsByInterface(nonExistingIpInterfaceId);
             assertThat(response, notNullValue());
             assertThat(response.hasEntity(), is(false));
             assertThat(response.getStatus(), is(Response.Status.NO_CONTENT.getStatusCode()));
-
-            var responseHeaders = response.getHeaders();
-            assertThat(responseHeaders.containsKey("Content-Range"), is(false));
+            assertThat(response.getHeaders().containsKey("Content-Range"), is(false));
         });
     }
 
@@ -357,8 +354,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             assertThat(ipInterfaces.size(), equalTo(RECORD_COUNT));
 
             // Add DeviceConfig entries mapped to ipInterfaces and services
-            Date currentDate = new Date();
-            List<Date> dates = getTestDates(currentDate, 3);
+            List<Date> dates = getTestDates(new Date(), RECORD_COUNT);
             List<String> failureReasons = Arrays.asList(null, "failure 1", "failure 2");
 
             // never succeeded or failed, an odd case
@@ -380,23 +376,20 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             dc3.setLastSucceeded(Date.from(dc3.getLastUpdated().toInstant().minusSeconds(60 * 60)));
             dc3.setFailureReason(failureReasons.get(2));
 
-            deviceConfigDao.saveOrUpdate(dc1);
-            deviceConfigDao.saveOrUpdate(dc2);
-            deviceConfigDao.saveOrUpdate(dc3);
+            List.of(dc1, dc2, dc3).forEach(deviceConfigDao::saveOrUpdate);
 
-            var response = deviceConfigRestService.getDeviceConfigs(10, 0, "lastUpdated", "asc", null, null, null, null, null, null, null);
+            var response = deviceConfigRestService.getLatestDeviceConfigsForDeviceAndConfigType(10, 0, "lastUpdated", "asc", null);
             assertThat(response.hasEntity(), is(true));
 
             List<DeviceConfigDTO> responseList = (List<DeviceConfigDTO>) response.getEntity();
             assertThat(responseList.size(), equalTo(RECORD_COUNT));
 
-            for (int i = 0; i < RECORD_COUNT; i++) {
+            IntStream.range(0, RECORD_COUNT).forEach(i -> {
                 DeviceConfigDTO dto = responseList.get(i);
-
                 assertThat(dto.getLastUpdatedDate().getTime(), equalTo(dates.get(i).getTime()));
                 assertThat(dto.getBackupStatus(), equalTo(DefaultDeviceConfigRestService.BACKUP_STATUS_FAILED));
                 assertThat(dto.getFailureReason(), equalTo(failureReasons.get(i)));
-            }
+            });
         });
     }
 
@@ -409,9 +402,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             List<OnmsIpInterface> ipInterfaces = ipInterfaceDao.findAll();
             assertThat(ipInterfaces.size(), equalTo(RECORD_COUNT));
 
-            // Add DeviceConfig entries mapped to ipInterfaces and services
-            Date currentDate = new Date();
-            List<Date> dates = getTestDates(currentDate, 3);
+            List<Date> dates = getTestDates(new Date(), RECORD_COUNT);
 
             final byte[] configBytes = new byte[] { 0, 1, 2, 3, 11, 25, 127 };
             final String expectedConfig = "000102030B197F";
@@ -420,16 +411,65 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             deviceConfigDao.saveOrUpdate(dc);
 
             var response = deviceConfigRestService.getDeviceConfig(dc.getId());
-
             assertThat(response, notNullValue());
             assertThat(response.hasEntity(), is(true));
 
             DeviceConfigDTO dto = (DeviceConfigDTO) response.getEntity();
-
             assertThat(dc.getId(), equalTo(dto.getId()));
             assertThat(CONFIG_TYPES.get(0).equalsIgnoreCase(dto.getConfigType()), is(true));
             assertThat(dto.getEncoding(), equalTo(DefaultDeviceConfigRestService.BINARY_ENCODING));
             assertThat(dto.getConfig(), equalTo(expectedConfig));
+        });
+    }
+
+    @Test
+    public void testGetDeviceConfigsByInterface() {
+        populateDeviceConfigServiceInfo();
+
+        this.sessionUtils.withTransaction(() -> {
+            // Add nodes, interfaces, services
+            List<OnmsIpInterface> ipInterfaces = ipInterfaceDao.findAll();
+            assertThat(ipInterfaces.size(), equalTo(RECORD_COUNT));
+
+            List<Date> dates = getTestDates(new Date(), RECORD_COUNT);
+
+            final var dc0 = createDeviceConfig(ipInterfaces.get(0), CONFIG_TYPES.get(0), dates.get(0), CONFIG_BYTES.get(0));
+            final var dc1a = createDeviceConfig(ipInterfaces.get(1), CONFIG_TYPES.get(1), dates.get(1), CONFIG_BYTES.get(1));
+            final var dc1b = createDeviceConfig(ipInterfaces.get(1), CONFIG_TYPES.get(0),
+                Date.from(dates.get(1).toInstant().minusSeconds(1)), "older".getBytes(StandardCharsets.UTF_8));
+            final var dc2 = createDeviceConfig(ipInterfaces.get(2), CONFIG_TYPES.get(2), dates.get(2), CONFIG_BYTES.get(2));
+
+            List.of(dc0, dc1a, dc1b, dc2).forEach(deviceConfigDao::saveOrUpdate);
+
+            final var expectedDeviceConfigs = List.of(List.of(dc0), List.of(dc1a, dc1b), List.of(dc2));
+
+            IntStream.range(0, RECORD_COUNT).forEach(i -> {
+                final var response = deviceConfigRestService.getDeviceConfigsByInterface(ipInterfaces.get(i).getId());
+                assertThat(response, notNullValue());
+                assertThat(response.hasEntity(), is(true));
+
+                final var responseHeaders = response.getHeaders();
+                assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+                assertThat(responseHeaders.containsKey("Content-Range"), is(true));
+
+                final int expectedCount = expectedDeviceConfigs.get(i).size();
+                final String contentRange = getHeaderAsString(responseHeaders, "Content-Range");
+                final String expectedContentRange = getContentRange(0, expectedCount - 1, expectedCount);
+                assertThat(contentRange, equalTo(expectedContentRange));
+
+                final List<DeviceConfigDTO> responseList = (List<DeviceConfigDTO>) response.getEntity();
+                assertThat(responseList.size(), equalTo(expectedCount));
+
+                IntStream.range(0, expectedCount).forEach(j -> {
+                    DeviceConfigDTO dto = responseList.get(j);
+                    DeviceConfig expectedDc = expectedDeviceConfigs.get(i).get(j);
+
+                    assertThat(dto.getId(), equalTo(expectedDc.getId()));
+                    assertThat(dto.getLastUpdatedDate(), equalTo(expectedDc.getLastUpdated()));
+                    assertThat(dto.getIpInterfaceId(), equalTo(expectedDc.getIpInterface().getId()));
+                    assertThat(dto.getDeviceName(), equalTo(expectedDc.getIpInterface().getNode().getLabel()));
+                });
+            });
         });
     }
 
@@ -439,22 +479,22 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         idParams.add(null);
         idParams.add("");
 
-        for (String id : idParams) {
+        idParams.forEach(id -> {
             var response = deviceConfigRestService.downloadDeviceConfig(id);
             assertThat(response, notNullValue());
             assertThat(response.getStatus(), equalTo(Response.Status.NO_CONTENT.getStatusCode()));
-        }
+        });
     }
 
     @Test
     public void testDownloadInvalidRequest() {
         final List<String> idParams = List.of("abc", "a,b,c", ",,,,,0a", ";", "123,,", "123,,,456", ",123");
 
-        for (String id : idParams) {
+        idParams.forEach(id -> {
             var response = deviceConfigRestService.downloadDeviceConfig(id);
             assertThat(response, notNullValue());
             assertThat(response.getStatus(), equalTo(Response.Status.BAD_REQUEST.getStatusCode()));
-        }
+        });
     }
 
     @Test
@@ -465,17 +505,14 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         assertThat(ipInterfaces.size(), equalTo(RECORD_COUNT));
 
         // Add DeviceConfig entries mapped to ipInterfaces and services
-        // Save off 2nd one to check below
-        Date currentDate = new Date();
-        List<Date> dates = getTestDates(currentDate, 3);
+        List<Date> dates = getTestDates(new Date(), RECORD_COUNT);
 
         deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(0), CONFIG_TYPES.get(0), dates.get(0), CONFIG_BYTES.get(0)));
         DeviceConfig dc = createDeviceConfig(ipInterfaces.get(1), CONFIG_TYPES.get(1), dates.get(1), CONFIG_BYTES.get(1));
         deviceConfigDao.saveOrUpdate(dc);
         deviceConfigDao.saveOrUpdate(createDeviceConfig(ipInterfaces.get(2), CONFIG_TYPES.get(2), dates.get(2), CONFIG_BYTES.get(2)));
 
-        var response = deviceConfigRestService.downloadDeviceConfig(dc.getId().toString());
-
+        final var response = deviceConfigRestService.downloadDeviceConfig(dc.getId().toString());
         assertThat(response, notNullValue());
         assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 
@@ -483,18 +520,17 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         assertThat(responseHeaders.containsKey("Content-Type"), is(true));
         assertThat(responseHeaders.containsKey("Content-Disposition"), is(true));
 
-        assertThat(responseHeaders.get("Content-Type").get(0).toString(),
+        assertThat(getHeaderAsString(responseHeaders, "Content-Type"),
             equalTo("text/plain;charset=" + DefaultDeviceConfigRestService.DEFAULT_ENCODING));
 
         String expectedFileName = DefaultDeviceConfigRestService.createDownloadFileName(
             "dcb-2", "192.168.3.2", CONFIG_TYPES.get(1), dc.getCreatedTime());
         String expectedContentDisposition = "attachment; filename=" + expectedFileName;
-        String actualContentDisposition = responseHeaders.get("Content-Disposition").get(0).toString();
+        String actualContentDisposition = getHeaderAsString(responseHeaders, "Content-Disposition");
         assertThat(actualContentDisposition, equalTo(expectedContentDisposition));
 
         Object responseObj = response.getEntity();
         byte[] responseBytes = (byte[]) response.getEntity();
-
         assertArrayEquals(dc.getConfig(), responseBytes);
     }
 
@@ -505,34 +541,27 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         List<OnmsIpInterface> ipInterfaces = populateDeviceConfigServiceInfo();
         assertThat(ipInterfaces.size(), equalTo(RECORD_COUNT));
 
-        // Add DeviceConfig entries mapped to ipInterfaces and services
-        // Save off 2nd one to check below
-        Date currentDate = new Date();
-        List<Date> dates = getTestDates(currentDate, 3);
+        final List<Date> dates = getTestDates(new Date(), RECORD_COUNT);
 
-        DeviceConfig dc1 = createDeviceConfig(ipInterfaces.get(0), CONFIG_TYPES.get(0), dates.get(0), CONFIG_BYTES.get(0));
-        DeviceConfig dc2 = createDeviceConfig(ipInterfaces.get(1), CONFIG_TYPES.get(1), dates.get(1), CONFIG_BYTES.get(1));
-        DeviceConfig dc3 = createDeviceConfig(ipInterfaces.get(2), CONFIG_TYPES.get(2), dates.get(2), CONFIG_BYTES.get(2));
+        var dcs = IntStream.range(0, RECORD_COUNT).boxed().map(i ->
+            createDeviceConfig(ipInterfaces.get(i), CONFIG_TYPES.get(i), dates.get(i), CONFIG_BYTES.get(i))
+        ).collect(Collectors.toList());
 
-        deviceConfigDao.saveOrUpdate(dc1);
-        deviceConfigDao.saveOrUpdate(dc2);
-        deviceConfigDao.saveOrUpdate(dc3);
+        dcs.forEach(deviceConfigDao::saveOrUpdate);
 
-        List<Long> ids = List.of(dc1.getId(), dc2.getId(), dc3.getId());
+        List<Long> ids = dcs.stream().map(DeviceConfig::getId).collect(Collectors.toList());
         String idParam = String.join(",", ids.stream().map(id -> id.toString()).collect(Collectors.toList()));
 
-        var response = deviceConfigRestService.downloadDeviceConfig(idParam);
+        final var response = deviceConfigRestService.downloadDeviceConfig(idParam);
 
         assertThat(response, notNullValue());
         assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-        var responseHeaders = response.getHeaders();
+        final var responseHeaders = response.getHeaders();
         assertThat(responseHeaders.containsKey("Content-Type"), is(true));
         assertThat(responseHeaders.containsKey("Content-Disposition"), is(true));
+        assertThat(getHeaderAsString(responseHeaders, "Content-Type"), equalTo("application/gzip"));
 
-        assertThat(responseHeaders.get("Content-Type").get(0).toString(), equalTo("application/gzip"));
-
-        String actualContentDisposition = responseHeaders.get("Content-Disposition").get(0).toString();
-
+        String actualContentDisposition = getHeaderAsString(responseHeaders, "Content-Disposition");
         assertThat(actualContentDisposition, startsWith("attachment; filename="));
         assertThat(actualContentDisposition, endsWith(".tar.gz"));
 
@@ -558,23 +587,17 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
         assertThat(fileMap, notNullValue());
         assertThat(fileMap.size(), equalTo(RECORD_COUNT));
+        final Map<String,byte[]> finalFileMap = fileMap;
 
-        Set<String> fileKeys = fileMap.keySet();
-
+        final Set<String> fileKeys = fileMap.keySet();
         List<String> sortedFileNames = fileMap.keySet().stream().sorted().collect(Collectors.toList());
-        assertThat(sortedFileNames.size(), equalTo(3));
+        assertThat(sortedFileNames.size(), equalTo(RECORD_COUNT));
 
-        final String fileName = sortedFileNames.get(0);
-        assertThat(fileName, startsWith("dcb-1"));
-        assertArrayEquals(CONFIG_BYTES.get(0), fileMap.get(fileName));
-
-        final String fileName2 = sortedFileNames.get(1);
-        assertThat(fileName2, startsWith("dcb-2"));
-        assertArrayEquals(CONFIG_BYTES.get(1), fileMap.get(fileName2));
-
-        final String fileName3 = sortedFileNames.get(2);
-        assertThat(fileName3, startsWith("dcb-3"));
-        assertArrayEquals(CONFIG_BYTES.get(2), fileMap.get(fileName3));
+        IntStream.range(0, RECORD_COUNT).forEach(idx -> {
+            final String fileName = sortedFileNames.get(idx);
+            assertThat(fileName, startsWith(dcs.get(idx).getIpInterface().getNode().getLabel()));
+            assertArrayEquals(CONFIG_BYTES.get(idx), finalFileMap.get(fileName));
+        });
     }
 
     private List<OnmsIpInterface> populateDeviceConfigServiceInfo() {
@@ -589,7 +612,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
             List<String> scheduleIntervals = List.of("daily", "weekly", "monthly");
 
-            for (int i = 0; i < RECORD_COUNT; i++) {
+            IntStream.range(0, RECORD_COUNT).forEach(i -> {
                 builder.addNode(nodeNames.get(i)).setForeignSource("imported:").setForeignId(foreignIds.get(i)).setType(OnmsNode.NodeType.ACTIVE);
                 builder.addInterface(ipAddresses.get(i)).setIsManaged("M").setIsSnmpPrimary("P");
                 builder.addService(addOrGetServiceType("DeviceConfig-" + CONFIG_TYPES.get(i)));
@@ -599,7 +622,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
 
                 OnmsIpInterface ipInterface = builder.getCurrentNode().getIpInterfaceByIpAddress(ipAddresses.get(i));
                 ipInterfaces.add(ipInterface);
-            }
+            });
 
             nodeDao.flush();
 
@@ -641,5 +664,13 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             .sorted(Collections.reverseOrder())
             .map(seconds -> Date.from(currentDate.toInstant().minusSeconds(seconds)))
             .collect(Collectors.toList());
+    }
+
+    private static String getHeaderAsString(MultivaluedMap<String,Object> headers, String key) {
+        return headers.getFirst(key).toString();
+    }
+
+    private static String getContentRange(int startIndex, int endIndex, int count) {
+        return String.format("items %d-%d/%d", startIndex, endIndex, count);
     }
 }

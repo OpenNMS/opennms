@@ -55,10 +55,11 @@ public interface DeviceConfigRestService {
 
     /**
      * Gets a list of device configs along with backup schedule information.
+     *
      * @param limit used for paging; defaults to 10
      * @param offset used for paging; defaults to 0
-     * @param orderBy used for paging; defaults to "lastUpdated"
-     * @param order used for paging; defaults to "desc"
+     * @param orderBy used for sorting. Valid values are 'lastUpdated', 'deviceName', 'lastBackup' and 'ipAddress'. Defaults to 'lastUpdated'
+     * @param order used for sorting; valid values are 'asc' and 'desc', defaults to 'desc'
      * @param deviceName filter results by device name. Should use 'searchTerm' instead.
      * @param ipAddress filter results by device IP address. Should use 'searchTerm' instead.
      * @param ipInterfaceId database id of OnmsIpInterface instance. This will retrieve a record history.
@@ -84,6 +85,38 @@ public interface DeviceConfigRestService {
         @QueryParam("createdAfter") Long createdAfter,
         @QueryParam("createdBefore") Long createdBefore
     );
+
+    /**
+     * Gets the most recent device config for each device / config type combination.
+     * Typically called by UI to get latest status.
+     *
+     * @param limit used for paging; defaults to 10
+     * @param offset used for paging; defaults to 0
+     * @param orderBy used for sorting. Valid values are 'lastUpdated', 'deviceName', 'lastBackup' and 'ipAddress'. Defaults to 'lastUpdated'
+     * @param order used for sorting; valid values are 'asc' and 'desc', defaults to 'desc'
+     * @param searchTerm A search term, currently to search by device name or IP address.
+     * @return
+     */
+    @GET
+    @Path("/latest")
+    @Produces(MediaType.APPLICATION_JSON)
+    Response getLatestDeviceConfigsForDeviceAndConfigType(
+        @QueryParam("limit") @DefaultValue("10") Integer limit,
+        @QueryParam("offset") @DefaultValue("0") Integer offset,
+        @QueryParam("orderBy") @DefaultValue("lastUpdated") String orderBy,
+        @QueryParam("order") @DefaultValue("desc") String order,
+        @QueryParam("search") String searchTerm
+    );
+
+    /**
+     * Get a list of device configs for a given IP interface id.
+     * This is a history of configs for a particular device.
+     * Returns all config types.
+     */
+    @GET
+    @Path("/interface/{id : \\d+}")
+    @Produces(MediaType.APPLICATION_JSON)
+    Response getDeviceConfigsByInterface(@PathParam("id") Integer ipInterfaceId);
 
     /**
      * Delete a single device config.
