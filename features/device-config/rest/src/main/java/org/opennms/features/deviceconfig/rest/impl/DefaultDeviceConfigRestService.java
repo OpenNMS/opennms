@@ -444,8 +444,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
         var dto = new DeviceConfigDTO();
         dto.setId(queryResult.getId());
-        dto.setIpInterfaceId(queryResult.getIpInterfaceId());
-        dto.setMonitoredServiceId(queryResult.getMonitoredServiceId());
+        dto.setServiceName(queryResult.getServiceName());
         dto.setIpAddress(queryResult.getIpAddr());
         dto.setLastBackupDate(queryResult.getCreatedTime());
         dto.setLastUpdatedDate(queryResult.getLastUpdated());
@@ -481,8 +480,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
         var dto = new DeviceConfigDTO();
         dto.setId(deviceConfig.getId());
-        dto.setIpInterfaceId(deviceConfig.getIpInterface().getId());
-        dto.setMonitoredServiceId(deviceConfig.getIpInterface().getMonitoredServiceByServiceType(deviceConfig.getServiceName()).getId());
+        dto.setServiceName(deviceConfig.getServiceName());
         dto.setIpAddress(InetAddressUtils.str(deviceConfig.getIpInterface().getIpAddress()));
         dto.setLastBackupDate(deviceConfig.getCreatedTime());
         dto.setLastUpdatedDate(deviceConfig.getLastUpdated());

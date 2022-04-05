@@ -45,7 +45,6 @@ import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigQueryResult;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,10 +148,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
                          final OnmsIpInterface ip = (OnmsIpInterface) objects[1];
                          final OnmsNode n = ip.getNode();
 
-                         final OnmsMonitoredService service = ip.getMonitoredServiceByServiceType(dc.getServiceName());
-                         final Integer monitoredServiceId = service != null ? service.getId() : null;
-
-                         return new DeviceConfigQueryResult(dc, ip, n, monitoredServiceId);
+                         return new DeviceConfigQueryResult(dc, ip, n);
                      }
 
                      return null;

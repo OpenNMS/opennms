@@ -160,7 +160,7 @@ public class DefaultDeviceConfigRestServiceIT {
         var res = getDeviceConfigs(null, null, null, null, null, null, null, null, null, null, null);
         assertThat(res, hasSize(VERSIONS * INTERFACES));
         for (var itf : interfaces) {
-            var set = res.stream().filter(dc -> dc.getMonitoredServiceId() == itf.getId()).collect(Collectors.toSet());
+            var set = res.stream().filter(dc -> dc.getIpInterfaceId() == itf.getId()).collect(Collectors.toSet());
             assertThat(set, hasSize(VERSIONS));
         }
     }

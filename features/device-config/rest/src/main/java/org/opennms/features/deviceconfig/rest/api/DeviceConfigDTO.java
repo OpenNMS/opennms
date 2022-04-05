@@ -41,8 +41,8 @@ public class DeviceConfigDTO {
     /** Database id of 'device_config' table entry */
     private long id;
 
-    /** Database id of monitored service */
-    private int monitoredServiceId;
+    /** Name of monitored service */
+    private String serviceName;
 
     /** IP address as a text string */
     private String ipAddress;
@@ -93,9 +93,6 @@ public class DeviceConfigDTO {
     /** Location, from node. */
     private String location;
 
-    /** Service name */
-    private String serviceName;
-
     /** Operating system of corresponding node. */
     private String operatingSystem;
 
@@ -119,10 +116,10 @@ public class DeviceConfigDTO {
         this.id = id;
     }
 
-    public int getMonitoredServiceId() { return this.monitoredServiceId; }
+    public String getServiceName() { return this.serviceName; }
 
-    public void setMonitoredServiceId(final int monitoredServiceId) {
-        this.monitoredServiceId = monitoredServiceId;
+    public void setServiceName(final String serviceName) {
+        this.serviceName = serviceName;
     }
 
     public boolean isSuccessfulBackup() {
@@ -213,10 +210,6 @@ public class DeviceConfigDTO {
 
     public void setLocation(String location) { this.location = location; }
 
-    public String getServiceName() { return this.serviceName; }
-    
-    public void setServiceName(String name) { this.serviceName = name; }
-   
     public String getOperatingSystem() { return this.operatingSystem; }
 
     public void setOperatingSystem(String os) { this.operatingSystem = os; }
