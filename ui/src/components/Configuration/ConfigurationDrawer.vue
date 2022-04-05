@@ -21,8 +21,8 @@
       </div>
       <div class="slide-outer-body">
         <p class="slide-short">
-          To synchronize inventory automatically from an external source, build a requisition and
-          schedule it.
+          To help synchronize inventory automatically from an external source, build a requisition definition and
+          schedule it. The requisition definition provides a URL that specifies where OpenNMS can get this input information.
         </p>
         <div class="slide-inner-body">
           <ProvisionDForm

@@ -38,7 +38,7 @@
           <span class="fa fa-retweet"></span> Reset Default
         </button>
         <button type="button" class="btn btn-secondary" ng-click="add()" id="add-requisition" ng-disabled="timingStatus.isRunning">
-          <span class="fa fa-plus"></span> Add Requisition
+          <span class="fa fa-plus"></span> Add Requisition Definition
         </button>
       </div>
     </form>
@@ -62,8 +62,8 @@
     <!-- No Requisitions -->
     <div class="jumbotron" ng-show="loaded && requisitionsData.requisitions.length == 0">
       <div class="container">
-        <h1>There are no requisitions</h1>
-        <p>Please click on the 'Add Requisition' button, to start adding requisitions.</p>
+        <h1>There are no requisition definitions</h1>
+        <p>Click the 'Add Requisition Definition' button, to add some.</p>
       </div>
     </div>
 
