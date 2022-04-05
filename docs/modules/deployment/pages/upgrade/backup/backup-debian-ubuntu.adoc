@@ -7,7 +7,7 @@
 sudo systemctl stop opennms
 ----
 
-.Create Backup Folder
+.Create backup folder
 [source, console]
 ----
 sudo mkdir /backup
