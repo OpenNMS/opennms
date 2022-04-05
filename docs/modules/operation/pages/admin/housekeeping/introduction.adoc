@@ -5,8 +5,10 @@
 There are a number of housekeeping tasks you may want to do regularly to ensure optimum system performance.
 We also recommend you complete some of these housekeeping tasks before upgrading {page-component-title}.
 
+== Prior to upgrading
+
 [[prune-events]]
-== Prune unneeded events
+=== Prune unneeded events
 Use vacuumd or cron to regularly prune unneeded events.
 This helps to clean up your events table, and reduces the amount of data in your backups.
 We also recommend doing this before you begin the {page-component-title} upgrade process.
@@ -24,15 +26,17 @@ UNION
 SELECT eventid FROM notifications WHERE eventid
 ----
 
+== After Upgrading
+
 [[delete-cache-folder]]
-== Delete cache folder
+=== Delete cache folder
 Run the Fix Karaf script to delete cached items so that your system is cleaned up.
 We recommend doing this after an upgrade.
 This script tries to fix Karaf configuration problems by pruning `opt/opennms/data` and restoring all Karaf-related configuration files to a pristine state.
 
 NOTE: Back up `/opt/opennms/etc` before running the script.
 
-[source, shell]
+[source, console]
 ----
 /opt/opennms/bin/fix-karaf-setup.sh
 ----
