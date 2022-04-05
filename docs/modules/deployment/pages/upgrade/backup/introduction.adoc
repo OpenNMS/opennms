@@ -1,5 +1,5 @@
 [[backup]]
-= Backup OpenNMS {page-component-title}
+= Back up OpenNMS {page-component-title}
 
 OpenNMS {page-component-title} configurations and performance data storage methods can differ a lot depending on the customer needs.
 This article describes the backup process of a default installation of OpenNMS {page-component-title}.
