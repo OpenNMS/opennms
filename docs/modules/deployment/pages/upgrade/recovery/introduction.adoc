@@ -18,7 +18,7 @@ NOTE: In this example the backup storage path is `/backup` for demonstration pur
 == Requirements
 
 * The backups that were made in [[backup-debian-ubuntu]]
-* System user with administrative permissions (sudo) to perform installation
+* System user with administrative permissions (sudo)
 * Internet access to download and install OpenJDK and PostgreSQL
 NOTE: PostgreSQL link:https://www.postgresql.org/about/news/announcing-apt-archivepostgresqlorg-2024/[archive repository] provides also older PostgreSQL versions
 * Database password for `opennms` and `postgres` user

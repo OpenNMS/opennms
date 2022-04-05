@@ -17,7 +17,7 @@ NOTE: In this example the backup storage path is `/backup` for demonstration pur
 == Requirements
 
 * Linux physical server or a virtual machine running a supported xref:deployment:core/system-requirements.adoc#operating-systems-core[Linux operating system]
-* System user with administrative permissions (sudo) to perform a backup
+* System user with administrative permissions (sudo)
 * Database password for `opennms` and `postgres` user
 
 == Create backup
