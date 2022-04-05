@@ -5,7 +5,7 @@
 This section provides sample XML configuration for many of the tasks described in the Provisioning chapter.
 
 [[SNMP-community-xml]]
-== Configuring SNMP community names
+== Configure SNMP community names
 
 [source, xml]
 .Sample snmp-config.xml
