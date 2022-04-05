@@ -28,7 +28,8 @@ const mockDeviceConfigBackups: DeviceConfigBackup[] = [
     nodeLabel: 'node1',
     operatingSystem: '',
     isSuccessfulBackup: true,
-    monitoredServiceId: 1
+    monitoredServiceId: 1,
+    serviceName: 'DeviceConfig-running'
   },
   {
     id: 12,
@@ -52,7 +53,8 @@ const mockDeviceConfigBackups: DeviceConfigBackup[] = [
     nodeLabel: 'node1',
     operatingSystem: '',
     isSuccessfulBackup: true,
-    monitoredServiceId: 1
+    monitoredServiceId: 1,
+    serviceName: 'DeviceConfig-default'
   }
 ]
 
@@ -96,11 +98,11 @@ test('action btns enable and disable correctly', async () => {
 
   // select 'all devices' checkbox
   await allCheckbox.trigger('click')
-  // the view history btn should be disabled. Dwnld / backup btns enabled
+  // the view history and backup btns should be disabled. Dwnld btn enabled
   expect(allCheckbox.attributes('aria-checked')).toBe('true')
   expect(viewHistoryBtn.attributes('aria-disabled')).toBe('true')
   expect(downloadBtn.attributes('aria-disabled')).toBeUndefined()
-  expect(backupNowBtn.attributes('aria-disabled')).toBeUndefined()
+  expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
 
   // change 'all devices' to false
   await allCheckbox.trigger('click')
