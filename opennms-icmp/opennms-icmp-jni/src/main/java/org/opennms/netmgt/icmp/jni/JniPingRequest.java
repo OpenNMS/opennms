@@ -42,7 +42,7 @@ import org.opennms.netmgt.icmp.HostIsDownException;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
-import org.opennms.protocols.rt.Request;
+import org.opennms.core.tracker.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
