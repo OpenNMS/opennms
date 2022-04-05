@@ -11,7 +11,7 @@ NOTE: In this example the backup storage path is `/backup` for demonstration pur
 
 * Create backup of OpenNMS {page-component-title} components
 * Create PostgreSQL database backup
-* Being able to run a disaster recovery without having OpenNMS packages available
+* Able to run a disaster recovery without having OpenNMS packages available
 
 [[backup-requirements]]
 == Requirements
