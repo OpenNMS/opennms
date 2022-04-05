@@ -93,6 +93,9 @@ public class DeviceConfigDTO {
     /** Location, from node. */
     private String location;
 
+    /** Service name */
+    private String serviceName;
+
     /** Operating system of corresponding node. */
     private String operatingSystem;
 
@@ -120,7 +123,8 @@ public class DeviceConfigDTO {
         String configType,
         String fileName,
         String config,
-        String failureReason
+        String failureReason,
+        String serviceName
     ) {
         this.id = id;
         this.monitoredServiceId = monitoredServiceId;
@@ -134,6 +138,7 @@ public class DeviceConfigDTO {
         this.fileName = fileName;
         this.config = config;
         this.failureReason = failureReason;
+        this.serviceName = serviceName;
     }
 
     public long getId() {
@@ -172,6 +177,8 @@ public class DeviceConfigDTO {
 
     public String getLocation() { return this.location; }
 
+    public String getServiceName() { return this.serviceName; }
+
     public String getOperatingSystem() { return this.operatingSystem; }
 
     public boolean getIsSuccessfulBackup() { return this.isSuccessfulBackup; }
@@ -191,6 +198,8 @@ public class DeviceConfigDTO {
     public void setNodeLabel(String label) { this.nodeLabel = label; }
 
     public void setLocation(String location) { this.location = location; }
+
+    public void setServiceName(String name) { this.serviceName = name; }
 
     public void setOperatingSystem(String os) { this.operatingSystem = os; }
 

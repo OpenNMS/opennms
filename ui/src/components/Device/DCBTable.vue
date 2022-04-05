@@ -149,7 +149,7 @@
           <td>{{ config.ipAddress }}</td>
           <td>{{ config.location }}</td>
           <td class="last-backup-date pointer" @click="onLastBackupDateClick(config)">
-            <span v-date>{{ config.lastSucceededDate }}</span>
+            <span v-date>{{ config.lastBackupDate }}</span>
             <FeatherButton icon="View" v-if="config.lastBackupDate">
               <FeatherIcon :icon="ViewDetails" />
             </FeatherButton>

@@ -23,6 +23,7 @@ export interface DeviceConfigBackup {
   nextScheduledBackupDate: number
   config: string
   monitoredServiceId: number
+  serviceName: string
 }
 
 export interface DeviceConfigQueryParams extends QueryParameters {
