@@ -38,7 +38,6 @@ import RrdGraphConverter from './utils/RrdGraphConverter.class'
 import { formatTimestamps, getFormattedLegendStatements } from './utils/LegendFormatter'
 import GraphDataTable from './GraphDataTable.vue'
 import { ConvertedGraphData, GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph, StartEndTime } from '@/types'
-import { onMounted, ref, computed, PropType, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useElementSize } from '@vueuse/core'
 import { ChartOptions, TitleOptions, ChartData } from 'chart.js'
@@ -52,6 +51,7 @@ import {
   FeatherTabContainer,
   FeatherTabPanel,
 } from '@featherds/tabs'
+import { PropType } from 'vue'
 Chart.register(...registerables)
 Chart.register(zoomPlugin)
 

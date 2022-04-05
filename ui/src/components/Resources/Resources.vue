@@ -10,7 +10,6 @@
 </template>
   
 <script setup lang=ts>
-import { onMounted } from 'vue'
 import { useStore } from 'vuex'
 import ResourceList from '@/components/Resources/ResourceList.vue'
 import NodeResourceList from '@/components/Resources/NodeResourceList.vue'

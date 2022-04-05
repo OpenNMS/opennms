@@ -8,10 +8,7 @@
   <router-view />
 </template>
 <script setup lang=ts>
-import { ref, onActivated } from 'vue'
-import { computed } from 'vue'
 import { useStore } from 'vuex'
-import { useRouter, useRoute } from 'vue-router'
 import { FeatherTab, FeatherTabContainer } from '@featherds/tabs'
 import { Alarm, Node } from '@/types'
 

@@ -781,11 +781,6 @@
       <param-name>redirect.success</param-name>
       <param-value>../support/index.htm</param-value>
     </init-param>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>mail.program</param-name>
-      <param-value>/bin/mail</param-value>
-    </init-param>
   </servlet>
 
   <servlet>

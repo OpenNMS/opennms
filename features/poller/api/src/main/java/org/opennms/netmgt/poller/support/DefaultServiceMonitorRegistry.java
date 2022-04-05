@@ -110,14 +110,7 @@ public class DefaultServiceMonitorRegistry implements ServiceMonitorRegistry {
             m_monitorsByClassName.remove(className);
         }
     }
-
-
-
-    @Override
-    public synchronized ServiceMonitor getMonitorByClassName(String className) {
-        return getMonitorFutureByClassName(className).completeOnTimeout(null, 100, TimeUnit.MILLISECONDS).join();
-    }
-
+    
     @Override
     public synchronized CompletableFuture<ServiceMonitor> getMonitorFutureByClassName(String className) {
         CompletableFuture<ServiceMonitor> future = m_monitorsByClassName.get(className);

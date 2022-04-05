@@ -27,6 +27,7 @@ Optionally, the banner line the node provides may be parsed and compared against
 | banner
 | Regular expression to be matched against the service's banner.
 | n/a
+
 | client-banner
 | The client banner that {page-component-title} uses to identify itself to the node.
 | SSH-1.99-OpenNMS_1.5

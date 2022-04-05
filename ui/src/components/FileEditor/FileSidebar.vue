@@ -38,7 +38,6 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import FileTreeItem from './FileTreeItem.vue'
 import Search from './Search.vue'

@@ -10,6 +10,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "allowJs": true,
     "lib": ["esnext", "dom"],
     "paths": {
       "@/*": [
@@ -22,7 +23,8 @@
     "src/**/*.d.ts",
     "src/**/*.vue",
     "vite.config.ts",
-    "tests"
+    "tests",
+    "auto-imports.d.ts"
   ],
   "exclude": [
     "node_modules"

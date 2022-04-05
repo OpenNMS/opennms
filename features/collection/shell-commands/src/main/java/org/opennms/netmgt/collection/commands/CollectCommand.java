@@ -127,7 +127,7 @@ public class CollectCommand implements Action {
 
     @Override
     public Void execute() {
-        final ServiceCollector collector = serviceCollectorRegistry.getCollectorByClassName(className);
+        final ServiceCollector collector = serviceCollectorRegistry.getCollectorFutureByClassName(className).getNow(null);
         if (collector == null) {
             System.out.printf("No collector found with class name '%s'. Aborting.\n", className);
             return null;

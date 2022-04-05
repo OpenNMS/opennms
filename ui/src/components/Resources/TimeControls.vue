@@ -46,7 +46,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 import { FeatherList, FeatherListItem } from '@featherds/list'
 import { FeatherMegaMenu } from '@featherds/megamenu'
 import { add, sub, getUnixTime, differenceInHours } from 'date-fns'
