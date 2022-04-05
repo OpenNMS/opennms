@@ -13,8 +13,19 @@ This time varies, and will be longer depending on how customized and complex you
 
 There are a number of tasks you should complete before starting an upgrade:
 
+ifeval::["{page-component-title}" == "Meridian"]
+* Check the https://meridian.opennms.com/[release notes] for breaking changes in each release between your current version and the version you want to upgrade to.
+Address any issues that might affect you.
+endif::[]
+
+ifeval::["{page-component-title}" == "Horizon"]
 * Check the https://vault.opennms.com/docs/opennms/releases/index.html[release notes] for breaking changes in each release between your current version and the version you want to upgrade to.
 Address any issues that might affect you.
+
+NOTE: Release notes for versions 28 and 29 are not available at the vault docs link (above) at this time.
+Please check the branches on GitHub for those release notes.
+endif::[]
+
 * Stop OpenNMS and PostgreSQL
 * xref:operation:admin/housekeeping/introduction.adoc#prune-events[Prune unneeded events]
 * <<non-root-permissions, Update permissions>> (if upgrading from pre-29 Horizon or pre-2022 Meridian)

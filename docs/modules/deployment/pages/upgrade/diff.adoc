@@ -5,6 +5,14 @@
 During an upgrade, {page-component-title} overwrites configuration files, so any customization you may have done will be lost.
 You need to back up your customized configuration files so that you can merge them into your upgraded system.
 
+Consider one of the following options to identify changed configuration files:
+
+* <<config-diff, run the config-diff.sh script>> (to show which files have changed)
+* make the `$OPENNMS_HOME/etc` folder a git repo to track changes between versions (to show content lines that have changed as well)
+
+[[config-diff]]
+== Run the config-diff.sh script
+
 The config-diff tool identifies differences between the default {page-component-title} configuration and what you are running.
 Identifying these differences helps you to determine what you need to migrate as part of an upgrade.
 
