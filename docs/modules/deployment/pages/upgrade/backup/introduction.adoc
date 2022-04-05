@@ -20,7 +20,7 @@ NOTE: In this example the backup storage path is `/backup` for demonstration pur
 * System user with administrative permissions (sudo) to perform a backup
 * Database password for `opennms` and `postgres` user
 
-== Create backups
+== Create backup
 
 [{tabs}]
 ====
