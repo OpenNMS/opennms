@@ -614,7 +614,6 @@
     <feature name="opennms-icmp-api" version="${project.version}" description="OpenNMS :: ICMP :: API">
         <feature>guava</feature>
         <feature>opennms-core</feature>
-        <bundle dependency="true">mvn:org.opennms.lib/org.opennms.lib.tracker/${trackerVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
     </feature>
     <feature name="opennms-icmp-best" version="${project.version}" description="OpenNMS :: ICMP :: Best Match">
