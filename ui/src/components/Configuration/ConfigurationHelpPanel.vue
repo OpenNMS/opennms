@@ -62,8 +62,8 @@ const helpText = computed(() => {
   const subType = props.item.subType.name
 
   let helpVals = {
-    title: 'Requisition',
-    subTitle: 'A requisition enables periodic inventory synchronization from external sources. Each definition contains a URL, schedule, and setting to specify the nodes to rescan. The "type" defines the external source, and uses type-specific parameters (host, path, foreign source) to construct the URL that tells OpenNMS where to find this information.',
+    title: 'Requisition Definition',
+    subTitle: 'A requisition definition enables periodic inventory synchronization from external sources. The definition contains a URL, schedule, and setting to specify the nodes to rescan. The "type" defines the external source, and uses type-specific parameters (host, path, foreign source) to construct the URL that tells OpenNMS where to find this information.',
     help: 'See the online documentation for detailed information on supported options:',
     linkCopy: 'READ FULL ARTICLE',
     link: 'https://docs.opennms.com/horizon/29/reference/provisioning/handlers/introduction.html'
