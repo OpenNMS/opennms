@@ -22,14 +22,14 @@ You will need to fine-tune your results to exclude or add things to what you mon
 
 == Before you begin
 
-If you collect data via SNMP or are monitoring the availability of the SNMP service on a node, you must xref:provision-snmp-configuration [configure SNMP for provisioning] before using auto or directed discovery.
+If you collect data via SNMP or are monitoring the availability of the SNMP service on a node, you must <<provision-snmp-configuration, configure SNMP for provisioning>> before using auto or directed discovery.
 This ensures that {page-component-title} can immediately scan newly discovered devices for entities.
 It also makes reporting and thresholding available for these devices.
 
 In addition, you may want to xref:foreign-source-definition[edit the default foreign source definition] to specify the services to detect and policies to apply during discovery.
 
 [[provision-snmp-configuration]]
-== Configuring SNMP for provisioning
+== Configure SNMP for provisioning
 
 Proper SNMP configuration lets {page-component-title} understand network/node topology and automatically enables performance data collection.
 {page-component-title} updates network topology as it provisions nodes.
@@ -37,13 +37,13 @@ Proper SNMP configuration lets {page-component-title} understand network/node to
 . In the web UI, click the gear icon in the top right.
 . In the *Provisioning* area, choose *Configure SNMP Community Names by IP Address*, and fill in the fields as desired:
 
-.Configuring SNMP community names
+.Configure SNMP community names
 image::provisioning/SNMP_Config.png[]
 
 This screen sets up SNMP within {page-component-title} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
 These settings are optimized into the `snmp-configuration.xml` file.
 
-For an example of the resulting XML configuration, see link:#SNMP-community-xml[Configuring SNMP community names].
+For an example of the resulting XML configuration, see link:#SNMP-community-xml[Configure SNMP community names].
 
 [[foreign-source-definition]]
 == Edit Default Foreign Source Definition
