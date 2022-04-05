@@ -28,7 +28,7 @@ sudo tar -cvzf /backup/usr-share-java-opennms.tar.gz /usr/share/java/opennms
 sudo runuser -l postgres -c 'pg_dump -W -U opennms -Fc -h localhost -p 5432 -f /backup/opennms_postgres.dmp opennms'
 ----
 
-.OpenNMS {page-component-title} Operating system user
+. Back up OpenNMS {page-component-title} operating system user
 [source, console]
 ----
 sudo grep opennms /etc/passwd > /backup/opennms-passwd.txt
