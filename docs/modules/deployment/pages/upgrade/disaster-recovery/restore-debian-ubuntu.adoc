@@ -47,7 +47,7 @@ sudo runuser -l postgres -c 'pg_restore -Fc -h localhost -p 5432 -U opennms -d o
 ----
 
 NOTE: The following errors can appear while restoring the database.
-Those can be ignored for now. The `install -dis` command later will fix it.
+The `install -dis` command will fix it later.
 
 [source, console]
 ----
