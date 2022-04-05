@@ -35,9 +35,9 @@ A cluster's marker displays as the color of the highest severity of the nodes th
 | image::geographical-map/orange.png[orange marker]
 
 | Major
-| image::geographical-map/lightred.png[lightred marker]
+| image::geographical-map/lightred.png[light red marker]
 
 | Critical
-| image::geographical-map/deepred.png[deepred marker]
+| image::geographical-map/deepred.png[dark red marker]
 
 |====
