@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
-import org.opennms.protocols.rt.ResponseWithId;
+import org.opennms.core.tracker.ResponseWithId;
 
 /**
  * <p>
