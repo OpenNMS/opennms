@@ -76,6 +76,7 @@
     "prettier": "^2.3.2",
     "tsm": "^2.1.4",
     "typescript": "^4.5.5",
+    "unplugin-auto-import": "^0.6.8",
     "uvu": "^0.5.3",
     "vite": "^2.7.13",
     "vue-eslint-parser": "^8.0.1",
