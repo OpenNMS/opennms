@@ -1,7 +1,7 @@
 = Device Configuation Backup
 
-OpenNMS allows you to back up the configuration of devices like routers or firewalls. 
-It does this through a TFTP server that OpenNMS and Minions provide. 
+OpenNMS allows you to back up the configuration of devices like routers or firewalls.
+It does this through a TFTP server that OpenNMS and Minions provide.
 Devices send their configuration to that TFTP server with either a pull- or push-based backup.
 
 * Pull-based backup: OpenNMS uses its poller infrastructure to schedule tasks that connect via SSH into devices and execute configurable scripts that do the TFTP uploads.
@@ -9,18 +9,18 @@ Devices send their configuration to that TFTP server with either a pull- or push
 
 == Overview
 
-OpenNMS stores device configuration backups for IP addresses in the default location or at remote locations. 
-Different kinds of configuration types can be distinguished. 
-For example, some devices may distinguish between their default configuration and their running configuration. 
-OpenNMS considers configuration types as arbitrary strings. 
+OpenNMS stores device configuration backups for IP addresses in the default location or at remote locations.
+Different kinds of configuration types can be distinguished.
+For example, some devices may distinguish between their default configuration and their running configuration.
+OpenNMS considers configuration types as arbitrary strings.
 If no configuration type is specified, then `default` is used.
 
-OpenNMS archives received backups and records when changes happened. 
+OpenNMS archives received backups and records when changes happened.
 It also records if backups fail and raises corresponding alarms.
 
 == SSH scripting
 
-An SSH scripting engine executes the commands that are necessary to upload device configurations. 
+An SSH scripting engine executes the commands that are necessary to upload device configurations.
 The scripting engine supports two commands:
 
 * `send: ...`: Sends the given string to the device
@@ -72,3 +72,79 @@ await: >
 ----
 
 == Poller configuration
+
+Device Config Backup is performed through DeviceConfig Monitor.
+This Monitor is configured in a separate package `device-config` with down-time model that shouldn't be changed.
+
+.Polling package for Device Config Backup
+[source, xml]
+----
+<package name="device-config"> <1>
+   <filter>IPADDR != '0.0.0.0'</filter> <2>
+   <service name="DeviceConfig" interval="300000" user-defined="false" status="on"> <3>
+      <pattern><![CDATA[^DeviceConfig-(?<configType>.+)$]]></pattern> <4>
+      <parameter key="config-type" value="${pattern:configType|requisition:configType|default}"/><5>
+      <parameter key="username" value="${requisition:dcb:username|admin}"/>
+      <parameter key="password" value="${requisition:dcb:password|admin}"/>
+      <parameter key="ssh-port" value="${requisition:ssh-port|22}"/>
+      <parameter key="ssh-timeout" value="${requisition:ssh-timeout|60000}"/>
+      <!-- schedule is a cron expression -->
+      <parameter key="schedule" value="${requisition:dcb:schedule|0 0 0 * * ?}"/> <6>
+      <parameter key="script-file" value="${requisition:script-file|assets:operating-system|node:os|default}.dcb"/> <7>
+   </service>
+   <downtime begin="0" interval="300000"/><!-- 300s --> <8>
+</package>
+----
+
+<1> Package for Device Config.
+<2> IP Addresses that need to do device config backup.
+<3> Base service name for Device Config backup.
+<4> Service name pattern that allows multiple services to be enabled
+<5> Config type, A device may have multiple config types, running config or default config.
+<6> Schedule in the form of cron expression. Default being every day at 12.00 AM
+<7> Script file that needs to be used to retrieve the config.
+<8> Downtime model is fixed to every 5 mins, this shouldn't be updated.
+
+== Configure TFTP Port
+
+By default, tftp server will use non-privileged port 6969 both on Minion and OpenNMS.
+
+.Configure tftp port via Karaf shell on {page-component-title}
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+.Configure tftp port via Karaf shell on Minion
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Configure tftp port
+[source, karaf]
+----
+config:edit org.opennms.features.deviceconfig.tftp
+config:property-set port 69
+config:update
+----
+
+== Enable Device Config Backup for Push-based config upload
+
+{page-component-title} Devices may also push config through tftp manually whenever config changes. This is  not enabled by default but this can be achieved by enabling Sink for Device Config.
+
+.Configure Device Config Sink feature via Karaf shell on Minion
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Configure opennms-deviceconfig-sink feature
+[source, karaf]
+----
+feature:install opennms-deviceconfig-sink
+----
+
+NOTE: To survive reboots, `opennms-deviceconfig-sink` feature can be added to etc/featuresBoot.d/device-config.boot file.
+
+

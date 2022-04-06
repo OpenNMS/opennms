@@ -39,6 +39,7 @@
 ** xref:service-assurance/polling-packages.adoc[]
 ** xref:service-assurance/service-monitors.adoc[]
 ** xref:application-perspective-monitoring/application-perspective-monitoring.adoc[]
+** xref:device-config-backup/introduction.adoc[]
 
 * xref:performance-data-collection/introduction.adoc[]
 ** xref:performance-data-collection/collectd/collection-packages.adoc[]
