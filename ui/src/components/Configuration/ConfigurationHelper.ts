@@ -170,11 +170,11 @@ const convertLocalToCronTab = (item: LocalConfiguration) => {
     const [hoursd, minutesd] = time.split(':')
     const hours = parseInt(hoursd)
     const minutes = parseInt(minutesd)
-  
+
     if (occurance.name === 'Daily' || !occurance.name) {
       schedule = `0 ${minutes} ${hours} * * *`
     } else if (occurance.name === 'Weekly') {
-      const week: number | string = item.occuranceWeek.name ? item.occuranceWeek.id : '-1' // -1 to have cronstrue's validation as Error: DOW since 0|7 is supported by cronstrue lib as Sunday
+      const week: number | string = item.occuranceWeek.id
       schedule = `0 ${minutes} ${hours} * * ${week}`
     } else if (occurance.name === 'Monthly') {
       let day: number | string = item.occuranceDay.id
@@ -188,7 +188,7 @@ const convertLocalToCronTab = (item: LocalConfiguration) => {
   } else {
     schedule = item.occuranceAdvanced
   }
-  
+
   return schedule
 }
 
@@ -390,7 +390,7 @@ const cronToEnglish = (cronFormatted: string) => {
     error = ErrorStrings.QuartzFormatSupportError // custom error of 6th part quartz format support
   } else {
     try {
-      error = cronstrue.toString(cronFormatted)
+      error = cronstrue.toString(cronFormatted, { dayOfWeekStartIndexZero: false })
     } catch (e) {
       error = typeof e === 'string' ? e : 'Error Parsing Crontab'
     }

@@ -48,9 +48,7 @@
                 :modelValue="props.config.occuranceAdvanced"
             />
         </div>
-        <div
-            class="feather-input-hint-custom"
-        >{{ !hasCronValidationError ? scheduledTime : '' }}</div>
+        <div class="feather-input-hint-custom">{{ !hasCronValidationError ? scheduledTime : '' }}</div>
         <div class="flex">
             <div>
                 <FeatherCheckbox
@@ -96,7 +94,7 @@ const scheduledTime = computed(() => {
         ret = ConfigurationHelper.cronToEnglish(props.config.occuranceAdvanced)
     } else {
         try {
-            ret = cronstrue.toString(ConfigurationHelper.convertLocalToCronTab(props.config))
+            ret = cronstrue.toString(ConfigurationHelper.convertLocalToCronTab(props.config), { dayOfWeekStartIndexZero: false })
         } catch (e) {
             // custom error instead of cronstrue lib's error message
             if (String(e).match(/^(Error: DOM)/g)) {
