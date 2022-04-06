@@ -41,7 +41,7 @@
           <FeatherButton
             data-test="backup-now-btn"
             @click="onBackupNow"
-            :disabled="(!all && selectedDeviceConfigIds.length !== 1) || (all && deviceConfigBackups.length !== 1)"
+            :disabled="(selectedDeviceConfigIds.length === 0 && !all) || (all && !deviceConfigBackups.length)"
             text
           >
             <template v-slot:icon>
