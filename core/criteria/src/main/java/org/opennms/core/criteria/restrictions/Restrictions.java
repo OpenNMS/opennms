@@ -116,6 +116,7 @@ public abstract class Restrictions {
         return new AllRestriction(restrictions);
     }
 
+    
     public static AllRestriction all(final Collection<Restriction> restrictions) {
         return new AllRestriction(restrictions.toArray(EMPTY_RESTRICTION_ARRAY));
     }
