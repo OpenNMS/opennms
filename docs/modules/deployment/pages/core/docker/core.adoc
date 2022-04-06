@@ -52,7 +52,7 @@ services:
 <7> Publish ports to access the web UI and the Karaf shell.
 <8> Run an internal health check against the web UI to verify service health status.
 
-TIP: The process inside the container runs as a non-privileged user with user id `10001`.
+NOTE: The process inside the container runs as a non-privileged user with user id `10001`.
      If you want the configuration files in a bind mount on your local host system, make sure you set permissions and ownership accordingly with `chown 10001:10001 ./path/to/my/config-dir`.
 
 TIP: To run a release candidate or a different version, use the public image tags from our repository on <<link:https://hub.docker.com/repository/docker/opennms/horizon/tags, DockerHub>>.
