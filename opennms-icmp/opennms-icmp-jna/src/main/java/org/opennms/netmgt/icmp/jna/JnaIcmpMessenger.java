@@ -33,8 +33,8 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.IcmpMessengerIOException;
-import org.opennms.protocols.rt.Messenger;
-import org.opennms.protocols.rt.ReplyHandler;
+import org.opennms.core.tracker.Messenger;
+import org.opennms.core.tracker.ReplyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

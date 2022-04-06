@@ -214,6 +214,27 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         }
     }
 
+    private void handleStringRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
+        List<XmlSchemaRestriction> minLengthFacets = facets.get(XmlSchemaRestriction.Type.LENGTH_MIN);
+        if ((minLengthFacets != null) && !minLengthFacets.isEmpty()) {
+            // Should only be one minimum specified
+            XmlSchemaRestriction minRestriction = minLengthFacets.get(0);
+            Object minVal = minRestriction.getValue();
+            if (minVal instanceof String) {
+                item.setMin(Long.valueOf((String) minVal));
+            }
+        }
+        List<XmlSchemaRestriction> maxLengthFacets = facets.get(XmlSchemaRestriction.Type.LENGTH_MAX);
+        if ((maxLengthFacets != null) && !maxLengthFacets.isEmpty()) {
+            // Should only be one maximum specified
+            XmlSchemaRestriction maxRestriction = maxLengthFacets.get(0);
+            Object minVal = maxRestriction.getValue();
+            if (minVal instanceof String) {
+                item.setMax(Long.valueOf((String) minVal));
+            }
+        }
+    }
+
     private void handleOtherRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
         List<XmlSchemaRestriction> minFacets = facets.get(XmlSchemaRestriction.Type.INCLUSIVE_MIN);
         if ((minFacets != null) && !minFacets.isEmpty()) {
@@ -262,7 +283,9 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         }
         this.handlePatternRestrictions(item, facets);
         this.handleEnumerationRestrictions(item, facets);
-        if (item.getType() != ConfigItem.Type.STRING) {
+        if (item.getType() == ConfigItem.Type.STRING) {
+            this.handleStringRestrictions(item, facets);
+        } else {
             this.handleOtherRestrictions(item, facets);
         }
     }
