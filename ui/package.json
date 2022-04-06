@@ -36,11 +36,11 @@
     "@featherds/table": "0.10.2",
     "@featherds/tabs": "0.10.2",
     "@featherds/utils": "0.10.2",
-    "@vueuse/core": "^7.5.3",
-    "axios": "^0.25.0",
+    "@vueuse/core": "^8.2.4",
+    "axios": "^0.26.1",
     "chart.js": "^3.7.0",
     "chartjs-plugin-zoom": "^1.2.0",
-    "cronstrue": "1.125.0",
+    "cronstrue": "2.2.0",
     "d3": "^7.3.0",
     "date-fns": "^2.28.0",
     "date-fns-tz": "^1.1.6",
@@ -72,7 +72,7 @@
     "@vue-leaflet/vue-leaflet": "^0.6.1",
     "eslint": "^8.8.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-vue": "^8.4.0",
+    "eslint-plugin-vue": "^8.6.0",
     "prettier": "^2.3.2",
     "tsm": "^2.1.4",
     "typescript": "^4.5.5",
@@ -80,6 +80,6 @@
     "uvu": "^0.5.3",
     "vite": "^2.7.13",
     "vue-eslint-parser": "^8.0.1",
-    "vue-tsc": "0.31.4"
+    "vue-tsc": "0.33.9"
   }
 }
