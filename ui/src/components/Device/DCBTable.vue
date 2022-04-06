@@ -41,7 +41,7 @@
           <FeatherButton
             data-test="backup-now-btn"
             @click="onBackupNow"
-            :disabled="(selectedDeviceConfigIds.length === 0 && !all) || (all && !deviceConfigBackups.length)"
+            :disabled="(!all && selectedDeviceConfigIds.length !== 1) || (all && deviceConfigBackups.length !== 1)"
             text
           >
             <template v-slot:icon>
@@ -149,7 +149,7 @@
           <td>{{ config.ipAddress }}</td>
           <td>{{ config.location }}</td>
           <td class="last-backup-date pointer" @click="onLastBackupDateClick(config)">
-            <span v-date>{{ config.lastSucceededDate }}</span>
+            <span v-date>{{ config.lastBackupDate }}</span>
             <FeatherButton icon="View" v-if="config.lastBackupDate">
               <FeatherIcon :icon="ViewDetails" />
             </FeatherButton>

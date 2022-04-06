@@ -442,7 +442,8 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             queryResult.getConfigType(),
             queryResult.getFilename(),
             config,
-            queryResult.getFailureReason()
+            queryResult.getFailureReason(),
+            queryResult.getServiceName()
         );
 
         // determine backup status, not handling all cases for now
@@ -479,7 +480,8 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             deviceConfig.getConfigType(),
             deviceConfig.getFileName(),
             config,
-            deviceConfig.getFailureReason()
+            deviceConfig.getFailureReason(),
+            deviceConfig.getServiceName()
         );
 
         // determine backup status, not handling all cases for now
