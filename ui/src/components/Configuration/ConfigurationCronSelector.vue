@@ -62,7 +62,7 @@
         <div v-if="props.config.advancedCrontab">
             <a
                 target="_blank"
-                class="link mb-20"
+                class="link mb-m"
                 href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html"
             >Quartz Scheduler Documentation</a>
         </div>
@@ -98,6 +98,7 @@ const scheduledTime = computed(() => {
         try {
             ret = cronstrue.toString(ConfigurationHelper.convertLocalToCronTab(props.config))
         } catch (e) {
+            // custom error instead of cronstrue lib's error message
             if (String(e).match(/^(Error: DOM)/g)) {
                 ret = ErrorStrings.OccuranceDayTime
             } else if (String(e).match(/^(Error: DOW)/g)) {
@@ -105,7 +106,7 @@ const scheduledTime = computed(() => {
             }
         }
     }
-    
+
     return ret
 })
 
@@ -133,8 +134,8 @@ const hasCronValidationError = computed(() => props.errors.occuranceAdvanced || 
     margin-top: -24px;
     display: flex;
     justify-content: flex-end;
-    min-height: 1.5rem;
-    padding: 0.25rem 0 0.25rem 1rem;
+    min-height: var($spacing-xl);
+    padding: var($spacing-xxs) 0 var($spacing-xxs) var($spacing-m);
 }
 div a.link {
     color: var(--feather-clickable);
@@ -160,8 +161,5 @@ div a.link {
             flex: 0 0 100%;
         }
     }
-}
-.mb-20 {
-    margin-bottom: 20px;
 }
 </style>
