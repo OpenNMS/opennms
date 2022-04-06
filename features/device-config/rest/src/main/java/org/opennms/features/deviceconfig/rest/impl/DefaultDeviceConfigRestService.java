@@ -347,6 +347,12 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     @Override
     public Response triggerDeviceConfigBackup(List<BackupRequestDTO> backupRequestDtoList) {
+        if (backupRequestDtoList == null || backupRequestDtoList.isEmpty()) {
+            final var message = "Cannot trigger config backup on empty request list";
+            LOG.error(message);
+            return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
+        }
+
         for (var requestDto : backupRequestDtoList) {
             try {
                 deviceConfigService.triggerConfigBackup(requestDto.getIpAddress(),
