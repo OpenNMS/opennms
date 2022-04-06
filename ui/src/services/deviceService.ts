@@ -18,7 +18,7 @@ const getDeviceConfigBackups = async (queryParameters: DeviceConfigQueryParams):
 const downloadDeviceConfigs = async (deviceIds: number[]) => {
   const queryString = `?id=${deviceIds.join(',')}`
   try {
-    return await rest.get(`${endpoint}/download${queryString}`)
+    return await rest.get(`${endpoint}/download${queryString}`, { responseType: 'blob' })
   } catch (err) {
     return false
   }
