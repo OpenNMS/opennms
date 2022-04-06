@@ -346,15 +346,18 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     }
 
     @Override
-    public Response triggerDeviceConfigBackup(BackupRequestDTO backupRequestDTO) {
-        try {
-            deviceConfigService.triggerConfigBackup(backupRequestDTO.getIpAddress(),
-                    backupRequestDTO.getLocation(), backupRequestDTO.getServiceName());
-        } catch (Exception e) {
-            LOG.error("Unable to trigger config backup for {} at location {} with configType {}",
-                    backupRequestDTO.getIpAddress(), backupRequestDTO.getLocation(), backupRequestDTO.getServiceName());
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+    public Response triggerDeviceConfigBackup(List<BackupRequestDTO> backupRequestDtoList) {
+        for (var requestDto : backupRequestDtoList) {
+            try {
+                deviceConfigService.triggerConfigBackup(requestDto.getIpAddress(),
+                    requestDto.getLocation(), requestDto.getServiceName());
+            } catch (Exception e) {
+                LOG.error("Unable to trigger config backup for {} at location {} with configType {}",
+                    requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName());
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
         }
+
         return Response.accepted().build();
     }
 

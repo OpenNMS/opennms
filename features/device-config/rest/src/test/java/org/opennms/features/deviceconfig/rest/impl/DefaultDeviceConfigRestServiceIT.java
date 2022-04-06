@@ -267,11 +267,16 @@ public class DefaultDeviceConfigRestServiceIT {
                 Mockito.anyString(), Mockito.anyString());
 
         var dto = new BackupRequestDTO(ipAddress, "MINION", "default");
-        Response response = deviceConfigRestService.triggerDeviceConfigBackup(dto);
+        Response response = deviceConfigRestService.triggerDeviceConfigBackup(List.of(dto));
         assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.ACCEPTED));
 
-        dto = new BackupRequestDTO(invalidIpAddress, "MINION", "default");
-        response = deviceConfigRestService.triggerDeviceConfigBackup(dto);
+        var invalidDto = new BackupRequestDTO(invalidIpAddress, "MINION", "default");
+        response = deviceConfigRestService.triggerDeviceConfigBackup(List.of(invalidDto));
+        assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.BAD_REQUEST));
+        assertThat(response.getEntity(), Matchers.is(message));
+
+        // if any fail, BAD_REQUEST is returned
+        response = deviceConfigRestService.triggerDeviceConfigBackup(List.of(dto, invalidDto));
         assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.BAD_REQUEST));
         assertThat(response.getEntity(), Matchers.is(message));
     }
