@@ -50,7 +50,7 @@
         </div>
         <div
             class="feather-input-hint-custom"
-        >{{ !props.errors.occuranceAdvanced ? scheduledTime : '' }}</div>
+        >{{ !hasCronValidationError ? scheduledTime : '' }}</div>
         <div class="flex">
             <div>
                 <FeatherCheckbox
@@ -75,6 +75,7 @@ import { FeatherCheckbox } from '@featherds/checkbox'
 import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
 import { PropType, computed } from 'vue'
 import { LocalConfiguration, LocalErrors } from './configuration.types'
+import { ErrorStrings } from './copy/requisitionTypes'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import cronstrue from 'cronstrue'
 
@@ -97,12 +98,18 @@ const scheduledTime = computed(() => {
         try {
             ret = cronstrue.toString(ConfigurationHelper.convertLocalToCronTab(props.config))
         } catch (e) {
-            ret = ''
+            if (String(e).match(/^(Error: DOM)/g)) {
+                ret = ErrorStrings.OccuranceDayTime
+            } else if (String(e).match(/^(Error: DOW)/g)) {
+                ret = ErrorStrings.OccuranceWeekTime
+            }
         }
     }
-
+    
     return ret
 })
+
+const hasCronValidationError = computed(() => props.errors.occuranceAdvanced || props.errors.occuranceDay || props.errors.occuranceWeek)
 
 </script>
 <style lang="scss">

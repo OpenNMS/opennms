@@ -24,7 +24,7 @@ import {
 import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
 import cronstrue from 'cronstrue'
 
-const cronSixthPartErrorMessage = 'Error: Expression has only 5 parts. At least 6 parts are required.'
+const cronTabLength = (cronTab: string) => cronTab.replace(/\s$/, '').split(' ').length
 
 /**
  *
@@ -170,10 +170,11 @@ const convertLocalToCronTab = (item: LocalConfiguration) => {
     const [hoursd, minutesd] = time.split(':')
     const hours = parseInt(hoursd)
     const minutes = parseInt(minutesd)
-    if (occurance.name === 'Daily') {
+  
+    if (occurance.name === 'Daily' || !occurance.name) {
       schedule = `0 ${minutes} ${hours} * * *`
     } else if (occurance.name === 'Weekly') {
-      const week = item.occuranceWeek.id
+      const week: number | string = item.occuranceWeek.name ? item.occuranceWeek.id : '-1' // -1 to have cronstrue's validation as Error: DOW since 0|7 is supported by cronstrue lib as Sunday
       schedule = `0 ${minutes} ${hours} * * ${week}`
     } else if (occurance.name === 'Monthly') {
       let day: number | string = item.occuranceDay.id
@@ -187,7 +188,7 @@ const convertLocalToCronTab = (item: LocalConfiguration) => {
   } else {
     schedule = item.occuranceAdvanced
   }
-
+  
   return schedule
 }
 
@@ -385,8 +386,8 @@ const createBlankSubConfiguration = () => {
 const cronToEnglish = (cronFormatted: string) => {
   let error: string = ''
 
-  if (isApiCronFormatInvalid(cronFormatted)) {
-    error = cronSixthPartErrorMessage
+  if (cronTabLength(cronFormatted) === 5) {
+    error = ErrorStrings.QuartzFormatSupportError // custom error of 6th part quartz format support
   } else {
     try {
       error = cronstrue.toString(cronFormatted)
@@ -637,13 +638,6 @@ const stripOriginalIndexes = (dataToUpdate: Array<ProvisionDServerConfiguration>
 }
 
 /**
- * Server API expects at least 6 parts (server quartz format support).
- * @param cronTab Our advanced crontab field
- * @returns 
- */
-const isApiCronFormatInvalid = (cronTab: string) => (cronTab.replace(/\s$/, '').split(' ').length === 5)
-
-/**
  * Just ensures that it's a valid quartz crontab.
  * @param cronTab Our advanced crontab field
  * @returns
@@ -651,8 +645,8 @@ const isApiCronFormatInvalid = (cronTab: string) => (cronTab.replace(/\s$/, '').
 const validateBasicCron = (cronTab: string) => {
   let error: unknown | string = ''
 
-  if (isApiCronFormatInvalid(cronTab)) {
-    error = cronSixthPartErrorMessage
+  if (cronTabLength(cronTab) === 5) {
+    error = ErrorStrings.QuartzFormatSupportError // custom error of 6th part quartz format support
   } else {
     try {
       cronstrue.toString(cronTab)
