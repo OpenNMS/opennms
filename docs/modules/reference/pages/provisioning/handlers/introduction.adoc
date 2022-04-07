@@ -50,7 +50,8 @@ Use the `opennms:show-import` command, available via the Karaf shell, to show th
 opennms:show-import -l MINION http url=http://127.0.0.1:8000/req.xml
 ----
 
-=== Create a requisition definition
+[[create-req-def]]
+== Create a requisition definition
 
 A requisition definition defines the URL, schedule, and rescan behaviour to retrieve provisioning information from external sources such as HTTP(S), VMWare, and DNS protocol, for up-to-date inventory data.
 
@@ -69,7 +70,7 @@ The following example shows how to create a requisition definition to schedule a
 .. The URL "dns://localhost/localhost/DNS-example" appears at the bottom of the dialog.
 . Choose *Daily* for the schedule type and specify 12:00 a.m. for the time.
 +
-NOTE: To create an advanced cron schedule, click the checkbox.
+NOTE: To create an advanced cron schedule, click the checkbox and add the appropriate information.
 
 . Specify how OpenNMS should perform subsequent scans:
 .. Scan new and existing nodes

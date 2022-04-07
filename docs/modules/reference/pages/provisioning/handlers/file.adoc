@@ -4,16 +4,26 @@
 
 The file handler imports a properly-formatted requisition definition from an XML file stored locally on the server.
 
-Examples:
+== Configure file requisition
 
-== Simple
+ifeval::["{page-component-title}" == "Horizon"]
+Prior to {page-component-title} 30, you set requisition definitions in the `provisiond-configuration.xml` file.
+This file is no longer available.
+You must use the UI to configure a requisition definition.
+endif::[]
+
+To configure a file requisition, follow the steps in xref:reference:provisioning/handlers/introduction.adoc#create-req-def[Create a requisition definition], but specify File as the type, and set the path, schedule, and rescan behavior.
+
+== Examples
+
+=== Simple
 
 [source]
 ----
 file:///path/to/my/requisition.xml
 ----
 
-== Using the generic handler
+=== Using the generic handler
 
 [source]
 ----

@@ -26,6 +26,7 @@ config:edit org.opennms.sentinel.controller
 config:property-set location SENTINEL<1>
 config:property-set id 00000000-0000-0000-0000-000000ddba11<2>
 config:property-set broker-url failover:tcp://my-activemq-ip:61616<3>
+config:property-set broker-url failover:tcp://my-activemq-ip:61616<4>
 config:update
 ----
 
