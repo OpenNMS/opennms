@@ -10,7 +10,6 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "allowJs": true,
     "lib": ["esnext", "dom"],
     "allowJs": true,
     "paths": {

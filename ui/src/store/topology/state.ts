@@ -13,7 +13,7 @@ export interface State {
   layout: Record<string, NodePoint>
   focusedSearchBarNodes: SearchResult[]
   defaultNode: Node | null
-  highlightFocusedNodes: boolean,
+  highlightFocusedNodes: boolean
   modalState: boolean
   nodeIcons: Record<string, string>
 }
