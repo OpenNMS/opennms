@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -48,12 +49,10 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,12 +60,14 @@ import java.util.List;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-eventCollectorMock.xml",
 })
 @JUnitConfigurationEnvironment
 public class EventListenerCollectorTest {
+
     @Autowired
-    private ApplicationContext applicationContext;
+    private IpInterfaceDao ipInterfaceDao;
 
     /**
      * Create a collector with fake data and pass the persister into PersisterFactory
@@ -77,20 +78,13 @@ public class EventListenerCollectorTest {
      * @throws NoSuchFieldException
      * @throws IllegalAccessException
      */
-    private EventListenerCollector getCollector(Persister persister) throws IOException, NoSuchFieldException, IllegalAccessException {
-        EventListenerCollector collector = new EventListenerCollector();
-
+    private EventListenerCollector getCollector(Persister persister) throws IOException {
         // load testing eventconf
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
         eventConfDao.setConfigResource(new FileSystemResource("src/test/resources/events/collection.events.xml"));
         eventConfDao.afterPropertiesSet();
 
-        Field eventConfDaoField = collector.getClass().getDeclaredField("eventConfDao");
-        eventConfDaoField.setAccessible(true);
-        eventConfDaoField.set(collector, eventConfDao);
-
         // fake interface info
-        IpInterfaceDao ipInterfaceDao = (IpInterfaceDao) applicationContext.getBean("ipInterfaceDao");
         OnmsNode node = new OnmsNode();
         node.setId(1);
         OnmsIpInterface onmsIpInterface = new OnmsIpInterface();
@@ -98,14 +92,6 @@ public class EventListenerCollectorTest {
         onmsIpInterface.setId(1);
         onmsIpInterface.setNode(node);
         ipInterfaceDao.save(onmsIpInterface);
-
-        Field ipInterfaceDaoField = collector.getClass().getDeclaredField("ipInterfaceDao");
-        ipInterfaceDaoField.setAccessible(true);
-        ipInterfaceDaoField.set(collector, applicationContext.getBean("ipInterfaceDao"));
-
-        Field platformTransactionManagerField = collector.getClass().getDeclaredField("platformTransactionManager");
-        platformTransactionManagerField.setAccessible(true);
-        platformTransactionManagerField.set(collector, applicationContext.getBean("transactionManager"));
 
         PersisterFactory persisterFactory = new PersisterFactory() {
             @Override
@@ -118,14 +104,16 @@ public class EventListenerCollectorTest {
                 return persister;
             }
         };
-        Field persisterFactoryField = collector.getClass().getDeclaredField("persisterFactory");
-        persisterFactoryField.setAccessible(true);
-        persisterFactoryField.set(collector, persisterFactory);
+        EventListenerCollector collector = new EventListenerCollector(eventConfDao, null, persisterFactory, ipInterfaceDao, collectionAgentFactory);
+
         return collector;
     }
 
+    @Autowired
+    private CollectionAgentFactory collectionAgentFactory;
+
     @Test
-    public void testSingleParam() throws IOException, NoSuchFieldException, IllegalAccessException {
+    public void testSingleParam() throws IOException {
         MockPersister persister = Mockito.mock(MockPersister.class);
 
         List<IParm> paramList = new ArrayList<>();
@@ -140,7 +128,7 @@ public class EventListenerCollectorTest {
     }
 
     @Test
-    public void testNameMatchingParam() throws IOException, NoSuchFieldException, IllegalAccessException {
+    public void testNameMatchingParam() throws IOException {
         MockPersister persister = Mockito.mock(MockPersister.class);
 
         List<IParm> paramList = new ArrayList<>();

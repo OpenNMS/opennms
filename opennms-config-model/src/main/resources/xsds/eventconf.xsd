@@ -376,8 +376,6 @@
         </extension>
       </simpleContent>
     </complexType>
-
-
   </element>
 
   <element name="collection">
@@ -423,12 +421,23 @@
           </restriction>
         </simpleType>
       </attribute>
-      <attribute name="target" default="node">
+      <attribute name="target" default="nodeSnmp">
+        <annotation>
+          <documentation>
+            Location of the time series stored. Values values (nodeSnmp / interfaceSnmp / any string match with etc/resource-types.d)
+          </documentation>
+        </annotation>
         <simpleType>
           <restriction base="string">
-            <pattern value="(node|interface)"/>
+            <pattern value="[\w-]+"/>
           </restriction>
         </simpleType>
+      </attribute>
+      <attribute name="instance" type="string">
+        <annotation>
+          <documentation>It is name of event param. When target is generic resource type.  It will use the param value as instance of metrics.
+            When target is interfaceSnmp, it use param value as ifIndex.</documentation>
+        </annotation>
       </attribute>
       <attribute name="step" type="int" default="300">
         <annotation>

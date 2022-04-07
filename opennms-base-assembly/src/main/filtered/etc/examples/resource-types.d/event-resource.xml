@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!-- osgi feature opennms-events-collector pair with etc/examples/events/collection.events.xml & etc/examples/snmp-graph.properties.d/event-collection.properties -->
+<resource-types>
+  <resourceType name="eventType" label="Event Application" resourceLabel="Instance ${instance}">
+     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+     <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+</resource-types>

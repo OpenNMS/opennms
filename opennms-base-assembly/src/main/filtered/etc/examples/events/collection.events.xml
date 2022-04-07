@@ -1,4 +1,4 @@
-<!-- pair with etc/examples/snmp-graph.properties.d/event-collection.properties -->
+<!-- osgi feature opennms-events-collector pair with etc/examples/resource-types.d/event-resource.xml & etc/examples/snmp-graph.properties.d/event-collection.properties -->
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
    <event>
       <mask>
@@ -23,18 +23,18 @@
       <event-label>test: varbind with regex</event-label>
       <descr>Testing varbind with regex</descr>
       <logmsg dest="donotpersist"></logmsg>
-      <collection name="VALUE" type="gauge" step="60" target="node" heartBeat="120">
+      <collection name="VALUE" type="gauge" step="60" target="nodeSnmp" heartBeat="120">
         <rra>RRA:AVERAGE:0.5:1:8928</rra>
       </collection>
-      <collection name="TIME" type="counter" step="60" target="node" heartBeat="120">
+      <collection name="TIME" type="counter" step="60" target="eventType" instance="STATUS" heartBeat="120">
         <rra>RRA:AVERAGE:0.5:1:8928</rra>
       </collection>
-      <collection name="STATUS" type="counter" step="60" target="interface" heartBeat="120">
+      <collection name="STATUS" type="counter" step="60" target="interfaceSnmp" heartBeat="120">
         <rra>RRA:AVERAGE:0.5:1:8928</rra>
         <paramValues>master:1</paramValues>
         <paramValues>slave:2</paramValues>
       </collection>
-      <collection name="TAG" type="string" step="60" target="interface" heartBeat="120">
+      <collection name="TAG" type="string" step="60" target="interfaceSnmp" heartBeat="120">
         <rra>RRA:AVERAGE:0.5:1:8928</rra>
       </collection>
       <severity>Normal</severity>
@@ -58,7 +58,7 @@
       <event-label>test: full varbind</event-label>
       <descr>Testing full varbind.</descr>
       <logmsg dest="donotpersist"></logmsg>
-      <collection name="uei.opennms.org/traps/test/varbind" type="gauge" step="100" heartBeat="200" target="node">
+      <collection name="uei.opennms.org/traps/test/varbind" type="gauge" step="100" heartBeat="200" target="nodeSnmp">
         <rra>RRA:AVERAGE:0.5:1:8928</rra>
       </collection>
       <severity>Normal</severity>

@@ -360,6 +360,7 @@ public class WillItUnmarshalIT {
                                                    true)) {
             addFile(Source.ABSOLUTE, file.getPath(), ResourceTypes.class, false, null);
         }
+        addFile(Source.EXAMPLE, "resource-types.d/event-resource.xml", ResourceTypes.class, true, null);
 
         // Add all jmx-datacollection configuration files
         for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "jmx-datacollection-config.d"),

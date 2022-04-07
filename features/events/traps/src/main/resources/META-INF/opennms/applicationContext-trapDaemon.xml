@@ -24,7 +24,4 @@
   <bean id="trapListener" class="org.opennms.netmgt.trapd.TrapListener">
     <constructor-arg ref="trapdConfig" />
   </bean>
-
-  <bean id="eventListenerCollector" class="org.opennms.netmgt.collection.EventListenerCollector"/>
-
 </beans>

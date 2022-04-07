@@ -616,6 +616,13 @@
         <bundle>mvn:org.opennms.features.events.sink/org.opennms.features.events.sink.dispatcher/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-events-collector" description="OpenNMS :: Events :: Collector" version="${project.version}">
+        <feature>opennms-config-api</feature>
+        <feature>opennms-events-api</feature>
+        <feature>opennms-rrd-api</feature>
+        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.collector/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-icmp-api" version="${project.version}" description="OpenNMS :: ICMP :: API">
         <feature>guava</feature>
         <feature>opennms-core</feature>

@@ -54,7 +54,10 @@ public class Collection implements Serializable {
     private AttributeType type;
 
     @XmlAttribute(name = "target")
-    private String target = "node";
+    private String target = "nodeSnmp";
+
+    @XmlAttribute(name = "instance")
+    private String instance;
 
     @XmlAttribute(name = "step")
     private int step = 300;
@@ -90,6 +93,14 @@ public class Collection implements Serializable {
 
     public void setTarget(String target) {
         this.target = target;
+    }
+
+    public String getInstance() {
+        return instance;
+    }
+
+    public void setInstance(String instance) {
+        this.instance = instance;
     }
 
     public int getStep() {
