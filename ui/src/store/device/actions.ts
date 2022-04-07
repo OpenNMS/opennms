@@ -10,8 +10,8 @@ interface ContextWithState extends VuexContext {
   state: State
 }
 
-const getDeviceConfigBackupObjById = (deviceConfigs: DeviceConfigBackup[], id: number) => {
-  return deviceConfigs.filter((dcb) => dcb.id === id)[0]
+const getDeviceConfigBackupObjByIds = (deviceConfigs: DeviceConfigBackup[], ids: number[]) => {
+  return deviceConfigs.filter((dcb) => ids.includes(dcb.id))
 }
 
 const getDeviceConfigBackups = async (context: ContextWithState) => {
@@ -73,30 +73,25 @@ const backupSelectedDevices = async (contextWithState: ContextWithState) => {
   const configs = contextWithState.state.deviceConfigBackups
   contextWithState.dispatch('spinnerModule/setSpinnerState', true, { root: true })
 
-  if (ids.length === 1) {
-    const config = getDeviceConfigBackupObjById(configs, ids[0])
-    const resp = await API.backupDeviceConfig(config)
-    contextWithState.dispatch('spinnerModule/setSpinnerState', false, { root: true })
-    const success = resp && (resp.status === 200 || resp.status === 202)
+  const configsForBackup = getDeviceConfigBackupObjByIds(configs, ids)
+  const resp = await API.backupDeviceConfig(configsForBackup)
+  contextWithState.dispatch('spinnerModule/setSpinnerState', false, { root: true })
+  const success = resp && (resp.status === 200 || resp.status === 202)
 
-    if (success) {
-      const successToast = {
-        basic: 'Success!',
-        detail: 'Device backup successful.',
-        hasErrors: false
-      }
-      contextWithState.dispatch('notificationModule/setToast', successToast, { root: true })
-    } else {
-      const failedToast = {
-        basic: 'Failed:',
-        detail: 'Device backup unsuccessful.',
-        hasErrors: true
-      }
-      contextWithState.dispatch('notificationModule/setToast', failedToast, { root: true })
+  if (success) {
+    const successToast = {
+      basic: 'Success!',
+      detail: 'Device backup successful.',
+      hasErrors: false
     }
+    contextWithState.dispatch('notificationModule/setToast', successToast, { root: true })
   } else {
-    contextWithState.dispatch('spinnerModule/setSpinnerState', false, { root: true })
-    // backup multiple configs?
+    const failedToast = {
+      basic: 'Failed:',
+      detail: 'Device backup unsuccessful.',
+      hasErrors: true
+    }
+    contextWithState.dispatch('notificationModule/setToast', failedToast, { root: true })
   }
 }
 
@@ -121,7 +116,7 @@ const setSelectedIds = (contextWithState: ContextWithState, idsOrAll: number[] |
   } else {
     contextWithState.commit('SET_SELECTED_IDS', idsOrAll)
     if (idsOrAll.length === 1) {
-      contextWithState.commit('SET_MODAL_DEVICE_CONFIG_BACKUP', getDeviceConfigBackupObjById(configs, idsOrAll[0]))
+      contextWithState.commit('SET_MODAL_DEVICE_CONFIG_BACKUP', getDeviceConfigBackupObjByIds(configs, idsOrAll)[0])
     }
   }
 }

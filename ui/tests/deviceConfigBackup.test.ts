@@ -102,7 +102,7 @@ test('action btns enable and disable correctly', async () => {
   expect(allCheckbox.attributes('aria-checked')).toBe('true')
   expect(viewHistoryBtn.attributes('aria-disabled')).toBe('true')
   expect(downloadBtn.attributes('aria-disabled')).toBeUndefined()
-  expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
+  expect(backupNowBtn.attributes('aria-disabled')).toBeUndefined()
 
   // change 'all devices' to false
   await allCheckbox.trigger('click')

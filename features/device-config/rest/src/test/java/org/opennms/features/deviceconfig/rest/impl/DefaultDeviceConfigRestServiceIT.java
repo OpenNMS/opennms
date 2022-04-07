@@ -37,6 +37,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -267,13 +268,28 @@ public class DefaultDeviceConfigRestServiceIT {
                 Mockito.anyString(), Mockito.anyString());
 
         var dto = new BackupRequestDTO(ipAddress, "MINION", "default");
-        Response response = deviceConfigRestService.triggerDeviceConfigBackup(dto);
+        Response response = deviceConfigRestService.triggerDeviceConfigBackup(List.of(dto));
         assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.ACCEPTED));
 
-        dto = new BackupRequestDTO(invalidIpAddress, "MINION", "default");
-        response = deviceConfigRestService.triggerDeviceConfigBackup(dto);
+        var invalidDto = new BackupRequestDTO(invalidIpAddress, "MINION", "default");
+        response = deviceConfigRestService.triggerDeviceConfigBackup(List.of(invalidDto));
         assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.BAD_REQUEST));
         assertThat(response.getEntity(), Matchers.is(message));
+
+        // if any fail, BAD_REQUEST is returned
+        response = deviceConfigRestService.triggerDeviceConfigBackup(List.of(dto, invalidDto));
+        assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.BAD_REQUEST));
+        assertThat(response.getEntity(), Matchers.is(message));
+
+        final String nullOrEmptyMessage = "Cannot trigger config backup on empty request list";
+
+        response = deviceConfigRestService.triggerDeviceConfigBackup(null);
+        assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.BAD_REQUEST));
+        assertThat(response.getEntity(), Matchers.is(nullOrEmptyMessage));
+
+        response = deviceConfigRestService.triggerDeviceConfigBackup(new ArrayList<>());
+        assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.BAD_REQUEST));
+        assertThat(response.getEntity(), Matchers.is(nullOrEmptyMessage));
     }
 
     private OnmsIpInterface populateIpInterfaceAndGet(int num) {
