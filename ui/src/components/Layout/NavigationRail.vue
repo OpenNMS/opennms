@@ -14,6 +14,12 @@
         title="Map"
       />
       <FeatherRailItem
+        :class="{ selected: isSelected('/configuration') }"
+        href="#/configuration"
+        :icon="LoggerConfigs"
+        title="Configuration"
+      />
+      <FeatherRailItem
         :class="{ selected: isSelected('/file-editor') }"
         v-if="isAdmin"
         href="#/file-editor"
@@ -56,6 +62,7 @@
 import { useStore } from 'vuex'
 import Instances from '@featherds/icon/hardware/Instances'
 import AddNote from '@featherds/icon/action/AddNote'
+import LoggerConfigs from '@featherds/icon/action/LoggerConfigs'
 import Location from '@featherds/icon/action/Location'
 import MarkComplete from '@featherds/icon/action/MarkComplete'
 import Cloud from '@featherds/icon/action/Cloud'

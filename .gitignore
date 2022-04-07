@@ -37,6 +37,9 @@ ui/package-lock.json
 ui/devConfig.ts
 .circleci/main.yml
 
+ ui/dist
+ui/package-lock.json
+ui/devConfig.ts
 # Ignore Visual Studio Code
 .factorypath
 # Ignore Docker/OCI temporary files

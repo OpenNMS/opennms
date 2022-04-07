@@ -736,6 +736,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - /features\/CM-Phase1/
       - sentinel-publish-oci:
           requires:
             - horizon-deb-build

@@ -15,6 +15,7 @@
 </template>
   
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import { debounce } from 'lodash'
 import { useStore } from 'vuex'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
@@ -27,7 +28,6 @@ const loading = ref(false)
 const defaultLabels = { noResults: 'Searching...' }
 const labels = ref(defaultLabels)
 
-// any to fix feather TS issue
 const selectItem: any = (items: { label: string }[]) => {
   const nodeLabels = items.map((item) => item.label)
   store.dispatch('mapModule/setSearchedNodeLabels', nodeLabels)
