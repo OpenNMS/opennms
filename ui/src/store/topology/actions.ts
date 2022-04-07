@@ -39,6 +39,7 @@ const parseVerticesAndEdges = (resp: VerticesAndEdges, context: VuexContext) => 
   context.commit('SAVE_NODE_EDGES', edges)
   context.commit('SAVE_NODE_VERTICIES', vertices)
   context.dispatch('updateNodesFocusedProperty')
+  context.dispatch('updateVerticesIconPaths')
 }
 
 const getVerticesAndEdges = async (context: VuexContext, queryParameters?: QueryParameters) => {
@@ -46,6 +47,11 @@ const getVerticesAndEdges = async (context: VuexContext, queryParameters?: Query
   if (resp) {
     parseVerticesAndEdges(resp, context)
   }
+}
+
+const getTopologyGraphs = async (context: VuexContext) => {
+  const topologyGraphs = await API.getTopologyGraphs()
+  context.commit('SAVE_TOPOLOGY_GRAPHS', topologyGraphs)
 }
 
 const setSemanticZoomLevel = (context: ContextWithState, SML: number) => {
@@ -73,12 +79,8 @@ const setSelectedView = (context: VuexContext, view: string) => {
   context.commit('SET_SELECTED_VIEW', view)
 }
 
-const openLeftDrawer = (context: VuexContext) => {
-  context.commit('SET_LEFT_DRAWER_OPEN', true)
-}
-
-const closeLeftDrawer = (context: VuexContext) => {
-  context.commit('SET_LEFT_DRAWER_OPEN', false)
+const setSelectedDisplay = (context: VuexContext, display: string) => {
+  context.commit('SET_SELECTED_DISPLAY', display)
 }
 
 const addContextNodeToFocus = (context: VuexContext, nodeId: string) => {
@@ -132,12 +134,46 @@ const highlightFocusedNodes = (context: ContextWithState, bool: boolean) => {
   context.commit('SET_HIGHLIGHT_FOCUSED_NODES', bool)
 }
 
+const changeIcon = (context: ContextWithState, nodeIdIconKey: Record<string, string>) => {
+  context.commit('UPDATE_NODE_ICONS', nodeIdIconKey)
+  context.dispatch('updateVerticesIconPaths')
+}
+
+const updateVerticesIconPaths = (context: ContextWithState) => {
+  const vertices = context.state.verticies
+  const nodeIcons = context.state.nodeIcons
+
+  for (const [id, iconKey] of Object.entries(nodeIcons)) {
+    vertices[id]['icon'] = iconKey
+  }
+
+  context.commit('SAVE_NODE_VERTICIES', vertices)
+}
+
+/**
+ * Left and right drawer states
+ */
+const openLeftDrawer = (context: VuexContext) => context.commit('SET_LEFT_DRAWER_OPEN', true)
+const closeLeftDrawer = (context: VuexContext) => context.commit('SET_LEFT_DRAWER_OPEN', false)
+const openRightDrawer = (context: VuexContext) => context.commit('SET_RIGHT_DRAWER_OPEN', true)
+const closeRightDrawer = (context: VuexContext) => context.commit('SET_RIGHT_DRAWER_OPEN', false)
+
+/**
+ * Modal state
+ */
+const setModalState = (context: VuexContext, bool: boolean) => context.commit('SET_MODAL_STATE', bool)
+
+
+
 export default {
   getVerticesAndEdges,
   setSemanticZoomLevel,
   setSelectedView,
+  setSelectedDisplay,
   openLeftDrawer,
   closeLeftDrawer,
+  openRightDrawer,
+  closeRightDrawer,
   addFocusedNodeIds,
   getTopologyDataByLevelAndFocus,
   addContextNodeToFocus,
@@ -146,5 +182,9 @@ export default {
   addFocusedSearchBarNode,
   removeFocusedSearchBarNode,
   highlightFocusedNodes,
-  updateNodesFocusedProperty
+  updateNodesFocusedProperty,
+  setModalState,
+  changeIcon,
+  updateVerticesIconPaths,
+  getTopologyGraphs
 }

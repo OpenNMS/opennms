@@ -108,19 +108,9 @@
           </exclusions>
       </dependency>
       <dependency>
-          <groupId>com.sun.xml.bind</groupId>
+          <groupId>org.glassfish.jaxb</groupId>
           <artifactId>jaxb-xjc</artifactId>
-          <version>2.2.11</version>
-          <exclusions>
-              <exclusion>
-                  <groupId>javax.xml.bind</groupId>
-                  <artifactId>jaxb-api</artifactId>
-              </exclusion>
-              <exclusion>
-                  <groupId>com.sun.xml.bind</groupId>
-                  <artifactId>jaxb-impl</artifactId>
-              </exclusion>
-          </exclusions>
+          <version>${jaxbRuntimeVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -94,7 +94,6 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
         LOG.debug("Creating a service...");
 
         final String service = "<service status=\"A\">\n" +
-                "<applications/>\n" +
                 "<serviceType id=\"1\">\n" +
                 "<name>ICMP</name>\n" +
                 "</serviceType>\n" +

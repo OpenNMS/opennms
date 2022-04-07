@@ -33,6 +33,7 @@
                             <excludes>
                                 <exclude>org.springframework:*</exclude>
                                 <exclude>javax.xml.bind:jaxb-api</exclude>
+                                <exclude>com.sun.xml.bind:jaxb-core</exclude>
                                 <exclude>com.sun.xml.bind:jaxb-impl</exclude>
                                 <exclude>commons-logging:commons-logging</exclude>
                                 <exclude>joda-time:joda-time</exclude>
@@ -87,6 +88,10 @@
                 </exclusion>
                 <exclusion>
                     <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.bind</groupId>
                     <artifactId>jaxb-impl</artifactId>
                 </exclusion>
                 <exclusion>
@@ -107,6 +112,10 @@
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-core</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>com.sun.xml.bind</groupId>

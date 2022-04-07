@@ -51,3 +51,15 @@ export interface SZLRequest {
   semanticZoomLevel: number
   verticesInFocus: string[]
 }
+
+export interface TopologyGraph {
+  namespace: string
+  description: string
+  label: string
+}
+
+export interface TopologyGraphList {
+  graphs: TopologyGraph[]
+  id: string
+  label: string
+}

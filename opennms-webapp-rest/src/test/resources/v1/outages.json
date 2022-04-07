@@ -12,7 +12,6 @@
             "locationName": "Default",
             "perspective": null,
             "monitoredService": {
-                "applications": [],
                 "down": true,
                 "lastFail": null,
                 "lastGood": null,

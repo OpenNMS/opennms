@@ -10,13 +10,61 @@
       :zoomLevel="zoomLevel"
       :eventHandlers="eventHandlers"
       v-if="trigger && focusedNodeIds.length !== 0"
-    />
+    >
+      <defs>
+        <!--
+        Define the path for clipping the image.
+        To change the size of the applied node as it changes,
+        add the `clipPathUnits="objectBoundingBox"` attribute
+        and specify the relative size (0.0~1.0).
+        -->
+        <clipPath id="iconCircle" clipPathUnits="objectBoundingBox">
+          <circle cx="0.5" cy="0.5" r="0.5" />
+        </clipPath>
+      </defs>
+
+      <!-- Replace the node component -->
+      <template #override-node="{ nodeId, scale, config, ...slotProps }">
+        <!-- circle for filling background -->
+        <circle
+          class="node-circle"
+          :r="config.radius * scale"
+          :fill="setColor(verticies[nodeId])"
+          v-bind="slotProps"
+        />
+        <!--
+        The base position of the <image /> is top left. The node's
+        center should be (0,0), so slide it by specifying x and y.
+        -->
+        <image
+          v-if="ICON_PATHS[verticies[nodeId].icon]"
+          :class="{ 'unfocused': highlightFocusedNodes && !verticies[nodeId].focused }"
+          class="node-icon"
+          :x="-config.radius * scale"
+          :y="-config.radius * scale"
+          :width="config.radius * scale * 2"
+          :height="config.radius * scale * 2"
+          :xlink:href="ICON_PATHS[verticies[nodeId].icon]"
+          clip-path="url(#iconCircle)"
+        />
+        <!-- circle for drawing stroke -->
+        <circle
+          class="node-circle"
+          :r="config.radius * scale"
+          fill="none"
+          :stroke="setColor(verticies[nodeId])"
+          :stroke-width="1 * scale"
+          v-bind="slotProps"
+        />
+      </template>
+    </VNetworkGraph>
     <!-- Tooltip -->
-    <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos, display: tooltipDisplay }">
+    <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos }">
       <div v-html="verticies[targetNodeId]?.tooltip ?? ''"></div>
     </div>
   </div>
   <NoFocusMsg :useDefaultFocus="useDefaultFocus" v-if="focusedNodeIds.length === 0" />
+  <TopologyModal :nodeId="contextNodeId" v-if="contextNodeId" />
   <ContextMenu
     ref="contextMenu"
     v-if="showContextMenu"
@@ -42,7 +90,9 @@ import NoFocusMsg from './NoFocusMsg.vue'
 import { onClickOutside } from '@vueuse/core'
 import { SimulationNodeDatum } from 'd3'
 import { ContextMenuType } from './topology.constants'
-import { useFocus } from './composables'
+import { useFocus } from './topology.composables'
+import TopologyModal from './TopologyModal.vue'
+import ICON_PATHS from './icons/iconPaths'
 
 interface d3Node extends Required<SimulationNodeDatum> {
   id: string
@@ -62,7 +112,7 @@ const graph = ref<Instance>()
 const selectedNodes = ref<string[]>([]) // string ids
 const selectedNodeObjects = ref<Node>([]) // full nodes
 const tooltip = ref<HTMLDivElement>()
-const tooltipDisplay = ref('none')
+const displayTooltip = ref(false)
 const cancelTooltipDebounce = ref(false)
 const targetNodeId = ref('')
 const d3Nodes = ref<d3Node[]>([])
@@ -86,19 +136,20 @@ const focusedNodeIds = computed<string[]>(() => store.state.topologyModule.focus
 const highlightFocusedNodes = computed<boolean>(() => store.state.topologyModule.highlightFocusedNodes)
 
 const tooltipPos = computed(() => {
-  if (!graph.value || !tooltip.value) return { x: 0, y: 0 }
-  if (!targetNodeId.value) return { x: 0, y: 0 }
+  const defaultPos = { left: '-9999px', top: '-99999px' }
+  if (!graph.value || !tooltip.value) return defaultPos
+  if (!targetNodeId.value) return defaultPos
 
   // attempt to get the node position from the layout. If layout is d3, use the function
   const nodePos = layout.value.nodes ? layout.value.nodes[targetNodeId.value] : getD3NodeCoords()
-  if (!nodePos) return { x: 0, y: 0 }
+  if (!nodePos) return defaultPos
 
   // translate coordinates: SVG -> DOM
   const domPoint = graph.value.translateFromSvgToDomCoordinates(nodePos)
 
   return {
-    left: domPoint.x - 120 + 'px',
-    top: domPoint.y - 130 + 'px',
+    left: displayTooltip.value ? (domPoint.x - 120 + 'px') : (-9999 + 'px'),
+    top: displayTooltip.value ? (domPoint.y - 130 + 'px') : (-9999 + 'px')
   }
 })
 
@@ -137,7 +188,7 @@ const eventHandlers: EventHandlers = {
 
     const showTooltip = useDebounceFn(() => {
       if (!cancelTooltipDebounce.value) {
-        tooltipDisplay.value = 'block' // show
+        displayTooltip.value = true
       }
     }, 1000)
 
@@ -145,7 +196,7 @@ const eventHandlers: EventHandlers = {
   },
   'node:pointerout': () => {
     cancelTooltipDebounce.value = true
-    tooltipDisplay.value = 'none' // hide
+    displayTooltip.value = false
   }
 }
 
@@ -200,16 +251,8 @@ watch(layout, async (layout) => {
   trigger.value = true
 })
 
-const setNodeColor = (node: Node) => {
-  if (highlightFocusedNodes.value && !node.focused) {
-    return 'rgb(39, 49, 128, 0.5)'
-  }
-
-  return 'rgb(39, 49, 128)' // feather primary
-}
-
-const setEdgeColor = (edge: Edge) => {
-  if (highlightFocusedNodes.value && !edge.focused) {
+const setColor = (item: Node | Edge) => {
+  if (highlightFocusedNodes.value && !item.focused) {
     return 'rgb(39, 49, 128, 0.5)'
   }
 
@@ -225,12 +268,12 @@ const configs = reactive(
       selectable: true,
       normal: {
         type: 'circle',
-        color: node => setNodeColor(node),
+        color: node => setColor(node),
       },
     },
     edge: {
       normal: {
-        color: edge => setEdgeColor(edge)
+        color: edge => setColor(edge)
       }
     }
   })
@@ -248,6 +291,17 @@ onMounted(() => useDefaultFocus())
 <style lang="scss" scoped>
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
+
+// transitions when scaling on mouseover.
+.node-circle,
+.node-icon {
+  transition: all 0.1s linear;
+}
+
+.unfocused {
+  opacity: 0.5;
+  background: var($state-color-on-surface);
+}
 
 .tooltip-wrapper {
   position: relative;

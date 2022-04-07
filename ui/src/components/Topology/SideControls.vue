@@ -6,6 +6,7 @@
       <FeatherIcon :icon="RefreshIcon" />
     </FeatherButton>
 
+    <CtrlLayers />
     <CtrlHighlightFocusedNode />
   </div>
 </template>
@@ -13,6 +14,7 @@
 <script setup lang="ts">
 import CtrlSemanticZoomLevel from './CtrlSemanticZoomLevel.vue'
 import CtrlHighlightFocusedNode from './CtrlHighlightFocusedNodes.vue'
+import CtrlLayers from './CtrlLayers.vue'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import RefreshIcon from '@featherds/icon/navigation/Refresh'
