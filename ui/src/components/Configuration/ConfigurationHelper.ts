@@ -649,12 +649,12 @@ const validateBasicCron = (cronTab: string) => {
     error = ErrorStrings.QuartzFormatSupportError // custom error of 6th part quartz format support
   } else {
     try {
-      cronstrue.toString(cronTab)
+      cronstrue.toString(cronTab,  { dayOfWeekStartIndexZero: false })
     } catch (e) {
       error = e
     }
   }
-
+  
   return error
 }
 
