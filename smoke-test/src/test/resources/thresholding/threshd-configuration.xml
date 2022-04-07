@@ -4,7 +4,7 @@
         <filter>catincThresholdingTest</filter>
         <include-range begin="1.1.1.1" end="254.254.254.254"/>
         <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
-        <service name="SvcToThreshold" interval="5000" user-defined="false" status="on">
+        <service name="SvcToThreshold" interval="3000" user-defined="false" status="on">
             <parameter key="thresholding-group" value="ttest-latency"/>
         </service>
     </package>
@@ -14,7 +14,7 @@
         <filter>catincThresholdingTest</filter>
         <include-range begin="1.1.1.1" end="254.254.254.254"/>
         <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
-        <service name="SvcToThreshold" interval="5000" user-defined="false" status="on">
+        <service name="SvcToThreshold" interval="3000" user-defined="false" status="on">
             <parameter key="thresholding-group" value="ttest-collect"/>
         </service>
     </package>

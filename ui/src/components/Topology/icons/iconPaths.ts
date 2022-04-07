@@ -9,7 +9,7 @@ const doc = parser.parseFromString(icons, 'image/svg+xml')
 // get all icons with a unique id
 const iconArray = doc.querySelectorAll('[id]')
 
-iconArray.forEach(icon => {
+iconArray.forEach((icon) => {
   // serialize icon
   const iconStr = serializer.serializeToString(icon)
   // append styles and closing tag

@@ -198,6 +198,8 @@
 
         <simpleType>
           <restriction base="string">
+            <minLength value="1"/>
+            <maxLength value="2"/>
             <pattern value="(&lt;|&lt;=|=|&gt;=|&gt;)"/>
           </restriction>
         </simpleType>

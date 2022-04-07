@@ -135,7 +135,7 @@ spawn_minion() {
 
   echo "Updating configuration for Minion #$idx..."
   # Enable Hawtio
-  echo 'hawtio-offline' > "$MINION_HOME/etc/featuresBoot.d/hawtio.boot"
+  echo 'hawtio' > "$MINION_HOME/etc/featuresBoot.d/hawtio.boot"
 
   # Instance specific configuration
   set_instance_specific_configuration "$MINION_HOME" "$idx"
