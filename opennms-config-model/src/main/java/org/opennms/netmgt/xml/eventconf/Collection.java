@@ -28,15 +28,19 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
+import com.google.common.base.MoreObjects;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.File;
 import java.io.Serializable;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -59,17 +63,11 @@ public class Collection implements Serializable {
     @XmlAttribute(name = "instance")
     private String instance;
 
-    @XmlAttribute(name = "step")
-    private int step = 300;
-
-    @XmlAttribute(name = "heartBeat")
-    private int heartBeat = -1;
-
-    @XmlElement(name = "rra", required = true)
-    private List<String> rras = new ArrayList<>();
-
     @XmlElement(name = "paramValues")
     private List<String> paramValues = new ArrayList<>();
+
+    @XmlElement(name = "rrd")
+    private Rrd rrd;
 
     public String getName() {
         return name;
@@ -103,30 +101,6 @@ public class Collection implements Serializable {
         this.instance = instance;
     }
 
-    public int getStep() {
-        return step;
-    }
-
-    public void setStep(int step) {
-        this.step = step;
-    }
-
-    public int getHeartBeat() {
-        return heartBeat == -1 ? this.getStep() * 2 : heartBeat;
-    }
-
-    public void setHeartBeat(int heartBeat) {
-        this.heartBeat = heartBeat;
-    }
-
-    public List<String> getRras() {
-        return rras;
-    }
-
-    public void setRras(List<String> rras) {
-        this.rras = rras;
-    }
-
     public List<String> getParamValues() {
         return paramValues;
     }
@@ -135,9 +109,17 @@ public class Collection implements Serializable {
         this.paramValues = paramValues;
     }
 
+    public Rrd getRrd() {
+        return this.rrd;
+    }
+
+    public void setRrd(final Rrd rrd) {
+        this.rrd = rrd;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(name, type, target, step, rras);
+        return Objects.hash(name, type, target, rrd);
     }
 
     @Override
@@ -150,10 +132,85 @@ public class Collection implements Serializable {
             return Objects.equals(this.name, that.name) &&
                     Objects.equals(this.type, that.type) &&
                     Objects.equals(this.target, that.target) &&
-                    Objects.equals(this.step, that.step) &&
-                    Objects.equals(this.rras, that.rras);
+                    Objects.equals(this.rrd, that.rrd);
         }
         return false;
+    }
+
+    @XmlRootElement(name="rrd")
+    @XmlAccessorType(XmlAccessType.NONE)
+    public static class Rrd {
+        private static final File DEFAULT_BASE_DIRECTORY = new File(ResourceTypeUtils.DEFAULT_RRD_ROOT, ResourceTypeUtils.SNMP_DIRECTORY);
+
+        /**
+         * Step size for the RRD, in seconds.
+         */
+        @XmlAttribute(name="step")
+        private Integer step;
+
+        /**
+         * HeartBeat of the RRD, default is step * 2
+         */
+        @XmlAttribute(name = "heartBeat")
+        private Integer heartBeat = -1;
+
+        /**
+         * Round Robin Archive definitions
+         */
+        @XmlElement(name="rra")
+        private List<String> rras = new ArrayList<>();
+
+        public Integer getStep() {
+            return this.step;
+        }
+
+        public void setStep(final Integer step) {
+            this.step = step;
+        }
+
+        public int getHeartBeat() {
+            return heartBeat == -1 ? this.getStep() * 2 : heartBeat;
+        }
+
+        public void setHeartBeat(int heartBeat) {
+            this.heartBeat = heartBeat;
+        }
+
+        public List<String> getRras() {
+            return this.rras;
+        }
+
+        public void setRras(final List<String> rras) {
+            this.rras = rras;
+        }
+
+        public File getBaseDir() {
+            return DEFAULT_BASE_DIRECTORY;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final Rrd that = (Rrd) o;
+            return Objects.equals(this.step, that.step) &&
+                    Objects.equals(this.rras, that.rras) &&
+                    Objects.equals(this.heartBeat, that.heartBeat);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.step, this.rras, this.heartBeat);
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("step", this.step)
+                    .add("rras", this.rras)
+                    .add("heartBeat", this.heartBeat)
+                    .toString();
+        }
     }
 
 }

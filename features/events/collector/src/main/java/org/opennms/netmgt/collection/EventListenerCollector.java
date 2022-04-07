@@ -148,7 +148,11 @@ public class EventListenerCollector implements EventListener {
                 collectionSet.withStringAttribute(resource, collection.getTarget(), "instance", groupName);
             }
             collectionSet = setupCollectionSet(collectionSet, resource, groupName, collection, parm);
-            collectionSet.build().visit(this.getRrdPersister(collection));
+            if (collection.getRrd() != null) {
+                collectionSet.build().visit(this.getRrdPersister(collection.getRrd()));
+            } else {
+                LOG.warn("Missing rrd config. {}", collection);
+            }
         }
     }
 
@@ -235,12 +239,12 @@ public class EventListenerCollector implements EventListener {
         return value;
     }
 
-    private CollectionSetVisitor getRrdPersister(Collection collection) {
+    private CollectionSetVisitor getRrdPersister(Collection.Rrd rrd) {
         RrdRepository repository = new RrdRepository();
-        repository.setRrdBaseDir(new File(ResourceTypeUtils.DEFAULT_RRD_ROOT, ResourceTypeUtils.SNMP_DIRECTORY));
-        repository.setStep(collection.getStep());
-        repository.setHeartBeat(collection.getHeartBeat());
-        repository.setRraList(collection.getRras());
+        repository.setRrdBaseDir(rrd.getBaseDir());
+        repository.setStep(rrd.getStep());
+        repository.setHeartBeat(rrd.getHeartBeat());
+        repository.setRraList(rrd.getRras());
         return persisterFactory.createPersister(
                 new ServiceParameters(Collections.emptyMap()), repository, false, false, false);
     }

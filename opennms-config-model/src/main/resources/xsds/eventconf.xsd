@@ -385,15 +385,11 @@
 
     <complexType>
       <sequence>
-        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+        <element maxOccurs="1" minOccurs="1" ref="this:rrd">
           <annotation>
-            <documentation>Round Robin Archive definitions.</documentation>
+            <documentation>RRD parameters for response time
+              data.</documentation>
           </annotation>
-          <simpleType>
-            <restriction base="string">
-              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*" />
-            </restriction>
-          </simpleType>
         </element>
         <element maxOccurs="unbounded" minOccurs="0" name="paramValues">
           <annotation>
@@ -439,9 +435,29 @@
             When target is interfaceSnmp, it use param value as ifIndex.</documentation>
         </annotation>
       </attribute>
-      <attribute name="step" type="int" default="300">
+    </complexType>
+  </element>
+
+  <element name="rrd">
+    <annotation>
+      <documentation>RRD parameters</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+          <annotation>
+            <documentation>Round Robin Archive definitions</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string">
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+      <attribute name="step" type="int" use="required">
         <annotation>
-          <documentation>step size for the RRD</documentation>
+          <documentation>Step size for the RRD, in seconds.</documentation>
         </annotation>
       </attribute>
       <attribute name="heartBeat" type="int">

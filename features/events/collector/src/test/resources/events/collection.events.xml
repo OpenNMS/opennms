@@ -23,19 +23,27 @@
       <event-label>test: varbind with regex</event-label>
       <descr>Testing varbind with regex</descr>
       <logmsg dest="donotpersist"></logmsg>
-      <collection name="VALUE" type="gauge" step="60" target="nodeSnmp" heartBeat="120">
-        <rra>RRA:AVERAGE:0.5:1:8928</rra>
+      <collection name="VALUE" type="gauge" target="nodeSnmp">
+        <rrd step="60" heartBeat="120">
+          <rra>RRA:AVERAGE:0.5:1:8928</rra>
+        </rrd>
       </collection>
-      <collection name="TIME" type="counter" step="60" target="nodeSnmp" heartBeat="120">
-        <rra>RRA:AVERAGE:0.5:1:8928</rra>
+      <collection name="TIME" type="counter" target="nodeSnmp">
+        <rrd step="60" heartBeat="120">
+          <rra>RRA:AVERAGE:0.5:1:8928</rra>
+        </rrd>
       </collection>
-      <collection name="STATUS" type="counter" step="60" target="interfaceSnmp" heartBeat="120">
-        <rra>RRA:AVERAGE:0.5:1:8928</rra>
+      <collection name="STATUS" type="counter" target="interfaceSnmp">
+        <rrd step="60" heartBeat="120">
+          <rra>RRA:AVERAGE:0.5:1:8928</rra>
+        </rrd>
         <paramValues>master:1</paramValues>
         <paramValues>slave:2</paramValues>
       </collection>
-      <collection name="TAG" type="string" step="60" target="interfaceSnmp" heartBeat="120">
-        <rra>RRA:AVERAGE:0.5:1:8928</rra>
+      <collection name="TAG" type="string" target="interfaceSnmp">
+        <rrd step="60" heartBeat="120">
+          <rra>RRA:AVERAGE:0.5:1:8928</rra>
+        </rrd>
       </collection>
       <severity>Normal</severity>
    </event>
@@ -58,8 +66,10 @@
       <event-label>test: full varbind</event-label>
       <descr>Testing full varbind.</descr>
       <logmsg dest="donotpersist"></logmsg>
-      <collection name="uei.opennms.org/traps/test/varbind" type="gauge" step="100" heartBeat="200" target="nodeSnmp">
-        <rra>RRA:AVERAGE:0.5:1:8928</rra>
+      <collection name="uei.opennms.org/traps/test/varbind" type="gauge" target="nodeSnmp">
+        <rrd step="60" heartBeat="120">
+          <rra>RRA:AVERAGE:0.5:1:8928</rra>
+        </rrd>
       </collection>
       <severity>Normal</severity>
    </event>
