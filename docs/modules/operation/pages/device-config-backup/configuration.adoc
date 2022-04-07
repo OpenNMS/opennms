@@ -1,0 +1,123 @@
+== Poller configuration
+
+Device Config Backup is performed through DeviceConfig Monitor,
+see xref:reference:service-assurance/monitors/DeviceConfiMonitor.adoc[Device Config Monitor].
+
+== Configure TFTP Port
+
+By default, tftp server will use non-privileged port 6969 both on Minion and OpenNMS.
+
+.Configure tftp port via Karaf shell on {page-component-title}
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+.Configure tftp port via Karaf shell on Minion
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Configure tftp port
+[source, karaf]
+----
+config:edit org.opennms.features.deviceconfig.tftp
+config:property-set port 69
+config:update
+----
+
+== Enable Device Config Backup for Push-based config upload
+
+Devices may also push config through tftp manually whenever config changes. This is  not enabled by default but this can be achieved by enabling Sink for Device Config.
+
+.Configure Device Config Sink feature via Karaf shell on {page-component-title}
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+.Configure Device Config Sink feature via Karaf shell on Minion
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+
+.Configure opennms-deviceconfig-sink feature
+[source, karaf]
+----
+feature:install opennms-deviceconfig-sink
+----
+
+NOTE: To survive reboots, `opennms-deviceconfig-sink` feature can be added to etc/featuresBoot.d/device-config.boot file.
+
+== Events associated with Device Config Backup
+
+Pollerd can generate the following Events in {page-component-title} for Device Config Backup.
+
+[options="header, autowidth"]
+[cols="1,2"]
+|===
+| Event name
+| Description
+
+| uei.opennms.org/deviceconfig/configRetrievalFailed
+| Failed to retrieve config associated with a given service
+during the last poll on a given interface
+
+| uei.opennms.org/deviceconfig/configRetrievalSucceeded
+| Config retrieval succeeded on a given service during the last poll on a given interface.
+
+|===
+
+== Retrieve Device Config without Monitor
+
+Retrieving Device Config can also be triggered outside Monitor schedule with Rest API.
+see xref:development:rest/device_config.adoc[Device Config Monitor].
+
+
+== Retrieve/Trigger Device Config Backup from Karaf shell
+
+Device Config can also be triggered/retrieved from karaf shell.
+
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+Once in the shell, you can print show the commands help as follows:
+[source, console]
+----
+admin@opennms()> opennms:device-config-get --help
+DESCRIPTION
+        opennms:device-config-get
+
+	Get device config from a specific Interface
+
+SYNTAX
+        opennms:device-config-get [options] host
+
+ARGUMENTS
+        host
+                Hostname or IP Address of the system to poll
+                (required)
+
+OPTIONS
+        -l, --location
+                Location
+                (defaults to Default)
+        -t, --timeout
+                Timeout for device config retrieval in msec
+                (defaults to 60000)
+        -s, --service
+                Device Config Service
+                (defaults to DeviceConfig)
+        --help
+                Display this help message
+        -n, --node-id
+                Node Id for Service
+        -e, --encoding
+                Encoding format
+                (defaults to UTF-8)
+----

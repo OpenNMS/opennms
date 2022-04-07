@@ -1,0 +1,49 @@
+[[ga-development-rest-device-config]]
+= Device Config Rest API
+
+Use the Device Config Rest API to fetch existing configs and trigger retrieval of the device configs and is in `api/v2` endpoint.
+
+NOTE: If not otherwise specified, the `Content-Type` of the request and response is `application/json`.
+
+[options="header, %autowidth"]
+|===
+| Resource
+| Method
+| Description
+
+| `/device-config`
+| GET
+| Retrieves all the configs sorted by lastUpdated.
+| This API also supports following query params: limit, offset, orderBy, order, deviceName, ipAddress, configType,
+| createdAfter, createdBefore.
+
+| `/device-config/\{id}`
+| GET
+| Retrieves the config for the specific id (Database ID).
+
+| `/device-config/interface/\{id}`
+| GET
+| Retrieves all the configs for the specific interface.
+
+| `/device-config/latest`
+| GET
+| Retrieves the latest config for all the devices.
+
+| `/device-config/download?id=\{id1, id2}`
+| GET
+| Download the configs with the given id.
+
+| `/device-config/backup`
+| POST
+| Trigger backup for a given interface and location.
+
+|===
+
+== Examples:
+
+.Trigger Device Config backup
+[source,bash]
+----
+curl -u admin:admin -d '{"ipAddress":"192.168.1.123","location":"Default","serviceName":"DeviceConfig-default"}' -H "Content-Type: application/json" -X POST http://localhost:8980/opennms/rest/device-config/backup -v
+----
+
