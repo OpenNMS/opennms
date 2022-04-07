@@ -475,7 +475,8 @@ public class Requisition implements Serializable, Comparable<Requisition> {
             throw new ValidationException("Foreign Source (" + m_foreignSource + ") contains invalid characters. ('/' is forbidden.)");
     	}
 
-    	for (final RequisitionNode node : m_nodes) {
+        // new ArrayList to prevent ConcurrentModificationException
+        for (final RequisitionNode node : new ArrayList<>(m_nodes)) {
     		final String foreignId = node.getForeignId();
     		node.validate();
 			Integer count = foreignSourceCounts.get(foreignId);
