@@ -49,6 +49,11 @@ const getVerticesAndEdges = async (context: VuexContext, queryParameters?: Query
   }
 }
 
+const getTopologyGraphs = async (context: VuexContext) => {
+  const topologyGraphs = await API.getTopologyGraphs()
+  context.commit('SAVE_TOPOLOGY_GRAPHS', topologyGraphs)
+}
+
 const setSemanticZoomLevel = (context: ContextWithState, SML: number) => {
   context.commit('SET_SEMANTIC_ZOOM_LEVEL', SML)
   context.dispatch('getTopologyDataByLevelAndFocus')
@@ -74,12 +79,8 @@ const setSelectedView = (context: VuexContext, view: string) => {
   context.commit('SET_SELECTED_VIEW', view)
 }
 
-const openLeftDrawer = (context: VuexContext) => {
-  context.commit('SET_LEFT_DRAWER_OPEN', true)
-}
-
-const closeLeftDrawer = (context: VuexContext) => {
-  context.commit('SET_LEFT_DRAWER_OPEN', false)
+const setSelectedDisplay = (context: VuexContext, display: string) => {
+  context.commit('SET_SELECTED_DISPLAY', display)
 }
 
 const addContextNodeToFocus = (context: VuexContext, nodeId: string) => {
@@ -133,10 +134,6 @@ const highlightFocusedNodes = (context: ContextWithState, bool: boolean) => {
   context.commit('SET_HIGHLIGHT_FOCUSED_NODES', bool)
 }
 
-const setModalState = (context: VuexContext, bool: boolean) => {
-  context.commit('SET_MODAL_STATE', bool)
-}
-
 const changeIcon = (context: ContextWithState, nodeIdIconKey: Record<string, string>) => {
   context.commit('UPDATE_NODE_ICONS', nodeIdIconKey)
   context.dispatch('updateVerticesIconPaths')
@@ -153,12 +150,30 @@ const updateVerticesIconPaths = (context: ContextWithState) => {
   context.commit('SAVE_NODE_VERTICIES', vertices)
 }
 
+/**
+ * Left and right drawer states
+ */
+const openLeftDrawer = (context: VuexContext) => context.commit('SET_LEFT_DRAWER_OPEN', true)
+const closeLeftDrawer = (context: VuexContext) => context.commit('SET_LEFT_DRAWER_OPEN', false)
+const openRightDrawer = (context: VuexContext) => context.commit('SET_RIGHT_DRAWER_OPEN', true)
+const closeRightDrawer = (context: VuexContext) => context.commit('SET_RIGHT_DRAWER_OPEN', false)
+
+/**
+ * Modal state
+ */
+const setModalState = (context: VuexContext, bool: boolean) => context.commit('SET_MODAL_STATE', bool)
+
+
+
 export default {
   getVerticesAndEdges,
   setSemanticZoomLevel,
   setSelectedView,
+  setSelectedDisplay,
   openLeftDrawer,
   closeLeftDrawer,
+  openRightDrawer,
+  closeRightDrawer,
   addFocusedNodeIds,
   getTopologyDataByLevelAndFocus,
   addContextNodeToFocus,
@@ -170,5 +185,6 @@ export default {
   updateNodesFocusedProperty,
   setModalState,
   changeIcon,
-  updateVerticesIconPaths
+  updateVerticesIconPaths,
+  getTopologyGraphs
 }

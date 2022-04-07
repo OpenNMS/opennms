@@ -1,4 +1,5 @@
 import { SearchResult } from '@/types'
+import { TopologyGraphList } from '@/types/topology'
 import { Edges, Node, Nodes } from 'v-network-graph'
 import { State } from './state'
 
@@ -8,6 +9,10 @@ const SAVE_NODE_EDGES = (state: State, edges: Edges) => {
 
 const SAVE_NODE_VERTICIES = (state: State, verticies: Nodes) => {
   state.verticies = verticies
+}
+
+const SAVE_TOPOLOGY_GRAPHS = (state: State, topologyGraphs: TopologyGraphList[]) => {
+  state.topologyGraphs = topologyGraphs
 }
 
 const SAVE_DEFAULT_NODE = (state: State, defaultNode: Node) => {
@@ -23,8 +28,16 @@ const SET_SELECTED_VIEW = (state: State, view: string) => {
   state.selectedView = view
 }
 
+const SET_SELECTED_DISPLAY = (state: State, display: string) => {
+  state.selectedDisplay = display
+}
+
 const SET_LEFT_DRAWER_OPEN = (state: State, bool: boolean) => {
   state.isLeftDrawerOpen = bool
+}
+
+const SET_RIGHT_DRAWER_OPEN = (state: State, bool: boolean) => {
+  state.isRightDrawerOpen = bool
 }
 
 const ADD_FOCUSED_NODE_IDS = (state: State, ids: string[]) => {
@@ -68,7 +81,9 @@ export default {
   SAVE_NODE_VERTICIES,
   SET_SEMANTIC_ZOOM_LEVEL,
   SET_SELECTED_VIEW,
+  SET_SELECTED_DISPLAY,
   SET_LEFT_DRAWER_OPEN,
+  SET_RIGHT_DRAWER_OPEN,
   ADD_FOCUSED_NODE_IDS,
   ADD_NODE_TO_FOCUS_IDS,
   REMOVE_NODE_FROM_FOCUS_IDS,
@@ -78,5 +93,6 @@ export default {
   SAVE_DEFAULT_NODE,
   SET_HIGHLIGHT_FOCUSED_NODES,
   SET_MODAL_STATE,
-  UPDATE_NODE_ICONS
+  UPDATE_NODE_ICONS,
+  SAVE_TOPOLOGY_GRAPHS
 }

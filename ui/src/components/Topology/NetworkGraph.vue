@@ -38,7 +38,7 @@
         -->
         <image
           v-if="ICON_PATHS[verticies[nodeId].icon]"
-          :class="{ 'unfocused' : highlightFocusedNodes && !verticies[nodeId].focused }"
+          :class="{ 'unfocused': highlightFocusedNodes && !verticies[nodeId].focused }"
           class="node-icon"
           :x="-config.radius * scale"
           :y="-config.radius * scale"
@@ -90,7 +90,7 @@ import NoFocusMsg from './NoFocusMsg.vue'
 import { onClickOutside } from '@vueuse/core'
 import { SimulationNodeDatum } from 'd3'
 import { ContextMenuType } from './topology.constants'
-import { useFocus } from './composables'
+import { useFocus } from './topology.composables'
 import TopologyModal from './TopologyModal.vue'
 import ICON_PATHS from './icons/iconPaths'
 
@@ -136,12 +136,13 @@ const focusedNodeIds = computed<string[]>(() => store.state.topologyModule.focus
 const highlightFocusedNodes = computed<boolean>(() => store.state.topologyModule.highlightFocusedNodes)
 
 const tooltipPos = computed(() => {
-  if (!graph.value || !tooltip.value) return { x: 0, y: 0 }
-  if (!targetNodeId.value) return { x: 0, y: 0 }
+  const defaultPos = { left: '-9999px', top: '-99999px' }
+  if (!graph.value || !tooltip.value) return defaultPos
+  if (!targetNodeId.value) return defaultPos
 
   // attempt to get the node position from the layout. If layout is d3, use the function
   const nodePos = layout.value.nodes ? layout.value.nodes[targetNodeId.value] : getD3NodeCoords()
-  if (!nodePos) return { x: 0, y: 0 }
+  if (!nodePos) return defaultPos
 
   // translate coordinates: SVG -> DOM
   const domPoint = graph.value.translateFromSvgToDomCoordinates(nodePos)

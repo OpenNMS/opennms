@@ -1,9 +1,10 @@
 import { QueryParameters } from '@/types'
-import { SZLRequest, VerticesAndEdges } from '@/types/topology'
+import { SZLRequest, TopologyGraphList, VerticesAndEdges } from '@/types/topology'
 import { queryParametersHandler } from './serviceHelpers'
 import { v2 } from './axiosInstances'
 
 const endpoint = '/graphs/nodes/nodes'
+const graphs = '/graphs'
 
 const getVerticesAndEdges = async (queryParameters?: QueryParameters): Promise<VerticesAndEdges | false> => {
   let endpointWithQueryString = ''
@@ -41,4 +42,13 @@ const getTopologyDataByLevelAndFocus = async (payload: SZLRequest): Promise<Vert
   }
 }
 
-export { getVerticesAndEdges, getTopologyDataByLevelAndFocus }
+const getTopologyGraphs = async (): Promise<TopologyGraphList[]> => {
+  try {
+    const resp = await v2.get(graphs)
+    return resp.data
+  } catch (error) {
+    return []
+  }
+}
+
+export { getVerticesAndEdges, getTopologyDataByLevelAndFocus, getTopologyGraphs }
