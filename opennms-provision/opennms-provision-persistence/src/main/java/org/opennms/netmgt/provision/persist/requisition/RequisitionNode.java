@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
 
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -46,8 +45,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.network.IPValidationException;
-import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.PrimaryType;
 
 /**
  * <p>RequisitionNode class.</p>
@@ -59,6 +58,9 @@ import org.opennms.core.utils.InetAddressUtils;
 @XmlType(name = "", propOrder = { "m_interfaces", "m_categories", "m_assets", "m_metaData" })
 @XmlRootElement(name = "node")
 public class RequisitionNode {
+
+    // matches any string containing :?/\'"&
+    private static final String FOREIGN_ID_REGEX = ".*[:&?/\\\\\"'\"\\*].*";
 
     @XmlAttribute(name = "location")
     protected String m_location;
@@ -541,8 +543,8 @@ public class RequisitionNode {
         if (m_foreignId == null) {
             throw new ValidationException("Requisition node 'foreign-id' is a required attribute!");
         }
-        if (m_foreignId.contains("/")) {
-            throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains invalid characters. ('/' is forbidden.)");
+        if (m_foreignId.matches(FOREIGN_ID_REGEX)) {
+            throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains invalid characters. (:&?'/\\*\" are forbidden.)");
         }
         if (m_interfaces != null) {
             Iterator<RequisitionInterface> iter = m_interfaces.iterator();
