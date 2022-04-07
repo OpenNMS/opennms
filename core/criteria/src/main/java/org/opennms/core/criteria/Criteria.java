@@ -144,6 +144,8 @@ public class Criteria implements Cloneable {
 
     private LockType m_lockType = null;
 
+    private boolean m_isMultipleAnd = false;
+
     public Criteria(final Class<?> clazz) {
         this(clazz, null);
     }
@@ -222,6 +224,15 @@ public class Criteria implements Cloneable {
 
     public final Criteria setDistinct(final boolean distinct) {
         m_distinct = distinct;
+        return this;
+    }
+
+    public final boolean isMultipleAnd() {
+        return m_isMultipleAnd;
+    }
+
+    public final Criteria setMultipleAnd(final boolean multipleAnd) {
+        m_isMultipleAnd = multipleAnd;
         return this;
     }
 
