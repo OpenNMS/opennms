@@ -40,7 +40,7 @@ endif::[]
 
 ifeval::["{page-component-title}" == "Horizon"]
 Starting with version 29, {page-component-title} runs as the `opennms` user rather than root by default.
-If you are upgrading from a pre-29 version of {page-component-title}, you must fix the ownership of your files before upgrading.
+If you are upgrading from a pre-29 version of {page-component-title}, you must fix the ownership of your files as part of the upgrade process.
 
 For information on how to do this, see https://docs.opennms.com/horizon/29/releasenotes/whatsnew.html#running-as-non-root[Running as non-root].
 endif::[]
