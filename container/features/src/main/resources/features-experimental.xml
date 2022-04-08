@@ -26,6 +26,7 @@
     </feature>
 
     <feature name="opennms-activemq-dispatcher" description="OpenNMS :: Features :: ActiveMQ :: Dispatcher Broker" version="${project.version}">
+      <feature version="[4.2,4.3)">spring-jms</feature>
       <feature>opennms-activemq-dispatcher-config</feature>
       <feature>activemq</feature>
     </feature>
@@ -38,6 +39,7 @@
     </feature>
 
     <feature name="opennms-activemq" description="OpenNMS :: Features :: ActiveMQ :: Broker" version="${project.version}">
+      <feature version="[4.2,4.3)">spring-jms</feature>
       <feature>opennms-activemq-config</feature>
       <feature>activemq</feature>
     </feature>

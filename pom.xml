@@ -1752,6 +1752,7 @@
     <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
+    <javaxMailVersion>1.6.7</javaxMailVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
     <jaxbRuntimeVersion>2.3.3</jaxbRuntimeVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
@@ -4319,7 +4320,7 @@
       <dependency>
         <groupId>com.sun.mail</groupId>
         <artifactId>jakarta.mail</artifactId>
-        <version>1.6.7</version>
+        <version>${javaxMailVersion}</version>
       </dependency>
       <!-- functionally identical to com.sun.activation:javax.activation:1.2.0, don't upgrade further until we can excise other versions -->
       <!-- yes, that means even 1.2.2, which added a module-info.java and technically could change some things, in theory (at least until it's out of $OPENNMS_HOME/lib) -->

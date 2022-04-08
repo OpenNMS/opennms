@@ -92,6 +92,7 @@
     </feature>
 
     <feature name="sentinel-telemetry" description="OpenNMS :: Sentinel :: Telemetry" version="${project.version}">
+        <feature version="[4.2,4.3)">spring-tx</feature>
         <feature>sentinel-persistence</feature>
 
         <feature version="${netty4Version}">netty4</feature>
@@ -129,6 +130,7 @@
         <feature>sentinel-kvstore-api</feature>
         <feature>opennms-kafka</feature>
         <feature>rate-limited-logger</feature>
+        <feature>dropwizard-metrics</feature>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
@@ -216,7 +218,9 @@
 
     <!-- Newts -->
     <feature name="sentinel-newts" description="OpenNMS :: Sentinel :: Newts" version="${project.version}">
+        <feature version="[4.2,4.3)">spring-orm</feature>
         <feature>sentinel-core</feature>
+        <feature>dropwizard-metrics</feature>
         <feature>guava</feature>
         <feature>opennms-measurements-api</feature>
         <feature>opennms-collection-api</feature>
@@ -294,6 +298,7 @@
     </feature>
 
     <feature name="sentinel-config-dao-common" version="${project.version}" description="OpenNMS :: Config DAO :: Common">
+        <feature version="[4.2,4.3)">spring</feature>
         <feature>resilience4j</feature>
         <feature>sentinel-kvstore-api</feature>
         <feature>opennms-config-dao-api</feature>
@@ -304,6 +309,7 @@
     </feature>
 
     <feature name="sentinel-config-dao-thresholding" version="${project.version}" description="OpenNMS :: Config DAO :: Thresholding">
+        <feature version="[4.2,4.3)">spring</feature>
         <feature>sentinel-config-dao-common</feature>
         <bundle>mvn:org.opennms/org.opennms.config-dao.thresholding.impl/${project.version}</bundle>
     </feature>
