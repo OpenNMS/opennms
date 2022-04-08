@@ -24,6 +24,7 @@ UNION
 SELECT svcregainedeventid FROM outages WHERE svcregainedeventid = events.eventid
 UNION
 SELECT eventid FROM notifications WHERE eventid
+AND eventtime < now() - interval '6 weeks';
 ----
 
 == After Upgrading
