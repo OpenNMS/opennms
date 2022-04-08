@@ -23,7 +23,7 @@ DELETE FROM events WHERE NOT EXISTS
 UNION
 SELECT svcregainedeventid FROM outages WHERE svcregainedeventid = events.eventid
 UNION
-SELECT eventid FROM notifications WHERE eventid
+SELECT eventid FROM notifications WHERE eventid = events.eventid)
 AND eventtime < now() - interval '6 weeks';
 ----
 
