@@ -54,6 +54,7 @@
         <feature>camel-blueprint</feature>
         <feature>camel-jaxb</feature>
         <feature>opennms-health</feature>
+        <feature>scv-api</feature>
 
         <!-- Used for the REST client in core-impl -->
         <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
@@ -104,6 +105,7 @@
         <feature>opennms-dao</feature>
         <feature>opennms-core-tracing</feature>
         <feature>sentinel-thresholding-service</feature>
+        <feature>opennms-util</feature>
 
         <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
 
@@ -323,5 +325,33 @@
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.snmp-collector/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-api-layer" version="${project.version}" description="Sentinel :: API Layer">
+        <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
+        <feature>sentinel-persistence</feature>
+        <feature>opennms-provisioning</feature>
+        <feature>opennms-situation-feedback-api</feature>
+        <bundle dependency="true">mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.dao-common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.sentinel/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-timeseries-api" description="Sentinel :: Timeseries Storage API" version="${project.version}">
+        <feature>sentinel-persistence</feature>
+        <feature>opennms-health</feature>
+        <feature>opennms-measurements-api</feature>
+        <feature>opennms-collection-api</feature>
+        <feature>opennms-core-ipc-rpc-api</feature>
+        <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
+        <feature>newts-api</feature>
+
+        <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:net.agkn/hll/${hllVersion}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
+
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features/org.opennms.features.timeseries/${project.version}</bundle>
     </feature>
 </features>

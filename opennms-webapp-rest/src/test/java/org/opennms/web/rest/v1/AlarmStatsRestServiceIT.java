@@ -81,6 +81,7 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",

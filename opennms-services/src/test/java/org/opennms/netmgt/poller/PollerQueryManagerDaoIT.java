@@ -89,6 +89,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+		"classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",

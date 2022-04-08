@@ -81,35 +81,30 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_rescanExisting = rescanExisting;
         this.monitorKey = monitorKey;
     }
+    
+    /**
+     * <p>getScanManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.service.operations.ScanManager} object.
+     */
+    public ScanManager getScanManager() {
+        return m_scanManager;
+    }
 
-	/**
-	 * <p>getScanManager</p>
-	 *
-	 * @return a {@link org.opennms.netmgt.provision.service.operations.ScanManager} object.
-	 */
-	public ScanManager getScanManager() {
-	    return m_scanManager;
-	}
-
-	/**
-	 * <p>foundInterface</p>
-	 *
-	 * @param ipAddr a {@link java.lang.String} object.
-	 * @param descr a {@link java.lang.Object} object.
-	 * @param primaryType a {@link InterfaceSnmpPrimaryType} object.
-	 * @param managed a boolean.
-	 * @param status a int.
-	 */
-	public void foundInterface(String ipAddr, Object descr, final PrimaryType primaryType, boolean managed, int status) {
-		
-		if (ipAddr == null || "".equals(ipAddr.trim())) {
-		    LOG.error("Found interface on node {} with an empty ipaddr! Ignoring!", m_node.getLabel());
-			return;
-		}
-
-        final InetAddress addr = InetAddressUtils.addr(ipAddr);
+    /**
+     * <p>foundInterface</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param descr a {@link java.lang.Object} object.
+     * @param primaryType a {@link InterfaceSnmpPrimaryType} object.
+     * @param managed a boolean.
+     * @param status a int.
+     */
+    public void foundInterface(InetAddress addr, Object descr, final PrimaryType primaryType, boolean managed, int status) {
+        
         if (addr == null) {
-            LOG.error("Unable to resolve address of snmpPrimary interface for node {} with address '{}'", m_node.getLabel(), ipAddr);
+            LOG.error("Found interface on node {} with an empty/invalid ipaddr! Ignoring!", m_node.getLabel());
+            return;
         }
 
         m_currentInterface = new OnmsIpInterface(addr, m_node);

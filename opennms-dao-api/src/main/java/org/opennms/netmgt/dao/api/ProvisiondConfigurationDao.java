@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.api;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
@@ -47,7 +48,7 @@ public interface ProvisiondConfigurationDao {
      *
      * @return a {@link org.opennms.netmgt.config.provisiond.ProvisiondConfiguration} object.
      */
-    ProvisiondConfiguration getConfig();
+    ProvisiondConfiguration getConfig() throws IOException;
     
     /**
      * <p>getDef</p>
@@ -55,56 +56,56 @@ public interface ProvisiondConfigurationDao {
      * @param defName a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.config.provisiond.RequisitionDef} object.
      */
-    RequisitionDef getDef(String defName);
+    RequisitionDef getDef(String defName) throws IOException;
     
     /**
      * <p>getDefs</p>
      *
      * @return a {@link java.util.List} object.
      */
-    List<RequisitionDef> getDefs();
+    List<RequisitionDef> getDefs() throws IOException;
     
     /**
      * <p>getImportThreads</p>
      *
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer getImportThreads();
+    public Integer getImportThreads() throws IOException;
     
     /**
      * <p>getScanThreads</p>
      *
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer getScanThreads();
+    public Integer getScanThreads() throws IOException;
     
     /**
      * <p>getRescanThreads</p>
      *
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer getRescanThreads();
+    public Integer getRescanThreads() throws IOException;
     
     /**
      * <p>getWriteThreads</p>
      *
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer getWriteThreads();
+    public Integer getWriteThreads() throws IOException;
     
     /**
      * <p>getRequisitionDir</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getRequisitionDir();
+    public String getRequisitionDir() throws IOException;
     
     /**
      * <p>getForeignSourceDir</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getForeignSourceDir();
+    public String getForeignSourceDir() throws IOException;
         
     /**
      * The underlying XML-based DAO abstraction in the default implementation doesn't provide access to the container so
@@ -117,6 +118,6 @@ public interface ProvisiondConfigurationDao {
      *
      * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
-    void reloadConfiguration() throws DataAccessResourceFailureException;
+    void reloadConfiguration() throws IOException;
 
 }

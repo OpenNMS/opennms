@@ -356,7 +356,6 @@
   <bean id="prometheusDataCollectionConfigDao" class="org.opennms.netmgt.dao.prometheus.PrometheusDataCollectionConfigDaoJaxb" />
 
   <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
-    <property name="configResource" value="file:${opennms.home}/etc/provisiond-configuration.xml"/>
   </bean>
 
   <bean id="rancidAdapterConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -538,15 +537,15 @@
   <bean id="wmiDataCollectionConfigFactory" class="org.opennms.netmgt.config.WmiDataCollectionConfigFactory" depends-on="wmiDataCollectionConfigFactory-init" factory-method="getInstance"/>
 
   <!-- VMware configuration files -->
-  <bean id="VmwareCimDatacollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareCimDatacollectionConfigDaoJaxb">
+  <bean id="VmwareCimDatacollectionConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareCimDatacollectionConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/vmware-cim-datacollection-config.xml"/>
   </bean>
 
-  <bean id="VmwareDatacollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareDatacollectionConfigDaoJaxb">
+  <bean id="VmwareDatacollectionConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareDatacollectionConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/vmware-datacollection-config.xml"/>
   </bean>
 
-  <bean id="VmwareConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareConfigDaoJaxb">
+  <bean id="VmwareConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/vmware-config.xml"/>
   </bean>
 

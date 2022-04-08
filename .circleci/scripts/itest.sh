@@ -1,4 +1,12 @@
-#!/bin/sh -e
+#!/bin/bash
+
+set -e
+
+# attempt to work around repository flakiness
+retry()
+{
+	"$@" || "$@"
+}
 
 find_tests()
 {
@@ -25,13 +33,33 @@ find_tests()
 echo "#### Making sure git is up-to-date"
 git fetch --all
 
-echo "#### Generate project structure .json"
-./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end --legacy-local-repository -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+RUN_TESTS=false
+PROJECT_ARGS=()
 
 echo "#### Determining tests to run"
 cd ~/project
-find_tests
-if [ ! -s /tmp/this_node_projects ]; then
+
+# Always run everything if .circleci/ has changed, since it could
+# potentially change how the tests run.
+if [ -e ".nightly" ]; then
+  PARENT_BRANCH="$(grep -E '^parent_branch:' .nightly | sed -e 's,^parent_branch: *,,' -e 's, *$,,')"
+  if [ "$(git diff --name-only "origin/${PARENT_BRANCH}" | grep -c -E '^\.circleci/')" -gt 0 ]; then
+    RUN_TESTS=true
+  fi
+fi
+
+if [ "$RUN_TESTS" = false ]; then
+  echo "#### Generate project structure .json"
+  ./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end --legacy-local-repository -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+
+  find_tests
+  if [ -s /tmp/this_node_projects ]; then
+    RUN_TESTS=true
+    PROJECT_ARGS=("--projects" "$(< /tmp/this_node_projects paste -s -d, -)")
+  fi
+fi
+
+if [ "$RUN_TESTS" = "false" ]; then
   echo "No tests to run."
   exit 0
 fi
@@ -52,8 +80,8 @@ sudo rm -f /etc/apt/sources.list.d/*
 
 # kill other apt commands first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt || true && \
-            sudo apt update && \
-            sudo env DEBIAN_FRONTEND=noninteractive apt -y --no-install-recommends install \
+            retry sudo apt update && \
+            retry sudo env DEBIAN_FRONTEND=noninteractive apt -y --no-install-recommends install \
                 ca-certificates \
                 tzdata \
                 software-properties-common \
@@ -71,10 +99,10 @@ sudo add-apt-repository 'deb http://debian.opennms.org stable main'
 # add the R repository
 sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
 
-sudo apt update && \
+retry sudo apt update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
             echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
-            sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
+            retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
                 r-base \
                 "rrdtool=$RRDTOOL_VERSION" \
                 jrrd2 \
@@ -83,9 +111,10 @@ sudo apt update && \
             || exit 1
 
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+
 export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
 
-# Set higher open files limit
+# shellcheck disable=SC3045
 ulimit -n 65536
 
 echo "#### Building Assembly Dependencies"
@@ -99,7 +128,7 @@ echo "#### Building Assembly Dependencies"
            --batch-mode \
            "${CCI_FAILURE_OPTION:--fae}" \
            --also-make \
-           --projects "$(< /tmp/this_node_projects paste -s -d, -)"
+           "${PROJECT_ARGS[@]}"
 
 echo "#### Executing tests"
 ./compile.pl install -P'!checkstyle' \
@@ -117,5 +146,4 @@ echo "#### Executing tests"
            -Djava.security.egd=file:/dev/./urandom \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
-           --projects "$(< /tmp/this_node_projects paste -s -d, -)"
-
+           "${PROJECT_ARGS[@]}"

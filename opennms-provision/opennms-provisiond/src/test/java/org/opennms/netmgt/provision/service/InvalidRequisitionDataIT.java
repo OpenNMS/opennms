@@ -56,6 +56,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -72,6 +73,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
+@JUnitTemporaryDatabase
 @DirtiesContext
 // @Ignore("These tests are fixed in 1.13, and backporting the fixes are not worth it.  Narf.")
 public class InvalidRequisitionDataIT extends ProvisioningITCase implements InitializingBean {

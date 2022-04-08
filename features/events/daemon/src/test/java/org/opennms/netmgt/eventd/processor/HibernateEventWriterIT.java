@@ -70,6 +70,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -207,7 +208,7 @@ public class HibernateEventWriterIT {
         assertEquals(3, parameters.size());
 
         assertEquals("test", parameters.get(0).get("name"));
-        assertEquals("B9cECgEXBgArAAA%61", parameters.get(0).get("value"));
+        assertEquals("B9cECgEXBgArAAA=", parameters.get(0).get("value"));
 
         assertEquals("test2", parameters.get(1).get("name"));
         assertEquals("valWith%0Null%0", parameters.get(1).get("value"));

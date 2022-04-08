@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>29.0.6-SNAPSHOT</version>
+    <version>30.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -36,6 +36,24 @@
                   <classifier>dist</classifier>
                   <overWrite>true</overWrite>
                   <outputDirectory>target/opennms-webapp-${project.version}</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <excludes>META-INF/**</excludes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-ui</id>
+            <phase>process-resources</phase>
+            <goals><goal>unpack</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>org.opennms.ui</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>dist</classifier>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>target/opennms-webapp-${project.version}/ui</outputDirectory>
                 </artifactItem>
               </artifactItems>
               <excludes>META-INF/**</excludes>
@@ -397,6 +415,13 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.web-assets</artifactId>
+      <version>${project.version}</version>
+      <classifier>dist</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.ui</artifactId>
       <version>${project.version}</version>
       <classifier>dist</classifier>
       <scope>provided</scope>
@@ -876,11 +901,6 @@
       <groupId>org.opennms.features.distributed</groupId>
       <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>29.0.6-SNAPSHOT</version>
+  <version>30.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skip.surefire.tests>false</skip.surefire.tests>
@@ -13,9 +13,9 @@
     <surefireVersion>2.18</surefireVersion>
     <failsafeVersion>2.22.2</failsafeVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <jackson2Version>2.10.0</jackson2Version>
+    <jackson2Version>2.12.3</jackson2Version>
     <jersey.version>2.28</jersey.version>
-    <karafVersion>4.3.2</karafVersion>
+    <karafVersion>4.3.6</karafVersion>
     <selenium.version>3.141.59</selenium.version>
     <testcontainers.version>1.15.2</testcontainers.version>
     <test.fork.count>0</test.fork.count>
@@ -330,7 +330,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>4.13.1</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -572,7 +572,7 @@
     <dependency>
       <groupId>com.hubspot.jinjava</groupId>
       <artifactId>jinjava</artifactId>
-      <version>2.5.1</version>
+      <version>2.6.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
@@ -582,12 +582,12 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>fluent-hc</artifactId>
-      <version>4.5.2</version>
+      <version>4.5.13</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
-      <version>2.11.2</version>
+      <version>2.17.2</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.flows</groupId>

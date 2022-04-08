@@ -41,7 +41,6 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
@@ -63,6 +62,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
@@ -98,7 +98,7 @@ public class ThresholdingSessionIT implements TemporaryDatabaseAware<MockDatabas
     @Test
     public void canLoadServiceContext() throws ThresholdInitializationException {
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<>());
-        ThresholdingSession visitor = service.createSession(nodeId, ipAddress, serviceName, new RrdRepository(), serviceParams);
+        ThresholdingSession visitor = service.createSession(nodeId, ipAddress, serviceName, serviceParams);
         assertNotNull("Failed  to instantiate ThresholdingVisitor", visitor);
     }
 

@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>29.0.6-SNAPSHOT</version>
+        <version>30.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -95,15 +95,9 @@
                         <feature>scv-shell</feature>
 
                         <!-- OPENNMS: Additional tools -->
-                        <feature>hawtio-offline</feature>
+                        <feature>hawtio</feature>
                         <feature>jolokia</feature>
                     </bootFeatures>
-                    <installedBundles>
-                        <!-- override for security (see etc/overrides.properties) -->
-                        <bundle>mvn:org.ops4j.pax.logging/pax-logging-api/${paxLoggingVersion}</bundle>
-                        <bundle>mvn:org.ops4j.pax.logging/pax-logging-log4j2/${paxLoggingVersion}</bundle>
-                        <bundle>mvn:org.ops4j.pax.logging/pax-logging-logback/${paxLoggingVersion}</bundle>
-                    </installedBundles>
                     <libraries>
                         <!-- OPENNMS: Add JNA bundles to prevent jline from refreshing (KARAF-5251) -->
                         <library>mvn:net.java.dev.jna/jna/${jnaVersion};type:=boot;export:=false</library>
@@ -114,32 +108,6 @@
                     </libraries>
                     <javase>1.8</javase>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>prepare-package</phase>
-                        <goals><goal>run</goal></goals>
-                        <configuration>
-                            <target>
-                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance" />
-                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance.bat" />
-                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell" />
-                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell.bat" />
-                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/etc/startup.properties" />
-                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/system/org/apache/karaf/features/framework/${karafVersion}/framework-${karafVersion}-features.xml" />
-                                <delete>
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-api/2.0.9" />
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2/2.0.9" />
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-logback/2.0.9" />
-                                </delete>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>

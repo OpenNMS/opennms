@@ -61,7 +61,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.AnyServerX509TrustManager;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.config.vmware.VmwareServer;
-import org.opennms.netmgt.dao.VmwareConfigDao;
+import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 import org.sblim.wbem.cim.CIMException;
 import org.sblim.wbem.cim.CIMNameSpace;
 import org.sblim.wbem.cim.CIMObject;

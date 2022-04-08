@@ -1,0 +1,77 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+  <!-- Configuration properties for the API layer -->
+  <cm:property-placeholder id="org.opennms.features.apilayer"
+                           persistent-id="org.opennms.features.apilayer"
+                           update-strategy="reload">
+    <cm:default-properties>
+      <!-- RRD repository settings applicable to all Integration API based collectors -->
+      <cm:property name="rrdStep" value="300"/>
+      <cm:property name="rrdHeartbeat" value="600"/>
+      <cm:property name="rrdRraStr" value="RRA:AVERAGE:0.5:1:2016,RRA:AVERAGE:0.5:12:1488,RRA:AVERAGE:0.5:288:366,RRA:MAX:0.5:288:366,RRA:MIN:0.5:288:366"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <reference id="identity" interface="org.opennms.distributed.core.api.Identity" availability="mandatory"/>
+
+  <!-- Runtime -->
+  <service interface="org.opennms.integration.api.v1.runtime.RuntimeInfo" >
+    <bean class="org.opennms.features.apilayer.minion.RuntimeInfoImpl" >
+      <argument ref="identity"/>
+    </bean>
+  </service>
+
+  <!-- Health Checks -->
+  <bean id="healthCheckManager" class="org.opennms.features.apilayer.common.health.HealthCheckManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.health.HealthCheck" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="healthCheckManager" />
+  </reference-list>
+
+  <!-- Detectors -->
+  <bean id="detectorManager" class="org.opennms.features.apilayer.common.detectors.DetectorManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.detectors.ServiceDetectorFactory" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="detectorManager" />
+  </reference-list>
+
+  <reference id="locationAwareDetectorClient" interface="org.opennms.netmgt.provision.LocationAwareDetectorClient" availability="optional"/>
+  <service ref="detectorClient" interface="org.opennms.integration.api.v1.detectors.DetectorClient" >
+  </service>
+  <bean id="detectorClient" class="org.opennms.features.apilayer.common.detectors.DetectorClientImpl">
+    <argument ref="locationAwareDetectorClient"/>
+  </bean>
+
+  <!-- Poller -->
+  <bean id="servicePollerManager" class="org.opennms.features.apilayer.common.pollers.ServicePollerManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.pollers.ServicePollerFactory" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="servicePollerManager" />
+  </reference-list>
+
+  <!-- Service Collectors -->
+  <bean id="serviceCollectorManager" class="org.opennms.features.apilayer.common.collectors.ServiceCollectorManager">
+    <argument ref="blueprintBundleContext"/>
+    <argument value="${rrdStep}"/>
+    <argument value="${rrdHeartbeat}" />
+    <argument value="${rrdRraStr}" />
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.collectors.ServiceCollectorFactory" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="serviceCollectorManager" />
+  </reference-list>
+
+  <!-- Requisition Providers -->
+  <bean id="requisitionProviderManager" class="org.opennms.features.apilayer.common.requisition.RequisitionProviderManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.requisition.RequisitionProvider" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="requisitionProviderManager" />
+  </reference-list>
+
+</blueprint>

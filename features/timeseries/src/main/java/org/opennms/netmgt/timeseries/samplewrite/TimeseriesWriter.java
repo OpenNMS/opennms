@@ -187,7 +187,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     }
 
     @Override
-    public void onEvent(SampleBatchEvent event) throws Exception {
+    public void onEvent(SampleBatchEvent event) {
         // We'd expect the logs from this thread to be in collectd.log
         Logging.putPrefix("collectd");
 
@@ -206,5 +206,9 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
 
     public void setTimeSeriesStorage(final TimeseriesStorageManager timeseriesStorage) {
         this.storage = timeseriesStorage;
+    }
+
+    public void setStats(StatisticsCollector stats) {
+        this.stats = stats;
     }
 }

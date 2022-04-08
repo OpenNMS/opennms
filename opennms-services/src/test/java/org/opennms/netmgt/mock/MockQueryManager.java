@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.mock;
 
-import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +37,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.QueryManager;
+import org.opennms.netmgt.poller.pollables.PollableService;
 
 public class MockQueryManager implements QueryManager {
 
@@ -180,7 +180,7 @@ public class MockQueryManager implements QueryManager {
 	}
 
     @Override
-    public void updateLastGoodOrFail(int nodeId, InetAddress ipAddr, String serviceName, PollStatus status) {
+    public void updateLastGoodOrFail(PollableService pollableService, PollStatus status) {
         // pass
     }
 

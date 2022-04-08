@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cm="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="LiquibaseUpgraderIT" id="register-schemas">
+        <!-- provisiond -->
+        <cm:registerSchema id="provisiond"/>
+        <cm:importSchemaFromXsd  id="provisiond" xsdFileName="provisiond-configuration.xsd" xsdFileHash="8a501f54269c52b7ba5c49d89a99b5967c33acfab3d953444828fa47d76dfbab" rootElement="provisiond-configuration" />
+        <cm:importConfig schemaId="provisiond" filePath="provisiond-configuration.xml"/>
+
+        <!-- eventd -->
+        <cm:registerSchema id="eventd"/>
+        <cm:importSchemaFromXsd id="eventd" xsdFileName="eventd-configuration.xsd" xsdFileHash="dba9c50b58600a7003ed4e34735628bb656b0430864288ccbe7813a30cedf407" rootElement="EventdConfiguration"/>
+        <cm:importConfig schemaId="eventd" filePath="eventd-configuration.xml"/>
+    </changeSet>
+    <changeSet author="LiquibaseUpgraderIT" id="upgrade-schema-provisiond">
+        <cm:importSchemaFromXsd id="provisiond" xsdFileName="provisiond-configuration_v2.xsd" xsdFileHash="8a501f54269c52b7ba5c49d89a99b5967c33acfab3d953444828fa47d76dfbab" rootElement="provisiond-configuration"/>
+    </changeSet>
+    <changeSet author="LiquibaseUpgraderIT" id="upgrade-properties">
+        <cm:registerSchema id="propertiesTest"/>
+        <cm:changeSchema schemaId="propertiesTest">
+            <cm:put name="property1" type="string" default="" pattern=".*" />
+            <cm:put name="tobedeleted" type="string" default="" pattern=".*" />
+            <cm:delete name="tobedeleted"/>
+            <cm:put name="property3" type="boolean" default="false" />
+        </cm:changeSchema>
+        <cm:registerSchema id="org.opennms.features.datachoices"/>
+        <cm:changeSchema schemaId="org.opennms.features.datachoices">
+            <cm:put name="enabled" type="boolean" default="false"/>
+            <cm:put name="acknowledged-by" type="string"/>
+            <cm:put name="acknowledged-at" type="string"/>
+            <cm:put name="url" type="string" default="http://stats.opennms.org/datachoices/"/>
+            <cm:put name="interval" type="number" default="86400000"/> <!-- 24 hours -->
+            <cm:put name="useSystemProxy" type="boolean" default="false"/>
+            <cm:put name="systemid" type="string" />
+        </cm:changeSchema>
+        <cm:importConfig schemaId="org.opennms.features.datachoices" filePath="org.opennms.features.datachoices.cfg"/>
+    </changeSet>
+    <changeSet author="pschweizer" id="import-graphml">
+        <cm:registerSchema id="org.opennms.netmgt.graph.provider.graphml" allowMultiple="true"/>
+        <cm:changeSchema schemaId="org.opennms.netmgt.graph.provider.graphml">
+            <cm:put name="graphLocation" type="string"/>
+        </cm:changeSchema>
+        <cm:importConfigs schemaId="org.opennms.netmgt.graph.provider.graphml" filePath="org.opennms.netmgt.graph.provider.graphml-*.cfg"/>
+    </changeSet>
+</databaseChangeLog>

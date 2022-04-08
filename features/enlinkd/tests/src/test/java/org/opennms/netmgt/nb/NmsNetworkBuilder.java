@@ -1409,6 +1409,17 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      MKT_CISCO_SW01_IF_IFALIAS_MAP = new HashMap<>();
 
 
+    public static final String srv005_NAME="srv005";
+    public static final String srv005_IP="10.119.77.21";
+    public static final String srv005_SYSOID=".1.3.6.1.4.1.6527.1.6.4";
+    public static final String srv005_LLDP_ID="00 16 4D DD D5 5B".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
+    public static final String srv005_RESOURCE="classpath:/linkd/nms13923/srv005.txt";
+    public static final Map<InetAddress,Integer> srv005_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    public static final Map<Integer,String>      srv005_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      srv005_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      srv005_IF_MAC_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      srv005_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+
     NetworkBuilder m_networkBuilder;
 
     NetworkBuilder getNetworkBuilder() {

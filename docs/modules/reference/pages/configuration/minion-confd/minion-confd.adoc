@@ -16,7 +16,6 @@ The following describes the keys in `minion-config.yaml` that configure the Mini
 
 ```yaml
 broker-url: "<broker url>"
-http-url: "<http url>"
 id: "<id>"
 location: "<location>"
 ```

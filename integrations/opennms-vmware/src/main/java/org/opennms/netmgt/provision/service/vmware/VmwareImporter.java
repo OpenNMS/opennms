@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -333,9 +333,10 @@ public class VmwareImporter {
 
                 if (primaryInterfaceCandidate != null) {
                     if (reachableInterfaceFound) {
-                        logger.warn("Found reachable primary interface '{}'", primaryInterfaceCandidate.getIpAddr());
+                        logger.warn("Found reachable primary interface '{}'", org.opennms.core.utils.InetAddressUtils.str(primaryInterfaceCandidate.getIpAddr()));
                     } else {
-                        logger.warn("Only non-reachable interfaces found, using first one for primary interface '{}'", primaryInterfaceCandidate.getIpAddr());
+                        logger.warn("Only non-reachable interfaces found, using first one for primary interface '{}'", 
+                                org.opennms.core.utils.InetAddressUtils.str(primaryInterfaceCandidate.getIpAddr()));
                     }
                     primaryInterfaceCandidate.setSnmpPrimary(PrimaryType.PRIMARY);
 
@@ -833,7 +834,7 @@ public class VmwareImporter {
         return attributes;
     }
 
-    private RequisitionInterface getRequisitionInterface(RequisitionNode node, String ipAddr) {
+    private RequisitionInterface getRequisitionInterface(RequisitionNode node, InetAddress ipAddr) {
         for (RequisitionInterface intf : node.getInterfaces()) {
             if (ipAddr.equals(intf.getIpAddr())) {
                 return intf;

@@ -36,7 +36,7 @@ This collector provides tools for parsing and mapping the metrics to the collect
 
 | url
 | HTTP URL to query for the metrics.
-(Default address may be `http://${interface:address}:9100/metrics` for most exporters.)
+(Default address may be `\http://${interface:address}:9100/metrics` for most exporters.)
 | n/a
 
 3+| *Optional*

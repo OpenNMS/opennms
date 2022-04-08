@@ -30,11 +30,19 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Table;
 
+import com.google.common.collect.Sets;
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
@@ -43,12 +51,16 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.metadata.ClassMetadata;
+import org.opennms.core.criteria.restrictions.AllRestriction;
+import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateQueryException;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 /**
@@ -259,8 +271,56 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
 
     @Override
     public List<T> findMatching(final org.opennms.core.criteria.Criteria criteria) {
-        final HibernateCallback<List<T>> callback = buildHibernateCallback(criteria);
-        return getHibernateTemplate().execute(callback);
+        //Below findMultiAndMatching method supports multiAnd criteria, which is added to support
+        // multiple "and" condition on same columns of a table.
+        //e.g  select * from event_parameters where (eventparam1_.name= "instance" and eventparam1_.value = "node1")
+        // and (eventparam1_.name= "trigger" and eventparam1_.value = "3.0")
+        if(criteria.isMultipleAnd()){
+            return findMultiAndMatching(criteria);
+        } else {
+            final HibernateCallback<List<T>> callback = buildHibernateCallback(criteria);
+            return getHibernateTemplate().execute(callback);
+        }
+    }
+
+    private List<T> findMultiAndMatching(final org.opennms.core.criteria.Criteria criteria){
+        Set<T> allUniqueRecords = new LinkedHashSet<>();
+        Collection<Restriction> allRestrictions = criteria.getRestrictions();
+
+        //set of multiand restrictions
+        Set<Restriction> multiAndRestrictionSet = allRestrictions.stream().filter(
+                restriction -> restriction.getType().equals(Restriction.RestrictionType.MULTIAND)).collect(Collectors.toSet());
+
+        //set of non multiand restrictions
+        Set<Restriction>   nonMultiAndRestrictionSet =  Sets.difference(new HashSet<Restriction>(allRestrictions),multiAndRestrictionSet);
+
+        //iterating multiand and setting nonmultiand + single multiand restriction in criteria,
+        // retrieve result set, create intersection of each query executed
+        multiAndRestrictionSet.stream().forEach(restriction ->{
+            Collection<Restriction> allMultiAndRestrictions = ((AllRestriction) restriction).getRestrictions();
+            allMultiAndRestrictions.stream().forEach(singleMultiAndRestriction ->{
+                org.opennms.core.criteria.Criteria copyOfCriteria = criteria.clone();
+                copyOfCriteria.setRestrictions(nonMultiAndRestrictionSet);
+                copyOfCriteria.addRestriction(singleMultiAndRestriction);
+                if(allUniqueRecords.isEmpty()) {
+                    allUniqueRecords.addAll(getQueryResult(copyOfCriteria));
+                } else {
+                    allUniqueRecords.addAll(Sets.intersection(allUniqueRecords,
+                            Set.copyOf(getQueryResult(copyOfCriteria))));
+                }
+            });
+        });
+        return (List<T>) Arrays.asList(allUniqueRecords.toArray());
+    }
+
+    private List<T> getQueryResult( org.opennms.core.criteria.Criteria criteria){
+        try {
+            final HibernateCallback<List<T>> callback = buildHibernateCallback(criteria);
+            return getHibernateTemplate().execute(callback);
+        } catch (Exception ex){
+            LOG.error("Error in execution of query",ex);
+            return Collections.emptyList();
+        }
     }
 
     protected <T> HibernateCallback<List<T>> buildHibernateCallback(org.opennms.core.criteria.Criteria criteria) {
@@ -366,7 +426,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * <p>save</p>
      *
      * @param entity a T object.
-     * @throws org.springframework.dao.DataAccessException if any.
+     * @throws DataAccessException if any.
      */
     @Override
     public K save(final T entity) throws DataAccessException {

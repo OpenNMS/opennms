@@ -54,6 +54,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath*:/META-INF/opennms/component-service.xml",

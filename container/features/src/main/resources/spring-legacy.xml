@@ -15,11 +15,11 @@
         <bundle start-level="30">mvn:org.springframework.osgi/spring-osgi-annotation/1.2.1</bundle>
         <conditional>
             <condition>deployer</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.spring/4.3.2</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.spring/4.3.6</bundle>
         </conditional>
         <conditional>
             <condition>bundle</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.bundle/org.apache.karaf.bundle.springstate/4.3.2</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.bundle/org.apache.karaf.bundle.springstate/4.3.6</bundle>
         </conditional>
     </feature>
 
@@ -301,8 +301,8 @@
     <feature name="spring-test" description="Spring 4.3.x Test support" version="4.3.30.RELEASE_1">
         <feature version="[4.3.30.RELEASE_1,4.4)">spring</feature>
         <bundle dependency="true">mvn:javax.websocket/javax.websocket-api/1.1</bundle>
-        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.6</bundle>
-        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.2</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-test/4.3.30.RELEASE_1
         </bundle>
@@ -426,8 +426,8 @@
     <feature name="spring-test" description="Spring 5.2.x Test support" version="5.2.13.RELEASE_1">
         <feature version="[5.2.13.RELEASE_1,5.3)">spring</feature>
         <bundle dependency="true">mvn:javax.websocket/javax.websocket-api/1.1</bundle>
-        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.6</bundle>
-        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.2</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-test/5.2.13.RELEASE_1
         </bundle>

@@ -148,8 +148,8 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
             assertEquals(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, link.getLldpPortIdSubType());
             assertEquals(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
             if (link.getNode().getId().intValue() == zsr001.getId().intValue()) {
-                switch (link.getLldpLocalPortNum()) {
-                    case 1:
+                switch (link.getLldpPortIfindex()) {
+                    case 104906753:
                         assertEquals(104906753,link.getLldpPortIfindex().intValue());
                         assertEquals("104906753",link.getLldpPortId());
                         assertEquals("50e0ef000600",link.getLldpRemChassisId());
@@ -158,7 +158,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
                         assertEquals("35700737",link.getLldpRemPortId());
                         l11++;
                         break;
-                    case 3:
+                    case 105037825:
                         assertEquals(105037825,link.getLldpPortIfindex().intValue());
                         assertEquals("105037825",link.getLldpPortId());
                         assertEquals("242124daf63f",link.getLldpRemChassisId());
@@ -167,7 +167,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
                         assertEquals("3/2/c5/1",link.getLldpRemPortId());
                         l13++;
                         break;
-                    case 4:
+                    case 105070593:
                         assertEquals(105070593,link.getLldpPortIfindex().intValue());
                         assertEquals("105070593",link.getLldpPortId());
                         assertEquals("242124daf63f",link.getLldpRemChassisId());
@@ -181,8 +181,8 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
                         break;
                 }
             } else if (link.getNode().getId().intValue() == zsr002.getId().intValue()) {
-                switch (link.getLldpLocalPortNum()) {
-                    case 1:
+                switch (link.getLldpPortIfindex()) {
+                    case 104906753:
                         assertEquals(104906753,link.getLldpPortIfindex().intValue());
                         assertEquals("104906753",link.getLldpPortId());
                         assertEquals("50e0ef005000",link.getLldpRemChassisId());
@@ -191,7 +191,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
                         assertEquals("35700737",link.getLldpRemPortId());
                         l21++;
                         break;
-                    case 4:
+                    case 105037825:
                         assertEquals(105037825,link.getLldpPortIfindex().intValue());
                         assertEquals("105037825",link.getLldpPortId());
                         assertEquals("242124ece23f",link.getLldpRemChassisId());
@@ -200,7 +200,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
                         assertEquals("3/2/c5/1",link.getLldpRemPortId());
                         l24++;
                         break;
-                    case 5:
+                    case 105070593:
                         assertEquals(105070593,link.getLldpPortIfindex().intValue());
                         assertEquals("105070593",link.getLldpPortId());
                         assertEquals("242124ece23f",link.getLldpRemChassisId());
@@ -209,7 +209,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
                         assertEquals("3/2/c6/1",link.getLldpRemPortId());
                         l25++;
                         break;
-                    case 6:
+                    case 1140918299:
                         assertEquals(1140918299,link.getLldpPortIfindex().intValue());
                         assertEquals("1140918299",link.getLldpPortId());
                         assertEquals("e48184acbf34",link.getLldpRemChassisId());

@@ -420,6 +420,15 @@ public abstract class EventUtils {
         }
         return bldr.getEvent();
     }
+    
+    public static Event createNodeRescanEvent(String source, Integer nodeId) {
+        debug("CreateNodeUpdatedEvent: nodedId: %d", nodeId);
+        EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, source);
+        bldr.setNodeid(nodeId);
+        bldr.addParam(PARM_RESCAN_EXISTING, Boolean.TRUE.toString());
+        return bldr.getEvent();
+    }
+
 
     /**
      * <p>createNodeLocationChangedEvent</p>

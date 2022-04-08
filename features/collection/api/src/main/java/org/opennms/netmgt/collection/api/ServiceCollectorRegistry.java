@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collection.api;
 
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Enumerate and retrieve available {@link ServiceCollector} implementations.
@@ -37,7 +38,8 @@ import java.util.Set;
  */
 public interface ServiceCollectorRegistry {
 
-    ServiceCollector getCollectorByClassName(String className);
+    CompletableFuture<ServiceCollector> getCollectorFutureByClassName(String className);
+
 
     Set<String> getCollectorClassNames();
 

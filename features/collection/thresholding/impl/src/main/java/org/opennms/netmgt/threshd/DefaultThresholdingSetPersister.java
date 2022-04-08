@@ -69,32 +69,31 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
     private EntityScopeProvider entityScopeProvider;
 
     @Override
-    public void persistSet(ThresholdingSession session, ThresholdingSet set) {
+    public synchronized void persistSet(ThresholdingSession session, ThresholdingSet set) {
         thresholdingSets.put(session.getKey(), set);
     }
 
     @Override
-    public ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy) throws ThresholdInitializationException {
+    public synchronized ThresholdingSet getThresholdingSet(ThresholdingSession session, ThresholdingEventProxy eventProxy) throws ThresholdInitializationException {
         ThresholdingSessionKey key = session.getKey();
         ThresholdingSet tSet = thresholdingSets.get(key);
         if (tSet == null) {
             tSet = new ThresholdingSetImpl(key.getNodeId(), key.getLocation(), key.getServiceName(),
-                    ((ThresholdingSessionImpl) session).getRrdRepository(),
-                    ((ThresholdingSessionImpl) session).getServiceParameters(),
-                    ((ThresholdingSessionImpl) session).getResourceDao(), eventProxy, session, threshdDao,
-                    thresholdingDao, pollOutagesDao, ifLabelDao, entityScopeProvider);
+                                           ((ThresholdingSessionImpl) session).getServiceParameters(),
+                                           eventProxy, session, threshdDao,
+                                           thresholdingDao, pollOutagesDao, ifLabelDao, entityScopeProvider);
             thresholdingSets.put(key, tSet);
         }
         return tSet;
     }
 
     @Override
-    public void reinitializeThresholdingSets() {
-        thresholdingSets.values().forEach(set -> set.reinitialize());
+    public synchronized void reinitializeThresholdingSets() {
+        thresholdingSets.values().forEach(ThresholdingSet::reinitialize);
     }
 
     @Override
-    public void clear(ThresholdingSession session) {
+    public synchronized void clear(ThresholdingSession session) {
         ThresholdingSessionKey key = session.getKey();
         thresholdingSets.remove(key);
     }

@@ -3,19 +3,19 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
-	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="platformTransactionManager">
+	<bean class="org.mockito.Mockito" factory-method="mock" primary="true" id="platformTransactionManager">
         <constructor-arg value="org.springframework.transaction.PlatformTransactionManager"/>
     </bean>
 
-    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="nodeDao">
+    <bean class="org.mockito.Mockito" factory-method="mock" primary="true" id="nodeDao">
         <constructor-arg value="org.opennms.netmgt.dao.api.NodeDao"/>
     </bean>
 
-    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="ospfElementDao">
+    <bean class="org.mockito.Mockito" factory-method="mock" primary="true" id="ospfElementDao">
         <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao"/>
     </bean>
 
-    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="topologyEntityCache">
+    <bean class="org.mockito.Mockito" factory-method="mock" primary="true" id="topologyEntityCache">
         <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache"/>
     </bean>
 

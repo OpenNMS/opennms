@@ -86,7 +86,7 @@ public abstract class CollectorComplianceTest {
 
     public CollectionAgent createAgent(Integer ifaceId, IpInterfaceDao ifaceDao, PlatformTransactionManager transMgr) {
         return DefaultCollectionAgent.create(ifaceId, ifaceDao, transMgr);
-    };
+    }
 
     public void beforeMinion() { }
 
@@ -203,7 +203,7 @@ public abstract class CollectorComplianceTest {
     }
 
     private ServiceCollector getCollector() {
-        return serviceCollectorRegistry.getCollectorByClassName(collectorClass.getCanonicalName());
+        return serviceCollectorRegistry.getCollectorFutureByClassName(collectorClass.getCanonicalName()).getNow(null);
     }
 
     private ServiceCollector getNewCollector() {

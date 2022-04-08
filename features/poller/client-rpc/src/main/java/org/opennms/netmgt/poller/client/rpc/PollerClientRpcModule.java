@@ -63,7 +63,7 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
     @Override
     public CompletableFuture<PollerResponseDTO> execute(PollerRequestDTO request) {
         final String className = request.getClassName();
-        final ServiceMonitor monitor = serviceMonitorRegistry.getMonitorByClassName(className);
+        final ServiceMonitor monitor = serviceMonitorRegistry.getMonitorFutureByClassName(className).getNow(null);
         if (monitor == null) {
             return CompletableFuture.completedFuture(new PollerResponseDTO(PollStatus.unknown("No monitor found with class name '" + className + "'.")));
         }

@@ -60,7 +60,6 @@ import org.opennms.netmgt.collection.support.ConstantTimeKeeper;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -175,7 +174,7 @@ class CollectableService implements ReadyRunnable {
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
         try {
-            m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository, m_params);
+            m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_params);
         } catch (ThresholdInitializationException e) {
             LOG.error("Error when initializing Thresholding. No Thresholding will be performed on this service.", e);
         }

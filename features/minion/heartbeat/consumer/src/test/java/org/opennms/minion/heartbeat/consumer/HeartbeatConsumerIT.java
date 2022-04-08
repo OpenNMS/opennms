@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.hasSize;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -69,6 +70,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
 })
@@ -132,7 +134,7 @@ public class HeartbeatConsumerIT {
 
         //Verify that eventually all the minions get persisted in imports.
         await().atMost(45, TimeUnit.SECONDS).until(() ->
-                heartbeatConsumer.getDeployedForeignSourceRepository().getRequisitions().stream()
+                Collections.unmodifiableSet(heartbeatConsumer.getDeployedForeignSourceRepository().getRequisitions()).stream()
                         .mapToInt(Requisition::getNodeCount).sum() == 500);
 
         // Now Mock NodeDao to return true for minion existence.
@@ -155,7 +157,7 @@ public class HeartbeatConsumerIT {
         await().atMost(10, TimeUnit.SECONDS).until(() -> minionDao.countAll() == 1000);
 
         // Verify that no new requisition nodes get added and provisioning got short-circuited
-        Assert.assertThat(heartbeatConsumer.getDeployedForeignSourceRepository().getRequisitions().stream()
+        Assert.assertThat(Collections.unmodifiableSet(heartbeatConsumer.getDeployedForeignSourceRepository().getRequisitions()).stream()
                 .mapToInt(Requisition::getNodeCount).sum(), Matchers.is(500));
 
         // Verify that some of the heartbeats are rejected.

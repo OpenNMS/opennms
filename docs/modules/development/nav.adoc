@@ -31,6 +31,7 @@
 *** xref:rest/graph.adoc[]
 *** xref:rest/groups.adoc[]
 *** xref:rest/heatmap.adoc[]
+*** xref:rest/health_rest.adoc[]
 *** xref:rest/ifservices.adoc[]
 *** xref:rest/ipinterfaces.adoc[]
 *** xref:rest/ksc_reports.adoc[]
