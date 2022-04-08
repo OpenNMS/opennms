@@ -23,7 +23,7 @@ ifeval::["{page-component-title}" == "Horizon"]
 Address any issues that might affect you.
 
 NOTE: Release notes for versions 28 and 29 are not available at the vault docs link (above) at this time.
-Please check the branches on GitHub for those release notes.
+Please check the branches on https://github.com/OpenNMS/opennms/releases[GitHub] for those release notes.
 endif::[]
 
 * Stop OpenNMS and PostgreSQL
