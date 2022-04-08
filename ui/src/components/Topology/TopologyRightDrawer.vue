@@ -10,7 +10,7 @@
       <FeatherListItem
         v-for="graph in powerGridGraphs.graphs"
         :key="graph.label"
-        @click="selectGraph(graph.label)"
+        @click="selectTopologyGraph(graph.namespace)"
       >{{ graph.label }}</FeatherListItem>
     </FeatherList>
   </FeatherDrawer>
@@ -26,7 +26,7 @@ const store = useStore()
 const isOpen = computed<boolean>(() => store.state.topologyModule.isRightDrawerOpen)
 const powerGridGraphs = computed<TopologyGraphList>(() => store.getters['topologyModule/getPowerGridGraphs'])
 
-const selectGraph = (label: string) => store.dispatch('topologyModule/selectGraph', label)
+const selectTopologyGraph = (namespace: string) => store.dispatch('topologyModule/getTopologyGraphByContainerAndNamespace', { containerId: powerGridGraphs.value.id, namespace })
 const closeDrawer = () => store.dispatch('topologyModule/closeRightDrawer')
 </script>
 

@@ -54,6 +54,13 @@ const getTopologyGraphs = async (context: VuexContext) => {
   context.commit('SAVE_TOPOLOGY_GRAPHS', topologyGraphs)
 }
 
+const getTopologyGraphByContainerAndNamespace = async (context: VuexContext, { containerId, namespace}: Record<string, string>) => {
+  const topologyGraph = await API.getTopologyGraphByContainerAndNamespace(containerId, namespace)
+  if (topologyGraph) {
+    parseVerticesAndEdges(topologyGraph, context)
+  }
+}
+
 const setSemanticZoomLevel = (context: ContextWithState, SML: number) => {
   context.commit('SET_SEMANTIC_ZOOM_LEVEL', SML)
   context.dispatch('getTopologyDataByLevelAndFocus')
@@ -186,5 +193,6 @@ export default {
   setModalState,
   changeIcon,
   updateVerticesIconPaths,
-  getTopologyGraphs
+  getTopologyGraphs,
+  getTopologyGraphByContainerAndNamespace
 }

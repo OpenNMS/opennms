@@ -51,4 +51,13 @@ const getTopologyGraphs = async (): Promise<TopologyGraphList[]> => {
   }
 }
 
-export { getVerticesAndEdges, getTopologyDataByLevelAndFocus, getTopologyGraphs }
+const getTopologyGraphByContainerAndNamespace = async (containerId: string, namespace: string): Promise<VerticesAndEdges | false> => {
+  try {
+    const resp = await v2.get(`graphs/${containerId}/${namespace}`)
+    return resp.data
+  } catch (error) {
+    return false
+  }
+}
+
+export { getVerticesAndEdges, getTopologyDataByLevelAndFocus, getTopologyGraphs, getTopologyGraphByContainerAndNamespace }
