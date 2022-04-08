@@ -12,7 +12,7 @@
     <description>OSGi wrapper for the Jira Client API.</description>
 
     <properties>
-        <jiraClientVersion>3.0.0</jiraClientVersion>
+        <jiraClientVersion>5.2.2</jiraClientVersion>
     </properties>
 
     <build>
@@ -86,6 +86,14 @@
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>javax.ws.rs</groupId>
+                    <artifactId>jsr311-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>com.sun.xml.bind</groupId>
                     <artifactId>jaxb-impl</artifactId>
                 </exclusion>
@@ -107,6 +115,14 @@
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.ws.rs</groupId>
+                    <artifactId>jsr311-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>com.sun.xml.bind</groupId>
