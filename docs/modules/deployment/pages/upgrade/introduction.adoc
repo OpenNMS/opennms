@@ -5,7 +5,7 @@
 This section outlines the steps to follow to upgrade to a newer version of {page-component-title}.
 You may need to complete additional steps to upgrade in a more complex setup (running more than one OpenNMS instance, database migration requirements, age of current version, and so on).
 
-A basic upgrade with one instance takes about an hour.
+A basic upgrade of one instance can take about an hour.
 This time varies, and will be longer depending on how customized and complex your setup is.
 
 [[byb_upgrade]]
