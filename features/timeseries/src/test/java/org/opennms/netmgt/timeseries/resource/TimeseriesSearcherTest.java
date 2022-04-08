@@ -72,17 +72,17 @@ public class TimeseriesSearcherTest {
     @Test
     public void shouldFindAllMetrics() throws StorageException {
 
-        Metric abc = createAndAddMetric("a/b", "c");
-        Metric abcd1 = createAndAddMetric("a/b/c", "d1");
-        Metric abcd1e = createAndAddMetric("a/b/c/d1", "e");
-        Metric abcd2 = createAndAddMetric("a/b/c", "d2");
-        test("a",  abc);
-        test("a",  abc); // test cache: we should not have another invocation
+        Metric abcde = createAndAddMetric("a/b/c/d", "e");
+        Metric abcdef1 = createAndAddMetric("a/b/c/d/e", "f1");
+        Metric abcdef1g = createAndAddMetric("a/b/c/d/e/f1", "g");
+        Metric abcdef2 = createAndAddMetric("a/b/c/d/e", "f2");
+        test("a/b/c",  abcde);
+        test("a/b/c",  abcde); // test cache: we should not have another invocation
         verify(storage, times(1)).findMetrics(any());
 
-        test("a/b", abcd1, abcd2);
-        test("a/b/c", abcd1e);
-        test("a/b/not-existing");
+        test("a/b/c/d", abcdef1, abcdef2);
+        test("a/b/c/d/e", abcdef1g);
+        test("a/b/c/d/not-existing");
 
         // verify wildcard cache: we expect only 1 more getMetrics() invocation for the 3 calls above
         verify(storage, times(2)).findMetrics(any());

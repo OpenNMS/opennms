@@ -47,9 +47,14 @@ import org.opennms.netmgt.model.ResourcePath;
  */
 public final class TimeseriesUtils {
 
-    public static final String PREFIX_EXTERNAL_TAG =  "_ext_";
-
-    public static final int WILDCARD_INDEX_NO = 2; // => node level
+    /**
+     * This constant defines at which level in a resource path we start to query for multiple metrics.
+     * To save queries, we want to get all resources under a node.
+     * requisitions have the node at the 4th position, example: snmp/fs/xx/4/
+     * auto detected metrics have the node at 2nd position, example: snmp/4/mib2-tcp
+     * since we can't distinguish we set the level to 4.
+     */
+    public static final int WILDCARD_INDEX_NO = 4;
 
     /**
      * Converts a {@link org.opennms.netmgt.model.ResourcePath} to a String.
