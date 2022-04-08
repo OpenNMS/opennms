@@ -35,46 +35,131 @@
                 <version>${karafVersion}</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <javase>1.8</javase>
+
                     <bootRepositories>
                         <!--Karaf standard features-->
                         <repository>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</repository>
                         <!-- OPENNMS: Replace the spring-legacy features files with our modified versions -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</repository>
+
                         <!-- OPENNMS: Add the OpenNMS feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
-                        <!-- OPENNMS: Add the OpenNMS Minion feature repository -->
-                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</repository>
                     </bootRepositories>
-                    <installedFeatures>
-                        <feature>wrapper</feature>
-                    </installedFeatures>
+
                     <startupFeatures>
                         <feature>eventadmin</feature>
                     </startupFeatures>
                     <bootFeatures>
-                        <feature>wrap</feature>
-                        <feature>aries-blueprint</feature>
-                        <feature>shell</feature>
-                        <feature>shell-compat</feature>
-                        <feature>feature</feature>
-                        <feature>jaas</feature>
-                        <feature>ssh</feature>
-                        <feature>management</feature>
-                        <feature>bundle</feature>
-                        <feature>config</feature>
-                        <feature>deployer</feature>
-                        <feature>diagnostic</feature>
-                        <feature>feature</feature>
-                        <feature>instance</feature>
-                        <feature>kar</feature>
-                        <feature>log</feature>
-                        <feature>package</feature>
-                        <feature>service</feature>
-                        <feature>system</feature>
+                        <feature>standard</feature>
+                        <feature>eventadmin</feature>
 
-                        <!-- OPENNMS: Add http, http-whiteboard to the default list of features -->
+                        <!-- Add the OpenNMS whiteboard to the default list of features -->
                         <feature>opennms-http-whiteboard</feature>
+
+                        <!-- early bootstrap startup -->
+                        <feature>opennms-jaas-login-module</feature>
+                        <feature>karaf-extender</feature>
+                        <feature>opennms-health-rest</feature>
+
+                        <!-- main services startup -->
+                        <feature>datachoices</feature>
+                        <feature>geolocation</feature>
+                        <feature>ifttt-integration</feature>
+                        <feature>opennms-identity</feature>
+                        <feature>opennms-api-layer</feature>
+                        <feature>opennms-blobstore-postgres</feature>
+                        <feature>opennms-config-management</feature>
+                        <feature>opennms-core-ipc-rpc-commands</feature>
+                        <feature>opennms-deviceconfig-monitor</feature>
+                        <feature>opennms-deviceconfig-sink-consumer</feature>
+                        <feature>opennms-deviceconfig-rest</feature>
+                        <feature>opennms-deviceconfig-service</feature>
+                        <feature>opennms-dhcpd</feature>
+                        <feature>opennms-dnsresolver-netty</feature>
+                        <feature>opennms-endpoints-grafana</feature>
+                        <feature>opennms-flows</feature>
+                        <feature>opennms-graphml</feature>
+                        <feature>opennms-graphs</feature>
+                        <feature>opennms-osgi-core-rest</feature>
+                        <feature>opennms-reporting</feature>
+                        <feature>opennms-scv-rest</feature>
+                        <feature>opennms-search</feature>
+                        <feature>opennms-telemetry-bmp</feature>
+                        <feature>opennms-telemetry-collection</feature>
+                        <feature>opennms-telemetry-graphite</feature>
+                        <feature>opennms-telemetry-jti</feature>
+                        <feature>opennms-telemetry-nxos</feature>
+                        <feature>opennms-telemetry-openconfig</feature>
+                        <feature>opennms-topology-runtime-application</feature>
+                        <feature>opennms-topology-runtime-asset</feature>
+                        <feature>opennms-topology-runtime-browsers</feature>
+                        <feature>opennms-topology-runtime-bsm</feature>
+                        <feature>opennms-topology-runtime-graphml</feature>
+                        <feature>opennms-topology-runtime-linkd</feature>
+                        <feature>opennms-topology-runtime-pathoutage</feature>
+                        <feature>opennms-topology-runtime-vmware</feature>
+                        <feature>osgi-nrtg-local</feature>
+
+                        <!-- Vaadin UI -->
+                        <feature>vaadin-adminpage</feature>
+                        <feature>vaadin-dashboard</feature>
+                        <feature>vaadin-jmxconfiggenerator</feature>
+                        <feature>vaadin-node-maps</feature>
+                        <feature>vaadin-snmp-events-and-metrics</feature>
+                        <feature>vaadin-surveillance-views</feature>
+
+                        <!-- Vaadin Dashboard Plugins -->
+                        <feature>dashlet-alarms</feature>
+                        <feature>dashlet-bsm</feature>
+                        <feature>dashlet-charts</feature>
+                        <feature>dashlet-grafana</feature>
+                        <feature>dashlet-image</feature>
+                        <feature>dashlet-ksc</feature>
+                        <feature>dashlet-map</feature>
+                        <feature>dashlet-rtc</feature>
+                        <feature>dashlet-rrd</feature>
+                        <feature>dashlet-summary</feature>
+                        <feature>dashlet-surveillance</feature>
+                        <feature>dashlet-topology</feature>
+                        <feature>dashlet-url</feature>
+
+                        <!-- shell commands (and their dependencies) -->
+                        <feature>opennms-activemq-shell</feature>
+                        <feature>opennms-collection-commands</feature>
+                        <feature>opennms-core-ipc-kafka-shell</feature>
+                        <feature>opennms-core-ipc-twin-shell</feature>
+                        <feature>opennms-dnsresolver-shell</feature>
+                        <feature>opennms-events-commands</feature>
+                        <feature>opennms-icmp-commands</feature>
+                        <feature>opennms-jsonstore-shell</feature>
+                        <feature>opennms-measurements-shell</feature>
+                        <feature>opennms-poller-shell</feature>
+                        <feature>opennms-provisioning-shell</feature>
+                        <feature>opennms-send-event-command</feature>
+                        <feature>opennms-snmp-commands</feature>
+                        <feature>opennms-threshold-states-shell</feature>
+                        <feature>org.opennms.features.bsm.shell-commands</feature>
+
+                        <!-- always load karaf health last, to trigger core Karaf startup complete -->
+                        <feature>opennms-karaf-health</feature>
                     </bootFeatures>
+                    <installedFeatures>
+                        <!-- general priming to make sure the right spring is started -->
+                        <feature>spring/${springVersion}</feature>
+                        <feature>spring-aspects/${springVersion}</feature>
+                        <feature>spring-instrument/${springVersion}</feature>
+                        <feature>spring-jdbc/${springVersion}</feature>
+                        <feature>spring-jms/${springVersion}</feature>
+
+                        <!-- karaf wrapper feature -->
+                        <feature>wrapper</feature>
+                    </installedFeatures>
+
+                    <blacklistedBundles>
+                        <bundle>mvn:org.springframework/*</bundle>
+                    </blacklistedBundles>
+
                     <libraries>
                         <library>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/2.11.0_1;type:=endorsed;export:=true;delegate:=true</library>
                         <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${karaf.servicemix.specs.version};type:=endorsed;export:=true</library>
@@ -100,7 +185,9 @@
                         <!-- OPENNMS: Add our custom branding JAR -->
                         <library>mvn:org.opennms.container/org.opennms.container.branding/${project.version};type:=default;export:=true</library>
                     </libraries>
-                    <javase>1.8</javase>
+
+                    <generateConsistencyReport>${project.build.directory}</generateConsistencyReport>
+                    <consistencyReportProjectName>OpenNMS Core (full)</consistencyReportProjectName>
                 </configuration>
             </plugin>
             <plugin>
@@ -154,6 +241,7 @@
     </build>
 
     <dependencies>
+        <!-- Karaf internals and features -->
         <dependency>
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>framework</artifactId>
@@ -170,30 +258,16 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--
-            This is the original version of mvn:org.opennms.karaf/opennms//xml/standard so it
-            shouldn't be necessary but the karaf-maven-plugin doesn't resolve the bootFeatures
-            without it. The plugin looks at the classifier and scope when it does its magic so
-            something about mvn:org.opennms.karaf/opennms//xml/standard doesn't line up like
-            the original one does.
-        -->
         <dependency>
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>standard</artifactId>
             <version>${karafVersion}</version>
             <classifier>features</classifier>
             <type>xml</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                </exclusion>
-            </exclusions>
+            <scope>runtime</scope>
         </dependency>
+
+        <!-- OpenNMS Karaf features -->
         <dependency>
             <groupId>org.opennms.karaf</groupId>
             <artifactId>opennms</artifactId>
@@ -210,14 +284,8 @@
             <type>xml</type>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.karaf</groupId>
-            <artifactId>opennms</artifactId>
-            <version>${project.version}</version>
-            <classifier>minion</classifier>
-            <type>xml</type>
-            <scope>runtime</scope>
-        </dependency>
+
+        <!-- OpenNMS Karaf tools -->
         <dependency>
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>felix-dependencies</artifactId>

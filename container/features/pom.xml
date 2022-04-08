@@ -251,25 +251,9 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.ipc.common</groupId>
-      <artifactId>org.opennms.core.ipc.common.aws-sqs</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.ipc.common</groupId>
       <artifactId>org.opennms.core.ipc.common.kafka-shell</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.ipc.rpc</groupId>
-      <artifactId>org.opennms.core.ipc.rpc.aws-sqs-impl</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
-      <artifactId>org.opennms.core.ipc.sink.aws.sqs.client</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.ipc.sink.camel</groupId>
@@ -354,11 +338,6 @@
       <artifactId>opennms-integration-tsrm</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.api-layer</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
