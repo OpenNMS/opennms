@@ -435,41 +435,47 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     }
 
     private DeviceConfigDTO createDeviceConfigDto(DeviceConfigQueryResult queryResult) {
-        Pair<String,String> pair = configToText(queryResult.getEncoding(), queryResult.getConfig());
-        final String encoding = pair.getLeft();
-        final String config = pair.getRight();
 
-        var dto = new DeviceConfigDTO(
-            queryResult.getId(),
-            queryResult.getMonitoredServiceId(),
-            queryResult.getIpAddr(),
-            queryResult.getCreatedTime(),
-            queryResult.getLastUpdated(),
-            queryResult.getLastSucceeded(),
-            queryResult.getLastFailed(),
-            encoding,
-            queryResult.getConfigType(),
-            queryResult.getFilename(),
-            config,
-            queryResult.getFailureReason(),
-            queryResult.getServiceName()
-        );
+        try {
+            Pair<String, String> pair = configToText(queryResult.getEncoding(), queryResult.getConfig());
+            final String encoding = pair.getLeft();
+            final String config = pair.getRight();
 
-        // determine backup status, not handling all cases for now
-        boolean backupSuccess = determineBackupSuccess(queryResult.getLastSucceeded(), queryResult.getLastUpdated());
-        dto.setIsSuccessfulBackup(backupSuccess);
-        dto.setBackupStatus(backupSuccess ? BACKUP_STATUS_SUCCESS : BACKUP_STATUS_FAILED);
+            var dto = new DeviceConfigDTO(
+                    queryResult.getId(),
+                    queryResult.getMonitoredServiceId(),
+                    queryResult.getIpAddr(),
+                    queryResult.getCreatedTime(),
+                    queryResult.getLastUpdated(),
+                    queryResult.getLastSucceeded(),
+                    queryResult.getLastFailed(),
+                    encoding,
+                    queryResult.getConfigType(),
+                    queryResult.getFilename(),
+                    config,
+                    queryResult.getFailureReason(),
+                    queryResult.getServiceName()
+            );
 
-        dto.setIpInterfaceId(queryResult.getIpInterfaceId());
-        dto.setNodeId(queryResult.getNodeId());
-        dto.setNodeLabel(queryResult.getNodeLabel());
-        dto.setDeviceName(queryResult.getNodeLabel());
-        dto.setLocation(queryResult.getLocation());
-        dto.setOperatingSystem(queryResult.getOperatingSystem());
+            // determine backup status, not handling all cases for now
+            boolean backupSuccess = determineBackupSuccess(queryResult.getLastSucceeded(), queryResult.getLastUpdated());
+            dto.setIsSuccessfulBackup(backupSuccess);
+            dto.setBackupStatus(backupSuccess ? BACKUP_STATUS_SUCCESS : BACKUP_STATUS_FAILED);
 
-        populateScheduleInfo(dto);
+            dto.setIpInterfaceId(queryResult.getIpInterfaceId());
+            dto.setNodeId(queryResult.getNodeId());
+            dto.setNodeLabel(queryResult.getNodeLabel());
+            dto.setDeviceName(queryResult.getNodeLabel());
+            dto.setLocation(queryResult.getLocation());
+            dto.setOperatingSystem(queryResult.getOperatingSystem());
 
-        return dto;
+            populateScheduleInfo(dto);
+            return dto;
+        } catch (Exception e) {
+            LOG.error("Exception while creating DTO for Rest", e);
+        }
+
+        return null;
     }
 
     private DeviceConfigDTO createDeviceConfigDto(DeviceConfig deviceConfig) {

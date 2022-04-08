@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.base.Strings;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
@@ -67,6 +68,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     public static final String SSH_TIMEOUT = "ssh-timeout";
     public static final String PASSWORD = "password";
     public static final String LAST_RETRIEVAL = "lastRetrieval";
+    public static final String FAILURE_REASON = "failureReason";
     public static final String SCRIPT_FILE = "script-file";
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitor.class);
@@ -92,6 +94,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         
         final var deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
         deviceConfigOptional.ifPresent(deviceConfig -> params.put(LAST_RETRIEVAL, String.valueOf(deviceConfig.getLastUpdated().getTime())));
+        deviceConfigOptional.ifPresent(deviceConfig -> params.put(FAILURE_REASON, deviceConfig.getFailureReason()));
         
         final String scriptFile = getKeyedString(parameters, SCRIPT_FILE, null);
         try {
@@ -129,7 +132,13 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         final Date nextRun = getNextRunDate(cronSchedule, lastRun);
 
         if (!triggeredPoll && !nextRun.before(new Date())) {
-            return PollStatus.unknown("Skipping. Next retrieval scheduled for " + nextRun);
+            // Send previous status back based on failure reason.
+            String failureReason = getKeyedString(parameters, FAILURE_REASON, null);
+            if (Strings.isNullOrEmpty(failureReason)) {
+                return PollStatus.up();
+            } else {
+                return PollStatus.down(failureReason);
+            }
         }
 
         String script = getObjectAsStringFromParams(parameters, SCRIPT);
