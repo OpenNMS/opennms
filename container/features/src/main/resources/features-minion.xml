@@ -9,6 +9,7 @@
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
     <feature name="minion-core-api" description="OpenNMS :: Distributed :: Core :: API" version="${project.version}">
+      <feature>opennms-spring-extender</feature>
       <feature>opennms-distributed-core-api</feature>
     </feature>
 
@@ -129,6 +130,7 @@
     </feature>
 
     <feature name="minion-telemetryd-receivers" description="Minion :: Telemetry :: Receivers" version="${project.version}">
+      <feature version="${guavaVersion}">guava</feature>
       <feature version="${netty4Version}">netty4</feature>
       <feature>opennms-dnsresolver-api</feature>
       <feature>dropwizard-metrics</feature>
