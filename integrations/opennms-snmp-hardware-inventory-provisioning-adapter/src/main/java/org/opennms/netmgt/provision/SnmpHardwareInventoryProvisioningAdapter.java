@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -217,19 +218,13 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
      */
     private void initializeVendorAttributes() {
         m_vendorAttributes.clear();
-        for (HwEntityAttributeType type : m_hwEntityAttributeTypeDao.findAll()) {
-            LOG.debug("Loading attribute type {}", type);
-            m_vendorAttributes.put(type.getSnmpObjId(), type);
-        }
+        m_hwEntityAttributeTypeDao.deleteAllEntities((Collection<HwEntityAttributeType>) m_hwEntityAttributeTypeDao.findAll());
         for (HwExtension ext : m_hwInventoryAdapterConfigDao.getConfiguration().getExtensions()) {
             for (MibObj obj : ext.getMibObjects()) {
-                HwEntityAttributeType type = m_vendorAttributes.get(obj.getOid());
-                if (type == null) {
-                    type = new HwEntityAttributeType(obj.getOid().toString(), obj.getAlias(), obj.getType());
-                    LOG.info("Creating attribute type {}", type);
-                    m_hwEntityAttributeTypeDao.save(type);
-                    m_vendorAttributes.put(type.getSnmpObjId(), type);
-                }
+                HwEntityAttributeType  type = new HwEntityAttributeType(obj.getOid().toString(), obj.getAlias(), obj.getType());
+                LOG.info("Creating attribute type {}", type);
+                m_hwEntityAttributeTypeDao.save(type);
+                m_vendorAttributes.put(type.getSnmpObjId(), type);
             }
         }
     }

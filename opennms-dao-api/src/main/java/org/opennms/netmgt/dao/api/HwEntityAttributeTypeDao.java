@@ -29,6 +29,9 @@
 package org.opennms.netmgt.dao.api;
 
 import org.opennms.netmgt.model.HwEntityAttributeType;
+import org.springframework.dao.DataAccessException;
+
+import java.util.Collection;
 
 /**
  * The Interface HwEntityAttributeTypeDao.
@@ -52,5 +55,12 @@ public interface HwEntityAttributeTypeDao extends OnmsDao<HwEntityAttributeType,
      * @return the hardware entity attribute type
      */
     public HwEntityAttributeType findTypeByOid(String oid);
+
+
+    /**
+     *  Delete all records
+     * @param entities
+     */
+    public void deleteAllEntities(final Collection<HwEntityAttributeType> entities);
 
 }

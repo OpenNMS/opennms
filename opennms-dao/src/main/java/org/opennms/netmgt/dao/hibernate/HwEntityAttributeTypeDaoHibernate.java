@@ -31,6 +31,8 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
 import org.opennms.netmgt.model.HwEntityAttributeType;
 
+import java.util.Collection;
+
 /**
  * The Class HwEntityAttributeTypeDaoHibernate.
  * 
@@ -59,6 +61,11 @@ public class HwEntityAttributeTypeDaoHibernate extends AbstractDaoHibernate<HwEn
     @Override
     public HwEntityAttributeType findTypeByOid(String oid) {
         return (HwEntityAttributeType) findUnique("from HwEntityAttributeType t where t.oid = ?", oid);
+    }
+
+    @Override
+    public void deleteAllEntities(Collection<HwEntityAttributeType> entities) {
+        deleteAll(entities);
     }
 
 }
