@@ -53,6 +53,10 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>bson</artifactId>
     </dependency>

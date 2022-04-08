@@ -88,6 +88,10 @@
         <artifactId>org.opennms.core.ipc.rpc.common</artifactId>
       </dependency>
       <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+      </dependency>
+      <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>osgi.cmpn</artifactId>
         <scope>provided</scope>

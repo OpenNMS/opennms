@@ -67,6 +67,10 @@
       <version>${lmaxDisruptorVersion}</version>
     </dependency>
     <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>args4j</groupId>
       <artifactId>args4j</artifactId>
       <version>${args4jVersion}</version>
