@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Paths;
@@ -48,6 +49,7 @@ import java.util.Objects;
 @XmlRootElement(name = "collection")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
+@XmlType(propOrder={"rrd", "paramValues"})
 public class Collection implements Serializable {
     private static final long serialVersionUID = 2L;
 
