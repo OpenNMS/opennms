@@ -23,7 +23,6 @@
             <groupId>org.opennms.container.bridge</groupId>
             <artifactId>org.opennms.container.bridge.api</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -35,7 +34,6 @@
             <groupId>com.eclipsesource.jaxrs</groupId>
             <artifactId>publisher-api</artifactId>
             <version>${osgiJaxRsVersion}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 
