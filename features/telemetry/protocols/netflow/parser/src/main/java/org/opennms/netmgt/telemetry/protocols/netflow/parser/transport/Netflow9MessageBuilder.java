@@ -40,13 +40,14 @@ import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Me
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.IllegalFlowException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.RecordEnrichment;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.Direction;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.NetflowVersion;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.SamplingAlgorithm;
+
+import com.google.protobuf.UInt32Value;
 
 public class Netflow9MessageBuilder implements MessageBuilder {
 
@@ -83,6 +84,10 @@ public class Netflow9MessageBuilder implements MessageBuilder {
         Long lastSwitched = null;
         Long flowStartMilliseconds = null;
         Long flowEndMilliseconds = null;
+        UInt32Value ingressPhysicalInterface = null;
+        UInt32Value egressPhysicalInterface = null;
+        UInt32Value inputSnmp = null;
+        UInt32Value outputSnmp = null;
 
 	if (this.flowSamplingIntervalFallback != null) {
 	    builder.setSamplingInterval(setDoubleValue(this.flowSamplingIntervalFallback));
@@ -157,13 +162,13 @@ public class Netflow9MessageBuilder implements MessageBuilder {
                     lastSwitched = getLongValue(value);
                     break;
                 case "INPUT_SNMP":
-                    getUInt32Value(value).ifPresent(builder::setInputSnmpIfindex);
+                    inputSnmp = getUInt32Value(value).orElse(null);
                     break;
                 case "IP_PROTOCOL_VERSION":
                     getUInt32Value(value).ifPresent(builder::setIpProtocolVersion);
                     break;
                 case "OUTPUT_SNMP":
-                    getUInt32Value(value).ifPresent(builder::setOutputSnmpIfindex);
+                    outputSnmp = getUInt32Value(value).orElse(null);
                     break;
                 case "IPV6_NEXT_HOP":
                     ipv6NextHop = getInetAddress(value);
@@ -241,6 +246,12 @@ public class Netflow9MessageBuilder implements MessageBuilder {
                 case "flowEndMilliseconds":
                     flowEndMilliseconds = getLongValue(value);
                     break;
+                case "ingressPhysicalInterface":
+                    ingressPhysicalInterface = getUInt32Value(value).orElse(null);
+                    break;
+                case "egressPhysicalInterface":
+                    egressPhysicalInterface = getUInt32Value(value).orElse(null);
+                    break;
             }
         }
 
@@ -265,6 +276,17 @@ public class Netflow9MessageBuilder implements MessageBuilder {
                 builder.setLastSwitched(setLongValue(flowEndMilliseconds));
             }
         }
+
+        // Set input interface
+        first(inputSnmp, ingressPhysicalInterface).ifPresent(ifIndex -> {
+            builder.setInputSnmpIfindex(ifIndex);
+        });
+
+        // Set output interface
+        first(outputSnmp, egressPhysicalInterface).ifPresent(ifIndex -> {
+            builder.setOutputSnmpIfindex(ifIndex);
+        });
+
 
         // Set Destination address and host name.
         first(ipv6DstAddress, ipv4DstAddress).ifPresent(inetAddress -> {
