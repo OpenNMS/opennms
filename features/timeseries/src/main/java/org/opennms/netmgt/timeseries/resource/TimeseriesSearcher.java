@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.timeseries.resource;
 
-import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.WILDCARD_INDEX_NO;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toSearchRegex;
 
@@ -50,6 +49,7 @@ import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.TagMatcher;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTagMatcher;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,10 +101,12 @@ public class TimeseriesSearcher {
             return metrics;
         }
 
-        // in order not to call the TimeseriesStorage implementation for every resource, we query all resources below a certain
-        // depth (defined as WILDCARD_INDEX_NO).
-        if (path.elements().length >= WILDCARD_INDEX_NO) {
-            String wildcardPath = toResourceId(ResourcePath.get(Arrays.asList(path.elements()).subList(0, WILDCARD_INDEX_NO)));
+        // if we detect a query for resources bellow a node, we opt to make a single call to the TimeseriesStorage implementation
+        // to retrieve all resources for that node in one sweep, cache all the results, and return the match for the specific
+        // resource requested
+        int numPathElementsToNodeLevel = getNumPathElementsToNodeLevel(path);
+        if (numPathElementsToNodeLevel > 0) {
+            String wildcardPath = toResourceId(ResourcePath.get(Arrays.asList(path.elements()).subList(0, numPathElementsToNodeLevel)));
             Set<Metric> metricsFromWildcard = getMetricsBelowWildcardPath(wildcardPath);
 
             for (Metric metric : metricsFromWildcard) {
@@ -133,6 +135,25 @@ public class TimeseriesSearcher {
             metrics = getMetricFromCacheOrLoad(indexMatcher);
         }
         return metrics;
+    }
+
+    /**
+     * Returns the number of elements that correspond to the "node resource" for the given path.
+     * @param path resource path
+     * @return number of elements or -1 if the given path does not map to a node
+     */
+    public static int getNumPathElementsToNodeLevel(ResourcePath path) {
+        final String[] elements = path.elements();
+        if (elements.length > 2
+                && ResourceTypeUtils.SNMP_DIRECTORY.equals(elements[0])
+                && !ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(elements[1])) {
+            return 2;
+        } else if (elements.length > 4
+                && ResourceTypeUtils.SNMP_DIRECTORY.equals(elements[0])
+                && ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(elements[1])) {
+            return 4;
+        }
+        return -1;
     }
 
     private Set<Metric> getMetricFromCacheOrLoad(TagMatcher matcher) throws StorageException {

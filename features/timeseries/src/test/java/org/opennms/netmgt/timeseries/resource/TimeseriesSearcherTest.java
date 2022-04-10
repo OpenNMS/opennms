@@ -30,6 +30,7 @@ package org.opennms.netmgt.timeseries.resource;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -71,21 +72,40 @@ public class TimeseriesSearcherTest {
 
     @Test
     public void shouldFindAllMetrics() throws StorageException {
+        // Node with FS/FID
+        Metric n1_loadavg1m = createAndAddMetric("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID/node-stats", "loadavg1m");
+        Metric n1_loadavg5m = createAndAddMetric("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID/node-stats", "loadavg5m");
+        Metric n1_ifHcInOctects = createAndAddMetric("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID/eth0/mib2-stats", "ifHcInOctects");
+        Metric n1_ifHcOutOctects = createAndAddMetric("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID/eth0/mib2-stats", "ifHcOutOctects");
+        Metric n1_dskUsage = createAndAddMetric("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID/dskIndex/C_/disk-stats", "dskUsage");
 
-        Metric abcde = createAndAddMetric("a/b/c/d", "e");
-        Metric abcdef1 = createAndAddMetric("a/b/c/d/e", "f1");
-        Metric abcdef1g = createAndAddMetric("a/b/c/d/e/f1", "g");
-        Metric abcdef2 = createAndAddMetric("a/b/c/d/e", "f2");
-        test("a/b/c",  abcde);
-        test("a/b/c",  abcde); // test cache: we should not have another invocation
+        // Node without FS/FID
+        Metric n2_loadavg1m = createAndAddMetric("snmp/2/node-stats", "loadavg1m");
+        Metric n2_loadavg5m = createAndAddMetric("snmp/2/node-stats", "loadavg5m");
+        Metric n2_ifHcInOctects = createAndAddMetric("snmp/2/eth0/mib2-stats", "ifHcInOctects");
+        Metric n2_ifHcOutOctects = createAndAddMetric("snmp/2/eth0/mib2-stats", "ifHcOutOctects");
+        Metric n2_dskUsage = createAndAddMetric("snmp/2/dskIndex/C_/disk-stats", "dskUsage");
+
+        test("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID",  n1_loadavg1m, n1_loadavg5m);
+        test("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID",  n1_loadavg1m, n1_loadavg5m); // test cache: we should not have another invocation
         verify(storage, times(1)).findMetrics(any());
+        clearInvocations(storage);
 
-        test("a/b/c/d", abcdef1, abcdef2);
-        test("a/b/c/d/e", abcdef1g);
-        test("a/b/c/d/not-existing");
+        test("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID/eth0", n1_ifHcInOctects, n1_ifHcOutOctects);
+        test("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID/dskIndex/C_", n1_dskUsage);
+        test("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID/someNonExistantType");
 
         // verify wildcard cache: we expect only 1 more getMetrics() invocation for the 3 calls above
-        verify(storage, times(2)).findMetrics(any());
+        verify(storage, times(1)).findMetrics(any());
+        clearInvocations(storage);
+
+        test("snmp/2/eth0", n2_ifHcInOctects, n2_ifHcOutOctects);
+        test("snmp/2/dskIndex/C_", n2_dskUsage);
+        test("snmp/2/someNonExistantType");
+
+        // verify wildcard cache: we expect only 1 more getMetrics() invocation for the 3 calls above
+        verify(storage, times(1)).findMetrics(any());
+        clearInvocations(storage);
     }
 
     private void test(String path, Metric...expectedMetrics) throws StorageException {
