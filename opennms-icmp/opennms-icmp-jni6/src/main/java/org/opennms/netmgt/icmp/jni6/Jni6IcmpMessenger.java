@@ -37,8 +37,8 @@ import org.opennms.protocols.icmp6.ICMPv6EchoReply;
 import org.opennms.protocols.icmp6.ICMPv6Packet;
 import org.opennms.protocols.icmp6.ICMPv6Packet.Type;
 import org.opennms.protocols.icmp6.ICMPv6Socket;
-import org.opennms.protocols.rt.Messenger;
-import org.opennms.protocols.rt.ReplyHandler;
+import org.opennms.core.tracker.Messenger;
+import org.opennms.core.tracker.ReplyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
