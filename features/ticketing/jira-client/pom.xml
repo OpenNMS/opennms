@@ -139,6 +139,11 @@
             <artifactId>atlassian-util-concurrent</artifactId>
             <version>4.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>io.atlassian.fugue</groupId>
+            <artifactId>fugue</artifactId>
+            <version>4.7.2</version>
+        </dependency>
     </dependencies>
 
     <repositories>
