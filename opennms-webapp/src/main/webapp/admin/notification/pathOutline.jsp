@@ -70,6 +70,12 @@
 
     function edit_path(index) 
     {
+        trimmed = trimString(document.outline.name.value);
+        if (trimmed == "")
+        {
+            alert("Please specify a valid path name first.");
+            return false;
+        }
         document.outline.userAction.value="edit";
         document.outline.index.value=index;
         document.outline.submit();
@@ -77,6 +83,12 @@
     
     function add_path(index)
     {
+        trimmed = trimString(document.outline.name.value);
+        if (trimmed == "")
+        {
+            alert("Please specify a valid path name first.");
+            return false;
+        }
         document.outline.userAction.value="add";
         document.outline.index.value=index;
         document.outline.submit();
