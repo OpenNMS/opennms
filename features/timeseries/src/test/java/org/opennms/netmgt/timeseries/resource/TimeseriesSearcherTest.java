@@ -87,15 +87,18 @@ public class TimeseriesSearcherTest {
         Metric n2_dskUsage = createAndAddMetric("snmp/2/dskIndex/C_/disk-stats", "dskUsage");
 
         test("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID",  n1_loadavg1m, n1_loadavg5m);
-        test("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID",  n1_loadavg1m, n1_loadavg5m); // test cache: we should not have another invocation
-        verify(storage, times(1)).findMetrics(any());
-        clearInvocations(storage);
-
+        test("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID",  n1_loadavg1m, n1_loadavg5m);
         test("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID/eth0", n1_ifHcInOctects, n1_ifHcOutOctects);
         test("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID/dskIndex/C_", n1_dskUsage);
         test("snmp/fs/FOREIGN_SOURCE/FOREIGN_ID/someNonExistantType");
 
-        // verify wildcard cache: we expect only 1 more getMetrics() invocation for the 3 calls above
+        // verify wildcard cache: we expect only one getMetrics() invocation for the 5 calls above
+        // since all resources are under the same node path: snmp/fs/FOREIGN_SOURCE/FOREIGN_ID
+        verify(storage, times(1)).findMetrics(any());
+        clearInvocations(storage);
+
+        // search another provisioned node => we should get another call since resources from that node should not be cached
+        searcher.search(ResourcePath.fromString("snmp/fs/FOREIGN_SOURCE/SOME_OTHER_FOREIGN_ID"),  0);
         verify(storage, times(1)).findMetrics(any());
         clearInvocations(storage);
 
@@ -104,6 +107,12 @@ public class TimeseriesSearcherTest {
         test("snmp/2/someNonExistantType");
 
         // verify wildcard cache: we expect only 1 more getMetrics() invocation for the 3 calls above
+        // since all resources are under the same node path: snmp/2
+        verify(storage, times(1)).findMetrics(any());
+        clearInvocations(storage);
+
+        // search another auto-detect node => we should get another call since resources from that node should not be cached
+        searcher.search(ResourcePath.fromString("snmp/5/eth0"),  0);
         verify(storage, times(1)).findMetrics(any());
         clearInvocations(storage);
     }
