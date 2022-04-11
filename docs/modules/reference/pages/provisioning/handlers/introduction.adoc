@@ -1,6 +1,6 @@
 
 [[import-handlers]]
-= Import Handlers
+= Import Inventory from External Sources
 
 {page-component-title} supports import handlers to help provision nodes from an external system (foreign source) into a requisition.
 OpenNMS does this through requisition definitions you specify in the Requisition Definition UI.
@@ -15,7 +15,7 @@ A requisition definition enables periodic inventory synchronization from externa
 Each definition contains a URL, schedule, and setting to specify the nodes to rescan.
 
 Most commonly, these URLs are files on the file system (`file:$\{OPENNMS_HOME}/etc/imports/<my-requisition.xml>`), but they can also come from external URLs.
-For example, OpenNMS can use the HTTP protocol to retrieve a requisition.
+For example, OpenNMS can use the HTTP protocol to retrieve inventory.
 
 In addition to the standard protocols Java supports, we provide a series of custom URL handlers to help retrieve requisitions from external sources.
 
@@ -79,5 +79,3 @@ NOTE: To create an advanced cron schedule, click the checkbox and add the approp
 
 . The optional *Advanced Options* section lets you specify key/value pairs.
 . Click *Save & Close*.
-
-
