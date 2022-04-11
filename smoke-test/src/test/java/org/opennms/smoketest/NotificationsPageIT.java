@@ -97,4 +97,42 @@ public class NotificationsPageIT extends OpenNMSSeleniumIT {
         findElementByLink("Respond Time");
         assertElementDoesNotHaveText(By.xpath("//span[@class='label label-default']"), "admin was notified [-]");
     }
+
+    @Test
+    public void testAddEscalationButton() {
+        adminPage();
+        findElementByLink("Configure Notifications").click();
+        findElementByLink("Configure Destination Paths").click();
+        findElementByXpath("//input[@value='New Path']").click();
+        findElementByXpath("//input[@value='Add Escalation']").click();
+        try {
+            final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            alert.dismiss();
+        } catch (final Exception e) {
+            LOG.debug("Got an exception waiting for a 'specify path name first' alert.", e);
+            throw e;
+        }
+        enterText(By.xpath("//input[@name='name']"), "Foo");
+        findElementByXpath("//input[@value='Add Escalation']").click();
+        assertElementHasText(By.xpath("//h2"), "Editing path: Foo");
+    }
+
+    @Test
+    public void testEditButton() {
+        adminPage();
+        findElementByLink("Configure Notifications").click();
+        findElementByLink("Configure Destination Paths").click();
+        findElementByXpath("//input[@value='New Path']").click();
+        findElementByXpath("//input[@value='Edit']").click();
+        try {
+            final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            alert.dismiss();
+        } catch (final Exception e) {
+            LOG.debug("Got an exception waiting for a 'specify path name first' alert.", e);
+            throw e;
+        }
+        enterText(By.xpath("//input[@name='name']"), "Foo");
+        findElementByXpath("//input[@value='Edit']").click();
+        assertElementHasText(By.xpath("//h2"), "Editing path: Foo");
+    }
 }
