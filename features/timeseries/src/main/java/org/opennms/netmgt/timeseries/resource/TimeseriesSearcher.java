@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.timeseries.resource;
 
+import static org.opennms.netmgt.model.ResourceTypeUtils.getNumPathElementsToNodeLevel;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toSearchRegex;
 
@@ -135,25 +136,6 @@ public class TimeseriesSearcher {
             metrics = getMetricFromCacheOrLoad(indexMatcher);
         }
         return metrics;
-    }
-
-    /**
-     * Returns the number of elements that correspond to the "node resource" for the given path.
-     * @param path resource path
-     * @return number of elements or -1 if the given path does not map to a node
-     */
-    public static int getNumPathElementsToNodeLevel(ResourcePath path) {
-        final String[] elements = path.elements();
-        if (elements.length > 2
-                && ResourceTypeUtils.SNMP_DIRECTORY.equals(elements[0])
-                && !ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(elements[1])) {
-            return 2;
-        } else if (elements.length > 4
-                && ResourceTypeUtils.SNMP_DIRECTORY.equals(elements[0])
-                && ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(elements[1])) {
-            return 4;
-        }
-        return -1;
     }
 
     private Set<Metric> getMetricFromCacheOrLoad(TagMatcher matcher) throws StorageException {
