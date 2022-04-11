@@ -5,7 +5,7 @@ sudo -u opennms vi /opt/opennms/etc/opennms-datasources.xml
 ----
 
 .Set credentials to access the PostgreSQL database
-[source, opennms-datasources.xml]
+[source, xml]
 ----
 <jdbc-data-source name="opennms"
                     database-name="opennms"<1>
@@ -40,19 +40,21 @@ sudo /opt/opennms/bin/runjava -s
 sudo /opt/opennms/bin/install -dis
 ----
 
-._Assign CAP_NET_RAW capabilities_
-{page-component-title} runs as a non-root user, which requires having a Linux kernel greater than 3.10.
-If you run on an older kernel, and are unable to upgrade your OS, you need to assign CAP_NET_RAW capabilities:
+._Binding to privileged ports_
 
-Run `systemctl edit --full opennms.service` and add the following lines to the `[Service]` section:
+The core service user must be able to send ICMP echo requests.
+During setup, the permissions for `net.ipv4.ping_group_range` are set permanently on boot via `/etc/sysctl.d/99-opennms-non-root-icmp.conf`.
+Some system kernels do not honor this setting, and in those cases, additional configuration is required to allow binding to privileged ports.
+This is best achieved by creating a systemd overlay to add the necessary settings to the service configuration.
 
-[source, console]
+Run `systemctl edit --full opennms.service` and add the following line to the `[Service]` section:
+
+[source, properties]
 ----
-CapabilityBoundingSet=CAP_NET_RAW
-AmbientCapabilities=CAP_NET_RAW
+AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE
 ----
 
-Reload the sytemd unit with `systemctl daemon-reload` and restart the service with `systemctl restart opennms`.
+Reload the systemd unit with `systemctl daemon-reload` and restart the service with `systemctl restart opennms`.
 
 (For more background on this issue, see https://opennms.discourse.group/t/h29-wont-start-with-permission-error-to-open-icmp-socket/2387[H29+ won't start with permission error to open ICMP socket] on Discourse.)
 
@@ -68,6 +70,3 @@ sudo systemctl enable --now opennms
 sudo firewall-cmd --permanent --add-port=8980/tcp
 sudo systemctl reload firewalld
 ----
-
-NOTE: The core service user must be able to send ICMP echo requests.
-      During setup, the permissions for `net.ipv4.ping_group_range` are set permanently on boot in `/etc/sysctl.d/99-opennms-non-root-icmp.conf`. 
