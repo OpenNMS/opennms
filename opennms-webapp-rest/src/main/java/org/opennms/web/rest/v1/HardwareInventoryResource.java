@@ -321,7 +321,7 @@ public class HardwareInventoryResource extends OnmsRestService {
                 if (t == null) {
                     t = a.getType();
                     if(!isValidOid(t.getOid())){
-                        throw getException(Status.BAD_REQUEST, "OID  { } provided in entity is not valid.", t.getOid());
+                        throw getException(Status.BAD_REQUEST, "OID {" +  t.getOid()  + "} provided in entity is not valid.");
                     }
                     m_hwEntityAttribTypeDao.save(t);
                 }
