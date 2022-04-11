@@ -139,7 +139,7 @@ The OpenNMS {page-component-title} core services run as an unprivileged user and
 For this reason, the default port for the SNMP Trap/Inform listener is set to port number 10162/udp instead of the IANA registered port number 162/udp.
 The following example shows how to configure the local firewall daemon to forward port 162/udp to 10162/udp.
 
-NOTE: If you need SNMP Trap listener on port 162/udp directly, see the "Binding to privileged ports" steps in the <<core/getting-started.adoc#set-up-core-instance, Setup the Core Instance>> section above.
+NOTE: If you need SNMP Trap listener on port 162/udp directly, see the "Binding to privileged ports" steps in <<core/getting-started.adoc#set-up-core-instance, Set up the Core Instance>>.
 
 [{tabs}]
 ====

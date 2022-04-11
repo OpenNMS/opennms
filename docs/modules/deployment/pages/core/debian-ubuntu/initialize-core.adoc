@@ -45,7 +45,7 @@ sudo /usr/share/opennms/bin/install -dis
 The core service user must be able to send ICMP echo requests.
 During setup, the permissions for `net.ipv4.ping_group_range` are set permanently on boot via `/etc/sysctl.d/99-opennms-non-root-icmp.conf`.
 Some system kernels do not honor this setting, and in those cases, additional configuration is required to allow binding to privileged ports.
-This is best achieved by creating a systemd overlay to add the necessary settings to the service configuration.
+We recommend creating a systemd overlay to add the necessary settings to the service configuration.
 
 Run `systemctl edit --full opennms.service` and add the following line to the `[Service]` section:
 
