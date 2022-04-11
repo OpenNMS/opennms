@@ -39,6 +39,12 @@
         :icon="Reporting"
         title="Resource Graphs"
       />
+      <FeatherRailItem
+        :class="{ selected: isSelected('/device-config-backup') }"
+        href="#/device-config-backup"
+        :icon="MinionProfiles"
+        title="Configuration Management"
+      />
 
       <!-- loop plugin menu items -->
       <FeatherRailItem
@@ -55,6 +61,7 @@
 <script setup lang=ts>
 import { useStore } from 'vuex'
 import Instances from '@featherds/icon/hardware/Instances'
+import MinionProfiles from '@featherds/icon/hardware/MinionProfiles'
 import AddNote from '@featherds/icon/action/AddNote'
 import Location from '@featherds/icon/action/Location'
 import MarkComplete from '@featherds/icon/action/MarkComplete'

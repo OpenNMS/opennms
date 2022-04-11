@@ -1689,6 +1689,7 @@
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsCodecVersion>1.15</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
+    <commonsCompressVersion>1.21</commonsCompressVersion>
     <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
@@ -1697,12 +1698,12 @@
     <commonsIoVersion>2.8.0</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.4</commonsLang3Version>
-    <commonsNetVersion>3.6</commonsNetVersion>
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsMath3Version>3.5</commonsMath3Version>
     <commonsNetVersion>3.8.0</commonsNetVersion>
     <commonsValidatorVersion>1.6</commonsValidatorVersion>
     <concurrentTreesVersion>2.5.0</concurrentTreesVersion>
+    <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.4</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
     <cxfVersion>3.4.5</cxfVersion>
@@ -1847,6 +1848,7 @@
     <zookeeperVersion>3.4.7</zookeeperVersion>
     <zookeeper2Version>3.6.3</zookeeper2Version>
     <zstdJniVersion>1.5.0-2</zstdJniVersion>
+    <minaSshdVersion>2.8.0</minaSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
@@ -4574,6 +4576,12 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>4.0.3</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>net.sourceforge.jwebunit</groupId>
         <artifactId>jwebunit-htmlunit-plugin</artifactId>
         <version>2.5</version>
@@ -4935,6 +4943,16 @@
         <groupId>org.openjdk.jmh</groupId>
         <artifactId>jmh-generator-annprocess</artifactId>
         <version>${jmhVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vavr</groupId>
+        <artifactId>vavr</artifactId>
+        <version>0.10.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sshd</groupId>
+        <artifactId>sshd-core</artifactId>
+        <version>${minaSshdVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
