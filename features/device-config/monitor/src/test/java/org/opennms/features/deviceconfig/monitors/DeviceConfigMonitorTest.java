@@ -41,11 +41,13 @@ import java.net.InetAddress;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -54,6 +56,9 @@ import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
 import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 
@@ -177,9 +182,17 @@ public class DeviceConfigMonitorTest {
     public void testParsingScriptFile() {
         DeviceConfigDao deviceConfigDao = mock(DeviceConfigDao.class);
         IpInterfaceDao ipInterfaceDao = mock(IpInterfaceDao.class);
+        SessionUtils sessionUtils = mock(SessionUtils.class);
         MonitoredService monitoredService = mock(MonitoredService.class);
+        OnmsIpInterface ipInterface = mock(OnmsIpInterface.class);
+        OnmsNode node = mock(OnmsNode.class);
+        when(sessionUtils.withReadOnlyTransaction((Supplier<?>) Mockito.any())).thenAnswer((inv) -> inv.getArgument(0, Supplier.class).get());
         when(deviceConfigDao.getLatestConfigForInterface(Mockito.any(), Mockito.anyString())).thenReturn(Optional.empty());
-        when(ipInterfaceDao.findByNodeIdAndIpAddress(Mockito.anyInt(), Mockito.anyString())).thenReturn(null);
+        when(ipInterfaceDao.findByNodeIdAndIpAddress(Mockito.anyInt(), Mockito.anyString())).thenReturn(ipInterface);
+        when(ipInterface.getNode()).thenReturn(node);
+        when(node.getCreateTime()).thenReturn(new Date());
+        when(monitoredService.getNodeId()).thenReturn(0);
+        when(monitoredService.getIpAddr()).thenReturn("::1");
         String testResourcePath = Paths.get("src","test","resources").toFile().getAbsolutePath();
         System.setProperty("opennms.home",  testResourcePath);
         Map<String, Object> parameters = new HashMap<>();
@@ -188,6 +201,7 @@ public class DeviceConfigMonitorTest {
         var deviceConfigMonitor = new DeviceConfigMonitor();
         deviceConfigMonitor.setDeviceConfigDao(deviceConfigDao);
         deviceConfigMonitor.setIpInterfaceDao(ipInterfaceDao);
+        deviceConfigMonitor.setSessionUtils(sessionUtils);
         Map<String, Object> params = deviceConfigMonitor.getRuntimeAttributes(monitoredService, parameters);
         assertFalse(params.isEmpty());
         String script = (String)params.get("script");

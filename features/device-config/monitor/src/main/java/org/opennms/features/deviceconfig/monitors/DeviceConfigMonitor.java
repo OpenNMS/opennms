@@ -78,6 +78,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
     private IpInterfaceDao ipInterfaceDao;
     private DeviceConfigDao deviceConfigDao;
+    private SessionUtils sessionUtils;
 
     @Override
     public Map<String, Object> getRuntimeAttributes(final MonitoredService svc, final Map<String, Object> parameters) {
@@ -89,7 +90,9 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
             deviceConfigDao = BeanUtils.getBean("daoContext", "deviceConfigDao", DeviceConfigDao.class);
         }
 
-        final var sessionUtils = BeanUtils.getBean("daoContext", "sessionUtils", SessionUtils.class);
+        if (sessionUtils == null) {
+            sessionUtils = BeanUtils.getBean("daoContext", "sessionUtils", SessionUtils.class);
+        }
 
         return sessionUtils.withReadOnlyTransaction(() -> {
             final Map<String, Object> params = new HashMap<>();
@@ -199,6 +202,10 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
     public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
         this.deviceConfigDao = deviceConfigDao;
+    }
+
+    public void setSessionUtils(final SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
     }
 
     private Date getNextRunDate(String cronSchedule, Date lastRun) {
