@@ -185,11 +185,14 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        // TODO: Get total count for 'getLatestConfigForEachInterface' call and optimize it
-        final long offsetToUse = offset != null ? offset.longValue() : 0L;
-        final int totalCount = dtos.size();
+        final int totalCount =
+            (limit != null || offset != null)
+            ? deviceConfigDao.getLatestConfigCountForEachInterface(searchTerm)
+            : dtos.size();
 
-        return ResponseUtils.createResponse(dtos, offsetToUse, totalCount);
+        final long offsetForResponse = offset != null ? offset.longValue() : 0L;
+
+        return ResponseUtils.createResponse(dtos, offsetForResponse, totalCount);
     }
 
     /** {@inheritDoc} */

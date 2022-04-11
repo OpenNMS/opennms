@@ -36,8 +36,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.google.common.base.Strings;
+import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.ResultTransformer;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigQueryResult;
@@ -167,6 +169,34 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         });
 
         return resultList;
+    }
+
+    /**
+     * Get the total device count for {@link DeviceConfigDaoImpl#getLatestConfigForEachInterface}
+     * if no limit/offset were applied. Query is simplified as we do not need to do any sorting, grouping
+     * or windowing functions.
+     * @param searchTerm Optional search term
+     */
+    public int getLatestConfigCountForEachInterface(String searchTerm) {
+        final boolean hasSearchTerm = !Strings.isNullOrEmpty(searchTerm);
+
+        String hql =
+            "SELECT COUNT (DISTINCT dc.ipInterface.id)\n" +
+            "FROM DeviceConfig dc\n" +
+            "INNER JOIN dc.ipInterface AS ip";
+
+        if (hasSearchTerm) {
+            hql +=
+                "\n" +
+                "INNER JOIN ip.node AS node\n" +
+                "WHERE (node.label LIKE ? OR ip.ipAddress LIKE ?)";
+        }
+
+        final int count = hasSearchTerm
+            ? this.queryInt(hql, "%" + searchTerm + "%", "%" + searchTerm + "%")
+            : this.queryInt(hql);
+
+        return count;
     }
 
     private DeviceConfigQueryCriteria createSqlQueryCriteria(Integer limit, Integer offset,
