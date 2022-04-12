@@ -24,7 +24,7 @@ To install the opennms-plugin-ticketer-jira package:
 
 . Configure the plugin options by setting desired options in `$OPENNMS_HOME/etc/jira.properties`.
 See the table below for available options.
-. To make the ticketer system start automatically in the future, add `jira-troubleticketer` to the `featuresBoot` property in the `$OPENNMS_HOME/etc/org.apache.karaf.features.cfg`.
+. To make the ticketer system start automatically on future service starts, add the line `jira-troubleticketer` to the file `$\{OPENNMS_HOME}/etc/featuresBoot.d/ticketer.boot`.
 . To make the ticketer system start now, log in to the Karaf shell and run the following command to load the feature:
 
  feature:install jira-troubleticketer
