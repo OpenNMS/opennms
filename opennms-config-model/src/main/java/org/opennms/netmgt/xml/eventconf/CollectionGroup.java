@@ -209,7 +209,10 @@ public class CollectionGroup implements Serializable {
         @XmlAttribute(name = "name", required = true)
         private String name;
 
-        @XmlAttribute(name = "type", required = true)
+        @XmlAttribute(name = "rename")
+        private String rename;
+
+        @XmlAttribute(name = "type")
         private AttributeType type;
 
         @XmlElement(name = "paramValue")
@@ -221,6 +224,14 @@ public class CollectionGroup implements Serializable {
 
         public void setName(String name) {
             this.name = name;
+        }
+
+        public String getRename() {
+            return rename;
+        }
+
+        public void setRename(String rename) {
+            this.rename = rename;
         }
 
         public AttributeType getType() {

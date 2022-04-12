@@ -144,7 +144,7 @@ public class EventMetricsCollectorTest {
         MockPersister persister = Mockito.mock(MockPersister.class);
 
         List<IParm> paramList = new ArrayList<>();
-        IParm parm = ImmutableParm.newBuilder().setParmName("uei.opennms.org/traps/test/varbind").setValue(ImmutableValue.newBuilder().setContent("123").build()).build();
+        IParm parm = ImmutableParm.newBuilder().setParmName(".1.3.6.1.4.1.22222.2.4.3.12.2.21").setValue(ImmutableValue.newBuilder().setContent("123").build()).build();
         paramList.add(parm);
         IEvent event = ImmutableEvent.newBuilder().setUei("uei.opennms.org/traps/test/varbind").setParms(paramList)
                 .setInterfaceAddress(InetAddress.getByName("127.0.0.1")).setNodeid(1L).build();

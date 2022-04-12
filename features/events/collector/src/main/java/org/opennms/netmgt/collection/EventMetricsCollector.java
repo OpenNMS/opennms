@@ -69,6 +69,7 @@ import java.util.Objects;
 public class EventMetricsCollector implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(EventMetricsCollector.class);
 
+    public static final int NAME_MAX_LENGTH = 19;
     public static final String NODE_SNMP = "nodeSnmp";
     public static final String INTERFACE_SNMP = "interfaceSnmp";
 
@@ -177,7 +178,7 @@ public class EventMetricsCollector implements EventListener {
             collectionSetBuilder.withStringAttribute(resource, collectionGroup.getName(), "instance", instanceName);
         }
         for (var collection : collectionGroup.getCollection()) {
-            IParm parm = this.getMatchParam(e, collection);
+            IParm parm = e.getParm(collection.getName());
             if (parm == null) {
                 continue;
             }
@@ -237,18 +238,28 @@ public class EventMetricsCollector implements EventListener {
             switch (collection.getType()) {
                 case GAUGE:
                     return collectionSet.withGauge(resource, groupName,
-                            GenericTypeResource.sanitizeInstanceStrict(collection.getName()), convertParamValue(collection, value));
+                            this.getCollectionName(collection), convertParamValue(collection, value));
                 case COUNTER:
                     return collectionSet.withCounter(resource, groupName,
-                            GenericTypeResource.sanitizeInstanceStrict(collection.getName()), convertParamValue(collection, value));
+                            this.getCollectionName(collection), convertParamValue(collection, value));
                 case STRING:
                     return collectionSet.withStringAttribute(resource, groupName,
-                            GenericTypeResource.sanitizeInstanceStrict(collection.getName()), value);
+                            this.getCollectionName(collection), value);
             }
         } catch (NumberFormatException ex) {
             LOG.warn("Skip invalid value exist. value = {}", value);
         }
         return collectionSet;
+    }
+
+    private String getCollectionName(CollectionGroup.Collection collection) {
+        String name = collection.getRename();
+        if (name == null) {
+            name = collection.getName();
+        }
+        String sanitized = GenericTypeResource.sanitizeInstanceStrict(name);
+        // trim to 19 due to rrd name length limitation
+        return (sanitized.length() > NAME_MAX_LENGTH) ? sanitized.substring(0, NAME_MAX_LENGTH) : sanitized;
     }
 
     /**
@@ -274,19 +285,5 @@ public class EventMetricsCollector implements EventListener {
         repository.setRraList(rrd.getRras());
         return persisterFactory.createPersister(
                 new ServiceParameters(Collections.emptyMap()), repository);
-    }
-
-    private IParm getMatchParam(IEvent e, CollectionGroup.Collection collection) {
-        Objects.requireNonNull(e);
-        Objects.requireNonNull(collection);
-        IParm parm = e.getParm(collection.getName());
-        if (parm != null) {
-            return parm;
-        }
-        // if user set the collection name as uei, it means user want the whole message as value
-        if (e.getUei().equals(collection.getName()) && e.getParmCollection().size() == 1) {
-            return e.getParmCollection().get(0);
-        }
-        return null;
     }
 }

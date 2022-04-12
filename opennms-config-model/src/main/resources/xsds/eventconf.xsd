@@ -474,6 +474,11 @@
           <documentation>Name of the collection. It should match with named expression param name. Use uei as name if you want to use the whole varbind message.</documentation>
         </annotation>
       </attribute>
+      <attribute name="rename" type="string">
+        <annotation>
+          <documentation>It is use for replace the param name use for the collection. e.g. very long oid to some meaningful words.</documentation>
+        </annotation>
+      </attribute>
       <attribute name="type" default="gauge">
         <annotation>
           <documentation>Type of data.</documentation>
