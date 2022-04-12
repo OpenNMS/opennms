@@ -2,8 +2,6 @@
 
 = Changelog
 
-[[releasenotes-changelog-29.0.8]]
-
 == Release 29.0.8
 
 Release 29.0.8 contains a few small bug fixes mostly relating to upgrades, as well

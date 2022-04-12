@@ -210,6 +210,9 @@ export interface QueryParameters {
   _s?: string
   orderBy?: string
   order?: SORT
+  search?: string
+  groupBy?: string
+  groupByValue?: string
   [x: string]: any
 }
 
@@ -456,4 +459,10 @@ export interface Plugin {
   menuEntry: string
   moduleFileName: string
   resourceRootPath: string
+}
+
+export interface Toast {
+  basic: string
+  detail: string
+  hasErrors: boolean
 }

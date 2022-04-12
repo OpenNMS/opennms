@@ -18,6 +18,7 @@ import resourceModule from './resource'
 import graphModule from './graph'
 import topologyModule from './topology'
 import pluginModule from './plugin'
+import deviceModule from './device'
 
 export default createStore({
   modules: {
@@ -37,6 +38,7 @@ export default createStore({
     resourceModule,
     graphModule,
     topologyModule,
-    pluginModule
+    pluginModule,
+    deviceModule
   }
 })

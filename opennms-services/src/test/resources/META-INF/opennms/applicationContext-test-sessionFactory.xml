@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+	">
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="packagesToScan">
+            <list>
+                <value>org.opennms.netmgt.dao.hibernate</value>
+                <value>org.opennms.netmgt.model</value>
+            </list>
+        </property>
+        <!--  property name="schemaUpdate" value="true">
+          </property -->
+        <property name="annotatedPackages">
+            <list>
+                <value>org.opennms.netmgt.dao.hibernate</value>
+                <value>org.opennms.netmgt.model</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <value>
+                <!-- Dialect for PostgreSQL 8.2+ -->
+                <!-- hibernate.dialect=org.hibernate.dialect.PostgreSQL82Dialect -->
+                hibernate.dialect=org.hibernate.dialect.HSQLDialect
+
+                hibernate.cache.use_query_cache=false
+                hibernate.cache.use_second_level_cache=false
+
+                hibernate.hbm2ddl.auto=create
+                hibernate.jdbc.batch_size=0
+                <!-- hibernate.format_sql=true -->
+            </value>
+        </property>
+    </bean>
+</beans>

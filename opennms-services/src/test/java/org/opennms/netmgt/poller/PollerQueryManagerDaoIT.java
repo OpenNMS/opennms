@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.After;
@@ -102,7 +103,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
 
         // Override the default QueryManager with the DAO version
-        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
+        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml",
+		"classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"
@@ -227,6 +229,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_poller.setPollerConfig(m_pollerConfig);
 		m_poller.setPollOutagesDao(m_pollerConfig);
 		m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
+		m_poller.setServiceMonitorAdaptor((svc, parameters, status) -> status);
 		m_poller.setPersisterFactory(new MockPersisterFactory());
 	}
 
@@ -239,23 +242,6 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_db.drop();
 		MockUtil.println("------------ End Test  --------------------------");
 	}
-
-	//
-	// Tests
-	//
-    @Test
-    public void testIsRemotePackage() {
-    	Properties p = new Properties();
-        p.setProperty("org.opennms.netmgt.ConfigFileConstants", "ERROR");
-    	MockLogAppender.setupLogging(p);
-        Package pkg = new Package();
-        pkg.setName("SFO");
-        pkg.setPerspectiveOnly(true);
-        Poller poller = new Poller();
-		poller.setPollerConfig(new MockPollerConfig(m_network));
-        assertFalse(poller.pollableServiceInPackage(null, null, pkg));
-        poller = null;
-    }
 
     @Test
     public void testNullInterfaceOnNodeDown() {
