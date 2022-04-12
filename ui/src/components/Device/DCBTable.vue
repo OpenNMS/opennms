@@ -3,7 +3,7 @@
     <div class="config-header">
       <div class="config-column">
         <div>Devices:</div>
-        <div class="config-number">N/A</div>
+        <div class="config-number">{{ totalCountOfDeviceConfigBackups }}</div>
       </div>
       <div class="divider"></div>
       <div class="config-column">
