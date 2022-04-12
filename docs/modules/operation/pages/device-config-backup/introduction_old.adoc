@@ -1,0 +1,20 @@
+= Device Configuration Backup
+
+OpenNMS allows you to back up the configuration of devices like routers or firewalls.
+It does this through a TFTP server that OpenNMS and Minions provide.
+Devices send their configuration to that TFTP server with either a pull- or push-based backup.
+
+* Pull-based backup: OpenNMS uses its poller infrastructure to schedule tasks that connect via SSH into devices and execute configurable scripts that do the TFTP uploads.
+* Push-based backup: Devices may upload their configuration by themselves. This may happen, for example, either by administrator interaction or scheduled jobs running on the devices themselves.
+
+== Overview
+
+OpenNMS stores device configuration backups for IP addresses in the default location or at remote locations.
+Different kinds of configuration types can be distinguished.
+For example, some devices may distinguish between their default configuration and their running configuration.
+OpenNMS considers configuration types as arbitrary strings.
+If no configuration type is specified, then `default` is used.
+
+OpenNMS archives received backups and records when changes happened.
+It also records if backups fail and raises corresponding alarms.
+

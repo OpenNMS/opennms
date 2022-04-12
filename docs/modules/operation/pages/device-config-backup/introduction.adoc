@@ -1,73 +1,32 @@
-= Device Configuation Backup
+= Device Configuration Backup
 
-OpenNMS allows you to back up the configuration of devices like routers or firewalls.
-It does this through a TFTP server that OpenNMS and Minions provide.
+OpenNMS lets you back up the configuration of devices like routers, firewalls, and switches, for better disaster recovery in case of network failure.
+
+Through the UI, users can back up network device configuration any time, on demand, for a single device or group of devices, or create a user-defined schedule.
+Trigger backups to occur when a device’s configuration changes, to ensure you always have a copy of the active device configuration.
+View backup history, download configurations, search, and compare configurations for specific devices at different points in time.
+
+Only users with the xref:operation:user-management/security-roles.adoc#ga-role-user-management-roles[ROLE_DEVICE_CONFIG_BACKUP role] can perform and monitor device configuration backups.
+
+Note that the devices whose configuration you want to back up must either be TFTP-enabled or support an SSH shell.
+
+== Before You Begin
+
+You must configure OpenNMS to perform configuration backups before you can xref:operation:device-config-backup/dcb.adoc#dcb-manage[view and manage] them in the {page-component-title} UI:
+
+* xref:operation:device-config-backup/ssh.adoc#backup-script[Create a backup script for each device type]
+* xref:operation:device-config-backup/configuration.adoc#poller-config[Set up the pollerd configuration file]
+* xref:operation:device-config-backup/dcb-requisition.adoc#dcb-requisition[Create a requisition], specify its metadata, and schedule it for immediate backup
+
+== How it works
+
+OpenNMS performs database configuration backups through a TFTP server that OpenNMS and Minions provide.
 Devices send their configuration to that TFTP server with either a pull- or push-based backup.
 
 * Pull-based backup: OpenNMS uses its poller infrastructure to schedule tasks that connect via SSH into devices and execute configurable scripts that do the TFTP uploads.
-* Push-based backup: Devices may upload their configuration by themselves. This may happen, for example, either by administrator interaction or scheduled jobs running on the devices themselves.
-
-== Overview
+* Push-based backup: Devices may upload their configuration themselves.
+This may happen either by administrator interaction or scheduled jobs running on the devices themselves.
 
 OpenNMS stores device configuration backups for IP addresses in the default location or at remote locations.
-Different kinds of configuration types can be distinguished.
-For example, some devices may distinguish between their default configuration and their running configuration.
-OpenNMS considers configuration types as arbitrary strings.
-If no configuration type is specified, then `default` is used.
-
-OpenNMS archives received backups and records when changes happened.
+It archives received backups and records when changes happened.
 It also records if backups fail and raises corresponding alarms.
-
-== SSH scripting
-
-An SSH scripting engine executes the commands that are necessary to upload device configurations.
-The scripting engine supports two commands:
-
-* `send: ...`: Sends the given string to the device
-* `await: ...`: Awaits some response from the device
-
-Scripts can reference the following variables by using `${varname}` notation:
-
-.Scripting variables
-[options="header" cols="1,2"]
-|===
-| Name
-| Description
-
-| tftpServerIp
-| IP address of the TFTP server
-
-| tftpServerPort
-| port number of the TFTP server
-
-| filenameSuffix
-| suffix that must be appended to the filename for uploading
-
-| configType
-| config type as described above
-|===
-
-Note: Uploaded configuration files should specify their file type by including the corresponding filename extension like `.zip` or `.gz`.
-In addition, a `.` and the script variable `filenameSuffix` must be appended to the filename that is used for upload.
-{page-component-title} uses that additional suffix to identify incoming uploads.
-
-.Example script
-[source, script]
-----
-await: >
-send: configure
-await: Entering configuration mode
-await: #
-send: save config to config.gz.${filenameSuffix}
-await: Config saved to config.gz.${filenameSuffix}
-await: #
-send: quit
-await: Exiting configuration mode
-await: >
-send: tftp export configuration from config.gz.${filenameSuffix} to ${tftpServerIp}:${tftpServerPort}
-await: >
-send: delete config saved config.gz.${filenameSuffix}
-await: Successfully removed config.gz.${filenameSuffix}
-await: >
-----
-
