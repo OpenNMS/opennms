@@ -201,14 +201,14 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
         @Override
         public void onFileReceived(InetAddress address, String fileName, byte[] content) {
-            if (fileName.endsWith("." + fileNameSuffix)) {
+            if (fileName.endsWith(fileNameSuffix)) {
                 // it is unlikely, that the file receiver receives a file (with matching filename!) before the file
                 // upload was triggered
                 // -> just to be sure check that the future is set
                 if (future != null) {
                     LOG.debug("received config - host: " + host + "; port: " + port + "; address: " + address.getHostAddress());
                     // strip the '.' and filenameSuffix from the filename
-                    future.complete(Either.right(new Success(content, fileName.substring(0, fileName.length() - fileNameSuffix.length() - 1))));
+                    future.complete(Either.right(new Success(content, fileName.substring(0, fileName.length() - fileNameSuffix.length()))));
                 }
             }
         }
