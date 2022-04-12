@@ -100,10 +100,10 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
             // Publish time of last backup to poller execution.
             // Use creation time of node as fallback to ensure first run scheduled correctly.
-            params.put(LAST_RETRIEVAL, this.deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName())
-                                                           .map(org.opennms.features.deviceconfig.persistence.api.DeviceConfig::getLastUpdated)
-                                                           .orElse(ipInterface.getNode().getCreateTime())
-                                                           .getTime());
+            params.put(LAST_RETRIEVAL, Long.toString(this.deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName())
+                                                                         .map(org.opennms.features.deviceconfig.persistence.api.DeviceConfig::getLastUpdated)
+                                                                         .orElse(ipInterface.getNode().getCreateTime())
+                                                                         .getTime()));
 
             final String scriptFile = getKeyedString(parameters, SCRIPT_FILE, null);
             try {
