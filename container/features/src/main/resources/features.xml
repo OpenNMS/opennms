@@ -620,6 +620,7 @@
         <feature>opennms-config-api</feature>
         <feature>opennms-events-api</feature>
         <feature>opennms-rrd-api</feature>
+        <feature>opennms-thresholding-api</feature>
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.collector/${project.version}</bundle>
     </feature>
 

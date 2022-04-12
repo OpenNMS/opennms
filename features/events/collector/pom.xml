@@ -83,5 +83,19 @@
       <artifactId>org.opennms.core.test-api.services</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.thresholding.api</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.collectors</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-services</artifactId>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

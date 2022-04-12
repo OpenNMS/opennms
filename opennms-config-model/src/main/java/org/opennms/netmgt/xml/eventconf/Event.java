@@ -97,16 +97,8 @@ public class Event implements Serializable, Comparable<Event> {
     @XmlElement(name="logmsg", required=true)
     private Logmsg m_logmsg;
 
-    @XmlElement(name="collection", required=false)
-    private List<Collection> m_collections = new ArrayList<>();
-
-    public List<Collection> getCollections() {
-        return m_collections;
-    }
-
-    public void setCollections(List<Collection> collections) {
-        this.m_collections = collections;
-    }
+    @XmlElement(name="collectionGroup", required=false)
+    private List<CollectionGroup> collectionGroup = new ArrayList<>();
 
     /**
      * The event severity
@@ -261,6 +253,14 @@ public class Event implements Serializable, Comparable<Event> {
 
     public void setLogmsg(final Logmsg logmsg) {
         m_logmsg = ConfigUtils.assertNotNull(logmsg, "logmsg");
+    }
+
+    public List<CollectionGroup> getCollectionGroup() {
+        return collectionGroup;
+    }
+
+    public void setCollectionGroup(List<CollectionGroup> collectionGroup) {
+        this.collectionGroup = collectionGroup;
     }
 
     public String getSeverity() {

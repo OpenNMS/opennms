@@ -10,14 +10,16 @@
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory"/>
     <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"
                availability="mandatory"/>
+    <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" availability="optional"/>
 
-    <bean id="eventListenerCollector" class="org.opennms.netmgt.collection.EventListenerCollector"
+    <bean id="eventListenerCollector" class="org.opennms.netmgt.collection.EventMetricsCollector"
           init-method="start" destroy-method="stop">
         <argument ref="eventConfDao"/>
         <argument ref="eventSubscriptionService"/>
         <argument ref="persisterFactory"/>
         <argument ref="ipInterfaceDao"/>
         <argument ref="collectionAgentFactory"/>
+        <argument ref="thresholdingService"/>
     </bean>
 
     <service interface="org.opennms.netmgt.events.api.EventListener" ref="eventListenerCollector"/>

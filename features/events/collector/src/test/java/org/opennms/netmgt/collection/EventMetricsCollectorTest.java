@@ -33,9 +33,17 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
+import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
+import org.opennms.netmgt.collection.api.ResourceType;
+import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.api.StrategyDefinition;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
+import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.events.api.model.IEvent;
@@ -44,9 +52,11 @@ import org.opennms.netmgt.events.api.model.ImmutableEvent;
 import org.opennms.netmgt.events.api.model.ImmutableParm;
 import org.opennms.netmgt.events.api.model.ImmutableValue;
 import org.opennms.netmgt.mock.MockPersister;
+import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -55,7 +65,13 @@ import org.springframework.test.context.ContextConfiguration;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -64,7 +80,7 @@ import java.util.List;
         "classpath:/META-INF/opennms/applicationContext-eventCollectorMock.xml",
 })
 @JUnitConfigurationEnvironment
-public class EventListenerCollectorTest {
+public class EventMetricsCollectorTest {
 
     @Autowired
     private IpInterfaceDao ipInterfaceDao;
@@ -78,7 +94,7 @@ public class EventListenerCollectorTest {
      * @throws NoSuchFieldException
      * @throws IllegalAccessException
      */
-    private EventListenerCollector getCollector(Persister persister) throws IOException {
+    private EventMetricsCollector getCollector(Persister persister) throws IOException {
         // load testing eventconf
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
         eventConfDao.setConfigResource(new FileSystemResource("src/test/resources/events/collection.events.xml"));
@@ -100,11 +116,14 @@ public class EventListenerCollectorTest {
             }
 
             @Override
-            public Persister createPersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters, boolean forceStoreByGroup, boolean dontReorderAttributes) {
+            public Persister createPersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters,
+                                             boolean forceStoreByGroup, boolean dontReorderAttributes) {
                 return persister;
             }
         };
-        EventListenerCollector collector = new EventListenerCollector(eventConfDao, null, persisterFactory, ipInterfaceDao, collectionAgentFactory);
+
+        EventMetricsCollector collector = new EventMetricsCollector(eventConfDao, null,
+                persisterFactory, ipInterfaceDao, collectionAgentFactory, null);
 
         return collector;
     }
@@ -122,7 +141,7 @@ public class EventListenerCollectorTest {
         IEvent event = ImmutableEvent.newBuilder().setUei("uei.opennms.org/traps/test/varbind").setParms(paramList)
                 .setInterfaceAddress(InetAddress.getByName("127.0.0.1")).setNodeid(1L).build();
 
-        EventListenerCollector collector = this.getCollector(persister);
+        EventMetricsCollector collector = this.getCollector(persister);
         collector.onEvent(event);
         Mockito.verify(persister, Mockito.times(1)).visitAttribute(Mockito.any());
     }
@@ -130,6 +149,15 @@ public class EventListenerCollectorTest {
     @Test
     public void testNameMatchingParam() throws IOException {
         MockPersister persister = Mockito.mock(MockPersister.class);
+        ResourceTypeMapper.getInstance().setResourceTypeMapper(s -> {
+            ResourceType rt = mock(ResourceType.class, RETURNS_DEEP_STUBS);
+            when(rt.getName()).thenReturn("mock");
+            when(rt.getStorageStrategy().getClazz()).thenReturn(IndexStorageStrategy.class.getCanonicalName());
+            when(rt.getStorageStrategy().getParameters()).thenReturn(Collections.emptyList());
+            when(rt.getPersistenceSelectorStrategy().getClazz()).thenReturn(PersistAllSelectorStrategy.class.getCanonicalName());
+            when(rt.getPersistenceSelectorStrategy().getParameters()).thenReturn(Collections.emptyList());
+            return rt;
+        });
 
         List<IParm> paramList = new ArrayList<>();
         paramList.add(ImmutableParm.newBuilder().setParmName("TIME").setValue(ImmutableValue.newBuilder().setContent("100").build()).build());
@@ -142,7 +170,7 @@ public class EventListenerCollectorTest {
         IEvent event = ImmutableEvent.newBuilder().setUei("uei.opennms.org/traps/test/regex").setParms(paramList)
                 .setInterfaceAddress(InetAddress.getByName("127.0.0.1")).setNodeid(1L).build();
 
-        EventListenerCollector collector = Mockito.spy(this.getCollector(persister));
+        EventMetricsCollector collector = Mockito.spy(this.getCollector(persister));
         collector.onEvent(event);
 
         // only 4 will be persisted

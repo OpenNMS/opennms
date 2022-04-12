@@ -41,35 +41,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.File;
 import java.io.Serializable;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@XmlRootElement(name = "collection")
+@XmlRootElement(name = "collectionGroup")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
-@XmlType(propOrder={"rrd", "paramValues"})
-public class Collection implements Serializable {
+@XmlType(propOrder = {"rrd", "collection"})
+public class CollectionGroup implements Serializable {
     private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "name", required = true)
     private String name;
 
-    @XmlAttribute(name = "type", required = true)
-    private AttributeType type;
-
-    @XmlAttribute(name = "target")
-    private String target = "nodeSnmp";
+    @XmlAttribute(name = "resourceType")
+    private String resourceType = "nodeSnmp";
 
     @XmlAttribute(name = "instance")
     private String instance;
 
-    @XmlElement(name = "paramValues")
-    private List<String> paramValues = new ArrayList<>();
-
     @XmlElement(name = "rrd")
     private Rrd rrd;
+
+    @XmlElement(name = "collection")
+    private List<Collection> collection = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -79,20 +75,12 @@ public class Collection implements Serializable {
         this.name = name;
     }
 
-    public AttributeType getType() {
-        return type;
+    public String getResourceType() {
+        return resourceType;
     }
 
-    public void setType(AttributeType type) {
-        this.type = type;
-    }
-
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
     }
 
     public String getInstance() {
@@ -103,14 +91,6 @@ public class Collection implements Serializable {
         this.instance = instance;
     }
 
-    public List<String> getParamValues() {
-        return paramValues;
-    }
-
-    public void setParamValues(List<String> paramValues) {
-        this.paramValues = paramValues;
-    }
-
     public Rrd getRrd() {
         return this.rrd;
     }
@@ -119,9 +99,17 @@ public class Collection implements Serializable {
         this.rrd = rrd;
     }
 
+    public List<Collection> getCollection() {
+        return collection;
+    }
+
+    public void setCollection(List<Collection> collection) {
+        this.collection = collection;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(name, type, target, rrd);
+        return Objects.hash(name, resourceType, rrd);
     }
 
     @Override
@@ -129,17 +117,17 @@ public class Collection implements Serializable {
         if (this == obj) {
             return true;
         }
-        if (obj instanceof Collection) {
-            final Collection that = (Collection) obj;
+        if (obj instanceof CollectionGroup) {
+            final CollectionGroup that = (CollectionGroup) obj;
             return Objects.equals(this.name, that.name) &&
-                    Objects.equals(this.type, that.type) &&
-                    Objects.equals(this.target, that.target) &&
-                    Objects.equals(this.rrd, that.rrd);
+                    Objects.equals(this.resourceType, that.resourceType) &&
+                    Objects.equals(this.rrd, that.rrd) &&
+                    Objects.equals(this.collection, that.collection);
         }
         return false;
     }
 
-    @XmlRootElement(name="rrd")
+    @XmlRootElement(name = "rrd")
     @XmlAccessorType(XmlAccessType.NONE)
     public static class Rrd {
         private static final File DEFAULT_BASE_DIRECTORY = new File(ResourceTypeUtils.DEFAULT_RRD_ROOT, ResourceTypeUtils.SNMP_DIRECTORY);
@@ -147,7 +135,7 @@ public class Collection implements Serializable {
         /**
          * Step size for the RRD, in seconds.
          */
-        @XmlAttribute(name="step")
+        @XmlAttribute(name = "step")
         private Integer step;
 
         /**
@@ -159,7 +147,7 @@ public class Collection implements Serializable {
         /**
          * Round Robin Archive definitions
          */
-        @XmlElement(name="rra")
+        @XmlElement(name = "rra")
         private List<String> rras = new ArrayList<>();
 
         public Integer getStep() {
@@ -215,4 +203,64 @@ public class Collection implements Serializable {
         }
     }
 
+    @XmlRootElement(name = "collection")
+    @XmlAccessorType(XmlAccessType.NONE)
+    public static class Collection {
+        @XmlAttribute(name = "name", required = true)
+        private String name;
+
+        @XmlAttribute(name = "type", required = true)
+        private AttributeType type;
+
+        @XmlElement(name = "paramValues")
+        private List<String> paramValues = new ArrayList<>();
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public AttributeType getType() {
+            return type;
+        }
+
+        public void setType(AttributeType type) {
+            this.type = type;
+        }
+
+        public List<String> getParamValues() {
+            return paramValues;
+        }
+
+        public void setParamValues(List<String> paramValues) {
+            this.paramValues = paramValues;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final Collection that = (Collection) o;
+            return Objects.equals(this.name, that.name) &&
+                    Objects.equals(this.type, that.type) &&
+                    Objects.equals(this.paramValues, that.paramValues);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.name, this.type, this.paramValues);
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("name", this.name)
+                    .add("type", this.type)
+                    .add("paramValues", this.paramValues)
+                    .toString();
+        }
+    }
 }

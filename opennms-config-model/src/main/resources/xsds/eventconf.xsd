@@ -103,7 +103,7 @@
           </annotation>
         </element>
 
-        <element maxOccurs="unbounded" minOccurs="0" ref="this:collection">
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:collectionGroup">
           <annotation>
             <documentation>Sent event to collectd.</documentation>
           </annotation>
@@ -378,11 +378,10 @@
     </complexType>
   </element>
 
-  <element name="collection">
+  <element name="collectionGroup">
     <annotation>
-      <documentation>The event collect configured will trigger message forward to collectd.</documentation>
+      <documentation>The event collection group.</documentation>
     </annotation>
-
     <complexType>
       <sequence>
         <element maxOccurs="1" minOccurs="1" ref="this:rrd">
@@ -390,33 +389,14 @@
             <documentation>RRD parameters for events data.</documentation>
           </annotation>
         </element>
-        <element maxOccurs="unbounded" minOccurs="0" name="paramValues">
-          <annotation>
-            <documentation>It use to convert KEY (string) into VALUE (number) for rrd. Format KEY:VALUE</documentation>
-          </annotation>
-          <simpleType>
-            <restriction base="string">
-              <pattern value="\w+:\d"/>
-            </restriction>
-          </simpleType>
-        </element>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:collection"/>
       </sequence>
       <attribute name="name" type="string" use="required">
         <annotation>
-          <documentation>Name of the collection. It should match with named expression param name. Use uei as name if you want to use the whole varbind message.</documentation>
+          <documentation>Name of the collection group.</documentation>
         </annotation>
       </attribute>
-      <attribute name="type" default="gauge">
-        <annotation>
-          <documentation>Type of data.</documentation>
-        </annotation>
-        <simpleType>
-          <restriction base="string">
-            <pattern value="(gauge|counter|string)"/>
-          </restriction>
-        </simpleType>
-      </attribute>
-      <attribute name="target" default="nodeSnmp">
+      <attribute name="resourceType" default="nodeSnmp">
         <annotation>
           <documentation>
             Location of the time series stored. Values values (nodeSnmp / interfaceSnmp / any string match with etc/resource-types.d)
@@ -463,6 +443,41 @@
         <annotation>
           <documentation>heartBeat for the RRD (default step * 2)</documentation>
         </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="collection">
+    <annotation>
+      <documentation>The event collect configured will trigger message forward to collectd.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" name="paramValues">
+          <annotation>
+            <documentation>It use to convert KEY (string) into VALUE (number) for rrd. Format KEY:VALUE</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string">
+              <pattern value="\w+:\d+"/>
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>Name of the collection. It should match with named expression param name. Use uei as name if you want to use the whole varbind message.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="type" default="gauge">
+        <annotation>
+          <documentation>Type of data.</documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(gauge|counter|string)"/>
+          </restriction>
+        </simpleType>
       </attribute>
     </complexType>
   </element>

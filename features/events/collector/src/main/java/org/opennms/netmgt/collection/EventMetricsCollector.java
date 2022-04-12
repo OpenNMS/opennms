@@ -30,10 +30,10 @@ package org.opennms.netmgt.collection;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
+import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.core.DefaultCollectionAgent;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
@@ -46,17 +46,16 @@ import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.xml.eventconf.Collection;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.opennms.netmgt.xml.eventconf.CollectionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.io.File;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -66,8 +65,8 @@ import java.util.regex.Matcher;
 /**
  * This collector will convert event into time series data. It depends on eventconf.xsd's collection tag.
  */
-public class EventListenerCollector implements EventListener {
-    private static final Logger LOG = LoggerFactory.getLogger(EventListenerCollector.class);
+public class EventMetricsCollector implements EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(EventMetricsCollector.class);
 
     public static final String NODE_SNMP = "nodeSnmp";
     public static final String INTERFACE_SNMP = "interfaceSnmp";
@@ -82,15 +81,18 @@ public class EventListenerCollector implements EventListener {
 
     private final CollectionAgentFactory collectionAgentFactory;
 
-    public EventListenerCollector(
+    private final ThresholdingService thresholdingService;
+
+    public EventMetricsCollector(
             EventConfDao eventConfDao, EventSubscriptionService eventSubscriptionService,
             PersisterFactory persisterFactory, IpInterfaceDao ipInterfaceDao,
-            CollectionAgentFactory collectionAgentFactory) {
+            CollectionAgentFactory collectionAgentFactory, ThresholdingService thresholdingService) {
         this.eventConfDao = eventConfDao;
         this.eventSubscriptionService = eventSubscriptionService;
         this.persisterFactory = persisterFactory;
         this.ipInterfaceDao = ipInterfaceDao;
         this.collectionAgentFactory = collectionAgentFactory;
+        this.thresholdingService = thresholdingService;
     }
 
     public void start() {
@@ -109,65 +111,94 @@ public class EventListenerCollector implements EventListener {
     @Override
     public void onEvent(IEvent e) {
         var eventconf = eventConfDao.findByUei(e.getUei());
-        if (eventconf == null || eventconf.getCollections().isEmpty()) {
+        if (eventconf == null || eventconf.getCollectionGroup() == null || eventconf.getCollectionGroup().isEmpty()) {
             return;
         }
-        List<Collection> collections = eventconf.getCollections();
+        List<CollectionGroup> collectionGroups = eventconf.getCollectionGroup();
 
         OnmsIpInterface iface = ipInterfaceDao.findByNodeIdAndIpAddress(e.getNodeid().intValue(),
                 e.getInterfaceAddress().getHostAddress());
         CollectionAgent agent = collectionAgentFactory.createCollectionAgent(iface);
 
-        for (IParm parm : e.getParmCollection()) {
-            Collection collection = this.getMatchCollection(e, collections, parm.getParmName());
-            if (collection == null) {
-                LOG.debug("Drop parm name: {} \t value: {}", parm.getParmName(), parm.getValue());
+        for (var collectionGroup : collectionGroups) {
+            if (collectionGroup == null || collectionGroup.getCollection() == null) {
+                continue;
+            }
+            CollectionSetBuilder collectionSetBuilder = this.createCollectionSetBuilder(collectionGroup, e, iface, agent);
+            if (collectionSetBuilder == null) {
                 continue;
             }
 
-            var nodeLevelResource = new NodeLevelResource(iface.getNodeId());
-            var collectionSet = new CollectionSetBuilder(agent).withTimestamp(new Date());
-
-            final Resource resource;
-            final String groupName;
-            if (NODE_SNMP.equals(collection.getTarget())) {
-                groupName = NODE_SNMP;
-                resource = nodeLevelResource;
-            } else if (INTERFACE_SNMP.equals(collection.getTarget())) {
-                String instanceName = getInstanceName(collection, e);
-                groupName = INTERFACE_SNMP;
-                resource = new InterfaceLevelResource(nodeLevelResource, this.getInterfaceName(instanceName, iface));
+            if (collectionGroup.getRrd() != null) {
+                CollectionSet collectionSet = collectionSetBuilder.build();
+                this.handleThresholding(collectionSet, agent);
+                collectionSet.visit(this.getRrdPersister(collectionGroup.getRrd()));
             } else {
-                String instanceName = getInstanceName(collection, e);
-                if (instanceName == null) {
-                    LOG.warn("Skip parm due to missing instance param {}. uei: {}", collection.getInstance(), e.getUei());
-                    continue;
-                }
-                groupName = instanceName;
-                resource = new DeferredGenericTypeResource(nodeLevelResource, collection.getTarget(), groupName);
-                collectionSet.withStringAttribute(resource, collection.getTarget(), "instance", groupName);
-            }
-            collectionSet = setupCollectionSet(collectionSet, resource, groupName, collection, parm);
-            if (collection.getRrd() != null) {
-                collectionSet.build().visit(this.getRrdPersister(collection.getRrd()));
-            } else {
-                LOG.warn("Missing rrd config. {}", collection);
+                LOG.warn("Missing rrd config. {}", collectionGroup);
             }
         }
+    }
+
+    private void handleThresholding(CollectionSet collectionSet, CollectionAgent agent) {
+        try {
+            int nodeId = agent.getNodeId();
+            String hostAddress = agent.getHostAddress();
+            ThresholdingSession session = thresholdingService.createSession(nodeId, hostAddress,
+                    EventMetricsCollector.class.getSimpleName(), new ServiceParameters(Collections.emptyMap()));
+            session.accept(collectionSet);
+        } catch (ThresholdInitializationException | NullPointerException e) {
+            LOG.warn("FAIL to initialize Thresholding. Error: {}", e.getMessage());
+        }
+    }
+
+    private CollectionSetBuilder createCollectionSetBuilder(CollectionGroup collectionGroup, IEvent e, OnmsIpInterface iface, CollectionAgent agent) {
+        Objects.requireNonNull(collectionGroup);
+        Objects.requireNonNull(e);
+        Objects.requireNonNull(iface);
+        Objects.requireNonNull(agent);
+
+        var nodeLevelResource = new NodeLevelResource(iface.getNodeId());
+        var collectionSetBuilder = new CollectionSetBuilder(agent).withTimestamp(new Date());
+        final var groupName = collectionGroup.getName();
+
+        final Resource resource;
+        if (NODE_SNMP.equals(collectionGroup.getResourceType())) {
+            resource = nodeLevelResource;
+        } else if (INTERFACE_SNMP.equals(collectionGroup.getResourceType())) {
+            String instanceName = getInstanceName(collectionGroup, e);
+            resource = new InterfaceLevelResource(nodeLevelResource, this.getInterfaceName(instanceName, iface));
+        } else {
+            String instanceName = getInstanceName(collectionGroup, e);
+            if (instanceName == null) {
+                LOG.warn("Skip parm due to missing instance param {}. uei: {}", collectionGroup.getInstance(), e.getUei());
+                return null;
+            }
+            resource = new DeferredGenericTypeResource(nodeLevelResource, collectionGroup.getResourceType(), instanceName);
+            collectionSetBuilder.withStringAttribute(resource, collectionGroup.getResourceType(), "instance", instanceName);
+        }
+        for (var collection : collectionGroup.getCollection()) {
+            IParm parm = this.getMatchParam(e, collection);
+            if (parm == null) {
+
+                continue;
+            }
+            collectionSetBuilder = setupCollectionSet(collectionSetBuilder, resource, groupName, collection, parm);
+        }
+        return collectionSetBuilder;
     }
 
     /**
      * Return instanceName from the event parameter. Collection's instance as parameter key.
      *
-     * @param collection
+     * @param collectionGroup
      * @param e
      * @return
      */
-    private String getInstanceName(Collection collection, IEvent e) {
-        if (collection.getInstance() == null) {
+    private String getInstanceName(CollectionGroup collectionGroup, IEvent e) {
+        if (collectionGroup.getInstance() == null) {
             return null;
         }
-        IParm instanceName = e.getParm(collection.getInstance());
+        IParm instanceName = e.getParm(collectionGroup.getInstance());
         if (instanceName == null) {
             return null;
         }
@@ -195,17 +226,17 @@ public class EventListenerCollector implements EventListener {
     }
 
     private CollectionSetBuilder setupCollectionSet(CollectionSetBuilder collectionSet, Resource resource,
-                                                    String groupName, Collection collection, IParm parm) {
+                                                    String groupName, CollectionGroup.Collection collection, IParm parm) {
         Objects.requireNonNull(collection);
         Objects.requireNonNull(parm);
         String value = convertParamValue(collection, parm);
         switch (collection.getType()) {
             case GAUGE:
                 return collectionSet.withGauge(resource, groupName,
-                        this.getEscapeParamName(collection.getName()), Float.parseFloat(value));
+                        this.getEscapeParamName(collection.getName()), Double.parseDouble(value));
             case COUNTER:
                 return collectionSet.withCounter(resource, groupName,
-                        this.getEscapeParamName(collection.getName()), Float.parseFloat(value));
+                        this.getEscapeParamName(collection.getName()), Double.parseDouble(value));
             case STRING:
                 return collectionSet.withStringAttribute(resource, groupName,
                         this.getEscapeParamName(collection.getName()), value);
@@ -224,7 +255,7 @@ public class EventListenerCollector implements EventListener {
      * @param parm
      * @return converted value
      */
-    private String convertParamValue(Collection collection, IParm parm) {
+    private String convertParamValue(CollectionGroup.Collection collection, IParm parm) {
         Objects.requireNonNull(parm);
         Objects.requireNonNull(collection);
         String value = parm.getValue().getContent();
@@ -239,7 +270,7 @@ public class EventListenerCollector implements EventListener {
         return value;
     }
 
-    private CollectionSetVisitor getRrdPersister(Collection.Rrd rrd) {
+    private CollectionSetVisitor getRrdPersister(CollectionGroup.Rrd rrd) {
         RrdRepository repository = new RrdRepository();
         repository.setRrdBaseDir(rrd.getBaseDir());
         repository.setStep(rrd.getStep());
@@ -249,16 +280,16 @@ public class EventListenerCollector implements EventListener {
                 new ServiceParameters(Collections.emptyMap()), repository, false, false, false);
     }
 
-    private Collection getMatchCollection(IEvent e, List<Collection> collections, String name) {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(collections);
-        // if user set the collection name as uei, it means user want the whole message as value
-        if (collections.size() == 1 && e.getUei().equals(collections.get(0).getName())) {
-            return collections.get(0);
+    private IParm getMatchParam(IEvent e, CollectionGroup.Collection collection) {
+        Objects.requireNonNull(e);
+        Objects.requireNonNull(collection);
+        IParm parm = e.getParm(collection.getName());
+        if (parm != null){
+            return parm;
         }
-        for (var collection : collections) {
-            if (name.equals(collection.getName()))
-                return collection;
+        // if user set the collection name as uei, it means user want the whole message as value
+        if (e.getUei().equals(collection.getName()) && e.getParmCollection().size() == 1) {
+            return e.getParmCollection().get(0);
         }
         return null;
     }
