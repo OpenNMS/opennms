@@ -47,9 +47,10 @@ import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.retrieval.api.Retriever;
 import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
-import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -60,6 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DeviceConfigMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitor.class);
 
     public static final String SCRIPT = "script";
     public static final String USERNAME = "username";
@@ -69,13 +71,14 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     public static final String LAST_RETRIEVAL = "lastRetrieval";
     public static final String SCRIPT_FILE = "script-file";
 
-    private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitor.class);
-    private Retriever retriever;
     private static final Duration DEFAULT_DURATION = Duration.ofMinutes(1); // 60sec
     private static final int DEFAULT_SSH_PORT = 22;
 
+    private Retriever retriever;
+
     private IpInterfaceDao ipInterfaceDao;
     private DeviceConfigDao deviceConfigDao;
+    private SessionUtils sessionUtils;
 
     @Override
     public Map<String, Object> getRuntimeAttributes(final MonitoredService svc, final Map<String, Object> parameters) {
@@ -87,23 +90,34 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
             deviceConfigDao = BeanUtils.getBean("daoContext", "deviceConfigDao", DeviceConfigDao.class);
         }
 
-        final Map<String, Object> params = new HashMap<>();
-        final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
-        
-        final var deviceConfigOptional = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
-        deviceConfigOptional.ifPresent(deviceConfig -> params.put(LAST_RETRIEVAL, String.valueOf(deviceConfig.getLastUpdated().getTime())));
-        
-        final String scriptFile = getKeyedString(parameters, SCRIPT_FILE, null);
-        try {
-            if (scriptFile != null) {
-                String script = parseScriptFile(scriptFile);
-                params.put(SCRIPT, script);
-            }
-        } catch (Exception e) {
-            LOG.error("Error while parsing script file {}", scriptFile, e);
-            throw new RuntimeException(e);
+        if (sessionUtils == null) {
+            sessionUtils = BeanUtils.getBean("daoContext", "sessionUtils", SessionUtils.class);
         }
-        return params;
+
+        return sessionUtils.withReadOnlyTransaction(() -> {
+            final Map<String, Object> params = new HashMap<>();
+            final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
+
+            // Publish time of last backup to poller execution.
+            // Use creation time of node as fallback to ensure first run scheduled correctly.
+            params.put(LAST_RETRIEVAL, this.deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName())
+                                                           .map(org.opennms.features.deviceconfig.persistence.api.DeviceConfig::getLastUpdated)
+                                                           .orElse(ipInterface.getNode().getCreateTime())
+                                                           .getTime());
+
+            final String scriptFile = getKeyedString(parameters, SCRIPT_FILE, null);
+            try {
+                if (scriptFile != null) {
+                    String script = parseScriptFile(scriptFile);
+                    params.put(SCRIPT, script);
+                }
+            } catch (Exception e) {
+                LOG.error("Error while parsing script file {}", scriptFile, e);
+                throw new RuntimeException(e);
+            }
+
+            return params;
+        });
     }
 
     private static String parseScriptFile(String fileName) throws IOException {
@@ -188,6 +202,10 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
     public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
         this.deviceConfigDao = deviceConfigDao;
+    }
+
+    public void setSessionUtils(final SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
     }
 
     private Date getNextRunDate(String cronSchedule, Date lastRun) {
