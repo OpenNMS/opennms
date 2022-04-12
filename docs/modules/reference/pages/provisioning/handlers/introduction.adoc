@@ -1,6 +1,6 @@
 
 [[import-handlers]]
-= Import Inventory from External Sources
+= Import Handlers
 
 {page-component-title} supports import handlers to help provision nodes from an external system (foreign source) into a requisition.
 OpenNMS does this through requisition definitions you specify in the Requisition Definition UI.
