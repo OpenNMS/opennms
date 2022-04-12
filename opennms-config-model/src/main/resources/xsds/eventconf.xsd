@@ -453,15 +453,20 @@
     </annotation>
     <complexType>
       <sequence>
-        <element maxOccurs="unbounded" minOccurs="0" name="paramValues">
+        <element maxOccurs="unbounded" minOccurs="0" name="paramValue">
           <annotation>
-            <documentation>It use to convert KEY (string) into VALUE (number) for rrd. Format KEY:VALUE</documentation>
+            <documentation>It use to convert KEY (string) into VALUE (double) for rrd. It only support gauge and counter type.</documentation>
           </annotation>
-          <simpleType>
-            <restriction base="string">
-              <pattern value="\w+:\d+"/>
-            </restriction>
-          </simpleType>
+          <complexType>
+            <attribute name="key" use="required">
+              <simpleType>
+                <restriction base="string">
+                  <minLength value="1"/>
+                </restriction>
+              </simpleType>
+            </attribute>
+            <attribute name="value" type="double" use="required"/>
+          </complexType>
         </element>
       </sequence>
       <attribute name="name" type="string" use="required">

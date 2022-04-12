@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collection;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -36,16 +37,19 @@ import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
@@ -54,13 +58,10 @@ import org.opennms.netmgt.xml.eventconf.CollectionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
 
 /**
  * This collector will convert event into time series data. It depends on eventconf.xsd's collection tag.
@@ -79,20 +80,23 @@ public class EventMetricsCollector implements EventListener {
 
     private final IpInterfaceDao ipInterfaceDao;
 
+    private final SnmpInterfaceDao snmpInterfaceDao;
+
     private final CollectionAgentFactory collectionAgentFactory;
 
     private final ThresholdingService thresholdingService;
 
     public EventMetricsCollector(
             EventConfDao eventConfDao, EventSubscriptionService eventSubscriptionService,
-            PersisterFactory persisterFactory, IpInterfaceDao ipInterfaceDao,
+            PersisterFactory persisterFactory, IpInterfaceDao ipInterfaceDao, SnmpInterfaceDao snmpInterfaceDao,
             CollectionAgentFactory collectionAgentFactory, ThresholdingService thresholdingService) {
-        this.eventConfDao = eventConfDao;
-        this.eventSubscriptionService = eventSubscriptionService;
-        this.persisterFactory = persisterFactory;
-        this.ipInterfaceDao = ipInterfaceDao;
-        this.collectionAgentFactory = collectionAgentFactory;
-        this.thresholdingService = thresholdingService;
+        this.eventConfDao = Objects.requireNonNull(eventConfDao);
+        this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
+        this.persisterFactory = Objects.requireNonNull(persisterFactory);
+        this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
+        this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
+        this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
+        this.thresholdingService = Objects.requireNonNull(thresholdingService);
     }
 
     public void start() {
@@ -117,22 +121,18 @@ public class EventMetricsCollector implements EventListener {
         List<CollectionGroup> collectionGroups = eventconf.getCollectionGroup();
 
         OnmsIpInterface iface = ipInterfaceDao.findByNodeIdAndIpAddress(e.getNodeid().intValue(),
-                e.getInterfaceAddress().getHostAddress());
+                InetAddressUtils.str(e.getInterfaceAddress()));
         CollectionAgent agent = collectionAgentFactory.createCollectionAgent(iface);
 
         for (var collectionGroup : collectionGroups) {
-            if (collectionGroup == null || collectionGroup.getCollection() == null) {
-                continue;
-            }
             CollectionSetBuilder collectionSetBuilder = this.createCollectionSetBuilder(collectionGroup, e, iface, agent);
             if (collectionSetBuilder == null) {
                 continue;
             }
-
             if (collectionGroup.getRrd() != null) {
                 CollectionSet collectionSet = collectionSetBuilder.build();
                 this.handleThresholding(collectionSet, agent);
-                collectionSet.visit(this.getRrdPersister(collectionGroup.getRrd()));
+                collectionSet.visit(this.createRrdPersister(collectionGroup.getRrd()));
             } else {
                 LOG.warn("Missing rrd config. {}", collectionGroup);
             }
@@ -174,12 +174,11 @@ public class EventMetricsCollector implements EventListener {
                 return null;
             }
             resource = new DeferredGenericTypeResource(nodeLevelResource, collectionGroup.getResourceType(), instanceName);
-            collectionSetBuilder.withStringAttribute(resource, collectionGroup.getResourceType(), "instance", instanceName);
+            collectionSetBuilder.withStringAttribute(resource, collectionGroup.getName(), "instance", instanceName);
         }
         for (var collection : collectionGroup.getCollection()) {
             IParm parm = this.getMatchParam(e, collection);
             if (parm == null) {
-
                 continue;
             }
             collectionSetBuilder = setupCollectionSet(collectionSetBuilder, resource, groupName, collection, parm);
@@ -206,85 +205,82 @@ public class EventMetricsCollector implements EventListener {
     }
 
     /**
-     * It will try to find the ifIndex, if not return iface's snmp interface name. If iface snmp interface not found, it will return interface ip address
+     * It will try to find the ifIndex, if not return iface's snmp interface name. It will return in the following order.
+     * 1. snmp interface name
+     * 2. ifIndex
+     * 3. interface ip
      *
      * @param ifIndex
      * @param iface
      * @return interfaceName
      */
     private String getInterfaceName(String ifIndex, OnmsIpInterface iface) {
-        OnmsIpInterface targetInterface;
+        OnmsSnmpInterface snmpInterface;
         try {
-            int tmpIndex = Integer.parseInt(ifIndex);
-            targetInterface = ipInterfaceDao.findByNodeId(iface.getNodeId()).stream()
-                    .filter(tmpIf -> tmpIf.getIfIndex() == tmpIndex).findFirst().orElse(iface);
-        } catch (NullPointerException | NumberFormatException exception) {
-            targetInterface = iface;
+            snmpInterface = snmpInterfaceDao.findByNodeIdAndIfIndex(iface.getNodeId(), Integer.parseInt(ifIndex));
+        } catch (NumberFormatException e) {
+            snmpInterface = null;
         }
-        return targetInterface.getSnmpInterface() != null
-                ? targetInterface.getSnmpInterface().getIfName() : iface.getIpAddress().getHostAddress();
+        if (snmpInterface != null) {
+            return snmpInterface.getIfName();
+        } else {
+            return ifIndex != null ? ifIndex : InetAddressUtils.str(iface.getIpAddress());
+        }
     }
 
     private CollectionSetBuilder setupCollectionSet(CollectionSetBuilder collectionSet, Resource resource,
                                                     String groupName, CollectionGroup.Collection collection, IParm parm) {
         Objects.requireNonNull(collection);
         Objects.requireNonNull(parm);
-        String value = convertParamValue(collection, parm);
-        switch (collection.getType()) {
-            case GAUGE:
-                return collectionSet.withGauge(resource, groupName,
-                        this.getEscapeParamName(collection.getName()), Double.parseDouble(value));
-            case COUNTER:
-                return collectionSet.withCounter(resource, groupName,
-                        this.getEscapeParamName(collection.getName()), Double.parseDouble(value));
-            case STRING:
-                return collectionSet.withStringAttribute(resource, groupName,
-                        this.getEscapeParamName(collection.getName()), value);
+        String value = parm.getValue().getContent();
+        try {
+            switch (collection.getType()) {
+                case GAUGE:
+                    return collectionSet.withGauge(resource, groupName,
+                            GenericTypeResource.sanitizeInstanceStrict(collection.getName()), convertParamValue(collection, value));
+                case COUNTER:
+                    return collectionSet.withCounter(resource, groupName,
+                            GenericTypeResource.sanitizeInstanceStrict(collection.getName()), convertParamValue(collection, value));
+                case STRING:
+                    return collectionSet.withStringAttribute(resource, groupName,
+                            GenericTypeResource.sanitizeInstanceStrict(collection.getName()), value);
+            }
+        } catch (NumberFormatException ex) {
+            LOG.warn("Skip invalid value exist. value = {}", value);
         }
         return collectionSet;
-    }
-
-    private String getEscapeParamName(String name) {
-        return name.replaceAll(Matcher.quoteReplacement(File.separator), "_");
     }
 
     /**
      * It will convert param values base on the eventconf's paramValues mapping. If nothing match, it returns the original value.
      *
      * @param collection
-     * @param parm
+     * @param value
      * @return converted value
      */
-    private String convertParamValue(CollectionGroup.Collection collection, IParm parm) {
-        Objects.requireNonNull(parm);
+    private double convertParamValue(CollectionGroup.Collection collection, String value) throws NumberFormatException {
+        Objects.requireNonNull(value);
         Objects.requireNonNull(collection);
-        String value = parm.getValue().getContent();
-        String searchText = value + ":";
-        List<String> paramValues = collection.getParamValues();
-        for (var s : paramValues) {
-            var idx = s.indexOf(searchText);
-            if (idx != -1) {
-                return s.substring(idx + searchText.length());
-            }
-        }
-        return value;
+        var found = collection.getParamValue().stream()
+                .filter(p -> p.getName().equals(value)).findFirst();
+        return (found.isPresent()) ? found.get().getValue() : Double.parseDouble(value);
     }
 
-    private CollectionSetVisitor getRrdPersister(CollectionGroup.Rrd rrd) {
+    private CollectionSetVisitor createRrdPersister(CollectionGroup.Rrd rrd) {
         RrdRepository repository = new RrdRepository();
         repository.setRrdBaseDir(rrd.getBaseDir());
         repository.setStep(rrd.getStep());
         repository.setHeartBeat(rrd.getHeartBeat());
         repository.setRraList(rrd.getRras());
         return persisterFactory.createPersister(
-                new ServiceParameters(Collections.emptyMap()), repository, false, false, false);
+                new ServiceParameters(Collections.emptyMap()), repository);
     }
 
     private IParm getMatchParam(IEvent e, CollectionGroup.Collection collection) {
         Objects.requireNonNull(e);
         Objects.requireNonNull(collection);
         IParm parm = e.getParm(collection.getName());
-        if (parm != null){
+        if (parm != null) {
             return parm;
         }
         // if user set the collection name as uei, it means user want the whole message as value

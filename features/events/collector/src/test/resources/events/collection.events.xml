@@ -30,8 +30,8 @@
             </rrd>
             <collection name="TIME" type="counter"/>
             <collection name="STATUS" type="gauge">
-                <paramValues>master:123</paramValues>
-                <paramValues>slave:2</paramValues>
+                <paramValue key="primary" value="1"/>
+                <paramValue key="secondary" value="2"/>
             </collection>
         </collectionGroup>
         <collectionGroup name="eventTypeGroup" resourceType="eventType" instance="STATUS">

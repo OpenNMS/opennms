@@ -46,6 +46,8 @@ import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.events.api.model.ImmutableEvent;
@@ -85,6 +87,9 @@ public class EventMetricsCollectorTest {
     @Autowired
     private IpInterfaceDao ipInterfaceDao;
 
+    @Autowired
+    private SnmpInterfaceDao snmpInterfaceDao;
+
     /**
      * Create a collector with fake data and pass the persister into PersisterFactory
      *
@@ -109,6 +114,9 @@ public class EventMetricsCollectorTest {
         onmsIpInterface.setNode(node);
         ipInterfaceDao.save(onmsIpInterface);
 
+        EventSubscriptionService mockEventSubscriptionService = mock(EventSubscriptionService.class);
+        ThresholdingService mockThresholdingService = mock(ThresholdingService.class, RETURNS_DEEP_STUBS);
+
         PersisterFactory persisterFactory = new PersisterFactory() {
             @Override
             public Persister createPersister(ServiceParameters params, RrdRepository repository) {
@@ -122,8 +130,8 @@ public class EventMetricsCollectorTest {
             }
         };
 
-        EventMetricsCollector collector = new EventMetricsCollector(eventConfDao, null,
-                persisterFactory, ipInterfaceDao, collectionAgentFactory, null);
+        EventMetricsCollector collector = new EventMetricsCollector(eventConfDao, mockEventSubscriptionService,
+                persisterFactory, ipInterfaceDao, snmpInterfaceDao, collectionAgentFactory, mockThresholdingService);
 
         return collector;
     }
@@ -162,7 +170,7 @@ public class EventMetricsCollectorTest {
         List<IParm> paramList = new ArrayList<>();
         paramList.add(ImmutableParm.newBuilder().setParmName("TIME").setValue(ImmutableValue.newBuilder().setContent("100").build()).build());
         paramList.add(ImmutableParm.newBuilder().setParmName("VALUE").setValue(ImmutableValue.newBuilder().setContent("200").build()).build());
-        paramList.add(ImmutableParm.newBuilder().setParmName("STATUS").setValue(ImmutableValue.newBuilder().setContent("master").build()).build());
+        paramList.add(ImmutableParm.newBuilder().setParmName("STATUS").setValue(ImmutableValue.newBuilder().setContent("primary").build()).build());
         paramList.add(ImmutableParm.newBuilder().setParmName("TAG").setValue(ImmutableValue.newBuilder().setContent("TAG").build()).build());
         // wrong param
         paramList.add(ImmutableParm.newBuilder().setParmName("WRONG").setValue(ImmutableValue.newBuilder().setContent("WRONG").build()).build());

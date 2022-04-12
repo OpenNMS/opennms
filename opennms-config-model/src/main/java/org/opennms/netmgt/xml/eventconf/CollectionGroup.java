@@ -212,8 +212,8 @@ public class CollectionGroup implements Serializable {
         @XmlAttribute(name = "type", required = true)
         private AttributeType type;
 
-        @XmlElement(name = "paramValues")
-        private List<String> paramValues = new ArrayList<>();
+        @XmlElement(name = "paramValue")
+        private List<ParamValue> paramValue = new ArrayList<>();
 
         public String getName() {
             return name;
@@ -231,12 +231,12 @@ public class CollectionGroup implements Serializable {
             this.type = type;
         }
 
-        public List<String> getParamValues() {
-            return paramValues;
+        public List<ParamValue> getParamValue() {
+            return paramValue;
         }
 
-        public void setParamValues(List<String> paramValues) {
-            this.paramValues = paramValues;
+        public void setParamValue(List<ParamValue> paramValue) {
+            this.paramValue = paramValue;
         }
 
         @Override
@@ -246,12 +246,12 @@ public class CollectionGroup implements Serializable {
             final Collection that = (Collection) o;
             return Objects.equals(this.name, that.name) &&
                     Objects.equals(this.type, that.type) &&
-                    Objects.equals(this.paramValues, that.paramValues);
+                    Objects.equals(this.paramValue, that.paramValue);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(this.name, this.type, this.paramValues);
+            return Objects.hash(this.name, this.type, this.paramValue);
         }
 
         @Override
@@ -259,7 +259,55 @@ public class CollectionGroup implements Serializable {
             return MoreObjects.toStringHelper(this)
                     .add("name", this.name)
                     .add("type", this.type)
-                    .add("paramValues", this.paramValues)
+                    .add("paramValue", this.paramValue)
+                    .toString();
+        }
+    }
+
+    @XmlRootElement(name = "paramValue")
+    @XmlAccessorType(XmlAccessType.NONE)
+    public static class ParamValue {
+        @XmlAttribute(name = "key", required = true)
+        private String name;
+
+        @XmlAttribute(name = "value", required = true)
+        private Double value;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Double getValue() {
+            return value;
+        }
+
+        public void setValue(Double value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final ParamValue that = (ParamValue) o;
+            return Objects.equals(this.name, that.name) &&
+                    Objects.equals(this.value, that.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.name, this.value);
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("name", this.name)
+                    .add("type", this.value)
                     .toString();
         }
     }
