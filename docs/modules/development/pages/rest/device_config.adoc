@@ -2,7 +2,6 @@
 = Device Config Rest API
 
 Use the Device Config Rest API to fetch existing configurations and trigger retrieval of the device configs.
-It is an `api/v2` endpoint.
 
 NOTE: If not otherwise specified, the `Content-Type` of the request and response is `application/json`.
 
