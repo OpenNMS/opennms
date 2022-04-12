@@ -74,7 +74,7 @@ during the last poll on a given interface
 == Retrieve device configuration without monitor
 
 You can use the Rest API to trigger device configuration retrieval outside of a monitor schedule.
-(See xref:development:rest/device_config.adoc[Device Config Rest API].
+(See xref:development:rest/device_config.adoc[Device Config Rest API].)
 
 
 == Retrieve/trigger device configuration backup from Karaf shell
