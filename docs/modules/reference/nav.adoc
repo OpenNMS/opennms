@@ -35,7 +35,7 @@
 ** xref:service-assurance/monitors/CiscoIpSlaMonitor.adoc[]
 ** xref:service-assurance/monitors/CiscoPingMibMonitor.adoc[]
 ** xref:service-assurance/monitors/CitrixMonitor.adoc[]
-** xref:service-assurance/monitors/DeviceConfiMonitor.adoc[]
+** xref:service-assurance/monitors/DeviceConfigMonitor.adoc[]
 ** xref:service-assurance/monitors/DhcpMonitor.adoc[]
 ** xref:service-assurance/monitors/DiskUsageMonitor.adoc[]
 ** xref:service-assurance/monitors/DnsMonitor.adoc[]
