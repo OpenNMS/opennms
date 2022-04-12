@@ -8,8 +8,7 @@ export const useFocus = () => {
     const results: SearchResultResponse[] = await store.dispatch('searchModule/search', node.name)
 
     if (results) {
-      store.dispatch('topologyModule/setFocusedSearchBarNodes', [results[0].results[0]])
-      store.dispatch('topologyModule/addFocusedNodeIds', [node.id])
+      store.dispatch('topologyModule/addFocusObjects', [node.id])
     }
   }
 

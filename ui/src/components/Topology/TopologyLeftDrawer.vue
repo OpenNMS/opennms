@@ -22,6 +22,7 @@ import { FeatherDrawer } from '@featherds/drawer'
 const store = useStore()
 const isOpen = computed<boolean>(() => store.state.topologyModule.isLeftDrawerOpen)
 const isRightDrawerOpen = computed<boolean>(() => store.state.topologyModule.isRightDrawerOpen)
+
 const closeDrawer = () => store.dispatch('topologyModule/closeLeftDrawer')
 
 onMounted(() => {

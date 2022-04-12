@@ -1,4 +1,4 @@
-import { SearchResult } from '@/types'
+import { IdLabelProps, SearchResult } from '@/types'
 import { TopologyGraphList } from '@/types/topology'
 import { Edges, Node, Nodes } from 'v-network-graph'
 import { State } from './state'
@@ -15,8 +15,8 @@ const SAVE_TOPOLOGY_GRAPHS = (state: State, topologyGraphs: TopologyGraphList[])
   state.topologyGraphs = topologyGraphs
 }
 
-const SAVE_DEFAULT_NODE = (state: State, defaultNode: Node) => {
-  state.defaultNode = defaultNode
+const SAVE_DEFAULT_OBJECTS = (state: State, defaultObjects: Node[]) => {
+  state.defaultObjects = defaultObjects
 }
 
 const SET_SEMANTIC_ZOOM_LEVEL = (state: State, SML: number) => {
@@ -40,16 +40,16 @@ const SET_RIGHT_DRAWER_OPEN = (state: State, bool: boolean) => {
   state.isRightDrawerOpen = bool
 }
 
-const ADD_FOCUSED_NODE_IDS = (state: State, ids: string[]) => {
-  state.focusedNodeIds = ids
+const ADD_FOCUS_OBJECTS = (state: State, ids: IdLabelProps[]) => {
+  state.focusObjects = ids
 }
 
-const ADD_NODE_TO_FOCUS_IDS = (state: State, id: string) => {
-  state.focusedNodeIds = [...state.focusedNodeIds, id]
+const ADD_FOCUS_OBJECT = (state: State, id: IdLabelProps) => {
+  state.focusObjects = [...state.focusObjects, id]
 }
 
-const REMOVE_NODE_FROM_FOCUS_IDS = (state: State, id: string) => {
-  state.focusedNodeIds = state.focusedNodeIds.filter((focusedId) => focusedId !== id)
+const REMOVE_FOCUS_OBJECT = (state: State, id: string) => {
+  state.focusObjects = state.focusObjects.filter((obj) => obj.id !== id)
 }
 
 const SET_FOCUSED_SEARCH_BAR_NODES = (state: State, nodes: SearchResult[]) => {
@@ -76,6 +76,14 @@ const UPDATE_NODE_ICONS = (state: State, nodeIdIconKey: Record<string, string>) 
   state.nodeIcons = { ...state.nodeIcons, ...nodeIdIconKey }
 }
 
+const SET_CONTAINER_AND_NAMESPACE = (
+  state: State,
+  { container, namespace }: { container: string; namespace: string }
+) => {
+  state.container = container
+  state.namespace = namespace
+}
+
 export default {
   SAVE_NODE_EDGES,
   SAVE_NODE_VERTICIES,
@@ -84,15 +92,16 @@ export default {
   SET_SELECTED_DISPLAY,
   SET_LEFT_DRAWER_OPEN,
   SET_RIGHT_DRAWER_OPEN,
-  ADD_FOCUSED_NODE_IDS,
-  ADD_NODE_TO_FOCUS_IDS,
-  REMOVE_NODE_FROM_FOCUS_IDS,
+  ADD_FOCUS_OBJECTS,
+  ADD_FOCUS_OBJECT,
+  REMOVE_FOCUS_OBJECT,
   SET_FOCUSED_SEARCH_BAR_NODES,
   ADD_FOCUSED_SEARCH_BAR_NODE,
   REMOVE_FOCUSED_SEARCH_BAR_NODE,
-  SAVE_DEFAULT_NODE,
+  SAVE_DEFAULT_OBJECTS,
   SET_HIGHLIGHT_FOCUSED_NODES,
   SET_MODAL_STATE,
   UPDATE_NODE_ICONS,
-  SAVE_TOPOLOGY_GRAPHS
+  SAVE_TOPOLOGY_GRAPHS,
+  SET_CONTAINER_AND_NAMESPACE
 }

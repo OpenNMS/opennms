@@ -11,7 +11,7 @@ const getCircleLayout = (state: State): Record<string, NodePoint> => {
   const vertexNames = Object.keys(state.verticies)
   const layout = {} as Record<string, NodePoint>
 
-  for (let i = 0;i < vertexNames.length;i++) {
+  for (let i = 0; i < vertexNames.length; i++) {
     layout[vertexNames[i]] = {
       x: centerX + radius * Math.cos((2 * Math.PI * i) / vertexNames.length),
       y: centerY + radius * Math.sin((2 * Math.PI * i) / vertexNames.length)
@@ -33,8 +33,8 @@ const getLayout = (state: State): Layouts => {
 
 /**
  * Determine whether powergrid graphs are available
- * 
- * @param state topology store 
+ *
+ * @param state topology store
  * @returns boolean
  */
 const hasPowerGridGraphs = (state: State): boolean => {
@@ -49,8 +49,8 @@ const hasPowerGridGraphs = (state: State): boolean => {
 /**
  * Return powergrid graphs, if available.
  * Otherwise return object with empty graphs array.
- * 
- * @param state topology store 
+ *
+ * @param state topology store
  * @returns TopologyGraphList
  */
 const getPowerGridGraphs = (state: State): TopologyGraphList => {

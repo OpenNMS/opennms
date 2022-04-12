@@ -15,8 +15,8 @@
         <li>use the default focus</li>
       </ul>
 
-      <FeatherButton @click="useDefaultFocus" primary class="btn" :disabled="!defaultNode">
-        <span v-if="defaultNode">Use Default Focus</span>
+      <FeatherButton @click="useDefaultFocus" primary class="btn" :disabled="!defaultObjects">
+        <span v-if="defaultObjects">Use Default Focus</span>
         <span v-else>No Nodes Available</span>
       </FeatherButton>
     </div>
@@ -29,7 +29,7 @@ import { PropType } from 'vue'
 import { useStore } from 'vuex'
 
 const store = useStore()
-const defaultNode = computed<Node>(() => store.state.topologyModule.defaultNode)
+const defaultObjects = computed<Node>(() => store.state.topologyModule.defaultObjects)
 
 defineProps({
   useDefaultFocus: {

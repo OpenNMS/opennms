@@ -6,6 +6,11 @@ export interface VuexContext {
   dispatch: Dispatch
 }
 
+export interface IdLabelProps {
+  id: string
+  label: string
+}
+
 export interface SearchResultResponse {
   label?: string
   context: {

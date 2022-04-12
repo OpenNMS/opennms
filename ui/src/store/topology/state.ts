@@ -1,4 +1,4 @@
-import { SearchResult } from '@/types'
+import { IdLabelProps, SearchResult } from '@/types'
 import { NodePoint, TopologyGraphList } from '@/types/topology'
 import { Edges, Node, Nodes } from 'v-network-graph'
 
@@ -11,14 +11,16 @@ export interface State {
   semanticZoomLevel: number
   isLeftDrawerOpen: boolean
   isRightDrawerOpen: boolean
-  focusedNodeIds: string[]
+  focusObjects: IdLabelProps[]
   layout: Record<string, NodePoint>
   focusedSearchBarNodes: SearchResult[]
-  defaultNode: Node | null
+  defaultObjects: Node[] | null
   highlightFocusedNodes: boolean
   modalState: boolean
   nodeIcons: Record<string, string>
   topologyGraphs: TopologyGraphList[]
+  container: string
+  namespace: string
 }
 
 const state: State = {
@@ -30,14 +32,16 @@ const state: State = {
   semanticZoomLevel: 1,
   isLeftDrawerOpen: true,
   isRightDrawerOpen: false,
-  focusedNodeIds: [],
+  focusObjects: [],
   layout: {},
   focusedSearchBarNodes: [],
-  defaultNode: null,
+  defaultObjects: null,
   highlightFocusedNodes: false,
   modalState: false,
   nodeIcons: {},
-  topologyGraphs: []
+  topologyGraphs: [],
+  container: '',
+  namespace: ''
 }
 
 export default state

@@ -12,7 +12,7 @@
       >
         <pane min-size="1" max-size="100" :size="72">
           <DrawerBtn />
-          <LeftDrawer>
+          <TopologyLeftDrawer>
             <template v-slot:search>
               <TopologySearch v-if="isTopologyView" />
               <MapSearch
@@ -25,7 +25,7 @@
             <template v-slot:view>
               <ViewSelect />
             </template>
-          </LeftDrawer>
+          </TopologyLeftDrawer>
           <Topology v-if="isTopologyView" />
           <LeafletMap v-if="nodesReady" v-show="!isTopologyView" ref="leafletComponent" />
         </pane>
@@ -50,7 +50,7 @@ import LeafletMap from '../components/Map/LeafletMap.vue'
 import Topology from './Topology.vue'
 import GridTabs from '@/components/Map/GridTabs.vue'
 import { debounce } from 'lodash'
-import LeftDrawer from '@/components/Topology/LeftDrawer.vue'
+import TopologyLeftDrawer from '@/components/Topology/TopologyLeftDrawer.vue'
 import ViewSelect from '@/components/Topology/ViewSelect.vue'
 import TopologySearch from '@/components/Topology/TopologySearch.vue'
 import MapSearch from '@/components/Map/MapSearch.vue'

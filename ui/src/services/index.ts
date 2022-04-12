@@ -20,7 +20,13 @@ import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
 import { getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
-import { getVerticesAndEdges, getTopologyDataByLevelAndFocus, getTopologyGraphs, getTopologyGraphByContainerAndNamespace } from './topologyService'
+import {
+  getVerticesAndEdges,
+  getNodesTopologyDataByLevelAndFocus,
+  getPowerGridTopologyDataByLevelAndFocus,
+  getTopologyGraphs,
+  getTopologyGraphByContainerAndNamespace
+} from './topologyService'
 import { getPlugins } from './pluginService'
 
 export default {
@@ -54,7 +60,8 @@ export default {
   getResourceForNode,
   getGraphDefinitionsByResourceId,
   getTopologyGraphByContainerAndNamespace,
-  getTopologyDataByLevelAndFocus,
+  getNodesTopologyDataByLevelAndFocus,
+  getPowerGridTopologyDataByLevelAndFocus,
   getTopologyGraphs,
   getPlugins
 }

@@ -1,4 +1,5 @@
 export interface VerticesAndEdges {
+  ['focus-strategy']?: string
   defaultFocus?: DefaultFocus
   focus?: Focus
   vertices: ResponseVertex[]
