@@ -19,12 +19,14 @@ To install the opennms-plugin-ticketer-jira package:
 ****
 
 . Once installed, set the following property in `$OPENNMS_HOME/etc/opennms.properties.d/ticketer.properties` to enable the plugin:
+(Create the file if it does not exist)
 
  opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin
 
 . Configure the plugin options by setting desired options in `$OPENNMS_HOME/etc/jira.properties`.
 See the table below for available options.
 . To make the ticketer system start automatically on future service starts, add the line `jira-troubleticketer` to the file `$\{OPENNMS_HOME}/etc/featuresBoot.d/ticketer.boot`.
+(Create the file if it does not exist)
 . To make the ticketer system start now, log in to the Karaf shell and run the following command to load the feature:
 
  feature:install jira-troubleticketer
@@ -95,6 +97,7 @@ Besides the common fields creator, create date, description, or subject, you als
 The Jira ticketing plugin provides the opportunity to define those in the OpenNMS ticket attributes, which can be overwritten with Drools rules.
 
 To enable the Drools ticketing integration, set the following property in `$OPENNMS_HOME/etc/opennms.properties.d/ticketer.properties`:
+(Create the file if it does not exist)
 
 [source, properties]
 ----

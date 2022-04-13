@@ -9,6 +9,7 @@ The TSRM ticketing plugin creates TSRM incidents in response to {page-component-
 == Setup
 
 To enable the plugin start by setting following property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/ticketer.properties`:
+(Create the file if it does not exist)
 
 [source]
 ----
@@ -37,6 +38,7 @@ Configure the plugin options by setting the following properties in `$\{OPENNMS_
 |===
 
 . To make the ticketer system start automatically on the future service starts, add the line `tsrm-troubleticketer` to the file `$\{OPENNMS_HOME}/etc/featuresBoot.d/ticketer.boot`.
+(Create the file if it does not exist)
 
 To make the ticketer system start now, log in to the Karaf shell and run the following command to load the feature:
 
