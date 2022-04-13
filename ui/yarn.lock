@@ -407,9 +407,9 @@
     "@types/chai" "*"
 
 "@types/chai@*", "@types/chai@^4.3.0":
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.3.0.tgz#23509ebc1fa32f1b4d50d6a66c4032d5b8eaabdc"
-  integrity sha512-/ceqdqeRraGolFTcfoXNiqjyQhZzbINDngeoAq9GoHa8PPK1yNzTaxWjA6BFWp5Ua9JpXEMSS4s5i9tS0hOJtw==
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.3.1.tgz#e2c6e73e0bdeb2521d00756d099218e9f5d90a04"
+  integrity sha512-/zPMqDkzSZ8t3VtxOa4KPq7uzzW978M9Tvh+j7GHKuo6k6GTLxPJ4J5gE5cjfJ26pnXst0N5Hax8Sr0T2Mi9zQ==
 
 "@types/concat-stream@^1.6.0":
   version "1.6.1"
@@ -3111,9 +3111,9 @@ vite-svg-loader@^3.2.0:
     svgo "^2.7.0"
 
 vite@^2.7.10, vite@^2.9.1:
-  version "2.9.3"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-2.9.3.tgz#29a887bc21a2f90043f800618cb6848e861a604c"
-  integrity sha512-R9IrnWGallcXvOeWa1AA7CH9MdW/9X+cj3c11IHcq98OkNSzWzwb0dd69DvEZTIdxJNOZL3kHRCWC7L2QH0sNw==
+  version "2.9.4"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-2.9.4.tgz#3d1c5895ecacfcaf8e7e96316d4d4ca3dfbf983b"
+  integrity sha512-7pO6ruZMsyTpaPB7kGtW+yj15Ze5g+E4w4Ramk1sAJLIuI4uPd5sauqubmZNpq0Yc1vLVxoXRf2Uj+qWxk5aXw==
   dependencies:
     esbuild "^0.14.27"
     postcss "^8.4.12"
