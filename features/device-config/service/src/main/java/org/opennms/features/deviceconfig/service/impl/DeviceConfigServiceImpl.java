@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -48,6 +49,7 @@ import org.opennms.netmgt.config.ReadOnlyPollerConfigManager;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
@@ -176,6 +178,15 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private CompletableFuture<PollerResponse> pollDeviceConfig(String ipAddress, String location, String serviceName) throws IOException {
         final var match = getPollerConfig().findService(ipAddress, serviceName)
                 .orElseThrow(IllegalArgumentException::new);
+
+        final Set<String> serviceNames = sessionUtils.withReadOnlyTransaction(() -> ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location)
+                .getMonitoredServices().stream()
+                .map(OnmsMonitoredService::getServiceName)
+                .collect(Collectors.toSet()));
+
+        if (!serviceNames.contains(serviceName)) {
+            throw new IllegalArgumentException("Service " + serviceName + " not bound to interface with ipAddress " + ipAddress + " at location " + location);
+        }
 
         final var monitor = getPollerConfig().getServiceMonitor(match.service.getName());
 
