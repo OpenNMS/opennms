@@ -1,7 +1,7 @@
 export const rescanCopy: Record<string, unknown> = {
-  true: 'Scan New and Existing Nodes',
-  dbonly: 'Database Steps Only',
-  false: 'Scan New Nodes Only'
+  true: 'Scan all nodes',
+  dbonly: 'No scanning',
+  false: 'Scan added nodes only'
 }
 
 export const rescanItems = [
