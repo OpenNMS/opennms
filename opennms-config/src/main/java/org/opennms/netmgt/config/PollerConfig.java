@@ -33,6 +33,7 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
@@ -295,7 +296,51 @@ public interface PollerConfig extends PathOutageConfig {
     public List<Package> getPackages();
 
     List<Monitor> getConfiguredMonitors();
-    
+
+    /**
+     * Find the {@link Package} containing the service selected for the given IP.
+     * @param ipAddr the address to select the package for
+     * @param serviceName the name of the service
+     * @return the found package or {@code null} if no package matches
+     */
+    default Package findPackageForService(final String ipAddr, final String serviceName) {
+        Package lastPkg = null;
+        for (final var pkg : this.getPackages()) {
+            if (pkg.getPerspectiveOnly()) {
+                continue;
+            }
+
+            if (!this.isServiceInPackageAndEnabled(serviceName, pkg)) {
+                continue;
+            }
+
+            if (!this.isInterfaceInPackage(ipAddr, pkg)) {
+                this.rebuildPackageIpListMap();
+                if (!this.isInterfaceInPackage(ipAddr, pkg)) {
+                    continue;
+                }
+            }
+
+            lastPkg = pkg;
+        }
+        return lastPkg;
+    }
+
+    /**
+     * Find the service for the given IP by service name.
+     * @param ipAddr the address to select the package for
+     * @param serviceName the name of the service
+     * @return the found matching info
+     */
+    default Optional<Package.ServiceMatch> findService(final String ipAddr, final String serviceName) {
+        final var pkg = this.findPackageForService(ipAddr, serviceName);
+        if (pkg == null) {
+            return Optional.empty();
+        }
+
+        return pkg.findService(serviceName);
+    }
+
     /**
      * <p>getPackage</p>
      *

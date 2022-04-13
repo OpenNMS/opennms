@@ -71,6 +71,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     private final SyncDispatcher<S> syncDispatcher;
     private final AsyncPolicy asyncPolicy;
     private final Counter droppedCounter;
+    private final DispatcherState<W, S, T> state;
 
     private final Map<String, CompletableFuture<DispatchStatus>> futureMap = new ConcurrentHashMap<>();
     private final AtomicResultQueue<S> atomicResultQueue;
@@ -89,6 +90,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
         Objects.requireNonNull(state);
         Objects.requireNonNull(asyncPolicy);
         Objects.requireNonNull(syncDispatcher);
+        this.state = state;
         this.syncDispatcher = syncDispatcher;
         this.asyncPolicy = asyncPolicy;
         SinkModule<S, T> sinkModule = state.getModule();
@@ -106,8 +108,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
         }
         atomicResultQueue = new AtomicResultQueue<>(dispatchQueue);
 
-        state.getMetrics().register(MetricRegistry.name(state.getModule().getId(), "queue-size"),
-                (Gauge<Integer>) activeDispatchers::get);
+        state.getMetrics().register(queueSizeMetricName(), (Gauge<Integer>) activeDispatchers::get);
 
         droppedCounter = state.getMetrics().counter(MetricRegistry.name(state.getModule().getId(), "dropped"));
 
@@ -115,6 +116,10 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
                 new LogPreservingThreadFactory(SystemInfoUtils.DEFAULT_INSTANCE_ID + ".Sink.AsyncDispatcher." +
                         state.getModule().getId(), Integer.MAX_VALUE));
         startDrainingQueue();
+    }
+
+    private String queueSizeMetricName() {
+        return MetricRegistry.name(state.getModule().getId(), "queue-size");
     }
 
     private void dispatchFromQueue() {
@@ -248,6 +253,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
 
     @Override
     public void close() throws Exception {
+        state.getMetrics().remove(queueSizeMetricName());
         syncDispatcher.close();
         executor.shutdown();
     }

@@ -676,6 +676,40 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.ssh-scripting</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.tftp</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.shell</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.rest</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.retrieval</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.sentinel</groupId>
       <artifactId>core</artifactId>
       <version>${project.version}</version>
