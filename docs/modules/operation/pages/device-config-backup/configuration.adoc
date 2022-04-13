@@ -3,6 +3,14 @@
 
 OpenNMS backs up device configuration through the xref:reference:service-assurance/monitors/DeviceConfigMonitor.adoc[Device Config Monitor].
 
+You must configure the <<tftp-port-configure, TFTP port>> before OpenNMS can back up device configurations.
+
+In addition, you may choose to configure the following poller options:
+
+* enable push-based device configuration backups
+* retrieve/trigger device configuration backup from a Karaf shell
+
+[[tftp-port-configure]]
 == Configure TFTP Port
 
 By default, the TFTP server uses non-privileged port 6969 on both Minion and {page-component-title}.

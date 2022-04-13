@@ -1,2 +1,27 @@
 [[dcb-requisition]]
 = Create Requisition for Device Configuration Backup
+
+After you have xref:operation:device-config-backup/ssh.adoc#backup-script[created a backup script for each device type] and xref:operation:device-config-backup/configuration.adoc#poller-config[set up the pollerd configuration file], you can create a requisition for each device whose configuration you want to back up.
+
+To activate the device configuration backup, you must add metadata that defines the device configuration backup script you created to use for the node's device type.
+
+. Log in to OpenNMS and click the gears icon.
+. Choose *Provisioning>Manage Provisioning Requisitions*.
+. Click *Add Requisition* and enter a name for the requisition.
+. Click on the edit icon and click *Add Node*.
+. Set up your requisition as described in xref:operation:provisioning/getting-started.adoc#requisition-create[Create a requisition].
+. Click *Add Meta-Data*, and define the following key-value pairs:
+.. dcbusername: username for the device
+.. dcbpassword: password for the device
+.. script-file: name of the device configuration script for this type of device
+. Click *Save* to save the metadata and then *Save* to save the requisition.
+
+== Run a device configuration back up
+Since no device configuration back ups will appear in the UI until one runs, we recommend that you run a requisition immediately.
+
+. Choose the requisition to run, and click *Synchronize*.
+. Select a scan option and click *Synchronize*.
+
+Go to *Info>Configuration Management* to view the device configuration backup.
+
+See xref:operation:device-config-backup/dcb.adoc#dcb-manage[manage device configuration backup UI] for more information.
