@@ -30,6 +30,7 @@ See the table below for available options.
  feature:install jira-troubleticketer
 
 The plugin should be ready to use.
+Login to the Karaf shell and run `opennms:jira-verify` to check your configuration.
 
 .`jira.properties` Options
 [options="header"]
@@ -296,5 +297,3 @@ When troubleshooting, consult the following log files:
 
 * `$\{OPENNMS_HOME}/data/log/karaf.log`
 * `$\{OPENNMS_HOME}/logs/trouble-ticketer.log`
-
-You can also try the `opennms:jira-verify` Karaf command to help identify problems in your configuration.
