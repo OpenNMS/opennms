@@ -7,7 +7,7 @@ export interface State {
   selectedView: string
   selectedDisplay: string
   edges: Edges
-  verticies: Nodes
+  vertices: Nodes
   semanticZoomLevel: number
   isLeftDrawerOpen: boolean
   isRightDrawerOpen: boolean
@@ -15,12 +15,13 @@ export interface State {
   layout: Record<string, NodePoint>
   focusedSearchBarNodes: SearchResult[]
   defaultObjects: Node[] | null
-  highlightFocusedNodes: boolean
+  highlightFocusedObjects: boolean
   modalState: boolean
   nodeIcons: Record<string, string>
   topologyGraphs: TopologyGraphList[]
   container: string
   namespace: string
+  idsWithSubLayers: string[]
 }
 
 const state: State = {
@@ -28,7 +29,7 @@ const state: State = {
   selectedView: 'map',
   selectedDisplay: 'linkd',
   edges: {},
-  verticies: {},
+  vertices: {},
   semanticZoomLevel: 1,
   isLeftDrawerOpen: true,
   isRightDrawerOpen: false,
@@ -36,12 +37,13 @@ const state: State = {
   layout: {},
   focusedSearchBarNodes: [],
   defaultObjects: null,
-  highlightFocusedNodes: false,
+  highlightFocusedObjects: false,
   modalState: false,
   nodeIcons: {},
   topologyGraphs: [],
   container: '',
-  namespace: ''
+  namespace: '',
+  idsWithSubLayers: []
 }
 
 export default state

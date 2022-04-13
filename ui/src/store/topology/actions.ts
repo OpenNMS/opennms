@@ -1,9 +1,10 @@
 import { PowerGrid } from '@/components/Topology/topology.constants'
 import API from '@/services'
 import { IdLabelProps, QueryParameters, VuexContext } from '@/types'
-import { SZLRequest, VerticesAndEdges } from '@/types/topology'
+import { SZLRequest, TopologyGraphList, VerticesAndEdges } from '@/types/topology'
 import { Edges, Nodes } from 'v-network-graph'
 import { State } from './state'
+import getters from './getters'
 
 interface ContextWithState extends VuexContext {
   state: State
@@ -28,25 +29,28 @@ const parseVerticesAndEdges = (resp: VerticesAndEdges, context: VuexContext) => 
   }
 
   if (resp.defaultFocus && resp.defaultFocus.vertexIds.length) {
-    const defaultId = resp.defaultFocus.vertexIds[0].id
-    if (defaultId) {
-      const defaultObjects = vertices[defaultId]
-      context.commit('SAVE_DEFAULT_OBJECTS', [defaultObjects])
+    const defaultIds = resp.defaultFocus.vertexIds.map((obj) => obj.id)
+
+    if (defaultIds.length) {
+      const defaultObjects = defaultIds.map((id) => vertices[id])
+      context.commit('SAVE_DEFAULT_OBJECTS', defaultObjects)
     }
   }
 
   if (resp.focus) {
-    const defaultId = resp.focus.vertices[0]
-    if (defaultId) {
-      const defaultObjects = vertices[defaultId]
-      context.commit('SAVE_DEFAULT_OBJECTS', [defaultObjects])
+    const defaultIds = resp.focus.vertices
+
+    if (defaultIds.length) {
+      const defaultObjects = defaultIds.map((id) => vertices[id])
+      context.commit('SAVE_DEFAULT_OBJECTS', defaultObjects)
     }
   }
 
-  context.commit('SAVE_NODE_EDGES', edges)
-  context.commit('SAVE_NODE_VERTICIES', vertices)
+  context.commit('SAVE_EDGES', edges)
+  context.commit('SAVE_VERTICES', vertices)
   context.dispatch('updateObjectFocusedProperty')
   context.dispatch('updateVerticesIconPaths')
+  context.dispatch('updateSubLayerIndicator')
 }
 
 const getVerticesAndEdges = async (context: VuexContext, queryParameters?: QueryParameters) => {
@@ -69,6 +73,12 @@ const getTopologyGraphByContainerAndNamespace = async (
   if (topologyGraph) {
     context.commit('SET_CONTAINER_AND_NAMESPACE', { container: containerId, namespace })
     parseVerticesAndEdges(topologyGraph, context)
+
+    // save which ids have sublayers, to show indicator
+    const idsWithSubLayers = topologyGraph.edges.map((edge) => edge.id.split('.')[0])
+    context.commit('SAVE_IDS_WITH_SUBLAYERS', idsWithSubLayers)
+
+    // set focus to the defaults
     context.dispatch('addFocusObjects', context.state.defaultObjects)
   }
 }
@@ -101,57 +111,36 @@ const getObjectDataByLevelAndFocus = async (context: ContextWithState) => {
   }
 }
 
-const setSelectedView = (context: VuexContext, view: string) => {
-  context.commit('SET_SELECTED_VIEW', view)
-}
-
-const setSelectedDisplay = (context: VuexContext, display: string) => {
-  context.commit('SET_SELECTED_DISPLAY', display)
-}
-
-const updateObjectFocusedProperty = (context: ContextWithState) => {
-  const vertices = context.state.verticies
-  const edges = context.state.edges
-  const focusedIds = context.state.focusObjects.map((obj) => obj.id)
-
-  for (const vertex of Object.values(vertices)) {
-    if (focusedIds.includes(vertex.id)) {
-      vertex.focused = true
-    } else {
-      vertex.focused = false
-    }
-  }
-
-  for (const edge of Object.values(edges)) {
-    if (focusedIds.includes(edge.target) && focusedIds.includes(edge.source)) {
-      edge.focused = true
-    } else {
-      edge.focused = false
-    }
-  }
-
-  context.commit('SAVE_NODE_VERTICIES', vertices)
-  context.commit('SAVE_NODE_EDGES', edges)
-}
-
-const highlightFocusedNodes = (context: ContextWithState, bool: boolean) => {
-  context.commit('SET_HIGHLIGHT_FOCUSED_NODES', bool)
-}
-
 const changeIcon = (context: ContextWithState, nodeIdIconKey: Record<string, string>) => {
   context.commit('UPDATE_NODE_ICONS', nodeIdIconKey)
   context.dispatch('updateVerticesIconPaths')
 }
 
-const updateVerticesIconPaths = (context: ContextWithState) => {
-  const vertices = context.state.verticies
-  const nodeIcons = context.state.nodeIcons
+/**
+ * Saves menu selections
+ */
 
-  for (const [id, iconKey] of Object.entries(nodeIcons)) {
-    vertices[id]['icon'] = iconKey
+// d3, circle, etc.
+const setSelectedView = (context: VuexContext, view: string) => {
+  context.commit('SET_SELECTED_VIEW', view)
+}
+
+// linkd, powerdrid, etc.
+const setSelectedDisplay = async (context: ContextWithState, display: string) => {
+  context.commit('SET_SELECTED_DISPLAY', display)
+
+  if (display === PowerGrid) {
+    // get first available namespace items
+    const powergridGraphs: TopologyGraphList = getters.getPowerGridGraphs(context.state)
+    if (powergridGraphs.graphs && powergridGraphs.graphs.length) {
+      const containerId = powergridGraphs.id
+      const namespace = powergridGraphs.graphs[0].namespace
+      await context.dispatch('getTopologyGraphByContainerAndNamespace', { containerId, namespace })
+    }
+  } else {
+    await context.dispatch('getVerticesAndEdges')
+    context.dispatch('addFocusObjects', context.state.defaultObjects)
   }
-
-  context.commit('SAVE_NODE_VERTICIES', vertices)
 }
 
 /**
@@ -172,18 +161,80 @@ const removeFocusObject = (context: VuexContext, nodeId: string) => {
   context.dispatch('getObjectDataByLevelAndFocus')
 }
 
+const highlightFocusedObjects = (context: ContextWithState, bool: boolean) => {
+  context.commit('SET_HIGHLIGHT_FOCUSED_OBJECTS', bool)
+}
+
 /**
  * Left and right drawer states
  */
 const openLeftDrawer = (context: VuexContext) => context.commit('SET_LEFT_DRAWER_OPEN', true)
 const closeLeftDrawer = (context: VuexContext) => context.commit('SET_LEFT_DRAWER_OPEN', false)
-const openRightDrawer = (context: VuexContext) => context.commit('SET_RIGHT_DRAWER_OPEN', true)
-const closeRightDrawer = (context: VuexContext) => context.commit('SET_RIGHT_DRAWER_OPEN', false)
+const setRightDrawerState = (context: VuexContext, bool: boolean) => context.commit('SET_RIGHT_DRAWER_OPEN', bool)
 
 /**
  * Modal state
  */
 const setModalState = (context: VuexContext, bool: boolean) => context.commit('SET_MODAL_STATE', bool)
+
+/**
+ * Network graph custom property updates.
+ * Run every time after parsing the vertices and edges.
+ */
+
+// prop for whether object is focused or not
+const updateObjectFocusedProperty = (context: ContextWithState) => {
+  const vertices = context.state.vertices
+  const edges = context.state.edges
+  const focusedIds = context.state.focusObjects.map((obj) => obj.id)
+
+  for (const vertex of Object.values(vertices)) {
+    if (focusedIds.includes(vertex.id)) {
+      vertex.focused = true
+    } else {
+      vertex.focused = false
+    }
+  }
+
+  for (const edge of Object.values(edges)) {
+    if (focusedIds.includes(edge.target) && focusedIds.includes(edge.source)) {
+      edge.focused = true
+    } else {
+      edge.focused = false
+    }
+  }
+
+  context.commit('SAVE_VERTICES', vertices)
+  context.commit('SAVE_EDGES', edges)
+}
+
+// icon path prop
+const updateVerticesIconPaths = (context: ContextWithState) => {
+  const vertices = context.state.vertices
+  const nodeIcons = context.state.nodeIcons
+
+  for (const [id, iconKey] of Object.entries(nodeIcons)) {
+    if (vertices[id]) {
+      vertices[id]['icon'] = iconKey
+    }
+  }
+
+  context.commit('SAVE_VERTICES', vertices)
+}
+
+// prop for whether object has links to sublayer objects
+const updateSubLayerIndicator = (context: ContextWithState) => {
+  const idsWithSubLayers = context.state.idsWithSubLayers
+  const vertices = context.state.vertices
+
+  for (const id of idsWithSubLayers) {
+    if (vertices[id]) {
+      vertices[id]['hasSubLayer'] = true
+    }
+  }
+
+  context.commit('SAVE_VERTICES', vertices)
+}
 
 export default {
   getVerticesAndEdges,
@@ -192,17 +243,17 @@ export default {
   setSelectedDisplay,
   openLeftDrawer,
   closeLeftDrawer,
-  openRightDrawer,
-  closeRightDrawer,
+  setRightDrawerState,
   addFocusObject,
   addFocusObjects,
   getObjectDataByLevelAndFocus,
   removeFocusObject,
-  highlightFocusedNodes,
+  highlightFocusedObjects,
   updateObjectFocusedProperty,
   setModalState,
   changeIcon,
   updateVerticesIconPaths,
+  updateSubLayerIndicator,
   getTopologyGraphs,
   getTopologyGraphByContainerAndNamespace
 }

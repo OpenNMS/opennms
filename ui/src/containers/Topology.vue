@@ -1,13 +1,11 @@
 <template>
   <NetworkGraph v-if="displayGraph" :refresh="refreshGraph" />
   <SideControls :refreshGraph="refreshGraph" />
-  <TopologyRightDrawer />
 </template>
 
 <script setup lang="ts">
 import NetworkGraph from '@/components/Topology/NetworkGraph.vue'
 import SideControls from '@/components/Topology/SideControls.vue'
-import TopologyRightDrawer from '@/components/Topology/TopologyRightDrawer.vue'
 import { ref, nextTick } from 'vue'
 import { useStore } from 'vuex'
 

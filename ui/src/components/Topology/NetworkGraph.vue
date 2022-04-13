@@ -1,6 +1,6 @@
 <template>
   <div class="tooltip-wrapper">
-    <VNetworkGraph ref="graph" v-model:selectedNodes="selectedNodes" :layouts="layout" :nodes="verticies" :edges="edges"
+    <VNetworkGraph ref="graph" v-model:selectedNodes="selectedNodes" :layouts="layout" :nodes="vertices" :edges="edges"
       :configs="configs" :zoomLevel="zoomLevel" :eventHandlers="eventHandlers"
       v-if="trigger && focusObjects.length !== 0">
       <defs>
@@ -16,21 +16,25 @@
       </defs>
 
       <!-- Replace the node component -->
-      <template #override-node="{ nodeId, scale, config }">
+      <template #override-node="{ nodeId, scale, config, ...slotProps }">
         <!--
         The base position of the <image /> is top left. The node's
         center should be (0,0), so slide it by specifying x and y.
         -->
-        <image v-if="ICON_PATHS[verticies[nodeId].icon]"
-          :class="{ 'unfocused': highlightFocusedNodes && !verticies[nodeId].focused }" class="node-icon pointer"
+        <image v-if="ICON_PATHS[vertices[nodeId].icon]"
+          :class="{ 'unfocused': highlightFocusedObjects && !vertices[nodeId].focused }" class="node-icon pointer"
           :x="-config.radius * scale" :y="-config.radius * scale" :width="config.radius * scale * 2"
-          :height="config.radius * scale * 2" :xlink:href="ICON_PATHS[verticies[nodeId].icon]"
+          :height="config.radius * scale * 2" :xlink:href="ICON_PATHS[vertices[nodeId].icon]"
           clip-path="url(#iconCircle)" />
+
+        <!-- circle for drawing stroke -->
+        <circle v-if="vertices[nodeId].hasSubLayer" class="node-circle" :cx="-12 * scale" :cy="12 * scale" :r="5 * scale"
+          :fill="setColor(vertices[nodeId])" v-bind="slotProps" />
       </template>
     </VNetworkGraph>
     <!-- Tooltip -->
     <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos }">
-      <div v-html="verticies[targetNodeId]?.tooltip ?? ''"></div>
+      <div v-html="vertices[targetNodeId]?.tooltip ?? ''"></div>
     </div>
   </div>
   <NoFocusMsg :useDefaultFocus="useDefaultFocus" v-if="focusObjects.length === 0" />
@@ -86,12 +90,12 @@ const getD3NodeCoords = () => d3Nodes.value.filter((d3Node) => d3Node.id === tar
 const closeContextMenu = () => showContextMenu.value = false
 onClickOutside(contextMenu, () => closeContextMenu())
 
-const verticies = computed<Nodes>(() => store.state.topologyModule.verticies)
+const vertices = computed<Nodes>(() => store.state.topologyModule.vertices)
 const edges = computed<Edges>(() => store.state.topologyModule.edges)
 const layout = computed<Layouts>(() => store.getters['topologyModule/getLayout'])
 const defaultObjects = computed<Node[]>(() => store.state.topologyModule.defaultObjects)
 const focusObjects = computed<string[]>(() => store.state.topologyModule.focusObjects)
-const highlightFocusedNodes = computed<boolean>(() => store.state.topologyModule.highlightFocusedNodes)
+const highlightFocusedObjects = computed<boolean>(() => store.state.topologyModule.highlightFocusedObjects)
 
 const tooltipPos = computed(() => {
   const defaultPos = { left: '-9999px', top: '-99999px' }
@@ -134,7 +138,7 @@ const eventHandlers: EventHandlers = {
     }
 
     contextMenuType.value = ContextMenuType.node
-    contextNode.value = verticies.value[node]
+    contextNode.value = vertices.value[node]
     menuXPos.value = event.layerX
     menuYPos.value = event.layerY
     showContextMenu.value = true
@@ -160,7 +164,7 @@ const eventHandlers: EventHandlers = {
 
 const getNodesFromSelectedIds = () => {
   selectedNodeObjects.value = selectedNodes.value.map((nodeId) => {
-    return verticies.value[nodeId]
+    return vertices.value[nodeId]
   })
 }
 
@@ -210,7 +214,7 @@ watch(layout, async (layout) => {
 })
 
 const setColor = (item: Node | Edge) => {
-  if (highlightFocusedNodes.value && !item.focused) {
+  if (highlightFocusedObjects.value && !item.focused) {
     return 'rgb(39, 49, 128, 0.5)'
   }
 

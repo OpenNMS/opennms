@@ -13,6 +13,7 @@ import { PowerGrid } from './topology.constants'
 
 const store = useStore()
 const disable = computed<boolean>(() => store.state.topologyModule.selectedDisplay !== PowerGrid)
+const isOpen = computed<boolean>(() => store.state.topologyModule.isRightDrawerOpen)
 
-const openLayersSidebar = () => store.dispatch('topologyModule/openRightDrawer')
+const openLayersSidebar = () => store.dispatch('topologyModule/setRightDrawerState', !isOpen.value)
 </script>

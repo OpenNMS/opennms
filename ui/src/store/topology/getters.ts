@@ -8,7 +8,7 @@ const getCircleLayout = (state: State): Record<string, NodePoint> => {
   const centerX = 350
   const radius = 250
 
-  const vertexNames = Object.keys(state.verticies)
+  const vertexNames = Object.keys(state.vertices)
   const layout = {} as Record<string, NodePoint>
 
   for (let i = 0; i < vertexNames.length; i++) {

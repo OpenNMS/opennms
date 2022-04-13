@@ -24,6 +24,4 @@ for (const key in ICON_PATHS) {
   }
 }
 
-console.log(ICON_PATHS)
-
 export default ICON_PATHS
