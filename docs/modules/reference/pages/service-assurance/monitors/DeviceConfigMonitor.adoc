@@ -55,3 +55,5 @@ Example for how to configure the DeviceConfigMonitor in the `poller-configuratio
 The Device Config Monitor service uses an interval of 300secs and a cron expression for the schedule.
 The default cron expression runs every 24 hrs at 12.00am (0 0 0 * * ?).
 The monitor retrieves the device configuration when the next trigger from the schedule falls within the interval.
+
+##Chandra, could you update the text in line 57?##

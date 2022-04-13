@@ -15,7 +15,7 @@ Note that the devices whose configuration you want to back up must either be TFT
 You must configure OpenNMS to perform configuration backups before you can xref:operation:device-config-backup/dcb.adoc#dcb-manage[view and manage] them in the {page-component-title} UI:
 
 * xref:operation:device-config-backup/ssh.adoc#backup-script[Create a backup script for each device type]
-* xref:operation:device-config-backup/configuration.adoc#poller-config[Set up the pollerd configuration file]
+* xref:operation:device-config-backup/configuration.adoc#tftp-port-configure[Configure TFTP port]
 * xref:operation:device-config-backup/dcb-requisition.adoc#dcb-requisition[Create a requisition], specify its metadata, and schedule it for immediate backup
 
 == How it works

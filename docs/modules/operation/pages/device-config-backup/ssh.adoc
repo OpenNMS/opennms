@@ -45,26 +45,19 @@ In addition, you must append a `.` and the script variable `filenameSuffix` to t
 
 .Example script
 
-This sample script is for a Palo Alto firewall.
+This sample script is for a Juniper vSRX virtual firewall.
 You will need to modify it for other device types.
 
 [source, script]
 ----
-await: >
-send: configure
-await: Entering configuration mode
-await: #
-send: save config to config.gz.${filenameSuffix}
-await: Config saved to config.gz.${filenameSuffix}
-await: #
-send: quit
-await: Exiting configuration mode
-await: >
-send: tftp export configuration from config.gz.${filenameSuffix} to ${tftpServerIp}:${tftpServerPort}
-await: >
-send: delete config saved config.gz.${filenameSuffix}
-await: Successfully removed config.gz.${filenameSuffix}
-await: >
+send: start shell
+await: %
+send: cd /config
+await: %
+send: tftp ${tftpServerIp}
+await: tftp>
+send: put juniper.conf.gz juniper.conf.gz.${filenameSuffix}
+await:  tftp>
 ----
 
 == Vendor TFTP support

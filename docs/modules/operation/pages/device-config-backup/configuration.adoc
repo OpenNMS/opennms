@@ -40,13 +40,13 @@ config:update
 Devices may also push configuration through TFTP manually whenever their configuration changes.
 This is not enabled by default; you must enable the sink for device configuration.
 
-.Configure Device Config Sink feature via Karaf shell on {page-component-title}
+.Configure device config sink feature via Karaf shell on {page-component-title}
 [source, console]
 ----
 ssh -p 8101 admin@localhost
 ----
 
-.Configure Device Config Sink feature via Karaf shell on Minion
+.Configure device config sink feature via Karaf shell on Minion
 [source, console]
 ----
 ssh -p 8201 admin@localhost
@@ -60,7 +60,7 @@ feature:install opennms-deviceconfig-sink
 
 NOTE: To survive reboots, add the `opennms-deviceconfig-sink` feature to etc/featuresBoot.d/device-config.boot file.
 
-== Events associated with Device Config Backup
+== Events associated with device config backup
 
 Pollerd can generate the following events in {page-component-title} for device config backup.
 
