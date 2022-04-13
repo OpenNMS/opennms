@@ -9,6 +9,7 @@ const populateProvisionD = (store: Store<unknown>) => {
 
 const getProvisionDService = async () => {
   const resp = await rest.get(getProvisionD)
+
   try {
     if (resp.status === 200) {
       return resp.data
