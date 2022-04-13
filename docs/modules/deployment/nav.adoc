@@ -26,3 +26,6 @@
 *** xref:time-series-storage/timeseries/configuration.adoc[]
 
 * xref:opentracing/jaeger-tracing.adoc[]
+
+* xref:upgrade/introduction.adoc[]
+** xref:upgrade/diff.adoc[]

@@ -1,0 +1,73 @@
+= Device Configuation Backup
+
+OpenNMS allows you to back up the configuration of devices like routers or firewalls.
+It does this through a TFTP server that OpenNMS and Minions provide.
+Devices send their configuration to that TFTP server with either a pull- or push-based backup.
+
+* Pull-based backup: OpenNMS uses its poller infrastructure to schedule tasks that connect via SSH into devices and execute configurable scripts that do the TFTP uploads.
+* Push-based backup: Devices may upload their configuration by themselves. This may happen, for example, either by administrator interaction or scheduled jobs running on the devices themselves.
+
+== Overview
+
+OpenNMS stores device configuration backups for IP addresses in the default location or at remote locations.
+Different kinds of configuration types can be distinguished.
+For example, some devices may distinguish between their default configuration and their running configuration.
+OpenNMS considers configuration types as arbitrary strings.
+If no configuration type is specified, then `default` is used.
+
+OpenNMS archives received backups and records when changes happened.
+It also records if backups fail and raises corresponding alarms.
+
+== SSH scripting
+
+An SSH scripting engine executes the commands that are necessary to upload device configurations.
+The scripting engine supports two commands:
+
+* `send: ...`: Sends the given string to the device
+* `await: ...`: Awaits some response from the device
+
+Scripts can reference the following variables by using `${varname}` notation:
+
+.Scripting variables
+[options="header" cols="1,2"]
+|===
+| Name
+| Description
+
+| tftpServerIp
+| IP address of the TFTP server
+
+| tftpServerPort
+| port number of the TFTP server
+
+| filenameSuffix
+| suffix that must be appended to the filename for uploading
+
+| configType
+| config type as described above
+|===
+
+Note: Uploaded configuration files should specify their file type by including the corresponding filename extension like `.zip` or `.gz`.
+In addition, a `.` and the script variable `filenameSuffix` must be appended to the filename that is used for upload.
+{page-component-title} uses that additional suffix to identify incoming uploads.
+
+.Example script
+[source, script]
+----
+await: >
+send: configure
+await: Entering configuration mode
+await: #
+send: save config to config.gz.${filenameSuffix}
+await: Config saved to config.gz.${filenameSuffix}
+await: #
+send: quit
+await: Exiting configuration mode
+await: >
+send: tftp export configuration from config.gz.${filenameSuffix} to ${tftpServerIp}:${tftpServerPort}
+await: >
+send: delete config saved config.gz.${filenameSuffix}
+await: Successfully removed config.gz.${filenameSuffix}
+await: >
+----
+

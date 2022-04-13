@@ -1,3 +1,14 @@
+opennms (29.0.9-1) stable; urgency=medium
+
+  * New minor release. It contains a bunch of bug fixes and enhancements,
+    including improvements for running in containers, code cleanups, and
+    improved documentation.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/29.0.9/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 12 Apr 2022 11:25:00 -0400
+ 
 opennms (29.0.8-1) stable; urgency=medium
 
   * New minor release. It contains a few small bug fixes mostly relating
