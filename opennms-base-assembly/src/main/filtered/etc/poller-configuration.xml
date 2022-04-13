@@ -353,7 +353,7 @@
          <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
          <parameter key="rrd-base-name" value="device-config"/>
          <!-- match service name suffix with config-type -->
-         <parameter key="config-type" value="${pattern:configType|requisition:configType|default}"/>
+         <parameter key="config-type" value="${pattern:configType|requisition:dcb:config-type|default}"/>
          <parameter key="username" value="${requisition:dcb:username|admin}"/>
          <parameter key="password" value="${requisition:dcb:password|admin}"/>
          <parameter key="ssh-port" value="${requisition:dcb:ssh-port|22}"/>
