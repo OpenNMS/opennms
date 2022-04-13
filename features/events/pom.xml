@@ -17,5 +17,6 @@
     <module>traps</module>
     <module>shell-commands</module>
     <module>sink</module>
+    <module>collector</module>
   </modules>
 </project>

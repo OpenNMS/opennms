@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -448,6 +449,7 @@ public class DefaultPollContext implements PollContext, EventListener {
             LOG.warn("Error occurred while tracking poll for service: {}", service, e);
         }
     }
+
 
     private static void processPending(final PendingPollEvent pollEvent) {
         LOG.trace("onEvent: pollEvent is no longer pending, processing pollEvent: {}", pollEvent);

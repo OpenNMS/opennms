@@ -491,6 +491,7 @@
                 <feature>opennms-dao</feature>
                 <feature>opennms-events-api</feature>
                 <feature>opennms-events-commands</feature>
+                <feature>opennms-events-collector</feature>
                 <feature>opennms-health</feature>
                 <feature>opennms-health-rest</feature>
                 <feature>opennms-icmp-api</feature>
@@ -615,6 +616,13 @@
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
+                <!-- Lots of deviceconfig features -->
+                <feature>opennms-deviceconfig-rest</feature>
+                <feature>opennms-deviceconfig-sink</feature>
+                <feature>opennms-deviceconfig-sink-consumer</feature>
+                <feature>opennms-deviceconfig-service</feature>
+                <feature>opennms-deviceconfig-monitor</feature>
+
               </features>
               <repository>${project.build.directory}/opennms-repo</repository>
             </configuration>

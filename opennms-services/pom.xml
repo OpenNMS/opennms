@@ -463,5 +463,17 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config.persistence</groupId>
+      <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.monitor-adaptor</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
