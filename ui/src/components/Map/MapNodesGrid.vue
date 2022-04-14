@@ -176,6 +176,7 @@ thead {
   z-index: 2;
   position: relative;
   background: var($surface);
+  white-space: nowrap;
 }
 .first-td {
   padding-left: 12px;

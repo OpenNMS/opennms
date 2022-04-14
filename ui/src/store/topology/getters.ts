@@ -1,5 +1,6 @@
 import { PowerGrid } from '@/components/Topology/topology.constants'
 import { NodePoint, TopologyGraphList } from '@/types/topology'
+import { orderBy } from 'lodash'
 import { Layouts } from 'v-network-graph'
 import { State } from './state'
 
@@ -8,10 +9,10 @@ const getCircleLayout = (state: State): Record<string, NodePoint> => {
   const centerX = 350
   const radius = 250
 
-  const vertexNames = Object.keys(state.verticies)
+  const vertexNames = Object.keys(state.vertices)
   const layout = {} as Record<string, NodePoint>
 
-  for (let i = 0;i < vertexNames.length;i++) {
+  for (let i = 0; i < vertexNames.length; i++) {
     layout[vertexNames[i]] = {
       x: centerX + radius * Math.cos((2 * Math.PI * i) / vertexNames.length),
       y: centerY + radius * Math.sin((2 * Math.PI * i) / vertexNames.length)
@@ -33,8 +34,8 @@ const getLayout = (state: State): Layouts => {
 
 /**
  * Determine whether powergrid graphs are available
- * 
- * @param state topology store 
+ *
+ * @param state topology store
  * @returns boolean
  */
 const hasPowerGridGraphs = (state: State): boolean => {
@@ -50,12 +51,25 @@ const hasPowerGridGraphs = (state: State): boolean => {
  * Return powergrid graphs, if available.
  * Otherwise return object with empty graphs array.
  * 
- * @param state topology store 
+ * API does not return proper layer order,
+ * but the id is made up of proper ordered layer names.
+ * This can be used during layer selection / context menu nav.
+ *
+ * @param state topology store
  * @returns TopologyGraphList
  */
 const getPowerGridGraphs = (state: State): TopologyGraphList => {
   if (hasPowerGridGraphs(state)) {
-    return state.topologyGraphs.filter((graphs) => graphs.label === PowerGrid)[0]
+    const powerGridGraphs = state.topologyGraphs.filter((graphs) => graphs.label === PowerGrid)[0]
+    const orderedLayers = powerGridGraphs.id.split('.')
+
+    for (const graph of powerGridGraphs.graphs) {
+      graph.index = orderedLayers.indexOf(graph.label.toLowerCase())
+    }
+
+    powerGridGraphs.graphs = orderBy(powerGridGraphs.graphs, 'index', 'asc')
+
+    return powerGridGraphs
   }
   return { graphs: [], id: 'N/A', label: 'N/A' }
 }

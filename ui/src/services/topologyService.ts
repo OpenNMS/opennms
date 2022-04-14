@@ -27,7 +27,7 @@ const getVerticesAndEdges = async (queryParameters?: QueryParameters): Promise<V
   }
 }
 
-const getTopologyDataByLevelAndFocus = async (payload: SZLRequest): Promise<VerticesAndEdges | false> => {
+const getNodesTopologyDataByLevelAndFocus = async (payload: SZLRequest): Promise<VerticesAndEdges | false> => {
   try {
     const resp = await v2.post(endpoint, payload)
 
@@ -51,4 +51,41 @@ const getTopologyGraphs = async (): Promise<TopologyGraphList[]> => {
   }
 }
 
-export { getVerticesAndEdges, getTopologyDataByLevelAndFocus, getTopologyGraphs }
+const getTopologyGraphByContainerAndNamespace = async (
+  containerId: string,
+  namespace: string
+): Promise<VerticesAndEdges | false> => {
+  try {
+    const resp = await v2.get(`graphs/${containerId}/${namespace}`)
+    return resp.data
+  } catch (error) {
+    return false
+  }
+}
+
+const getPowerGridTopologyDataByLevelAndFocus = async (
+  containerId: string,
+  namespace: string,
+  payload: SZLRequest
+): Promise<VerticesAndEdges | false> => {
+  try {
+    const resp = await v2.post(`graphs/${containerId}/${namespace}`, payload)
+
+    // no content from server
+    if (resp.status === 204) {
+      return { vertices: [], edges: [], focus: { semanticZoomLevel: 1, vertices: [] } }
+    }
+
+    return resp.data
+  } catch (error) {
+    return false
+  }
+}
+
+export {
+  getVerticesAndEdges,
+  getNodesTopologyDataByLevelAndFocus,
+  getPowerGridTopologyDataByLevelAndFocus,
+  getTopologyGraphs,
+  getTopologyGraphByContainerAndNamespace
+}

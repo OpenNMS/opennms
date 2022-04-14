@@ -1,13 +1,16 @@
 <template>
   <div class="topology-side-controls">
-    <CtrlSemanticZoomLevel />
+    <div class="controls">
+      <CtrlSemanticZoomLevel />
 
-    <FeatherButton class="refresh-btn" icon="Refresh" @click="refreshGraph">
-      <FeatherIcon :icon="RefreshIcon" />
-    </FeatherButton>
+      <FeatherButton class="refresh-btn" icon="Refresh" @click="refreshGraph">
+        <FeatherIcon :icon="RefreshIcon" />
+      </FeatherButton>
 
-    <CtrlLayers />
-    <CtrlHighlightFocusedNode />
+      <CtrlLayers />
+      <CtrlHighlightFocusedNode />
+    </div>
+    <TopologyRightDrawer />
   </div>
 </template>
 
@@ -18,7 +21,11 @@ import CtrlLayers from './CtrlLayers.vue'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import RefreshIcon from '@featherds/icon/navigation/Refresh'
+import TopologyRightDrawer from './TopologyRightDrawer.vue'
 import { PropType } from 'vue'
+import { useStore } from 'vuex'
+
+const store = useStore()
 
 defineProps({
   refreshGraph: {
@@ -27,20 +34,31 @@ defineProps({
   }
 })
 
+const width = computed<string>(() => store.state.topologyModule.isRightDrawerOpen ? '250px' : '65px')
 </script>
 
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/elevation";
+@import "@featherds/styles/themes/variables";
+
 
 .topology-side-controls {
   @include elevation(2);
-  height: calc(100vh - 100px);
-  width: 75px;
-  position: absolute;
-  display: block;
-  z-index: 0;
-  top: 0;
+  display: flex;
+  height: auto;
+  padding-bottom: 20px;
+  padding-top: 20px;
+  width: v-bind(width);
+  position: fixed;
+  top: 62px;
   right: 0;
+
+  .controls {
+    display: block;
+    width: 75px;
+    border-right: 1px solid var($primary);
+    padding-right: 15px;
+  }
 }
 </style>
 
@@ -49,9 +67,11 @@ defineProps({
   .btn {
     margin: 0px 0px 0px 15px !important;
   }
+
   .chip {
     margin: 0px 0px 0px 12px !important;
   }
+
   .refresh-btn {
     margin-top: 5px !important;
   }

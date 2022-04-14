@@ -1,8 +1,7 @@
 <template>
   <FeatherAutocomplete
     class="search-bar"
-    :modelValue="focusedSearchBarNodes"
-    type="multi"
+    type="single"
     :results="results"
     label="Focused Nodes"
     @search="resetLabelsAndSearch"
@@ -11,23 +10,36 @@
     @update:modelValue="selectItem"
     :labels="labels"
   ></FeatherAutocomplete>
+
+  <FeatherChipList condensed label="List of focus objects">
+    <FeatherChip v-for="item of focusObjects" :key="item.id" @click="removeFocusObjectsByIds([item.id])">
+      {{ item.label }}
+      <template v-slot:icon> <FeatherIcon :icon="Close" /> </template>
+    </FeatherChip>
+  </FeatherChipList>
 </template>
   
 <script setup lang="ts">
 import { debounce } from 'lodash'
 import { useStore } from 'vuex'
+import { FeatherIcon } from '@featherds/icon'
+import Close from '@featherds/icon/navigation/Cancel'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
+import { FeatherChip, FeatherChipList } from '@featherds/chips'
+import { IdLabelProps } from '@/types'
+import { useTopologyFocus } from './topology.composables'
 
 const store = useStore()
+const { addFocusObject, removeFocusObjectsByIds } = useTopologyFocus()
 const loading = ref(false)
 const defaultLabels = { noResults: 'Searching...' }
 const labels = ref(defaultLabels)
 
 // add any here to fix feather TS issue
-const selectItem: any = (items: { url: string }[]) => {
-  const ids = items.map((item) => item.url.split('=')[1])
-  store.dispatch('topologyModule/addFocusedNodeIds', ids)
-  store.dispatch('topologyModule/setFocusedSearchBarNodes', items)
+const selectItem: any = (item: { url: string, label: string }) => {
+  const label = item.label
+  const id = item.url.split('=')[1]
+  addFocusObject({ id, label })
 }
 
 const resetLabelsAndSearch = (value: string) => {
@@ -50,5 +62,5 @@ const results = computed(() => {
   return []
 })
 
-const focusedSearchBarNodes = computed(() => store.state.topologyModule.focusedSearchBarNodes)
+const focusObjects = computed<IdLabelProps[]>(() => store.state.topologyModule.focusObjects)
 </script>

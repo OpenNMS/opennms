@@ -1,45 +1,53 @@
 <template>
   <div class="context-menu" v-if="contextMenu" @click="closeContextMenu">
     <div v-if="contextMenu === ContextMenuType.node">
-      <div
-        class="menu-btn"
-        @click="() => groupClick ? addContextNodesToFocus() : addContextNodeToFocus()"
-        v-if="!nodeIsFocused"
-      >Add To Focus</div>
-      <div
-        class="menu-btn"
-        @click="openIconModal"
-        v-if="!groupClick"
-      >Change Icon</div>
-      <div
-        class="menu-btn"
-        @click="() => groupClick ? removeContextNodesFromFocus() : removeContextNodeFromFocus()"
-        v-else
-      >Remove From Focus</div>
-      <div
-        class="menu-btn"
-        @click="() => groupClick ? setContextNodesAsFocus() : setContextNodeAsFocus()"
-      >Set As Focal Point</div>
-      <div class="menu-btn" @click="openNodeInfoPage" v-if="!groupClick">Node Info</div>
-      <div class="menu-btn" @click="openNodeResourcePage" v-if="!groupClick">Resource Graphs</div>
+      <!-- Navigate to object sublayer -->
+      <div v-if="node.subLayer" class="menu-btn" @click="() => navigateToSubLayer(node.subLayer.namespace)">Navigate to {{
+        node.subLayer.label
+      }}</div>
+
+      <!-- Add object/s to focus -->
+      <div class="menu-btn" @click="() => groupClick ? addFocusObjects(selectedNodeObjects) : addFocusObject(node)"
+        v-if="!nodeIsFocused">Add To Focus</div>
+
+      <!-- Remove object/s from focus -->
+      <div class="menu-btn" @click="() => groupClick ? removeFocusObjectsByIds(selectedNodes) : removeFocusObjectsByIds([node.id])" v-else>
+        Remove From Focus</div>
+
+      <!-- Change single object icon -->
+      <div class="menu-btn" @click="openIconModal" v-if="!groupClick">Change Icon</div>
+
+      <!-- Replace focus with object/s -->
+      <div class="menu-btn" @click="() => groupClick ? replaceFocusObjects(selectedNodeObjects) : replaceFocusObjects([node])">Set As Focal
+        Point</div>
+
+      <!-- Open node info page -->
+      <div class="menu-btn" @click="openNodeInfoPage" v-if="!groupClick && node.namespace === 'nodes'">Node Info</div>
+
+      <!-- Open node resource graphs -->
+      <div class="menu-btn" @click="openNodeResourcePage" v-if="!groupClick && node.namespace === 'nodes'">Resource
+        Graphs</div>
+
     </div>
 
     <div v-if="contextMenu === ContextMenuType.background">
-      <div class="menu-btn" @click="clearFocus">Clear Focus</div>
+      <div class="menu-btn" @click="replaceFocusObjects([])">Clear Focus</div>
       <div class="menu-btn" @click="refreshNow">Refresh Now</div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Node, SearchResultResponse } from '@/types'
+import { IdLabelProps, SearchResultResponse } from '@/types'
 import { PropType } from 'vue'
 import { useStore } from 'vuex'
 import { ContextMenuType } from './topology.constants'
 import { Node as VNode } from 'v-network-graph'
+import { useTopologyFocus } from './topology.composables'
 
 const store = useStore()
 const router = useRouter()
+const { addFocusObject, addFocusObjects, replaceFocusObjects, removeFocusObjectsByIds } = useTopologyFocus()
 
 const props = defineProps({
   contextMenuType: {
@@ -50,8 +58,9 @@ const props = defineProps({
     required: true,
     type: Function
   },
-  nodeId: {
-    type: String
+  node: {
+    required: true,
+    type: Object as PropType<VNode>
   },
   selectedNodes: {
     type: Array as PropType<string[]>,
@@ -60,7 +69,7 @@ const props = defineProps({
     }
   },
   selectedNodeObjects: {
-    type: Array as PropType<VNode>,
+    type: Array as PropType<VNode[]>,
     default() {
       return []
     }
@@ -83,17 +92,11 @@ const props = defineProps({
   }
 })
 
-watchEffect(() => {
-  if (props.nodeId && !props.groupClick) {
-    store.dispatch('nodesModule/getNodeById', props.nodeId)
-  }
-})
-
 const { x, y, contextMenuType } = toRefs(props)
 const compX = computed(() => x.value + 'px')
 const compY = computed(() => y.value + 'px')
 const contextMenu = computed<ContextMenuType>(() => contextMenuType.value)
-const node = computed<Node>(() => store.state.nodesModule.node)
+const containerId = computed<string>(() => store.state.topologyModule.container)
 
 const nodeIsFocused = computed(() => {
   let idsToCheck
@@ -101,11 +104,11 @@ const nodeIsFocused = computed(() => {
   if (props.groupClick) {
     idsToCheck = props.selectedNodes
   } else {
-    idsToCheck = [props.nodeId]
+    idsToCheck = [props.node.id]
   }
 
   for (const id of idsToCheck) {
-    if (store.state.topologyModule.focusedNodeIds.includes(id)) {
+    if (store.state.topologyModule.focusObjects.map((obj: IdLabelProps) => obj.id).includes(id)) {
       return true
     }
   }
@@ -113,96 +116,15 @@ const nodeIsFocused = computed(() => {
   return false
 })
 
-// add single node to focus
-const addContextNodeToFocus = async () => {
-  if (!node.value.label) return
-  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', node.value.label)
-
-  store.dispatch('topologyModule/addFocusedSearchBarNode', results[0].results[0])
-  store.dispatch('topologyModule/addContextNodeToFocus', props.nodeId)
-}
-
-// add multiple nodes to focus
-const addContextNodesToFocus = async () => {
-  const promises: Promise<SearchResultResponse[]>[] = []
-
-  for (const node of props.selectedNodeObjects as VNode[]) {
-    promises.push(store.dispatch('searchModule/search', node.name))
-  }
-
-  const results = await Promise.all(promises)
-
-  for (const result of results) {
-    store.dispatch('topologyModule/addFocusedSearchBarNode', result[0].results[0])
-  }
-
-  for (const id of props.selectedNodes) {
-    store.dispatch('topologyModule/addContextNodeToFocus', id)
-  }
-
-}
-
-// remove single node
-const removeContextNodeFromFocus = async () => {
-  if (!node.value.label) return
-  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', node.value.label)
-
-  store.dispatch('topologyModule/removeFocusedSearchBarNode', results[0].results[0])
-  store.dispatch('topologyModule/removeContextNodeFromFocus', props.nodeId)
-}
-
-// remove multiple nodes
-const removeContextNodesFromFocus = async () => {
-  const promises: Promise<SearchResultResponse[]>[] = []
-
-  for (const node of props.selectedNodeObjects as VNode[]) {
-    promises.push(store.dispatch('searchModule/search', node.name))
-  }
-
-  const results = await Promise.all(promises)
-
-  for (const result of results) {
-    store.dispatch('topologyModule/removeFocusedSearchBarNode', result[0].results[0])
-  }
-
-  for (const id of props.selectedNodes) {
-    store.dispatch('topologyModule/removeContextNodeFromFocus', id)
-  }
-}
-
-// set single node as focus
-const setContextNodeAsFocus = async () => {
-  if (!node.value.label) return
-  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', node.value.label)
-
-  if (results) {
-    store.dispatch('topologyModule/setFocusedSearchBarNodes', [results[0].results[0]])
-    store.dispatch('topologyModule/addFocusedNodeIds', [props.nodeId])
-  }
-}
-
-// set multiple nodes as focus
-const setContextNodesAsFocus = async () => {
-  const promises: Promise<SearchResultResponse[]>[] = []
-
-  for (const node of props.selectedNodeObjects as VNode[]) {
-    promises.push(store.dispatch('searchModule/search', node.name))
-  }
-
-  const results = await Promise.all(promises)
-  const resultsArr = results.map((result) => result[0].results[0])
-  store.dispatch('topologyModule/setFocusedSearchBarNodes', resultsArr)
-  store.dispatch('topologyModule/addFocusedNodeIds', props.selectedNodes)
-}
 
 const openNodeInfoPage = () => {
-  const route = router.resolve(`/node/${props.nodeId}`)
+  const route = router.resolve(`/node/${props.node.id}`)
   window.open(route.href, '_blank')
 }
 
 const openNodeResourcePage = async () => {
-  if (!node.value.label) return
-  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', node.value.label)
+  if (!props.node.label) return
+  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', props.node.label)
 
   if (results) {
     const route = router.resolve(`/resource-graphs/${results[0].results[0].identifier}`)
@@ -210,9 +132,8 @@ const openNodeResourcePage = async () => {
   }
 }
 
-const clearFocus = () => {
-  store.dispatch('topologyModule/setFocusedSearchBarNodes', [])
-  store.dispatch('topologyModule/addFocusedNodeIds', [])
+const navigateToSubLayer = (namespace: string) => {
+  store.dispatch('topologyModule/getTopologyGraphByContainerAndNamespace', { containerId: containerId.value, namespace })
 }
 
 const refreshNow = () => props.refresh()
@@ -222,6 +143,7 @@ const openIconModal = () => store.dispatch('topologyModule/setModalState', true)
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
+
 .context-menu {
   @include body-small;
   @include elevation(1);
@@ -241,6 +163,7 @@ const openIconModal = () => store.dispatch('topologyModule/setModalState', true)
     cursor: pointer;
     padding: 2px 5px 2px 5px;
   }
+
   .menu-btn:hover {
     color: var($primary-text-on-color);
     background: var($primary);

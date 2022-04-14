@@ -1,6 +1,5 @@
 <template>
   <FeatherDrawer
-    v-if="!isRightDrawerOpen"
     id="map-left-drawer"
     :left="true"
     :modelValue="isOpen"
@@ -21,7 +20,7 @@ import { FeatherDrawer } from '@featherds/drawer'
 
 const store = useStore()
 const isOpen = computed<boolean>(() => store.state.topologyModule.isLeftDrawerOpen)
-const isRightDrawerOpen = computed<boolean>(() => store.state.topologyModule.isRightDrawerOpen)
+
 const closeDrawer = () => store.dispatch('topologyModule/closeLeftDrawer')
 
 onMounted(() => {

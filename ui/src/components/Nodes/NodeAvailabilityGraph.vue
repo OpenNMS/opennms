@@ -50,14 +50,14 @@ const startTime = ref(getUnixTime(sub(now, { days: 1 })))
 const endTime = ref(getUnixTime(now))
 const width = ref(200)
 const timeline = ref<any>(null)
-const recalculateWidth = () => {
+const recalculateWidth = debounce(() => {
   width.value = timeline.value.clientWidth - 60
-}
+}, 100)
 
 onMounted(async () => {
   store.dispatch('nodesModule/getNodeAvailabilityPercentage', nodeId.value)
   recalculateWidth()
-  window.addEventListener('resize', debounce(recalculateWidth, 100))
+  window.addEventListener('resize', recalculateWidth)
 })
 
 const availability = computed(() => store.state.nodesModule.availability)

@@ -2,7 +2,7 @@
   <FeatherButton
     v-if="!focusIsHighlighted"
     icon="Highlight focused nodes."
-    @click="highlightFocusedNodes"
+    @click="highlightFocusedObjects"
   >
     <FeatherIcon :icon="View"></FeatherIcon>
   </FeatherButton>
@@ -24,8 +24,8 @@ import View from '@featherds/icon/action/View'
 import Hide from '@featherds/icon/action/Hide'
 
 const store = useStore()
-const focusIsHighlighted = computed<boolean>(() => store.state.topologyModule.highlightFocusedNodes)
+const focusIsHighlighted = computed<boolean>(() => store.state.topologyModule.highlightFocusedObjects)
 
-const highlightFocusedNodes = () => store.dispatch('topologyModule/highlightFocusedNodes', true)
-const removeHighlightFromFocusedNodes = () => store.dispatch('topologyModule/highlightFocusedNodes', false)
+const highlightFocusedObjects = () => store.dispatch('topologyModule/highlightFocusedObjects', true)
+const removeHighlightFromFocusedNodes = () => store.dispatch('topologyModule/highlightFocusedObjects', false)
 </script>

@@ -1,16 +1,8 @@
 <template>
   <div class="tooltip-wrapper">
-    <VNetworkGraph
-      ref="graph"
-      v-model:selectedNodes="selectedNodes"
-      :layouts="layout"
-      :nodes="verticies"
-      :edges="edges"
-      :configs="configs"
-      :zoomLevel="zoomLevel"
-      :eventHandlers="eventHandlers"
-      v-if="trigger && focusedNodeIds.length !== 0"
-    >
+    <VNetworkGraph ref="graph" v-model:selectedNodes="selectedNodes" :layouts="layout" :nodes="vertices" :edges="edges"
+      :configs="configs" :zoomLevel="zoomLevel" :eventHandlers="eventHandlers"
+      v-if="trigger && focusObjects.length !== 0">
       <defs>
         <!--
         Define the path for clipping the image.
@@ -25,59 +17,32 @@
 
       <!-- Replace the node component -->
       <template #override-node="{ nodeId, scale, config, ...slotProps }">
-        <!-- circle for filling background -->
-        <circle
-          class="node-circle"
-          :r="config.radius * scale"
-          :fill="setColor(verticies[nodeId])"
-          v-bind="slotProps"
-        />
         <!--
         The base position of the <image /> is top left. The node's
         center should be (0,0), so slide it by specifying x and y.
         -->
-        <image
-          v-if="ICON_PATHS[verticies[nodeId].icon]"
-          :class="{ 'unfocused': highlightFocusedNodes && !verticies[nodeId].focused }"
-          class="node-icon"
-          :x="-config.radius * scale"
-          :y="-config.radius * scale"
-          :width="config.radius * scale * 2"
-          :height="config.radius * scale * 2"
-          :xlink:href="ICON_PATHS[verticies[nodeId].icon]"
-          clip-path="url(#iconCircle)"
-        />
+        <image v-if="ICON_PATHS[vertices[nodeId].icon]"
+          :class="{ 'unfocused': highlightFocusedObjects && !vertices[nodeId].focused }" class="node-icon pointer"
+          :x="-config.radius * scale" :y="-config.radius * scale" :width="config.radius * scale * 2"
+          :height="config.radius * scale * 2" :xlink:href="ICON_PATHS[vertices[nodeId].icon]"
+          clip-path="url(#iconCircle)" />
+
         <!-- circle for drawing stroke -->
-        <circle
-          class="node-circle"
-          :r="config.radius * scale"
-          fill="none"
-          :stroke="setColor(verticies[nodeId])"
-          :stroke-width="1 * scale"
-          v-bind="slotProps"
-        />
+        <circle v-if="vertices[nodeId].subLayer" class="node-circle" :cx="-12 * scale" :cy="12 * scale" :r="5 * scale"
+          :fill="setColor(vertices[nodeId])" v-bind="slotProps" />
       </template>
     </VNetworkGraph>
     <!-- Tooltip -->
-    <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos }">
-      <div v-html="verticies[targetNodeId]?.tooltip ?? ''"></div>
+    <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos }"
+      v-if="vertices[targetNodeId] && vertices[targetNodeId].namespace === 'nodes'">
+      <div v-html="vertices[targetNodeId]?.tooltip ?? ''"></div>
     </div>
   </div>
-  <NoFocusMsg :useDefaultFocus="useDefaultFocus" v-if="focusedNodeIds.length === 0" />
-  <TopologyModal :nodeId="contextNodeId" v-if="contextNodeId" />
-  <ContextMenu
-    ref="contextMenu"
-    v-if="showContextMenu"
-    :refresh="refresh"
-    :contextMenuType="contextMenuType"
-    :x="menuXPos"
-    :y="menuYPos"
-    :nodeId="contextNodeId"
-    :selectedNodeObjects="selectedNodeObjects"
-    :selectedNodes="selectedNodes"
-    :groupClick="groupClick"
-    :closeContextMenu="closeContextMenu"
-  />
+  <NoFocusMsg :useDefaultFocus="useDefaultFocus" v-if="focusObjects.length === 0" />
+  <TopologyModal :nodeId="contextNode.id" v-if="contextNode && contextNode.id" />
+  <ContextMenu ref="contextMenu" v-if="showContextMenu" :refresh="refresh" :contextMenuType="contextMenuType"
+    :x="menuXPos" :y="menuYPos" :node="contextNode" :selectedNodeObjects="selectedNodeObjects"
+    :selectedNodes="selectedNodes" :groupClick="groupClick" :closeContextMenu="closeContextMenu" />
 </template>
 
 <script setup lang="ts">
@@ -90,9 +55,9 @@ import NoFocusMsg from './NoFocusMsg.vue'
 import { onClickOutside } from '@vueuse/core'
 import { SimulationNodeDatum } from 'd3'
 import { ContextMenuType } from './topology.constants'
-import { useFocus } from './topology.composables'
 import TopologyModal from './TopologyModal.vue'
 import ICON_PATHS from './icons/iconPaths'
+import { useTopologyFocus } from './topology.composables'
 
 interface d3Node extends Required<SimulationNodeDatum> {
   id: string
@@ -106,11 +71,11 @@ defineProps({
 })
 
 const store = useStore()
-const { setContextNodeAsFocus } = useFocus()
+const { useDefaultFocus } = useTopologyFocus()
 const zoomLevel = ref(1)
 const graph = ref<Instance>()
 const selectedNodes = ref<string[]>([]) // string ids
-const selectedNodeObjects = ref<Node>([]) // full nodes
+const selectedNodeObjects = ref<Node[]>([]) // full nodes
 const tooltip = ref<HTMLDivElement>()
 const displayTooltip = ref(false)
 const cancelTooltipDebounce = ref(false)
@@ -118,7 +83,7 @@ const targetNodeId = ref('')
 const d3Nodes = ref<d3Node[]>([])
 const contextMenu = ref(null)
 const showContextMenu = ref(false)
-const contextNodeId = ref()
+const contextNode = ref()
 const contextMenuType = ref()
 const menuXPos = ref(0)
 const menuYPos = ref(0)
@@ -128,12 +93,11 @@ const getD3NodeCoords = () => d3Nodes.value.filter((d3Node) => d3Node.id === tar
 const closeContextMenu = () => showContextMenu.value = false
 onClickOutside(contextMenu, () => closeContextMenu())
 
-const verticies = computed<Nodes>(() => store.state.topologyModule.verticies)
+const vertices = computed<Nodes>(() => store.state.topologyModule.vertices)
 const edges = computed<Edges>(() => store.state.topologyModule.edges)
 const layout = computed<Layouts>(() => store.getters['topologyModule/getLayout'])
-const defaultNode = computed<Node>(() => store.state.topologyModule.defaultNode)
-const focusedNodeIds = computed<string[]>(() => store.state.topologyModule.focusedNodeIds)
-const highlightFocusedNodes = computed<boolean>(() => store.state.topologyModule.highlightFocusedNodes)
+const focusObjects = computed<string[]>(() => store.state.topologyModule.focusObjects)
+const highlightFocusedObjects = computed<boolean>(() => store.state.topologyModule.highlightFocusedObjects)
 
 const tooltipPos = computed(() => {
   const defaultPos = { left: '-9999px', top: '-99999px' }
@@ -176,7 +140,7 @@ const eventHandlers: EventHandlers = {
     }
 
     contextMenuType.value = ContextMenuType.node
-    contextNodeId.value = node
+    contextNode.value = vertices.value[node]
     menuXPos.value = event.layerX
     menuYPos.value = event.layerY
     showContextMenu.value = true
@@ -202,7 +166,7 @@ const eventHandlers: EventHandlers = {
 
 const getNodesFromSelectedIds = () => {
   selectedNodeObjects.value = selectedNodes.value.map((nodeId) => {
-    return verticies.value[nodeId]
+    return vertices.value[nodeId]
   })
 }
 
@@ -252,7 +216,7 @@ watch(layout, async (layout) => {
 })
 
 const setColor = (item: Node | Edge) => {
-  if (highlightFocusedNodes.value && !item.focused) {
+  if (highlightFocusedObjects.value && !item.focused) {
     return 'rgb(39, 49, 128, 0.5)'
   }
 
@@ -279,12 +243,6 @@ const configs = reactive(
   })
 )
 
-// sets the default focused node
-const useDefaultFocus = () => {
-  if (defaultNode.value) {
-    setContextNodeAsFocus(defaultNode.value)
-  }
-}
 onMounted(() => useDefaultFocus())
 </script>
 

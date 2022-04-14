@@ -33,8 +33,8 @@
 
       <FeatherDropdownItem v-if="hasPowerGridGraphs">
         <FeatherCheckbox
-          @update:modelValue="selectDisplay('powerGrid')"
-          v-model="displays['powerGrid']"
+          @update:modelValue="selectDisplay(PowerGrid)"
+          v-model="displays[PowerGrid]"
         >PowerGrid</FeatherCheckbox>
       </FeatherDropdownItem>
     </div>
@@ -46,6 +46,7 @@ import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherCheckbox } from '@featherds/checkbox'
+import { PowerGrid } from './topology.constants'
 
 const store = useStore()
 

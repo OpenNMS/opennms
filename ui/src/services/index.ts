@@ -7,10 +7,18 @@ import {
   getNodeAvailabilityPercentage
 } from './nodeService'
 
-import { getAlarms, modifyAlarm } from './alarmService'
-
 import { getGraphDefinitionsByResourceId, getDefinitionData, getGraphMetrics, getPreFabGraphs } from './graphService'
 
+import {
+  getDeviceConfigBackups,
+  backupDeviceConfig,
+  downloadDeviceConfigs,
+  getVendorOptions,
+  getOsImageOptions,
+  getHistoryByIpInterface
+} from './deviceService'
+
+import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { search } from './searchService'
@@ -22,7 +30,13 @@ import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
 import { getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
-import { getVerticesAndEdges, getTopologyDataByLevelAndFocus, getTopologyGraphs } from './topologyService'
+import {
+  getVerticesAndEdges,
+  getNodesTopologyDataByLevelAndFocus,
+  getPowerGridTopologyDataByLevelAndFocus,
+  getTopologyGraphs,
+  getTopologyGraphByContainerAndNamespace
+} from './topologyService'
 import { getPlugins } from './pluginService'
 
 export default {
@@ -60,6 +74,14 @@ export default {
   getResourceForNode,
   getGraphDefinitionsByResourceId,
   getPlugins,
-  getTopologyDataByLevelAndFocus,
-  getTopologyGraphs
+  getTopologyGraphs,
+  getTopologyGraphByContainerAndNamespace,
+  getNodesTopologyDataByLevelAndFocus,
+  getPowerGridTopologyDataByLevelAndFocus,
+  getDeviceConfigBackups,
+  backupDeviceConfig,
+  downloadDeviceConfigs,
+  getVendorOptions,
+  getOsImageOptions,
+  getHistoryByIpInterface
 }

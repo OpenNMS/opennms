@@ -1,4 +1,5 @@
 export interface VerticesAndEdges {
+  ['focus-strategy']?: string
   defaultFocus?: DefaultFocus
   focus?: Focus
   vertices: ResponseVertex[]
@@ -56,6 +57,7 @@ export interface TopologyGraph {
   namespace: string
   description: string
   label: string
+  index: number
 }
 
 export interface TopologyGraphList {

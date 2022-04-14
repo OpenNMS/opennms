@@ -1,24 +1,26 @@
-import { SearchResult } from '@/types'
+import { IdLabelProps } from '@/types'
 import { NodePoint, TopologyGraphList } from '@/types/topology'
 import { Edges, Node, Nodes } from 'v-network-graph'
 
 export interface State {
-  isTopologyView: boolean
-  selectedView: string
-  selectedDisplay: string
+  isTopologyView: boolean // switch between geo-map and topology
+  selectedView: string // d3, circle layout etc.
+  selectedDisplay: string // linkd, powerGrid etc.
   edges: Edges
-  verticies: Nodes
+  vertices: Nodes
   semanticZoomLevel: number
   isLeftDrawerOpen: boolean
   isRightDrawerOpen: boolean
-  focusedNodeIds: string[]
+  focusObjects: IdLabelProps[]
   layout: Record<string, NodePoint>
-  focusedSearchBarNodes: SearchResult[]
-  defaultNode: Node | null
-  highlightFocusedNodes: boolean
+  defaultObjects: Node[] | null
+  highlightFocusedObjects: boolean
   modalState: boolean
   nodeIcons: Record<string, string>
   topologyGraphs: TopologyGraphList[]
+  container: string
+  namespace: string
+  idsWithSubLayers: string[]
 }
 
 const state: State = {
@@ -26,18 +28,20 @@ const state: State = {
   selectedView: 'map',
   selectedDisplay: 'linkd',
   edges: {},
-  verticies: {},
+  vertices: {},
   semanticZoomLevel: 1,
   isLeftDrawerOpen: true,
   isRightDrawerOpen: false,
-  focusedNodeIds: [],
+  focusObjects: [],
   layout: {},
-  focusedSearchBarNodes: [],
-  defaultNode: null,
-  highlightFocusedNodes: false,
+  defaultObjects: null,
+  highlightFocusedObjects: false,
   modalState: false,
   nodeIcons: {},
-  topologyGraphs: []
+  topologyGraphs: [],
+  container: '',
+  namespace: '',
+  idsWithSubLayers: []
 }
 
 export default state

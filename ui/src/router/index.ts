@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import DeviceConfigBackup from '@/containers/DeviceConfigBackup.vue'
 import FileEditor from '@/containers/FileEditor.vue'
-import Logs from '@/containers/Logs.vue'
 import Resources from '@/components/Resources/Resources.vue'
 import Graphs from '@/components/Resources/Graphs.vue'
 
@@ -43,12 +43,6 @@ const router = createRouter({
       ]
     },
     {
-      path: '/plugins/:extensionId/:resourceRootPath/:moduleFileName',
-      name: 'Plugin',
-      props: true,
-      component: () => import('@/containers/Plugin.vue')
-    },
-    {
       path: '/file-editor',
       name: 'FileEditor',
       component: FileEditor
@@ -56,7 +50,7 @@ const router = createRouter({
     {
       path: '/logs',
       name: 'Logs',
-      component: Logs
+      component: () => import('@/containers/Logs.vue')
     },
     {
       path: '/map',
@@ -103,26 +97,9 @@ const router = createRouter({
       component: () => import('@/containers/OpenAPI.vue')
     },
     {
-      path: '/resource-graphs',
-      name: 'ResourceGraphs',
-      component: () => import('@/containers/ResourceGraphs.vue'),
-      children: [
-        {
-          path: '',
-          name: 'Resources',
-          component: () => import('@/components/Resources/Resources.vue')
-        },
-        {
-          path: 'graphs/:label/:singleGraphDefinition/:singleGraphResourceId',
-          component: () => import('@/components/Resources/Graphs.vue'),
-          props: true
-        },
-        {
-          path: 'graphs',
-          name: 'Graphs',
-          component: () => import('@/components/Resources/Graphs.vue')
-        }
-      ]
+      path: '/device-config-backup',
+      name: 'DeviceConfigBackup',
+      component: DeviceConfigBackup
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

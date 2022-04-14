@@ -69,7 +69,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
+        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml",
+		"classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)

@@ -1,22 +1,23 @@
-import { SearchResult } from '@/types'
+import { PowerGrid } from '@/components/Topology/topology.constants'
+import { IdLabelProps, SearchResult } from '@/types'
 import { TopologyGraphList } from '@/types/topology'
 import { Edges, Node, Nodes } from 'v-network-graph'
 import { State } from './state'
 
-const SAVE_NODE_EDGES = (state: State, edges: Edges) => {
+const SAVE_EDGES = (state: State, edges: Edges) => {
   state.edges = edges
 }
 
-const SAVE_NODE_VERTICIES = (state: State, verticies: Nodes) => {
-  state.verticies = verticies
+const SAVE_VERTICES = (state: State, vertices: Nodes) => {
+  state.vertices = vertices
 }
 
 const SAVE_TOPOLOGY_GRAPHS = (state: State, topologyGraphs: TopologyGraphList[]) => {
   state.topologyGraphs = topologyGraphs
 }
 
-const SAVE_DEFAULT_NODE = (state: State, defaultNode: Node) => {
-  state.defaultNode = defaultNode
+const SAVE_DEFAULT_OBJECTS = (state: State, defaultObjects: Node[]) => {
+  state.defaultObjects = defaultObjects
 }
 
 const SET_SEMANTIC_ZOOM_LEVEL = (state: State, SML: number) => {
@@ -29,6 +30,11 @@ const SET_SELECTED_VIEW = (state: State, view: string) => {
 }
 
 const SET_SELECTED_DISPLAY = (state: State, display: string) => {
+  // close the powergrid sidebar if different display selected
+  if (display !== PowerGrid) {
+    state.isRightDrawerOpen = false
+  }
+
   state.selectedDisplay = display
 }
 
@@ -40,32 +46,20 @@ const SET_RIGHT_DRAWER_OPEN = (state: State, bool: boolean) => {
   state.isRightDrawerOpen = bool
 }
 
-const ADD_FOCUSED_NODE_IDS = (state: State, ids: string[]) => {
-  state.focusedNodeIds = ids
+const ADD_FOCUS_OBJECTS = (state: State, ids: IdLabelProps[]) => {
+  state.focusObjects = ids
 }
 
-const ADD_NODE_TO_FOCUS_IDS = (state: State, id: string) => {
-  state.focusedNodeIds = [...state.focusedNodeIds, id]
+const ADD_FOCUS_OBJECT = (state: State, id: IdLabelProps) => {
+  state.focusObjects = [...state.focusObjects, id]
 }
 
-const REMOVE_NODE_FROM_FOCUS_IDS = (state: State, id: string) => {
-  state.focusedNodeIds = state.focusedNodeIds.filter((focusedId) => focusedId !== id)
+const REMOVE_FOCUS_OBJECT = (state: State, id: string) => {
+  state.focusObjects = state.focusObjects.filter((obj) => obj.id !== id)
 }
 
-const SET_FOCUSED_SEARCH_BAR_NODES = (state: State, nodes: SearchResult[]) => {
-  state.focusedSearchBarNodes = nodes
-}
-
-const ADD_FOCUSED_SEARCH_BAR_NODE = (state: State, node: SearchResult) => {
-  state.focusedSearchBarNodes = [...state.focusedSearchBarNodes, node]
-}
-
-const REMOVE_FOCUSED_SEARCH_BAR_NODE = (state: State, node: SearchResult) => {
-  state.focusedSearchBarNodes = state.focusedSearchBarNodes.filter((focusedNode) => focusedNode.label !== node.label)
-}
-
-const SET_HIGHLIGHT_FOCUSED_NODES = (state: State, bool: boolean) => {
-  state.highlightFocusedNodes = bool
+const SET_HIGHLIGHT_FOCUSED_OBJECTS = (state: State, bool: boolean) => {
+  state.highlightFocusedObjects = bool
 }
 
 const SET_MODAL_STATE = (state: State, bool: boolean) => {
@@ -76,23 +70,34 @@ const UPDATE_NODE_ICONS = (state: State, nodeIdIconKey: Record<string, string>) 
   state.nodeIcons = { ...state.nodeIcons, ...nodeIdIconKey }
 }
 
+const SET_CONTAINER_AND_NAMESPACE = (
+  state: State,
+  { container, namespace }: { container: string; namespace: string }
+) => {
+  state.container = container
+  state.namespace = namespace
+}
+
+const SAVE_IDS_WITH_SUBLAYERS = (state: State, idsWithSubLayers: string[]) => {
+  state.idsWithSubLayers = idsWithSubLayers
+}
+
 export default {
-  SAVE_NODE_EDGES,
-  SAVE_NODE_VERTICIES,
+  SAVE_EDGES,
+  SAVE_VERTICES,
   SET_SEMANTIC_ZOOM_LEVEL,
   SET_SELECTED_VIEW,
   SET_SELECTED_DISPLAY,
   SET_LEFT_DRAWER_OPEN,
   SET_RIGHT_DRAWER_OPEN,
-  ADD_FOCUSED_NODE_IDS,
-  ADD_NODE_TO_FOCUS_IDS,
-  REMOVE_NODE_FROM_FOCUS_IDS,
-  SET_FOCUSED_SEARCH_BAR_NODES,
-  ADD_FOCUSED_SEARCH_BAR_NODE,
-  REMOVE_FOCUSED_SEARCH_BAR_NODE,
-  SAVE_DEFAULT_NODE,
-  SET_HIGHLIGHT_FOCUSED_NODES,
+  ADD_FOCUS_OBJECTS,
+  ADD_FOCUS_OBJECT,
+  REMOVE_FOCUS_OBJECT,
+  SAVE_DEFAULT_OBJECTS,
+  SET_HIGHLIGHT_FOCUSED_OBJECTS,
   SET_MODAL_STATE,
   UPDATE_NODE_ICONS,
-  SAVE_TOPOLOGY_GRAPHS
+  SAVE_TOPOLOGY_GRAPHS,
+  SET_CONTAINER_AND_NAMESPACE,
+  SAVE_IDS_WITH_SUBLAYERS
 }
