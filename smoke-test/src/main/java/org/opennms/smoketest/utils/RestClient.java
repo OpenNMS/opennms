@@ -391,4 +391,24 @@ public class RestClient {
         final WebTarget target = getTargetV2().path("applications");
         return getBuilder(target).accept(MediaType.APPLICATION_XML).get(applications);
     }
+
+    public void triggerBackup(final String requestDTO) {
+        final WebTarget target = getTarget().path("device-config").path("backup");
+        final var response = getBuilder(target)
+                .post(Entity.entity(requestDTO, MediaType.APPLICATION_JSON));
+        System.err.println(response);
+        this.bailOnFailure(response);
+    }
+
+    public JsonNode getBackups() throws IOException {
+        final var result = getBuilder(getTarget().path("device-config"))
+                .accept(MediaType.APPLICATION_JSON)
+                .get(String.class);
+
+        if (result == null) {
+            return null;
+        }
+
+        return new ObjectMapper().readTree(result);
+    }
 }
