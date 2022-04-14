@@ -11,7 +11,7 @@ Through the UI, users can:
 
 Only users with the xref:operation:user-management/security-roles.adoc#ga-role-user-management-roles[ROLE_DEVICE_CONFIG_BACKUP role] can perform and monitor device configuration backups.
 
-Note that the devices whose configuration you want to back up must either be TFTP-enabled or support an SSH shell.
+IMPORTANT: The devices whose configuration you want to back up must either be TFTP-enabled or support an SSH shell.
 
 == Before You Begin
 
