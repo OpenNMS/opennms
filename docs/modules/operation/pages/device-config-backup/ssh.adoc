@@ -41,7 +41,7 @@ Scripts can reference the following variables by using `$\{varname}` notation:
 Optional; if not specified, OpenNMS uses `default`.
 |===
 
-Note: Uploaded configuration files should include filename extensions like `.zip` or `.gz` that specify their file type.
+NOTE: Uploaded configuration files should include filename extensions like `.zip` or `.gz` that specify their file type.
 In addition, you must append a `.` and the script variable `filenameSuffix` to the filename that is used for upload.
 
 .Example script
