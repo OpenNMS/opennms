@@ -62,7 +62,8 @@ await:  tftp>
 ----
 
 == Vendor TFTP support
-Click the following vendor names for documentation on their TFTP support:
+See your device manufacturer's documentation for details on their TFTP support.
+Some links to popular device manufacturers are provided below.
 
 * https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClJ9CAK[Palo Alto]
 * https://www.arubanetworks.com/techdocs/ArubaOS_63_Web_Help/Content/ArubaFrameStyles/Management_Utilities/Managing_Files_on_the_.htm[Aruba]
