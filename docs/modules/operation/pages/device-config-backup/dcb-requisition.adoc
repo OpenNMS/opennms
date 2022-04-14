@@ -8,6 +8,7 @@ To activate the device configuration backup, you must add metadata that defines 
 . Log in to OpenNMS and click the gears icon.
 . Choose *Provisioning>Manage Provisioning Requisitions*.
 . Click *Add Requisition* and enter a name for the requisition.
+If you want to enable device config backup on existing nodes in a requisition, select the desired requisition and edit the node definition.
 . Click on the edit icon and click *Add Node*.
 . Set up your requisition as described in xref:operation:provisioning/getting-started.adoc#requisition-create[Create a requisition].
 . Click *Add Meta-Data*, and define the following key-value pairs:
