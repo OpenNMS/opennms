@@ -2,9 +2,12 @@
 
 OpenNMS lets you back up the configuration of devices like routers, firewalls, and switches, for better disaster recovery in case of network failure.
 
-Through the UI, users can back up network device configuration any time, on demand, for a single device or group of devices, or create a user-defined schedule.
-Trigger backups to occur when a device’s configuration changes, to ensure you always have a copy of the active device configuration.
-View backup history, download configurations, search, and compare configurations for specific devices at different points in time.
+Through the UI, users can:
+
+* Back up network device configuration on demand at any time for a single device or group of devices.
+* Create a user-defined schedule to automate configuration backups.
+* Trigger backups to occur when a device’s configuration changes, to ensure you always have a copy of the active device configuration.
+* View backup history, download configurations, search, and compare configurations for specific devices at different points in time.
 
 Only users with the xref:operation:user-management/security-roles.adoc#ga-role-user-management-roles[ROLE_DEVICE_CONFIG_BACKUP role] can perform and monitor device configuration backups.
 
