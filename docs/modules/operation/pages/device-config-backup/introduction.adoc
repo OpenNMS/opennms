@@ -23,7 +23,7 @@ You must configure OpenNMS to perform configuration backups before you can xref:
 
 == How it works
 
-OpenNMS performs database configuration backups through a TFTP server that OpenNMS and Minions provide.
+OpenNMS collects database configuration backups through a TFTP server embedded in the OpenNMS and Minion services.
 Devices send their configuration to that TFTP server with either a pull- or push-based backup.
 
 * Pull-based backup: OpenNMS uses its poller infrastructure to schedule tasks that connect via SSH into devices and execute configurable scripts that do the TFTP uploads.
