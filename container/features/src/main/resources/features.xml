@@ -1966,4 +1966,10 @@
         <feature version="${cxfVersion}">cxf-jaxrs</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.rest-cxf/${project.version}</bundle>
     </feature>
+
+    <feature name="opennms-scv-rest" description="OpenNMS :: Features :: Scv :: Rest" version="${project.version}">
+        <feature>opennms-osgi-core-rest</feature>
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.rest/${project.version}</bundle>
+    </feature>
 </features>
