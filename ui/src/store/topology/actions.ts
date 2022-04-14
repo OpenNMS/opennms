@@ -10,12 +10,28 @@ interface ContextWithState extends VuexContext {
   state: State
 }
 
-const parseVerticesAndEdges = (resp: VerticesAndEdges, context: VuexContext) => {
+/**
+ * Parses a response from one of many calls
+ * that contain vertices and edges.
+ * 
+ * Calls are either initial GET calls, or 
+ * POST calls with SZL/Focus
+ * 
+ * @param resp VerticesAndEdges 
+ * @param context VuexContext
+ * 
+ * Whether to add the edges or not. 
+ * We may not want to if they contain links to sublayer nodes that are unavailable on this response.
+ * @param preventLinks boolean  
+ */
+const parseVerticesAndEdges = (resp: VerticesAndEdges, context: VuexContext, preventLinks = false) => {
   const edges: Edges = {}
   const vertices: Nodes = {}
 
-  for (const edge of resp.edges) {
-    edges[edge.label] = { source: edge.source.id, target: edge.target.id }
+  if (!preventLinks) {
+    for (const edge of resp.edges) {
+      edges[edge.label] = { source: edge.source.id, target: edge.target.id }
+    }
   }
 
   for (const vertex of resp.vertices) {
@@ -24,7 +40,8 @@ const parseVerticesAndEdges = (resp: VerticesAndEdges, context: VuexContext) => 
       id: vertex.id,
       tooltip: vertex.tooltipText,
       label: vertex.label,
-      icon: 'generic_icon'
+      icon: 'generic_icon',
+      namespace: vertex.namespace
     }
   }
 
@@ -72,14 +89,14 @@ const getTopologyGraphByContainerAndNamespace = async (
   const topologyGraph = await API.getTopologyGraphByContainerAndNamespace(containerId, namespace)
   if (topologyGraph) {
     context.commit('SET_CONTAINER_AND_NAMESPACE', { container: containerId, namespace })
-    parseVerticesAndEdges(topologyGraph, context)
+    parseVerticesAndEdges(topologyGraph, context, true) // true to prevent adding edges here
 
     // save which ids have sublayers, to show indicator
     const idsWithSubLayers = topologyGraph.edges.map((edge) => edge.id.split('.')[0])
     context.commit('SAVE_IDS_WITH_SUBLAYERS', idsWithSubLayers)
 
     // set focus to the defaults
-    context.dispatch('addFocusObjects', context.state.defaultObjects)
+    context.dispatch('replaceFocusObjects', context.state.defaultObjects)
   }
 }
 
@@ -139,19 +156,19 @@ const setSelectedDisplay = async (context: ContextWithState, display: string) =>
     }
   } else {
     await context.dispatch('getVerticesAndEdges')
-    context.dispatch('addFocusObjects', context.state.defaultObjects)
+    context.dispatch('replaceFocusObjects', context.state.defaultObjects)
   }
 }
 
 /**
  * Focus
  */
-const addFocusObjects = (context: ContextWithState, objects: IdLabelProps[]) => {
+const replaceFocusObjects = (context: ContextWithState, objects: IdLabelProps[] | Node[]) => {
   context.commit('ADD_FOCUS_OBJECTS', objects)
   context.dispatch('getObjectDataByLevelAndFocus')
 }
 
-const addFocusObject = (context: VuexContext, object: IdLabelProps) => {
+const addFocusObject = (context: VuexContext, object: IdLabelProps | Node) => {
   context.commit('ADD_FOCUS_OBJECT', object)
   context.dispatch('getObjectDataByLevelAndFocus')
 }
@@ -163,6 +180,11 @@ const removeFocusObject = (context: VuexContext, nodeId: string) => {
 
 const highlightFocusedObjects = (context: ContextWithState, bool: boolean) => {
   context.commit('SET_HIGHLIGHT_FOCUSED_OBJECTS', bool)
+}
+
+const useDefaultFocus = (context: ContextWithState) => {
+  const defaultFocusObjects = context.state.defaultObjects
+  context.dispatch('replaceFocusObjects', defaultFocusObjects)
 }
 
 /**
@@ -222,14 +244,20 @@ const updateVerticesIconPaths = (context: ContextWithState) => {
   context.commit('SAVE_VERTICES', vertices)
 }
 
-// prop for whether object has links to sublayer objects
 const updateSubLayerIndicator = (context: ContextWithState) => {
   const idsWithSubLayers = context.state.idsWithSubLayers
+  const powergridGraphs: TopologyGraphList = getters.getPowerGridGraphs(context.state)
   const vertices = context.state.vertices
 
-  for (const id of idsWithSubLayers) {
-    if (vertices[id]) {
-      vertices[id]['hasSubLayer'] = true
+  for (const graph of powergridGraphs.graphs) {
+    for (const vertex of Object.values(vertices)) {
+      // if vertex has sublayer and is within graph namespace
+      if (idsWithSubLayers.includes(vertex.id) && vertex.namespace === graph.namespace) {
+        // add the the next layer object for the context nav
+        if (powergridGraphs.graphs[graph.index + 1]) {
+          vertex['subLayer'] = powergridGraphs.graphs[graph.index + 1]
+        }
+      }
     }
   }
 
@@ -241,16 +269,17 @@ export default {
   setSemanticZoomLevel,
   setSelectedView,
   setSelectedDisplay,
+  setModalState,
   openLeftDrawer,
   closeLeftDrawer,
-  setRightDrawerState,
   addFocusObject,
-  addFocusObjects,
-  getObjectDataByLevelAndFocus,
+  useDefaultFocus,
   removeFocusObject,
+  replaceFocusObjects,
+  setRightDrawerState,
+  getObjectDataByLevelAndFocus,
   highlightFocusedObjects,
   updateObjectFocusedProperty,
-  setModalState,
   changeIcon,
   updateVerticesIconPaths,
   updateSubLayerIndicator,

@@ -1,5 +1,6 @@
 import { PowerGrid } from '@/components/Topology/topology.constants'
 import { NodePoint, TopologyGraphList } from '@/types/topology'
+import { orderBy } from 'lodash'
 import { Layouts } from 'v-network-graph'
 import { State } from './state'
 
@@ -49,13 +50,26 @@ const hasPowerGridGraphs = (state: State): boolean => {
 /**
  * Return powergrid graphs, if available.
  * Otherwise return object with empty graphs array.
+ * 
+ * API does not return proper layer order,
+ * but the id is made up of proper ordered layer names.
+ * This can be used during layer selection / context menu nav.
  *
  * @param state topology store
  * @returns TopologyGraphList
  */
 const getPowerGridGraphs = (state: State): TopologyGraphList => {
   if (hasPowerGridGraphs(state)) {
-    return state.topologyGraphs.filter((graphs) => graphs.label === PowerGrid)[0]
+    const powerGridGraphs = state.topologyGraphs.filter((graphs) => graphs.label === PowerGrid)[0]
+    const orderedLayers = powerGridGraphs.id.split('.')
+
+    for (const graph of powerGridGraphs.graphs) {
+      graph.index = orderedLayers.indexOf(graph.label.toLowerCase())
+    }
+
+    powerGridGraphs.graphs = orderBy(powerGridGraphs.graphs, 'index', 'asc')
+
+    return powerGridGraphs
   }
   return { graphs: [], id: 'N/A', label: 'N/A' }
 }

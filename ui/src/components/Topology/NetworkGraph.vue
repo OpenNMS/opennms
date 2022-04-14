@@ -28,12 +28,13 @@
           clip-path="url(#iconCircle)" />
 
         <!-- circle for drawing stroke -->
-        <circle v-if="vertices[nodeId].hasSubLayer" class="node-circle" :cx="-12 * scale" :cy="12 * scale" :r="5 * scale"
+        <circle v-if="vertices[nodeId].subLayer" class="node-circle" :cx="-12 * scale" :cy="12 * scale" :r="5 * scale"
           :fill="setColor(vertices[nodeId])" v-bind="slotProps" />
       </template>
     </VNetworkGraph>
     <!-- Tooltip -->
-    <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos }">
+    <div ref="tooltip" class="tooltip" :style="{ ...tooltipPos }"
+      v-if="vertices[targetNodeId] && vertices[targetNodeId].namespace === 'nodes'">
       <div v-html="vertices[targetNodeId]?.tooltip ?? ''"></div>
     </div>
   </div>
@@ -56,6 +57,7 @@ import { SimulationNodeDatum } from 'd3'
 import { ContextMenuType } from './topology.constants'
 import TopologyModal from './TopologyModal.vue'
 import ICON_PATHS from './icons/iconPaths'
+import { useTopologyFocus } from './topology.composables'
 
 interface d3Node extends Required<SimulationNodeDatum> {
   id: string
@@ -69,6 +71,7 @@ defineProps({
 })
 
 const store = useStore()
+const { useDefaultFocus } = useTopologyFocus()
 const zoomLevel = ref(1)
 const graph = ref<Instance>()
 const selectedNodes = ref<string[]>([]) // string ids
@@ -93,7 +96,6 @@ onClickOutside(contextMenu, () => closeContextMenu())
 const vertices = computed<Nodes>(() => store.state.topologyModule.vertices)
 const edges = computed<Edges>(() => store.state.topologyModule.edges)
 const layout = computed<Layouts>(() => store.getters['topologyModule/getLayout'])
-const defaultObjects = computed<Node[]>(() => store.state.topologyModule.defaultObjects)
 const focusObjects = computed<string[]>(() => store.state.topologyModule.focusObjects)
 const highlightFocusedObjects = computed<boolean>(() => store.state.topologyModule.highlightFocusedObjects)
 
@@ -241,12 +243,6 @@ const configs = reactive(
   })
 )
 
-// sets the default focused node
-const useDefaultFocus = () => {
-  if (defaultObjects.value) {
-    store.dispatch('topologyModule/addFocusObjects', defaultObjects.value)
-  }
-}
 onMounted(() => useDefaultFocus())
 </script>
 

@@ -12,7 +12,7 @@
   ></FeatherAutocomplete>
 
   <FeatherChipList condensed label="List of focus objects">
-    <FeatherChip v-for="item of focusObjects" :key="item.id" @click="removeFocus(item.id)">
+    <FeatherChip v-for="item of focusObjects" :key="item.id" @click="removeFocusObjectsByIds([item.id])">
       {{ item.label }}
       <template v-slot:icon> <FeatherIcon :icon="Close" /> </template>
     </FeatherChip>
@@ -27,8 +27,10 @@ import Close from '@featherds/icon/navigation/Cancel'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 import { FeatherChip, FeatherChipList } from '@featherds/chips'
 import { IdLabelProps } from '@/types'
+import { useTopologyFocus } from './topology.composables'
 
 const store = useStore()
+const { addFocusObject, removeFocusObjectsByIds } = useTopologyFocus()
 const loading = ref(false)
 const defaultLabels = { noResults: 'Searching...' }
 const labels = ref(defaultLabels)
@@ -37,7 +39,7 @@ const labels = ref(defaultLabels)
 const selectItem: any = (item: { url: string, label: string }) => {
   const label = item.label
   const id = item.url.split('=')[1]
-  store.dispatch('topologyModule/addFocusObject', { id, label })
+  addFocusObject({ id, label })
 }
 
 const resetLabelsAndSearch = (value: string) => {
@@ -61,5 +63,4 @@ const results = computed(() => {
 })
 
 const focusObjects = computed<IdLabelProps[]>(() => store.state.topologyModule.focusObjects)
-const removeFocus = (id: string) => store.dispatch('topologyModule/removeFocusObject', id)
 </script>

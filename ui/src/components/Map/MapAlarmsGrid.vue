@@ -220,6 +220,7 @@ thead {
   z-index: 2;
   position: relative;
   background: var($surface);
+  white-space: nowrap;
 }
 .select-ack {
   z-index: 3;

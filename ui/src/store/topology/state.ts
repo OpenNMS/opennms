@@ -1,11 +1,11 @@
-import { IdLabelProps, SearchResult } from '@/types'
+import { IdLabelProps } from '@/types'
 import { NodePoint, TopologyGraphList } from '@/types/topology'
 import { Edges, Node, Nodes } from 'v-network-graph'
 
 export interface State {
-  isTopologyView: boolean
-  selectedView: string
-  selectedDisplay: string
+  isTopologyView: boolean // switch between geo-map and topology
+  selectedView: string // d3, circle layout etc.
+  selectedDisplay: string // linkd, powerGrid etc.
   edges: Edges
   vertices: Nodes
   semanticZoomLevel: number
@@ -13,7 +13,6 @@ export interface State {
   isRightDrawerOpen: boolean
   focusObjects: IdLabelProps[]
   layout: Record<string, NodePoint>
-  focusedSearchBarNodes: SearchResult[]
   defaultObjects: Node[] | null
   highlightFocusedObjects: boolean
   modalState: boolean
@@ -35,7 +34,6 @@ const state: State = {
   isRightDrawerOpen: false,
   focusObjects: [],
   layout: {},
-  focusedSearchBarNodes: [],
   defaultObjects: null,
   highlightFocusedObjects: false,
   modalState: false,

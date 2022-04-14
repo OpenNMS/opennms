@@ -58,18 +58,6 @@ const REMOVE_FOCUS_OBJECT = (state: State, id: string) => {
   state.focusObjects = state.focusObjects.filter((obj) => obj.id !== id)
 }
 
-const SET_FOCUSED_SEARCH_BAR_NODES = (state: State, nodes: SearchResult[]) => {
-  state.focusedSearchBarNodes = nodes
-}
-
-const ADD_FOCUSED_SEARCH_BAR_NODE = (state: State, node: SearchResult) => {
-  state.focusedSearchBarNodes = [...state.focusedSearchBarNodes, node]
-}
-
-const REMOVE_FOCUSED_SEARCH_BAR_NODE = (state: State, node: SearchResult) => {
-  state.focusedSearchBarNodes = state.focusedSearchBarNodes.filter((focusedNode) => focusedNode.label !== node.label)
-}
-
 const SET_HIGHLIGHT_FOCUSED_OBJECTS = (state: State, bool: boolean) => {
   state.highlightFocusedObjects = bool
 }
@@ -105,9 +93,6 @@ export default {
   ADD_FOCUS_OBJECTS,
   ADD_FOCUS_OBJECT,
   REMOVE_FOCUS_OBJECT,
-  SET_FOCUSED_SEARCH_BAR_NODES,
-  ADD_FOCUSED_SEARCH_BAR_NODE,
-  REMOVE_FOCUSED_SEARCH_BAR_NODE,
   SAVE_DEFAULT_OBJECTS,
   SET_HIGHLIGHT_FOCUSED_OBJECTS,
   SET_MODAL_STATE,

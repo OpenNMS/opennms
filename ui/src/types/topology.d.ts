@@ -57,6 +57,7 @@ export interface TopologyGraph {
   namespace: string
   description: string
   label: string
+  index: number
 }
 
 export interface TopologyGraphList {

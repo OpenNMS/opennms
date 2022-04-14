@@ -45,11 +45,12 @@ const width = computed<string>(() => store.state.topologyModule.isRightDrawerOpe
 .topology-side-controls {
   @include elevation(2);
   display: flex;
-  height: calc(100vh - 100px);
+  height: auto;
+  padding-bottom: 20px;
+  padding-top: 20px;
   width: v-bind(width);
-  position: absolute;
-  z-index: 0;
-  top: 0;
+  position: fixed;
+  top: 62px;
   right: 0;
 
   .controls {

@@ -1,6 +1,8 @@
 <template>
   <NetworkGraph v-if="displayGraph" :refresh="refreshGraph" />
-  <SideControls :refreshGraph="refreshGraph" />
+  <Teleport to="body">
+    <SideControls :refreshGraph="refreshGraph" />
+  </Teleport>
 </template>
 
 <script setup lang="ts">
