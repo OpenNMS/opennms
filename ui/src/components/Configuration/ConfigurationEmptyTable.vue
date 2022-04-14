@@ -6,7 +6,7 @@
         Add an external requisition to synchronize inventory.
       </div>
       <div class="flex button-wrapper">
-        <FeatherButton class="button" primary @click="props.newDefinition">Add Requisition Definition</FeatherButton>
+        <FeatherButton class="button" primary @click="props.newDefinition">Add External Requisition</FeatherButton>
       </div>
     </div>
   </div>

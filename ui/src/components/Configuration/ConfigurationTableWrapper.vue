@@ -1,7 +1,7 @@
 <template>
   <div class="white-bg">
     <div class="flex title-padding">
-      <h3 class="title">Requisition Definitions {{ requisitionDCount }}</h3>
+      <h3 class="title">External Requisitions {{ requisitionDCount }}</h3>
       <div class="flex button-wrapper" v-if="provisionDList?.length > 0">
         <FeatherButton class="button" text @click="addNew">Add External Requisition</FeatherButton>
       </div>
