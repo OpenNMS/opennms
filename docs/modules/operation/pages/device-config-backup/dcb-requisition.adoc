@@ -19,7 +19,7 @@ If you want to enable device config backup on existing nodes in a requisition, s
 
 [[dcb-backup]]
 == Run a device configuration backup
-Since no device configuration back ups will appear in the UI until one runs, we recommend that you run a requisition immediately.
+Since no device configuration backups will appear in the UI until at least one has been collected, we recommend that you synchronize the requisition immediately.
 
 . Choose the requisition to run, and click *Synchronize*.
 . Select a scan option and click *Synchronize*.
