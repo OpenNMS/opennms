@@ -52,7 +52,7 @@ public class StackModel {
     private final boolean elasticsearchEnabled;
     private final boolean telemetryProcessingEnabled;
     private final IpcStrategy ipcStrategy;
-    private final SSLStrategy sslStrategy;
+    private final SSLMode sslMode;
     private final TimeSeriesStrategy timeSeriesStrategy;
     private final BlobStoreStrategy blobStoreStrategy;
     private final JsonStoreStrategy jsonStoreStrategy;
@@ -71,7 +71,7 @@ public class StackModel {
 
         // Enums
         ipcStrategy = builder.ipcStrategy;
-        sslStrategy = builder.sslStrategy;
+        sslMode = builder.sslStrategy;
         timeSeriesStrategy = builder.timeSeriesStrategy;
         blobStoreStrategy = builder.blobStoreStrategy;
         jsonStoreStrategy = builder.jsonStoreStrategy;
@@ -91,7 +91,7 @@ public class StackModel {
         private boolean telemetryProcessingEnabled = false;
 
         private IpcStrategy ipcStrategy = IpcStrategy.JMS;
-        private SSLStrategy sslStrategy = SSLStrategy.SSL;
+        private SSLMode sslStrategy = SSLMode.SSL;
         private TimeSeriesStrategy timeSeriesStrategy = TimeSeriesStrategy.RRD;
         
         private BlobStoreStrategy blobStoreStrategy = BlobStoreStrategy.NOOP;
@@ -206,7 +206,7 @@ public class StackModel {
          * @param sslStrategy SSL
          * @return this builder
          */
-        public Builder withSSLStrategy(SSLStrategy sslStrategy) {
+        public Builder withSSLStrategy(SSLMode sslStrategy) {
             this.sslStrategy = Objects.requireNonNull(sslStrategy);
             return this;
         }
@@ -312,7 +312,7 @@ public class StackModel {
         return ipcStrategy;
     }
 
-    public SSLStrategy getSSLStrategy() { return sslStrategy; }
+    public SSLMode getSSLMode() { return sslMode; }
 
     public TimeSeriesStrategy getTimeSeriesStrategy() {
         return timeSeriesStrategy;

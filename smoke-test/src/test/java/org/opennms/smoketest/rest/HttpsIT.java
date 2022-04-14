@@ -28,21 +28,19 @@
 
 package org.opennms.smoketest.rest;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 
 import io.restassured.RestAssured;
-import org.opennms.smoketest.stacks.SSLStrategy;
+import org.opennms.smoketest.stacks.SSLMode;
 import org.opennms.smoketest.stacks.StackModel;
 
-// Ensures if "X-Requeste-With" is set to "XMLHttpRequest" no "WWW-Authenticate" header is sent with the response
 
-public class SSLPortTestIT {
+public class HttpsIT {
 
     @ClassRule
     public static final OpenNMSStack STACK =  OpenNMSStack.withModel(StackModel.newBuilder()
@@ -51,7 +49,7 @@ public class SSLPortTestIT {
                     .withFile("jetty.xml", "etc/jetty.xml")
                     .withFile("opennms.properties", "etc/opennms.properties")
                     .build())
-            .withSSLStrategy(SSLStrategy.SSL)
+            .withSSLStrategy(SSLMode.SSL)
             .build());
 
     @Before

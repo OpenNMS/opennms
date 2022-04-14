@@ -31,6 +31,6 @@ package org.opennms.smoketest.stacks;
 /**
  * JMS vs Kafka
  */
-public enum SSLStrategy {
+public enum SSLMode {
     SSL
 }

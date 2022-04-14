@@ -335,7 +335,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             props.put("org.opennms.newts.config.port", Integer.toString(CassandraContainer.CQL_PORT));
             props.put("org.opennms.rrd.storeByForeignSource", Boolean.TRUE.toString());
         }
-        if(SSLStrategy.SSL.equals(model.getSSLStrategy())){
+        if(SSLMode.SSL.equals(model.getSSLMode())){
             // Set SSL properties
             props.put("org.opennms.netmgt.jetty.https-port", String.valueOf(OPENNMS_SSL_PORT));
             props.put("org.opennms.netmgt.jetty.https-keystorepassword", "changeit");
