@@ -11,9 +11,9 @@ To activate the device configuration backup, you must add metadata that defines 
 . Click on the edit icon and click *Add Node*.
 . Set up your requisition as described in xref:operation:provisioning/getting-started.adoc#requisition-create[Create a requisition].
 . Click *Add Meta-Data*, and define the following key-value pairs:
-.. dcbusername: username for the device
-.. dcbpassword: password for the device
-.. script-file: name of the device configuration script for this type of device
+.. `dcbusername`: username for the device
+.. `dcbpassword`: password for the device
+.. `script-file`: name of the device configuration script for this type of device
 . Click *Save* to save the metadata and then *Save* to save the requisition.
 
 [[dcb-backup]]
