@@ -3,7 +3,8 @@
 
 OpenNMS uses an SSH scripting engine to run the commands required for devices to upload their configurations.
 You must create a script for each device type whose configuration you want to back up and save this script in the `$\{OPENNMS_HOME}/etc/device-config` folder.
-This script basically simulates an interactive session with a network device that tells the device to create a backup of its configuration and send that backup to a TFTP server operated by the Minion or OpenNMS server.
+This script simulates an interactive session with the network device.
+The script tells the device to create a backup of its configuration and send that backup to a TFTP server operated by the Minion or {page-component-title} server.
 
 Note that some devices may distinguish different types of configuration; for example, default configuration versus running configuration.
 OpenNMS treats configuration types as arbitrary strings, and uses `default` when no configuration type is specified.
