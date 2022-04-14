@@ -24,6 +24,6 @@ Since no device configuration backups will appear in the UI until at least one h
 . Choose the requisition to import, and click *Synchronize*.
 . Select a scan option and click *Synchronize*.
 
-Go to *Info>Configuration Management* to view the device configuration backup.
+In the main menu, choose *Info>Configuration Management* to view the device configuration backup.
 
 See xref:operation:device-config-backup/dcb.adoc#dcb-manage[manage device configuration backup UI] for more information.

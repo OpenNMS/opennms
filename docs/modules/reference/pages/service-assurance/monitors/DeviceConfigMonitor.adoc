@@ -25,7 +25,7 @@ This monitor tries to retrieve configuration from the network device and shows t
 
 | script-file
 | Script file to use to retrieve configuration.
-| `-`
+| -
 
 3+| *Optional*
 
@@ -36,6 +36,8 @@ This monitor tries to retrieve configuration from the network device and shows t
 | schedule
 | Schedule to fetch configuration, in the form of cron expression.
 | 0 0 0 * * ?
+The default cron expression runs every 24 hrs at 12:00 a.m.
+
 
 |===
 
@@ -53,7 +55,7 @@ Example for how to configure the DeviceConfigMonitor in the `poller-configuratio
 == Schedule and interval
 
 The Device Config Monitor service uses an interval of 300 seconds and a cron expression for the schedule.
-The default cron expression runs every 24 hrs at 12.00am (0 0 0 * * ?).
+The default cron expression runs every 24 hrs at 12:00 a.m. (0 0 0 * * ?).
 The monitor retrieves the device configuration when the next trigger from the schedule falls within the interval.
 
 ##Chandra, could you update the text in line 57?##
