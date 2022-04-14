@@ -13,8 +13,7 @@
             <FeatherSelect
                 class="side-input full-width mb-16"
                 textProp="name"
-                hint="Type of URL to use."
-                label="Type"
+                label="External Source"
                 :options="requisitionTypeList"
                 :error="errors.type"
                 :modelValue="config.type"

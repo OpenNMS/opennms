@@ -52,6 +52,8 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 import Delete from '@featherds/icon/action/Delete'
 
+import { orderBy } from 'lodash'
+
 import { advancedKeys, dnsKeys, openDaylightKeys, aciKeys, zabbixKeys, prisKeys } from './copy/advancedKeys'
 import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'
 import { AdvancedKey, AdvancedOption } from './configuration.types'
@@ -86,7 +88,7 @@ const results = reactive({
 const buttonAddDisabled = computed(() => {
   const itemsLength = props.items.length
 
-  if(!itemsLength) return false; // enabled
+  if (!itemsLength) return false; // enabled
 
   const { key, value } = props.items[itemsLength - 1] // last item
   return !(key.name && value) // disabled
@@ -105,7 +107,7 @@ const getKeysBasedOnType = (type: string, subType: string) => {
   if (type === RequisitionTypes.DNS) {
     keys = dnsKeys
   } else if (type === RequisitionTypes.VMWare) {
-    keys = advancedKeys
+    keys = orderBy(advancedKeys, 'name', 'asc')
   } else if (type === RequisitionTypes.RequisitionPlugin) {
     if (subType === RequisitionPluginSubTypes.OpenDaylight) {
       keys = openDaylightKeys
