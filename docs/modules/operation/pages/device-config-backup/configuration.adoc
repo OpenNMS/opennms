@@ -83,7 +83,7 @@ Pollerd can generate the following events in {page-component-title} for device c
 You can use the Rest API to trigger device configuration retrieval outside of a monitor schedule.
 (See xref:development:rest/device_config.adoc[Device Config Rest API].)
 
-== Retrieve/trigger device configuration backup from Karaf shell
+== Trigger backup from Karaf shell
 
 You can also trigger/retrieve a device configuration from the Karaf shell.
 
