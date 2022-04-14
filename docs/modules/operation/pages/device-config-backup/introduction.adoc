@@ -30,6 +30,6 @@ Devices send their configuration to that TFTP server with either a pull- or push
 * Push-based backup: Devices may upload their configuration themselves.
 This may happen either by administrator interaction or scheduled jobs running on the devices themselves.
 
-OpenNMS stores device configuration backups for IP addresses in the default location or at remote locations.
-It archives received backups and records when changes happened.
-It also records if backups fail and raises corresponding alarms.
+OpenNMS stores device configuration backups for IP addresses in the default location or at remote locations in the OpenNMS database.
+It keeps configuration history to provide change tracking and compare differences between different versions of device configurations.
+If {page-component-title} fails to retrieve configurations, it raises corresponding alarms to alert system operators.
