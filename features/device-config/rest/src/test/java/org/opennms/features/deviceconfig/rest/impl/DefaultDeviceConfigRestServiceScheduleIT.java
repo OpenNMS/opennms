@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -65,6 +66,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
@@ -221,7 +223,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 assertThat(dto.getFailureReason(), nullValue());
                 assertThat(dto.getConfig(), equalTo(CONFIG_STRINGS.get(i)));
                 assertThat(dto.getOperatingSystem(), equalTo(expectedOperatingSystems.get(i)));
-                assertThat(dto.getBackupStatus(), equalTo(DefaultDeviceConfigRestService.BACKUP_STATUS_SUCCESS));
+                assertThat(dto.getBackupStatus(), equalTo(DeviceConfigStatus.SUCCESS.name().toLowerCase(Locale.ROOT)));
                 assertThat(dto.getScheduledInterval().get(SERVICE_NAMES.get(i)),
                     equalTo(EXPECTED_CRON_SCHEDULE_DESCRIPTIONS.get(i)));
                 assertThat(dto.getNextScheduledBackupDate().after(currentDate), is(true));
@@ -254,7 +256,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 assertThat(dto.getLastFailedDate(), nullValue());
                 assertThat(dto.getFailureReason(), nullValue());
                 assertThat(dto.getOperatingSystem(), equalTo(expectedOperatingSystems.get(1)));
-                assertThat(dto.getBackupStatus(), equalTo(DefaultDeviceConfigRestService.BACKUP_STATUS_SUCCESS));
+                assertThat(dto.getBackupStatus(), equalTo(DeviceConfigStatus.SUCCESS.name().toLowerCase(Locale.ROOT)));
                 assertThat(dto.getScheduledInterval().get(SERVICE_NAMES.get(1)),
                     equalTo(EXPECTED_CRON_SCHEDULE_DESCRIPTIONS.get(1)));
                 assertThat(dto.getNextScheduledBackupDate().after(currentDate), is(true));
@@ -377,7 +379,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
                 assertThat(dto.getFailureReason(), nullValue());
                 assertThat(dto.getConfig(), equalTo(CONFIG_STRINGS.get(1)));
                 assertThat(dto.getOperatingSystem(), equalTo(expectedOperatingSystems.get(1)));
-                assertThat(dto.getBackupStatus(), equalTo(DefaultDeviceConfigRestService.BACKUP_STATUS_SUCCESS));
+                assertThat(dto.getBackupStatus(), equalTo(DeviceConfigStatus.SUCCESS.name().toLowerCase(Locale.ROOT)));
                 assertThat(dto.getScheduledInterval().get(SERVICE_NAMES.get(1)),
                     equalTo(EXPECTED_CRON_SCHEDULE_DESCRIPTIONS.get(1)));
                 assertThat(dto.getNextScheduledBackupDate().after(currentDate), is(true));
@@ -458,7 +460,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
             IntStream.range(0, RECORD_COUNT).forEach(i -> {
                 DeviceConfigDTO dto = responseList.get(i);
                 assertThat(dto.getLastUpdatedDate().getTime(), equalTo(dates.get(i).getTime()));
-                assertThat(dto.getBackupStatus(), equalTo(DefaultDeviceConfigRestService.BACKUP_STATUS_FAILED));
+                assertThat(dto.getBackupStatus(), equalTo(DeviceConfigStatus.FAILED.name().toLowerCase(Locale.ROOT)));
                 assertThat(dto.getFailureReason(), equalTo(failureReasons.get(i)));
             });
         });
@@ -735,6 +737,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         dc.setIpInterface(ipInterface1);
         dc.setServiceName(serviceName);
         dc.setConfigType(configType);
+        dc.setStatus(DeviceConfig.determineBackupStatus(dc));
 
         return dc;
     }

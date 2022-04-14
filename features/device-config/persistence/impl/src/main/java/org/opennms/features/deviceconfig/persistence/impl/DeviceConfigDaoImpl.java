@@ -78,7 +78,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     @Override
     public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, String serviceName) {
 
-        return find("from DeviceConfig dc where dc.ipInterface.id = ? AND serviceName = ? ORDER BY lastUpdated DESC",
+        return find("from DeviceConfig dc where dc.lastUpdated is not null AND dc.ipInterface.id = ? AND serviceName = ? ORDER BY lastUpdated DESC",
                 ipInterface.getId(), serviceName);
     }
 
@@ -86,7 +86,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String serviceName) {
         List<DeviceConfig> deviceConfigs =
                 findObjects(DeviceConfig.class,
-                        "from DeviceConfig dc where dc.ipInterface.id = ? AND serviceName = ? " +
+                        "from DeviceConfig dc where dc.lastUpdated is not null AND dc.ipInterface.id = ? AND serviceName = ? " +
                                 "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), serviceName);
 
         if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
