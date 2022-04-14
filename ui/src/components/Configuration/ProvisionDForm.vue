@@ -82,12 +82,12 @@
                 hint="DNS zone to use as basis for this definition"
             />
             <FeatherInput
-                label="Foreign Source"
+                label="Requisition Name"
                 class="side-input mb-16"
                 :error="errors.foreignSource"
                 :modelValue="config.foreignSource"
                 @update:modelValue="(val: string) => updateFormValue('foreignSource', val)"
-                hint="Foreign-source name to use for resulting requisition"
+                hint="Name to use for resulting requisition"
             />
         </div>
         <div v-if="[RequisitionTypes.VMWare].includes(config.type.name)">
