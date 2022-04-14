@@ -491,6 +491,7 @@
                 <feature>opennms-dao</feature>
                 <feature>opennms-events-api</feature>
                 <feature>opennms-events-commands</feature>
+                <feature>opennms-events-collector</feature>
                 <feature>opennms-health</feature>
                 <feature>opennms-health-rest</feature>
                 <feature>opennms-icmp-api</feature>
