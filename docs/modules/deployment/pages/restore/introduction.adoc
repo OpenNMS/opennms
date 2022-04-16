@@ -4,7 +4,8 @@
 This section describes a basic restore process for a default OpenNMS {page-component-title} xref:deployment:core/getting-started.adoc#getting-started-core[installation].
 OpenNMS {page-component-title} binaries, logs, RRD archives, configurations and the database will be restored.
 
-NOTE: In this example the backup storage path is `/backup` for demonstration purposes.
+NOTE: In this example the backup storage path is `/tmp` for demonstration purposes.
+Please be aware that `/tmp` is not persisted as most operating systems will delete the content at bootup.
 
 [[restore-objectives]]
 == Objectives

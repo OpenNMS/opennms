@@ -3,18 +3,18 @@
 
 [source, console]
 ----
-sudo echo /backup/opennms-passwd.txt >> /etc/passwd
-sudo echo /backup/opennms-group.txt >> /etc/group
+sudo echo /tmp/opennms-passwd.txt >> /etc/passwd
+sudo echo /tmp/opennms-group.txt >> /etc/group
 ----
 
 .Restore OpenNMS {page-component-title} binaries, logs, RRD archives, configurations
 
 [source, console]
 ----
-sudo tar -xzf /backup/opennms.tar.gz -C / && \
-sudo tar -xzf /backup/etc-opennms.tar.gz -C / && \
-sudo tar -xzf /backup/var-lib-opennms.tar.gz -C / && \
-sudo tar -xzf /backup/usr-share-java-opennms.tar.gz -C
+sudo tar -xzf /tmp/opennms.tar.gz -C / && \
+sudo tar -xzf /tmp/etc-opennms.tar.gz -C / && \
+sudo tar -xzf /tmp/var-lib-opennms.tar.gz -C / && \
+sudo tar -xzf /tmp/usr-share-java-opennms.tar.gz -C
 ----
 
 .Create OpenNMS systemd unit
@@ -30,40 +30,10 @@ sudo systemctl daemon-reload
 sudo apt -y install postgresql
 ----
 
-.Create PostgreSQL Database and User
-[source, console]
-----
-sudo -u postgres createuser -P opennms
-sudo -u postgres createdb -O opennms opennms
-sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
-----
-
 .Restore OpenNMS Database
 [source, console]
 ----
-sudo runuser -l postgres -c 'pg_restore -Fc -h localhost -p 5432 -U opennms -d opennms /backup/opennms_postgres.dmp'
-----
-
-NOTE: The following errors can appear while restoring the database.
-The `install -dis` command will fix it later.
-
-[source, console]
-----
-pg_restore: [archiver (db)] Error while PROCESSING TOC:
-pg_restore: [archiver (db)] Error from TOC entry 4215; 0 0 COMMENT EXTENSION plpgsql 
-pg_restore: [archiver (db)] could not execute query: ERROR:  must be owner of extension plpgsql
-    Command was: COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-pg_restore: [archiver (db)] Error from TOC entry 345; 1255 16386 FUNCTION iplike(text, text) postgres
-pg_restore: [archiver (db)] could not execute query: ERROR:  permission denied for language c
-    Command was: CREATE FUNCTION public.iplike(i_ipaddress text, i_rule text) RETURNS boolean
-    LANGUAGE c STRICT
-    AS '/usr/lib/postgresql/10/lib/iplike.so', 'iplike';
-
-pg_restore: [archiver (db)] could not execute query: ERROR:  function public.iplike(text, text) does not exist
-    Command was: ALTER FUNCTION public.iplike(i_ipaddress text, i_rule text) OWNER TO postgres;
-
-WARNING: errors ignored on restore: 3
+sudo runuser -l postgres -c 'psql -f /tmp/opennms_postgres.dmp postgres'
 ----
 
 .Install OpenJDK

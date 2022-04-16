@@ -5,30 +5,24 @@
 sudo systemctl stop opennms
 ----
 
-.Create backup folder
-[source, console]
-----
-sudo mkdir /backup
-----
-
 .Backup OpenNMS {page-component-title} binaries, logs, RRD archives, configurations
 [source, console]
 ----
-sudo tar --exclude='usr/share/opennms/data/cache' -cvzf /backup/opennms.tar.gz /usr/share/opennms && \
-sudo tar -cvzf /backup/etc-opennms.tar.gz /etc/opennms && \
-sudo tar -cvzf /backup/var-lib-opennms.tar.gz /var/lib/opennms && \
-sudo tar -cvzf /backup/usr-share-java-opennms.tar.gz /usr/share/java/opennms
+sudo tar --exclude='usr/share/opennms/data/cache' -cvzf /tmp/opennms.tar.gz /usr/share/opennms && \
+sudo tar -cvzf /tmp/etc-opennms.tar.gz /etc/opennms && \
+sudo tar -cvzf /tmp/var-lib-opennms.tar.gz /var/lib/opennms && \
+sudo tar -cvzf /tmp/usr-share-java-opennms.tar.gz /usr/share/java/opennms
 ----
 
 .Create PostgreSQL database backup
 [source, console]
 ----
-sudo runuser -l postgres -c 'pg_dump -W -U opennms -Fc -h localhost -p 5432 -f /backup/opennms_postgres.dmp opennms'
+sudo runuser -l postgres -c 'pg_dumpall -f /tmp/opennms_postgres.dmp'
 ----
 
 . Back up OpenNMS {page-component-title} operating system user
 [source, console]
 ----
-sudo grep opennms /etc/passwd > /backup/opennms-passwd.txt
-sudo grep opennms /etc/group > /backup/opennms-group.txt
+sudo grep opennms /etc/passwd > /tmp/opennms-passwd.txt
+sudo grep opennms /etc/group > /tmp/opennms-group.txt
 ----

@@ -4,7 +4,8 @@
 This section describes a basic backup process for a default OpenNMS {page-component-title} xref:deployment:core/getting-started.adoc#getting-started-core[installation].
 OpenNMS {page-component-title} binaries, logs, RRD archives, configurations and the database will be backed up.
 
-NOTE: In this example the backup storage path is `/backup` for demonstration purposes.
+NOTE: In this example the backup storage path is `/tmp` for demonstration purposes.
+Please be aware that `/tmp` is not persisted as most operating systems will delete the content at bootup.
 
 [[backup-objectives]]
 == Objectives
@@ -16,7 +17,6 @@ NOTE: In this example the backup storage path is `/backup` for demonstration pur
 [[backup-requirements]]
 == Requirements
 
-* Linux physical server or a virtual machine running a supported xref:deployment:core/system-requirements.adoc#operating-systems-core[Linux operating system]
 * System user with administrative permissions (sudo)
 * Database password for `opennms` and `postgres` user
 
