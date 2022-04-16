@@ -19,25 +19,18 @@ Click on a marker to show the summary of the nodes it contains.
 A node's marker displays as the color associated with the most severe alarm for that node. 
 A cluster's marker displays as the color of the highest severity of the nodes the marker contains.
 
-[options="header"]
-[cols="2*"]
-|====
-| Serverity
-| Symbol
 
-| Normal
-| image::geographical-map/green.png[green marker]
+*Normal*
+image::geographical-map/severity_normal.png[width=25,height=41]
 
-| Warning
-| image::geographical-map/yellow.png[yellow marker] 
+*Warning*
+image::geographical-map/severity_warning.png[width=25,height=41]
 
-| Minor
-| image::geographical-map/orange.png[orange marker]
+*Minor*
+image::geographical-map/severity_minor.png[width=25,height=41]
 
-| Major
-| image::geographical-map/lightred.png[light red marker]
+*Major*
+image::geographical-map/severity_major.png[width=25,height=41]
 
-| Critical
-| image::geographical-map/deepred.png[dark red marker]
-
-|====
+*Critical*
+image::geographical-map/severity_critical.png[width=25,height=41]
