@@ -1,0 +1,63 @@
+[[ga-logging-introduction]]
+= Logging
+
+{page-component-title} stores logs into different files in the filesystem depending and named on the daemon that was acting on a process.
+
+For example: Logs for xref:operation:service-assurance/introduction.adoc#ga-service-assurance[service assurance checks] that are done by `pollerd` are stored in a file called `pollerd.log`.
+
+The log files can be found in `/var/log/opennms/`.
+
+----
+# ls -l /var/log/opennms/
+total 2992
+-rw-rw-r-- 1 opennms opennms    1168 Apr 16 10:26 ackd.log
+-rw-rw-r-- 1 opennms opennms    3167 Apr 16 10:26 alarmd.log
+-rw-rw-r-- 1 opennms opennms    1167 Apr 16 10:26 bsmd.log
+-rw-rw-r-- 1 opennms opennms 1745699 Apr 16 11:38 collectd.log
+-rw-rw-r-- 1 opennms opennms    1178 Apr 16 10:26 discovery.log
+-rw-rw-r-- 1 opennms opennms    1186 Apr 16 10:26 enlinkd.log
+-rw-rw-r-- 1 opennms opennms  139393 Apr 16 10:26 eventd.log
+-rw-rw-r-- 1 opennms opennms    2469 Mär 16 21:15 FilterWatcher.log
+-rw-rw-r-- 1 opennms opennms   25672 Apr 16 11:38 instrumentation.log
+-rw-rw-r-- 1 opennms opennms    1538 Apr 16 10:26 ipc.log
+-rw-rw-r-- 1 opennms opennms    1094 Apr 16 10:26 jetty-server.log
+-rw-rw-r-- 1 opennms opennms  358725 Apr 16 10:28 karaf.log
+-rw-rw-r-- 1 opennms opennms    3846 Apr 16 10:28 karafStartupMonitor.log
+-rw-rw-r-- 1 opennms opennms   85382 Apr 16 10:28 manager.log
+-rw-rw-r-- 1 opennms opennms    2059 Apr 16 10:26 notifd.log
+-rw-rw-r-- 1 opennms opennms    4107 Apr 16 10:28 perspectivepollerd.log
+-rw-rw-r-- 1 opennms opennms    3134 Apr 16 10:26 poller.log
+-rw-rw-r-- 1 opennms opennms  329854 Apr 16 10:27 provisiond.log
+-rw-rw-r-- 1 opennms opennms    1172 Apr 16 10:26 queued.log
+-rw-rw-r-- 1 opennms opennms    4900 Apr 16 10:26 reportd.log
+-rw-rw-r-- 1 opennms opennms    8830 Apr 16 10:27 rtc.log
+-rw-rw-r-- 1 opennms opennms    4422 Apr 16 10:26 statsd.log
+-rw-rw-r-- 1 opennms opennms    1206 Apr 16 10:26 telemetryd.log
+-rw-rw-r-- 1 opennms opennms    1179 Apr 16 10:26 trapd.log
+-rw-rw-r-- 1 opennms opennms    1189 Apr 16 10:26 trouble-ticketer.log
+-rw-rw-r-- 1 opennms opennms  258613 Apr 16 10:28 web.log
+----
+
+== Change logging behavior
+
+[[ga-logging-change-behavior]]
+
+{page-component-title} uses the https://logging.apache.org/log4j/[Apache Log4j] framework for managing how the logs are being written, structured or rotated.
+
+The configuration file can be found in `/etc/opennms/log4j2.xml`.
+
+Each daemon can have an individual logging level.
+
+The corresponding configuration in this file can be found in the XML tree path
+
+*configuration/loggers/root/DynamicThresholdFilter/KeyValuePair*
+
+The default logging level is `WARN`.
+But the levels can be set to `TRACE`, `INFO`, `DEBUG`, `WARN`, or `ERROR` depending on the need.
+
+For troubleshooting purposes `DEBUG` can be used. 
+By saving the changes in this file {page-component-title} needs a few seconds to apply the changes.
+The additional `DEBUG` log output is now also being written to the corresponding log file.
+
+NOTE: Don't forget to set the logging level back to `WARN` after changing it to an higher severity.
+Depending on the scale {page-component-title} can generate a lot more logs which will require more disk space.
