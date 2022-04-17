@@ -39,26 +39,44 @@
         :icon="Reporting"
         title="Resource Graphs"
       />
+      <FeatherRailItem
+        :class="{ selected: isSelected('/device-config-backup') }"
+        href="#/device-config-backup"
+        :icon="MinionProfiles"
+        title="Configuration Management"
+      />
+
+      <!-- loop plugin menu items -->
+      <FeatherRailItem
+        v-for="plugin of plugins"
+        :key="plugin.extensionId"
+        :class="{ selected: isSelected(`/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`) }"
+        :href="`#/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`"
+        :title="plugin.menuEntry"
+        :icon="UpdateUtilities"
+      />
     </template>
   </FeatherNavigationRail>
 </template>
 <script setup lang=ts>
-import { computed } from 'vue'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
 import Instances from '@featherds/icon/hardware/Instances'
+import MinionProfiles from '@featherds/icon/hardware/MinionProfiles'
 import AddNote from '@featherds/icon/action/AddNote'
 import Location from '@featherds/icon/action/Location'
 import MarkComplete from '@featherds/icon/action/MarkComplete'
 import Cloud from '@featherds/icon/action/Cloud'
 import Reporting from '@featherds/icon/action/Reporting'
+import UpdateUtilities from '@featherds/icon/action/UpdateUtilities'
 import {
   FeatherNavigationRail,
   FeatherRailItem,
 } from '@featherds/navigation-rail'
+import { Plugin } from '@/types'
 
 const store = useStore()
 const route = useRoute()
+const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
 const isAdmin = computed(() => store.getters['authModule/isAdmin'])
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRailOpen.value)

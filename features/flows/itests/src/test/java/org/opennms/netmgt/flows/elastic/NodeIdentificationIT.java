@@ -109,7 +109,9 @@ public class NodeIdentificationIT {
     public void testSomething() throws InterruptedException {
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> Collections.emptyList(), FilterService.NOOP);
         final DocumentEnricher documentEnricher = new DocumentEnricher(
-                new MetricRegistry(), databasePopulator.getNodeDao(), interfaceToNodeCache, sessionUtils, classificationEngine,
+                new MetricRegistry(),
+                databasePopulator.getNodeDao(), databasePopulator.getIpInterfaceDao(),
+                interfaceToNodeCache, sessionUtils, classificationEngine,
                 new CacheConfigBuilder()
                         .withName("flows.node")
                         .withMaximumSize(1000)

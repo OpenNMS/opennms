@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,6 +40,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
 import static org.opennms.core.test.OnmsAssert.assertThrowsException;
+import static org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +54,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -101,7 +105,6 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     private final static String SCHEMA_NAME_EVENTD = "eventd";
     private final static String SCHEMA_NAME_PROPERTIES = "propertiesTest";
     private final static String SCHEMA_NAME_GRAPHML = "org.opennms.netmgt.graph.provider.graphml";
-    private final static String CONFIG_ID = "default";
     private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
 
     private DataSource dataSource;
@@ -138,9 +141,9 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         db.watch(connection);
         cmSpy = spy(cm);
         assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROVISIOND).isEmpty());
-        assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isEmpty());
+        assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, DEFAULT_CONFIG_ID).isEmpty());
         assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_EVENTD).isEmpty());
-        assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isEmpty());
+        assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, DEFAULT_CONFIG_ID).isEmpty());
         assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_GRAPHML).isEmpty());
         assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_GRAPHML, "a").isEmpty());
         assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_GRAPHML, "b").isEmpty());
@@ -179,7 +182,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             verify(cmSpy, times(5)).registerConfigDefinition(anyString(), any());
 
             // check if CM was called for config
-            verify(cmSpy).registerConfiguration(eq(SCHEMA_NAME_PROVISIOND), eq(CONFIG_ID), any());
+            verify(cmSpy).registerConfiguration(eq(SCHEMA_NAME_PROVISIOND), eq(DEFAULT_CONFIG_ID), any());
 
             // check if liquibase table names where set correctly
             checkIfTableExists(TABLE_NAME_DATABASECHANGELOG);
@@ -187,18 +190,18 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
             // check for the data itself
             assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROVISIOND).isPresent());
-            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent());
+            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, DEFAULT_CONFIG_ID).isPresent());
             assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_EVENTD).isPresent());
-            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent());
+            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, DEFAULT_CONFIG_ID).isPresent());
 
             // check if CM was called for schema
             verify(cmSpy, times(6)).changeConfigDefinition(anyString(), any(ConfigDefinition.class));
 
             // check if xml file was moved into archive folder
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"))); // should be gone since we moved the file
-            assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_EVENTD + "-configuration.xml")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive", SCHEMA_NAME_EVENTD + "-configuration.xml"));
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"))); // should be gone since we moved the file
-            assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive", SCHEMA_NAME_PROVISIOND + "-configuration.xml"));
 
             // check if schema changes work properly
             Optional<ConfigDefinition> configDefinition = this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROPERTIES);
@@ -215,9 +218,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
             // check for org.opennms.features.datachoices.cfg
             Optional<JSONObject> config = this.cm.getJSONConfiguration("org.opennms.features.datachoices", "default");
-            assertEquals(7, config.get().keySet().size());
-            assertEquals(JSONObject.NULL, config.get().get("enabled"));
-            assertEquals(JSONObject.NULL, config.get().get("acknowledged-by"));
+            // only fields with a default value will auto fill
+            assertEquals(4, config.get().keySet().size());
+            // boolean in openable is impossible to be null
+            assertEquals(false, config.get().get("enabled"));
             assertEquals(BigDecimal.valueOf(86400000), config.get().get("interval"));
             assertEquals("http://stats.opennms.org/datachoices/", config.get().get("url"));
 
@@ -229,16 +233,16 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             assertTrue(config.isPresent());
             assertEquals("b", config.get().get("graphLocation"));
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_GRAPHML + "-a.cfg"))); // should be gone since we moved the file
-            assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_GRAPHML + "-a.cfg")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive", SCHEMA_NAME_GRAPHML + "-a.cfg"));
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_GRAPHML + "-b.cfg"))); // should be gone since we moved the file
-            assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_GRAPHML + "-b.cfg")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive", SCHEMA_NAME_GRAPHML + "-b.cfg"));
         } finally {
             this.db.cleanUp();
         }
     }
 
     @Test
-    public void shouldAbortInCaseOfValidationError() throws URISyntaxException, IOException {
+    public void shouldAbortInCaseOfValidationError() {
         try {
             ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class);
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
@@ -258,7 +262,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class); // will lead to Exception
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
             assertThrowsException(MigrationFailedException.class,
-                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", connection));
+                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog2.xml", connection));
         } finally {
             this.db.cleanUp();
         }
@@ -274,5 +278,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         assertTrue(result.getBoolean(1));
     }
 
-
+    private boolean checkFileWithDateTimeSuffix(String path, String fileName){
+        List<File> files = Stream.of(new File(path).listFiles())
+                .filter(file -> file.getName().matches(String.format("%s\\.[0-9]+", fileName)))
+                .collect(Collectors.toList());
+        return files.size() == 1 && files.get(0).isFile();
+    }
 }

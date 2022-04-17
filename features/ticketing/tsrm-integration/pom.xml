@@ -15,18 +15,6 @@
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-codegen-plugin</artifactId>
 				<version>${cxfVersion}</version>
-                                <dependencies>
-                                   <dependency>
-                                      <groupId>com.sun.xml.bind</groupId>
-                                      <artifactId>jaxb-impl</artifactId>
-                                      <version>2.2.11</version>
-                                   </dependency>
-                                   <dependency>
-                                      <groupId>com.sun.xml.bind</groupId>
-                                      <artifactId>jaxb-xjc</artifactId>
-                                      <version>2.2.11</version>
-                                   </dependency>
-                                </dependencies>
 				<executions>
 					<execution>
 						<id>generate-sources</id>
@@ -142,10 +130,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.opennms.core.test-api</groupId>
 			<artifactId>org.opennms.core.test-api.services</artifactId>

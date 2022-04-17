@@ -49,7 +49,8 @@ class CallbackManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(CallbackManager.class);
 
-    void registerCallbacks(ConfigurationAdmin configurationAdmin, ConfigurationManagerService cm,
+    void registerCallbacks(ConfigurationAdmin configurationAdmin,
+                           ConfigurationManagerService cm,
                            CmPersistenceManager cmPersistenceManager) {
 
         // single instance services:

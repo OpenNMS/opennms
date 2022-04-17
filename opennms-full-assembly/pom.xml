@@ -182,7 +182,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin> 
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -277,7 +277,7 @@
                 <artifactItem>
                   <groupId>io.hawt</groupId>
                   <artifactId>hawtio-default</artifactId>
-                  <version>${hawtioVersion}</version>
+                  <version>${hawtio.version}</version>
                   <type>war</type>
                 </artifactItem>
               </artifactItems>
@@ -299,7 +299,7 @@
             </goals>
             <configuration>
               <descriptors>
-                <!-- 
+                <!--
                   All of these feature files need to be added to the featuresRepositories parameter in the
                   org.apache.karaf.features.cfg file so that the features are available to the container.
                 -->
@@ -491,6 +491,7 @@
                 <feature>opennms-dao</feature>
                 <feature>opennms-events-api</feature>
                 <feature>opennms-events-commands</feature>
+                <feature>opennms-events-collector</feature>
                 <feature>opennms-health</feature>
                 <feature>opennms-health-rest</feature>
                 <feature>opennms-icmp-api</feature>
@@ -615,6 +616,13 @@
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
+                <!-- Lots of deviceconfig features -->
+                <feature>opennms-deviceconfig-rest</feature>
+                <feature>opennms-deviceconfig-sink</feature>
+                <feature>opennms-deviceconfig-sink-consumer</feature>
+                <feature>opennms-deviceconfig-service</feature>
+                <feature>opennms-deviceconfig-monitor</feature>
+
               </features>
               <repository>${project.build.directory}/opennms-repo</repository>
             </configuration>
@@ -670,34 +678,34 @@
           </fileSets>
         </configuration>
       </plugin>
-      <plugin> 
-        <artifactId>maven-clean-plugin</artifactId> 
-        <executions> 
-          <execution> 
-            <id>cleanup-after-integration-tests</id> 
-            <phase>post-integration-test</phase> 
-            <goals> 
-              <goal>clean</goal> 
-            </goals> 
-            <configuration> 
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>cleanup-after-integration-tests</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
               <excludeDefaultDirectories>true</excludeDefaultDirectories>
-              <filesets> 
-                <fileset> 
+              <filesets>
+                <fileset>
                   <directory>${project.build.directory}/opennms-repo</directory>
-                </fileset> 
-                <fileset> 
+                </fileset>
+                <fileset>
                   <directory>${project.build.directory}/experimental-repo</directory>
-                </fileset> 
-                <fileset> 
+                </fileset>
+                <fileset>
                   <directory>${project.build.directory}/minion-core-repo</directory>
-                </fileset> 
-                <fileset> 
+                </fileset>
+                <fileset>
                   <directory>${project.build.directory}/minion-default-repo</directory>
-                </fileset> 
-              </filesets> 
-            </configuration> 
-          </execution> 
-        </executions> 
+                </fileset>
+              </filesets>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -721,6 +729,10 @@
         <configuration>
           <skip>true</skip>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
       </plugin>
     </plugins>
 
@@ -934,7 +946,7 @@
     <dependency>
       <groupId>io.hawt</groupId>
       <artifactId>hawtio-default</artifactId>
-      <version>${hawtioVersion}</version>
+      <version>${hawtio.version}</version>
       <type>war</type>
     </dependency>
 
@@ -1119,47 +1131,28 @@
     </dependency>
   </dependencies>
 
-  <!-- 
-    You need to have all Maven repos here that contain artifacts that you need installed
-    into the Karaf system folder.
+  <!--
+    In theory, we may need all repositories to be defined here.
+    In practice, almost everything is in the reactor.
   -->
-  <pluginRepositories>
-    <pluginRepository>
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>https://maven.opennms.org/content/groups/opennms.org-release/</url>
-    </pluginRepository>
-  </pluginRepositories>
   <repositories>
     <repository>
       <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
       <url>https://maven.opennms.org/content/groups/opennms.org-release/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
+    <!-- Required for OIA snapshots -->
     <repository>
-      <snapshots><enabled>true</enabled></snapshots>
-      <releases><enabled>false</enabled></releases>
-      <id>opennms-snapshots</id>
-      <name>OpenNMS Snapshot Maven Repository</name>
-      <url>https://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
-    </repository>
-    <repository>
-       <id>vaadin-addons</id>
-       <url>https://maven.opennms.org/content/repositories/vaadin-addons/</url>
-       <snapshots><enabled>false</enabled></snapshots>
-       <releases><enabled>true</enabled></releases>
-    </repository>
-    <repository>
-        <id>sonatype.org-snapshot</id>
-        <name>Sonatype OSS Snapshots Repository</name>
-        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        <releases><enabled>false</enabled></releases>
-        <snapshots><enabled>true</enabled></snapshots>
-    </repository>
-    <repository>
-      <id>sonatype-public-repo</id>
-      <name>Sonatype Public Maven Repository</name>
-      <url>https://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
+      <id>sonatype.org-snapshot</id>
+      <url>https://maven.opennms.org/content/groups/sonatype.org-snapshot/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
   </repositories>
 </project>

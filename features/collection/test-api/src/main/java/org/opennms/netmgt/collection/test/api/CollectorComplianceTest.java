@@ -203,7 +203,7 @@ public abstract class CollectorComplianceTest {
     }
 
     private ServiceCollector getCollector() {
-        return serviceCollectorRegistry.getCollectorByClassName(collectorClass.getCanonicalName());
+        return serviceCollectorRegistry.getCollectorFutureByClassName(collectorClass.getCanonicalName()).getNow(null);
     }
 
     private ServiceCollector getNewCollector() {

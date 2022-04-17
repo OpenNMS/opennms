@@ -38,12 +38,6 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface ServiceMonitorRegistry {
 
-    /**
-     * @deprecated use {@link #getMonitorFutureByClassName(String)} instead.
-     */
-    @Deprecated
-    ServiceMonitor getMonitorByClassName(String className);
-
     CompletableFuture<ServiceMonitor> getMonitorFutureByClassName(String className);
 
     Set<String> getMonitorClassNames();

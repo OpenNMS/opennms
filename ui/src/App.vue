@@ -21,7 +21,6 @@
 </template>
   
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Menubar from './components/Layout/Menubar.vue'
@@ -36,6 +35,7 @@ const maxWidth = computed(() => navRailOpen.value ? '223px' : '0px')
 onMounted(() => {
   store.dispatch('authModule/getWhoAmI')
   store.dispatch('infoModule/getInfo')
+  store.dispatch('pluginModule/getPlugins')
 })
 </script>
   

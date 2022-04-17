@@ -18,7 +18,6 @@
 </template>
     
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
@@ -26,7 +25,6 @@ import LightDarkMode from '@featherds/icon/action/LightDarkMode'
 import Logo from '@/assets/Logo.vue'
 import Search from './Search.vue'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
 
 const store = useStore()
 const route = useRoute()
@@ -69,7 +67,7 @@ onMounted(async () => {
 @import "@featherds/styles/themes/variables";
 .return-btn {
   background: var($secondary-variant);
-  color: var($primary-text-on-color);
+  color: var($primary-text-on-color) !important;
   margin-right: 20px;
 }
 </style>

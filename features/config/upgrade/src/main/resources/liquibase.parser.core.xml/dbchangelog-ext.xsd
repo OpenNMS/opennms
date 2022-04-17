@@ -8,6 +8,7 @@
     <xsd:element name="registerSchema">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
+            <xsd:attribute name="allowMultiple" type="xsd:boolean" use="optional"/>
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="importSchemaFromXsd">
@@ -51,6 +52,7 @@
     <xsd:element name="importConfig">
         <xsd:complexType>
             <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
+            <xsd:attribute name="configId" type="xsd:string" use="optional"/>
             <xsd:attribute name="filePath" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>

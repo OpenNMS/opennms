@@ -43,6 +43,9 @@ public class NodeDocument {
     @SerializedName("node_id")
     private Integer nodeId;
 
+    @SerializedName("interface_id")
+    private Integer interfaceId;
+
     @SerializedName("categories")
     private List<String> categories = new LinkedList<>();
 
@@ -68,6 +71,14 @@ public class NodeDocument {
 
     public void setNodeId(Integer nodeId) {
         this.nodeId = nodeId;
+    }
+
+    public Integer getInterfaceId() {
+        return this.interfaceId;
+    }
+
+    public void setInterfaceId(final Integer interfaceId) {
+        this.interfaceId = interfaceId;
     }
 
     public List<String> getCategories() {

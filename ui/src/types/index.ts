@@ -207,6 +207,9 @@ export interface QueryParameters {
   _s?: string
   orderBy?: string
   order?: SORT
+  search?: string
+  groupBy?: string
+  groupByValue?: string
   [x: string]: any
 }
 
@@ -242,6 +245,11 @@ export interface NodeAvailability {
   }[]
   'service-count': number
   'service-down-count': number
+}
+
+export interface FileEditorResponseLog {
+  success: boolean
+  msg: string
 }
 
 export interface BreadCrumb {
@@ -287,11 +295,6 @@ export interface WhoAmIResponse {
   id: string
   internal: boolean
   roles: string[]
-}
-
-export interface FileEditorResponseLog {
-  success: boolean
-  msg: string
 }
 
 export interface AppInfo {
@@ -446,4 +449,17 @@ export interface Expression {
   consolidate: (metrics: GraphMetricsResponse) => any
   functionName: string
   metricName: string
+}
+
+export interface Plugin {
+  extensionId: string
+  menuEntry: string
+  moduleFileName: string
+  resourceRootPath: string
+}
+
+export interface Toast {
+  basic: string
+  detail: string
+  hasErrors: boolean
 }

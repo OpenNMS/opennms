@@ -47,7 +47,6 @@
     <module>rancid</module>
     <module>servlet</module>
     <module>smack</module>
-    <module>smslib</module>
     <module>snmp4j</module>
     <module>snmp4j-agent</module>
     <module>snmp</module>
@@ -57,7 +56,6 @@
     <module>spring-security</module>
     <module>spring-test</module>
     <module>spring-web</module>
-    <module>tracker</module>
     <module>twitter4j</module>
     <module>jcifs-shaded</module>
   </modules>

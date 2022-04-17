@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 public class OpenAPIConfigHelper {
@@ -61,12 +60,12 @@ public class OpenAPIConfigHelper {
             var key = entry.getKey();
             var schema = entry.getValue();
             if (!configJsonObj.has(key)) {
-                fillSingleValue(key, configJsonObj, schema, openapi);
+                fillSingleValue(key, configJsonObj, schema, openapi, true);
             } else {
                 Object property = configJsonObj.get(key);
                 if (property instanceof JSONObject) {
                     JSONObject object = (JSONObject) property;
-                    fillSingleValue(key, object, schema, openapi);
+                    fillSingleValue(key, object, schema, openapi, false);
                 } else if (property instanceof JSONArray) {
                     for (var item : (JSONArray) property) {
                         if (item instanceof JSONObject && schema instanceof ArraySchema) {
@@ -79,21 +78,35 @@ public class OpenAPIConfigHelper {
         }
     }
 
-    private static void fillSingleValue(String key, final JSONObject configJsonObj, Schema<?> propertySchema, OpenAPI openapi) {
+    private static void fillSingleValue(String key, final JSONObject configJsonObj, Schema<?> propertySchema, OpenAPI openapi, boolean isNewObject) {
         if (propertySchema instanceof ArraySchema) {
-            configJsonObj.put(key, new ArrayList<>(0));
-        } else if (propertySchema instanceof StringSchema || propertySchema instanceof NumberSchema
-                || propertySchema instanceof IntegerSchema || propertySchema instanceof DateSchema
-                || propertySchema instanceof DateTimeSchema || propertySchema instanceof BooleanSchema) {
-            configJsonObj.put(key, propertySchema.getDefault() == null ? JSONObject.NULL : propertySchema.getDefault());
+            configJsonObj.put(key, new JSONArray());
+        } else if (isSimpleDataType(propertySchema)) {
+            // only fill with default value, give up fill null values. It may cause validation exception
+            if(propertySchema.getDefault() != null) {
+                configJsonObj.put(key, propertySchema.getDefault());
+            }
         } else if (propertySchema instanceof Schema && propertySchema.get$ref() != null) {
             String schemaName = propertySchema.get$ref().replaceAll("^" + OpenAPIBuilder.SCHEMA_REF_TAG, "");
-
-            JSONObject newObject = new JSONObject();
-            configJsonObj.put(key, newObject);
-            fillWithDefaultValue(openapi, schemaName, newObject);
+            if(isNewObject)
+            {
+                JSONObject children = new JSONObject();
+                fillWithDefaultValue(openapi, schemaName, children);
+                // only add if children is not empty
+                if (children.length() > 0) {
+                    configJsonObj.put(key, children);
+                }
+            } else {
+                fillWithDefaultValue(openapi, schemaName, configJsonObj);
+            }
         } else {
             configJsonObj.put(key, (Object) null);
         }
+    }
+
+    private static boolean isSimpleDataType(Schema schema){
+        return (schema instanceof StringSchema || schema instanceof NumberSchema
+                || schema instanceof IntegerSchema || schema instanceof DateSchema
+                || schema instanceof DateTimeSchema || schema instanceof BooleanSchema);
     }
 }

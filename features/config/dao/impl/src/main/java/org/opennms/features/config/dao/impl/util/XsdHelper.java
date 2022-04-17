@@ -87,8 +87,21 @@ public class XsdHelper {
      * @param topLevelElement
      * @return ConfigDefinition
      */
-    public static ConfigDefinition buildConfigDefinition(String configName, String xsdName, String topLevelElement, String basePath) {
-        ConfigDefinition def = new ConfigDefinition(configName);
+    public static ConfigDefinition buildConfigDefinition(String configName, String xsdName, String topLevelElement, String basePath){
+        return buildConfigDefinition(configName, xsdName, topLevelElement, basePath, false);
+    }
+
+    /**
+     * It help to convert xsd to openapi and prepare all metadata needed
+     * @param configName
+     * @param xsdName
+     * @param topLevelElement
+     * @param basePath
+     * @param allowMultiple
+     * @return ConfigDefinition
+     */
+    public static ConfigDefinition buildConfigDefinition(String configName, String xsdName, String topLevelElement, String basePath, boolean allowMultiple) {
+        ConfigDefinition def = new ConfigDefinition(configName, allowMultiple);
         XsdModelConverter xsdConverter = XsdHelper.getXsdModelConverter(xsdName);
         ConfigItem item = xsdConverter.convert(topLevelElement);
 

@@ -24,7 +24,7 @@ See the release notes for information about platform support changes, including 
 | RHEL                    | {compatible-rhel7} +
                             {compatible-rhel8}
 | CentOS                  | {compatible-centos7} +
-                            {compatible-centos8}
+                            {compatible-centos-stream}
 ifeval::["{page-component-title}" == "Horizon"]
 | Debian                  | {compatible-debian}
 | Ubuntu                  | {compatible-ubuntu}

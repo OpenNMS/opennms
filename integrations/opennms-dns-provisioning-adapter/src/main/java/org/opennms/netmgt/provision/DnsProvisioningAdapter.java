@@ -226,7 +226,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             	return;
             }
             DnsRecord record = new DnsRecord(node,m_level);
-            LOG.debug("doUpdate: DnsRecord: hostname: {} zone: {} ip address {}", record.getIp().getHostAddress(), record.getHostname(), record.getZone());
+            LOG.debug("doUpdate: DnsRecord: hostname: {} zone: {} ip address {}", record.getHostname(), record.getZone(), record.getIp().getHostAddress());
             DnsRecord oldRecord = m_nodeDnsRecordMap.get(Integer.valueOf(node.getId()));
 
             Update update = new Update(Name.fromString(record.getZone()));

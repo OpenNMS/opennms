@@ -47,8 +47,8 @@ import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.SinglePingResponseCallback;
 import org.opennms.netmgt.icmp.jni.JniPinger;
-import org.opennms.protocols.rt.IDBasedRequestLocator;
-import org.opennms.protocols.rt.RequestTracker;
+import org.opennms.core.tracker.IDBasedRequestLocator;
+import org.opennms.core.tracker.RequestTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

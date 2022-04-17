@@ -135,8 +135,12 @@ public class FilesystemPermissionValidator {
         final List<Path> failures;
         try (final Stream<Path> stream = Files.walk(dirPath, FileVisitOption.FOLLOW_LINKS)) {
             failures = stream
-                    .filter(file -> ! file.toUri().toString().contains("/.git/"))
                     .filter(file -> {
+                        final var uri = file.toUri().toString();
+                        if (uri.contains("/.git/")) return false;
+                        if (uri.contains("/lost+found")) return false;
+                        return true;
+                    }).filter(file -> {
                         try {
                             validateFile(user, file);
                         } catch (final FilesystemPermissionException e) {

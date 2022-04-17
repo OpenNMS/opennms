@@ -19,7 +19,6 @@
 </template>
   
 <script setup lang=ts>
-import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import {
@@ -41,7 +40,3 @@ const selectResource = (name: string) => {
   store.dispatch('graphModule/getPreFabGraphs', name)
 }
 </script>
-  
-<style scoped lang="scss">
-</style>
-  

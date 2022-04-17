@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -44,8 +45,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.opennms.core.network.IPValidationException;
 import org.opennms.netmgt.model.PrimaryType;
-
+import org.opennms.core.utils.InetAddressUtils;
 
 /**
  * <p>RequisitionNode class.</p>
@@ -144,7 +146,7 @@ public class RequisitionNode {
      */
     public RequisitionInterface getInterface(String ipAddress) {
         for (RequisitionInterface iface : m_interfaces) {
-            if (iface.getIpAddr().equals(ipAddress)) {
+            if (InetAddressUtils.str(iface.getIpAddr()).equals(ipAddress)) {
                 return iface;
             }
         }
@@ -169,7 +171,7 @@ public class RequisitionNode {
         final Iterator<RequisitionInterface> i = m_interfaces.iterator();
         while (i.hasNext()) {
             final RequisitionInterface iface = i.next();
-            if (iface.getIpAddr().equals(ipAddress)) {
+            if (InetAddressUtils.str(iface.getIpAddr()).equals(ipAddress)) {
                 i.remove();
                 return true;
             }
@@ -183,7 +185,7 @@ public class RequisitionNode {
      * @param iface a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
      */
     public void putInterface(RequisitionInterface iface) {
-        deleteInterface(iface.getIpAddr());
+        deleteInterface(iface.getIpAddr() == null ? null : InetAddressUtils.str(iface.getIpAddr()));
         m_interfaces.add(0, iface);
     }
 
@@ -532,6 +534,7 @@ public class RequisitionNode {
     }
 
     public void validate() throws ValidationException {
+        //this.pruneInterfaces();
         if (m_nodeLabel == null) {
             throw new ValidationException("Requisition node 'node-label' is a required attribute!");
         }
@@ -542,8 +545,14 @@ public class RequisitionNode {
             throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains invalid characters. ('/' is forbidden.)");
         }
         if (m_interfaces != null) {
-            for (final RequisitionInterface iface : m_interfaces) {
-                iface.validate();
+            Iterator<RequisitionInterface> iter = m_interfaces.iterator();
+            while (iter.hasNext()) {
+                try {
+                    iter.next().validate(this);
+                }
+                catch (IPValidationException ive) {
+                    iter.remove();
+                }
             }
             // there can be only one primary interface per node
             if(m_interfaces.stream().filter(iface -> PrimaryType.PRIMARY == iface.m_snmpPrimary).count() > 1) {
@@ -601,5 +610,4 @@ public class RequisitionNode {
                 + ", parentNodeLabel=" + m_parentNodeLabel
                 + ", location=" + m_location + "]";
     }
-
 }

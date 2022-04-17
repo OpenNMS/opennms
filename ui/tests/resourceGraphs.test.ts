@@ -1,7 +1,6 @@
 import { PrintStatement } from '@/types'
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
-import { tokenizeStatement, TOKENS, formatStatement } from '../src/components/Resources/utils/LegendFormatter'
+import { assert, test } from 'vitest'
+import { tokenizeStatement, TOKENS, formatStatement } from '@/components/Resources/utils/LegendFormatter'
 
 test('Tokenizing a statement', () => {
   let tokens = tokenizeStatement('Max  : %8.2lf %s\\n')
@@ -61,5 +60,3 @@ test('Format statement', () => {
   assert.equal(renderer.texts[1].trim(), '1.02k')
   assert.equal(renderer.texts[4], '\n')
 })
-
-test.run()

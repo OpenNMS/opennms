@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,6 @@
 // Generated on: 2009.01.29 at 01:15:48 PM EST 
 //
 
-
 package org.opennms.netmgt.provision.persist.requisition;
 
 import java.util.ArrayList;
@@ -41,8 +40,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.net.InetAddress;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -53,10 +55,14 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.opennms.core.network.IPAddress;
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.PrimaryTypeAdapter;
-
+import org.opennms.core.network.IPValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>RequisitionInterface class.</p>
@@ -65,6 +71,8 @@ import org.opennms.netmgt.model.PrimaryTypeAdapter;
 @XmlType(name="", propOrder = { "m_monitoredServices", "m_categories", "m_metaData" })
 @XmlRootElement(name = "interface")
 public class RequisitionInterface implements Comparable<RequisitionInterface> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RequisitionInterface.class);
 
     //TODO Change these to be sets so that we don't have to verify duplicates in the lists
     @XmlElement(name="monitored-service")
@@ -78,9 +86,9 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
 
     @XmlAttribute(name="descr")
     protected String m_description;
-    
+
     @XmlAttribute(name="ip-addr", required=true)
-    protected String m_ipAddress;
+    protected String m_ipAddressStr;
     
     @XmlAttribute(name="managed")
     protected Boolean m_isManaged;
@@ -90,6 +98,8 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     
     @XmlAttribute(name="status")
     protected Integer m_status;
+
+    protected InetAddress m_ipAddress;
 
     /**
      * <p>getMonitoredServiceCount</p>
@@ -146,7 +156,6 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
                     return svc;
                 }
             }
-            
         }
         return null;
     }
@@ -307,7 +316,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getIpAddr() {
+    public InetAddress getIpAddr() {
         return m_ipAddress;
     }
 
@@ -318,9 +327,10 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      */
     public void setIpAddr(String value) {
         try {
-            m_ipAddress = InetAddressUtils.toIpAddrString(InetAddressUtils.getInetAddress(value));
+            m_ipAddress = InetAddressUtils.getInetAddress(value);
+            m_ipAddressStr = value;
         } catch (Throwable e) {
-            throw new IllegalArgumentException("Invalid IP address specified", e);
+            throw new IllegalArgumentException(String.format("Invalid IP address specified: %s", value), e);
         }
     }
 
@@ -395,17 +405,39 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
         m_status = value;
     }
 
-    public void validate() throws ValidationException {
+    public void validate(RequisitionNode node) throws ValidationException {
         if (m_ipAddress == null) {
-            throw new ValidationException("Requisition interface 'ip-addr' is a required attribute!");
+            if (m_ipAddressStr != null) {
+                try {
+                    m_ipAddress = new IPAddress(m_ipAddressStr).toInetAddress();
+                } catch (IllegalArgumentException iae) {
+                    LOG.warn(String.format("Invalid IP address %s", m_ipAddressStr));
+                    throw new IPValidationException(String.format("Invalid IP address %s", m_ipAddressStr), iae);
+                }
+            }
+            else {
+                throw new ValidationException("Requisition interface 'ip-addr' is a required attribute!");
+            }
         }
+
         if (m_monitoredServices != null) {
             Set<String> serviceNameSet = new HashSet<>();
             for (final RequisitionMonitoredService svc : m_monitoredServices) {
                 svc.validate();
                 if (!serviceNameSet.add(svc.getServiceName())) {
-                    throw new ValidationException("Duplicate service name: " + svc.getServiceName());
+                    throw new ValidationException(String.format("Duplicate service name: %s", svc.getServiceName()));
                 }
+            }
+        }
+
+        // there can be only one primary interface per node
+        if (m_snmpPrimary == PrimaryType.PRIMARY) {
+            long otherPrimaryInterfaces = node.getInterfaces().stream()
+                    .filter(iface -> PrimaryType.PRIMARY == iface.getSnmpPrimary())
+                    .filter(iface -> !iface.getIpAddr().equals(this.getIpAddr()))
+                    .count();
+            if (otherPrimaryInterfaces > 0) {
+                throw new ValidationException("Node foreign ID (" + node.getForeignId() + ") contains multiple primary interfaces. Maximum one is allowed.");
             }
         }
     }

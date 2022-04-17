@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,13 +40,16 @@ import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 /** Used in changelog.xml */
 @DatabaseChange(name = "registerSchema", description = "Registers a new schema", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class RegisterSchema extends AbstractCmChange {
 
     private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
 
-    protected String id;
+    private String id;
+    private Boolean allowMultiple = false;
 
     @Override
     public ValidationErrors validate(CmDatabase database, ValidationErrors validationErrors) {
@@ -66,7 +69,7 @@ public class RegisterSchema extends AbstractCmChange {
                     LOG.info("Registering new schema with schemaName={}",
                             this.id);
                     try {
-                        ConfigDefinition definition = new ConfigDefinition(this.id);
+                        ConfigDefinition definition = new ConfigDefinition(this.id, this.allowMultiple);
                         m.registerConfigDefinition(id, definition);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -81,6 +84,14 @@ public class RegisterSchema extends AbstractCmChange {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Boolean getAllowMultiple() {
+        return defaultIfNull(this.allowMultiple, false);
+    }
+
+    public void setAllowMultiple(Boolean allowMultiple) {
+        this.allowMultiple = defaultIfNull(allowMultiple, false);
     }
 }
 
