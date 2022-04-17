@@ -28,22 +28,38 @@
 
 package org.opennms.smoketest.rest;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContexts;
+import org.junit.*;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 
-import io.restassured.RestAssured;
 import org.opennms.smoketest.stacks.SSLMode;
 import org.opennms.smoketest.stacks.StackModel;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
+
+import javax.net.ssl.SSLContext;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 
 
 public class HttpsIT {
 
     @ClassRule
-    public static final OpenNMSStack STACK =  OpenNMSStack.withModel(StackModel.newBuilder()
+    public static final OpenNMSStack STACK = OpenNMSStack.withModel(StackModel.newBuilder()
             .withOpenNMS(OpenNMSProfile.newBuilder()
                     .withFile("jetty.keystore", "etc/jetty.keystore")
                     .withFile("jetty.xml", "etc/jetty.xml")
@@ -52,27 +68,42 @@ public class HttpsIT {
             .withSSLStrategy(SSLMode.SSL)
             .build());
 
-    @Before
-    public void setUp() {
-        // Always reset the session before the test since we expect no existing session/cookies to be present
-        RestAssured.reset();
-        RestAssured.baseURI = "https://" + STACK.opennms().getHost();
-        RestAssured.port = STACK.opennms().getSSLPort();
-        RestAssured.basePath = "/opennms/";
-    }
-
-    @After
-    public void tearDown() {
-        RestAssured.reset();
-    }
-
+    /**
+     * This test will open the page over HTTPS accepting any self-signed certificate which will allow us to verify the page is opened.
+     */
     @Test
-    public void verifyOpenNmsSSL() {
-        // Verify header exists by default, if not authorized
-        RestAssured.given()
-                .get()
-                .then().log().all();
+    public void sslAcceptingAllCertificates() {
+        ResponseEntity<String> response = null;
+        String urlOverHttps = "https://" + STACK.opennms().getHost() + ":" + STACK.opennms().getSSLPort();
+        try {
+            TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
+            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
+                    NoopHostnameVerifier.INSTANCE);
 
-        //statusCode(200);
+            Registry<ConnectionSocketFactory> socketFactoryRegistry =
+                    RegistryBuilder.<ConnectionSocketFactory>create()
+                            .register("https", sslsf)
+                            .register("http", new PlainConnectionSocketFactory())
+                            .build();
+
+            BasicHttpClientConnectionManager connectionManager =
+                    new BasicHttpClientConnectionManager(socketFactoryRegistry);
+            CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslsf)
+                    .setConnectionManager(connectionManager).build();
+
+            HttpComponentsClientHttpRequestFactory requestFactory =
+                    new HttpComponentsClientHttpRequestFactory(httpClient);
+            response = new RestTemplate(requestFactory)
+                    .exchange(urlOverHttps, HttpMethod.GET, null, String.class);
+
+
+        } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
+            e.printStackTrace();
+        }
+
+        Assert.assertEquals(response.getStatusCode().value(), 200);
+        Assert.assertTrue(response.getBody().contains("Username"));
+        Assert.assertTrue(response.getBody().contains("Password"));
     }
 }
