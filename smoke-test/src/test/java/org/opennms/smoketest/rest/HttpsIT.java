@@ -42,11 +42,14 @@ import org.apache.http.ssl.SSLContexts;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 
 import org.opennms.smoketest.stacks.SSLMode;
 import org.opennms.smoketest.stacks.StackModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -60,12 +63,14 @@ import java.security.NoSuchAlgorithmException;
 
 public class HttpsIT {
 
+    private static final Logger LOG = LoggerFactory.getLogger(OpenNMSContainer.class);
+
     @ClassRule
     public static final OpenNMSStack STACK = OpenNMSStack.withModel(StackModel.newBuilder()
             .withOpenNMS(OpenNMSProfile.newBuilder()
                     .withFile("jetty.keystore", "etc/jetty.keystore")
                     .withFile("jetty.xml", "etc/jetty.xml")
-                    .withFile("opennms.properties", "etc/opennms.properties")
+                    .withFile("https.properties", "etc/opennms.properties.d/https.properties")
                     .build())
             .withSSLStrategy(SSLMode.SSL)
             .build());
@@ -102,7 +107,7 @@ public class HttpsIT {
 
 
         } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
-            e.printStackTrace();
+            LOG.error(e.toString());
         }
 
         Assert.assertEquals(response.getStatusCode().value(), 200);
