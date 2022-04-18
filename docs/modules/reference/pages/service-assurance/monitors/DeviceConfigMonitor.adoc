@@ -35,7 +35,7 @@ This monitor tries to retrieve configuration from the network device and shows t
 
 | schedule
 | Schedule to fetch configuration, in the form of cron expression.
-| 0 0 0 * * ?
+| `0 0 0 * * ?`
 The default cron expression runs every 24 hrs at 12:00 a.m.
 
 
