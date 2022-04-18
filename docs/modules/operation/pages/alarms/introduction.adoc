@@ -8,6 +8,7 @@
 While OpenNMS events (or messages) carry problem state attributes such as acknowledgement and severity, alarms are _the_ indicator for problems in the network, (see also situations and <<bsm/introduction.adoc#ga-bsm-introduction, Business Services>>).
 
 == Single Alarm Tracking Problem States
+
 .First occurrence of a service down problem (SNMP), alarm instantiated
 image::alarms/single_alarm_1.png[]
 
