@@ -58,4 +58,4 @@ The service uses an interval of 300 seconds and a cron expression for the schedu
 The default cron expression runs every 24 hrs at 12:00 a.m. (`0 0 0 * * ?`).
 The monitor checks every 300 seconds (interval) for the next trigger time in the cron schedule.
 It retrieves the configuration only when the next trigger time matches the current time (current time must be greater than the trigger time).
-For example, if the monitor checks at 11:59, but the trigger time is 12:00 a.m., the monitor retrieves the configuration at 12:04 a.m., which is the next check interval.
+For example, if the monitor checks at 11:59 p.m., but the trigger time is 12:00 a.m., the monitor will retrieve the configuration at the next check interval at 12:04 a.m.
