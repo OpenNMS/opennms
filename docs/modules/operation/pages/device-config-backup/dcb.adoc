@@ -11,8 +11,7 @@ To manage device configuration backups, follow these steps:
 
 . Click the gear icon and choose *Configuration Management* to view a list of devices.
 +
-NOTE: If you do not see any devices, xref:operation:device-config-backup/dcb-requisition.adoc#dcb-backup[run one backup] immediately.
-Additional backups will appear according to their schedule.
+NOTE: Backups appear according to their schedule.
 
 . Click the icon in the *Last Backup Data* field to view the device’s configuration backup.
 .. In the case of backups that have failed or are in progress, no icon appears.

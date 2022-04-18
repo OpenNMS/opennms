@@ -19,7 +19,7 @@ You must configure OpenNMS to perform configuration backups before you can xref:
 
 * xref:operation:device-config-backup/ssh.adoc#backup-script[Create a backup script for each device type]
 * xref:operation:device-config-backup/configuration.adoc#tftp-port-configure[Configure TFTP port]
-* xref:operation:device-config-backup/dcb-requisition.adoc#dcb-requisition[Create a requisition], specify its metadata, and schedule it for immediate backup
+* xref:operation:device-config-backup/dcb-requisition.adoc#dcb-requisition[Create a requisition] and specify its metadata
 
 == How it works
 

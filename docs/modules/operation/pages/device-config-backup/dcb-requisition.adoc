@@ -5,6 +5,10 @@ After you have xref:operation:device-config-backup/ssh.adoc#backup-script[create
 
 To activate the device configuration backup, you must add metadata that defines the device configuration backup script you created for the node's device type, and the device's username and password.
 
+We recommend you also add metadata to overwrite the default device configuration backup schedule.
+By default, {page-component-title} fetches device configuration backups every 24 hours at 12:00 a.m. (see xref:reference:service-assurance/monitors/DeviceConfigMonitor.adoc[Device Config Monitor] for details).
+Changing the default schedule spaces out the backup for each group of nodes, rather than them all running at the same time.
+
 . Log in to OpenNMS and click the gears icon.
 . Choose *Provisioning>Manage Provisioning Requisitions*.
 . Click *Add Requisition* and enter a name for the requisition.
@@ -15,15 +19,7 @@ If you want to enable device config backup on existing nodes in a requisition, s
 .. `username`: username for the device
 .. `password`: password for the device
 .. `script-file`: name of the device configuration script for this type of device
+.. `schedule`: a cron expression to specify the time to fetch the device backup configuration (default is `0 0 0 * * ?`, every 24 hrs at 12:00 a.m.)
 . Click *Save* to save the metadata and then *Save* to save the requisition.
-
-[[dcb-backup]]
-== Run a device configuration backup
-Since no device configuration backups will appear in the UI until at least one has been collected, we recommend that you synchronize the requisition immediately.
-
-. Choose the requisition to import, and click *Synchronize*.
-. Select a scan option and click *Synchronize*.
-
-In the main menu, choose *Info>Configuration Management* to view the device configuration backup.
-
-See xref:operation:device-config-backup/dcb.adoc#dcb-manage[manage device configuration backup UI] for more information.
+. Click *Return* and click *Synchronize*.
+. Choose a scan option and click *Synchronize*.
