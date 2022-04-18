@@ -70,9 +70,10 @@ public class HttpsIT {
 
     /**
      * This test will open the page over HTTPS accepting any self-signed certificate which will allow us to verify the page is opened.
+     * Test will confirm response 200, Username and Password fields.
      */
     @Test
-    public void sslAcceptingAllCertificates() {
+    public void testHTTPSConnection() {
         ResponseEntity<String> response = null;
         String urlOverHttps = "https://" + STACK.opennms().getHost() + ":" + STACK.opennms().getSSLPort();
         try {
