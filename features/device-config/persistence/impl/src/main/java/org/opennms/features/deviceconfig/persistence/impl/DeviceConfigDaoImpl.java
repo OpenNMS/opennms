@@ -36,13 +36,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.google.common.base.Strings;
-import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.ResultTransformer;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigQueryResult;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -247,6 +246,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             lastDeviceConfig.setLastUpdated(currentTime);
             lastDeviceConfig.setLastSucceeded(currentTime);
             lastDeviceConfig.setFileName(fileName);
+            lastDeviceConfig.setStatus(DeviceConfigStatus.SUCCESS);
             saveOrUpdate(lastDeviceConfig);
             LOG.debug("Device config did not change - ipInterface: {}; service: {}; type: {}", ipInterface, serviceName, configType);
         } else if (lastDeviceConfig != null
@@ -258,6 +258,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             lastDeviceConfig.setLastUpdated(currentTime);
             lastDeviceConfig.setLastSucceeded(currentTime);
             lastDeviceConfig.setFailureReason(null);
+            lastDeviceConfig.setStatus(DeviceConfigStatus.SUCCESS);
             saveOrUpdate(lastDeviceConfig);
             LOG.info("Persisted device config - ipInterface: {}; service: {}; type: {}", ipInterface, serviceName, configType);
         } else {
@@ -272,6 +273,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             deviceConfig.setConfigType(configType);
             deviceConfig.setLastUpdated(currentTime);
             deviceConfig.setLastSucceeded(currentTime);
+            deviceConfig.setStatus(DeviceConfigStatus.SUCCESS);
             saveOrUpdate(deviceConfig);
             LOG.info("Persisted changed device config - ipInterface: {}; service: {}; type: {}", ipInterface, serviceName, configType);
         }
@@ -302,6 +304,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         deviceConfig.setFailureReason(reason);
         deviceConfig.setLastFailed(currentTime);
         deviceConfig.setLastUpdated(currentTime);
+        deviceConfig.setStatus(DeviceConfigStatus.FAILED);
         saveOrUpdate(deviceConfig);
         LOG.warn("Persisted device config backup failure - ipInterface: {}; service: {}; type: {}; reason: {}", ipInterface, serviceName, configType, reason);
     }
