@@ -39,7 +39,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 
