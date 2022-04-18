@@ -3,8 +3,9 @@
     <h1 class="title">{{ props.title }}</h1>
     <h2 class="headline">{{ props.headline }}</h2>
     <p class="body">
-      The provision daemon (provisiond) uses requisitions to track the nodes, interfaces, and services to monitor.
-      Create a requisition to enable regular synchronization with outside inventory sources. Adjust the thread pool size to improve performance.
+      An external requisition imports the nodes, interfaces, and services from outside inventory sources.
+
+      Thread pool sizes impact the performance of the provisioning subsystem.
     </p>
   </div>
 </template>

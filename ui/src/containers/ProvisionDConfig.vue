@@ -14,9 +14,9 @@ populateProvisionD(store)
     <div class="feather-col-12">
   <div class="wrapper feather-container center">
     <ConfigurationToast />
-    <ConfigurationHeader 
-      title="Configuration" 
-      headline="Provisiond" 
+    <ConfigurationHeader
+      title="Configuration"
+      headline="External Requisitions and Thread Pools"
     />
     <ConfigurationTableWrapper />
     <div class="spacer"></div>
