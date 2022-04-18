@@ -5,12 +5,6 @@ OpenNMS backs up device configuration through the xref:reference:service-assuran
 
 You must configure the <<tftp-port-configure, TFTP port>> before OpenNMS can back up device configurations.
 
-In addition, you may choose to configure the following poller options:
-
-* enable push-based device configuration backups
-* change the default backup schedule
-* retrieve/trigger device configuration backup from a Karaf shell
-
 [[tftp-port-configure]]
 == Configure TFTP Port
 
@@ -36,7 +30,7 @@ config:property-set port 69
 config:update
 ----
 
-== Enable push-based configuration upload
+== (optional) Enable push-based configuration upload
 
 Devices may also push configuration through TFTP manually whenever their configuration changes.
 This is not enabled by default; you must enable the sink for device configuration.
