@@ -13,7 +13,6 @@
         </div>
       </div>
     </div>
-    <Toast />
   </div>
 </template>
 
@@ -21,7 +20,6 @@
 import { useStore } from 'vuex'
 import DCBTable from '@/components/Device/DCBTable.vue'
 import DCBGroupFilters from '@/components/Device/DCBGroupFilters.vue'
-import Toast from '@/components/Common/Toast.vue'
 
 const store = useStore()
 
@@ -41,9 +39,6 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
 }
 :deep(.failed) {
   @include status-bar(var($error));
-}
-:deep(.inprogress) {
-  @include status-bar(var($warning));
 }
 :deep(.nobackup) {
   @include status-bar(var($secondary-variant));

@@ -83,11 +83,6 @@
 
           <FeatherSortHeader
             scope="col"
-            property="configType"
-          >Config Type</FeatherSortHeader>
-
-          <FeatherSortHeader
-            scope="col"
             property="ipAddress"
             :sort="sortStates.ipAddress"
             v-on:sort-changed="sortByColumnHandler"
@@ -143,16 +138,20 @@
             />
           </td>
           <td>
-            <router-link :to="`/node/${config.nodeId}`" target="_blank">{{ config.deviceName }}</router-link>
+            <router-link :to="`/node/${config.nodeId}`" target="_blank">
+            {{ config.deviceName }}
+              <span title="Running Configuration">
+                <FeatherIcon v-if="config.configType !== 'default'" :icon="Speed" />
+              </span>
+            </router-link>
           </td>
-          <td>{{ config.configType }}</td>
           <td>{{ config.ipAddress }}</td>
           <td>{{ config.location }}</td>
           <td class="last-backup-date pointer" @click="onLastBackupDateClick(config)">
-            <span v-date>{{ config.lastBackupDate }}</span>
-            <FeatherButton icon="View" v-if="config.lastBackupDate">
-              <FeatherIcon :icon="ViewDetails" />
-            </FeatherButton>
+            <span title="View config" v-date>{{ config.lastBackupDate }}</span>
+            <span title="View config" v-if="config.lastBackupDate">
+              <FeatherIcon :icon="ViewDetails" class="view-config" />
+            </span>
           </td>
           <td v-date>{{ config.lastUpdatedDate }}</td>
           <td>
@@ -194,6 +193,7 @@ import Download from '@featherds/icon/action/DownloadFile'
 import Backup from '@featherds/icon/action/Cycle'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
 import Compare from '@featherds/icon/action/ContentCopy'
+import Speed from './icons/Speed.vue'
 import DCBSearch from '@/components/Device/DCBSearch.vue'
 import DCBModal from './DCBModal.vue'
 import DCBModalLastBackupContent from './DCBModalLastBackupContent.vue'
@@ -356,6 +356,12 @@ onMounted(() => {
       line-height: 3.5;
       padding-left: 15px;
       text-transform: capitalize;
+    }
+
+    .view-config {
+      margin-left: 4px;
+      height: 16px;
+      width: 16px;
     }
   }
 
