@@ -12,6 +12,7 @@
       <div
         v-date
         class="history-date pointer"
+        :class="{ 'selected' : selectedConfig?.id === config.id }"
         v-for="config of defaultConfigTypeBackups"
         :key="config.id"
         @click="setSelectedConfig(config)"
@@ -38,6 +39,7 @@
             <div
               v-date
               class="history-date pointer"
+              :class="{ 'selected' : selectedConfig?.id === config.id }"
               v-for="config of defaultConfigTypeBackups"
               :key="config.id"
               @click="setSelectedConfig(config)"
@@ -57,6 +59,7 @@
             <div
               v-date
               class="history-date pointer"
+              :class="{ 'selected' : selectedConfig?.id === config.id }"
               v-for="config of otherConfigTypeBackups"
               :key="config.id"
               @click="setSelectedConfig(config)"
@@ -139,6 +142,11 @@ onMounted(() => getHistoryBackups())
     .history-date {
       @include body-small;
       color: var($primary);
+      margin-top: 5px;
+
+      &.selected {
+        font-weight: bold;
+      }
     }
   }
 }

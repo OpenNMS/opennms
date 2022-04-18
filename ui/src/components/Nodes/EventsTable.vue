@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
-import useQueryParameters from '@/hooks/useQueryParams'
+import useQueryParameters from '@/composables/useQueryParams'
 import { Event } from '@/types'
 
 const store = useStore()
