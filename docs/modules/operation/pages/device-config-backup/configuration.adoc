@@ -16,7 +16,7 @@ By default, the TFTP server uses non-privileged port 6969 on both Minion and {pa
 ssh -p 8101 admin@localhost
 ----
 
-.Conect to Karaf shell on Minion
+.Connect to Karaf shell on Minion
 [source, console]
 ----
 ssh -p 8201 admin@localhost
