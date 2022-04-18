@@ -84,6 +84,11 @@
             <artifactId>mapstruct</artifactId>
             <version>${mapstructVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Test -->
         <dependency>

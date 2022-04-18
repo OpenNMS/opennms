@@ -107,11 +107,6 @@
             <artifactId>org.opennms.features.graph.provider.topology</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.features.scv</groupId>
-            <artifactId>org.opennms.features.scv.api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!-- Test -->
         <dependency>
