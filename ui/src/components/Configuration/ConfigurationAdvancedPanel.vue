@@ -25,12 +25,7 @@
             for forced update. So when item.hint is empty, we supply an empty space which is enough
             to force FeatherInput to render the help label.
         -->
-        <FeatherInput
-          class="hint-label"
-          label="Value"
-          :hint="item.hint || ' '"
-          v-model="item.value"
-        />
+        <FeatherInput class="hint-label" label="Value" :hint="item.hint || ' '" v-model="item.value" />
         <FeatherButton icon="Delete" @click="() => deleteAdvancedOption(index)">
           <FeatherIcon class="delete-icon" :icon="Delete"></FeatherIcon>
         </FeatherButton>
@@ -88,16 +83,16 @@ const results = reactive({
 const buttonAddDisabled = computed(() => {
   const itemsLength = props.items.length
 
-  if (!itemsLength) return false; // enabled
+  if (!itemsLength) return false // enabled
 
   const { key, value } = props.items[itemsLength - 1] // last item
   return !(key.name && value) // disabled
-});
+})
 
 /**
- * Depending on which Type is selected, we have different 
+ * Depending on which Type is selected, we have different
  * keys in our Advanced Options select options. This
- * method determines which to load. This should eventually be 
+ * method determines which to load. This should eventually be
  * moved to an API solution so we don't store values locally.
  */
 const getKeysBasedOnType = (type: string, subType: string) => {
@@ -123,7 +118,7 @@ const getKeysBasedOnType = (type: string, subType: string) => {
 }
 
 /**
- * 
+ *
  * @param searchVal The Key Name to search for
  * @param index Since there are multiple search boxes, we need to know which one to generate results for.
  */
@@ -169,8 +164,8 @@ const fillAutoComplete = () => {
 
 /**
  * When you activate the advanced section, our code waits
- * for 150 milliseconds to give FeatherExpansion panel a chance to populate the DOM 
- * If FeatherAutoComplete ever includes the option to set a single value 
+ * for 150 milliseconds to give FeatherExpansion panel a chance to populate the DOM
+ * If FeatherAutoComplete ever includes the option to set a single value
  * by default to the textarea, then this can be removed.
  */
 watch(props, () => {
@@ -180,7 +175,6 @@ watch(props, () => {
     }, 150)
   }
 })
-
 </script>
 
 <style lang="scss">
@@ -235,3 +229,4 @@ watch(props, () => {
   color: var(--feather-error);
 }
 </style>
+

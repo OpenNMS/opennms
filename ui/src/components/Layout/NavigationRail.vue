@@ -1,5 +1,7 @@
 <template>
-  <FeatherNavigationRail @update:modelValue="onNavRailClick">
+  <FeatherNavigationRail
+    @update:modelValue="onNavRailClick"
+  >
     <template v-slot:main>
       <FeatherRailItem
         :class="{ selected: isSelected('/') }"
@@ -14,10 +16,10 @@
         title="Map"
       />
       <FeatherRailItem
-        :class="{ selected: isSelected('/configuration') }"
+        :class="{ selected: isSelected('/configuration'), 'title-multiline-custom': navRailOpen }"
         href="#/configuration"
         :icon="LoggerConfigs"
-        title="Configuration"
+        title="External Requisitions and Thread Pools"
       />
       <FeatherRailItem
         :class="{ selected: isSelected('/file-editor') }"
@@ -64,7 +66,7 @@
     </template>
   </FeatherNavigationRail>
 </template>
-<script setup lang=ts>
+<script setup lang="ts">
 import { useStore } from 'vuex'
 import Instances from '@featherds/icon/hardware/Instances'
 import MinionProfiles from '@featherds/icon/hardware/MinionProfiles'
@@ -77,7 +79,7 @@ import Reporting from '@featherds/icon/action/Reporting'
 import UpdateUtilities from '@featherds/icon/action/UpdateUtilities'
 import {
   FeatherNavigationRail,
-  FeatherRailItem,
+  FeatherRailItem
 } from '@featherds/navigation-rail'
 import { Plugin } from '@/types'
 
@@ -91,7 +93,17 @@ const isSelected = (path: string) => path === route.fullPath
 </script>
 
 <style scopes lang="scss">
+@import "@featherds/styles/themes/variables";
+
 .nav-header {
   display: none !important;
 }
+
+.title-multiline-custom {
+  white-space: pre-wrap;
+  height: auto !important;
+  padding-top: var($spacing-xs) !important;
+  padding-bottom: var($spacing-xs) !important;
+}
 </style>
+
