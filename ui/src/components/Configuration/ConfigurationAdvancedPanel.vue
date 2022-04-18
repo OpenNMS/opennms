@@ -7,7 +7,11 @@
     @update:modelValue="props.activeUpdate"
   >
     <div>
-      <div v-bind:key="index" v-for="(item, index) in props.items" class="item-wrapper">
+      <div
+        v-bind:key="index"
+        v-for="(item, index) in props.items"
+        class="item-wrapper"
+      >
         <FeatherAutocomplete
           type="single"
           label="Key"
@@ -25,13 +29,29 @@
             for forced update. So when item.hint is empty, we supply an empty space which is enough
             to force FeatherInput to render the help label.
         -->
-        <FeatherInput class="hint-label" label="Value" :hint="item.hint || ' '" v-model="item.value" />
-        <FeatherButton icon="Delete" @click="() => deleteAdvancedOption(index)">
-          <FeatherIcon class="delete-icon" :icon="Delete"></FeatherIcon>
+        <FeatherInput
+          class="hint-label"
+          label="Value"
+          :hint="item.hint || ' '"
+          v-model="item.value"
+        />
+        <FeatherButton
+          icon="Delete"
+          @click="() => deleteAdvancedOption(index)"
+        >
+          <FeatherIcon
+            class="delete-icon"
+            :icon="Delete"
+          ></FeatherIcon>
         </FeatherButton>
       </div>
       <div class="button-wrapper">
-        <FeatherButton :disabled="buttonAddDisabled" @click="addAdvancedOption" primary>Add</FeatherButton>
+        <FeatherButton
+          :disabled="buttonAddDisabled"
+          @click="addAdvancedOption"
+          primary
+          >Add</FeatherButton
+        >
       </div>
     </div>
   </FeatherExpansionPanel>
