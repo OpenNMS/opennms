@@ -28,14 +28,16 @@
 
 package org.opennms.features.scv.rest;
 
-import joptsimple.internal.Strings;
+import com.google.common.base.Strings;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
+import java.text.Collator;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class DefaultScvRestService implements ScvRestService {
 
@@ -78,11 +80,11 @@ public class DefaultScvRestService implements ScvRestService {
                 scv.setCredentials(credentialsDTO.getAlias(), credentials);
                 return Response.accepted().build();
             } catch (Exception e) {
-                LOG.error("Exception while adding credentials with alias {} ", credentialsDTO.getAlias(), e);
+                LOG.error("Exception while adding credentials with alias {}", credentialsDTO.getAlias(), e);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
             }
         } else {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing alias for credentails").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid Credentials").build();
         }
     }
 
@@ -96,17 +98,19 @@ public class DefaultScvRestService implements ScvRestService {
                 scv.setCredentials(alias, credentials);
                 return Response.accepted().build();
             } catch (Exception e) {
-                LOG.error("Exception while adding credentials with alias {} ", credentialsDTO.getAlias(), e);
+                LOG.error("Exception while adding credentials with alias {}", credentialsDTO.getAlias(), e);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
             }
         } else {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid Credentials").build();
         }
     }
 
     @Override
     public Response getAliases() {
-        Set<String> res = scv.getAliases();
-        return Response.ok(res).build();
+        Set<String> aliasSet = scv.getAliases();
+        var aliases = new TreeSet<String>(Collator.getInstance());
+        aliases.addAll(aliasSet);
+        return Response.ok(aliases).build();
     }
 }

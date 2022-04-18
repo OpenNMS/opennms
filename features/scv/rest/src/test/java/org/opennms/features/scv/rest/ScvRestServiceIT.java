@@ -100,5 +100,16 @@ public class ScvRestServiceIT {
         var updatedCreds = ((CredentialsDTO) updatedResponse.getEntity());
         Assert.assertEquals(credentialDTO.getUsername(), updatedCreds.getUsername());
         Assert.assertEquals(credentialDTO.getAlias(), updatedCreds.getAlias());
+
+        String alias1 = "another-device";
+        credentialDTO = new CredentialsDTO(alias1, "horizon", "OpenNMS");
+        scvRestService.addCredentials(credentialDTO);
+        Assert.assertEquals(posted.getStatus(), Response.Status.ACCEPTED.getStatusCode());
+
+        aliasesResult = scvRestService.getAliases();
+        Assert.assertEquals(aliasesResult.getStatus(), Response.Status.OK.getStatusCode());
+
+        aliases = ((Set<String>) aliasesResult.getEntity());
+        Assert.assertThat(aliases, Matchers.contains(alias1, alias));
     }
 }
