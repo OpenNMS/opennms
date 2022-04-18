@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@antfu/utils@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@antfu/utils/-/utils-0.5.0.tgz#b3169429997cb87850e543cb74660f9e2fed7efd"
-  integrity sha512-MrAQ/MrPSxbh1bBrmwJjORfJymw4IqSHFBXqvxaga3ZdDM+/zokYF8DjyJpSjY2QmpmgQrajDUBJOWrYeARfzA==
+"@antfu/utils@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@antfu/utils/-/utils-0.5.1.tgz#7eb6764878adb715daff20019e5a15fd63d93342"
+  integrity sha512-8Afo0+xvYe1K8Wm4xHTymfTkpzy36aaqDvhXIayUwl+mecMG9Xzl3XjXa6swG6Bk8FBeQ646RyvmsYt6+2Be9g==
 
 "@apitools/openapi-parser@^0.0.24":
   version "0.0.24"
@@ -3025,24 +3025,25 @@ typescript@^4.6.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.3.tgz#eefeafa6afdd31d725584c67a0eaba80f6fc6c6c"
   integrity sha512-yNIatDa5iaofVozS/uQJEl3JRWLKKGJKh6Yaiv0GLGSuhpFJe7P3SbHZ8/yjAHRQwKRoA6YZqlfjXWmVzoVSMw==
 
-unplugin-auto-import@^0.6.9:
-  version "0.6.9"
-  resolved "https://registry.yarnpkg.com/unplugin-auto-import/-/unplugin-auto-import-0.6.9.tgz#0ecdc7cf38aaf94f22358b56703e059f41b6f367"
-  integrity sha512-IqgT7AoRrNQwNhiF/wDH3sMEDX8SqCYBEgJzwdg5441b5aiC5VwZz0J0wYqkaKu89YkZE9DG6rQ2JpFfZv1iiQ==
+unplugin-auto-import@^0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/unplugin-auto-import/-/unplugin-auto-import-0.7.1.tgz#3ad04277254f9fc1bcf18ceb71addb4798bbac7c"
+  integrity sha512-9865OV9eP99PNxHR2mtTDExeN01m4M9boT5U2BtIwsU1wDRsaFIYWLwcCBEjvXzXfTTC2NNMskhHGVAMfL2WgA==
   dependencies:
-    "@antfu/utils" "^0.5.0"
+    "@antfu/utils" "^0.5.1"
     "@rollup/pluginutils" "^4.2.0"
     local-pkg "^0.4.1"
     magic-string "^0.26.1"
     resolve "^1.22.0"
-    unplugin "^0.4.0"
+    unplugin "^0.6.1"
 
-unplugin@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/unplugin/-/unplugin-0.4.0.tgz#43a923f0267f8834118a926c406131d1d84a1358"
-  integrity sha512-4ScITEmzlz1iZW3tkz+3L1V5k/xMQ6kjgm4lEXKxH0ozd8/OUWfiSA7RMRyrawsvq/t50JIzPpp1UyuSL/AXkA==
+unplugin@^0.6.1:
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/unplugin/-/unplugin-0.6.2.tgz#5646829e7f8a664c8a4498654f258dc6ad3ebf1f"
+  integrity sha512-+QONc2uBFQbeo4x5mlJHjTKjR6pmuchMpGVrWhwdGFFMb4ttFZ4E9KqhOOrNcm3Q8NNyB1vJ4s5e36IZC7UWYw==
   dependencies:
     chokidar "^3.5.3"
+    webpack-sources "^3.2.3"
     webpack-virtual-modules "^0.4.3"
 
 upath@^2.0.1:
@@ -3225,6 +3226,11 @@ webidl-conversions@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-7.0.0.tgz#256b4e1882be7debbf01d05f0aa2039778ea080a"
   integrity sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==
+
+webpack-sources@^3.2.3:
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/webpack-sources/-/webpack-sources-3.2.3.tgz#2d4daab8451fd4b240cc27055ff6a0c2ccea0cde"
+  integrity sha512-/DyMEOrDgLKKIG0fmvtz+4dUX/3Ghozwgm6iPp8KRhvn+eQf9+Q7GWxVNMk3+uCPWfdXYC4ExGBckIXdFEfH1w==
 
 webpack-virtual-modules@^0.4.3:
   version "0.4.3"
