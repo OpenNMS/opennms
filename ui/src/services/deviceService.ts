@@ -26,7 +26,7 @@ const downloadDeviceConfigs = async (deviceIds: number[]) => {
 
 const backupDeviceConfig = async (configs: DeviceConfigBackup[]) => {
   try {
-    const config = configs.map(({ ipAddress, location, serviceName }) => ({ ipAddress, location, serviceName }));
+    const config = configs.map(({ ipAddress, location, serviceName }) => ({ ipAddress, location, serviceName }))
 
     const resp = await rest.post(`${endpoint}/backup`, config)
     return resp

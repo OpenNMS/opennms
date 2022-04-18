@@ -384,7 +384,7 @@ const createBlankSubConfiguration = () => {
  * Convert our Cron Schedules to Human Readable String.
  */
 const cronToEnglish = (cronFormatted: string) => {
-  let error: string = ''
+  let error = ''
 
   if (cronTabLength(cronFormatted) === 5) {
     error = ErrorStrings.QuartzFormatSupportError // custom error of 6th part quartz format support
@@ -690,7 +690,7 @@ const validateHost = (host: string) => {
    *  - no separator at begin, end or between uri and port
    *  - expression names (uri, port) can be used, with expression.match(), to target specific part of the host string
    * */
-  const ipv4 = new RegExp(/^[^\s\.\-\%](?<uri>[\w]*[\s\.\-\%]?[\w]*[^\s\.\-\%20\:])*(?<port>:\d{4})?$/, 'gmi')
+  const ipv4 = new RegExp(/^[^\s.\-%](?<uri>[\w]*[\s.\-%]?[\w]*[^\s.\-%20:])*(?<port>:\d{4})?$/, 'gmi')
   const isHostValid = ipv4.test(host)
 
   if (!isHostValid) {
