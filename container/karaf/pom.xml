@@ -261,9 +261,10 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.http.bridge</artifactId>
-            <version>${felixBridgeVersion}</version>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>felix-dependencies</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
