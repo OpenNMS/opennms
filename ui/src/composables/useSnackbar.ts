@@ -17,12 +17,13 @@ const useSnackbar = () => {
 
   const hideSnackbar = () => {
     isDisplayed.value = false
+    message.value = ''
   }
 
   return {
     showSnackBar,
     hideSnackbar,
-    isDisplayed: readonly(isDisplayed),
+    isDisplayed: isDisplayed,
     isCentered: readonly(isCentered),
     hasError: readonly(hasError),
     message: readonly(message)
