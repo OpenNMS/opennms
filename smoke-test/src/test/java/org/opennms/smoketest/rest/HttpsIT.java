@@ -80,7 +80,7 @@ public class HttpsIT {
      * Test will confirm response 200, Username and Password fields.
      */
     @Test
-    public void testHTTPSConnection() {
+    public void verifyHTTPSConnection() {
         ResponseEntity<String> response = null;
         String urlOverHttps = "https://" + STACK.opennms().getHost() + ":" + STACK.opennms().getSSLPort();
         try {
