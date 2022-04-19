@@ -62,6 +62,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigQueryResult;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
@@ -79,8 +80,6 @@ import com.google.common.collect.Maps;
 
 public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDeviceConfigRestService.class);
-    public static final String BACKUP_STATUS_SUCCESS = "success";
-    public static final String BACKUP_STATUS_FAILED = "failed";
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
     public static final String BINARY_ENCODING = "binary";
 
@@ -259,7 +258,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         if (ids.size() == 1) {
             return downloadSingleDeviceConfig(ids.get(0));
         } else {
-            return downloadMultipleDeviceCofigs(ids);
+            return downloadMultipleDeviceConfigs(ids);
         }
     }
 
@@ -285,7 +284,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             .entity(outputStream.toByteArray()).build();
     }
 
-    private Response downloadMultipleDeviceCofigs(List<Long> ids) {
+    private Response downloadMultipleDeviceConfigs(List<Long> ids) {
         final Map<String, byte[]> fileNameToDataMap = ids.stream()
             .map(deviceConfigDao::get)
             .filter(dc -> dc != null && dc.getConfig() != null && dc.getConfig().length > 0)
@@ -458,10 +457,9 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             queryResult.getServiceName()
         );
 
-        // determine backup status, not handling all cases for now
-        boolean backupSuccess = determineBackupSuccess(queryResult.getLastSucceeded(), queryResult.getLastUpdated());
-        dto.setIsSuccessfulBackup(backupSuccess);
-        dto.setBackupStatus(backupSuccess ? BACKUP_STATUS_SUCCESS : BACKUP_STATUS_FAILED);
+        DeviceConfigStatus backupStatus = DeviceConfig.determineBackupStatus(queryResult.getLastUpdated(), queryResult.getLastSucceeded());
+        dto.setIsSuccessfulBackup(backupStatus.equals(DeviceConfigStatus.SUCCESS));
+        dto.setBackupStatus(backupStatus.name().toLowerCase(Locale.ROOT));
 
         dto.setIpInterfaceId(queryResult.getIpInterfaceId());
         dto.setNodeId(queryResult.getNodeId());
@@ -496,10 +494,9 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             deviceConfig.getServiceName()
         );
 
-        // determine backup status, not handling all cases for now
-        boolean backupSuccess = determineBackupSuccess(deviceConfig.getLastSucceeded(), deviceConfig.getLastUpdated());
-        dto.setIsSuccessfulBackup(backupSuccess);
-        dto.setBackupStatus(backupSuccess ? BACKUP_STATUS_SUCCESS : BACKUP_STATUS_FAILED);
+        DeviceConfigStatus backupStatus = DeviceConfig.determineBackupStatus(deviceConfig);
+        dto.setIsSuccessfulBackup(backupStatus.equals(DeviceConfigStatus.SUCCESS));
+        dto.setBackupStatus(backupStatus.name().toLowerCase(Locale.ROOT));
 
         final OnmsIpInterface ipInterface = deviceConfig.getIpInterface();
         final OnmsNode node = ipInterface.getNode();
@@ -570,17 +567,6 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         return
             !Strings.isNullOrEmpty(encoding) && Charset.isSupported(encoding)
             ? Charset.forName(encoding) : Charset.defaultCharset();
-    }
-
-    /**
-     * Currently, backup status is {@link BACKUP_STATUS_SUCCESS} if a backup config exists
-     * for this device and there have been no failures since last backup,
-     * otherwise status is {@link BACKUP_STATUS_FAILED}.
-     */
-    private static boolean determineBackupSuccess(Date lastSucceeded, Date lastUpdated) {
-        return
-            lastSucceeded != null &&
-            lastSucceeded.getTime() >= lastUpdated.getTime();
     }
 
     private static String createDownloadFileName(DeviceConfig dc) {
