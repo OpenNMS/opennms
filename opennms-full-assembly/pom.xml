@@ -387,7 +387,7 @@
                 <feature>spring/4.1.9.RELEASE_1</feature>
                 <feature>spring-jms/4.1.9.RELEASE_1</feature>
                 <feature>spring/4.2.9.RELEASE_1</feature>
-                <feature>spring/4.3.14.RELEASE_1</feature>
+                <feature>spring/4.3.30.RELEASE_1</feature>
                 <feature>spring/${springVersion}</feature>
                 <feature>spring-aspects/${springVersion}</feature>
                 <feature>spring-instrument/${springVersion}</feature>
