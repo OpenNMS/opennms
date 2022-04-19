@@ -60,7 +60,7 @@ import org.opennms.netmgt.model.PrimaryType;
 public class RequisitionNode {
 
     // matches any string containing :?/\'"&
-    private static final String FOREIGN_ID_REGEX = ".*[:&?/\\\\\"'\"\\*].*";
+    private static final String FOREIGN_ID_REGEX = "^[a-zA-Z0-9_.\\- ]*$";
 
     @XmlAttribute(name = "location")
     protected String m_location;
@@ -543,8 +543,8 @@ public class RequisitionNode {
         if (m_foreignId == null) {
             throw new ValidationException("Requisition node 'foreign-id' is a required attribute!");
         }
-        if (m_foreignId.matches(FOREIGN_ID_REGEX)) {
-            throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains invalid characters. (:&?'/\\*\" are forbidden.)");
+        if (!m_foreignId.matches(FOREIGN_ID_REGEX)) {
+            throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains invalid characters. (Only alphanumerics and [-_.] are allowed)");
         }
         if (m_interfaces != null) {
             Iterator<RequisitionInterface> iter = m_interfaces.iterator();
