@@ -4,6 +4,11 @@ import DeviceConfigBackup from '@/containers/DeviceConfigBackup.vue'
 import FileEditor from '@/containers/FileEditor.vue'
 import Resources from '@/components/Resources/Resources.vue'
 import Graphs from '@/components/Resources/Graphs.vue'
+import useRole from '@/composables/useRole'
+import useSnackbar from '@/composables/useSnackbar'
+
+const { adminRole, dcbRole } = useRole()
+const { showSnackBar } = useSnackbar()
 
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
@@ -27,12 +32,24 @@ const router = createRouter({
     {
       path: '/file-editor',
       name: 'FileEditor',
-      component: FileEditor
+      component: FileEditor,
+      beforeEnter: (to, from) => {
+        if (!adminRole.value) {
+          showSnackBar({ msg: 'No route access.'})
+          return from.path
+        }
+      },
     },
     {
       path: '/logs',
       name: 'Logs',
-      component: () => import('@/containers/Logs.vue')
+      component: () => import('@/containers/Logs.vue'),
+      beforeEnter: (to, from) => {
+        if (!adminRole.value) {
+          showSnackBar({ msg: 'No route access.'})
+          return from.path
+        }
+      },
     },
     {
       path: '/map',
@@ -81,7 +98,13 @@ const router = createRouter({
     {
       path: '/device-config-backup',
       name: 'DeviceConfigBackup',
-      component: DeviceConfigBackup
+      component: DeviceConfigBackup,
+      beforeEnter: (to, from) => {
+        if (!dcbRole.value) {
+          showSnackBar({ msg: 'No route access.'})
+          return from.path
+        }
+      },
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
