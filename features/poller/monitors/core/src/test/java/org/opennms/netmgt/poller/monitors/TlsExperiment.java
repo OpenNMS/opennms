@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -75,6 +75,7 @@ import org.bouncycastle.cert.jcajce.JcaX509v1CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.junit.Ignore
 import org.junit.Test;
 
 /**
@@ -88,6 +89,7 @@ import org.junit.Test;
  * "Java Cryptography: Tools and Techniques"
  * (cf. https://www.bouncycastle.org/java-crypto-tools-src.zip)
  */
+@Ignore("this poisons a full test build with bouncycastle, do not enable except for local checking, edit poms to add bc back in")
 public class TlsExperiment {
 
     static {
