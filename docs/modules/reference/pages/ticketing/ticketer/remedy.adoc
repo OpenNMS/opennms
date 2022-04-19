@@ -1,0 +1,164 @@
+
+[[ref-ticketing-remedy]]
+= Remedy Ticketing Plugin
+
+The Remedy ticketing plugin creates requests in the BMC Remedy ARS Help Desk Module in response to {page-component-title} alarms.
+
+== Remedy product overview
+It's important to be specific when discussing Remedy, because BMC Remedy is a suite of products.
+The {page-component-title} Remedy ticketing plugin requires the core Remedy ARS and the Help Desk Module.
+The Help Desk Module contains a Help Desk Interface Web Service, which serves as the endpoint for creating, updating, and fetching tickets.
+
+The Help Desk Interface (HDI) Web Service requires extensive configuration for its basic operation, and may need additional customization to interoperate with the {page-component-title} Remedy ticketing plugin.
+Contact your Remedy administrator for help with required configuration tasks.
+
+== Supported remedy product versions
+Currently supported Remedy product versions:
+
+[options="header"]
+[cols="1,1"]
+|===
+| Product
+| Version
+
+| Remedy ARS
+| 7.6.04 Service Pack 2
+
+| Help Desk Module
+| 7.6.04 Service Pack 1
+
+| HDI Web Service
+| Same as Help Desk Module
+|===
+
+[[ref-ticketing-remedy-setup]]
+== Setup
+
+The Remedy ticketing plugin and its dependencies are part of the {page-component-title} core packages.
+
+Start by enabling the plugin and the ticket controls in the {page-component-title} web interface, by setting the following properties in `$OPENNMS_HOME/etc/opennms.properties.d/ticketer.properties` (create the file if it does not exist):
+
+[source, properties]
+----
+opennms.ticketer.plugin=org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin
+opennms.alarmTroubleTicketEnabled=true
+----
+
+In the same file, set the property `opennms.alarmTroubleTicketLinkTemplate` to a value appropriate for constructing a link to tickets in the Remedy web interface.
+You must customize the sample value for your site.
+The token `$\{id}` will be replaced with the Remedy ticket ID when the link is rendered.
+
+Now configure the plugin itself by setting the following properties in `$OPENNMS_HOME/etc/remedy.properties`:
+
+[options="header"]
+[cols="2,3"]
+|===
+| Name
+| Description
+
+2+| *Required*
+
+| remedy.username
+| Username for authenticating to Remedy.
+
+| remedy.password
+| Password for authenticating to Remedy.
+
+| remedy.endpoint
+| The endpoint URL of the HPD web service
+
+| remedy.portname
+| The port name of the HPD web service
+
+| remedy.createendpoint
+| The endpoint location of the Create-HPD web service
+
+| remedy.createportname
+| The port name of the Create-HPD web service
+
+| remedy.assignedgroup
+| Default group to assign the ticket in case the ticket itself lacks information about a target assigned group.
+
+| remedy.firstname
+| First name for ticket creation and updating. Must exist in Remedy.
+
+| remedy.lastname
+| Last name for ticket creation and updating. Must exist in Remedy.
+
+| remedy.serviceCI
+| A valid Remedy Service CI for ticket creation.
+
+| remedy.serviceCIReconID
+| A valid Remedy Service CI Reconciliation ID for ticket creation.
+
+| remedy.assignedsupportcompany
+| A valid default assigned support company for ticket creation.
+
+| remedy.assignedsupportorganization
+| A valid default assigned support organization for ticket creation.
+
+| remedy.categorizationtier1
+| A valid categorization tier (primary) for ticket creation.
+
+| remedy.categorizationtier2
+| A valid categorization tier (secondary) for ticket creation.
+
+| remedy.categorizationtier3
+| A valid categorization tier (tertiary) for ticket creation.
+
+| remedy.serviceType
+| A valid service type for ticket creation.
+
+| remedy.reportedSource
+| A valid reported source for ticket creation.
+
+| remedy.impact
+| A valid value for impact, used in ticket creation.
+
+| remedy.urgency
+| A valid value for urgency, used in ticket creation.
+
+| remedy.reason.reopen
+| The reason code set in Remedy when the ticket is reopened in {page-component-title}.
+
+| remedy.resolution
+| The reason code set in Remedy when the ticket is closed in {page-component-title}.
+
+| remedy.reason.cancelled
+| The reason code set in Remedy when the ticket is canceled in {page-component-title}.
+
+2+| *Optional*
+
+| remedy.authentication
+| Authentication style to use.
+
+| remedy.locale
+| Locale for text when creating and updating tickets.
+
+| remedy.timezone
+| Timezone for interaction with Remedy.
+
+| remedy.targetgroups
+| Colon-separated list of Remedy groups to which created tickets may be assigned (`\{group}` below refers to values from this list).
+
+| remedy.assignedgroup.\{group}
+| Assigned group for the target group `\{group}`.
+
+| remedy.assignedsupportcompany.\{group}
+| Assigned support company for the target group `\{group}`.
+
+| remedy.assignedsupportorganization.\{group}
+| Assigned support organization for the target group `\{group}`.
+|===
+
+NOTE: The values for many of the required properties are site specific; contact your Remedy administrator for assistance.
+
+Restart {page-component-title}.
+
+[[ref-ticketing-remedy-troubleshooting]]
+== Troubleshooting
+
+The plugin should be ready to use.
+When troubleshooting, consult the following log files:
+
+* `$\{OPENNMS_HOME}/logs/trouble-ticketer.log``

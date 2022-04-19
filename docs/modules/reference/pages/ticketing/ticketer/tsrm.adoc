@@ -1,0 +1,131 @@
+
+
+[[ref-ticketing-tsrm]]
+= TSRM Ticketing Plugin
+
+The TSRM ticketing plugin creates TSRM incidents in response to {page-component-title} alarms.
+
+[[ref-ticketing-tsrm-setup]]
+== Setup
+
+To enable the plugin, start by setting the following property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/ticketer.properties` (create the file if it does not exist):
+
+[source]
+----
+opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin
+----
+
+Configure the plugin options by setting the following properties in `$\{OPENNMS_HOME}/etc/tsrm.properties`:
+
+[options="header, autowidth"]
+[cols="1,1"]
+|===
+| Name
+| Description
+
+| tsrm.url
+| TSRM Endpoint URL
+
+| tsrm.ssl.strict
+| Strict SSL Check (true/false)
+
+| tsrm.status.open
+| TSRM status for open ticket
+
+| tsrm.status.close
+| TSRM status for closed ticket
+|===
+
+. To make the ticketer system start automatically on future service starts, add the line `tsrm-troubleticketer` to the file `$\{OPENNMS_HOME}/etc/featuresBoot.d/ticketer.boot`.
+(Create the file if it does not exist.)
+
+To make the ticketer system start now, log in to the Karaf shell and run the following command to load the feature:
+
+ feature:install tsrm-troubleticketer
+
+The plugin should be ready to use.
+
+== Mapping OpenNMS Ticket with TSRM Incident
+
+The following tables show mapping between OpenNMS ticket and TSRM incident.
+
+[options="header, autowidth"]
+[cols='1,1']
+|===
+| Ticket Field
+| TSRM Incident Field
+
+| id
+| TICKETID
+
+| state
+| STATUS
+
+| summary
+| DESCRIPTION
+
+| details
+| DESCRIPTIONLONGDESCRIPTION
+
+| user
+| REPORTEDBY
+|===
+
+The fields below are not part of a ticket; you need to add them as attributes.
+
+[options="header, autowidth"]
+[cols='1,1']
+|===
+|   Ticket Field
+| TSRM Incident Field
+
+| affectedPerson
+| AFFECTEDPERSON
+
+| assetNum
+| ASSETNUM
+
+| classId
+| CLASS
+
+| classStructureId
+| CLASSSTRUCTUREID
+
+| commodity
+| COMMODITY
+
+| location
+| LOCATION
+
+| ownerGroup
+| OWNERGROUP
+
+| shsCallerType
+| SHSCALLERTYPE
+
+| shsReasonForOutage
+| SHSREASONFOROUTAGE
+
+| shsResolution
+| SHSRESOLUTION
+
+| shsRoomNumber
+| SHSROOMNUMBER
+
+| siteId
+| SITEID
+
+| source
+| source
+
+| statusIface
+| STATUSIFACE
+|===
+
+[[ref-ticketing-tsrm-troubleshooting]]
+== Troubleshooting
+
+When troubleshooting, consult the following log files:
+
+* `$\{OPENNMS_HOME}/data/log/karaf.log`
+* `$\{OPENNMS_HOME}/logs/trouble-ticketer.log`
