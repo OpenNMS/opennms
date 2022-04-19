@@ -27,7 +27,7 @@ endif::opennms-prime[]
 | Allow actions (such as acknowledging an alarm) to be performed on behalf of another user.
 
 | ROLE_DEVICE_CONFIG_BACKUP
-| Allow user to view and trigger device config backups.
+| Allow user to view and trigger device configuration backups.
 
 | ROLE_FLOW_MANAGER
 | Allow user to edit flow classifications.
