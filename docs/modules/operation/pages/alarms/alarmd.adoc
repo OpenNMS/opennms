@@ -2,7 +2,7 @@
 [[alarmd]]
 = Alarm Service Daemon
 
-Alarmd, the Alarm Service Daemon, processes events representing problems in the Network.
+Alarmd, the Alarm Service Daemon, processes events representing problems in the network.
 It either instantiates a new alarm for tracking a problem's state or reduces a reoccurring Event of an existing problem into the same Alarm.
 (Also known as alarm de-duplication.)
 

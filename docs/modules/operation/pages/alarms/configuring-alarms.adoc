@@ -54,10 +54,10 @@ See also: <<events/anatomy-events.adoc#ga-events-anatomy-of-an-event, anatomy of
 == The reduction-key
 
 Alarmd is designed to reduce multiple occurrences of an alarm into a single alarm.
-The critical attribute when defining the alarm-data of an event, is the reduction-key.
+The critical attribute when defining the alarm-data of an event is the reduction-key.
 This attribute can contain literal strings as well as references to properties (fields and parameters) of the event.
-The purpose of the reduction-key is to uniquely identify the signature of a problem and, as such, is used to reduce (de-duplicate) events so that only one problem is instantiated.
-Most commonly, the event's identifier (UEI) is used as the left most (least significant) portion of the reduction-key, followed by other properties of the event from least to most significant and, traditionally, separated with the literal `:`.
+The reduction-key uniquely identifies the signature of a problem and, as such, is used to reduce (de-duplicate) events so that only one problem is instantiated.
+Most commonly, the event's identifier (UEI) is used as the left-most (least significant) portion of the reduction-key, followed by other properties of the event from least to most significant and, traditionally, separated with the literal `:`.
 
 .Multi-part reduction-key
 ====
@@ -85,10 +85,10 @@ However, there are caveats:
 ----
 With this reduction-key, a single alarm would be instantiated for all nodes that were determined by the Poller to be down.
 There would be a single alarm with the count representing the number of nodes down.
-However, the UEI `uei.opennms.org/nodes/nodeUp` would *not* be a good 'pair wise' reduction-key for resolving this alarm as it would take only a single 'node up' to clear all nodes down tracked with this single alarm configuration.
+However, the UEI `uei.opennms.org/nodes/nodeUp` would *not* be a good 'pairwise' reduction-key for resolving this alarm as it would take only a single 'node up' to clear all nodes down tracked with this single alarm configuration.
 ====
 
-== The alarm-type attribute
+== Alarm-type attribute
 The second most critical attribute is the alarm-type.
 There are currently three types of alarms:
 
@@ -96,21 +96,21 @@ There are currently three types of alarms:
 * resolution (2)
 * notification (3)
 
-The alarm-type attribute helps Alarmd with pair-wise resolution, matching the resolution events to problem events.
+The alarm-type attribute helps Alarmd with pairwise resolution, matching the resolution events to problem events.
 
-NOTE: If an alarm transitions from an alarm-type 2 back to alarm-type 1 the Severity will be set to the most recent event's value.
+NOTE: If an alarm transitions from an alarm-type 2 back to alarm-type 1, the severity will be set to the most recent event's value.
 
-== The clear-key attribute
-This attribute is used in the pair-wise correlation feature of Alarmd.
-When configuring a resolution alarm, set this attribute to match the reduction-key of a the corresponding problem alarm.
+== Clear-key attribute
+This attribute is used in the pairwise correlation feature of Alarmd.
+When configuring a resolution alarm, set this attribute to match the reduction-key of the corresponding problem alarm.
 
-== The auto-clean attribute
-This attribute instructs Alarmd to only retain the most recent event reduced into an alarm.
+== Auto-clean attribute
+This attribute instructs Alarmd to retain only the most recent event reduced into an alarm.
 For alarms that are super chatty, this is a way to reduce the size of the most recent events in the database.
 
-WARNING: Do not use this feature with alarms that have pair-wise correlation (matching problems with resolutions).
+WARNING: Do not use this feature with alarms that have pairwise correlation (matching problems with resolutions).
 
-== The update-field element
+== Update-field element
 Use this element to override Alarmd's default behavior for which some fields are updated during reduction.
 The Alarm fields that are currently allowed to be controlled this way are:
 
@@ -131,7 +131,7 @@ Alarms with matching resolutions with problems (Ups with Downs), should be indic
 * alarm-type="2" (resolving alarm)
 * alarm-type="3" (notification alarm... alarm with no resolution such as SNMP Authentication Failures)
 
-== Instantiate new Alarms for existing cleared problem
+== Instantiate new alarms for existing cleared problem
 
 NOTE: Alarmd includes a global property setting that controls the behavior of alarm reduction of currently cleared alarms.
 
@@ -149,9 +149,9 @@ Create or edit the `alarmd.properties` file in the `$\{OPENNMS_HOME}/etc/opennms
 org.opennms.alarmd.newIfClearedAlarmExists = true
 ----
 
-Now, with this property set, when a repeat incident occurs and the current state of the Alarm tracking the problem is "Cleared", instead of restating the current Alarm to it's default severity and incrementing the counter, a new instance of the Alarm will be created.
+Now, with this property set, when a repeat incident occurs and the current state of the alarm tracking the problem is "Cleared", instead of restating the current alarm to its default severity and incrementing the counter, a new instance of the alarm will be created.
 
-.New node down Alarm with existing cleared Alarm
+.New node-down alarm with existing cleared alarm
 image::alarms/new_after_clear_3.png[]
 
 What happens is that Alarmd will alter the existing alarm's reductionKey to be unique.
@@ -160,7 +160,7 @@ Thus preventing it from ever again being reused for a reoccurring problem in the
 .Altered reductionKey
 image::alarms/new_after_clear_4.png[]
 
-== Re-enable legacy dual Alarm state behavior
+== Re-enable legacy dual alarm state behavior
 
 NOTE: You can set a global property setting to re-enable the legacy (prior to version 23) dual alarm behavior.
 
@@ -176,4 +176,4 @@ Create or edit the `alarmd.properties` file in the `$\{OPENNMS_HOME}/etc/opennms
 org.opennms.alarmd.legacyAlarmState = true
 ----
 
-NOTE: Setting `legacyAlarmState` will nullify `newIfClearedAlarmExists`
+NOTE: Setting `legacyAlarmState` nullifies `newIfClearedAlarmExists`.

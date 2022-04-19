@@ -25,7 +25,7 @@ This feature requires Elasticsearch 7.0+.
 
 Alarm history indexing can be enabled as follows:
 
-First, login to the Karaf shell of your {page-component-title} instance and configure the Elasticsearch client settings to point to your Elasticsearch cluster.
+First, log in to the Karaf shell of your {page-component-title} instance and configure the Elasticsearch client settings to point to your Elasticsearch cluster.
 See <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, Elasticsearch Integration Configuration>> for a complete list of available options.
 
 [source, karaf]

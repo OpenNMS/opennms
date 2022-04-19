@@ -18,6 +18,7 @@ Deleting the alarm will also delete the sticky memo.
 
 * Journal Memo: A user-defined note for a whole class of alarms based on the resolved reduction key.
 The journal memo will be shown for all alarms matching a specific reduction key.
-Deleting an alarm doesn't remove the journal memo, they can be removed by pressing the "Clear" button on an alarm with the existing journal memo.
+Deleting an alarm doesn't remove the journal memo.
+Press the "Clear" button on an alarm with the existing journal memo to remove it.
 
 If an alarm has a sticky and/or a journal memo it is indicated with icons on the "Alarm list Summary" and "Alarm List Detail".
