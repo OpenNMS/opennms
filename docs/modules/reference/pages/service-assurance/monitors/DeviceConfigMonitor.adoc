@@ -49,7 +49,7 @@ Example for how to configure the DeviceConfigMonitor in the `poller-configuratio
 [source, xml]
 ----
 <parameter key="schedule" value="${requisition:dcb:schedule|0 0 0 * * ?}"/>
-<parameter key="script-file" value="${requisition:script-file|juniper-vsrx-default}.dcb"/>
+<parameter key="script-file" value="${requisition:dcb:script-file|juniper-vsrx-default}.dcb"/>
 ----
 
 == Schedule and interval

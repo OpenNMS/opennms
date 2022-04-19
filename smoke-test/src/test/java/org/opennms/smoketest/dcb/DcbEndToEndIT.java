@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.deviceconfig.persistence.impl.DeviceConfigDaoImpl;
@@ -355,10 +356,12 @@ public class DcbEndToEndIT {
     }
 
     @Test
+    @Ignore
     public void testTriggerBackupBySchedule() throws Exception {
     }
 
     @Test
+    @Ignore
     public void testPushedBackup() throws Exception {
     }
 
