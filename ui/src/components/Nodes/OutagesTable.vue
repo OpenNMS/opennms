@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
-import useQueryParameters from '@/hooks/useQueryParams'
+import useQueryParameters from '@/composables/useQueryParams'
 const store = useStore()
 const route = useRoute()
 const payload = { id: route.params.id }
