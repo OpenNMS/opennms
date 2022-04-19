@@ -140,6 +140,11 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
         final Date lastRun = new Date(getKeyedLong(parameters, LAST_RETRIEVAL, 0L));
         final String cronSchedule = getKeyedString(parameters, DeviceConfigConstants.SCHEDULE, DeviceConfigConstants.DEFAULT_CRON_SCHEDULE);
+
+        if (DeviceConfigConstants.NEVER.equalsIgnoreCase(cronSchedule)) {
+            return PollStatus.unknown("Not scheduled");
+        }
+
         final Date nextRun = getNextRunDate(cronSchedule, lastRun);
 
         if (!triggeredPoll && !nextRun.before(new Date())) {
