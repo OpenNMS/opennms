@@ -35,11 +35,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
@@ -179,29 +179,31 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         final var match = getPollerConfig().findService(ipAddress, serviceName)
                 .orElseThrow(IllegalArgumentException::new);
 
-        final Set<String> serviceNames = sessionUtils.withReadOnlyTransaction(() -> ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location)
-                .getMonitoredServices().stream()
-                .map(OnmsMonitoredService::getServiceName)
-                .collect(Collectors.toSet()));
-
-        if (!serviceNames.contains(serviceName)) {
-            throw new IllegalArgumentException("Service " + serviceName + " not bound to interface with ipAddress " + ipAddress + " at location " + location);
-        }
-
         final var monitor = getPollerConfig().getServiceMonitor(match.service.getName());
 
-        MonitoredService service = sessionUtils.withReadOnlyTransaction(() -> {
-            OnmsIpInterface ipInterface = ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
+        final Pair<Boolean, MonitoredService> boundServicePair = sessionUtils.withReadOnlyTransaction(() -> {
+            final OnmsIpInterface ipInterface = ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
             if (ipInterface == null) {
                 return null;
             }
-            OnmsNode node = ipInterface.getNode();
 
-            return new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), match.serviceName, location);
+            final boolean bound = ipInterface.getMonitoredServices().stream()
+                    .map(OnmsMonitoredService::getServiceName).anyMatch(s -> serviceName.equals(s));
+
+            final OnmsNode node = ipInterface.getNode();
+
+            return Pair.of(bound, new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), match.serviceName, location));
         });
 
-        if (service == null) {
+        if (boundServicePair == null) {
             throw new IllegalArgumentException("No interface found with ipAddress " + ipAddress + " at location " + location);
+        }
+
+        final Boolean serviceBound = boundServicePair.getLeft();
+        final MonitoredService service = boundServicePair.getRight();
+
+        if (!serviceBound) {
+            throw new IllegalArgumentException("Service " + serviceName + " not bound to interface with ipAddress " + ipAddress + " at location " + location);
         }
 
         // All the service parameters should be loaded from metadata in PollerRequestBuilderImpl
