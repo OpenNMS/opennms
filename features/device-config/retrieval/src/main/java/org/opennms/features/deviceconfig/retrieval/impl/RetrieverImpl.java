@@ -30,6 +30,7 @@ package org.opennms.features.deviceconfig.retrieval.impl;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.net.SocketAddress;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.HashMap;
@@ -86,13 +87,13 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             String script,
             String user,
             String password,
-            String host,
-            int port,
+            final SocketAddress target,
+            final String hostKeyFingerprint,
             String configType,
             Map<String, String> vars,
             Duration timeout
     ) {
-        LOG.debug("retrieve config - host: " + host + "; port: " + port);
+        LOG.debug("retrieve config: " + target);
         var vs = new HashMap<String, String>();
         vs.putAll(vars);
         // generate a unique filename suffix
@@ -112,10 +113,9 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             // -> it waits for the file or for a timeout
             // -> it is unregistered from the tftp server when the future is completed
             var tftpFileReceiver = new TftpFileReceiverImpl(
-                    host,
-                    port,
+                    target,
                     filenameSuffix,
-                    () -> sshScriptingService.execute(script, user, password, host, port, vs, timeout)
+                    () -> sshScriptingService.execute(script, user, password, target, hostKeyFingerprint, vs, timeout)
             );
 
             try {
@@ -134,14 +134,14 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                     throw e;
                 }
             } catch (Exception e) {
-                var message = "could not trigger device config retrievel - host: " + host + "; port: " + port;
+                var message = "could not trigger device config retrieval - target: " + target;
                 LOG.error(message, e);
                 return CompletableFuture.completedFuture(Either.left(new Failure(message)));
             }
 
         } else {
 
-            var message = "unsupported protocol for device config retrieval - host: " + host + "; port: " + port + "; protocol: " + protocol;
+            var message = "unsupported protocol for device config retrieval - target: " + target + "; protocol: " + protocol;
             LOG.error(message);
             return CompletableFuture.completedFuture(Either.left(new Failure(message)));
         }
@@ -154,21 +154,18 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
     private static class TftpFileReceiverImpl implements TftpFileReceiver, FutureUtils.Completer<Either<Failure, Success>> {
 
-        private final String host;
-        private final int port;
+        private final SocketAddress target;
         private final String fileNameSuffix;
         private final Supplier<SshScriptingService.Result> uploadTrigger;
 
         private volatile CompletableFuture<Either<Failure, Success>> future;
 
         public TftpFileReceiverImpl(
-                String host,
-                int port,
+                final SocketAddress target,
                 String filenameSuffix,
                 Supplier<SshScriptingService.Result> uploadTrigger
         ) {
-            this.host = host;
-            this.port = port;
+            this.target = Objects.requireNonNull(target);
             this.fileNameSuffix = Objects.requireNonNull(filenameSuffix);
             this.uploadTrigger = uploadTrigger;
         }
@@ -187,10 +184,10 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             try {
                 if (uploadTrigger.get().isFailed()) {
                     final SshScriptingService.Result result = uploadTrigger.get();
-                    fail(scriptingFailureMsg(host, port, result.message), result.stdout, result.stderr);
+                    fail(scriptingFailureMsg(this.target, result.message), result.stdout, result.stderr);
                 }
             } catch (Throwable e) {
-                var msg = scriptingFailureMsg(host, port, e.getMessage());
+                var msg = scriptingFailureMsg(this.target, e.getMessage());
                 LOG.error(msg, e);
                 fail(msg, Optional.empty(), Optional.empty());
             }
@@ -198,7 +195,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
         public void onTimeout(CompletableFuture<Either<Failure, Success>> future) {
             this.future = future;
-            fail(timeoutFailureMsg(host, port), Optional.empty(), Optional.empty());
+            fail(timeoutFailureMsg(this.target), Optional.empty(), Optional.empty());
         }
 
         @Override
@@ -208,7 +205,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                 // upload was triggered
                 // -> just to be sure check that the future is set
                 if (future != null) {
-                    LOG.debug("received config - host: " + host + "; port: " + port + "; address: " + address.getHostAddress());
+                    LOG.debug("received config - target: " + this.target + "; address: " + address.getHostAddress());
                     // strip the '.' and filenameSuffix from the filename
                     future.complete(Either.right(new Success(content, fileName.substring(0, fileName.length() - fileNameSuffix.length()))));
                 }
@@ -216,11 +213,11 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         }
     }
 
-    static String scriptingFailureMsg(String host, int port, String msg) {
-        return "could not trigger device config upload - host: " + host + "; port: " + port + "; msg: " + msg;
+    static String scriptingFailureMsg(final SocketAddress target, String msg) {
+        return "could not trigger device config upload - target: " + target + "; msg: " + msg;
     }
-    static String timeoutFailureMsg(String host, int port) {
-        return "device config was not received in time. host: " + host + "; port: " + port;
+    static String timeoutFailureMsg(final SocketAddress target) {
+        return "device config was not received in time. target: " + target;
     }
 
     private static byte[] uuidToBytes(UUID uuid) {

@@ -29,6 +29,7 @@
 package org.opennms.features.deviceconfig.retrieval.api;
 
 
+import java.net.SocketAddress;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
@@ -49,8 +50,8 @@ public interface Retriever {
             String script,
             String user,
             String password,
-            String host,
-            int port,
+            final SocketAddress target,
+            final String hostKeyFingerprint,
             String configType,
             Map<String, String> vars,
             Duration timeout

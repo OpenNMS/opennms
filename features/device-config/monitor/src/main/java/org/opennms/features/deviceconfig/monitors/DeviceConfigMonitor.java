@@ -32,12 +32,14 @@ import static java.util.stream.Collectors.toMap;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -70,6 +72,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
     public static final String SSH_PORT = "ssh-port";
     public static final String SSH_TIMEOUT = "ssh-timeout";
     public static final String PASSWORD = "password";
+    public static final String HOST_KEY = "host-key";
     public static final String LAST_RETRIEVAL = "lastRetrieval";
     public static final String SCRIPT_FILE = "script-file";
 
@@ -161,22 +164,23 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         Integer port = getKeyedInteger(parameters, SSH_PORT, DEFAULT_SSH_PORT);
         String configType = getKeyedString(parameters, DeviceConfigConstants.CONFIG_TYPE, ConfigType.Default);
         Long timeout = getKeyedLong(parameters, SSH_TIMEOUT, DEFAULT_DURATION.toMillis());
-        var host = svc.getIpAddr();
+        String hostKeyFingerprint = getKeyedString(parameters, HOST_KEY, null);
         var stringParameters = parameters.entrySet().stream().collect(toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue())));
+        final var target = new InetSocketAddress(svc.getAddress(), port);
         var future = retriever.retrieveConfig(
                 Retriever.Protocol.TFTP,
                 script,
                 user,
                 password,
-                host,
-                port,
+                target,
+                hostKeyFingerprint,
                 configType,
                 stringParameters,
                 Duration.ofMillis(timeout)
         ).thenApply(either ->
                 either.fold(
                         failure -> {
-                            var reason = "Device config retrieval could not be triggered - host: " + host + ";  message: " + failure.message
+                            var reason = "Device config retrieval could not be triggered - target: " + target + ";  message: " + failure.message
                                          + "\nstdout: " + failure.stdout
                                          + "\nstderr: " + failure.stderr;
                             LOG.error(reason);
@@ -185,7 +189,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                             return pollStatus;
                         },
                         success -> {
-                            LOG.debug("Retrieved device configuration - host: " + host);
+                            LOG.debug("Retrieved device configuration - target: " + target);
                             var pollStatus = PollStatus.up();
                             pollStatus.setDeviceConfig(new DeviceConfig(success.config, success.filename));
                             return pollStatus;
@@ -196,8 +200,8 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
         try {
             return future.toCompletableFuture().get(timeout, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            LOG.error("Device config retrieval failed - host: " + host, e);
-            return PollStatus.unavailable("Device config retrieval failed - host: " + host + "; message: " + e.getMessage());
+            LOG.error("Device config retrieval failed - target: " + target, e);
+            return PollStatus.unavailable("Device config retrieval failed - target: " + target + "; message: " + e.getMessage());
         }
     }
 

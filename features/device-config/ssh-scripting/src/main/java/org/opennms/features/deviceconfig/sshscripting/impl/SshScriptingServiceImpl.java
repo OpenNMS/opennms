@@ -35,6 +35,7 @@ import java.io.PipedOutputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -48,6 +49,7 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.session.ClientSession;
+import org.apache.sshd.common.config.keys.KeyUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.sshscripting.SshScriptingService;
 import org.slf4j.Logger;
@@ -85,8 +87,8 @@ public class SshScriptingServiceImpl implements SshScriptingService {
             String script,
             String user,
             String password,
-            String host,
-            int port,
+            final SocketAddress target,
+            final String hostKeyFingerprint,
             Map<String, String> vars,
             Duration timeout
     ) {
@@ -94,7 +96,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 errorLines -> Result.failure(errorLines.stream().collect(Collectors.joining("\n", "unrecognized statements:\n", ""))),
                 statements -> {
                     try {
-                        try (var sshInteraction = new SshInteractionImpl(user, password, host, port, vars, timeout, tftpServerIPv4Address, tftpServerIPv6Address)) {
+                        try (var sshInteraction = new SshInteractionImpl(user, password, target, hostKeyFingerprint, vars, timeout, tftpServerIPv4Address, tftpServerIPv6Address)) {
                             for (var statement : statements) {
                                 try {
                                     statement.execute(sshInteraction);
@@ -138,18 +140,33 @@ public class SshScriptingServiceImpl implements SshScriptingService {
         private SshInteractionImpl(
                 String user,
                 String password,
-                String host,
-                int port,
+                final SocketAddress target,
+                final String hostKeyFingerprint,
                 Map<String, String> vars,
                 Duration timeout,
                 InetAddress tftpServerIPv4Address,
                 InetAddress tftpServerIPv6Address
         ) throws Exception {
             sshClient = SshClient.setUpDefaultClient();
+            sshClient.setServerKeyVerifier((clientSession, socketAddress, publicKey) -> {
+                if (hostKeyFingerprint == null) {
+                    // If there is no host key specified, we accept all host keys as a graceful default.
+                    // Opt-in on security is not optimal but convenient.
+                    return true;
+                }
+
+                if (!socketAddress.equals(target)) {
+                    // Some kind of proxy is here
+                    return false;
+                }
+
+                return  KeyUtils.checkFingerPrint(hostKeyFingerprint, publicKey).getKey();
+            });
+
             sshClient.start();
             try {
                 session = sshClient
-                        .connect(user, host, port)
+                        .connect(user, target)
                         .verify(timeout)
                         .getSession();
 
