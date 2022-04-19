@@ -85,7 +85,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String serviceName) {
         List<DeviceConfig> deviceConfigs =
                 findObjects(DeviceConfig.class,
-                        "from DeviceConfig dc AND dc.ipInterface.id = ? AND serviceName = ? " +
+                        "from DeviceConfig dc WHERE dc.ipInterface.id = ? AND serviceName = ? " +
                                 "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), serviceName);
 
         if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
