@@ -36,9 +36,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <bootRepositories>
-                        <!-- OPENNMS: Replace the standard, spring, and spring-legacy features files with our modified versions -->
+                        <!-- OPENNMS: Replace the standard and spring-legacy features files with our modified versions -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/standard</repository>
-                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</repository>
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</repository>
                         <!-- OPENNMS: Add the OpenNMS feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
@@ -74,7 +73,8 @@
                         <feature>service</feature>
                         <feature>system</feature>
 
-                        <!-- OPENNMS: Add http, http-whiteboard to the default list of features -->
+                        <!-- OPENNMS: Add http, http-whiteboard to the default list of features. -->
+                        <!-- These actually end up pulling in replacement bridge and whiteboard features in our modified Karaf standard features XML. -->
                         <feature>http</feature>
                         <feature>http-whiteboard</feature>
                     </bootFeatures>
@@ -232,14 +232,6 @@
             <groupId>org.opennms.karaf</groupId>
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
-            <classifier>spring</classifier>
-            <type>xml</type>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.karaf</groupId>
-            <artifactId>opennms</artifactId>
-            <version>${project.version}</version>
             <classifier>spring-legacy</classifier>
             <type>xml</type>
             <scope>runtime</scope>
@@ -261,9 +253,10 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.http.bridge</artifactId>
-            <version>${felixBridgeVersion}</version>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>felix-dependencies</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -272,30 +265,13 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--
         <dependency>
-            <groupId>org.apache.karaf</groupId>
-            <artifactId>org.apache.karaf.main</artifactId>
-            <version>${karafVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-beans-shaded-dependencies</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.karaf.jaas</groupId>
-            <artifactId>org.apache.karaf.jaas.boot</artifactId>
-            <version>${karafVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
     </dependencies>
 
     <repositories>
