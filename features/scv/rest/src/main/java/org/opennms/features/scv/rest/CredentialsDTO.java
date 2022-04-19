@@ -28,6 +28,7 @@
 
 package org.opennms.features.scv.rest;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -37,7 +38,7 @@ public class CredentialsDTO {
 
     private String username;
     private String password;
-    private Map<String, String> attributes;
+    private Map<String, String> attributes = new HashMap<>();
 
     public CredentialsDTO() {
     }
@@ -46,6 +47,13 @@ public class CredentialsDTO {
         this.alias = alias;
         this.username = username;
         this.password = password;
+    }
+
+    public CredentialsDTO(String alias, String username, String password, Map<String, String> attributes) {
+        this.alias = alias;
+        this.username = username;
+        this.password = password;
+        this.attributes = attributes;
     }
 
     public String getAlias() {
@@ -80,6 +88,10 @@ public class CredentialsDTO {
         this.attributes = attributes;
     }
 
+    public void addAttributes(Map<String, String> attributes) {
+        this.attributes.putAll(attributes);
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

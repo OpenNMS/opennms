@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import java.text.Collator;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -57,11 +58,10 @@ public class DefaultScvRestService implements ScvRestService {
                 return Response.noContent().build();
             }
             if (credentials.getUsername() != null && credentials.getPassword() != null) {
-                CredentialsDTO dto = new CredentialsDTO(alias, credentials.getUsername(), credentials.getPassword());
                 // Mask password.
-                dto.setPassword("******");
-                dto.setAttributes(credentials.getAttributes());
-
+                CredentialsDTO dto = new CredentialsDTO(alias, credentials.getUsername(), "******");
+                dto.addAttributes(credentials.getAttributes());
+                
                 return Response.ok(dto).build();
             }
         } catch (Exception e) {
