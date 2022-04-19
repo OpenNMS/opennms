@@ -39,14 +39,15 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
-import org.junit.Assert;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.Assert;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 
-import org.opennms.smoketest.stacks.SSLMode;
 import org.opennms.smoketest.stacks.StackModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,8 +73,17 @@ public class HttpsIT {
                     .withFile("jetty.xml", "etc/jetty.xml")
                     .withFile("https.properties", "etc/opennms.properties.d/https.properties")
                     .build())
-            .withSSLStrategy(SSLMode.SSL)
             .build());
+
+    @Before
+    public void setUp() {
+        LOG.info("Test started!");
+    }
+
+    @After
+    public void tearDown() {
+        LOG.info("Test finished!");
+    }
 
     /**
      * This test will open the page over HTTPS accepting any self-signed certificate which will allow us to verify the page is opened.
