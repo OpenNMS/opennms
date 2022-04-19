@@ -85,7 +85,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String serviceName) {
         List<DeviceConfig> deviceConfigs =
                 findObjects(DeviceConfig.class,
-                        "from DeviceConfig dc where dc.lastUpdated is not null AND dc.ipInterface.id = ? AND serviceName = ? " +
+                        "from DeviceConfig dc AND dc.ipInterface.id = ? AND serviceName = ? " +
                                 "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), serviceName);
 
         if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
@@ -307,5 +307,14 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         deviceConfig.setStatus(DeviceConfigStatus.FAILED);
         saveOrUpdate(deviceConfig);
         LOG.warn("Persisted device config backup failure - ipInterface: {}; service: {}; type: {}; reason: {}", ipInterface, serviceName, configType, reason);
+    }
+
+    @Override
+    public void createEmptyDeviceConfig(OnmsIpInterface ipInterface, String serviceName, String configType) {
+        DeviceConfig deviceConfig = new DeviceConfig();
+        deviceConfig.setIpInterface(ipInterface);
+        deviceConfig.setServiceName(serviceName);
+        deviceConfig.setConfigType(configType);
+        saveOrUpdate(deviceConfig);
     }
 }
