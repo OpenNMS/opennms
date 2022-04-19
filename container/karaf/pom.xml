@@ -73,7 +73,8 @@
                         <feature>service</feature>
                         <feature>system</feature>
 
-                        <!-- OPENNMS: Add http, http-whiteboard to the default list of features -->
+                        <!-- OPENNMS: Add http, http-whiteboard to the default list of features. -->
+                        <!-- These actually end up pulling in replacement bridge and whiteboard features in our modified Karaf standard features XML. -->
                         <feature>http</feature>
                         <feature>http-whiteboard</feature>
                     </bootFeatures>
@@ -264,30 +265,13 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--
         <dependency>
-            <groupId>org.apache.karaf</groupId>
-            <artifactId>org.apache.karaf.main</artifactId>
-            <version>${karafVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-beans-shaded-dependencies</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.karaf.jaas</groupId>
-            <artifactId>org.apache.karaf.jaas.boot</artifactId>
-            <version>${karafVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
     </dependencies>
 
     <repositories>

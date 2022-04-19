@@ -515,6 +515,13 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-beans-shaded-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <!-- Required for com.eclipsesource.jaxrs/* -->

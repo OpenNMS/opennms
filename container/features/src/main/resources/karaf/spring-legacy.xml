@@ -16,7 +16,7 @@
       See the License for the specific language governing permissions and
       limitations under the License.
 -->
-<features name="spring-legacy-4.2.6" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
+<features name="opennms-spring-legacy-4.2.6" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
 
     <!-- ######### START OPENNMS CUSTOMIZATION ############ -->
     <!-- <repository>mvn:org.ops4j.pax.web/pax-web-features/7.2.8/xml/features</repository> -->
@@ -58,7 +58,7 @@
         <bundle start-level="30">mvn:org.springframework/spring-core/3.1.4.RELEASE</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-asm/3.1.4.RELEASE</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-expression/3.1.4.RELEASE</bundle>
-        <bundle start-level="30">mvn:org.springframework/spring-beans/3.1.4.RELEASE</bundle>
+        <bundle start-level="30">mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-31-shaded/${project.version}</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-aop/3.1.4.RELEASE</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-context/3.1.4.RELEASE</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-context-support/3.1.4.RELEASE</bundle>
@@ -135,7 +135,7 @@
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/3.2.18.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/3.2.18.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/3.2.18.RELEASE_1</bundle>
+        <bundle start-level="30">mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-32-shaded/${project.version}</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/3.2.18.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/3.2.18.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context-support/3.2.18.RELEASE_1</bundle>
@@ -212,7 +212,7 @@
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/4.0.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/4.0.9.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/4.0.9.RELEASE_1</bundle>
+        <bundle start-level="30">mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-40-shaded/${project.version}</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/4.0.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/4.0.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context-support/4.0.9.RELEASE_1</bundle>
@@ -285,7 +285,7 @@
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/4.1.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/4.1.9.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/4.1.9.RELEASE_1</bundle>
+        <bundle start-level="30">mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-41-shaded/${project.version}</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/4.1.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/4.1.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context-support/4.1.9.RELEASE_1</bundle>
@@ -358,7 +358,7 @@
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/4.2.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/4.2.9.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/4.2.9.RELEASE_1</bundle>
+        <bundle start-level="30">mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-42-shaded/${project.version}</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/4.2.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/4.2.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context-support/4.2.9.RELEASE_1</bundle>
@@ -431,7 +431,7 @@
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/4.3.30.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/4.3.30.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/4.3.30.RELEASE_1</bundle>
+        <bundle start-level="30">mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-43-shaded/${project.version}</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/4.3.30.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/4.3.30.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context-support/4.3.30.RELEASE_1</bundle>
