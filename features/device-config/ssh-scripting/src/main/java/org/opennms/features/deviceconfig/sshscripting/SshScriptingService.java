@@ -28,6 +28,7 @@
 
 package org.opennms.features.deviceconfig.sshscripting;
 
+import java.net.SocketAddress;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
@@ -40,8 +41,8 @@ public interface SshScriptingService {
      * @param script contains statements separated by new lines
      * @param user the ssh user
      * @param password the ssh user's password
-     * @param host the ssh host
-     * @param port the ssh port
+     * @param target the ssh target to connect to
+     * @param hostKeyFingerprint host key fingerprint to accept from the target system
      * @param vars variables that can be referenced in the script; variables are referenced by "{@code ${varname}}" expressions
      * @param timeout used when establishing the ssh interaction and for await statements
      * @return
@@ -50,8 +51,8 @@ public interface SshScriptingService {
             String script,
             String user,
             String password,
-            String host,
-            int port,
+            final SocketAddress target,
+            final String hostKeyFingerprint,
             Map<String, String> vars,
             Duration timeout
     );
