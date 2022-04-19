@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.dao.mock;
 
-import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
@@ -65,11 +64,6 @@ public class MockHwEntityAttributeTypeDao extends AbstractMockDao<HwEntityAttrib
 
 	@Override
 	public HwEntityAttributeType findTypeByOid(String oid) {
-		throw new UnsupportedOperationException("Not yet implemented!");
-	}
-
-	@Override
-	public void deleteAllEntities(Collection<HwEntityAttributeType> entities) {
 		throw new UnsupportedOperationException("Not yet implemented!");
 	}
 }

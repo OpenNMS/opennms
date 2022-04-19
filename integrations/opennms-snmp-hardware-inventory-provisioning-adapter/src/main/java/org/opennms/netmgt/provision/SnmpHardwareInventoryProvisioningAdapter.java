@@ -218,12 +218,24 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
      */
     private void initializeVendorAttributes() {
         m_vendorAttributes.clear();
-        m_hwEntityAttributeTypeDao.deleteAllEntities((Collection<HwEntityAttributeType>) m_hwEntityAttributeTypeDao.findAll());
+        for (HwEntityAttributeType type : m_hwEntityAttributeTypeDao.findAll()) {
+            LOG.debug("Loading attribute type {}", type);
+            m_vendorAttributes.put(type.getSnmpObjId(), type);
+        }
         for (HwExtension ext : m_hwInventoryAdapterConfigDao.getConfiguration().getExtensions()) {
             for (MibObj obj : ext.getMibObjects()) {
-                HwEntityAttributeType  type = new HwEntityAttributeType(obj.getOid().toString(), obj.getAlias(), obj.getType());
-                LOG.info("Creating attribute type {}", type);
-                m_hwEntityAttributeTypeDao.save(type);
+                HwEntityAttributeType type = m_vendorAttributes.get(obj.getOid());
+                if (type == null) {
+                    type = new HwEntityAttributeType(obj.getOid().toString(), obj.getAlias(), obj.getType());
+                    LOG.info("Creating attribute type {}", type);
+
+                } else {
+                    type.setOid(obj.getOid().toString());
+                    type.setName(obj.getAlias());
+                    type.setAttributeClass(obj.getType());
+                    LOG.info("Updating attribute type {}", type);
+                }
+                m_hwEntityAttributeTypeDao.saveOrUpdate(type);
                 m_vendorAttributes.put(type.getSnmpObjId(), type);
             }
         }

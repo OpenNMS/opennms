@@ -174,7 +174,7 @@ public class HardwareInventoryResourceIT extends AbstractSpringJerseyRestTestCas
 		Assert.assertNotNull(root.getNode());
 		Assert.assertEquals(2, root.getChildren().size());
 
-		// Test saving root entity
+		// Saving root entity
 		m_hwEntityDao.saveOrUpdate(root);
 		m_hwEntityDao.flush();
 	}
