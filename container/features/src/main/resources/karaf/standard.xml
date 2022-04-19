@@ -89,7 +89,6 @@
 #
 enterprise=mvn:org.apache.karaf.features/enterprise/${karaf.version}/xml/features
 enterprise-legacy=mvn:org.apache.karaf.features/enterprise-legacy/${karaf.version}/xml/features
-spring=mvn:org.apache.karaf.features/spring/${karaf.version}/xml/features
 spring-legacy=mvn:org.apache.karaf.features/spring-legacy/${karaf.version}/xml/features
 cellar=mvn:org.apache.karaf.cellar/apache-karaf-cellar/RELEASE/xml/features
 cave=mvn:org.apache.karaf.cave/apache-karaf-cave/RELEASE/xml/features

@@ -71,11 +71,6 @@
                   <classifier>standard</classifier>
                 </artifact>
                 <artifact>
-                  <file>${project.build.outputDirectory}/karaf/spring.xml</file>
-                  <type>xml</type>
-                  <classifier>spring</classifier>
-                </artifact>
-                <artifact>
                   <file>${project.build.outputDirectory}/karaf/spring-legacy.xml</file>
                   <type>xml</type>
                   <classifier>spring-legacy</classifier>
