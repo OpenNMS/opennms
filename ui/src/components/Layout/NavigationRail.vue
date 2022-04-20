@@ -15,14 +15,14 @@
       />
       <FeatherRailItem
         :class="{ selected: isSelected('/file-editor') }"
-        v-if="isAdmin"
+        v-if="adminRole"
         href="#/file-editor"
         :icon="AddNote"
         title="File Editor"
       />
       <FeatherRailItem
         :class="{ selected: isSelected('/logs') }"
-        v-if="isAdmin"
+        v-if="adminRole"
         href="#/logs"
         :icon="MarkComplete"
         title="Logs"
@@ -39,6 +39,13 @@
         :icon="Reporting"
         title="Resource Graphs"
       />
+      <FeatherRailItem
+        v-if="dcbRole"
+        :class="{ selected: isSelected('/device-config-backup') }"
+        href="#/device-config-backup"
+        :icon="MinionProfiles"
+        title="Configuration Management"
+      />
 
       <!-- loop plugin menu items -->
       <FeatherRailItem
@@ -52,9 +59,11 @@
     </template>
   </FeatherNavigationRail>
 </template>
-<script setup lang=ts>
+<script setup lang="ts">
 import { useStore } from 'vuex'
+import useRole from '@/composables/useRole'
 import Instances from '@featherds/icon/hardware/Instances'
+import MinionProfiles from '@featherds/icon/hardware/MinionProfiles'
 import AddNote from '@featherds/icon/action/AddNote'
 import Location from '@featherds/icon/action/Location'
 import MarkComplete from '@featherds/icon/action/MarkComplete'
@@ -69,8 +78,8 @@ import { Plugin } from '@/types'
 
 const store = useStore()
 const route = useRoute()
+const { adminRole, dcbRole } = useRole()
 const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
-const isAdmin = computed(() => store.getters['authModule/isAdmin'])
 const navRailOpen = computed(() => store.state.appModule.navRailOpen)
 const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRailOpen.value)
 const isSelected = (path: string) => path === route.fullPath

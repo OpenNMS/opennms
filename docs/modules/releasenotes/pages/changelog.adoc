@@ -2,6 +2,34 @@
 
 = Changelog
 
+[[releasenotes-changelog-29.0.9]]
+
+== Release 29.0.9
+
+Release 29.0.9 contains a bunch of bug fixes and enhancements, including improvements
+for running in containers, code cleanups, and improved documentation.
+
+The codename for Horizon 29.0.9 is https://wikipedia.org/wiki/$$Kiwi_(bird)$$[_Kiwi_].
+
+=== Bug
+
+* Documentation for all pollers misses RRD config parameter (Issue http://issues.opennms.org/browse/NMS-11747[NMS-11747])
+* Resolve SonarCloud High priority Security Hotspots  (Issue http://issues.opennms.org/browse/NMS-14002[NMS-14002])
+* Can't set capabilities in Minion systemd unit (Issue http://issues.opennms.org/browse/NMS-14016[NMS-14016])
+* Scriptd helpers ignore community setting (Issue http://issues.opennms.org/browse/NMS-14045[NMS-14045])
+* Wrong wiki URL in debian installer (Issue http://issues.opennms.org/browse/NMS-14053[NMS-14053])
+* Build from source documentation needs a minor correction (Issue http://issues.opennms.org/browse/NMS-14088[NMS-14088])
+* Hostname command is missing when running in a container (Issue http://issues.opennms.org/browse/NMS-14100[NMS-14100])
+* Fix for NMS-13887 did not make it to Core (Issue http://issues.opennms.org/browse/NMS-14117[NMS-14117])
+* Update docs for binding ports <1024 (Issue http://issues.opennms.org/browse/NMS-14162[NMS-14162])
+
+=== Enhancement
+
+* Switch to using a java e-mail library instead of system mail (Issue http://issues.opennms.org/browse/NMS-14015[NMS-14015])
+* Misspelling in SystemExecuteMonitor error text (Issue http://issues.opennms.org/browse/NMS-14091[NMS-14091])
+* relicense rancid-api to LGPL, change dependency to match (Issue http://issues.opennms.org/browse/NMS-14093[NMS-14093])
+* clean up JAXB dependencies (Issue http://issues.opennms.org/browse/NMS-14105[NMS-14105])
+
 [[releasenotes-changelog-29.0.8]]
 
 == Release 29.0.8

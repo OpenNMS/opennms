@@ -39,6 +39,11 @@
 ** xref:service-assurance/polling-packages.adoc[]
 ** xref:service-assurance/service-monitors.adoc[]
 ** xref:application-perspective-monitoring/application-perspective-monitoring.adoc[]
+** xref:device-config-backup/introduction.adoc[]
+*** xref:device-config-backup/ssh.adoc[]
+*** xref:device-config-backup/configuration.adoc[]
+*** xref:device-config-backup/dcb-requisition.adoc[]
+*** xref:device-config-backup/dcb.adoc[]
 
 * xref:performance-data-collection/introduction.adoc[]
 ** xref:performance-data-collection/collectd/collection-packages.adoc[]
@@ -154,7 +159,7 @@
 * xref:snmp-poller/concepts.adoc[]
 
 
-* xref:admin/introduction.adoc[]
+* {page-component-title} Administration
 ** xref:admin/webui/introduction.adoc[]
 *** xref:admin/webui/dashboard.adoc[]
 *** xref:admin/webui/grafana-dashboard-box.adoc[]
@@ -190,3 +195,4 @@
 ** xref:admin/request-logging.adoc[]
 ** xref:admin/restart.adoc[]
 ** xref:admin/daemon-config-files.adoc[]
+** xref:admin/housekeeping/introduction.adoc[]

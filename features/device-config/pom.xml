@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>org.opennms.features</artifactId>
+        <groupId>org.opennms</groupId>
+        <version>30.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.opennms.features</groupId>
+    <artifactId>org.opennms.features.device-config</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenNMS :: Features :: Device Config</name>
+
+    <modules>
+        <module>monitor</module>
+        <module>monitor-adaptor</module>
+        <module>persistence</module>
+        <module>rest</module>
+        <module>retrieval</module>
+        <module>tftp</module>
+        <module>shell</module>
+        <module>sink</module>
+        <module>ssh-scripting</module>
+        <module>service</module>
+        <module>api</module>
+    </modules>
+
+</project>

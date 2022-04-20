@@ -43,7 +43,7 @@ import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.protocols.icmp6.ICMPv6EchoRequest;
 import org.opennms.protocols.icmp6.ICMPv6Packet.Type;
 import org.opennms.protocols.icmp6.ICMPv6Socket;
-import org.opennms.protocols.rt.Request;
+import org.opennms.core.tracker.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -25,8 +25,8 @@ Regardless of the method, provisioning is an iterative process: you will need to
 == Automatic discovery
 
 {page-component-title} uses an ICMP ping sweep to find IP addresses on the network and provision node entities.
-Use link:#ga-provisioning-auto-discovery-detectors[auto discovery with detectors] in addition to the ICMP IP address ping to specify services that you need to detect.
-link:#import-handlers[Import handlers] let you to further control provisioning.
+Use <<provisioning/auto-discovery.adoc#ga-provisioning-auto-discovery-detectors, auto discovery with detectors>> in addition to the ICMP IP address ping to specify services that you need to detect.
+xref:reference:provisioning/handlers/introduction.adoc#import-handlers[Import handlers] let you to further control provisioning.
 
 Automatically discovered entities are analyzed, persisted to the relational data store, and managed based on the policies defined in the <<provisioning/getting-started.adoc#foreign-source-definition, default foreign source definition>>:
 
@@ -45,7 +45,7 @@ Using an import requisition, this mechanism directs {page-component-title} to ad
 No discovery process is used for finding more interfaces or services.
 
 IMPORTANT: An import requisition is an XML definition of node entities to be provisioned from an external source into {page-component-title}.
-See the http://xmlns.opennms.org/xsd/config/model-import[requisition schema] (XSD) for more information.
+See the https://raw.githubusercontent.com/OpenNMS/opennms/develop/opennms-provision/opennms-provision-persistence/src/main/resources/xsds/model-import.xsd[requisition schema] (XSD) for more information.
 
 === Understanding the Process
 

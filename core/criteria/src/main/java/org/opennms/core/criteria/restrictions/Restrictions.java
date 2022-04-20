@@ -104,6 +104,10 @@ public abstract class Restrictions {
         return new AllRestriction(restrictions);
     }
 
+    public static AllRestriction multipleAnd(final Restriction... restrictions) {
+        return new AllRestriction(true, restrictions);
+    }
+
     public static AnyRestriction or(final Restriction... restrictions) {
         return new AnyRestriction(restrictions);
     }
@@ -112,6 +116,7 @@ public abstract class Restrictions {
         return new AllRestriction(restrictions);
     }
 
+    
     public static AllRestriction all(final Collection<Restriction> restrictions) {
         return new AllRestriction(restrictions.toArray(EMPTY_RESTRICTION_ARRAY));
     }

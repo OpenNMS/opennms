@@ -35,6 +35,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -42,12 +45,13 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * <p>MonitoredServiceDaoHibernate class.</p>
  *
  * @author david
  */
-public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonitoredService, Integer>  implements MonitoredServiceDao {
+public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonitoredService, Integer> implements MonitoredServiceDao {
 
     @Autowired
     private FilterDao m_filterDao;
@@ -112,10 +116,8 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
                 
                 matchingServices.add(svc);
             }
-            
         }
-        
-        
+
         return matchingServices;
     }
 

@@ -4,7 +4,7 @@
 
     <div class="flex-container availability-header headline4">
       <div>Availability</div>
-      <div class="timeline" ref="timeline">{{ availability.availability }}%</div>
+      <div class="timeline" ref="timeline">{{ Math.round(100 * availability.availability) / 100 }}%</div>
     </div>
 
     <template v-for="ipinterface of availability.ipinterfaces" :key="ipinterface.id">
@@ -29,7 +29,7 @@
               :src="`${baseUrl}/opennms/rest/timeline/image/${nodeId}/${ipinterface.address}/${service.name}/${startTime}/${endTime}/${width}`"
             />
           </div>
-          <div class="percentage subtitle2">{{ service.availability }}%</div>
+          <div class="percentage subtitle2">{{ Math.round(100 * service.availability) / 100 }}%</div>
         </div>
       </template>
     </template>
@@ -50,14 +50,14 @@ const startTime = ref(getUnixTime(sub(now, { days: 1 })))
 const endTime = ref(getUnixTime(now))
 const width = ref(200)
 const timeline = ref<any>(null)
-const recalculateWidth = () => {
+const recalculateWidth = debounce(() => {
   width.value = timeline.value.clientWidth - 60
-}
+}, 100)
 
 onMounted(async () => {
   store.dispatch('nodesModule/getNodeAvailabilityPercentage', nodeId.value)
   recalculateWidth()
-  window.addEventListener('resize', debounce(recalculateWidth, 100))
+  window.addEventListener('resize', recalculateWidth)
 })
 
 const availability = computed(() => store.state.nodesModule.availability)

@@ -48,6 +48,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -119,7 +120,8 @@ import com.google.common.collect.Sets;
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
 
         // Override the default QueryManager with the DAO version
-        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
+        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml",
+        "classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         // We don't need a real pinger here
@@ -249,6 +251,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_poller.setPollerConfig(m_pollerConfig);
         m_poller.setPollOutagesDao(m_pollerConfig);
         m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
+        m_poller.setServiceMonitorAdaptor((svc, parameters, status) -> status);
         m_poller.setPersisterFactory(new MockPersisterFactory());
     }
 
@@ -259,22 +262,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         sleep(200);
         m_db.drop();
         MockUtil.println("------------ End Test  --------------------------");
-    }
-
-    //
-    // Tests
-    //
-    @Test
-    public void testIsRemotePackage() {
-        Properties p = new Properties();
-        p.setProperty("org.opennms.netmgt.ConfigFileConstants", "ERROR");
-        MockLogAppender.setupLogging(p);
-        Package pkg = new Package();
-        pkg.setName("SFO");
-        pkg.setPerspectiveOnly(true);
-        Poller poller = new Poller();
-        poller.setPollerConfig(new MockPollerConfig(m_network));
-        assertFalse(poller.pollableServiceInPackage(null, null, pkg));
     }
 
     @Test
