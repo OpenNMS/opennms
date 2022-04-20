@@ -1,0 +1,71 @@
+[[backup-script]]
+= Configure Backup Script
+
+OpenNMS uses an SSH scripting engine to run the commands required for devices to upload their configurations.
+You must create a script for each device type whose configuration you want to back up and save this script in the `$\{OPENNMS_HOME}/etc/device-config` folder.
+This script simulates an interactive session with the network device.
+The script tells the device to create a backup of its configuration and send that backup to a TFTP server operated by the Minion or {page-component-title}.
+
+NOTE: Some devices may distinguish different types of configuration; for example, startup configuration versus running configuration.
+OpenNMS treats configuration types as arbitrary strings, and uses `default` when no configuration type is specified.
+
+You will reference this script when you xref:operation:device-config-backup/dcb-requisition.adoc#dcb-requisition[create a requisition] for a device of this type.
+
+== SSH scripting engine
+
+The scripting engine supports two commands:
+
+* `send: ...`: Sends the given string to the device
+* `await: ...`: Waits for a response from the device that matches the given string
+
+Scripts can reference the following variables by using `$\{varname}` notation:
+
+.Scripting variables
+[options="header" cols="1,2"]
+|===
+| Name
+| Description
+
+| tftpServerIp
+| IP address of the TFTP server
+
+| tftpServerPort
+| Port number of the TFTP server
+
+| filenameSuffix
+| Suffix that must be appended to the filename for uploading.
+{page-component-title} uses this additional suffix to identify incoming uploads.
+
+| configType
+| Config type as described in the introduction above.
+Optional; if not specified, OpenNMS uses `default`.
+|===
+
+NOTE: Uploaded configuration files should include filename extensions like `.zip` or `.gz` that specify their file type.
+In addition, you must append a `.` and the script variable `filenameSuffix` to the filename that is used for upload.
+
+.Example script
+
+This sample script is for a Juniper vSRX virtual firewall.
+You will need to modify it for other device types.
+
+[source, script]
+----
+send: start shell
+await: %
+send: cd /config
+await: %
+send: tftp ${tftpServerIp}
+await: tftp>
+send: put juniper.conf.gz juniper.conf.gz.${filenameSuffix}
+await:  tftp>
+----
+
+== Vendor TFTP support
+See your device manufacturer's documentation for details on their TFTP support.
+Some links to popular device manufacturers are provided below.
+
+* https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClJ9CAK[Palo Alto]
+* https://www.arubanetworks.com/techdocs/ArubaOS_63_Web_Help/Content/ArubaFrameStyles/Management_Utilities/Managing_Files_on_the_.htm[Aruba]
+* https://www.cisco.com/c/de_de/support/docs/ios-nx-os-software/ios-software-releases-122-mainline/46741-backup-config.html[Cisco]
+* https://supportportal.juniper.net/s/article/Manually-transfer-a-configuration-file-or-text-file-from-EX-Switch-to-TFTP-server?language=en_US[Juniper]

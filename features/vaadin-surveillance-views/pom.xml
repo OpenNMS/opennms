@@ -168,6 +168,18 @@
             <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.config</groupId>
+            <artifactId>org.opennms.features.config.upgrade</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.config</groupId>
+            <artifactId>org.opennms.features.config.mock</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
