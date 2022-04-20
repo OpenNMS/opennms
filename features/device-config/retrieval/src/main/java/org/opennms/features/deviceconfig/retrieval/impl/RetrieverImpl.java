@@ -231,6 +231,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
     }
 
     private static String uniqueFilenameSuffix() {
+        // the term "monitor" is required to not consume it from the sink module, see class DeviceConfigDispatcher
         return BASE64_URL_ENCODER.encodeToString(uuidToBytes(UUID.randomUUID())) + "-monitor";
     }
 }
