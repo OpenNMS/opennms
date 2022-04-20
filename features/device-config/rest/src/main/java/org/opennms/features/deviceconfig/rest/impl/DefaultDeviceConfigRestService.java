@@ -536,10 +536,6 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     // This method's implementation should be the same as in DeviceConfigMonitor
     private static Date getNextRunDate(String cronSchedule, Date lastRun) {
-        if (Strings.isNullOrEmpty(cronSchedule) || DeviceConfigConstants.NEVER.equalsIgnoreCase(cronSchedule)) {
-            return null;
-        }
-
         final Trigger trigger = TriggerBuilder.newTrigger()
             .withSchedule(CronScheduleBuilder.cronSchedule(cronSchedule))
             .startAt(lastRun)

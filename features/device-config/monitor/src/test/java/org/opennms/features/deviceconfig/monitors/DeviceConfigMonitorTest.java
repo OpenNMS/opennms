@@ -171,6 +171,27 @@ public class DeviceConfigMonitorTest {
         assertThat(pollStatus.getReason(), is("Not scheduled"));
     }
 
+    @Test
+    public void testTriggerNeverSchedule() {
+        final Map<String, Object> params = new HashMap<>(this.params);
+        params.put(DeviceConfigConstants.SCHEDULE, "never");
+
+        params.put(DeviceConfigMonitor.LAST_RETRIEVAL, String.valueOf(Instant.now().minus(6, ChronoUnit.MINUTES).toEpochMilli()));
+        params.put(DeviceConfigConstants.TRIGGERED_POLL, "true");
+
+        final DeviceConfigMonitor deviceConfigMonitor = new DeviceConfigMonitor();
+        final Retriever retriever = mock(Retriever.class);
+
+        deviceConfigMonitor.setRetriever(retriever);
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), anyInt(), any(), any(), any())).thenReturn(
+                CompletableFuture.completedFuture(Either.left(new Retriever.Failure("didRun")))
+        );
+
+        PollStatus pollStatus = deviceConfigMonitor.poll(svc, params);
+
+        assertThat(pollStatus.getStatusCode() != PollStatus.SERVICE_UNKNOWN, is(true));
+    }
+
     public boolean doesItRun(final Map<String, Object> params) {
         final DeviceConfigMonitor deviceConfigMonitor = new DeviceConfigMonitor();
         final Retriever retriever = mock(Retriever.class);
