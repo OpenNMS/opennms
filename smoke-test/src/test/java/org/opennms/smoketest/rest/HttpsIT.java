@@ -65,6 +65,7 @@ import java.security.NoSuchAlgorithmException;
 public class HttpsIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSContainer.class);
+    private String urlOverHttps = "";
 
     @ClassRule
     public static final OpenNMSStack STACK = OpenNMSStack.withModel(StackModel.newBuilder()
@@ -78,6 +79,7 @@ public class HttpsIT {
     @Before
     public void setUp() {
         LOG.info("Test started!");
+        urlOverHttps = "https://" + STACK.opennms().getHost() + ":" + STACK.opennms().getSSLPort();
     }
 
     @After
@@ -92,7 +94,7 @@ public class HttpsIT {
     @Test
     public void verifyHTTPSConnection() {
         ResponseEntity<String> response = null;
-        String urlOverHttps = "https://" + STACK.opennms().getHost() + ":" + STACK.opennms().getSSLPort();
+
         try {
             TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
             SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
