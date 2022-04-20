@@ -31,6 +31,9 @@ package org.opennms.netmgt.flows.elastic;
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.script.ScriptEngineFactory;
+import javax.script.ScriptEngineManager;
+
 import org.mockito.Mockito;
 import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
@@ -86,7 +89,8 @@ public class MockDocumentEnricherFactory {
                     .withName("flows.node")
                     .withMaximumSize(1000)
                     .withExpireAfterWrite(300)
-                    .build(), clockSkewCorrectionThreshold);
+                    .build(), clockSkewCorrectionThreshold,
+                new DocumentMangler(new ScriptEngineManager()));
 
         // Required for mock node dao
         addServiceRegistry(nodeDao);

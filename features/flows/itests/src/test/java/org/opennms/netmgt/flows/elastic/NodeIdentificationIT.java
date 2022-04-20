@@ -34,6 +34,8 @@ import static org.hamcrest.core.IsNull.nullValue;
 import java.util.Collections;
 import java.util.List;
 
+import javax.script.ScriptEngineManager;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -113,7 +115,8 @@ public class NodeIdentificationIT {
                         .withName("flows.node")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build(), 0);
+                        .build(), 0,
+                new DocumentMangler(new ScriptEngineManager()));
 
         final FlowDocument flowDocument = new FlowDocument();
         flowDocument.setSrcAddr("1.1.1.1");
