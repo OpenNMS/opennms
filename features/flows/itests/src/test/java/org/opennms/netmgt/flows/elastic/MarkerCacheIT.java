@@ -47,6 +47,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.script.ScriptEngineManager;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -174,7 +176,8 @@ public class MarkerCacheIT {
                         .withName("flows.node")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build(), 0);
+                        .build(), 0,
+                new DocumentMangler(new ScriptEngineManager()));
 
 
         final JestClientFactory factory = new JestClientFactory();
@@ -219,7 +222,8 @@ public class MarkerCacheIT {
                         .withName("flows.node")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build(), 0);
+                        .build(), 0,
+                new DocumentMangler(new ScriptEngineManager()));
 
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
@@ -265,7 +269,8 @@ public class MarkerCacheIT {
                         .withName("flows.node")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build(), 0);
+                        .build(), 0,
+                new DocumentMangler(new ScriptEngineManager()));
 
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
