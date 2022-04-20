@@ -312,6 +312,8 @@ public class DefaultDeviceConfigRestServiceIT {
         dc.setIpInterface(ipInterface1);
         dc.setServiceName("DeviceConfig-default");
         dc.setLastUpdated(new Date(createdTime(version)));
+        dc.setStatus(DeviceConfig.determineBackupStatus(dc));
+
         return dc;
     }
 

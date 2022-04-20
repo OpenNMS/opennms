@@ -16,5 +16,6 @@
     <module>shell</module>
     <module>scvcli</module>
     <module>dominion-grpc-impl</module>
+    <module>rest</module>
   </modules>
 </project>

@@ -491,6 +491,7 @@
                 <feature>opennms-dao</feature>
                 <feature>opennms-events-api</feature>
                 <feature>opennms-events-commands</feature>
+                <feature>opennms-events-collector</feature>
                 <feature>opennms-health</feature>
                 <feature>opennms-health-rest</feature>
                 <feature>opennms-icmp-api</feature>
@@ -612,6 +613,7 @@
                 <feature>opennms-config-management</feature>
                 <feature>opennms-config-management-osgi-del</feature>
                 <feature>opennms-config-management-osgi-cm</feature>
+                <feature>opennms-scv-rest</feature>
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>

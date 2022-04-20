@@ -7,7 +7,7 @@
 
     <template v-slot:right>
       <Search v-if="!route.fullPath.includes('/map')" />
-      <FeatherButton @click="returnHandler" class="return-btn">Return to previous UI</FeatherButton>
+      <FeatherButton @click="returnHandler" class="return-btn">Back to main page</FeatherButton>
       <FeatherIcon
         :icon="LightDarkMode"
         class="pointer light-dark"

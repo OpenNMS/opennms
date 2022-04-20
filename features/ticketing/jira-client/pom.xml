@@ -12,7 +12,7 @@
     <description>OSGi wrapper for the Jira Client API.</description>
 
     <properties>
-        <jiraClientVersion>3.0.0</jiraClientVersion>
+        <jiraClientVersion>5.2.2</jiraClientVersion>
     </properties>
 
     <build>
@@ -59,7 +59,7 @@
             <configuration>
                 <instructions>
                     <Import-Package>javax.security.auth,javax.security.auth.x500,org.joda.time,org.joda.time.format;version=${jodaTimeVersion},javax.ws.rs,javax.ws.rs.core,javax.ws.rs.ext,javax.net.ssl,javax.naming,javax.naming.ldap,javax.naming.directory,org.apache.commons.logging,org.springframework.beans.factory</Import-Package>
-                    <Export-Package>com.atlassian.jira.rest.client.api,com.atlassian.jira.rest.client.auth,com.atlassian.jira.rest.client.api.domain,com.atlassian.jira.rest.client.api.domain.input,com.atlassian.jira.rest.client.internal.async,com.atlassian.util.concurrent,com.atlassian.httpclient.apache.httpcomponents</Export-Package>
+                    <Export-Package>com.atlassian.jira.rest.client.api,com.atlassian.jira.rest.client.auth,com.atlassian.jira.rest.client.api.domain,com.atlassian.jira.rest.client.api.domain.input,com.atlassian.jira.rest.client.internal.async,com.atlassian.httpclient.apache.httpcomponents,io.atlassian.util.concurrent</Export-Package>
                 </instructions>
                 <unpackBundle>true</unpackBundle>
             </configuration>
@@ -85,6 +85,14 @@
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.ws.rs</groupId>
+                    <artifactId>jsr311-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>com.sun.xml.bind</groupId>
@@ -114,6 +122,14 @@
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>javax.ws.rs</groupId>
+                    <artifactId>jsr311-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>com.sun.xml.bind</groupId>
                     <artifactId>jaxb-core</artifactId>
                 </exclusion>
@@ -126,6 +142,16 @@
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.atlassian.util.concurrent</groupId>
+            <artifactId>atlassian-util-concurrent</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.atlassian.fugue</groupId>
+            <artifactId>fugue</artifactId>
+            <version>4.7.2</version>
         </dependency>
     </dependencies>
 

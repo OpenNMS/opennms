@@ -52,6 +52,10 @@
       <groupId>org.opennms.core.ipc.sink</groupId>
       <artifactId>org.opennms.core.ipc.sink.xml</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.core</artifactId>
+    </dependency>
 
     <!-- Test dependencies -->
     <dependency>

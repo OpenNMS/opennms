@@ -45,4 +45,32 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet author="stheleman" id="30.0.0-device-config-lastupdated-nullable">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="NO">
+                SELECT is_nullable FROM information_schema.columns
+                WHERE table_schema = 'public'
+                AND table_name = 'device_config'
+                AND column_name = 'last_updated'
+            </sqlCheck>
+        </preConditions>
+        <dropNotNullConstraint tableName="device_config" columnName="last_updated" columnDataType="timestamp"/>
+    </changeSet>
+
+    <changeSet author="stheleman" id="30.0.0-device-config-add-column-status">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.columns
+                WHERE table_schema = 'public'
+                AND table_name = 'device_config'
+                AND column_name = 'status'
+            </sqlCheck>
+        </preConditions>
+        <addColumn tableName="device_config">
+            <column name="status" type="varchar(20)" defaultValue="NONE">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

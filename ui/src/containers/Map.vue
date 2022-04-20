@@ -33,8 +33,10 @@ import 'splitpanes/dist/splitpanes.css'
 import LeafletMap from '../components/Map/LeafletMap.vue'
 import GridTabs from '@/components/Map/GridTabs.vue'
 import { debounce } from 'lodash'
+import useSpinner from '@/composables/useSpinner'
 
 const store = useStore()
+const { startSpinner, stopSpinner } = useSpinner()
 const split = ref()
 const nodesReady = ref(false)
 const leafletComponent = ref()
@@ -50,10 +52,10 @@ const minimizeBottomPane = () => {
 const resize = debounce(() => leafletComponent.value.invalidateSizeFn(), 200)
 
 onMounted(async () => {
-  store.dispatch('spinnerModule/setSpinnerState', true)
+  startSpinner()
   await store.dispatch('mapModule/getNodes')
   await store.dispatch('mapModule/getAlarms')
-  store.dispatch('spinnerModule/setSpinnerState', false)
+  stopSpinner()
   nodesReady.value = true
   // commented out until we do topology
   // store.dispatch('mapModule/getNodesGraphEdges')
