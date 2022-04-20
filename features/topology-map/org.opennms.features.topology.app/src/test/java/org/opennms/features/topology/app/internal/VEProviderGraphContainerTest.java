@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-20122 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -41,7 +42,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
@@ -170,7 +170,7 @@ public class VEProviderGraphContainerTest {
 		final MetaTopologyProvider metaTopologyProvider = new SimpleMetaTopologyProvider(m_graphProvider);
 		final DefaultTopologyService topologyService = new DefaultTopologyService();
 		topologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
-		topologyService.setTopologyEntityCache(EasyMock.niceMock(TopologyEntityCache.class));
+		topologyService.setTopologyEntityCache(mock(TopologyEntityCache.class));
 
         final VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();
 		graphContainer.setSemanticZoomLevel(0);
@@ -197,7 +197,7 @@ public class VEProviderGraphContainerTest {
         final DefaultTopologyService topologyService = new DefaultTopologyService();
         final SimpleMetaTopologyProvider simpleMetaTopologyProvider = new SimpleMetaTopologyProvider(m_graphProvider);
 		topologyService.setServiceLocator(new SimpleServiceLocator(simpleMetaTopologyProvider));
-		topologyService.setTopologyEntityCache(EasyMock.niceMock(TopologyEntityCache.class));
+		topologyService.setTopologyEntityCache(mock(TopologyEntityCache.class));
 
 		// Wrap the test GraphProvider in a VertexHopGraphProvider
 		final VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();

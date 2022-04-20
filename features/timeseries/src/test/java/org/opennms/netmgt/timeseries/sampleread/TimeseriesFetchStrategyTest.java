@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,14 @@
 
 package org.opennms.netmgt.timeseries.sampleread;
 
-import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Duration;
@@ -44,7 +48,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,7 +99,7 @@ public class TimeseriesFetchStrategyTest {
 
     @Before
     public void setUp() {
-        resourceDao = EasyMock.createNiceMock(ResourceDao.class);
+        resourceDao = mock(ResourceDao.class);
         this.timeSeriesStorage = Mockito.mock(TimeSeriesStorage.class);
         when(timeSeriesStorage.supportsAggregation(Aggregation.AVERAGE)).thenReturn(true);
         storageManager = Mockito.mock(TimeseriesStorageManagerImpl.class);
@@ -111,7 +114,7 @@ public class TimeseriesFetchStrategyTest {
 
     @After
     public void tearDown() {
-        EasyMock.verify(resourceDao);
+        verifyNoMoreInteractions(resourceDao);
     }
 
     @Test
@@ -130,6 +133,8 @@ public class TimeseriesFetchStrategyTest {
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmp"));
         assertEquals(1, fetchResults.getTimestamps().length);
+
+        verify(resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
     }
 
     @Test
@@ -148,6 +153,8 @@ public class TimeseriesFetchStrategyTest {
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmp"));
         assertEquals(1, fetchResults.getTimestamps().length);
+
+        verify(resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
     }
 
     @Test
@@ -164,6 +171,8 @@ public class TimeseriesFetchStrategyTest {
 
         FetchResults fetchResults = fetchStrategy.fetch(START_TIME, END_TIME, STEP, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
         assertNull(fetchResults);
+
+        verify(resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
     }
 
     @Test
@@ -181,6 +190,8 @@ public class TimeseriesFetchStrategyTest {
         assertTrue(fetchResults.getColumns().containsKey("snmplocalhost"));
         assertTrue(fetchResults.getColumns().containsKey("snmp192"));
         assertEquals(1, fetchResults.getTimestamps().length);
+
+        verify(resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
     }
 
     @Test
@@ -204,6 +215,8 @@ public class TimeseriesFetchStrategyTest {
         FetchResults fetchResults = fetchStrategy.fetch(START_TIME, END_TIME, STEP, 0, null, null, sources, false);
         // It's not possible to fetch multiple resources with the same label, we should only get 1 ICMP result
         assertEquals(1, fetchResults.getColumns().keySet().size());
+
+        verify(resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
     }
 
     @Test
@@ -215,6 +228,8 @@ public class TimeseriesFetchStrategyTest {
         FetchResults fetchResults = fetchStrategy.fetch(START_TIME, END_TIME, STEP, 0, null, null, sources, false);
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("ping1Micro"));
+
+        verify(resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
     }
 
     public Source createMockResource(final String label, final String attr, final String node) throws StorageException {
@@ -226,15 +241,13 @@ public class TimeseriesFetchStrategyTest {
     }
 
     public Source createMockResource(final String label, final String attr, final String ds, final String node, boolean expect) throws StorageException {
-        OnmsResourceType nodeType = EasyMock.createMock(OnmsResourceType.class);
-        expect(nodeType.getName()).andReturn("nodeSource").anyTimes();
-        expect(nodeType.getLabel()).andReturn("nodeSourceTypeLabel").anyTimes();
-        EasyMock.replay(nodeType);
+        OnmsResourceType nodeType = mock(OnmsResourceType.class);
+        when(nodeType.getName()).thenReturn("nodeSource");
+        when(nodeType.getLabel()).thenReturn("nodeSourceTypeLabel");
 
-        OnmsResourceType type = EasyMock.createMock(OnmsResourceType.class);
-        expect(type.getName()).andReturn("newtsTypeName").anyTimes();
-        expect(type.getLabel()).andReturn("newtsTypeLabel").anyTimes();
-        EasyMock.replay(type);
+        OnmsResourceType type = mock(OnmsResourceType.class);
+        when(type.getName()).thenReturn("newtsTypeName");
+        when(type.getLabel()).thenReturn("newtsTypeLabel");
 
         final int nodeId = node.hashCode();
         final String newtsResourceId = "response:" + node + ":" + attr;
@@ -305,9 +318,7 @@ public class TimeseriesFetchStrategyTest {
 
     private void replay() {
         for (Entry<ResourceId, OnmsResource> entry : resources.entrySet()) {
-            expect(resourceDao.getResourceById(entry.getKey())).andReturn(entry.getValue()).anyTimes();
+            when(resourceDao.getResourceById(entry.getKey())).thenReturn(entry.getValue());
         }
-
-        EasyMock.replay(resourceDao);
     }
 }

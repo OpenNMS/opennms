@@ -35,6 +35,7 @@ POST requires XML using application/xml as its Content-Type.
 |===
 | Resource                                             | Description
 | `/nodes`                                             | Add a node.
+| `/nodes/\{id}/rescan`                                | Rescan the node for new interfaces.
 | `/nodes/\{id}/ipinterfaces`                          | Add an IP interface to the node.
 | `/nodes/\{id}/ipinterfaces/\{ipaddress}/services`    | Add a service to the interface for the given node.
 | `/nodes/\{id}/snmpinterfaces`                        | Add an SNMP interface to the node.

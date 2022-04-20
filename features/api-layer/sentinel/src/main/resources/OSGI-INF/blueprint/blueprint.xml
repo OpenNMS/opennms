@@ -1,0 +1,77 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+  <!-- Configuration properties for the API layer -->
+  <cm:property-placeholder id="org.opennms.features.apilayer"
+                           persistent-id="org.opennms.features.apilayer"
+                           update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="nodeIdToCriteriaMaxCacheSize" value="10000"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <reference id="identity" interface="org.opennms.distributed.core.api.Identity" availability="mandatory"/>
+  <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+  <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
+  <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
+  <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory"/>
+  <reference id="jsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
+
+  <!-- Runtime -->
+  <service interface="org.opennms.integration.api.v1.runtime.RuntimeInfo" >
+    <bean class="org.opennms.features.apilayer.sentinel.RuntimeInfoImpl" >
+      <argument ref="identity"/>
+    </bean>
+  </service>
+
+  <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
+    <argument ref="nodeDao"/>
+    <argument ref="sessionUtils"/>
+  </bean>
+  <service interface="org.opennms.integration.api.v1.dao.NodeDao" ref="nodeDaoImpl"/>
+
+  <bean id="nodeCriteriaCache" class="org.opennms.features.apilayer.utils.NodeCriteriaLoadingCacheImpl">
+    <argument ref="sessionUtils"/>
+    <argument ref="nodeDao"/>
+    <argument value="${nodeIdToCriteriaMaxCacheSize}"/>
+  </bean>
+  <service interface="org.opennms.features.apilayer.utils.NodeCriteriaCache" ref="nodeCriteriaCache"/>
+
+  <service interface="org.opennms.integration.api.v1.dao.AlarmDao" >
+    <bean class="org.opennms.features.apilayer.dao.AlarmDaoImpl">
+      <argument ref="alarmDao"/>
+      <argument ref="sessionUtils"/>
+    </bean>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.dao.SnmpInterfaceDao" >
+    <bean class="org.opennms.features.apilayer.dao.SnmpInterfaceDaoImpl">
+      <argument ref="snmpInterfaceDao"/>
+      <argument ref="sessionUtils"/>
+    </bean>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.dao.InterfaceToNodeCache">
+    <bean class="org.opennms.features.apilayer.dao.InterfaceToNodeCacheImpl">
+      <argument ref="interfaceToNodeCache"/>
+    </bean>
+  </service>
+
+  <!-- Health Checks -->
+  <bean id="healthCheckManager" class="org.opennms.features.apilayer.common.health.HealthCheckManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.health.HealthCheck" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="healthCheckManager" />
+  </reference-list>
+  <!--Key-value store -->
+  <service id="keyValueStore" interface="org.opennms.integration.api.v1.distributed.KeyValueStore">
+    <bean class="org.opennms.features.apilayer.common.distributed.KeyValueStoreWrapper">
+      <argument ref="jsonStore"/>
+    </bean>
+  </service>
+</blueprint>

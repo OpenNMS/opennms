@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>29.0.6-SNAPSHOT</version>
+  <version>30.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skip.surefire.tests>false</skip.surefire.tests>
@@ -13,9 +13,9 @@
     <surefireVersion>2.18</surefireVersion>
     <failsafeVersion>2.22.2</failsafeVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <jackson2Version>2.10.0</jackson2Version>
+    <jackson2Version>2.12.3</jackson2Version>
     <jersey.version>2.28</jersey.version>
-    <karafVersion>4.3.2</karafVersion>
+    <karafVersion>4.3.6</karafVersion>
     <selenium.version>3.141.59</selenium.version>
     <testcontainers.version>1.15.2</testcontainers.version>
     <test.fork.count>0</test.fork.count>
@@ -330,7 +330,12 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>4.13.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>hamcrest-jackson</artifactId>
+      <version>1.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -634,6 +639,18 @@
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config.persistence</groupId>
+      <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+      <dependency>
+          <groupId>org.opennms.features.device-config</groupId>
+          <artifactId>org.opennms.features.device-config.rest</artifactId>
+          <version>${project.version}</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
   <repositories>
     <repository>

@@ -10,7 +10,6 @@
 target
 .classpath
 .externalToolBuilders
-.factorypath
 .project
 .settings
 .springBeans
@@ -32,10 +31,14 @@ yarn-error.log
 /features/discovery/activemq-data
 /features/topology-map/org.opennms.features.topology.app/www-test/
 /opennms-alarms/jms-northbounder/activemq-data/
+ui/dist/
+ui/node_modules/
+ui/package-lock.json
+ui/devConfig.ts
+.circleci/main.yml
 
 # Ignore Visual Studio Code
 .factorypath
-
 # Ignore Docker/OCI temporary files
 .docker_temp*
 *.oci

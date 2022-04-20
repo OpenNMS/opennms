@@ -28,12 +28,28 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SortedSetMultimap;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import static org.opennms.core.utils.InetAddressUtils.str;
+
+import java.net.InetAddress;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
@@ -50,26 +66,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.net.InetAddress;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.TreeSet;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
-
-import static org.opennms.core.utils.InetAddressUtils.str;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SortedSetMultimap;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * This class represents a singular instance that is used to map IP
@@ -137,17 +138,24 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
     private static class Value implements Comparable<Value> {
         private final int nodeId;
+        private final int interfaceId;
         private final PrimaryType type;
 
 
         private Value(final int nodeId,
+                      final int interfaceId,
                       final PrimaryType type) {
             this.nodeId = nodeId;
+            this.interfaceId = interfaceId;
             this.type = type;
         }
 
         public int getNodeId() {
             return this.nodeId;
+        }
+
+        public int getInterfaceId() {
+            return this.interfaceId;
         }
 
         public PrimaryType getType() {
@@ -167,6 +175,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             }
             final Value that = (Value) obj;
             return Objects.equals(this.nodeId, that.nodeId)
+                    && Objects.equals(this.interfaceId, that.interfaceId)
                     && Objects.equals(this.type, that.type);
         }
 
@@ -177,7 +186,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
         @Override
         public String toString() {
-            return String.format("Value[nodeId='%s', type='%s']", this.nodeId, this.type);
+            return String.format("Value[nodeId='%s', interfaceId='%s', type='%s']", this.nodeId, this.interfaceId, this.type);
         }
 
         @Override
@@ -185,6 +194,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             return ComparisonChain.start()
                     .compare(this.type, that.type)
                     .compare(this.nodeId, that.nodeId)
+                    .compare(this.interfaceId, that.interfaceId)
                     .result();
         }
     }
@@ -304,7 +314,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
                     continue;
                 }
                 LOG.debug("Adding entry: {}:{} -> {}", node.getLocation().getLocationName(), iface.getIpAddress(), node.getId());
-                newAlreadyDiscovered.put(new Key(node.getLocation().getLocationName(), iface.getIpAddress()), new Value(node.getId(), iface.getIsSnmpPrimary()));
+                newAlreadyDiscovered.put(new Key(node.getLocation().getLocationName(), iface.getIpAddress()), new Value(node.getId(), iface.getId(), iface.getIsSnmpPrimary()));
             }
         }
 
@@ -318,25 +328,16 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", m_managedAddresses.size());
     }
 
-    /**
-     * Returns the nodeid for the IP Address
-     * <p>
-     * If multiple nodes hav assigned interfaces with the same IP, this returns all known nodes sorted by the interface
-     * management priority.
-     *
-     * @param address The IP Address to query.
-     * @return The node ID of the IP Address if known.
-     */
     @Override
-    public synchronized Iterable<Integer> getNodeId(final String location, final InetAddress address) {
-        if (address == null) {
-            return Collections.emptySet();
+    public Optional<Entry> getFirst(String location, InetAddress ipAddr) {
+        if (ipAddr == null) {
+            return Optional.empty();
         }
         waitForInitialNodeSync();
         m_lock.readLock().lock();
         try {
-            return Iterables.transform(m_managedAddresses.get(new Key(location, address)),
-                    Value::getNodeId);
+            var values = m_managedAddresses.get(new Key(location, ipAddr));
+            return values.isEmpty() ? Optional.empty() : Optional.of(new Entry(values.first().nodeId, values.first().interfaceId));
         } finally {
             m_lock.readLock().unlock();
         }
@@ -373,7 +374,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
         m_lock.writeLock().lock();
         try {
-            return m_managedAddresses.put(new Key(location, addr), new Value(nodeid, iface.getIsSnmpPrimary()));
+            return m_managedAddresses.put(new Key(location, addr), new Value(nodeid, iface.getId(), iface.getIsSnmpPrimary()));
         } finally {
             m_lock.writeLock().unlock();
         }
@@ -397,9 +398,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         m_lock.writeLock().lock();
         try {
             final Key key = new Key(location, address);
-            return m_managedAddresses.remove(key, new Value(nodeId, PrimaryType.PRIMARY)) ||
-                    m_managedAddresses.remove(key, new Value(nodeId, PrimaryType.SECONDARY)) ||
-                    m_managedAddresses.remove(key, new Value(nodeId, PrimaryType.NOT_ELIGIBLE));
+            return m_managedAddresses.get(key).removeIf(e -> e.nodeId == nodeId);
         } finally {
             m_lock.writeLock().unlock();
         }

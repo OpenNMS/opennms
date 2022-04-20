@@ -34,8 +34,6 @@ import java.util.Objects;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 
-import com.google.common.collect.Iterables;
-
 /**
  * Given a list of managed IP addresses, this filter will match IP addresses not in that
  * list, hence it is an unmanaged IP address filter.
@@ -50,7 +48,7 @@ public class UnmanagedInterfaceFilter implements IpAddressFilter {
 
     @Override
     public boolean matches(String location, InetAddress address) {
-        return Iterables.isEmpty(interfaceToNodeCache.getNodeId(location, address));
+        return interfaceToNodeCache.getFirstNodeId(location, address).isEmpty();
     }
 
     @Override

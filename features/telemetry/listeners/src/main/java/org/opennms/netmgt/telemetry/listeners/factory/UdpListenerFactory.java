@@ -32,9 +32,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.ListenerFactory;
+import org.opennms.netmgt.telemetry.api.receiver.Parser;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
 import org.opennms.netmgt.telemetry.listeners.UdpListener;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
@@ -55,13 +56,15 @@ public class UdpListenerFactory implements ListenerFactory {
     @Override
     public Listener createBean(ListenerDefinition listenerDefinition) {
         // Ensure each defined parser is of type UdpParser
-        final List<UdpParser> parsers = listenerDefinition.getParsers().stream()
+        final List<Parser> parsers = listenerDefinition.getParsers().stream()
                 .map(p -> telemetryRegistry.getParser(p))
+                .collect(Collectors.toList());
+        final List<UdpParser> udpParsers = parsers.stream()
                 .filter(p -> p instanceof UdpParser)
                 .map(p -> (UdpParser) p).collect(Collectors.toList());
-        if (parsers.size() != listenerDefinition.getParsers().size()) {
-            throw new IllegalArgumentException("Each parser must be of type UdpParser but was not.");
+        if (parsers.size() != udpParsers.size()) {
+            throw new IllegalArgumentException("Each parser must be of type UdpParser but was not: " + parsers);
         }
-        return new UdpListener(listenerDefinition.getName(), parsers, telemetryRegistry.getMetricRegistry());
+        return new UdpListener(listenerDefinition.getName(), udpParsers, telemetryRegistry.getMetricRegistry());
     }
 }

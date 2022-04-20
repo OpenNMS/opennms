@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,48 +28,63 @@
 
 package org.opennms.netmgt.correlation;
 
-import java.util.ArrayList;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.util.Collections;
 import java.util.List;
 
-import org.easymock.EasyMock;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 
-import static org.easymock.EasyMock.*;
-
-import junit.framework.TestCase;
-
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class CorrelatorTest extends TestCase {
-	
-	List<Object> mocks = new ArrayList<>();
+public class CorrelatorTest {
 	private EventIpcManager m_eventIpcManager;
 	private CorrelationEngine m_engine;
 	private Correlator m_correlator;
+	private List<String> m_interestingEvents;
 
-	@Override
-	protected void setUp() throws Exception {
-		m_eventIpcManager = createMock(EventIpcManager.class);
-		m_engine = createMock(CorrelationEngine.class);
+	@Before
+	public void setUp() throws Exception {
+		m_eventIpcManager = mock(EventIpcManager.class);
+		m_engine = mock(CorrelationEngine.class);
 		
-		List<String> interestingEvents = Collections.singletonList("uei.opennms.org:/testEvent");
+		m_interestingEvents = Collections.singletonList("uei.opennms.org:/testEvent");
 
-		expect(m_engine.getName()).andStubReturn("myMockEngine");
-		expect(m_engine.getInterestingEvents()).andReturn(interestingEvents);
+		when(m_engine.getName()).thenReturn("myMockEngine");
+		when(m_engine.getInterestingEvents()).thenReturn(Collections.singletonList("uei.opennms.org:/testEvent"));
 		m_engine.tearDown();
-		EasyMock.expectLastCall().anyTimes();
 
-		m_eventIpcManager.addEventListener(isA(EventListener.class), same(interestingEvents));
+		m_eventIpcManager.addEventListener(isA(EventListener.class), same(Collections.singletonList("uei.opennms.org:/testEvent")));
 		m_eventIpcManager.addEventListener(isA(EventListener.class), same(EventConstants.RELOAD_DAEMON_CONFIG_UEI));
-		replayMocks();
+
+                verify(m_eventIpcManager, times(1)).addEventListener((EventListener)null, (List<String>)null);
+                verify(m_eventIpcManager, times(1)).addEventListener((EventListener)null, (String)null);
+                verify(m_engine, times(1)).tearDown();
 	}
 
+	@After
+	public void tearDown() {
+            verifyNoMoreInteractions(m_eventIpcManager);
+            verifyNoMoreInteractions(m_engine);
+	}
+
+	@Test
 	public void testStartStop() throws Exception {
 
 		m_correlator = new Correlator();
@@ -82,32 +97,26 @@ public class CorrelatorTest extends TestCase {
 		assertEquals("Expected the correlator to be running", Fiber.RUNNING, m_correlator.getStatus());
 		m_correlator.stop();
 		assertEquals("Expected the correlator to be stopped", Fiber.STOPPED, m_correlator.getStatus());
-		
-		verifyMocks();
-	}
-	
-	public void testRegisterForEvents() throws Exception {
 
+                verify(m_eventIpcManager, times(1)).addEventListener(isA(Correlator.EngineAdapter.class), eq(m_interestingEvents));
+                verify(m_eventIpcManager, times(1)).addEventListener(isA(Correlator.EngineAdapter.class), eq(EventConstants.RELOAD_DAEMON_CONFIG_UEI));
+                verify(m_engine, times(2)).getName();
+                verify(m_engine, times(1)).getInterestingEvents();
+                verify(m_engine, times(2)).tearDown();
+	}
+
+	@Test
+	public void testRegisterForEvents() throws Exception {
 		m_correlator = new Correlator();
 		m_correlator.setEventIpcManager(m_eventIpcManager);
 		m_correlator.setCorrelationEngines(Collections.singletonList(m_engine));
 		m_correlator.afterPropertiesSet();
-		
-		verifyMocks();
+
+                verify(m_eventIpcManager, times(1)).addEventListener(isA(Correlator.EngineAdapter.class), eq(m_interestingEvents));
+                verify(m_eventIpcManager, times(1)).addEventListener(isA(Correlator.EngineAdapter.class), eq(EventConstants.RELOAD_DAEMON_CONFIG_UEI));
+                verify(m_engine, times(2)).getName();
+                verify(m_engine, times(1)).getInterestingEvents();
+                verify(m_engine, times(1)).tearDown();
 	}
 	
-	private <T> T createMock(Class<T> clazz) {
-		T mock = EasyMock.createMock(clazz);
-		mocks.add(mock);
-		return mock;
-	}
-	
-	private void replayMocks() {
-		EasyMock.replay(mocks.toArray());
-	}
-	
-	private void verifyMocks() {
-		EasyMock.verify(mocks.toArray());
-		EasyMock.reset(mocks.toArray());
-	}
 }

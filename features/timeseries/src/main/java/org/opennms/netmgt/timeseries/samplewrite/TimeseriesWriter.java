@@ -161,12 +161,9 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     }
 
     public void insert(List<Sample> samples) {
-        pushToRingBuffer(samples, TRANSLATOR);
-    }
 
-    private void pushToRingBuffer(List<Sample> samples, EventTranslatorOneArg<SampleBatchEvent, List<Sample>> translator) {
         // Add the samples to the ring buffer
-        if (!ringBuffer.tryPublishEvent(translator, samples)) {
+        if (!ringBuffer.tryPublishEvent(TRANSLATOR, samples)) {
             RATE_LIMITED_LOGGER.error("The ring buffer is full. {} samples associated with resource ids {} will be dropped.",
                     samples.size(), new Object() {
                         @Override
@@ -187,7 +184,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     }
 
     @Override
-    public void onEvent(SampleBatchEvent event) throws Exception {
+    public void onEvent(SampleBatchEvent event) {
         // We'd expect the logs from this thread to be in collectd.log
         Logging.putPrefix("collectd");
 
@@ -206,5 +203,9 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
 
     public void setTimeSeriesStorage(final TimeseriesStorageManager timeseriesStorage) {
         this.storage = timeseriesStorage;
+    }
+
+    public void setStats(StatisticsCollector stats) {
+        this.stats = stats;
     }
 }

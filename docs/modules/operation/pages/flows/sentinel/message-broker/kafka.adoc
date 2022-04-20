@@ -25,13 +25,11 @@ ssh -p 8301 admin@localhost
 config:edit org.opennms.sentinel.controller
 config:property-set location SENTINEL<1>
 config:property-set id 00000000-0000-0000-0000-000000ddba11<2>
-config:property-set http-url http://core-instance-ip:8980/opennms<3>
 config:update
 ----
 
 <1> A location string is used to assign the Sentinel to a monitoring location with Minions.
 <2> Unique identifier used as a node label for monitoring the Sentinel instance within {page-component-title).
-<3> Base URL for the web UI, which provides the REST endpoints.
 
 .Configure Sentinel as Kafka consumer for flow messages
 [source, karaf]

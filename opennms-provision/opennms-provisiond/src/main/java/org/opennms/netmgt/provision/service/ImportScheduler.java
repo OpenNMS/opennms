@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.service;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Iterator;
 import java.util.stream.Collectors;
@@ -218,7 +219,7 @@ public class ImportScheduler implements InitializingBean {
     /**
      * <p>buildImportSchedule</p>
      */
-    protected void buildImportSchedule() {
+    protected void buildImportSchedule() throws IOException {
         
         synchronized (m_lock) {
 

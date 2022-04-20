@@ -38,13 +38,10 @@ public class ThresholdingSessionKeyImpl implements ThresholdingSessionKey {
 
     private final String serviceName;
 
-    private final String resource;
-
-    public ThresholdingSessionKeyImpl(int nodeId, String ipAddress, String serviceName, String resource) {
+    public ThresholdingSessionKeyImpl(int nodeId, String ipAddress, String serviceName) {
         this.nodeId = nodeId;
         this.ipAddress = ipAddress;
         this.serviceName = serviceName;
-        this.resource = resource;
     }
 
     public String getLocation() {
@@ -59,10 +56,6 @@ public class ThresholdingSessionKeyImpl implements ThresholdingSessionKey {
         return serviceName;
     }
 
-    public String getResource() {
-        return resource;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -70,7 +63,6 @@ public class ThresholdingSessionKeyImpl implements ThresholdingSessionKey {
         result = prime * result + nodeId;
         result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
         result = prime * result + ((serviceName == null) ? 0 : serviceName.hashCode());
-        result = prime * result + ((resource == null) ? 0 : resource.hashCode());
         return result;
     }
 
@@ -94,11 +86,6 @@ public class ThresholdingSessionKeyImpl implements ThresholdingSessionKey {
             if (other.serviceName != null)
                 return false;
         } else if (!serviceName.equals(other.serviceName))
-            return false;
-        if (resource == null) {
-            if (other.resource != null)
-                return false;
-        } else if (!resource.equals(other.resource))
             return false;
         return true;
     }

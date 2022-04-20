@@ -1,5 +1,20 @@
 version: 2
 updates:
+
+  - package-ecosystem: "npm"
+    # Look for `package.json` and `lock` files in the `root` directory
+    directory: "/ui"
+    target-branch: "develop"
+    reviewers:
+      - "mikewrosey"
+    labels:
+      - "dependency update"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    schedule:
+      interval: "weekly"
+
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/core/web-assets/"

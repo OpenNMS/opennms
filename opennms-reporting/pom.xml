@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>29.0.6-SNAPSHOT</version>
+    <version>30.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-reporting</artifactId>
@@ -122,11 +122,6 @@
       <artifactId>avalon-framework</artifactId>
       <version>4.1.3</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>

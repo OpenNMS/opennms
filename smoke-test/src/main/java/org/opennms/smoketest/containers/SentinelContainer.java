@@ -28,6 +28,10 @@
 
 package org.opennms.smoketest.containers;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
@@ -43,8 +47,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 import org.apache.commons.io.FileUtils;
+import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.JsonStoreStrategy;
 import org.opennms.smoketest.stacks.SentinelProfile;
@@ -55,6 +62,7 @@ import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TargetRoot;
 import org.opennms.smoketest.utils.TestContainerUtils;
+import org.opennms.smoketest.utils.RestHealthClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
@@ -74,6 +82,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     private static final Logger LOG = LoggerFactory.getLogger(SentinelContainer.class);
     private static final int SENTINEL_DEBUG_PORT = 5005;
     private static final int SENTINEL_SSH_PORT = 8301;
+    private static final int SENTINEL_JETTY_PORT = 8181;
     static final String ALIAS = "sentinel";
 
     private final StackModel model;
@@ -85,7 +94,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
         this.overlay = writeOverlay();
-        withExposedPorts(SENTINEL_DEBUG_PORT, SENTINEL_SSH_PORT)
+        withExposedPorts(SENTINEL_DEBUG_PORT, SENTINEL_SSH_PORT, SENTINEL_JETTY_PORT)
                 .withEnv("SENTINEL_LOCATION", "Sentinel")
                 .withEnv("SENTINEL_ID", profile.getId())
                 .withEnv("POSTGRES_HOST", OpenNMSContainer.DB_ALIAS)
@@ -97,7 +106,6 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
                 .withEnv("OPENNMS_DBUSER", "opennms")
                 .withEnv("OPENNMS_DBPASS", "opennms")
                 .withEnv("OPENNMS_BROKER_URL", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616")
-                .withEnv("OPENNMS_HTTP_URL", "http://" + OpenNMSContainer.ALIAS + ":8980/opennms")
                 .withEnv("OPENNMS_HTTP_USER", "admin")
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
                 .withEnv("OPENNMS_BROKER_USER", "admin")
@@ -189,6 +197,8 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     public List<String> getFeaturesOnBoot() {
         final List<String> featuresOnBoot = new ArrayList<>();
         featuresOnBoot.add("sentinel-persistence");
+        featuresOnBoot.add("sentinel-core");
+        featuresOnBoot.add("opennms-health-rest-service");
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             featuresOnBoot.add("sentinel-kafka");
         } else if (IpcStrategy.JMS.equals(model.getIpcStrategy())) {
@@ -230,6 +240,18 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
     }
 
+    public URL getWebUrl() {
+        try {
+            return new URL(String.format("http://%s:%d/", getContainerIpAddress(), getMappedPort(SENTINEL_JETTY_PORT)));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getWebPort() {
+        return SENTINEL_JETTY_PORT;
+    }
+
     private static class WaitForSentinel extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
         private final SentinelContainer container;
 
@@ -240,8 +262,16 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         @Override
         protected void waitUntilReady() {
             LOG.info("Waiting for Sentinel health check...");
-            final InetSocketAddress sshAddr = container.getSshAddress();
-            awaitHealthCheckSucceeded(sshAddr, 5, "Sentinel");
+            try {
+                RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
+                await().atMost(5, MINUTES)
+                        .pollInterval(10, SECONDS)
+                        .ignoreExceptions()
+                        .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
+            } catch(ConditionTimeoutException e) {
+                LOG.error("{} rest health check did not finish after {} minutes.", ALIAS, 5);
+                throw new RuntimeException(e);
+            }
             LOG.info("Health check passed.");
         }
     }

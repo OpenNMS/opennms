@@ -132,6 +132,7 @@
       <feature version="${netty4Version}">netty4</feature>
       <feature>opennms-dnsresolver-api</feature>
       <feature>dropwizard-metrics</feature>
+      <feature>opennms-util</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
       <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
@@ -184,16 +185,21 @@
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.dominion-grpc-impl/${project.version}</bundle>
     </feature>
 
-  <feature name="minion-rest-service" version="${project.version}" description="Minion :: Rest :: Service">
-    <feature>opennms-health-rest</feature>
-    <feature version="${cxfVersion}">cxf-core</feature>
-    <feature version="${cxfVersion}">cxf-jaxrs</feature>
-    <bundle>mvn:org.opennms.features.minion/minion-rest-service/${project.version}</bundle>
-  </feature>
+    <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
+        <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+        <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
+        <feature>commons-lang3</feature>
+        <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
+    </feature>
 
-  <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
-    <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
-    <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
-  </feature>
+    <feature name="minion-api-layer" version="${project.version}" description="Minion :: API Layer">
+        <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
+        <feature>minion-health-check</feature>
+        <feature>opennms-provisioning</feature>
+        <feature>opennms-dao-api</feature>
+        <bundle dependency="true">mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.minion/${project.version}</bundle>
+    </feature>
 
 </features>

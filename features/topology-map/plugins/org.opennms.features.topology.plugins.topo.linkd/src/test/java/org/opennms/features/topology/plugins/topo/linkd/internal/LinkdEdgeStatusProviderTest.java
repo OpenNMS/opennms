@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,17 +28,29 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import org.easymock.EasyMock;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Status;
-import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
@@ -48,21 +60,12 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-
 public class LinkdEdgeStatusProviderTest {
 
     public LinkdEdgeStatusProviderTest() {
     }
 
     private AlarmDao m_alarmDao;
-    private SessionUtils sessionUtils;
     private LinkdEdgeStatusProvider m_statusProvider;
     private BackendGraph m_graph;
     private OnmsNode m_node1;
@@ -76,9 +79,7 @@ public class LinkdEdgeStatusProviderTest {
     private List<LinkdEdge> m_edges; 
 
     private LinkdVertex getVertexFromNode(OnmsNode node) {
-        return LinkdVertex.create(
-                                  TopologyUpdater.create(
-                                             NodeTopologyEntity.toNodeTopologyInfo(node), null));
+        return LinkdVertex.create(TopologyUpdater.create(NodeTopologyEntity.toNodeTopologyInfo(node), null));
     }
 
     @Before
@@ -160,28 +161,25 @@ public class LinkdEdgeStatusProviderTest {
         LinkdPort chennaiport13 = new LinkdPort(chennaiVertex, 13);
         m_edges.add(LinkdEdge.create("310|314", dehliport12, chennaiport13, ProtocolSupported.OSPF));
 
-        m_alarmDao = EasyMock.createMock(AlarmDao.class);
-        m_graph = EasyMock.createMock(BackendGraph.class);
+        m_alarmDao = mock(AlarmDao.class);
+        m_graph = mock(BackendGraph.class);
         m_statusProvider = new LinkdEdgeStatusProvider();
         m_statusProvider.setAlarmDao(m_alarmDao);
         m_statusProvider.setSessionUtils(new MockSessionUtils());
-
     }
 
     @After
     public void tearDown() {
-        EasyMock.reset(m_alarmDao,m_graph);
+        verifyNoMoreInteractions(m_alarmDao);
+        verifyNoMoreInteractions(m_graph);
     }
 
     @Test
     public void testLinkStatusWithNoAlarms() {
-        EasyMock.expect(
-                m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createEmptyAlarmList()).anyTimes();
+        when(m_alarmDao.findMatching(any(org.opennms.core.criteria.Criteria.class))).thenReturn(createEmptyAlarmList());
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
-            EasyMock.expect(
-                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_graph);
+            when(m_graph.getEdge(ref)).thenReturn(getEdgeFromRef(ref));
         
 
         Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
@@ -198,17 +196,16 @@ public class LinkdEdgeStatusProviderTest {
             assertEquals("up", status.computeStatus());
         }
 
+        verify(m_alarmDao, atLeastOnce()).findMatching(any(org.opennms.core.criteria.Criteria.class));
+        verify(m_graph, atLeastOnce()).getEdge(any(EdgeRef.class));
     }
 
     @Test
     public void testGetBridgeLinkStatusDesignatedCloudDown(){
-        EasyMock.expect(
-                m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createCloudDownAlarm()).anyTimes();
+        when(m_alarmDao.findMatching(any(org.opennms.core.criteria.Criteria.class))).thenReturn(createCloudDownAlarm());
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
-            EasyMock.expect(
-                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_graph);
+            when(m_graph.getEdge(ref)).thenReturn(getEdgeFromRef(ref));
 
         Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
         assertEquals(8, statusMap.size());
@@ -221,17 +218,17 @@ public class LinkdEdgeStatusProviderTest {
         assertEquals(statusMap.get(edges.get(6)).computeStatus(), "up");
         assertEquals(statusMap.get(edges.get(7)).computeStatus(), "up");
         assertEquals(statusMap.get(edges.get(0)).computeStatus(), "down");
+
+        verify(m_alarmDao, atLeastOnce()).findMatching(any(org.opennms.core.criteria.Criteria.class));
+        verify(m_graph, atLeastOnce()).getEdge(any(EdgeRef.class));
     }
 
     @Test
     public void testGetBridgeLinkStatusOneDown(){
-        EasyMock.expect(
-                m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createBridgeDownAlarm()).anyTimes();
+        when(m_alarmDao.findMatching(any(org.opennms.core.criteria.Criteria.class))).thenReturn(createBridgeDownAlarm());
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
-            EasyMock.expect(
-                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_graph);
+            when(m_graph.getEdge(ref)).thenReturn(getEdgeFromRef(ref));
 
         
         Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
@@ -246,17 +243,17 @@ public class LinkdEdgeStatusProviderTest {
         assertEquals(statusMap.get(edges.get(6)).computeStatus(), "up");
         assertEquals(statusMap.get(edges.get(7)).computeStatus(), "up");
         assertEquals(statusMap.get(edges.get(1)).computeStatus(), "down");
+
+        verify(m_alarmDao, atLeastOnce()).findMatching(any(org.opennms.core.criteria.Criteria.class));
+        verify(m_graph, atLeastOnce()).getEdge(any(EdgeRef.class));
     }
     
     @Test
     public void testGetIsisLinkStatusDown(){
-        EasyMock.expect(
-                        m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createIsIsDownAlarm()).anyTimes();
+        when(m_alarmDao.findMatching(any(org.opennms.core.criteria.Criteria.class))).thenReturn(createIsIsDownAlarm());
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
-            EasyMock.expect(
-                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_graph);
+            when(m_graph.getEdge(ref)).thenReturn(getEdgeFromRef(ref));
 
         Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
         assertEquals(8, statusMap.size());
@@ -269,17 +266,17 @@ public class LinkdEdgeStatusProviderTest {
         assertEquals(statusMap.get(edges.get(6)).computeStatus(), "up");
         assertEquals(statusMap.get(edges.get(7)).computeStatus(), "up");
         assertEquals(statusMap.get(edges.get(3)).computeStatus(), "down");
+
+        verify(m_alarmDao, atLeastOnce()).findMatching(any(org.opennms.core.criteria.Criteria.class));
+        verify(m_graph, atLeastOnce()).getEdge(any(EdgeRef.class));
     }
 
     @Test
     public void testGetLldpLinkStatusDown(){
-        EasyMock.expect(
-                m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createLldpDownAlarm()).anyTimes();
+        when(m_alarmDao.findMatching(any(org.opennms.core.criteria.Criteria.class))).thenReturn(createLldpDownAlarm());
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
-            EasyMock.expect(
-                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_graph);
+            when(m_graph.getEdge(ref)).thenReturn(getEdgeFromRef(ref));
 
         Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
         assertEquals(8, statusMap.size());
@@ -292,17 +289,17 @@ public class LinkdEdgeStatusProviderTest {
         assertEquals(statusMap.get(edges.get(6)).computeStatus(), "up");
         assertEquals(statusMap.get(edges.get(7)).computeStatus(), "up");
         assertEquals(statusMap.get(edges.get(4)).computeStatus(), "down");
+
+        verify(m_alarmDao, atLeastOnce()).findMatching(any(org.opennms.core.criteria.Criteria.class));
+        verify(m_graph, atLeastOnce()).getEdge(any(EdgeRef.class));
     }
 
     @Test
     public void testGetOspfLinkStatusDown(){
-        EasyMock.expect(
-                m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createOspfDownAlarm()).anyTimes();
+        when(m_alarmDao.findMatching(any(org.opennms.core.criteria.Criteria.class))).thenReturn(createOspfDownAlarm());
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
-            EasyMock.expect(
-                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_graph);
+            when(m_graph.getEdge(ref)).thenReturn(getEdgeFromRef(ref));
 
         Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
         assertEquals(8, statusMap.size());
@@ -315,17 +312,17 @@ public class LinkdEdgeStatusProviderTest {
         assertEquals(statusMap.get(edges.get(6)).computeStatus(), "up");
         assertEquals(statusMap.get(edges.get(7)).computeStatus(), "up");
         assertEquals(statusMap.get(edges.get(5)).computeStatus(), "down");
+
+        verify(m_alarmDao, atLeastOnce()).findMatching(any(org.opennms.core.criteria.Criteria.class));
+        verify(m_graph, atLeastOnce()).getEdge(any(EdgeRef.class));
     }
 
     @Test
     public void testGetCdpLinkStatusDown(){
-        EasyMock.expect(
-                m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createCdpDownAlarm()).anyTimes();
+        when(m_alarmDao.findMatching(any(org.opennms.core.criteria.Criteria.class))).thenReturn(createCdpDownAlarm());
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
-            EasyMock.expect(
-                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_graph);
+            when(m_graph.getEdge(ref)).thenReturn(getEdgeFromRef(ref));
 
         Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
         assertEquals(8, statusMap.size());
@@ -338,17 +335,17 @@ public class LinkdEdgeStatusProviderTest {
         assertEquals(statusMap.get(edges.get(5)).computeStatus(), "up");
         assertEquals(statusMap.get(edges.get(7)).computeStatus(), "up");
         assertEquals(statusMap.get(edges.get(6)).computeStatus(), "down");
+
+        verify(m_alarmDao, atLeastOnce()).findMatching(any(org.opennms.core.criteria.Criteria.class));
+        verify(m_graph, atLeastOnce()).getEdge(any(EdgeRef.class));
     }
 
     @Test
     public void testSPC944OspfLinkStatus(){
-        EasyMock.expect(
-                        m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createChennaiDownAlarm()).anyTimes();
+        when(m_alarmDao.findMatching(any(org.opennms.core.criteria.Criteria.class))).thenReturn(createChennaiDownAlarm());
                 List<EdgeRef> edges = getEdgeRefs();
                 for (EdgeRef ref: edges) 
-                    EasyMock.expect(
-                                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-                        EasyMock.replay(m_alarmDao,m_graph);
+                    when(m_graph.getEdge(ref)).thenReturn(getEdgeFromRef(ref));
 
                 Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
                 assertEquals(8, statusMap.size());
@@ -361,6 +358,9 @@ public class LinkdEdgeStatusProviderTest {
                 assertEquals(statusMap.get(edges.get(5)).computeStatus(), "up");
                 assertEquals(statusMap.get(edges.get(6)).computeStatus(), "up");
                 assertEquals(statusMap.get(edges.get(7)).computeStatus(), "down");
+
+                verify(m_alarmDao, atLeastOnce()).findMatching(any(org.opennms.core.criteria.Criteria.class));
+                verify(m_graph, atLeastOnce()).getEdge(any(EdgeRef.class));
     }
 
 

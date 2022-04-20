@@ -113,7 +113,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
         RrdRepository repository = getRrdRepository(rrdPath);
 
         if (thresholds.equalsIgnoreCase("true")) {
-            applyThresholds(collectionSet, svc, dsName, repository);
+            applyThresholds(collectionSet, svc, dsName);
         } else {
             LOG.debug("storeResponseTime: Thresholds processing is not enabled. Check thresholding-enabled parameter on service definition");
         }
@@ -138,13 +138,12 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
         collectionSet.visit(persister);
     }
 
-    private void applyThresholds(CollectionSet collectionSet, MonitoredService service, String dsName, RrdRepository repository) {
+    private void applyThresholds(CollectionSet collectionSet, MonitoredService service, String dsName) {
         try {
             if (m_thresholdingSession == null) {
                 m_thresholdingSession = m_thresholdingService.createSession(service.getNodeId(), 
                                                                             service.getIpAddr(),
                                                                             service.getSvcName(),
-                                                                            repository,
                                                                             EMPTY_SERVICE_PARAMS);
             }
             m_thresholdingSession.accept(collectionSet);

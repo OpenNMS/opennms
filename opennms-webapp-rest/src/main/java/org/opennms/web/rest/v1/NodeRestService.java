@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -68,7 +68,6 @@ import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
@@ -193,6 +192,26 @@ public class NodeRestService extends OnmsRestService {
     }
 
     /**
+     * <p>rescanNode</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("{nodeCriteria}/rescan")
+    public Response rescanNode(@PathParam("nodeCriteria") final String nodeCriteria) {
+        final OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.NOT_FOUND, "Node {} was not found.", nodeCriteria);
+        }
+        
+        final Event e = EventUtils.createNodeRescanEvent("ReST", node.getId());
+        sendEvent(e);
+        return Response.noContent().build();
+    }
+
+    /**
      * <p>addNode</p>
      *
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
@@ -222,7 +241,10 @@ public class NodeRestService extends OnmsRestService {
 
             LOG.debug("addNode: Adding node {}", node);
             m_nodeDao.save(node);
-            sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId(), node.getLabel());
+            
+            final Event e = EventUtils.createNodeAddedEvent("Web", node.getId(), node.getLabel(), null, null);
+            sendEvent(e);
+            
             return Response.created(uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();
         } finally {
             writeUnlock();
@@ -473,17 +495,6 @@ public class NodeRestService extends OnmsRestService {
             m_eventProxy.send(event);
         } catch (final EventProxyException e) {
             throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", event.getUei(), e.getMessage());
-        }
-    }
-
-    private void sendEvent(final String uei, final int nodeId, String nodeLabel) {
-        try {
-            final EventBuilder bldr = new EventBuilder(uei, "ReST");
-            bldr.setNodeid(nodeId);
-            bldr.addParam("nodelabel", nodeLabel);
-            m_eventProxy.send(bldr.getEvent());
-        } catch (final EventProxyException e) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", uei, e.getMessage());
         }
     }
 

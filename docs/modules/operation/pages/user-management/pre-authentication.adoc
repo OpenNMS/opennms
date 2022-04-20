@@ -41,6 +41,30 @@ You can also set the following properties to change the behavior of the pre-auth
 | X-Remote-User
 
 | credentialsHeader
-| A comma-separated list of additional credentials (roles) the user should have.
+| A comma-separated list of credentials to associate with the principal. If specified, the header must be set for authentication to be successful.
+| n/a
+
+| authoritiesHeader
+| The HTTP header that will contain a comma-separated list of authorities (roles) the user will have.
 | n/a
 |====
+
+== Enabling pre-authorization
+
+Modify `jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`, and set:
+
+[source,xml]
+---
+<beans:bean id="preauthAuthProvider" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+  <beans:property name="preAuthenticatedUserDetailsService">
+    <beans:bean id="preAuthUserDetailsService" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesUserDetailsService"/>
+  </beans:property>
+</beans:bean>
+---
+
+
+You can then try testing with:
+```
+curl -H "X-Remote-User: myuser" -H "X-Remote-Role: ROLE_USER,ROLE_REST" http://localhost:8980/opennms/rest/whoami
+```
+

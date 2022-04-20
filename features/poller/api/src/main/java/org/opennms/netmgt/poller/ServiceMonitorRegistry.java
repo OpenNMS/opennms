@@ -29,8 +29,7 @@
 package org.opennms.netmgt.poller;
 
 import java.util.Set;
-
-import org.opennms.netmgt.poller.ServiceMonitor;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Used to enumerate and retrieve available {@link ServiceMonitor} implementations.
@@ -39,7 +38,7 @@ import org.opennms.netmgt.poller.ServiceMonitor;
  */
 public interface ServiceMonitorRegistry {
 
-    ServiceMonitor getMonitorByClassName(String className);
+    CompletableFuture<ServiceMonitor> getMonitorFutureByClassName(String className);
 
     Set<String> getMonitorClassNames();
 

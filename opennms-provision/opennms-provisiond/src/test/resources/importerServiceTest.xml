@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+">
   
   <bean id="importResource" class="org.springframework.core.io.ClassPathResource">
     <constructor-arg><value>/tec_dump.xml.smalltest</value></constructor-arg>
@@ -43,10 +46,13 @@
   
   <bean class="org.opennms.netmgt.provision.service.MockServiceDetector" />
 
-  <bean id="provisiondConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="classpath:/importerServiceTest-provisiond-configuration.xml" />
-  </bean>
-
   <bean id="discoveryFactory" class="org.opennms.netmgt.provision.persist.MockDiscoveryConfigurationFactory" />
 
+  <util:map id="configFileMap" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
+      <entry key="provisiond" value="importerServiceTest-provisiond-configuration.xml"/>
+  </util:map>
+
+  <bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
+    <property name="configFileMap" ref="configFileMap"/>
+  </bean>
 </beans>

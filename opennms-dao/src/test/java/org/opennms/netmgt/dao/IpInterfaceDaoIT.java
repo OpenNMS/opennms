@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -70,6 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -201,4 +203,16 @@ public class IpInterfaceDaoIT implements InitializingBean {
         assertFalse("node ID for *BOGUS*IP* should not have been found", interfaceNodes.containsKey("*BOGUS*IP*"));
     }
 
+    @Test
+    @Transactional
+    public void testFindByIpAddressAndLocation() {
+        var ipAddress = "192.168.1.1";
+        var location = "Default";
+        OnmsIpInterface itf = m_ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
+        assertNotNull(itf);
+        assertEquals(itf.getIpAddress().getHostAddress(), ipAddress);
+        assertEquals(itf.getNode().getLocation().getLocationName(), location);
+        OnmsIpInterface itf2 = m_ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location + location);
+        assertNull(itf2);
+    }
 }

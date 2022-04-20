@@ -66,6 +66,7 @@ import com.google.common.collect.Lists;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -108,7 +109,9 @@ public class NodeIdentificationIT {
     public void testSomething() throws InterruptedException {
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> Collections.emptyList(), FilterService.NOOP);
         final DocumentEnricher documentEnricher = new DocumentEnricher(
-                new MetricRegistry(), databasePopulator.getNodeDao(), interfaceToNodeCache, sessionUtils, classificationEngine,
+                new MetricRegistry(),
+                databasePopulator.getNodeDao(), databasePopulator.getIpInterfaceDao(),
+                interfaceToNodeCache, sessionUtils, classificationEngine,
                 new CacheConfigBuilder()
                         .withName("flows.node")
                         .withMaximumSize(1000)

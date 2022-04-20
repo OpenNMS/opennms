@@ -32,7 +32,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.config.vmware.VmwareServer;
-import org.opennms.netmgt.dao.VmwareConfigDao;
+import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionProvider;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;

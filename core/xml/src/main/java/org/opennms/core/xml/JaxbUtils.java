@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -298,6 +298,17 @@ public abstract class JaxbUtils {
         XMLFilter filter = namespace == null? new SimpleNamespaceFilter("", false) : new SimpleNamespaceFilter(namespace, true);
 
         LOG.trace("namespace filter for class {}: {}", clazz, filter);
+        final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+        xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+        filter.setParent(xmlReader);
+        return filter;
+    }
+
+    public static XMLFilter getXMLFilterForNamespace(final String namespace) throws SAXException {
+        XMLFilter filter = namespace == null ? new SimpleNamespaceFilter("", false) : new SimpleNamespaceFilter(namespace, true);
+
+        LOG.trace("namespace filter for namesapce {}: {}", namespace, filter);
         final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
         xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,25 +28,25 @@
 
 package org.opennms.netmgt.eventd;
 
-import junit.framework.TestCase;
+import static org.mockito.Mockito.mock;
 
+import org.junit.Test;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.ThrowableAnticipator;
-import org.opennms.test.mock.EasyMockUtils;
 
 /**
  * Test case for BroadcastEventProcessor.
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class BroadcastEventProcessorTest extends TestCase {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    private EventConfDao m_eventConfDao = m_mocks.createMock(EventConfDao.class);
-    
+public class BroadcastEventProcessorTest {
+    private EventConfDao m_eventConfDao = mock(EventConfDao.class);
+
+    @Test
     public void testInstantiateWithNullEventIpcManager() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("argument eventIpcManager must not be null"));
@@ -59,7 +59,8 @@ public class BroadcastEventProcessorTest extends TestCase {
         
         ta.verifyAnticipated();
     }
-    
+
+    @Test
     public void testInstantiateWithNullEventConfDao() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("argument eventConfDao must not be null"));
@@ -72,13 +73,15 @@ public class BroadcastEventProcessorTest extends TestCase {
         
         ta.verifyAnticipated();
     }
-    
+
+    @Test
     public void testInstantiateAndClose() {
         MockEventIpcManager eventIpcManager = new MockEventIpcManager();
         BroadcastEventProcessor processor = new BroadcastEventProcessor(eventIpcManager, m_eventConfDao);
         processor.close();
     }
-    
+
+    @Test
     public void testReload() {
         MockEventIpcManager eventIpcManager = new MockEventIpcManager();
         BroadcastEventProcessor processor = new BroadcastEventProcessor(eventIpcManager, m_eventConfDao);
@@ -87,14 +90,11 @@ public class BroadcastEventProcessorTest extends TestCase {
         
         // Expect a call to reload the EventConfDao
         m_eventConfDao.reload();
-        
-        m_mocks.replayAll();
-        
+
         processor.onEvent(ImmutableMapper.fromMutableEvent(eventBuilder.getEvent()));
-        
-        m_mocks.verifyAll();
     }
 
+    @Test
     public void testReloadDaemonConfig() {
         MockEventIpcManager eventIpcManager = new MockEventIpcManager();
         BroadcastEventProcessor processor = new BroadcastEventProcessor(eventIpcManager, m_eventConfDao);
@@ -105,11 +105,7 @@ public class BroadcastEventProcessorTest extends TestCase {
         // Expect a call to reload the EventConfDao
         m_eventConfDao.reload();
 
-        m_mocks.replayAll();
-
         processor.onEvent(ImmutableMapper.fromMutableEvent(eventBuilder.getEvent()));
-
-        m_mocks.verifyAll();
     }
 
 }

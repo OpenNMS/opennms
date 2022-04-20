@@ -91,6 +91,7 @@ retry sudo apt update && \
             || exit 1
 
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+
 export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
 
 # shellcheck disable=SC3045

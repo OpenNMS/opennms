@@ -45,6 +45,7 @@ import org.opennms.smoketest.containers.PostgreSQLContainer;
 import org.opennms.smoketest.containers.SentinelContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  * This is the highest level interface to a stack. A stack is composed of
@@ -71,6 +72,10 @@ public final class OpenNMSStack implements TestRule {
 
     public static final OpenNMSStack MINION = OpenNMSStack.withModel(StackModel.newBuilder()
             .withMinion()
+            .build());
+
+    public static final OpenNMSStack SENTINEL = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withSentinel()
             .build());
 
     public static final OpenNMSStack ALEC = OpenNMSStack.withModel(StackModel.newBuilder()
@@ -116,7 +121,7 @@ public final class OpenNMSStack implements TestRule {
         final boolean shouldEnableKafka = IpcStrategy.KAFKA.equals(model.getIpcStrategy())
                 || model.getOpenNMS().isKafkaProducerEnabled();
         if (shouldEnableKafka) {
-            kafkaContainer = new KafkaContainer("6.0.1")
+            kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.0.0"))
                     // Reduce from the default of 1GB
                     .withEnv("KAFKA_HEAP_OPTS", "-Xms256m -Xmx256m")
                     .withNetwork(Network.SHARED)

@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -47,6 +48,7 @@ import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.dao.outages.impl.OverrideablePollOutagesDaoImpl;
 import org.opennms.netmgt.config.poller.Downtime;
+import org.opennms.netmgt.config.poller.Monitor;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
@@ -284,6 +286,11 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     @Override
     public List<Package> getPackages() {
         return m_pkgs;
+    }
+
+    @Override
+    public List<Monitor> getConfiguredMonitors() {
+        return Collections.emptyList();
     }
 
     private Service findService(Package pkg, String svcName) {
