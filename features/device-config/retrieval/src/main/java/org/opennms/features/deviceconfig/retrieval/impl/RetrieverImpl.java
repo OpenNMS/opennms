@@ -231,6 +231,6 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
     }
 
     private static String uniqueFilenameSuffix() {
-        return BASE64_URL_ENCODER.encodeToString(uuidToBytes(UUID.randomUUID()));
+        return BASE64_URL_ENCODER.encodeToString(uuidToBytes(UUID.randomUUID())) + "-monitor";
     }
 }
