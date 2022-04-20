@@ -106,7 +106,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     public CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String service, int timeout) throws IOException {
         return pollDeviceConfig(ipAddress, location, service)
                 .orTimeout(timeout, TimeUnit.MILLISECONDS)
-                .thenApply(resp -> resp.getPollStatus().getDeviceConfig())
+                .thenApply(resp -> {
+                    if (resp.getPollStatus().isAvailable()) {
+                        return resp.getPollStatus().getDeviceConfig();
+                    } else {
+                        throw new RuntimeException("Requesting backup failed: " + resp.getPollStatus().getReason());
+                    }
+                })
                 .whenComplete((config, throwable) -> {
                     if (throwable != null) {
                         LOG.error("Error while getting device config for IpAddress {} at location {}", ipAddress, location, throwable);
