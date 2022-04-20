@@ -65,6 +65,9 @@
 
             <!-- Enrichment settings -->
             <cm:property name="clockSkewCorrectionThreshold" value="0" />
+
+            <!-- Flow Mangling -->
+            <cm:property name="mangleScriptPath" value="" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -132,6 +135,15 @@
         <property name="routingPartitionSize" value="${aggregate.settings.index.routing_partition_size}"/>
     </bean>
 
+    <!-- Mangling -->
+    <bean id="sem" class="org.opennms.features.osgi.script.OSGiScriptEngineManager">
+        <argument ref="blueprintBundleContext" />
+    </bean>
+    <bean id="mangler" class="org.opennms.netmgt.flows.elastic.DocumentMangler">
+        <argument ref="sem" />
+        <property name="path" value="${mangleScriptPath}"/>
+    </bean>
+
     <!-- Enrichment -->
     <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
@@ -149,6 +161,7 @@
         <argument ref="sessionUtils" />
         <argument ref="nodeCacheConfig" />
         <argument value="${clockSkewCorrectionThreshold}" />
+        <argument ref="mangler" />
     </bean>
 
     <!-- Metrics -->
