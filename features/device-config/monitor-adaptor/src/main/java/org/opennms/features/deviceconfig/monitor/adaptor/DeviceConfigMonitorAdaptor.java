@@ -53,7 +53,9 @@ import com.google.common.base.Strings;
 
 
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
+
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitorAdaptor.class);
+    private static final String DEVICE_CONFIG_SVC_NAME = "DeviceConfig";
 
     @Autowired
     private DeviceConfigDao deviceConfigDao;
@@ -67,7 +69,9 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
     @Override
     public PollStatus handlePollResult(MonitoredService svc, Map<String, Object> parameters, PollStatus status) {
         final var deviceConfig = status.getDeviceConfig();
-
+        if (deviceConfig == null && !svc.getSvcName().startsWith(DEVICE_CONFIG_SVC_NAME)) {
+            return status;
+        }
         // Retrieve interface
         final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
 
