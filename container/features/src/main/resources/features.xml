@@ -537,12 +537,16 @@
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-dao-api</feature>
         <feature>opennms-core-tracing</feature>
+        <feature>opennms-rpc-utils</feature>
         <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-rpc-utils" version="${project.version}" description="OpenNMS :: Core :: IPC : RPC :: Utils">
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-ipc-rpc-jms" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: JMS Impl.">
         <feature>opennms-core-ipc-rpc-api</feature>
@@ -1046,7 +1050,7 @@
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-kafka</feature>
         <feature>rate-limited-logger</feature>
-        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
+        <feature>opennms-rpc-utils</feature>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.transport/${project.version}</bundle>
     </feature>
@@ -1073,9 +1077,9 @@
     <feature name="opennms-telemetry-openconfig"  description="OpenNMS :: Telemetry :: OpenConfig" version="${project.version}">
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-telemetry-openconfig-client</feature>
+        <feature>opennms-rpc-utils</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.openconfig/org.opennms.features.telemetry.protocols.openconfig.adapter/${project.version}</bundle>

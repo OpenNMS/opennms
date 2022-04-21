@@ -48,11 +48,23 @@ public class FallbackScope implements Scope {
 
     @Override
     public Optional<ScopeValue> get(final ContextKey contextKey) {
-        return this.scopes.stream()
+        Optional<ScopeValue> scopeValue =  this.scopes.stream()
                 .map(scope -> scope.get(contextKey))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .findFirst();
+        // If value itself a Metadata expression, retrieve value for the context key derived from expression.
+        if (scopeValue.isPresent() && Interpolator.containsMateData(scopeValue.get().value)) {
+            Optional<ContextKey> contextKeyForScv = Interpolator.getContextKeyFromMateData(scopeValue.get().value);
+            if (contextKeyForScv.isPresent()) {
+                Optional<Scope> optionalScope = scopes.stream().filter(scope -> scope.keys().contains(contextKeyForScv.get())).findFirst();
+                if (optionalScope.isPresent()) {
+                    return optionalScope.get().get(contextKeyForScv.get());
+                }
+            }
+        }
+        return scopeValue;
+
     }
 
     @Override
