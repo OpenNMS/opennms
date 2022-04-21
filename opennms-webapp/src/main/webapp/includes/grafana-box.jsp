@@ -70,7 +70,7 @@
     String errorMessage = null;
     String responseString = null;
 
-    if (!grafanaBasePath.startsWith("/")) {
+    if (!grafanaBasePath.startsWith("/")  && !grafanaBasePath.trim().isEmpty()) {
         grafanaBasePath = "/" + grafanaBasePath;
     }
 
@@ -141,7 +141,7 @@
                 }
                 if (showDashboard) {
                     if (limit < 1 || count++ < limit) {
-                        $('#dashboardlist').append('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%><%=grafanaBasePath%>/dashboard/' + val['uri'] + '"><span class="fa fa-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
+                        $('#dashboardlist').append('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%><%=grafanaBasePath%>' + val['url'] + '"><span class="fa fa-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
                     }
                 }
             };
