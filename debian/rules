@@ -47,14 +47,14 @@ $(STAMP_BUILD):
 				./compile.pl -Denable.snapshots=true -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install && \
 				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install; \
 			else \
-				./compile.pl -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install && \
-				./assemble.pl -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install; \
+				./compile.pl -DupdatePolicy=never -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install && \
+				./assemble.pl -DupdatePolicy=never -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install; \
 			fi; \
 		else \
 			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
 				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 			else \
-				./assemble.pl -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+				./assemble.pl -DupdatePolicy=never -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 			fi; \
 		fi; \
 	else \
@@ -63,14 +63,14 @@ $(STAMP_BUILD):
 				./compile.pl -Denable.snapshots=true -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install && \
 				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install; \
 			else \
-				./compile.pl -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install && \
-				./assemble.pl -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install; \
+				./compile.pl -DupdatePolicy=never -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install && \
+				./assemble.pl -DupdatePolicy=never -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install; \
 			fi; \
 		else \
 			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
 				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
 			else \
-				./assemble.pl -DupdatePolicy=always -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
+				./assemble.pl -DupdatePolicy=never -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
 			fi; \
 		fi; \
 	fi
