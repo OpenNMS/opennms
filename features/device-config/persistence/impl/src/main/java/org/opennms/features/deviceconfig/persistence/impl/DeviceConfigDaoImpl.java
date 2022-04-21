@@ -311,6 +311,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         deviceConfig.setIpInterface(ipInterface);
         deviceConfig.setServiceName(serviceName);
         deviceConfig.setConfigType(configType);
+        deviceConfig.setStatus(DeviceConfigStatus.NONE);
         saveOrUpdate(deviceConfig);
     }
 }
