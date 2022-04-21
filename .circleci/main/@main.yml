@@ -736,6 +736,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - /^features\/.+/
       - sentinel-publish-oci:
           requires:
             - horizon-deb-build
@@ -753,6 +754,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - /^features\/.+/
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
