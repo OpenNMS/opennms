@@ -339,4 +339,8 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
     public void setSessionUtils(SessionUtils sessionUtils) {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }
+
+    public void setScv(SecureCredentialsVault scv) {
+        this.scv = scv;
+    }
 }
