@@ -42,7 +42,7 @@ Optional; if not specified, OpenNMS uses `default`.
 |===
 
 NOTE: Uploaded configuration files should include filename extensions like `.zip` or `.gz` that specify their file type.
-In addition, you must append a `.` and the script variable `filenameSuffix` to the filename that is used for upload.
+In addition, you must append the script variable `filenameSuffix` to the filename that is used for upload.
 
 .Example script
 
@@ -57,7 +57,7 @@ send: cd /config
 await: %
 send: tftp ${tftpServerIp}
 await: tftp>
-send: put juniper.conf.gz juniper.conf.gz.${filenameSuffix}
+send: put juniper.conf.gz juniper.conf.gz${filenameSuffix}
 await:  tftp>
 ----
 
