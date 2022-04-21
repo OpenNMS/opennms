@@ -101,6 +101,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSContainer.class);
 
     public static final int OPENNMS_WEB_PORT = 8980;
+    public static final int OPENNMS_SSL_PORT = 8443;
     private static final int OPENNMS_SSH_PORT = 8101;
     private static final int OPENNMS_SYSLOG_PORT = 10514;
     private static final int OPENNMS_SNMP_PORT = 1162;
@@ -126,6 +127,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             .put(NetworkProtocol.GRPC, OPENNMS_GRPC_PORT)
             .put(NetworkProtocol.BMP, OPENNMS_BMP_PORT)
             .put(NetworkProtocol.TFTP, OPENNMS_TFTP_PORT)
+            .put(NetworkProtocol.HTTPS,OPENNMS_SSL_PORT)
             .build();
 
     private final StackModel model;
@@ -307,6 +309,10 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
     public int getWebPort() {
         return getMappedPort(OPENNMS_WEB_PORT);
+    }
+
+    public int getSSLPort() {
+        return getMappedPort(OPENNMS_SSL_PORT);
     }
 
     public InetSocketAddress getWebAddress() {
