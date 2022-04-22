@@ -134,7 +134,7 @@ public class HeartbeatConsumerIT {
 
         //Verify that eventually all the minions get persisted in imports.
         await().atMost(45, TimeUnit.SECONDS).until(() ->
-                Collections.unmodifiableSet(heartbeatConsumer.getDeployedForeignSourceRepository().getRequisitions()).stream()
+                heartbeatConsumer.getDeployedForeignSourceRepository().getRequisitions().stream()
                         .mapToInt(Requisition::getNodeCount).sum() == 500);
 
         // Now Mock NodeDao to return true for minion existence.
