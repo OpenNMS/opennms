@@ -27,8 +27,7 @@
                         <configuration>
                             <descriptors>
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.apache.karaf.features/spring-legacy/${karafVersion}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
                                 <!-- Add OpenNMS features -->
                                 <descriptor>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
@@ -77,7 +76,6 @@
                                 <feature>sentinel-blobstore-cassandra</feature>
                                 <feature>sentinel-jsonstore-postgres</feature>
                                 <feature>sentinel-thresholding-service</feature>
-
 
                                 <!-- Other features -->
                                 <feature>hawtio-offline</feature>

@@ -17,6 +17,7 @@
     <suppress files="org[\\/]opennms[\\/]container[\\/]web[\\/].*" checks=".*"/>
     <suppress files="org[\\/]apache[\\/]taglibs[\\/]standard[\\/]lang[\\/].*" checks=".*"/>
     <suppress files="org[\\/]hawkular[\\/]agent[\\/]prometheus[\\/].*" checks=".*"/>
+    <suppress files="org[\\/]springframework[\\/]beans[\\/].*" checks=".*"/>
 
     <!-- BSD style -->
     <suppress files="org[\\/]opennms[\\/]netmgt[\\/]syslogd[\\/]SyslogClient.java" checks=".*"/>
