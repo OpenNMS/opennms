@@ -1,51 +1,36 @@
 [[ref-ssl-selfsigned]]
 = Self-Signed Certificate
-If you are content with a self-signed certificate, you need to perform just one step to add a signature to your new SSL certificate.
 
-As in the key generation process above, be sure that you specify an appropriate number of days for the validity parameter.
+If you are content with a self-signed certificate, the certificate just needs to be loaded into a keystore and added to the Jetty configuration.
 
+
+. Add the certificate to a keystore.
++
 [source, console]
 ----
 keytool -selfcert -validity 721 -keystore /tmp/propercert/proper.keystore -alias opennms-jetty
 Enter keystore password:  aGoodStrongKeystorePassword
-Enter key password for <mykey>anotherGoodStrongPassword
+Enter key password for <mykey>:  anotherGoodStrongPassword
 ----
 
-== Copy the keystore into place
-Now that the keystore you created contains your server's signed SSL certificate, you must copy the keystore to a place where OpenNMS can find it.
-In the real world, you might want to place the keystore in a different location, perhaps one that is not included in your nightly backups (unless you trust your backup operator completely).
-In extreme cases it might be desirable to put the keystore on a filesystem that is unmounted except when starting or restarting OpenNMS.
-For the purposes of this article, we will assume that you copied the keystore to $\{OPENNMS_HOME}/etc/opennms.keystore.
+. Copy the keystore into place where {page-component-title} can find it.
+In the real world, you might want to place the keystore in a different location, perhaps one that is not included in your nightly backups.
+For the purposes of this exercise, we will assume that you copied the keystore to `$\{OPENNMS_HOME}/etc/opennms.keystore`.
 
-
-== Configure the Jetty HTTPS parameters in OpenNMS
-In your favorite editor, open the file OPENNMS_HOME/etc/opennms.properties.
-
-Uncomment (or add if not present) the line that sets the property org.opennms.netmgt.jetty.https-keystore, and change the value of this property to the location of the keystore that now contains your server's signed SSL certificate:
-
+. Configure the Jetty HTTPS parameters in OpenNMS.
+Create or edit the file `$\{OPENNMS_HOME}/etc/opennms.properties.d/jetty.properties` and set the following properties.
++
 [source, properties]
 ----
-org.opennms.netmgt.jetty.https-keystore = ${OPENNMS_HOME}/etc/opennms.keystore
-----
-
-Uncomment (or add if not present) the lines that set the properties org.opennms.netmgt.jetty.https-keystorepassword and org.opennms.netmgt.jetty.https-keypassword, and change the values of each property to match the password you used for the keystore and the key itself in the first step:
-
-[source, properties]
-----
-org.opennms.netmgt.jetty.https-keystorepassword = aGoodStrongKeystorePassword
+org.opennms.netmgt.jetty.https-keystore = ${OPENNMS_HOME}/etc/opennms.keystore <1>
+org.opennms.netmgt.jetty.https-keystorepassword = aGoodStrongKeystorePassword <2>
 org.opennms.netmgt.jetty.https-keypassword = anotherGoodStrongPassword
+org.opennms.netmgt.jetty.https-port = 8443 <3>
+org.opennms.netmgt.jetty.https-cert-alias = myOpennmsCertificate <4>
 ----
 
-Uncomment (or add if not present) the line that sets the property org.opennms.netmgt.jetty.https-port, and optionally change the value to suit your needs:
-
-[source, properties]
-----
-org.opennms.netmgt.jetty.https-port = 8443
-----
-
-If you have multiple certificates in the keystore and wish to force Jetty to use a particular certificate, then uncomment or add the following option to specify the alias of the certificate that you would like to use.
+<1> Location of the keystore file you created.
+<2> Set the password for the keystore and the key as you created them in the first step.
+<3> Set the port for Jetty to listen for HTTPS connections.
+<4> If you have multiple certificates in the keystore and wish to force Jetty to use a particular certificate, specify the alias of the certificate that you would like to use.
 If this option is not present, Jetty will use the first certificate that it finds in the keystore.
-
-----
-org.opennms.netmgt.jetty.https-cert-alias = myOpennmsCertificate
-----

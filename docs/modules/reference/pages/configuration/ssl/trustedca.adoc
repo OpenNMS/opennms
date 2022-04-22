@@ -1,7 +1,7 @@
 [[ref-ssl-trusted]]
 = Trusted CA Signing
+
 Generate a certificate signing request (or CSR) from the key that you created above.
-The command to do this is straightforward.
 The filename you specify for the file parameter will contain the CSR after the command completes.
 
 [source, console]
@@ -54,7 +54,7 @@ Enter keystore password:  aGoodStrongKeystorePassword
 ----
 
 NOTE: This requires that your keystore already trust the CA that has signed your certificate.
-If you see the error "keytool error: java.lang.Exception: Public keys in reply and keystore don't match", this indicates that you need to import your certificate authority's CA certificate first:
+If you see the error `keytool error: java.lang.Exception: Public keys in reply and keystore don't match`, this indicates that you need to import your certificate authority's CA certificate first:
 
 [source, console]
 ----
