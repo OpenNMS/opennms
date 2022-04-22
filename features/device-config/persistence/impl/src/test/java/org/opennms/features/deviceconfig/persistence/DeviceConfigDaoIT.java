@@ -161,7 +161,7 @@ public class DeviceConfigDaoIT {
         int count = 10;
         ipInterfaces.forEach(ipInterface -> populateDeviceConfigs(count, ipInterface));
         List<DeviceConfigQueryResult> results = deviceConfigDao.getLatestConfigForEachInterface(null,
-                null, null, null, null);
+                null, null, null, null, null);
         Assert.assertThat(results, Matchers.hasSize(5));
         Iterator<OnmsIpInterface> iterator = ipInterfaces.iterator();
         Assert.assertArrayEquals(results.get(0).getConfig(),
@@ -171,23 +171,23 @@ public class DeviceConfigDaoIT {
 
         // Should give one result.
         results = deviceConfigDao.getLatestConfigForEachInterface(null,
-                null, null, null, InetAddressUtils.str(iterator.next().getIpAddress()));
+                null, null, null, InetAddressUtils.str(iterator.next().getIpAddress()), null);
         Assert.assertThat(results, Matchers.hasSize(1));
 
         // Should give no results.
         results = deviceConfigDao.getLatestConfigForEachInterface(null,
-                null, null, null, "192.168.32.254");
+                null, null, null, "192.168.32.254", null);
         Assert.assertThat(results, Matchers.hasSize(0));
 
         // Should give all 5 interfaces
         results = deviceConfigDao.getLatestConfigForEachInterface(null,
-                null, null, null, iterator.next().getNode().getLabel());
+                null, null, null, iterator.next().getNode().getLabel(), null);
         Assert.assertThat(results, Matchers.hasSize(5));
 
         ipInterfaces.forEach(this::populateFailedRetrievalDeviceConfig);
 
         results = deviceConfigDao.getLatestConfigForEachInterface(null,
-                null, null, null, iterator.next().getNode().getLabel());
+                null, null, null, iterator.next().getNode().getLabel(), null);
 
         Assert.assertThat(results.get(0).getFailureReason(), Matchers.notNullValue());
     }

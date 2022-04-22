@@ -66,11 +66,6 @@
                   <classifier>karaf-extensions</classifier>
                 </artifact>
                 <artifact>
-                  <file>${project.build.outputDirectory}/spring.xml</file>
-                  <type>xml</type>
-                  <classifier>spring</classifier>
-                </artifact>
-                <artifact>
                   <file>${project.build.outputDirectory}/spring-legacy.xml</file>
                   <type>xml</type>
                   <classifier>spring-legacy</classifier>
@@ -731,6 +726,13 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.commands</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-beans-shaded-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
   </dependencies>

@@ -1186,6 +1186,10 @@
                    <exclude>com.sun.xml.bind.mvn:*</exclude>
                    <exclude>org.glassfish.jaxb:jaxb-core</exclude>
 
+                   <!-- use org.opennms.dependencies:org.opennms.dependencies.spring-beans-XX-shaded for CVE-2022-22965 -->
+                   <exclude>org.springframework:spring-beans</exclude>
+                   <exclude>org.apache.servicemix.bundles:org.apache.servicemix.bundles.spring-beans</exclude>
+
                  </excludes>
                </bannedDependencies>
              </rules>
@@ -1706,7 +1710,7 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.4</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
-    <cxfVersion>3.5.1</cxfVersion>
+    <cxfVersion>3.4.5</cxfVersion>
     <cxfServiceDescriptionOpenapiVersion>3.2.4</cxfServiceDescriptionOpenapiVersion>
     <cxfXjcVersion>3.3.0</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
@@ -1801,8 +1805,8 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
-    <opennmsApiVersion>0.8.1-SNAPSHOT</opennmsApiVersion>
-    <opennmsApiVersionOsgi>0.8.1.SNAPSHOT</opennmsApiVersionOsgi>
+    <opennmsApiVersion>0.8.3-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersionOsgi>0.8.3.SNAPSHOT</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
