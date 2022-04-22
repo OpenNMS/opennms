@@ -635,6 +635,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - /.*arm64.*/
       - minion-image-multi-arch:
           context:
             - docker-content-trust
@@ -647,6 +648,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - /.*arm64.*/
       - horizon-image-single-arch:
           requires:
             - horizon-deb-build
@@ -656,6 +658,9 @@ workflows:
           filters:
             branches:
               only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
                 - /.*arm64.*/
       - horizon-deb-build:
           requires:
@@ -834,6 +839,9 @@ workflows:
           filters:
             branches:
               only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
                 - /.*arm64.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
