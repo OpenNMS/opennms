@@ -28,6 +28,7 @@
 
 package org.opennms.features.deviceconfig.monitor.adaptor;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,7 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.Poll;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -212,6 +214,71 @@ public class DeviceConfigMonitorAdaptorIT {
         Assert.assertEquals(configOnSunday.get().getLastUpdated(), configOnSunday.get().getLastSucceeded());
         Assert.assertNotEquals(configOnSunday.get().getLastUpdated(), configOnSunday.get().getCreatedTime());
     }
+
+    @Test
+    public void testDeviceConfigNonBackedupDevices() {
+        MonitoredService service = Mockito.mock(MonitoredService.class);
+        PollStatus pollStatus = Mockito.mock(PollStatus.class);
+        Mockito.when(service.getNodeId()).thenReturn(node.getId());
+        Mockito.when(service.getIpAddr()).thenReturn(InetAddressUtils.toIpAddrString(ipInterface.getIpAddress()));
+        Mockito.when(service.getSvcName()).thenReturn("DeviceConfig-default");
+        Map<String, Object> attributes = new HashMap<>();
+        // Set charset information in attributes.
+        attributes.put("encoding", StandardCharsets.UTF_16.name());
+
+        // No config should exist for this device.
+        Optional<DeviceConfig> noDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
+        Assert.assertFalse(noDeviceConfig.isPresent());
+
+        // Now poller returns Unknown status without any config.
+        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(null);
+        Mockito.when(pollStatus.getStatusName()).thenReturn("Unknown");
+        deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
+        // Verify that we create empty Device Config entry
+        Optional<DeviceConfig> emptyConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
+        Assert.assertTrue(emptyConfig.isPresent());
+        Assert.assertThat(emptyConfig.get().getConfig(), Matchers.nullValue());
+        Assert.assertThat(emptyConfig.get().getLastUpdated(), Matchers.nullValue());
+    }
+
+    @Test
+    public void testPollStatusChangeForNonScheduledPolls() {
+        MonitoredService service = Mockito.mock(MonitoredService.class);
+        PollStatus pollStatus = Mockito.mock(PollStatus.class);
+        Mockito.when(service.getNodeId()).thenReturn(node.getId());
+        Mockito.when(service.getIpAddr()).thenReturn(InetAddressUtils.toIpAddrString(ipInterface.getIpAddress()));
+        Mockito.when(service.getSvcName()).thenReturn("DeviceConfig-default");
+        Map<String, Object> attributes = new HashMap<>();
+        // Set charset information in attributes.
+        attributes.put("encoding", StandardCharsets.UTF_16.name());
+
+        Optional<DeviceConfig> noDeviceConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
+        Assert.assertFalse(noDeviceConfig.isPresent());
+        // Send unknown status for the first time
+        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(null);
+        Mockito.when(pollStatus.getStatusName()).thenReturn("Unknown");
+        PollStatus status = deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
+        Assert.assertEquals("Unknown", status.getStatusName());
+
+        // Now send failed update for the config.
+        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(new org.opennms.netmgt.poller.DeviceConfig());
+        Mockito.when(pollStatus.getReason()).thenReturn("Failed to retrieve");
+        Mockito.when(pollStatus.getStatusName()).thenReturn("Down");
+        status = deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
+        Optional<DeviceConfig> failedConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, "DeviceConfig-default");
+        Assert.assertTrue(failedConfig.isPresent());
+        Assert.assertThat(failedConfig.get().getConfig(), Matchers.nullValue());
+        Assert.assertThat(failedConfig.get().getLastUpdated(), Matchers.notNullValue());
+        Assert.assertEquals("Down", status.getStatusName());
+
+        // Send unknown status again, status should return Down based on earlier config.
+        Mockito.when(pollStatus.getDeviceConfig()).thenReturn(null);
+        Mockito.when(pollStatus.getStatusName()).thenReturn("Unknown");
+        status = deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
+        Assert.assertEquals("Down", status.getStatusName());
+
+    }
+
 
     private void populateIpInterface() {
         NetworkBuilder builder = new NetworkBuilder();
