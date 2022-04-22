@@ -348,19 +348,19 @@
          <rra>RRA:MAX:0.5:288:366</rra>
          <rra>RRA:MIN:0.5:288:366</rra>
       </rrd>
-      <service name="DeviceConfig" interval="30000" user-defined="false" status="on">
+      <service name="DeviceConfig" interval="300000" user-defined="false" status="on">
          <pattern><![CDATA[^DeviceConfig-(?<configType>.+)$]]></pattern>
          <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
          <parameter key="rrd-base-name" value="device-config"/>
          <!-- match service name suffix with config-type -->
-         <parameter key="config-type" value="${pattern:configType|requisition:configType|default}"/>
+         <parameter key="config-type" value="${pattern:configType|requisition:dcb:config-type|default}"/>
          <parameter key="username" value="${requisition:dcb:username|admin}"/>
          <parameter key="password" value="${requisition:dcb:password|admin}"/>
-         <parameter key="ssh-port" value="${requisition:ssh-port|22}"/>
-         <parameter key="ssh-timeout" value="${requisition:ssh-timeout|60000}"/>
+         <parameter key="ssh-port" value="${requisition:dcb:ssh-port|22}"/>
+         <parameter key="ssh-timeout" value="${requisition:dcb:ssh-timeout|60000}"/>
          <!-- schedule is a cron expression -->
          <parameter key="schedule" value="${requisition:dcb:schedule|0 0 0 * * ?}"/>
-         <parameter key="script-file" value="${requisition:script-file|assets:operating-system|node:os|default}.dcb"/>
+         <parameter key="script-file" value="${requisition:dcb:script-file|assets:operating-system|node:os|default}.dcb"/>
       </service>
       <downtime begin="0" interval="300000"/><!-- 300s -->
    </package>

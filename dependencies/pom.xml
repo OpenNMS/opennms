@@ -52,6 +52,10 @@
     <module>snmp</module>
     <module>snmp-test</module>
     <module>spring</module>
+    <module>spring-beans-31-shaded</module>
+    <module>spring-beans-42-shaded</module>
+    <module>spring-beans-43-shaded</module>
+    <module>spring-beans-shaded</module>
     <module>spring-security-core</module>
     <module>spring-security</module>
     <module>spring-test</module>

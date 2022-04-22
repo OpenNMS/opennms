@@ -4,14 +4,14 @@
 
 [[releasenotes-changelog-29.0.9]]
 
-==== Release 29.0.9
+== Release 29.0.9
 
 Release 29.0.9 contains a bunch of bug fixes and enhancements, including improvements
 for running in containers, code cleanups, and improved documentation.
 
 The codename for Horizon 29.0.9 is https://wikipedia.org/wiki/$$Kiwi_(bird)$$[_Kiwi_].
 
-===== Bug
+=== Bug
 
 * Documentation for all pollers misses RRD config parameter (Issue http://issues.opennms.org/browse/NMS-11747[NMS-11747])
 * Resolve SonarCloud High priority Security Hotspots  (Issue http://issues.opennms.org/browse/NMS-14002[NMS-14002])
@@ -23,7 +23,7 @@ The codename for Horizon 29.0.9 is https://wikipedia.org/wiki/$$Kiwi_(bird)$$[_K
 * Fix for NMS-13887 did not make it to Core (Issue http://issues.opennms.org/browse/NMS-14117[NMS-14117])
 * Update docs for binding ports <1024 (Issue http://issues.opennms.org/browse/NMS-14162[NMS-14162])
 
-===== Enhancement
+=== Enhancement
 
 * Switch to using a java e-mail library instead of system mail (Issue http://issues.opennms.org/browse/NMS-14015[NMS-14015])
 * Misspelling in SystemExecuteMonitor error text (Issue http://issues.opennms.org/browse/NMS-14091[NMS-14091])

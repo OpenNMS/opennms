@@ -1186,6 +1186,10 @@
                    <exclude>com.sun.xml.bind.mvn:*</exclude>
                    <exclude>org.glassfish.jaxb:jaxb-core</exclude>
 
+                   <!-- use org.opennms.dependencies:org.opennms.dependencies.spring-beans-XX-shaded for CVE-2022-22965 -->
+                   <exclude>org.springframework:spring-beans</exclude>
+                   <exclude>org.apache.servicemix.bundles:org.apache.servicemix.bundles.spring-beans</exclude>
+
                  </excludes>
                </bannedDependencies>
              </rules>

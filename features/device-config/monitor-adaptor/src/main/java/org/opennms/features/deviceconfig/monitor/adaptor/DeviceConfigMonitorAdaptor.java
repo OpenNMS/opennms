@@ -34,12 +34,14 @@ import java.util.Map;
 
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
@@ -51,7 +53,9 @@ import com.google.common.base.Strings;
 
 
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
+
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitorAdaptor.class);
+    private static final String DEVICE_CONFIG_SVC_NAME = "DeviceConfig";
 
     @Autowired
     private DeviceConfigDao deviceConfigDao;
@@ -65,18 +69,35 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
     @Override
     public PollStatus handlePollResult(MonitoredService svc, Map<String, Object> parameters, PollStatus status) {
         final var deviceConfig = status.getDeviceConfig();
-
-        if (deviceConfig == null) {
-            // Not our business
+        if (deviceConfig == null && !svc.getSvcName().startsWith(DEVICE_CONFIG_SVC_NAME)) {
             return status;
         }
-
         // Retrieve interface
         final OnmsIpInterface ipInterface = ipInterfaceDao.findByNodeIdAndIpAddress(svc.getNodeId(), svc.getIpAddr());
+
+        var latestConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
+
         String encodingAttribute = getObjectAsString(parameters.get("encoding"));
         String configTypeAttribute = getObjectAsString(parameters.get("config-type"));
         String encoding = !Strings.isNullOrEmpty(encodingAttribute) ? encodingAttribute : Charset.defaultCharset().name();
         String configType = !Strings.isNullOrEmpty(configTypeAttribute) ? configTypeAttribute : ConfigType.Default;
+
+        if (deviceConfig == null && latestConfig.isEmpty()) {
+            // Create empty DeviceConfig for devices that are not scheduled to be backed up yet.
+            deviceConfigDao.createEmptyDeviceConfig(ipInterface, svc.getSvcName(), configType);
+            return status;
+        } else if (deviceConfig == null) {
+            // Returning previous state when no retrieval was attempted.
+            var deviceStatus = latestConfig.get().getStatus();
+            if (deviceStatus.equals(DeviceConfigStatus.FAILED)) {
+                var failureReason = latestConfig.get().getFailureReason();
+                return PollStatus.down(failureReason);
+            } else if (deviceStatus.equals(DeviceConfigStatus.SUCCESS)) {
+                return PollStatus.up();
+            } else {
+                return status;
+            }
+        }
 
         if (deviceConfig.getContent() == null) {
             // Config retrieval failed

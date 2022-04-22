@@ -175,5 +175,11 @@
       <classifier>daemon</classifier>
       <type>tar.gz</type>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.cli</artifactId>
+      <version>${project.version}</version>
+      <classifier>jar-with-dependencies</classifier>
+    </dependency>
   </dependencies>
 </project>

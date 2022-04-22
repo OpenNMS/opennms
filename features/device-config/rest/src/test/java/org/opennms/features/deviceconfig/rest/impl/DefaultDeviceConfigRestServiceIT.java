@@ -57,6 +57,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
@@ -141,11 +142,11 @@ public class DefaultDeviceConfigRestServiceIT {
             String ipAddress,
             Integer ipInterfaceId,
             String configType,
-            String searchTerm,
+            Set<DeviceConfigStatus> statuses,
             Long createdAfter,
             Long createdBefore
     ) {
-        var response = deviceConfigRestService.getDeviceConfigs(limit, offset, orderBy, order, deviceName, ipAddress, ipInterfaceId, configType, searchTerm, createdAfter, createdBefore);
+        var response = deviceConfigRestService.getDeviceConfigs(limit, offset, orderBy, order, deviceName, ipAddress, ipInterfaceId, configType, statuses, createdAfter, createdBefore);
         if (response.hasEntity()) {
             return (List<DeviceConfigDTO>) response.getEntity();
         } else {
@@ -160,7 +161,7 @@ public class DefaultDeviceConfigRestServiceIT {
         var res = getDeviceConfigs(null, null, null, null, null, null, null, null, null, null, null);
         assertThat(res, hasSize(VERSIONS * INTERFACES));
         for (var itf : interfaces) {
-            var set = res.stream().filter(dc -> dc.getMonitoredServiceId() == itf.getId()).collect(Collectors.toSet());
+            var set = res.stream().filter(dc -> dc.getIpInterfaceId() == itf.getId()).collect(Collectors.toSet());
             assertThat(set, hasSize(VERSIONS));
         }
     }

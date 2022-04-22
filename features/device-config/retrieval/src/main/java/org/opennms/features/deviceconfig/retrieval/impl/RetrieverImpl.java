@@ -29,16 +29,18 @@
 package org.opennms.features.deviceconfig.retrieval.impl;
 
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 import org.opennms.core.concurrent.FutureUtils;
@@ -60,8 +62,8 @@ import io.vavr.control.Either;
  */
 public class RetrieverImpl implements Retriever, AutoCloseable {
 
-
     private static Logger LOG = LoggerFactory.getLogger(RetrieverImpl.class);
+    private static final Base64.Encoder BASE64_URL_ENCODER = Base64.getUrlEncoder().withoutPadding();
 
     // when a
     private static String SCRIPT_VAR_FILENAME_SUFFIX = "filenameSuffix";
@@ -201,14 +203,14 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
         @Override
         public void onFileReceived(InetAddress address, String fileName, byte[] content) {
-            if (fileName.endsWith("." + fileNameSuffix)) {
+            if (fileName.endsWith(fileNameSuffix)) {
                 // it is unlikely, that the file receiver receives a file (with matching filename!) before the file
                 // upload was triggered
                 // -> just to be sure check that the future is set
                 if (future != null) {
                     LOG.debug("received config - host: " + host + "; port: " + port + "; address: " + address.getHostAddress());
                     // strip the '.' and filenameSuffix from the filename
-                    future.complete(Either.right(new Success(content, fileName.substring(0, fileName.length() - fileNameSuffix.length() - 1))));
+                    future.complete(Either.right(new Success(content, fileName.substring(0, fileName.length() - fileNameSuffix.length()))));
                 }
             }
         }
@@ -221,9 +223,15 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
         return "device config was not received in time. host: " + host + "; port: " + port;
     }
 
-    private static String uniqueFilenameSuffix() {
-        return "monitor" + String.valueOf(uploadCounter.incrementAndGet());
+    private static byte[] uuidToBytes(UUID uuid) {
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        return bb.array();
     }
 
-    private static AtomicLong uploadCounter = new AtomicLong();
+    private static String uniqueFilenameSuffix() {
+        // the term "monitor" is required to not consume it from the sink module, see class DeviceConfigDispatcher
+        return BASE64_URL_ENCODER.encodeToString(uuidToBytes(UUID.randomUUID())) + "-monitor";
+    }
 }
