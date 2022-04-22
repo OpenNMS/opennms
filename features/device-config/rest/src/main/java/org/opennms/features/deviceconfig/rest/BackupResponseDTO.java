@@ -31,13 +31,13 @@ package org.opennms.features.deviceconfig.rest;
 public class BackupResponseDTO {
 
     private Integer status;
-    private BackupRequestDTO backupRequestDTO;
+    private BackupRequestDTO request;
     private String failureMessage;
 
     public BackupResponseDTO(Integer status, String failureMessage, BackupRequestDTO backupRequestDTO) {
         this.status = status;
         this.failureMessage = failureMessage;
-        this.backupRequestDTO = backupRequestDTO;
+        this.request = backupRequestDTO;
     }
 
     public BackupResponseDTO() {
@@ -51,12 +51,12 @@ public class BackupResponseDTO {
         this.status = status;
     }
 
-    public BackupRequestDTO getBackupRequestDTO() {
-        return backupRequestDTO;
+    public BackupRequestDTO getRequest() {
+        return request;
     }
 
-    public void setBackupRequestDTO(BackupRequestDTO backupRequestDTO) {
-        this.backupRequestDTO = backupRequestDTO;
+    public void setRequest(BackupRequestDTO request) {
+        this.request = request;
     }
 
     public String getFailureMessage() {
