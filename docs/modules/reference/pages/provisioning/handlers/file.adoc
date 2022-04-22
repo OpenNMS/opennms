@@ -7,12 +7,12 @@ The file handler imports a properly-formatted requisition definition from an XML
 == Configure file requisition
 
 ifeval::["{page-component-title}" == "Horizon"]
-Prior to {page-component-title} 30, you set requisition definitions in the `provisiond-configuration.xml` file.
+Prior to {page-component-title} 30, you set external requisitions in the `provisiond-configuration.xml` file.
 This file is no longer available.
-You must use the UI to configure a requisition definition.
+You must use the UI to configure an external requisition.
 endif::[]
 
-To configure a file requisition, follow the steps in xref:reference:provisioning/handlers/introduction.adoc#create-req-def[Create a requisition definition], but specify File as the type, and set the path, schedule, and rescan behavior.
+To configure a file requisition, follow the steps in xref:reference:provisioning/handlers/introduction.adoc#create-req-def[Create an external requisition], but specify File as the type, and set the path, schedule, and rescan behavior.
 
 == Examples
 

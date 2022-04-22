@@ -3,15 +3,15 @@
 = Import Handlers
 
 {page-component-title} supports import handlers to help provision nodes from an external system (foreign source) into a requisition.
-OpenNMS does this through requisition definitions you specify in the Requisition Definition UI.
+OpenNMS does this through external requisitions you specify in the External Requisitions and Thread Pools UI.
 
 ifeval::["{page-component-title}" == "Horizon"]
-NOTE: Prior to {page-component-title} 30, you set requisition definitions in the `provisiond-configuration.xml` file.
-This file is no longer available, and was moved to the `/etc_archive` folder upon upgrading to {page-component-title} 30.
-Your existing configurations were also migrated and appear in the UI as existing requisition definitions.
+NOTE: Prior to {page-component-title} 30, you set external requisitions in the `provisiond-configuration.xml` file.
+This file is no longer available, and moved to the `/etc_archive` folder upon upgrade to {page-component-title} 30.
+Your existing configurations were also migrated and appear in the UI as existing external requisitions.
 endif::[]
 
-A requisition definition enables periodic inventory synchronization from external sources.
+An external requisition enables periodic inventory synchronization from external sources.
 Each definition contains a URL, schedule, and setting to specify the nodes to rescan.
 
 Most commonly, these URLs are files on the file system (`file:$\{OPENNMS_HOME}/etc/imports/<my-requisition.xml>`), but they can also come from external URLs.
@@ -50,32 +50,46 @@ Use the `opennms:show-import` command, available via the Karaf shell, to show th
 opennms:show-import -l MINION http url=http://127.0.0.1:8000/req.xml
 ----
 
-[[create-req-def]]
-== Create a requisition definition
+[[threadpools]]
+== Thread Pools
 
-A requisition definition defines the URL, schedule, and rescan behaviour to retrieve provisioning information from external sources such as HTTP(S), VMWare, and DNS protocol, for up-to-date inventory data.
+Thread pool sizes impact the performance of the provisioning subsystem.
+Larger systems may require larger values.
+To adjust them, follow these steps:
+
+. Log in to {page-component-title} as an admin user.
+. Click the gear icon and click *Configure External Requisitions and Thread Pools*.
+. In the left menu, click *External Requisitions and Thread Pools*.
+. In the *Thread Pools* area, select a value from the drop-down list for each item you want to update.
+. Click *Update Thread Pools*.
+
+[[create-req-def]]
+== Create an external requisition
+
+An external requisition defines the URL, schedule, and rescan behaviour to retrieve provisioning information from external sources such as HTTP(S), VMWare, and DNS protocol, for up-to-date inventory data.
 
 OpenNMS constructs the URL from the parameters (host, zone, foreign source) associated with the type of external source the user defines.
 
-The following example shows how to create a requisition definition to schedule an import from a DNS server running on the localhost, requesting nodes from the "localhost" zone, "DNS-example" foreign source, and imported daily at midnight.
+The following example shows how to create an external requisition to schedule an import from a DNS server running on the localhost, requesting nodes from the "localhost" zone, "DNS-example" requisition name, and imported daily at midnight.
 
 . Log in to {page-component-title} as an admin user.
-. Click the gear icon and click *Configure Provisioning Subsystem*.
-. Click *Add Requisition Definition*.
-. Specify a name for the requisition definition.
+. Click the gear icon and click *Configure External Requisitions and Thread Pools*.
+. In the left menu, click *External Requisitions and Thread Pools*.
+. Click *Add External Requisition*.
+. Specify a name for the external requisition.
 . From the *Type* drop-down, choose *DNS*.
 . Type "localhost" in the *Host* field.
-. Type "localhost" as the DNS zone.
-. Type "DNS-example" in the *Foreign Source* field.
+. Type "localhost" as the *Zone* field.
+. Type "DNS-example" in the *Requsition Name* field.
 .. The URL "dns://localhost/localhost/DNS-example" appears at the bottom of the dialog.
 . Choose *Daily* for the schedule type and specify 12:00 a.m. for the time.
 +
 NOTE: To create an advanced cron schedule, click the checkbox and add the appropriate information.
 
 . Specify how OpenNMS should perform subsequent scans:
-.. Scan new and existing nodes
-.. Scan new nodes only
-.. Database steps only
+.. Scan all nodes
+.. Scan added nodes only
+.. No scanning
 
 . The optional *Advanced Options* section lets you specify key/value pairs.
 . Click *Save & Close*.
