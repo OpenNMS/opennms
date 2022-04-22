@@ -74,8 +74,6 @@
                 <descriptor>mvn:org.apache.karaf.features/framework/${karafVersion}/xml/features</descriptor>
                 <!-- Karaf standard features -->
                 <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
-                <!-- Karaf Spring features -->
-                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</descriptor>
                 <!-- Karaf Spring legacy features -->
                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
                 <!-- Pax Exam features -->
@@ -318,23 +316,7 @@
       </exclusions>
     </dependency>
 
-    <!-- Karaf Spring features artifact -->
-    <dependency>
-      <groupId>org.opennms.karaf</groupId>
-      <artifactId>opennms</artifactId>
-      <version>${project.version}</version>
-      <classifier>spring</classifier>
-      <type>xml</type>
-      <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!-- Karaf Spring legacy features artifact -->
+    <!-- OpenNMS Spring legacy features artifact -->
     <dependency>
       <groupId>org.opennms.karaf</groupId>
       <artifactId>opennms</artifactId>
@@ -342,12 +324,6 @@
       <classifier>spring-legacy</classifier>
       <type>xml</type>
       <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <!-- Pax Exam features artifact -->

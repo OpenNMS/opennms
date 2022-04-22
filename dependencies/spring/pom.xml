@@ -27,9 +27,15 @@
       <version>${springVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicemix.bundles</groupId>
-      <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
-      <version>${springVersion}</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>org.opennms.dependencies.spring-beans-42-shaded</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.servicemix.bundles</groupId>
