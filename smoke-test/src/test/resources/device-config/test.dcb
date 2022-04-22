@@ -5,5 +5,5 @@ send:date "+%s" >> $BACKUP
 await:~$
 send:echo "${tftpServerIp} ${tftpServerPort}" >> $BACKUP
 await:~$
-send:tftp ${tftpServerIp} ${tftpServerPort} -v -c put $BACKUP test.${filenameSuffix} 2>&1 > /tmp/log
+send:tftp ${tftpServerIp} ${tftpServerPort} -v -c put $BACKUP test${filenameSuffix} 2>&1 > /tmp/log
 await:~$

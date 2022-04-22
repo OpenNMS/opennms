@@ -28,9 +28,11 @@
 
 package org.opennms.features.deviceconfig.rest.api;
 
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
 
 import java.util.List;
+import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -82,7 +84,7 @@ public interface DeviceConfigRestService {
         @QueryParam("ipAddress") String ipAddress,
         @QueryParam("ipInterfaceId") Integer ipInterfaceId,
         @QueryParam("configType") String configType,
-        @QueryParam("search") String searchTerm,
+        @QueryParam("status") Set<DeviceConfigStatus> statuses,
         @QueryParam("createdAfter") Long createdAfter,
         @QueryParam("createdBefore") Long createdBefore
     );
@@ -96,7 +98,8 @@ public interface DeviceConfigRestService {
      * @param orderBy used for sorting. Valid values are 'lastUpdated', 'deviceName', 'lastBackup' and 'ipAddress'. Defaults to 'lastUpdated'
      * @param order used for sorting; valid values are 'asc' and 'desc', defaults to 'desc'
      * @param searchTerm A search term, currently to search by device name or IP address.
-     * @return
+     * @param statuses An optional set of {@link DeviceConfigStatus} values. If supplied, only return records
+     *      with any of the given statuses; defaults to returning all values.
      */
     @GET
     @Path("/latest")
@@ -106,7 +109,8 @@ public interface DeviceConfigRestService {
         @QueryParam("offset") @DefaultValue("0") Integer offset,
         @QueryParam("orderBy") @DefaultValue("lastUpdated") String orderBy,
         @QueryParam("order") @DefaultValue("desc") String order,
-        @QueryParam("search") String searchTerm
+        @QueryParam("search") String searchTerm,
+        @QueryParam("status") Set<DeviceConfigStatus> statuses
     );
 
     /**

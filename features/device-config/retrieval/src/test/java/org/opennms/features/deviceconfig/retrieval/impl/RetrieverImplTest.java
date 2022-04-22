@@ -94,7 +94,7 @@ public class RetrieverImplTest {
         var filename = "config.gz";
 
         // signal the receiver of some incoming file with the expected filename
-        receiver.onFileReceived(InetAddress.getLocalHost(), filename + "." + filenameSuffix, bytes);
+        receiver.onFileReceived(InetAddress.getLocalHost(), filename + filenameSuffix, bytes);
 
         await().until(future::isDone);
 
@@ -225,7 +225,7 @@ public class RetrieverImplTest {
         var filenameSuffix = (String)vars.get("filenameSuffix");
 
         // signal the receiver of some incoming file that has a different name
-        receiver.onFileReceived(InetAddress.getLocalHost(), "config.gz." + filenameSuffix + ".other", new byte[] { 1, 2, 3 });
+        receiver.onFileReceived(InetAddress.getLocalHost(), "config.gz" + filenameSuffix + ".other", new byte[] { 1, 2, 3 });
 
         await().until(future::isDone);
 
