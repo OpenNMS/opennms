@@ -222,7 +222,6 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
             LOG.debug("Loading attribute type {}", type);
             m_vendorAttributes.put(type.getSnmpObjId(), type);
         }
-        //changed implementation to resolve NMS-14085
         //New implementation compares existing values of hwentityattributetype and values coming
         // from snmp-hardware-inventory-adapter-configuration.xml , if value is not in table and its new
         // entry in xml then insert record in table. If value is already in table then update it
@@ -232,12 +231,12 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
                 HwEntityAttributeType type = m_vendorAttributes.get(obj.getOid());
                 if (type == null) {
                     type = new HwEntityAttributeType(obj.getOid().toString(), obj.getAlias(), obj.getType());
-                    LOG.info("Creating attribute type {}", type);
+                    LOG.debug("Creating attribute type {}", type);
                 } else {
                     type.setOid(obj.getOid().toString());
                     type.setName(obj.getAlias());
                     type.setAttributeClass(obj.getType());
-                    LOG.info("Updating attribute type {}", type);
+                    LOG.debug("Updating attribute type {}", type);
                 }
                 m_hwEntityAttributeTypeDao.saveOrUpdate(type);
                 m_vendorAttributes.put(type.getSnmpObjId(), type);
