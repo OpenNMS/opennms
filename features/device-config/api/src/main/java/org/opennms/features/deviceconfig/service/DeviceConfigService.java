@@ -43,8 +43,9 @@ public interface DeviceConfigService {
      * @param location   specific minion location at which we need to fetch device config.
      * @param service    name of the bound service.
      * @throws IOException
+     * @return
      */
-    void triggerConfigBackup(String ipAddress, String location, String service) throws IOException;
+    CompletableFuture<Boolean> triggerConfigBackup(String ipAddress, String location, String service) throws IOException;
 
     /**
      * Get device config for the given ipAddress at given location.

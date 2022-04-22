@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.zip.GZIPInputStream;
 
-@Command(scope = "opennms", name = "device-config-get", description = "Get device config from a specific Interface")
+@Command(scope = "opennms", name = "device-config-get", description = "Get device config from a specific Interface, doesn't persist")
 @Service
 public class GetDeviceConfig implements Action {
 

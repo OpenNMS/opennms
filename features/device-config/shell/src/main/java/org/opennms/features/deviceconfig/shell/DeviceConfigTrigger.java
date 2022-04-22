@@ -36,11 +36,14 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-@Command(scope = "opennms", name = "device-config-trigger-backup", description = "Trigger device config  backup from a specific Interface")
+@Command(scope = "opennms", name = "device-config-trigger-backup", description = "Trigger device config backup from a specific Interface, always persists")
 @Service
 public class DeviceConfigTrigger implements Action {
 
@@ -56,7 +59,6 @@ public class DeviceConfigTrigger implements Action {
     @Option(name = "-s", aliases = "--service", description = "Device Config Service", required = false, multiValued = false)
     String service = "DeviceConfig";
 
-
     @Override
     public Object execute() throws Exception {
         try {
@@ -65,13 +67,26 @@ public class DeviceConfigTrigger implements Action {
             System.out.printf("Not a valid host %s \n", host);
             return null;
         }
-        try {
-            deviceConfigService.triggerConfigBackup(host, location, service);
-            System.out.printf("Triggered config backup for %s at location %s", host, location);
-        } catch (IOException e) {
-            System.out.printf("Exception while triggering device config for %s at location %s, e = %s \n", host, location, e.getMessage());
-            return null;
+        CompletableFuture<Boolean> future = deviceConfigService.triggerConfigBackup(host, location, service);
+        while (true) {
+            try {
+                try {
+                    future.get(1, TimeUnit.SECONDS);
+                    System.out.printf("Triggered config backup for %s at location %s", host, location);
+                } catch (InterruptedException e) {
+                    System.out.println("Interrupted.");
+                } catch (ExecutionException e) {
+                    System.out.println("Failed to trigger device config backup: " + e.getMessage());
+                }
+                break;
+            } catch (TimeoutException e) {
+                // pass
+            }
+            System.out.print(".");
+            System.out.flush();
         }
+
         return null;
     }
+
 }

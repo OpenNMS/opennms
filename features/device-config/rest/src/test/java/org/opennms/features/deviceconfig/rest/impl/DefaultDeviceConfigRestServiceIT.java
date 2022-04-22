@@ -267,11 +267,11 @@ public class DefaultDeviceConfigRestServiceIT {
         Mockito.doThrow(new IllegalArgumentException(message)).when(deviceConfigService).triggerConfigBackup(Mockito.eq(invalidIpAddress),
                 Mockito.anyString(), Mockito.anyString());
 
-        var dto = new BackupRequestDTO(ipAddress, "MINION", "default");
+        var dto = new BackupRequestDTO(ipAddress, "MINION", "default", false);
         Response response = deviceConfigRestService.triggerDeviceConfigBackup(List.of(dto));
         assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.ACCEPTED));
 
-        var invalidDto = new BackupRequestDTO(invalidIpAddress, "MINION", "default");
+        var invalidDto = new BackupRequestDTO(invalidIpAddress, "MINION", "default", false);
         response = deviceConfigRestService.triggerDeviceConfigBackup(List.of(invalidDto));
         assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.BAD_REQUEST));
         assertThat(response.getEntity(), Matchers.is(message));
