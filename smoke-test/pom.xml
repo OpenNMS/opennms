@@ -333,6 +333,11 @@
       <version>4.13.1</version>
     </dependency>
     <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>hamcrest-jackson</artifactId>
+      <version>1.2.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-bootstrap</artifactId>
       <version>${project.version}</version>
@@ -634,6 +639,18 @@
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config.persistence</groupId>
+      <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+      <dependency>
+          <groupId>org.opennms.features.device-config</groupId>
+          <artifactId>org.opennms.features.device-config.rest</artifactId>
+          <version>${project.version}</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
   <repositories>
     <repository>

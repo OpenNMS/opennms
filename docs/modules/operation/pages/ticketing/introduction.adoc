@@ -32,4 +32,4 @@ If enabled, various links to control the issue state appear on the alarm details
 
 == Supported Ticketer
 
-For information on supported ticketers and how to configure them, see xref:reference:configuration/ticketing/introduction.adoc[ticketer reference section].
+For information on supported ticketers and how to configure them, see xref:reference:ticketing/introduction.adoc[ticketer reference section].

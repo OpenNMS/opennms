@@ -1054,6 +1054,11 @@
       <artifactId>org.opennms.features.rest.mapper</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- dependency for ReST Elasticsearch integration -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

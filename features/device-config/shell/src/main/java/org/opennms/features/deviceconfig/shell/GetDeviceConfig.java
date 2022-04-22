@@ -63,9 +63,6 @@ public class GetDeviceConfig implements Action {
     @Argument(index = 0, name = "host", description = "Hostname or IP Address of the system to poll", required = true, multiValued = false)
     String host;
 
-    @Option(name = "-n", aliases = "--node-id", description = "Node Id for Service", required = false, multiValued = false)
-    int nodeId;
-
     @Option(name = "-s", aliases = "--service", description = "Device Config Service", required = false, multiValued = false)
     String service = "DeviceConfig";
 
@@ -94,16 +91,16 @@ public class GetDeviceConfig implements Action {
                         if (DeviceConfigUtil.isGzipFile(deviceConfig.getFilename())) {
                             content = DeviceConfigUtil.decompressGzipToBytes(deviceConfig.getContent());
                         }
-                        System.out.printf("Received file %s with content .. \n\n", deviceConfig.getFilename());
+                        System.out.printf("Received file %s with content…\n\n", deviceConfig.getFilename());
                         String config = new String(content, Charset.forName(encoding));
                         System.out.println(config);
                     } else {
-                        System.out.println("Failed to fetch device config");
+                        System.out.println("Device config not received.");
                     }
                 } catch (InterruptedException e) {
                     System.out.println("Interrupted.");
                 } catch (ExecutionException e) {
-                    System.out.println("Failed to fetch device config.");
+                    System.out.println("Failed to fetch device config: " + e.getMessage());
                 }
                 break;
             } catch (TimeoutException e) {

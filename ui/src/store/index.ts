@@ -14,7 +14,6 @@ import logsModule from './logs'
 import appModule from './app'
 import infoModule from './info'
 import helpModule from './help'
-import notificationModule from './notification'
 import resourceModule from './resource'
 import graphModule from './graph'
 import pluginModule from './plugin'
@@ -35,7 +34,6 @@ export default createStore({
     appModule,
     infoModule,
     helpModule,
-    notificationModule,
     resourceModule,
     graphModule,
     pluginModule,

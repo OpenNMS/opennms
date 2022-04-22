@@ -63,7 +63,7 @@
 import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
 import { QueryParameters } from '@/types'
-import useQueryParameters from '@/hooks/useQueryParams'
+import useQueryParameters from '@/composables/useQueryParams'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherSortObject } from '@/types'
