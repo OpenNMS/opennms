@@ -19,9 +19,10 @@ cleanup_and_build() {
 
   # Kill off any existing instances
   did_kill_at_least_one_pid=0
+  # shellcheck disable=SC2044
   for pid_file in $(find "${CONTAINERDIR}/target" -name karaf.pid); do
     pid=$(cat "$pid_file")
-    if [[ ! -z $pid ]]; then
+    if [[ -n $pid ]]; then
       $cmd_prefix kill -9 "$pid" 2>/dev/null && did_kill_at_least_one_pid=1
     fi
   done
@@ -123,14 +124,13 @@ spawn_minion() {
 
   # Extract the core repository
   pushd core/repository/target > /dev/null
-  mkdir -p "$MINION_HOME/repositories/core"
-  tar zxvf core-repository-*-repo.tar.gz -C "$MINION_HOME/repositories/core" > /dev/null
+  mkdir -p "$MINION_HOME/system"
+  tar zxvf core-repository-*-repo.tar.gz -C "$MINION_HOME/system" > /dev/null
   popd > /dev/null
 
   # Extract the default repository
   pushd repository/target > /dev/null
-  mkdir -p "$MINION_HOME/repositories/default"
-  tar zxvf repository-*-repo.tar.gz -C "$MINION_HOME/repositories/default" > /dev/null
+  tar zxvf repository-*-repo.tar.gz -C "$MINION_HOME/system" > /dev/null
   popd > /dev/null
 
   echo "Updating configuration for Minion #$idx..."

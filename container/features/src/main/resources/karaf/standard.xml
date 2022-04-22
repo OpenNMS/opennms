@@ -16,7 +16,7 @@
       See the License for the specific language governing permissions and
       limitations under the License.
 -->
-<features name="standard-4.2.6" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
+<features name="opennms-standard-4.2.6" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
 
 	<!-- ################ START OPENNMS CUSTOMIZATION ############ -->
 	<!-- <repository>mvn:org.ops4j.pax.web/pax-web-features/7.2.10/xml/features</repository> -->
@@ -89,8 +89,7 @@
 #
 enterprise=mvn:org.apache.karaf.features/enterprise/${karaf.version}/xml/features
 enterprise-legacy=mvn:org.apache.karaf.features/enterprise-legacy/${karaf.version}/xml/features
-spring=mvn:org.apache.karaf.features/spring/${karaf.version}/xml/features
-spring-legacy=mvn:org.apache.karaf.features/spring-legacy/${karaf.version}/xml/features
+spring-legacy=mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy
 cellar=mvn:org.apache.karaf.cellar/apache-karaf-cellar/RELEASE/xml/features
 cave=mvn:org.apache.karaf.cave/apache-karaf-cave/RELEASE/xml/features
 camel=mvn:org.apache.camel.karaf/apache-camel/RELEASE/xml/features
