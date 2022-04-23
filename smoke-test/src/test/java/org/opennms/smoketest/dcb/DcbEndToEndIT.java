@@ -329,7 +329,7 @@ public class DcbEndToEndIT {
 
         // Trigger local backup
         try (final SshClient sshClient = STACK.opennms().ssh(); final PrintStream pipe = sshClient.openShell()) {
-            pipe.printf("opennms:device-config-trigger-backup -s %s -l %s %s%n", DCB_SVC_NAME, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, targetAddress);
+            pipe.printf("opennms:device-config-get -s %s -l %s %s%n", DCB_SVC_NAME, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, targetAddress);
             pipe.printf("logout%n");
 
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
@@ -339,7 +339,7 @@ public class DcbEndToEndIT {
 
         // Trigger remote backup
         try (final SshClient sshClient = STACK.opennms().ssh(); final PrintStream pipe = sshClient.openShell()) {
-            pipe.printf("opennms:device-config-trigger-backup -s %s -l %s %s%n", DCB_SVC_NAME, STACK.minion().getLocation(), targetAddress);
+            pipe.printf("opennms:device-config-get -s %s -l %s %s%n", DCB_SVC_NAME, STACK.minion().getLocation(), targetAddress);
             pipe.printf("logout%n");
 
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
@@ -348,11 +348,8 @@ public class DcbEndToEndIT {
         }
 
         // Ensure backup was not stored
-//        await().atMost(2, MINUTES)
-//               .until(restClient::getBackups, is(nullValue()));
-        // TODO: remove with NMS-14176
         await().atMost(2, MINUTES)
-               .until(restClient::getBackups, jsonArray(hasSize(2)));
+               .until(restClient::getBackups, is(nullValue()));
     }
 
     @Test
