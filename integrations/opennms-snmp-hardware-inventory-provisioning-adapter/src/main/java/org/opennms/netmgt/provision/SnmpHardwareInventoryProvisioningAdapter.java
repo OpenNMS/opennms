@@ -222,10 +222,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
             LOG.debug("Loading attribute type {}", type);
             m_vendorAttributes.put(type.getSnmpObjId(), type);
         }
-        //New implementation compares existing values of hwentityattributetype and values coming
-        // from snmp-hardware-inventory-adapter-configuration.xml , if value is not in table and its new
-        // entry in xml then insert record in table. If value is already in table then update it
-        // with current information (oid, alias, class) coming from xml file.
+        
         for (HwExtension ext : m_hwInventoryAdapterConfigDao.getConfiguration().getExtensions()) {
             for (MibObj obj : ext.getMibObjects()) {
                 HwEntityAttributeType type = m_vendorAttributes.get(obj.getOid());
