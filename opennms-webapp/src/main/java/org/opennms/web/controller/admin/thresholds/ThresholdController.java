@@ -251,7 +251,7 @@ public class ThresholdController extends AbstractController implements Initializ
             //Set the two default values which need to be set for the UI to work properly
             threshold.setDsType("node");
             threshold.setType(ThresholdType.HIGH);
-            threshold.setTriggerValue(1); //Default to 1 - 0 will give an error, so we may as well be helpful
+            threshold.setTrigger("1"); //Default to 1 - 0 will give an error, so we may as well be helpful
             group.addThreshold(threshold);
         }
 
@@ -304,7 +304,7 @@ public class ThresholdController extends AbstractController implements Initializ
             //Set the two default values which need to be set for the UI to work properly
             expression.setDsType("node");
             expression.setType(ThresholdType.HIGH);
-            expression.setTriggerValue(1); //Default to 1 - 0 will give an error, so we may as well be helpful
+            expression.setTrigger("1"); //Default to 1 - 0 will give an error, so we may as well be helpful
             group.addExpression(expression);
         }
 

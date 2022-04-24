@@ -336,4 +336,14 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         saveOrUpdate(deviceConfig);
         LOG.warn("Persisted device config backup failure - ipInterface: {}; service: {}; type: {}; reason: {}", ipInterface, serviceName, configType, reason);
     }
+
+    @Override
+    public void createEmptyDeviceConfig(OnmsIpInterface ipInterface, String serviceName, String configType) {
+        DeviceConfig deviceConfig = new DeviceConfig();
+        deviceConfig.setIpInterface(ipInterface);
+        deviceConfig.setServiceName(serviceName);
+        deviceConfig.setConfigType(configType);
+        deviceConfig.setStatus(DeviceConfigStatus.NONE);
+        saveOrUpdate(deviceConfig);
+    }
 }
