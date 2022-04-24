@@ -227,6 +227,11 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         });
     }
 
+    @Override
+    public long getNumSituations() {
+        return getHibernateTemplate().execute(s -> (BigInteger)s.createSQLQuery( "SELECT COUNT( DISTINCT situation_id ) FROM alarm_situations").uniqueResult()).longValue();
+    }
+
     public List<OnmsAlarm> getAlarmsForEventParameters(final Map<String, String> eventParameters) {
         final StringBuffer hqlStringBuffer = new StringBuffer("From OnmsAlarm a where ");
         for (int i = 0; i < eventParameters.size(); i++) {

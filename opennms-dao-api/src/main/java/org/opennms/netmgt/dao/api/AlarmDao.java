@@ -69,4 +69,10 @@ public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
     List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, boolean processAcknowledgedAlarms, String restrictionColumn, String restrictionValue, String... groupByColumns);
 
     List<OnmsAlarm> getAlarmsForEventParameters(final Map<String, String> eventParameters);
+
+    /**
+     * Returns the number of situations currently present in the database.
+     */
+    long getNumSituations();
+
 }
