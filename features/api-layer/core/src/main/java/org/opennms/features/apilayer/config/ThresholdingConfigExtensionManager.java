@@ -128,17 +128,17 @@ public class ThresholdingConfigExtensionManager extends ConfigExtensionManager<T
         from.getDsLabel().ifPresent(to::setDsLabel);
         to.setDsType(from.getDsType());
         to.setFilterOperator(toFilterOperator(from.getFilterOperator()));
-        to.setRearmValue(from.getRearm());
+        to.setRearm(from.getRearm());
         from.getRearmedUEI().ifPresent(to::setRearmedUEI);
         to.setRelaxed(from.getRelaxed());
         to.setResourceFilters(from.getResourceFilters()
                 .stream()
                 .map(ThresholdingConfigExtensionManager::toResourceFilter)
                 .collect(Collectors.toList()));
-        to.setTriggerValue(from.getTrigger());
+        to.setTrigger(from.getTrigger());
         from.getTriggeredUEI().ifPresent(to::setTriggeredUEI);
         to.setType(toThresholdType(from.getType()));
-        to.setDoubleValue(from.getValue());
+        to.setValue(from.getValue());
     }
 
     private static FilterOperator toFilterOperator(org.opennms.integration.api.v1.config.thresholding.FilterOperator filterOperator) {
