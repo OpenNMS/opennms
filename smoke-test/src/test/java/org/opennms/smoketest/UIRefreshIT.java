@@ -70,7 +70,7 @@ public class UIRefreshIT extends OpenNMSSeleniumIT {
         // Switch to the new UI
         wait.until(pageContainsText("UI Preview"));
         clickElement(By.id("ui-preview-btn"));
-        wait.until(pageContainsText("Return to previous UI"));
+        wait.until(pageContainsText("Back to main page"));
     }
 
     @After

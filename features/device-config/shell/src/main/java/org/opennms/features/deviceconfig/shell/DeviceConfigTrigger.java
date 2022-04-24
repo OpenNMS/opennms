@@ -53,9 +53,6 @@ public class DeviceConfigTrigger implements Action {
     @Argument(index = 0, name = "host", description = "Hostname or IP Address of the system to poll", required = true, multiValued = false)
     String host;
 
-    @Option(name = "-n", aliases = "--node-id", description = "Node Id for Service", required = false, multiValued = false)
-    int nodeId;
-
     @Option(name = "-s", aliases = "--service", description = "Device Config Service", required = false, multiValued = false)
     String service = "DeviceConfig";
 

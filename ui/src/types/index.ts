@@ -6,6 +6,12 @@ export interface VuexContext {
   dispatch: Dispatch
 }
 
+export interface SnackbarProps {
+  msg: string
+  center?: boolean
+  error?: boolean
+}
+
 export interface SearchResultResponse {
   label?: string
   context: {

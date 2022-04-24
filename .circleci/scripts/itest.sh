@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
@@ -33,33 +33,13 @@ find_tests()
 echo "#### Making sure git is up-to-date"
 git fetch --all
 
-RUN_TESTS=false
-PROJECT_ARGS=()
+echo "#### Generate project structure .json"
+./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end --legacy-local-repository -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
 
 echo "#### Determining tests to run"
 cd ~/project
-
-# Always run everything if .circleci/ has changed, since it could
-# potentially change how the tests run.
-if [ -e ".nightly" ]; then
-  PARENT_BRANCH="$(grep -E '^parent_branch:' .nightly | sed -e 's,^parent_branch: *,,' -e 's, *$,,')"
-  if [ "$(git diff --name-only "origin/${PARENT_BRANCH}" | grep -c -E '^\.circleci/')" -gt 0 ]; then
-    RUN_TESTS=true
-  fi
-fi
-
-if [ "$RUN_TESTS" = false ]; then
-  echo "#### Generate project structure .json"
-  ./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end --legacy-local-repository -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
-
-  find_tests
-  if [ -s /tmp/this_node_projects ]; then
-    RUN_TESTS=true
-    PROJECT_ARGS=("--projects" "$(< /tmp/this_node_projects paste -s -d, -)")
-  fi
-fi
-
-if [ "$RUN_TESTS" = "false" ]; then
+find_tests
+if [ ! -s /tmp/this_node_projects ]; then
   echo "No tests to run."
   exit 0
 fi
@@ -128,7 +108,7 @@ echo "#### Building Assembly Dependencies"
            --batch-mode \
            "${CCI_FAILURE_OPTION:--fae}" \
            --also-make \
-           "${PROJECT_ARGS[@]}"
+           --projects "$(< /tmp/this_node_projects paste -s -d, -)"
 
 echo "#### Executing tests"
 ./compile.pl install -P'!checkstyle' \
@@ -146,4 +126,5 @@ echo "#### Executing tests"
            -Djava.security.egd=file:/dev/./urandom \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
-           "${PROJECT_ARGS[@]}"
+           --projects "$(< /tmp/this_node_projects paste -s -d, -)"
+
