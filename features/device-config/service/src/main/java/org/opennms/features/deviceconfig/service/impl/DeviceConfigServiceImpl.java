@@ -85,7 +85,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private PollerConfig pollerConfig;
 
     @Override
-    public CompletableFuture<Boolean> triggerConfigBackup(String ipAddress, String location, String service) throws IOException {
+    public CompletableFuture<Boolean> triggerConfigBackup(String ipAddress, String location, String service, boolean persist) throws IOException {
         try {
             InetAddress.getByName(ipAddress);
         } catch (UnknownHostException e) {
@@ -93,7 +93,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             throw new IllegalArgumentException("Unknown/Invalid IpAddress " + ipAddress);
         }
 
-        return pollDeviceConfig(ipAddress, location, service, true)
+        return pollDeviceConfig(ipAddress, location, service, persist)
                 .thenApply(response -> {
                     if (response.getPollStatus().isAvailable()) {
                         return true;
@@ -108,8 +108,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     }
 
     @Override
-    public CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String service, int timeout) throws IOException {
-        return pollDeviceConfig(ipAddress, location, service, false)
+    public CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String service, boolean persist, int timeout) throws IOException {
+        return pollDeviceConfig(ipAddress, location, service, persist)
                 .orTimeout(timeout, TimeUnit.MILLISECONDS)
                 .thenApply(resp -> {
                     if (resp.getPollStatus().isAvailable()) {

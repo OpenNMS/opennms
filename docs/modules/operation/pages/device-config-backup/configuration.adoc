@@ -80,7 +80,7 @@ Pollerd can generate the following events in {page-component-title} for device c
 You can use the Rest API to trigger device configuration retrieval outside of a monitor schedule.
 (See xref:development:rest/device_config.adoc[Device Config Rest API].)
 
-== Trigger backup from Karaf shell
+== Trigger/Retrieve Device Config from Karaf shell
 
 You can also use the Karaf shell to manually trigger and retrieve a device configuration backup.
 
@@ -90,16 +90,18 @@ ssh -p 8101 admin@localhost
 ----
 
 Once in the shell, you can print show the commands help as follows:
+
 [source, console]
+.Get Device Config Backup from a specific Interface
 ----
-admin@opennms()> opennms:device-config-get --help
+admin@opennms()> opennms:dcb-get --help
 DESCRIPTION
-        opennms:device-config-get
+        opennms:dcb-get
 
 	Get device config from a specific Interface
 
 SYNTAX
-        opennms:device-config-get [options] host
+        opennms:dcb-get [options] host
 
 ARGUMENTS
         host
@@ -110,17 +112,49 @@ OPTIONS
         -l, --location
                 Location
                 (defaults to Default)
+        --help
+                Display this help message
         -t, --timeout
                 Timeout for device config retrieval in msec
                 (defaults to 60000)
         -s, --service
                 Device Config Service
                 (defaults to DeviceConfig)
-        --help
-                Display this help message
-        -n, --node-id
-                Node Id for Service
         -e, --encoding
                 Encoding format
                 (defaults to UTF-8)
+        -p, --persist
+                Whether persist config or not
 ----
+
+[source, console]
+.Trigger device config backup from a specific Interface
+----
+admin@opennms()> opennms:dcb-trigger --help
+DESCRIPTION
+        opennms:dcb-trigger
+
+	Trigger device config backup from a specific Interface
+
+SYNTAX
+        opennms:dcb-trigger [options] host
+
+ARGUMENTS
+        host
+                Hostname or IP Address of the system to poll
+                (required)
+
+OPTIONS
+        -l, --location
+                Location
+                (defaults to Default)
+        --help
+                Display this help message
+        -s, --service
+                Device Config Service
+                (defaults to DeviceConfig)
+        -p, --persist
+                Whether persist config or not
+----
+
+NOTE: Above karaf commands won't persist config by default, use -p option to persist config in {page-component-title} Database.

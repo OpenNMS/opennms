@@ -34,7 +34,6 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
@@ -268,9 +267,9 @@ public class DefaultDeviceConfigRestServiceIT {
         String message = "Invalid Ip Interface";
         CompletableFuture<Boolean> success = new CompletableFuture<>();
         Mockito.doReturn(success).when(deviceConfigService).triggerConfigBackup(Mockito.eq(ipAddress),
-                Mockito.anyString(), Mockito.anyString());
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
         Mockito.doThrow(new IllegalArgumentException(message)).when(deviceConfigService).triggerConfigBackup(Mockito.eq(invalidIpAddress),
-                Mockito.anyString(), Mockito.anyString());
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
 
         var dto = new BackupRequestDTO(ipAddress, "MINION", "default", false);
         Response response = deviceConfigRestService.triggerDeviceConfigBackup(List.of(dto));

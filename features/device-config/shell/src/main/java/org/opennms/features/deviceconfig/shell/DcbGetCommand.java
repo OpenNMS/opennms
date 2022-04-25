@@ -35,17 +35,20 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
+import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
+import org.opennms.netmgt.poller.DeviceConfig;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-@Command(scope = "opennms", name = "device-config-trigger-backup", description = "Trigger device config backup from a specific Interface, always persists")
+@Command(scope = "opennms", name = "dcb-get", description = "Get device config backup from a specific Interface")
 @Service
-public class DeviceConfigTrigger implements Action {
+public class DcbGetCommand implements Action {
 
     @Reference
     private DeviceConfigService deviceConfigService;
@@ -59,6 +62,16 @@ public class DeviceConfigTrigger implements Action {
     @Option(name = "-s", aliases = "--service", description = "Device Config Service", required = false, multiValued = false)
     String service = "DeviceConfig";
 
+    @Option(name = "-t", aliases = "--timeout", description = "Timeout for device config retrieval in msec", required = false, multiValued = false)
+    int timeout = 60000;
+
+    @Option(name = "-e", aliases = "--encoding", description = "Encoding format", required = false, multiValued = false)
+    String encoding = Charset.defaultCharset().name();
+
+    @Option(name = "-p", aliases = "--persist", description = "Whether persist config or not")
+    boolean persist = false;
+
+
     @Override
     public Object execute() throws Exception {
         try {
@@ -67,16 +80,26 @@ public class DeviceConfigTrigger implements Action {
             System.out.printf("Not a valid host %s \n", host);
             return null;
         }
-        CompletableFuture<Boolean> future = deviceConfigService.triggerConfigBackup(host, location, service);
+        CompletableFuture<DeviceConfig> future = deviceConfigService.getDeviceConfig(host, location, service, persist, timeout);
         while (true) {
             try {
                 try {
-                    future.get(1, TimeUnit.SECONDS);
-                    System.out.printf("Triggered config backup for %s at location %s", host, location);
+                    DeviceConfig deviceConfig = future.get(1, TimeUnit.SECONDS);
+                    if (deviceConfig.getContent() != null) {
+                        byte[] content = deviceConfig.getContent();
+                        if (DeviceConfigUtil.isGzipFile(deviceConfig.getFilename())) {
+                            content = DeviceConfigUtil.decompressGzipToBytes(deviceConfig.getContent());
+                        }
+                        System.out.printf("Received file %s with content…\n\n", deviceConfig.getFilename());
+                        String config = new String(content, Charset.forName(encoding));
+                        System.out.println(config);
+                    } else {
+                        System.out.println("Device config not received.");
+                    }
                 } catch (InterruptedException e) {
                     System.out.println("Interrupted.");
                 } catch (ExecutionException e) {
-                    System.out.println("Failed to trigger device config backup: " + e.getMessage());
+                    System.out.println("Failed to fetch device config: " + e.getMessage());
                 }
                 break;
             } catch (TimeoutException e) {
@@ -85,7 +108,6 @@ public class DeviceConfigTrigger implements Action {
             System.out.print(".");
             System.out.flush();
         }
-
         return null;
     }
 
