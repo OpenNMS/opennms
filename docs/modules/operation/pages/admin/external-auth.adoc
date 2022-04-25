@@ -1,0 +1,91 @@
+[[ga-admin-external-auth]]
+= External Authentication
+
+If you have an existing directory for authenticating users, {page-component-title} can be configured to utilize that system for granting users access to login, in addition to users defined directly within your {page-component-title} server.
+
+While Active Directory and OpenLDAP (and others) implement the same LDAP protocol, their schemas are substantially different.
+The biggest difference is the `memberOf` attribute, which is not supported by default LDAP v3 specification, and is not present in common OpenLDAP installs, but comes standard with AD.
+This has a significant implication in that you cannot filter a user search by nested group membership, and most installs tend not to be fully hierarchical (User's DN doesn't cite a home group).
+You can either create dedicated per-role LDAP groups or map existing groups to roles by selecting and configuring the appropriate `userGroupLdapAuthoritiesPopulator`.
+
+== Configuring external authentication
+
+The {page-component-title} webapp uses link:https://spring.io/projects/spring-security[Spring Security] for its user authentication, authorization, and accounting (AAA) concerns.
+Configuring external authentication requires configuring Spring Security correctly for your own environment.
+
+The Spring Security configuration can be modified without making large, invasive changes to the main context file.
+Here is a summary of the files involved:
+
+[source, directory]
+----
+${OPENNMS_HOME}/jetty-webapps/
+|-- opennms
+|   |-- WEB-INF
+|   |   |-- applicationContext-spring-security.xml
+|   |   |-- spring-security.d
+|   |   |   |-- activeDirectory.xml.disabled
+|   |   |   |-- ldap.xml.disabled
+|   |   |   |-- radius.xml.disabled
+----
+
+There may be additional example files in your installation.
+
+applicationContext-spring-security.xml::
+The main Spring Security context configuration file for the OpenNMS webapp.
+A small edit (described below) is required to switch on external authentication.
+
+spring-security.d::
+Directory containing example files for common use cases.
+You must copy one of these files to a name of your own choosing, as long as it ends in `.xml`, and edit its details as outlined below.
+
+*.disabled::
+Skeleton files to use as starters for your configuration.
+
+
+Along with copying one of the files in the `$\{OPENNMS-HOME}/jetty-webapps/opennms/WEB-INF/spring-security.d` subdirectory to have a `.xml` extension and editing its contents to describe your directory configuration, you'll need to uncomment a single XML element in the `applicationContext-spring-security.xml` file.
+
+[source, xml]
+----
+    <!-- To enable external (e.g.
+LDAP, RADIUS) authentication, uncomment the following.
+         You must also rename and customize exactly ONE of the example files in the
+         spring-security.d subdirectory.
+-->
+    <authentication-provider ref="externalAuthenticationProvider" />
+----
+
+== Anatomy of an LDAP configuration
+
+Whether the authentication source is an Active Directory, a Novell eDirectory, or some other LDAP-enabled directory, the basic components (expressed as "beans" in Spring Framework lingo) that need to exist and be configured are the same:
+
+contextSource::
+Define your LDAP server URL(s) and search base.
+If you have multiple LDAP servers, include them as separate `<beans:value>` entries.
+
+authenticationSource::
+Provide credentials to bind to your directory in the `defaultUser` and `defaultPassword` properties.
+
+userSearch::
+Tells Spring Security where to find the users in your directory.
+
+userGroupLdapAuthoritiesPopulator::
+Tells Spring Security where to find groups in your directory.
+By defining `groupToRoleMap` entries, groups in your directory can be mapped to one or more security roles to determine what level of access the user should be granted.
+
+NOTE: If your directory requires a SSL connection, and is signed with a private certificate authority, make sure to add the certificates to your <<admin/https/http-client.adoc, truststore>>.
+
+After uncommenting the `externalAuthenticationProvider` bean reference in `$\{OPENNMS-HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml` and creating your site-specific configuration file (with a `.xml` extension) in the `spring-security.d` subdirectory, you must restart OpenNMS for the changes to take effect.
+Before doing this, it's a good idea to check that your changes have not led to malformed XML files:
+
+[source, console]
+----
+xmllint --noout applicationContext-spring-security.xml spring-security.d/*.xml
+----
+
+If this command produces no output, then the XML files are well-formed.
+If you've gotten all the details right, you'll be able to log in to the webapp with your directory credentials after restarting OpenNMS.
+
+
+== Troubleshooting
+
+If your server is not allowing login via your configured external authentication provider, logs are written to `$\{OPENNMS_HOME}/logs/web.log`.
