@@ -1,0 +1,138 @@
+
+[[upgrade-basic]]
+= Basic upgrade
+This procedure describes how to do a basic {page-component-title} upgrade, including upgrading the PostgreSQL database to a new version.
+You may need to complete additional steps to upgrade in a more complex setup (running more than one OpenNMS instance, database migration requirements, age of current version, and so on).
+
+A basic upgrade involves the following:
+
+* PostgreSQL upgrade and configuration
+* {page-component-title} update
+* Additional PostgreSQL configuration
+* Backup and upgrade
+
+IMPORTANT: Make sure you complete the tasks in the xref:deployment:upgrade/introduction.adoc#byb_upgrade[before you begin] section before upgrade.
+
+== PostgreSQL upgrade and configuration
+This example illustrates an upgrade from PostgreSQL 9.4 to 12.
+The process should be similar for different versions.
+
+. Become root:
+`sudo su -`
++
+Expected outcome: `whoami` returns `root`.
+
+. Install latest version PostgreSQL repository package.
+`yum -y install <repository package location>`
++
+Expected outcome: `yum repolist pdg*` reports available repos for postgresql versions 9.6 through 14.
+
+. Install new PostgreSQL version: `yum -y install postgresql-12 postgresql-12-server`
++
+Upstream versions are designed to coexist with multiple installed versions.
++
+Expected outcome: `rpm -qa | grep postgresql` shows both 9.4 and 12.x package versions installed.
+
+. Initialize the PostgreSQL database: `/usr/bin/postgresql-12-setup initdb`
++
+Expected result: command complete with no errors.
+
+. Stop OpenNMS: `systemctl stop opennms.service`
++
+Expected result: `systemctl status opennms.service` reports opennms is stopped.
++
+NOTE: Your OpenNMS downtime starts at this point.
+
+. Stop earlier version of PostgreSQL: `systemctl stop postgresql`
++
+Expected result: `systemctl status postgresql.service` reports postgresql is stopped.
+
+. Disable earlier version PostgreSQL: `systemctl disable postgresql`
+. Stop PostgreSQL 12: `systemctl postgresql-12 stop`
++
+Expected result: `systemctl status postgresql-12.service` reports postgresql-12 is stopped.
+
+. Become the `postgres` user: `sudo su – postgres`
++
+Expected result: `whoami` returns `postgres`
+
+. Run the PostgreSQL upgrade in "check" mode: `/var/lib/pgsql/data -D /var/lib/pgsql/12/data -r -v -c`
++
+Expected result: output ends with “*Clusters are compatible*”.
++
+Verify these paths align with reality.
+
+. Run the PostgreSQL upgrade without "check": `/usr/pgsql-12/bin/pg_upgrade -b /usr/bin -B /usr/pgsql-12/bin -d /var/lib/pgsql/data -D /var/lib/pgsql/12/data -r -v`
++
+Expected outcome: output ends with “Upgrade Complete”.
++
+NOTE: Verify these paths align with reality.
+PostgreSQL's `pg_upgrade` utility copies the existing database into the new database and does not alter the existing database's data files.
+This leaves the PostgreSQL 9.4 database in its original state and location which can be used for rollback.
+
+. Replace `/var/lib/pgsql/12/data/postgresql.conf` with the updated copy.
+. Copy `pg_hba.conf`` from the postgresql 9.4 data directory to the postgresql-12 data directory: `cp /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/12/data/pg_hba.conf`
++
+NOTE: Verify these paths align with reality.
+. Exit PostgreSQL shell: `exit`
++
+Expected outcome:  whoami returns root
+
+== Update and verify the {page-component-title} repository
+
+Your {page-component-title} repository is defined in a file in `/etc/yum.repos.d/`.
+It may be named {page-component-title}.repo  but is not guaranteed to be.
+
+. Use the text editor of your choice to edit your {page-component-title} repository config to change the `baseurl` of the repository from the old release family to the new release family.
+. Verify that the attribute `enabled=1` is defined, or enabled, or absent entirely
+. Purge any cached yum data: `yum clean all`
++
+Expected outcome: `yum repolist` does not show an error pertaining to the {page-component-title} repo; `yum info {page-component-title}-core` shows an available current package version.
+
+. Install the PostgreSQL 12 version of iplike: `yum -y install iplike-pgsql12`
++
+Expected outcome: `rpm -q iplike-pgsql12` reports an _iplike-pgsql12_ package is installed.
+
+. Start postgresql-12: `systemctl start postgresql-12.service`
++
+Expected outcome: `systemctl status postgresql-12.service` reports postgresql-12 has started.
+
+. Make a backup copy of your OpenNMS config: `mv /opt/opennms/etc /opt/opennms/etc.backup`
+
+. Upgrade the {page-component-title} packages to the new version: `yum -y upgrade {page-component-title}-core {page-component-title}-webapp-jetty`
++
+Expected result: A lot of rpmnew files; `rpm -q {page-component-title}-core` reports the new version is installed.
+
+. Move the package-updated etc directory out of the way: `mv $OPENNMS_HOME/etc $OPENNMS_HOME/etc.as.shipped.2021`
+
+. ##What do regular users do?## Unpack the OpenNMS Support provided config tarball in `/opt/opennms`: `cd /opt/opennms; tar zxvf apple_etc.tar.gz`
++
+Expected result: a new /etc directory is created.
+
+. Install Java 11: `yum -y install java-11-openjdk java-11-openjdk-devel`
++
+Expected result: `rpm -q java-11-openjdk` returns a result.
+
+. Execute runjava:
+`$OPENNMS_HOME/bin/runjava -S /usr/lib/jvm/java-11/bin/java`
++
+Expected outcome: `$OPENNMS_HOME/etc/java.conf` contains a path to the Java 11 JDK.
+
+. Run the opennms installer: `$OPENNMS_HOME/bin/install -dis`
++
+NOTE: This step took approximately two hours in a lab environment processing 1.9 million database events.
+It may be faster on your own hardware, but may still take significant time.
++
+Expected result: A long delay, followed by output containing: `Upgrade completed successfully!`
+
+. Clear the Karaf cache: `yes | $OPENNMS_HOME/bin/fix-karaf-setup.sh`
++
+Expected outcome: The directory `$OPENNMS_HOME/data/` is empty.
+
+. Start OpenNMS {page-component-title}: `systemctl start opennms.service`
++
+Expected result: OpenNMS {page-component-title} starts with no errors and the Web UI is accessible as normal.
++
+NOTE: `tail -F /var/log/opennms/manager.log` can illustrate at what point in the startup process {page-component-title} is currently.
+
+. Upgrade is complete and operation is resumed.
