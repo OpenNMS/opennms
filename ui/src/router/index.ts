@@ -7,7 +7,7 @@ import Graphs from '@/components/Resources/Graphs.vue'
 import useRole from '@/composables/useRole'
 import useSnackbar from '@/composables/useSnackbar'
 
-const { adminRole, dcbRole } = useRole()
+const { adminRole, dcbRole, rolesAreLoaded } = useRole()
 const { showSnackBar } = useSnackbar()
 
 const router = createRouter({
@@ -34,10 +34,15 @@ const router = createRouter({
       name: 'FileEditor',
       component: FileEditor,
       beforeEnter: (to, from) => {
-        if (!adminRole.value) {
-          showSnackBar({ msg: 'No route access.'})
-          return from.path
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'No role access to file editor.' })
+            router.push(from.path)
+          }
         }
+
+        if (rolesAreLoaded.value) checkRoles()
+        else whenever(rolesAreLoaded, () => checkRoles())
       },
     },
     {
@@ -45,10 +50,15 @@ const router = createRouter({
       name: 'Logs',
       component: () => import('@/containers/Logs.vue'),
       beforeEnter: (to, from) => {
-        if (!adminRole.value) {
-          showSnackBar({ msg: 'No route access.'})
-          return from.path
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'No role access to logs.' })
+            router.push(from.path)
+          }
         }
+
+        if (rolesAreLoaded.value) checkRoles()
+        else whenever(rolesAreLoaded, () => checkRoles())
       },
     },
     {
@@ -100,10 +110,15 @@ const router = createRouter({
       name: 'DeviceConfigBackup',
       component: DeviceConfigBackup,
       beforeEnter: (to, from) => {
-        if (!dcbRole.value) {
-          showSnackBar({ msg: 'No route access.'})
-          return from.path
+        const checkRoles = () => {
+          if (!dcbRole.value) {
+            showSnackBar({ msg: 'No role access to DCB.' })
+            router.push(from.path)
+          }
         }
+
+        if (rolesAreLoaded.value) checkRoles()
+        else whenever(rolesAreLoaded, () => checkRoles())
       },
     },
     {

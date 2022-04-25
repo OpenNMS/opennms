@@ -36,7 +36,6 @@ import java.util.Date;
 
 public class DeviceConfigQueryResult {
     private Long id;
-    private Integer monitoredServiceId;
     private Integer ipInterfaceId;
     private Date createdTime;
     private String configType;
@@ -55,7 +54,6 @@ public class DeviceConfigQueryResult {
     private String location;
 
     public Long getId() { return this.id; }
-    public Integer getMonitoredServiceId() { return this.monitoredServiceId; }
     public Integer getIpInterfaceId() { return this.ipInterfaceId; }
     public Date getCreatedTime() { return this.createdTime; }
     public String getConfigType() { return this.configType; }
@@ -74,7 +72,6 @@ public class DeviceConfigQueryResult {
     public String getLocation() { return this.location; }
 
     public void setId(Long n) { this.id = n; }
-    public void setMonitoredServiceId(Integer n) { this.monitoredServiceId = n; }
     public void setIpInterfaceId(Integer n) { this.ipInterfaceId = n; }
     public void setCreatedTime(Date createdTime) { this.createdTime = createdTime; }
     public void setConfigType(String configType) { this.configType = configType; }
@@ -95,9 +92,8 @@ public class DeviceConfigQueryResult {
     public DeviceConfigQueryResult() {
     }
 
-    public DeviceConfigQueryResult(DeviceConfig dc, OnmsIpInterface ip, OnmsNode node, Integer monitoredServiceId) {
+    public DeviceConfigQueryResult(DeviceConfig dc, OnmsIpInterface ip, OnmsNode node) {
         this.id = dc.getId();
-        this.monitoredServiceId = monitoredServiceId;
         this.ipInterfaceId = ip.getId();
         this.createdTime = dc.getCreatedTime();
         this.configType = dc.getConfigType();

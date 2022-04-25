@@ -36,10 +36,14 @@
                 <version>${karafVersion}</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <blacklistedRepositories>
+                        <!-- make sure the custom opennms karaf repo doesn't make it in -->
+                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/standard</repository>
+                    </blacklistedRepositories>
                     <bootRepositories>
                         <!-- OPENNMS: Add the OpenNMS Karaf extensions feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
-                        <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
+                        <repository>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</repository>
                     </bootRepositories>
                     <!-- use this instead of bootRepositories when we move to karaf-maven-plugin 4.2.x or higher -->
                     <!-- <descriptors>
@@ -58,7 +62,7 @@
                         <feature>spring/4.0.9.RELEASE_1</feature>
                         <feature>spring/4.1.9.RELEASE_1</feature>
                         <feature>spring/4.2.9.RELEASE_1</feature>
-                        <feature>spring/4.3.14.RELEASE_1</feature>
+                        <feature>spring/4.3.30.RELEASE_1</feature>
 
                         <feature>spring-jms/4.1.9.RELEASE_1</feature>
                         <feature>spring/${springVersion}</feature>
@@ -68,25 +72,11 @@
                         <feature>eventadmin</feature>
                     </startupFeatures>
                     <bootFeatures>
-                        <feature>wrap</feature>
-                        <feature>aries-blueprint</feature>
-                        <feature>shell</feature>
-                        <feature>shell-compat</feature>
-                        <feature>feature</feature>
-                        <feature>jaas</feature>
-                        <feature>ssh</feature>
-                        <feature>management</feature>
-                        <feature>bundle</feature>
-                        <feature>config</feature>
-                        <feature>deployer</feature>
-                        <feature>diagnostic</feature>
-                        <feature>feature</feature>
-                        <feature>instance</feature>
-                        <feature>kar</feature>
-                        <feature>log</feature>
-                        <feature>package</feature>
-                        <feature>service</feature>
-                        <feature>system</feature>
+                        <!-- Karaf "standard" features to include in the core -->
+                        <feature>standard</feature>
+                        <feature>http</feature>
+                        <feature>http-whiteboard</feature>
+                        <feature>war</feature>
 
                         <!-- OPENNMS: Add our enhancements to the container -->
                         <feature>karaf-extender</feature>
@@ -98,6 +88,24 @@
                         <feature>hawtio</feature>
                         <feature>jolokia</feature>
                     </bootFeatures>
+                    <blacklistedFeatures>
+                        <!-- make sure the custom opennms features don't make it in -->
+                        <feature>opennms-bridge-http-service</feature>
+                        <feature>opennms-http-whiteboard</feature>
+                    </blacklistedFeatures>
+                    <installedBundles>
+                        <!-- override for security (see etc/overrides.properties) -->
+                        <bundle>mvn:org.ops4j.pax.logging/pax-logging-api/${paxLoggingVersion}</bundle>
+                        <bundle>mvn:org.ops4j.pax.logging/pax-logging-log4j2/${paxLoggingVersion}</bundle>
+                        <bundle>mvn:org.ops4j.pax.logging/pax-logging-logback/${paxLoggingVersion}</bundle>
+
+                        <!-- override for security (see org.apache.karaf.features.xml) -->
+                        <bundle>mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-31-shaded/${project.version}</bundle>
+                        <bundle>mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-42-shaded/${project.version}</bundle>
+                        <bundle>mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-43-shaded/${project.version}</bundle>
+
+                        <bundle>mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
+                    </installedBundles>
                     <libraries>
                         <!-- OPENNMS: Add JNA bundles to prevent jline from refreshing (KARAF-5251) -->
                         <library>mvn:net.java.dev.jna/jna/${jnaVersion};type:=boot;export:=false</library>
@@ -158,58 +166,14 @@
             <version>${karafVersion}</version>
             <classifier>features</classifier>
             <type>xml</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
-                file, and features will installed into the system directory if specified in 
-                the plugin configuration -->
-            <groupId>org.opennms.karaf</groupId>
-            <artifactId>opennms</artifactId>
-            <version>${project.version}</version>
-            <classifier>spring</classifier>
-            <type>xml</type>
-            <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
-                file, and features will installed into the system directory if specified in 
-                the plugin configuration -->
             <groupId>org.opennms.karaf</groupId>
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
             <classifier>spring-legacy</classifier>
             <type>xml</type>
             <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.opennms.karaf</groupId>
@@ -218,6 +182,12 @@
             <classifier>karaf-extensions</classifier>
             <type>xml</type>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-beans-shaded-dependencies</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
         </dependency>
     </dependencies>
 </project>

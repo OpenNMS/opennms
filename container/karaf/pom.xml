@@ -38,8 +38,7 @@
                     <bootRepositories>
                         <!--Karaf standard features-->
                         <repository>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</repository>
-                        <!-- OPENNMS: Replace the spring, and spring-legacy features files with our modified versions -->
-                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</repository>
+                        <!-- OPENNMS: Replace the spring-legacy features files with our modified versions -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</repository>
                         <!-- OPENNMS: Add the OpenNMS feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
@@ -199,14 +198,6 @@
             <groupId>org.opennms.karaf</groupId>
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
-            <classifier>spring</classifier>
-            <type>xml</type>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.karaf</groupId>
-            <artifactId>opennms</artifactId>
-            <version>${project.version}</version>
             <classifier>spring-legacy</classifier>
             <type>xml</type>
             <scope>runtime</scope>
@@ -228,15 +219,23 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.http.bridge</artifactId>
-            <version>${felixBridgeVersion}</version>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>felix-dependencies</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
             <artifactId>org.opennms.container.branding</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-beans-shaded-dependencies</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
             <scope>provided</scope>
         </dependency>
     </dependencies>

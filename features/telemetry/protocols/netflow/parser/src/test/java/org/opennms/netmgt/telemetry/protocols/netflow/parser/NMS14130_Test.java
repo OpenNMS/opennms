@@ -35,56 +35,90 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.IpFixMessageBuilder;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow9MessageBuilder;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 
 public class NMS14130_Test {
 
-    public FlowMessage createMessage(final Integer in, final Integer out, final Integer ingress, final Integer egress) {
-        final RecordEnrichment enrichment = (address -> Optional.empty());
-        final List<Value<?>> record = new ArrayList<>();
-        record.add(new UnsignedValue("@unixSecs", 1000));
-        record.add(new UnsignedValue("@sysUpTime", 1000));
-        record.add(new UnsignedValue("FIRST_SWITCHED", 2000));
-        record.add(new UnsignedValue("LAST_SWITCHED", 3000));
+    private interface FlowMessageFactory {
+        FlowMessage create(final Integer in, final Integer out, final Integer ingress, final Integer egress);
+    }
 
-        if (in != null) {
-            record.add(new UnsignedValue("INPUT_SNMP", in));
-        }
-
-        if (out != null) {
-            record.add(new UnsignedValue("OUTPUT_SNMP", out));
-        }
-
-        if (ingress != null) {
-            record.add(new UnsignedValue("ingressPhysicalInterface", ingress));
-        }
-
-        if (egress != null) {
-            record.add(new UnsignedValue("egressPhysicalInterface", egress));
-        }
-
-        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
-        return builder.buildMessage(record, enrichment).build();
+    public void testIfIndex(final FlowMessageFactory flowMessageFactory) {
+        FlowMessage m;
+        m = flowMessageFactory.create(1, 2, null, null);
+        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 1);
+        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 2);
+        m = flowMessageFactory.create(1, 2, 3, 4);
+        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 1);
+        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 2);
+        m = flowMessageFactory.create(null, 2, 3, 4);
+        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 3);
+        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 2);
+        m = flowMessageFactory.create(1, null, 3, 4);
+        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 1);
+        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 4);
+        m = flowMessageFactory.create(null, null, 3, 4);
+        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 3);
+        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 4);
     }
 
     @Test
-    public void testIfIndex() {
-        FlowMessage m;
-        m = createMessage(1,2, null, null);
-        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 1);
-        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 2);
-        m = createMessage(1,2, 3, 4);
-        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 1);
-        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 2);
-        m = createMessage(null,2, 3, 4);
-        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 3);
-        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 2);
-        m = createMessage(1,null, 3, 4);
-        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 1);
-        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 4);
-        m = createMessage(null,null, 3, 4);
-        Assert.assertEquals(m.getInputSnmpIfindex().getValue(), 3);
-        Assert.assertEquals(m.getOutputSnmpIfindex().getValue(), 4);
+    public void testNetflow9() {
+        testIfIndex((in, out, ingress, egress) -> {
+            final RecordEnrichment enrichment = (address -> Optional.empty());
+            final List<Value<?>> record = new ArrayList<>();
+            record.add(new UnsignedValue("@unixSecs", 1000));
+            record.add(new UnsignedValue("@sysUpTime", 1000));
+
+            record.add(new UnsignedValue("FIRST_SWITCHED", 2000));
+            record.add(new UnsignedValue("LAST_SWITCHED", 3000));
+            if (in != null) {
+                record.add(new UnsignedValue("INPUT_SNMP", in));
+            }
+            if (out != null) {
+                record.add(new UnsignedValue("OUTPUT_SNMP", out));
+            }
+
+            if (ingress != null) {
+                record.add(new UnsignedValue("ingressPhysicalInterface", ingress));
+            }
+
+            if (egress != null) {
+                record.add(new UnsignedValue("egressPhysicalInterface", egress));
+            }
+
+            return new Netflow9MessageBuilder().buildMessage(record, enrichment).build();
+        });
+    }
+
+    @Test
+    public void testIPFix() {
+        testIfIndex((in, out, ingress, egress) -> {
+            final RecordEnrichment enrichment = (address -> Optional.empty());
+            final List<Value<?>> record = new ArrayList<>();
+            record.add(new UnsignedValue("@unixSecs", 1000));
+            record.add(new UnsignedValue("@sysUpTime", 1000));
+
+            record.add(new UnsignedValue("flowStartSeconds", 2000));
+            record.add(new UnsignedValue("flowEndSeconds", 3000));
+            if (in != null) {
+                record.add(new UnsignedValue("ingressInterface", in));
+            }
+            if (out != null) {
+                record.add(new UnsignedValue("egressInterface", out));
+            }
+
+            if (ingress != null) {
+                record.add(new UnsignedValue("ingressPhysicalInterface", ingress));
+            }
+
+            if (egress != null) {
+                record.add(new UnsignedValue("egressPhysicalInterface", egress));
+            }
+
+            return new IpFixMessageBuilder().buildMessage(record, enrichment).build();
+        });
     }
 }

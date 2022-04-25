@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>dependencies</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>30.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>spring-beans-shaded-dependencies</artifactId>
+
+  <name>OpenNMS :: Dependencies :: Spring Beans (Shaded)</name>
+  <description>This module is used to patch upstream `spring-beans` with security fixes.</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>org.opennms.dependencies.spring-beans-31-shaded</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>org.opennms.dependencies.spring-beans-42-shaded</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>org.opennms.dependencies.spring-beans-43-shaded</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+</project>

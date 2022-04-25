@@ -32,17 +32,31 @@ import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Optional;
 
 public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
+
     List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, String serviceName);
 
     Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String serviceName);
 
+    /**
+     * Get latest device configuration for each interface. Returns a single record per device/config type combination.
+     *
+     * @param limit Limit of number of records to return; defaults to 20
+     * @param offset Zero-based offset of records to return, used for pagination; defaults to 0.
+     * @param orderBy Property to order by, see implementation for exact options. Default is "lastUpdated".
+     * @param sortOrder Sort order for the sort type specified in 'orderBy'. Options are "desc" and "asc", defaults to "desc"
+     * @param searchTerm Search term to filter by, Currently searches device name and ip address.
+     * @param statuses If provided, a list of {@link DeviceConfigStatus} to filter on. If null or empty,
+     *                     does not do any filtering.
+     * @return A list of {@link DeviceConfigQueryResult } objects
+     */
     List<DeviceConfigQueryResult> getLatestConfigForEachInterface(Integer limit, Integer offset, String orderBy,
-        String sortOrder, String searchTerm);
+        String sortOrder, String searchTerm, Set<DeviceConfigStatus> statuses);
 
-    int getLatestConfigCountForEachInterface(String searchTerm);
+    int getLatestConfigCountForEachInterface(String searchTerm, Set<DeviceConfigStatus> statuses);
 
     void updateDeviceConfigContent(
             OnmsIpInterface ipInterface,
@@ -60,4 +74,9 @@ public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
             String encoding,
             String reason
     );
+
+    void createEmptyDeviceConfig(
+            OnmsIpInterface ipInterface,
+            String serviceName,
+            String configType);
 }
