@@ -237,29 +237,34 @@ public class SnmpHardwareInventoryProvisioningAdapterIT implements InitializingB
     @Test
     public void testUpdatedAttributeTypes() throws Exception {
 
-        //checking attribute class ( from hwentityattributetype table) before loading
-        //config file (test-config-03.xml)l
+        //loading config file (test-config-03.xml)
+        loadConfigFile("src/test/resources/test-config-03.xml");
+
         HwEntityAttributeType testEntityAttributeType = m_adapter.getHwEntityAttributeTypeDao().findTypeByOid(".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.7");
         Assert.assertEquals("string",testEntityAttributeType.getAttributeClass());
+        System.out.println("Class before new file"+ testEntityAttributeType.getAttributeClass());
 
         testEntityAttributeType = m_adapter.getHwEntityAttributeTypeDao().findTypeByOid(".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.22");
         Assert.assertEquals("string",testEntityAttributeType.getAttributeClass());
 
-        DefaultSnmpHwInventoryAdapterConfigDao configDao = (DefaultSnmpHwInventoryAdapterConfigDao) m_adapter.getHwAdapterConfigDao();
-        File file = new File("src/test/resources/test-config-03.xml");
-        Assert.assertTrue(file.exists());
-        configDao.setConfigResource(new FileSystemResource(file));
-        configDao.afterPropertiesSet();
-        m_adapter.afterPropertiesSet();
+        loadConfigFile("src/test/resources/test-config-04.xml");
 
-        //verifying attribute class ( from hwentityattributetype table) after loading
-        //config file (test-config-03.xml) , its changed to integer from string for mathcing oids
+        //verifying attribute class ( from hwentityattributetype table) after loading changed
+        //config file (test-config-04.xml) , its changed to integer from string for mathcing oids
         testEntityAttributeType = m_adapter.getHwEntityAttributeTypeDao().findTypeByOid(".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.7");
         Assert.assertEquals("integer",testEntityAttributeType.getAttributeClass());
 
         testEntityAttributeType = m_adapter.getHwEntityAttributeTypeDao().findTypeByOid(".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.22");
         Assert.assertEquals("integer",testEntityAttributeType.getAttributeClass());
+    }
 
+    private void loadConfigFile(String filePath) throws Exception {
+        DefaultSnmpHwInventoryAdapterConfigDao configDao = (DefaultSnmpHwInventoryAdapterConfigDao) m_adapter.getHwAdapterConfigDao();
+        File file = new File(filePath);
+        Assert.assertTrue(file.exists());
+        configDao.setConfigResource(new FileSystemResource(file));
+        configDao.afterPropertiesSet();
+        m_adapter.afterPropertiesSet();
     }
 
 }

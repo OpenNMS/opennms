@@ -50,8 +50,8 @@
   </hw-extension> 
 
   <hw-extension name="ALCATEL-IND1-CHASSIS-MIB" sysOidMask=".1.3.6.1.4.1.637.">
-    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.7"  type="string" alias="chasEntPhysPartNumber" />
-    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.22" type="string" alias="chasEntPhysAsicRev" />
+    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.7"  type="integer" alias="chasEntPhysPartNumber" />
+    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.22" type="integer" alias="chasEntPhysAsicRev" />
     <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.23" type="string" alias="chasEntPhysCpldRev" />
     <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.24" type="string" alias="chasEntPhysDefaultMinibootRev" />
     <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.25" type="string" alias="chasEntPhysBackUpMinibootRev" />
