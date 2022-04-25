@@ -60,6 +60,8 @@ import javax.net.ssl.SSLContext;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 
 public class HttpsIT {
@@ -96,36 +98,42 @@ public class HttpsIT {
 
         ResponseEntity<String> response = null;
         String urlOverHttps = "https://" + STACK.opennms().getHost() + ":" + STACK.opennms().getSSLPort();
-//        try {
-//            TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
-//            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
-//            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
-//                    NoopHostnameVerifier.INSTANCE);
-//
-//            Registry<ConnectionSocketFactory> socketFactoryRegistry =
-//                    RegistryBuilder.<ConnectionSocketFactory>create()
-//                            .register("https", sslsf)
-//                            .register("http", new PlainConnectionSocketFactory())
-//                            .build();
-//
-//            BasicHttpClientConnectionManager connectionManager =
-//                    new BasicHttpClientConnectionManager(socketFactoryRegistry);
-//            CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslsf)
-//                    .setConnectionManager(connectionManager).build();
-//
-//            HttpComponentsClientHttpRequestFactory requestFactory =
-//                    new HttpComponentsClientHttpRequestFactory(httpClient);
-//            response = new RestTemplate(requestFactory)
-//                    .exchange(urlOverHttps, HttpMethod.GET, null, String.class);
-//
-//
-//        } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
-//            LOG.error(e.toString());
-//        }
-//
-//        Assert.assertEquals(response.getStatusCode().value(), 200);
-//        Assert.assertTrue(response.getBody().contains("Username"));
-//        Assert.assertTrue(response.getBody().contains("Password"));
+        try {
+            TrustStrategy acceptingTrustStrategy = new TrustStrategy() {
+                @Override
+                public boolean isTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                    return false;
+                }
+            };
+            LOG.info(acceptingTrustStrategy.toString());
+            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
+                    NoopHostnameVerifier.INSTANCE);
+
+            Registry<ConnectionSocketFactory> socketFactoryRegistry =
+                    RegistryBuilder.<ConnectionSocketFactory>create()
+                            .register("https", sslsf)
+                            .register("http", new PlainConnectionSocketFactory())
+                            .build();
+
+            BasicHttpClientConnectionManager connectionManager =
+                    new BasicHttpClientConnectionManager(socketFactoryRegistry);
+            CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslsf)
+                    .setConnectionManager(connectionManager).build();
+
+            HttpComponentsClientHttpRequestFactory requestFactory =
+                    new HttpComponentsClientHttpRequestFactory(httpClient);
+            response = new RestTemplate(requestFactory)
+                    .exchange(urlOverHttps, HttpMethod.GET, null, String.class);
+
+
+        } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
+            LOG.error(e.toString());
+        }
+
+        Assert.assertEquals(response.getStatusCode().value(), 200);
+        Assert.assertTrue(response.getBody().contains("Username"));
+        Assert.assertTrue(response.getBody().contains("Password"));
 
         LOG.info("we have reached the end of the test");
     }
