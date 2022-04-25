@@ -242,7 +242,6 @@ public class SnmpHardwareInventoryProvisioningAdapterIT implements InitializingB
 
         HwEntityAttributeType testEntityAttributeType = m_adapter.getHwEntityAttributeTypeDao().findTypeByOid(".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.7");
         Assert.assertEquals("string",testEntityAttributeType.getAttributeClass());
-        System.out.println("Class before new file"+ testEntityAttributeType.getAttributeClass());
 
         testEntityAttributeType = m_adapter.getHwEntityAttributeTypeDao().findTypeByOid(".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.22");
         Assert.assertEquals("string",testEntityAttributeType.getAttributeClass());
