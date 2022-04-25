@@ -16,28 +16,28 @@ You can search the following fields:
 | The ID of the node
 
 | nodeLabel
-| A text description.
+| A text description
 
 | foreignSource
-| The provisioned foreign source, if any.
+| The provisioned foreign source, if any
 
 | foreignId
-| The provisioned foreign ID, if any.
+| The provisioned foreign ID, if any
 
 | ipAddress
-| The primary IP address.
+| The primary IP address
 
 | severityLabel
-| The severity. ("Normal", "Warning", etc.)
+| The severity ("Normal", "Warning", etc.)
 
 | description
-| The description field from the node's assets.
+| The description field from the node's assets
 
 | maintContract
-| The maintenance contract from the node's assets.
+| The maintenance contract from the node's assets
 
 | category
-| Match a category, if any.
+| Match a category, if any
 
 |====
 
