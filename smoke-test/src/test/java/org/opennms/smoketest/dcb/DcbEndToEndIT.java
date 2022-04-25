@@ -333,7 +333,7 @@ public class DcbEndToEndIT {
 
         // Trigger remote backup
         try (final SshClient sshClient = STACK.opennms().ssh(); final PrintStream pipe = sshClient.openShell()) {
-            pipe.printf("opennms:device-config-get -s %s -l %s %s%n", DCB_SVC_NAME, STACK.minion().getLocation(), targetAddress);
+            pipe.printf("opennms:dcb-get -s %s -l %s %s%n", DCB_SVC_NAME, STACK.minion().getLocation(), targetAddress);
             pipe.printf("logout%n");
 
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
