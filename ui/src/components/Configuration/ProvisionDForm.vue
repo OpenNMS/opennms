@@ -17,7 +17,10 @@
         :options="requisitionTypeList"
         :error="errors.type"
         :modelValue="config.type"
-        @update:modelValue="(val: {name:string}) => updateModelAndHint(val.name)"
+        @update:modelValue="(val: {name:string}) => {
+          props.updateFormValue('type', val)
+          updateHint(val.name)
+        }"
       />
       <div class="icon">
         <FeatherButton
@@ -193,21 +196,20 @@ const updateCronValue = (type:string, val:string) => {
   props.updateFormValue(type, val)
 }
 
-const updateModelAndHint = (val:string) => {
-  /**
-   * The following two lines are related to getting the Hint Text
-   * to update properly in the FeatherInput component. Currently if you update the Hint Text
-   * after the initial render, FeatherInput does not react to the untracked attribute.
-   * We could forcibly mount + unmount the component as an alternative which would also render
-   * the correct text, but I felt like these easily removable two lines of code is preferable
-   * than a forced re-render.
-   *
-   * In the case that FeatherInput properly updates when the Hint Text is updated, just remove
-   * the two proceeding lines of code (getHostHint and forceSetHint)
-   **/
+/**
+ * The following function is related to getting the Hint Text
+ * to update properly in the FeatherInput component. Currently if you update the Hint Text
+ * after the initial render, FeatherInput does not react to the untracked attribute.
+ * We could forcibly mount + unmount the component as an alternative which would also render
+ * the correct text, but I felt like these easily removable two lines of code is preferable
+ * than a forced re-render.
+ *
+ * In the case that FeatherInput properly updates when the Hint Text is updated, just remove
+ * the two proceeding lines of code (getHostHint and forceSetHint)
+ **/
+const updateHint = (val:string) => {
   const hint = ConfigurationHelper.getHostHint(val)
   ConfigurationHelper.forceSetHint({hint}, 0,'.host-update')
-  props.updateFormValue('type', val)
 }
 </script>
 <style lang="scss" scoped>
