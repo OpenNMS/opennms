@@ -109,18 +109,18 @@ public class HttpsIT {
             SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
             SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
                     NoopHostnameVerifier.INSTANCE);
-
+            LOG.info("Before Registry");
             Registry<ConnectionSocketFactory> socketFactoryRegistry =
                     RegistryBuilder.<ConnectionSocketFactory>create()
                             .register("https", sslsf)
                             .register("http", new PlainConnectionSocketFactory())
                             .build();
-
+            LOG.info("Before BasicHTTP");
             BasicHttpClientConnectionManager connectionManager =
                     new BasicHttpClientConnectionManager(socketFactoryRegistry);
             CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslsf)
                     .setConnectionManager(connectionManager).build();
-
+            LOG.info("Before getting a response");
             HttpComponentsClientHttpRequestFactory requestFactory =
                     new HttpComponentsClientHttpRequestFactory(httpClient);
             response = new RestTemplate(requestFactory)
@@ -130,7 +130,7 @@ public class HttpsIT {
         } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
             LOG.error(e.toString());
         }
-
+        LOG.info("Before assert");
         Assert.assertEquals(response.getStatusCode().value(), 200);
         Assert.assertTrue(response.getBody().contains("Username"));
         Assert.assertTrue(response.getBody().contains("Password"));
