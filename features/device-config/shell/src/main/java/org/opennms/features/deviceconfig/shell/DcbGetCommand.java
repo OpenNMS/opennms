@@ -68,7 +68,7 @@ public class DcbGetCommand implements Action {
     @Option(name = "-e", aliases = "--encoding", description = "Encoding format", required = false, multiValued = false)
     String encoding = Charset.defaultCharset().name();
 
-    @Option(name = "-p", aliases = "--persist", description = "Whether persist config or not")
+    @Option(name = "-p", aliases = "--persist", description = "Whether to persist config or not")
     boolean persist = false;
 
 

@@ -124,7 +124,7 @@ OPTIONS
                 Encoding format
                 (defaults to UTF-8)
         -p, --persist
-                Whether persist config or not
+                Whether to persist config or not
 ----
 
 [source, console]
@@ -154,7 +154,7 @@ OPTIONS
                 Device Config Service
                 (defaults to DeviceConfig)
         -p, --persist
-                Whether persist config or not
+                Whether to persist config or not
 ----
 
 NOTE: Above karaf commands won't persist config by default, use -p option to persist config in {page-component-title} Database.

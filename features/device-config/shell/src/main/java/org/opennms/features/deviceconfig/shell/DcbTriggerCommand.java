@@ -59,7 +59,7 @@ public class DcbTriggerCommand implements Action {
     @Option(name = "-s", aliases = "--service", description = "Device Config Service", required = false, multiValued = false)
     String service = "DeviceConfig";
 
-    @Option(name = "-p", aliases = "--persist", description = "Whether persist config or not")
+    @Option(name = "-p", aliases = "--persist", description = "Whether to persist config or not")
     boolean persist = false;
 
     @Override
