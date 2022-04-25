@@ -2,7 +2,7 @@
 
 The search bar lets you do a simple text search, as well as searching particular fields associated with the node.
 
-### Search Fields
+## Search fields
 
 You can search the following fields:
 
@@ -13,7 +13,7 @@ You can search the following fields:
 | Description
 
 | nodeId
-| The ID of the node.
+| The ID of the node
 
 | nodeLabel
 | A text description.
@@ -43,7 +43,7 @@ You can search the following fields:
 
 Note that all searches are case-insensitive.
 
-### Substring Matching Example
+## Substring matching example
 
 To search for text in one of the fields, use the following syntax:
 
@@ -59,7 +59,7 @@ To search for an exact match of a field, use the following syntax:
 
 If the search is `nodelabel=server1.opennms.com` it will only match a node's label like `server1.opennms.com`.
 
-### Link to a search
+## Link to a search
 
 It is possible to create a link to the `node-maps` URL that already has a pre-filled search defintion by adding a `#search/searchtext` into the URL.
 

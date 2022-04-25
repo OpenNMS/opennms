@@ -2,15 +2,15 @@
 
 OpenNMS includes a geographical map which can show nodes with address asset information on a world map, including dynamic alarm status.
 
-The geographical map is located in the `Maps` menu or by going to the page of a node that has an address and/or longitude/latitude defined in its asset fields, and following the `View in Geographical Map` link.
+The geographical map is located in the *Maps* menu or by going to the page of a node that has an address and/or longitude/latitude defined in its asset fields, and following the *View in Geographical Map* link.
 
-## Markers and Clusters
+## Markers and clusters
 
 The geographical map displays each node that has an associated longitude and latitude in the database. 
 If a node does not have coordinates recorded, update the requisition to include address asset fields and verify the xref:admin/geocoder.adoc[geocoder service] is configured and enabled.
 
 The geographical map automatically clusters nodes into groups if they are close together. 
-A marker with a number in it indicates a cluster and the number of nodes in in it.
+A marker with a number in it indicates a cluster and the number of nodes in it.
 Hover over a cluster to show the contents of the nodes it contains. 
 Click on a marker to show the summary of the nodes it contains.
 
