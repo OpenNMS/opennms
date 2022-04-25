@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.regex.Pattern;
 
@@ -58,6 +59,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
@@ -134,7 +137,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             String ipAddress,
             Integer ipInterfaceId,
             String configType,
-            String searchTerm,
+            Set<DeviceConfigStatus> statuses,
             Long createdAfter,
             Long createdBefore
     ) {
@@ -147,6 +150,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             ipAddress,
             ipInterfaceId,
             configType,
+            statuses,
             createdAfter,
             createdBefore);
 
@@ -175,10 +179,11 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         Integer offset,
         String orderBy,
         String order,
-        String searchTerm
+        String searchTerm,
+        Set<DeviceConfigStatus> statuses
     ) {
         List<DeviceConfigDTO> dtos =
-            this.deviceConfigDao.getLatestConfigForEachInterface(limit, offset, orderBy, order, searchTerm)
+            this.deviceConfigDao.getLatestConfigForEachInterface(limit, offset, orderBy, order, searchTerm, statuses)
                 .stream()
                 .map(this::createDeviceConfigDto)
                 .filter(Objects::nonNull)
@@ -186,7 +191,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
         final int totalCount =
             (limit != null || offset != null)
-            ? deviceConfigDao.getLatestConfigCountForEachInterface(searchTerm)
+            ? deviceConfigDao.getLatestConfigCountForEachInterface(searchTerm, statuses)
             : dtos.size();
 
         final long offsetForResponse = offset != null ? offset.longValue() : 0L;
@@ -205,6 +210,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             null,
             null,
             ipInterfaceId,
+            null,
             null,
             null,
             null);
@@ -378,6 +384,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         String ipAddress,
         Integer ipInterfaceId,
         String configType,
+        Set<DeviceConfigStatus> statuses,
         Long createdAfter,
         Long createdBefore
     ) {
@@ -419,6 +426,13 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
         if (StringUtils.isNoneBlank(configType)) {
             criteriaBuilder.ilike("configType", configType);
+        }
+
+        if (statuses != null && !statuses.isEmpty()) {
+            List<Restriction> restrictions = statuses.stream()
+                .map(status -> Restrictions.ilike("status", status.name())).collect(Collectors.toList());
+
+            criteriaBuilder.or(restrictions.stream().toArray(Restriction[]::new));
         }
 
         if (createdAfter != null) {

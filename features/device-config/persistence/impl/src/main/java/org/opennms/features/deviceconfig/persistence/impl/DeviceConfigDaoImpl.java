@@ -33,7 +33,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 import org.hibernate.SQLQuery;
@@ -56,9 +58,9 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         "ipaddress", "ipaddr"
     );
 
-    private static Logger LOG = LoggerFactory.getLogger(DeviceConfigDaoImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigDaoImpl.class);
 
-    private static int DEFAULT_LIMIT = 20;
+    private static final int DEFAULT_LIMIT = 20;
 
     private static class DeviceConfigQueryCriteria {
         public String filter;
@@ -84,7 +86,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String serviceName) {
         List<DeviceConfig> deviceConfigs =
                 findObjects(DeviceConfig.class,
-                        "from DeviceConfig dc where dc.lastUpdated is not null AND dc.ipInterface.id = ? AND serviceName = ? " +
+                        "from DeviceConfig dc WHERE dc.ipInterface.id = ? AND serviceName = ? " +
                                 "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), serviceName);
 
         if (deviceConfigs != null && !deviceConfigs.isEmpty()) {
@@ -93,11 +95,12 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         return Optional.empty();
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<DeviceConfigQueryResult> getLatestConfigForEachInterface(Integer limit, Integer offset, String orderBy,
-                                                                         String sortOrder, String searchTerm) {
+        String sortOrder, String searchTerm, Set<DeviceConfigStatus> statuses) {
 
-        var criteria = createSqlQueryCriteria(limit, offset, orderBy, sortOrder, searchTerm);
+        var criteria = createSqlQueryCriteria(limit, offset, orderBy, sortOrder, searchTerm, statuses);
 
         // NOTE: '{dc.*}' and '{ip.*}' needed for Hibernate to map to entities
         // Explicit columns needed to do sort/filter/search outside the inner query since Hibernate
@@ -110,6 +113,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             "        {ip.*},\n" +
             "        dc.last_updated,\n" +
             "        dc.created_time,\n" +
+            "        dc.status,\n" +
             "        ip.ipaddr,\n" +
             "        n.nodeid,\n" +
             "        n.nodelabel,\n" +
@@ -171,8 +175,9 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
      * if no limit/offset were applied. Query is simplified as we do not need to do any sorting, grouping
      * or windowing functions.
      * @param searchTerm Optional search term
+     * @param statuses See explanation in {@link DeviceConfigDao#getLatestConfigForEachInterface}
      */
-    public int getLatestConfigCountForEachInterface(String searchTerm) {
+    public int getLatestConfigCountForEachInterface(String searchTerm, Set<DeviceConfigStatus> statuses) {
         final boolean hasSearchTerm = !Strings.isNullOrEmpty(searchTerm);
 
         String hql =
@@ -187,6 +192,15 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
                 "WHERE (node.label LIKE ? OR ip.ipAddress LIKE ?)";
         }
 
+        if (statuses != null && !statuses.isEmpty()) {
+            final String statusQuery = getStatusSubquery(statuses);
+
+            hql +=
+                "\n" +
+                (hasSearchTerm ? "AND " : "WHERE ") +
+                statusQuery;
+        }
+
         final int count = hasSearchTerm
             ? this.queryInt(hql, "%" + searchTerm + "%", "%" + searchTerm + "%")
             : this.queryInt(hql);
@@ -195,13 +209,26 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     }
 
     private DeviceConfigQueryCriteria createSqlQueryCriteria(Integer limit, Integer offset,
-        String orderBy, String order, String searchTerm) {
+        String orderBy, String order, String searchTerm, Set<DeviceConfigStatus> statuses) {
         var criteria = new DeviceConfigQueryCriteria();
 
+        // Search term filter
         if (!Strings.isNullOrEmpty(searchTerm)) {
             criteria.hasFilter = true;
             criteria.searchTerm = "%" + searchTerm + "%";
-            criteria.filter = "WHERE nodelabel LIKE :searchTerm OR ipaddr LIKE :searchTerm";
+            criteria.filter = "WHERE (nodelabel LIKE :searchTerm OR ipaddr LIKE :searchTerm)";
+        }
+
+        // Status filter
+        if (statuses != null && !statuses.isEmpty()) {
+            criteria.hasFilter = true;
+            final String statusQuery = getStatusSubquery(statuses);
+
+            if (Strings.isNullOrEmpty(criteria.filter)) {
+                criteria.filter = "WHERE " + statusQuery;
+            } else {
+                criteria.filter += "\nAND " + statusQuery;
+            }
         }
 
         if (!Strings.isNullOrEmpty(orderBy) &&
@@ -221,6 +248,11 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         criteria.limitOffset = String.format("LIMIT %d OFFSET %d", limitToUse, offsetToUse);
 
         return criteria;
+    }
+
+    private String getStatusSubquery(Set<DeviceConfigStatus> statuses) {
+        final String statusNames = statuses.stream().map(s -> "'" + s.name() + "'").collect(Collectors.joining(","));
+        return "status IN (" + statusNames + ")";
     }
 
     @Override
@@ -303,5 +335,15 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         deviceConfig.setStatus(DeviceConfigStatus.FAILED);
         saveOrUpdate(deviceConfig);
         LOG.warn("Persisted device config backup failure - ipInterface: {}; service: {}; type: {}; reason: {}", ipInterface, serviceName, configType, reason);
+    }
+
+    @Override
+    public void createEmptyDeviceConfig(OnmsIpInterface ipInterface, String serviceName, String configType) {
+        DeviceConfig deviceConfig = new DeviceConfig();
+        deviceConfig.setIpInterface(ipInterface);
+        deviceConfig.setServiceName(serviceName);
+        deviceConfig.setConfigType(configType);
+        deviceConfig.setStatus(DeviceConfigStatus.NONE);
+        saveOrUpdate(deviceConfig);
     }
 }

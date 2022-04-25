@@ -8,7 +8,7 @@ export OPTS_ASSEMBLIES="-Passemblies"
 export OPTS_PROFILES="-Prun-expensive-tasks"
 
 OPTS_ENABLE_SNAPSHOTS=""
-OPTS_UPDATE_POLICY=""
+OPTS_UPDATE_POLICY="-DupdatePolicy=never"
 
 TOPDIR="$(pwd)"
 MYDIR="$(dirname "$0")"
