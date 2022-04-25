@@ -1,0 +1,90 @@
+[[ref-logging]]
+= Logging
+
+== List of Log Files
+
+[options="header"]
+[cols="1,3"]
+|===
+| Name
+| Description
+
+| ackd.log
+|
+
+| alarmd.log
+|
+
+| bsmd.log
+|
+
+| [[ref-logging-collectd.log]] collectd.log 
+| Information about all data collection and thresholding processes 
+
+| discovery.log
+| Network discovery scan jobs and their results are stored in this file.
+
+| elinkd.log
+|
+
+| eventd.log
+| 
+
+| FilterWatcher.log
+| 
+
+| instrumentation.log
+|
+
+| ipc.log
+|
+
+| jetty-server.log
+| The Jetty server provides the {page-component-title} web user interface.
+
+| karaf.log
+|
+
+| karafStartupMonitor.log
+|
+
+| manager.log
+|
+
+| notifd.log
+| Information about the notifications that were or were not send.
+
+| perspectivepollerd.log
+|
+
+| pollerd.log
+| All logging about the service availability monitors.
+
+| provisiond.log
+| The node provisioning processes are being logged here. This includes also service detection and policy results.
+
+| queued.log
+|
+
+| reportd.log
+|
+
+| rtc.log
+|
+
+| statsd.log
+|
+
+| telemetryd.log
+|
+
+| trapd.log
+|
+
+| trouble-ticketer.log
+| Logs of the trouble ticketer feature.
+
+
+| web.log
+| 
+|===

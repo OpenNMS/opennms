@@ -189,3 +189,4 @@
 ** xref:admin/restart.adoc[]
 ** xref:admin/daemon-config-files.adoc[]
 ** xref:admin/logging/introduction.adoc[]
+*** xref:admin/logging/change-logging.adoc[]
