@@ -31,6 +31,7 @@ package org.opennms.features.apilayer.common.scv;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.integration.api.v1.scv.Credentials;
 import org.opennms.integration.api.v1.scv.SecureCredentialsVault;
@@ -39,7 +40,7 @@ import org.opennms.integration.api.v1.scv.immutables.ImmutableCredentials;
 /** Exposes SecureCredentialsVault via Integration API */
 public class SecureCredentialsVaultImpl implements SecureCredentialsVault {
 
-    private static final String OIA_PREFIX ="_OIA_"; //prefix to prevent plugin access system keys
+    static final String OIA_PREFIX = "_OIA_"; //prefix to prevent plugin access system keys
 
     private final org.opennms.features.scv.api.SecureCredentialsVault delegate;
 
@@ -49,7 +50,12 @@ public class SecureCredentialsVaultImpl implements SecureCredentialsVault {
 
     @Override
     public Set<String> getAliases() {
-        return delegate.getAliases();
+        return delegate
+                .getAliases()
+                .stream()
+                .filter(s -> s.startsWith(OIA_PREFIX))
+                .map(s -> s.substring(OIA_PREFIX.length()))
+                .collect(Collectors.toSet());
     }
 
     @Override
