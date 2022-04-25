@@ -53,7 +53,8 @@ openssl \
 <1> Use SSL/TLS client functionality of `openssl`.
 <2> Show all certificates in the chain.
 <3> PORT:HOST to connect to; for example, localhost:443.
-<4> Optional. If you are serving multiple certificates under one single IP address, you may define a server name; otherwise, the `ip of localhost`:PORT certificate is returned, which may not match the requested server name (`mail.domain.com`, `opennms.domain.com`, `dns.domain.com`).
+<4> Optional.
+If you are serving multiple certificates under one single IP address, you may define a server name; otherwise, the `ip of localhost`:PORT certificate is returned, which may not match the requested server name (`mail.domain.com`, `opennms.domain.com`, `dns.domain.com`).
 <5> No input
 <6> Where to store the certificate.
 
@@ -66,11 +67,9 @@ Edit or create `$\{OPENNMS_HOME}/etc/opennms.properties.d/ssl.properties` and ad
 .$\{OPENNMS_HOME}/etc/opennms.properties snippet to define a Java Truststore
 [source, properties]
 ----
-javax.net.ssl.trustStore=${OPENNMS_HOME}/etc/trust-store.jks <1>
-javax.net.ssl.trustStorePassword=change-me <2>
+javax.net.ssl.trustStore=${OPENNMS_HOME}/etc/trust-store.jks
+javax.net.ssl.trustStorePassword=change-me
 ----
-<1> Java Truststore location
-<2> Java Truststore password
 
 For more details on the Java built-in SSL system properties, see <<ga-operation-ssl-properties, Debugging/Properties>>.
 
@@ -120,5 +119,6 @@ If a truststore location is not specified using this property, the Java implemen
 | (Optional) Defaults to `jks`.
 
 | javax.net.debug
-| (Optional) To switch on logging for the SSL/TLS layer, set this property to ssl. For more details about possible values, see https://docs.oracle.com/en/java/javase/11/security/java-secure-socket-extension-jsse-reference-guide.html#GUID-31B7E142-B874-46E9-8DD0-4E18EC0EB2CF[debugging utilities].
+| (Optional) To switch on logging for the SSL/TLS layer, set this property to ssl.
+For more details about possible values, see https://docs.oracle.com/en/java/javase/11/security/java-secure-socket-extension-jsse-reference-guide.html#GUID-31B7E142-B874-46E9-8DD0-4E18EC0EB2CF[debugging utilities].
 |===
