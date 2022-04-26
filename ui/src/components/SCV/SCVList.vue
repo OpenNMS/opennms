@@ -5,7 +5,7 @@
     </FeatherListHeader>
     <FeatherListItem
       v-for="alias of aliases" 
-      :selected="selectedAlias === alias" 
+      :selected="selectedAlias === alias && isEditing" 
       :key="alias"
       @click="onAliasClick(alias)">
       <span class="alias">{{ alias }}</span>
@@ -23,6 +23,7 @@ import { useStore } from 'vuex'
 const store = useStore()
 const selectedAlias = ref()
 const aliases = computed<string[]>(() => store.state.scvModule.aliases)
+const isEditing = computed<boolean>(() => store.state.scvModule.isEditing)
 
 const onAliasClick = (alias: string) => {
   selectedAlias.value = alias

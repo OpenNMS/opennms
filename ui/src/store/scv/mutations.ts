@@ -17,9 +17,14 @@ const SET_IS_EDITING = (state: State, bool: boolean) => {
   state.isEditing = bool
 }
 
+const ADD_ATTRIBUTE = (state: State) => {
+  state.credentials.attributes = { ...state.credentials.attributes, ...{ '': '' } } // adds empty key/val inputs in form
+}
+
 export default {
   SAVE_ALIASES,
   SAVE_CREDENTIALS,
   MERGE_CREDENTIALS,
-  SET_IS_EDITING
+  SET_IS_EDITING,
+  ADD_ATTRIBUTE
 }

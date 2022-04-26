@@ -27,6 +27,15 @@
       />
     </form>
 
+    <FeatherButton text class="add-attributes-btn" @click="addAttribute">
+      <template v-slot:icon>
+        <FeatherIcon :icon="Add" aria-hidden="true" focusable="false" />
+        Add attribute
+      </template>
+    </FeatherButton>
+
+    <SCVAttribute v-for="(value, key, index) in credentials.attributes" :key="key" :attributeKey="key" :attributeValue="value" :attributeIndex="index" />
+
     <div class="btns">
       <FeatherButton
         v-if="!isEditing"
@@ -57,7 +66,10 @@ import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import { FeatherProtectedInput } from '@featherds/protected-input'
 import { FeatherButton } from '@featherds/button'
+import { FeatherIcon } from '@featherds/icon'
+import Add from '@featherds/icon/action/Add' 
 import { SCVCredentials } from '@/types/scv'
+import SCVAttribute from './SCVAttribute.vue'
 
 const store = useStore()
 const credentials = computed<SCVCredentials>(() => store.state.scvModule.credentials)
@@ -80,6 +92,7 @@ const updatePassword = (val: string) => store.dispatch('scvModule/setValue', { p
 const addCredentials = () => store.dispatch('scvModule/addCredentials')
 const updateCredentials = () => store.dispatch('scvModule/updateCredentials')
 const clearCredentials = () => store.dispatch('scvModule/clearCredentials')
+const addAttribute = () => store.dispatch('scvModule/addAttribute')
 </script>
 
 <style lang="scss" scoped>
@@ -98,7 +111,17 @@ const clearCredentials = () => store.dispatch('scvModule/clearCredentials')
     gap: 10px;
   }
   .input {
-    width: 200px;
+    width: 50%;
+  }
+
+  .add-attributes-btn {
+    justify-content: center;
+  }
+
+  .btns {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: row;
   }
 }
 

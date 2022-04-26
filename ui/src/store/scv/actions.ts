@@ -50,11 +50,16 @@ const clearCredentials = async (context: VuexContext) => {
   context.commit('SET_IS_EDITING', false)
 }
 
+const addAttribute = (context: VuexContext) => {
+  context.commit('ADD_ATTRIBUTE')
+}
+
 export default {
   getAliases,
   getCredentialsByAlias,
   addCredentials,
   updateCredentials,
   setValue,
-  clearCredentials
+  clearCredentials,
+  addAttribute
 }
