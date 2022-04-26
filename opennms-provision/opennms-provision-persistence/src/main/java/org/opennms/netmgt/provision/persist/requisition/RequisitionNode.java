@@ -59,8 +59,8 @@ import org.opennms.netmgt.model.PrimaryType;
 @XmlRootElement(name = "node")
 public class RequisitionNode {
 
-    // matches any string containing :?/\'"&
-    private static final String FOREIGN_ID_REGEX = "^[a-zA-Z0-9_.\\- ]*$";
+    // matches any string containing only alphanumerics and [._-] characters
+    private static final String FOREIGN_ID_REGEX = "^[a-zA-Z0-9_.\\- ]+$";
 
     @XmlAttribute(name = "location")
     protected String m_location;
