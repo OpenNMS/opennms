@@ -8,17 +8,17 @@ Configurations modified will take effect instantly.
 [options="header", cols="5,10"]
 |===
 | Resource | Description
-| `/rest/cm/\{configName}` | Returns a list of configIds in JSON/YAML format, for example, ["config1", "config2"].
+| `/cm/\{configName}` | Returns a list of configIds in JSON/YAML format, for example, ["config1", "config2"].
 
 200: Return: String Array
 
 400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
-| `/rest/cm/schema/\{configName}` | Returns OpenAPI schema (for Swagger UI) in JSON/YAML format.
+| `/cm/schema/\{configName}` | Returns OpenAPI schema (for Swagger UI) in JSON/YAML format.
 
 200: Return: OpenAPI schema
 
 400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
-| `/rest/cm/\{configName}/\{configId}` | Returns configuration in JSON/YAML format.
+| `/cm/\{configName}/\{configId}` | Returns configuration in JSON/YAML format.
 
 200: Return: Config Bean 
 
@@ -31,7 +31,7 @@ Configurations modified will take effect instantly.
 [options="header", cols="5,10"]
 |===
 | Resource                    | Description
-| `/rest/cm/\{configName}/\{configId}`             | Add new configuration.
+| `/cm/\{configName}/\{configId}`             | Add new configuration.
                                                      If the same configuration exists, it will return an error.
 
 200: Return nothing
@@ -44,7 +44,7 @@ Configurations modified will take effect instantly.
 [options="header", cols="5,10"]
 |===
 | Resource                    | Description
-| `/rest/cm/\{configName}/\{configId}`             |  Update configuration.
+| `/cm/\{configName}/\{configId}`             |  Update configuration.
                                                      If configuration does not exist, it will return error.
 
 200: Return nothing
@@ -57,7 +57,7 @@ Configurations modified will take effect instantly.
 [options="header", cols="5,10"]
 |===
 | Resource                    | Description
-| `/rest/cm/\{configName}/\{configId}`             | Delete configuration.
+| `/cm/\{configName}/\{configId}`             | Delete configuration.
 
 200: Return nothing
 
