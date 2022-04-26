@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,7 +30,6 @@ package org.opennms.upgrade.implementations;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -38,9 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.xerces.parsers.DOMParser;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.UserFactory;
@@ -49,11 +50,9 @@ import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.opennms.web.api.Authentication;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Migrate the content from magic-users.properties into the users.xml file
@@ -185,42 +184,54 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
             return;
         }
 
-        boolean foundReadOnlyTag = false;
         // Parse read-only attributes
         final List<String> readOnlyUsers = new ArrayList<>();
         try {
-            final DOMParser parser = new DOMParser();
-            parser.parse(new InputSource(new FileReader(usersFile)));
-            final Document doc = parser.getDocument();
-            final NodeList users = doc.getElementsByTagName("user");
-            for (int i=0; i < users.getLength(); i++) {
-                String userName = null;
-                final Node user = users.item(i);
-                final NamedNodeMap attributes = user.getAttributes();
-                final NodeList userChildren = user.getChildNodes();
-                for (int j=0; j < userChildren.getLength(); j++) {
-                    final Node child = userChildren.item(j);
-                    if ("user-id".equals(child.getLocalName())) {
-                        userName = child.getTextContent();
-                        break;
-                    }
-                }
-                final Node readOnly = attributes.getNamedItem("read-only");
-                if (readOnly != null) {
-                    if (userName == null) {
-                        log("Warning: found a read-only tag but unable to determine username: " + user + "\n");
-                    } else {
-                        foundReadOnlyTag = true;
-                        final boolean isReadOnly = Boolean.valueOf(readOnly.getTextContent());
-                        if (isReadOnly) {
-                            log(userName + " is read-only\n");
-                            readOnlyUsers.add(userName);
-                        }
-                    }
-                }
-            }
+            final SAXParserFactory spf = SAXParserFactory.newDefaultInstance();
+            spf.setValidating(false);
+            final SAXParser parser = spf.newSAXParser();
+            parser.parse(usersFile, new DefaultHandler() {
+                String userId = null;
+                boolean isReadOnly = false;
 
-            if (foundReadOnlyTag) {
+                StringBuilder sb = null;
+
+                @Override
+                public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException {
+                    if ("user".equals(qName)) {
+                        userId = null;
+                        sb = null;
+                        int readOnlyIndex = attributes.getIndex("read-only");
+                        if (readOnlyIndex >= 0) {
+                            final String readOnlyValue = attributes.getValue(readOnlyIndex);
+                            isReadOnly = Boolean.parseBoolean(readOnlyValue);
+                        }
+                    } else if ("user-id".equals(qName)) {
+                        sb = new StringBuilder();
+                    }
+                }
+                @Override
+                public void endElement (final String uri, final String localName, final String qName) throws SAXException {
+                    if ("user".equals(qName)) {
+                        if (isReadOnly) {
+                            readOnlyUsers.add(userId);
+                        }
+                        isReadOnly = false;
+                        userId = null;
+                    } else if ("user-id".equals(qName)) {
+                        userId = sb == null? null : sb.toString().trim();
+                        sb = null;
+                    }
+                }
+                @Override
+                public void characters (final char[] ch, final int start, final int length) throws SAXException {
+                    if (sb != null) {
+                        sb.append(new String(ch, start, length));
+                    }
+                }
+            });
+
+            if (!readOnlyUsers.isEmpty()) {
                 log("Removing the read-only flags from users.xml\n");
                 String content = new String(Files.readAllBytes(usersFile.toPath()), StandardCharsets.UTF_8);
                 content = content.replaceAll("\\s+read-only=\".+\"", "");
@@ -245,11 +256,26 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
             // Parse magic-users.properties
             Properties properties = new Properties();
             if (magicUsersFile.exists()) {
-                properties.load(new FileInputStream(magicUsersFile));
+                final var is = new FileInputStream(magicUsersFile);
+                try (is) {
+                    properties.load(is);
+                } finally {
+                    is.close();
+                }
             } else if (magicUsersFileRPM.exists()) {
-                properties.load(new FileInputStream(magicUsersFileRPM));
+                final var is = new FileInputStream(magicUsersFileRPM);
+                try (is) {
+                    properties.load(is);
+                } finally {
+                    is.close();
+                }
             } else if (magicUsersFileDEB.exists()) {
-                properties.load(new FileInputStream(magicUsersFileDEB));
+                final var is = new FileInputStream(magicUsersFileDEB);
+                try (is) {
+                    properties.load(is);
+                } finally {
+                    is.close();
+                }
             } else {
                 throw new IllegalArgumentException("Can't find magic-users.properties, or any RPM/DEB backup of it");
             }
