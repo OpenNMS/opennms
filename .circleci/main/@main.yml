@@ -1064,6 +1064,7 @@ jobs:
             TAG="${MINION_IMAGE_VERSION}-${ARCH}"
             make DOCKER_ARCH="<< parameters.architecture >>" \
                  DOCKER_FLAGS=--load \
+                 DOCKER_IMAGE_NAME="minion-${ARCH}.oci" \
                  VERSION="${TAG}" \
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
@@ -1075,6 +1076,9 @@ jobs:
             docker trust key load $KEY_FOLDER/$AZURE_DCT_CI_KEY_ID.key
             docker push ${MINION_AZ_REPO}:${TAG}
             echo "pushed to AZ"
+      - store_artifacts:
+          path: ~/project/opennms-container/minion/images/minion-linux-arm64.oci
+          destination: minion-linux-arm64.oci
 
   minion-image-multi-arch:
     machine:
