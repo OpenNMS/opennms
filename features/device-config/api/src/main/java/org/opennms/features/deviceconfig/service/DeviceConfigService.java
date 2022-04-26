@@ -42,9 +42,11 @@ public interface DeviceConfigService {
      * @param ipAddress  specific IpAddress for which we need to fetch device config.
      * @param location   specific minion location at which we need to fetch device config.
      * @param service    name of the bound service.
+     * @param persist
      * @throws IOException
+     * @return
      */
-    void triggerConfigBackup(String ipAddress, String location, String service) throws IOException;
+    CompletableFuture<Boolean> triggerConfigBackup(String ipAddress, String location, String service, boolean persist) throws IOException;
 
     /**
      * Get device config for the given ipAddress at given location.
@@ -52,11 +54,12 @@ public interface DeviceConfigService {
      * @param ipAddress  specific IpAddress for which we need to fetch device config.
      * @param location   specific minion location at which we need to fetch device config.
      * @param service    name of the bound service.
+     * @param persist
      * @param timeout    timeout in milliseconds for retrieving device config
      * @throws IOException
      * @return
      */
-    CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String service, int timeout) throws IOException;
+    CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String service, boolean persist, int timeout) throws IOException;
 
     /**
      * Gets the backup jobs defined for the given interface.

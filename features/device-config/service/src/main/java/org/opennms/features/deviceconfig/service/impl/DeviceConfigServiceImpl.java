@@ -85,7 +85,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private PollerConfig pollerConfig;
 
     @Override
-    public void triggerConfigBackup(String ipAddress, String location, String service) throws IOException {
+    public CompletableFuture<Boolean> triggerConfigBackup(String ipAddress, String location, String service, boolean persist) throws IOException {
         try {
             InetAddress.getByName(ipAddress);
         } catch (UnknownHostException e) {
@@ -93,18 +93,23 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             throw new IllegalArgumentException("Unknown/Invalid IpAddress " + ipAddress);
         }
 
-        CompletableFuture<PollerResponse> future = pollDeviceConfig(ipAddress, location, service);
-        future.whenComplete(((pollerResponse, throwable) -> {
-            if (throwable != null) {
-                LOG.info("Error while manually triggering config backup for IpAddress {} at location {} for service {}",
-                        ipAddress, location, service, throwable);
-            }
-        }));
+        return pollDeviceConfig(ipAddress, location, service, persist)
+                .thenApply(response -> {
+                    if (response.getPollStatus().isAvailable()) {
+                        return true;
+                    } else {
+                        throw new RuntimeException("Requesting backup failed: " + response.getPollStatus().getReason());
+                    }
+                }).whenComplete((Boolean, throwable) -> {
+                    if (throwable != null) {
+                        LOG.error("Error while getting device config for IpAddress {} at location {}", ipAddress, location, throwable);
+                    }
+                });
     }
 
     @Override
-    public CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String service, int timeout) throws IOException {
-        return pollDeviceConfig(ipAddress, location, service)
+    public CompletableFuture<DeviceConfig> getDeviceConfig(String ipAddress, String location, String service, boolean persist, int timeout) throws IOException {
+        return pollDeviceConfig(ipAddress, location, service, persist)
                 .orTimeout(timeout, TimeUnit.MILLISECONDS)
                 .thenApply(resp -> {
                     if (resp.getPollStatus().isAvailable()) {
@@ -181,7 +186,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .collect(Collectors.toList());
     }
 
-    private CompletableFuture<PollerResponse> pollDeviceConfig(String ipAddress, String location, String serviceName) throws IOException {
+    private CompletableFuture<PollerResponse> pollDeviceConfig(String ipAddress, String location, String serviceName, boolean persist) throws IOException {
         final var match = getPollerConfig().findService(ipAddress, serviceName)
                 .orElseThrow(IllegalArgumentException::new);
 
@@ -198,7 +203,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
             final OnmsNode node = ipInterface.getNode();
 
-            return new AbstractMap.SimpleImmutableEntry(bound, new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), match.serviceName, location));
+            return new AbstractMap.SimpleImmutableEntry<>(bound, new SimpleMonitoredService(ipInterface.getIpAddress(), node.getId(), node.getLabel(), match.serviceName, location));
         });
 
         if (boundServicePair == null) {
@@ -213,15 +218,26 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         }
 
         // All the service parameters should be loaded from metadata in PollerRequestBuilderImpl
-        // Persistence will be performed in DeviceConfigMonitorAdaptor.
-        return locationAwarePollerClient.poll()
-                .withService(service)
-                .withAdaptor(serviceMonitorAdaptor)
-                .withMonitor(monitor)
-                .withPatternVariables(match.patternVariables)
-                .withAttributes(match.service.getParameterMap())
-                .withAttribute(DeviceConfigConstants.TRIGGERED_POLL, "true")
-                .execute();
+        if (persist) {
+            // Persistence will be performed in DeviceConfigMonitorAdaptor.
+            return locationAwarePollerClient.poll()
+                    .withService(service)
+                    .withAdaptor(serviceMonitorAdaptor)
+                    .withMonitor(monitor)
+                    .withPatternVariables(match.patternVariables)
+                    .withAttributes(match.service.getParameterMap())
+                    .withAttribute(DeviceConfigConstants.TRIGGERED_POLL, "true")
+                    .execute();
+        } else {
+            // No persistence of config.
+            return locationAwarePollerClient.poll()
+                    .withService(service)
+                    .withMonitor(monitor)
+                    .withPatternVariables(match.patternVariables)
+                    .withAttributes(match.service.getParameterMap())
+                    .withAttribute(DeviceConfigConstants.TRIGGERED_POLL, "true")
+                    .execute();
+        }
     }
 
     public void setLocationAwarePollerClient(LocationAwarePollerClient locationAwarePollerClient) {

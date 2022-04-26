@@ -221,23 +221,17 @@ public class DcbEndToEndIT {
         restClient.triggerBackup(new JSONArray(List.of(new JSONObject()
                                                                .put("ipAddress", targetAddress)
                                                                .put("location", STACK.minion().getLocation())
-                                                               .put("serviceName", DCB_SVC_NAME)))
-                                         .toString());
+                                                               .put("serviceName", DCB_SVC_NAME)
+                                                               .put("blocking", true))).toString());
 
-        // TODO: Remove after NMS-14143
-        await().atMost(2, MINUTES)
-                       .until(restClient::getBackups, jsonArray(hasSize(1)));
 
         // Trigger remote backup
         restClient.triggerBackup(new JSONArray(List.of(new JSONObject()
                                                                .put("ipAddress", targetAddress)
                                                                .put("location", MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID)
-                                                               .put("serviceName", DCB_SVC_NAME)))
-                                         .toString());
+                                                               .put("serviceName", DCB_SVC_NAME)
+                                                               .put("blocking", true))).toString());
 
-        // TODO: Remove after NMS-14143
-        await().atMost(2, MINUTES)
-               .until(restClient::getBackups, jsonArray(hasSize(2)));
 
         assertThat(restClient.getBackups(), jsonArray(containsInAnyOrder(
                 jsonObject()
@@ -274,7 +268,7 @@ public class DcbEndToEndIT {
 
         // Trigger local backup
         try (final SshClient sshClient = STACK.opennms().ssh(); final PrintStream pipe = sshClient.openShell()) {
-            pipe.printf("opennms:device-config-trigger-backup -s %s -l %s %s%n", DCB_SVC_NAME, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, targetAddress);
+            pipe.printf("opennms:dcb-trigger -p -s %s -l %s %s%n", DCB_SVC_NAME, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, targetAddress);
             pipe.printf("logout%n");
 
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
@@ -285,7 +279,7 @@ public class DcbEndToEndIT {
 
         // Trigger remote backup
         try (final SshClient sshClient = STACK.opennms().ssh(); final PrintStream pipe = sshClient.openShell()) {
-            pipe.printf("opennms:device-config-trigger-backup -s %s -l %s %s%n", DCB_SVC_NAME, STACK.minion().getLocation(), targetAddress);
+            pipe.printf("opennms:dcb-trigger -p -s %s -l %s %s%n", DCB_SVC_NAME, STACK.minion().getLocation(), targetAddress);
             pipe.printf("logout%n");
 
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
@@ -329,7 +323,7 @@ public class DcbEndToEndIT {
 
         // Trigger local backup
         try (final SshClient sshClient = STACK.opennms().ssh(); final PrintStream pipe = sshClient.openShell()) {
-            pipe.printf("opennms:device-config-get -s %s -l %s %s%n", DCB_SVC_NAME, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, targetAddress);
+            pipe.printf("opennms:dcb-get -s %s -l %s %s%n", DCB_SVC_NAME, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, targetAddress);
             pipe.printf("logout%n");
 
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
@@ -339,7 +333,7 @@ public class DcbEndToEndIT {
 
         // Trigger remote backup
         try (final SshClient sshClient = STACK.opennms().ssh(); final PrintStream pipe = sshClient.openShell()) {
-            pipe.printf("opennms:device-config-get -s %s -l %s %s%n", DCB_SVC_NAME, STACK.minion().getLocation(), targetAddress);
+            pipe.printf("opennms:dcb-get -s %s -l %s %s%n", DCB_SVC_NAME, STACK.minion().getLocation(), targetAddress);
             pipe.printf("logout%n");
 
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
@@ -348,11 +342,8 @@ public class DcbEndToEndIT {
         }
 
         // Ensure backup was not stored
-//        await().atMost(2, MINUTES)
-//               .until(restClient::getBackups, is(nullValue()));
-        // TODO: remove with NMS-14176
         await().atMost(2, MINUTES)
-               .until(restClient::getBackups, jsonArray(hasSize(2)));
+               .until(restClient::getBackups, is(nullValue()));
     }
 
     @Test
