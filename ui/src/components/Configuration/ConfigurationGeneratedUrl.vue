@@ -1,12 +1,20 @@
 <template>
-  <div class="white-bg" v-if="convertedItem?.url !== '://?=' && convertedItem?.url !== ''">
+  <div
+    class="white-bg"
+    v-if="convertedItem?.url !== '://?=' && convertedItem?.url !== ''"
+  >
     <div class="title">URL:</div>
-    <div class="url">{{ convertedItem?.url }}</div>
+    <div class="url">
+      {{ convertedItem?.url }}
+    </div>
   </div>
 </template>
 
-<script lang="ts" setup>
-import { computed, PropType } from 'vue'
+<script
+  lang="ts"
+  setup
+>
+import { PropType } from 'vue'
 import { LocalConfiguration } from './configuration.types'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import { RequisitionData } from './copy/requisitionTypes'
@@ -30,12 +38,15 @@ const convertedItem = computed(() => {
     url: converted[RequisitionData.ImportURL]
   }
 })
-
 </script>
 
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
+
 .white-bg {
   background-color: var(--feather-surface);
   display: flex;

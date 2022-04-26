@@ -1,5 +1,8 @@
 <template>
-  <div class="config-toast" :class="getToastClass()">
+  <div
+    class="config-toast"
+    :class="getToastClass()"
+  >
     <div class="message">
       <div class="icon">
         <FeatherIcon
@@ -8,20 +11,32 @@
           :class="getIconClass()"
         />
       </div>
-      <div class="basic">{{ toastMessage?.basic }}</div>
-      <div class="detail">{{ toastMessage?.detail }}</div>
+      <div class="basic">
+        {{ toastMessage?.basic }}
+      </div>
+      <div class="detail">
+        {{ toastMessage?.detail }}
+      </div>
       <div class="close">
-        <FeatherButton icon="Cancel" text @click="closeToast">
-          <FeatherIcon class="close-icon" :icon="Cancel" />
+        <FeatherButton
+          icon="Cancel"
+          text
+          @click="closeToast"
+        >
+          <FeatherIcon
+            class="close-icon"
+            :icon="Cancel"
+          />
         </FeatherButton>
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts" setup>
-
-import { computed, reactive, watch } from 'vue'
+<script
+  lang="ts"
+  setup
+>
 import { useStore } from 'vuex'
 
 import { FeatherIcon } from '@featherds/icon'
@@ -75,11 +90,14 @@ const getToastClass = () => {
 const getIconClass = () => {
   return toastMessage?.value?.hasErrors ? 'config-icon-errors ' : ''
 }
-
 </script>
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
+
 .icon-inner {
   color: var(--feather-success);
   font-size: 32px;
@@ -134,3 +152,4 @@ const getIconClass = () => {
   color: black;
 }
 </style>
+

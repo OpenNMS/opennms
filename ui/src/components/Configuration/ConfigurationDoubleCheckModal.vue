@@ -1,16 +1,29 @@
 <template>
-  <FeatherDialog v-model="visible" :labels="labels" :hide-close="true">
+  <FeatherDialog
+    v-model="visible"
+    :labels="labels"
+    :hide-close="true"
+  >
     <p class="my-content">This will delete the definition titled: {{ title }}</p>
     <template v-slot:footer>
-      <FeatherButton primary @click="props?.doubleCheckSelected(false)">No</FeatherButton>
-      <FeatherButton error @click="props?.doubleCheckSelected(true)">Yes</FeatherButton>
+      <FeatherButton
+        primary
+        @click="props?.doubleCheckSelected(false)"
+        >No</FeatherButton
+      >
+      <FeatherButton
+        error
+        @click="props?.doubleCheckSelected(true)"
+        >Yes</FeatherButton
+      >
     </template>
   </FeatherDialog>
 </template>
 
-<script lang="ts" setup>
-import { computed } from 'vue'
-
+<script
+  lang="ts"
+  setup
+>
 import { FeatherDialog } from '@featherds/dialog'
 import { FeatherButton } from '@featherds/button'
 

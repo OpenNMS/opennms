@@ -7,17 +7,15 @@ const populateProvisionD = (store: Store<unknown>) => {
   store.dispatch('configuration/getProvisionDService')
 }
 
-const getProvisionDService = async () => {
-  const resp = await rest.get(getProvisionD)
-
+const getProvisionDService = rest.get(getProvisionD).then((response) => {
   try {
-    if (resp.status === 200) {
-      return resp.data
+    if (response.status === 200) {
+      return response.data
     }
   } catch {
     console.error('issue with getProvisionDService api')
   }
-}
+})
 
 const putProvisionDService = async (payload: any) => {
   const resp = await rest.put(getProvisionD, payload)
