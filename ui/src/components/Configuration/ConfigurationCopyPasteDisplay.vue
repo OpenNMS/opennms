@@ -1,19 +1,40 @@
 <template>
   <div @mouseleave="timeoutOut">
-    <div class="inner-short" @mouseenter="timeoutIn">{{ shortText }}</div>
-    <div class="inner-float" :class="hover && 'hovering'">
-      <div ref="floating">{{ text }}</div>
-      <div class="button" v-if="showCopyBtn">
-        <FeatherButton icon="Copy to clipboard" @click="copyURLToClipboard">
-          <FeatherIcon :icon="ContentCopy" class="edit-icon"></FeatherIcon>
+    <div
+      class="inner-short"
+      @mouseenter="timeoutIn"
+    >
+      {{ shortText }}
+    </div>
+    <div
+      class="inner-float"
+      :class="hover && 'hovering'"
+    >
+      <div ref="floating">
+        {{ text }}
+      </div>
+      <div
+        class="button"
+        v-if="showCopyBtn"
+      >
+        <FeatherButton
+          icon="Copy to clipboard"
+          @click="copyURLToClipboard"
+        >
+          <FeatherIcon
+            :icon="ContentCopy"
+            class="edit-icon"
+          ></FeatherIcon>
         </FeatherButton>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed, ref, reactive } from 'vue'
+<script
+  setup
+  lang="ts"
+>
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import ContentCopy from '@featherds/icon/action/ContentCopy'
@@ -96,8 +117,12 @@ const timeoutIn = () => {
   margin: 0;
 }
 </style>
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/styles/mixins/elevation";
+
 .inner-short {
   cursor: pointer;
 }
@@ -114,10 +139,10 @@ const timeoutIn = () => {
   max-width: 25vw;
   line-break: anywhere;
 }
-
 .inner-float.hovering {
   opacity: 1;
   pointer-events: all;
   z-index: 2;
 }
 </style>
+

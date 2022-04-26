@@ -12,12 +12,13 @@
     @update:modelValue="selectItem"
   ></FeatherAutocomplete>
 </template>
-  
-<script setup lang="ts">
-import { ref, computed } from 'vue'
+
+<script
+  setup
+  lang="ts"
+>
 import { debounce } from 'lodash'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 
 const router = useRouter()
@@ -46,20 +47,21 @@ const results = computed(() => {
   return []
 })
 </script>
-  
-<style lang="scss">
+
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/styles/themes/variables";
+
 .menubar-search {
   width: 350px !important;
   margin-right: 20px;
-  .feather-input-border {
+  :deep(.feather-input-border) {
     background: var($surface);
   }
-  &.feather-autocomplete-container {
-    padding-top: 0px;
-  }
-  .feather-autocomplete-input {
-    height: 25px !important;
+  :deep(.feather-input-sub-text){
+    display:none
   }
 }
 </style>

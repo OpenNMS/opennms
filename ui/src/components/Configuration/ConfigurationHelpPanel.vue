@@ -1,17 +1,35 @@
 <template>
-  <div class="config-help-panel" :class="props?.active ? 'config-help-panel-open' : ''">
+  <div
+    class="config-help-panel"
+    :class="props?.active ? 'config-help-panel-open' : ''"
+  >
     <div class="config-help-close">
-      <FeatherButton class="button" text icon="" @click="onClose">
-        <FeatherIcon class="buttonIcon" :icon="chevronRight" />
+      <FeatherButton
+        class="button"
+        text
+        icon=""
+        @click="onClose"
+      >
+        <FeatherIcon
+          class="buttonIcon"
+          :icon="chevronRight"
+        />
       </FeatherButton>
     </div>
     <div class="config-help-header">
-      <div class="config-help-title">{{ helpText.title }}</div>
+      <div class="config-help-title">
+        {{ helpText.title }}
+      </div>
       <div class="config-help-body">
         <p>{{ helpText.subTitle }}</p>
         <p>{{ helpText.help }}</p>
       </div>
-      <a :href="helpText.link" target="_blank" class="config-help-link">{{ helpText.linkCopy }}</a>
+      <a
+        :href="helpText.link"
+        target="_blank"
+        class="config-help-link"
+        >{{ helpText.linkCopy }}</a
+      >
     </div>
     <div class="config-help-hr"></div>
     <div class="config-help-footer">
@@ -26,9 +44,11 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-
-import { computed, PropType, reactive } from 'vue'
+<script
+  lang="ts"
+  setup
+>
+import { PropType } from 'vue'
 
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
@@ -155,7 +175,6 @@ const helpText = computed(() => {
   return helpVals
 })
 
-
 /**
  * Gets the current class structure for the
  * two zone click box.
@@ -174,7 +193,7 @@ const getFooterClickClass = () => {
 /**
  * Stub for when the user clicks YES on two zone click box.
  * Functionality for this to be determined. Included in design from UX.
- * 
+ *
  */
 const footerYes = () => {
   footerVals.yes = true
@@ -191,7 +210,6 @@ const footerNo = () => {
   footerVals.no = true
   footerVals.yes = false
 }
-
 </script>
 
 <style lang="scss">
@@ -201,8 +219,12 @@ const footerNo = () => {
   }
 }
 </style>
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/styles/mixins/typography";
+
 .config-help-close {
   display: flex;
   justify-content: flex-end;
@@ -251,7 +273,6 @@ const footerNo = () => {
     margin-bottom: 24px;
   }
 }
-
 .config-help-hr {
   border-bottom: 1px solid var(--feather-primary);
   margin: 0 40px;
@@ -307,3 +328,4 @@ const footerNo = () => {
   }
 }
 </style>
+

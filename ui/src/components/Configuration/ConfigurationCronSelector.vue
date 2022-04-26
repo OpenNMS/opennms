@@ -54,9 +54,7 @@
         :modelValue="props.config.occuranceAdvanced"
       />
     </div>
-    <div
-      class="feather-input-hint-custom"
-    >
+    <div class="feather-input-hint-custom">
       {{ !hasCronValidationError ? scheduledTime : '' }}
     </div>
     <div class="flex">
@@ -64,30 +62,29 @@
         <FeatherCheckbox
           :modelValue="props.config.advancedCrontab"
           @update:modelValue="(val: string) => updateFormValue('advancedCrontab', val)"
-          >Advanced (Cron)
-          Schedule</FeatherCheckbox
+          >Advanced (Cron) Schedule</FeatherCheckbox
         >
       </div>
     </div>
-    <div
-      v-if="props.config.advancedCrontab"
-    >
+    <div v-if="props.config.advancedCrontab">
       <a
         target="_blank"
         class="link mb-m"
         href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html"
-        >Quartz Scheduler
-        Documentation</a
+        >Quartz Scheduler Documentation</a
       >
     </div>
   </div>
 </template>
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { FeatherSelect } from '@featherds/select'
 import { FeatherInput } from '@featherds/input'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
-import { PropType, computed } from 'vue'
+import { PropType } from 'vue'
 import { LocalConfiguration, LocalErrors } from './configuration.types'
 import { ErrorStrings } from './copy/requisitionTypes'
 import { ConfigurationHelper } from './ConfigurationHelper'
@@ -136,7 +133,10 @@ const hasCronValidationError = computed(() => props.errors.occuranceAdvanced || 
     }
 }
 </style>
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/styles/themes/variables";
 @import "@featherds/styles/mixins/typography";
 
@@ -176,4 +176,3 @@ div a.link {
     }
 }
 </style>
-

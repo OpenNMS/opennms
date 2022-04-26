@@ -25,6 +25,7 @@
 *** xref:rest/alarm_history.adoc[]
 *** xref:rest/events.adoc[]
 *** xref:rest/categories.adoc[]
+*** xref:rest/config_management.adoc[]
 *** xref:rest/device_config.adoc[]
 *** xref:rest/flows.adoc[]
 *** xref:rest/classifications.adoc[]

@@ -1,6 +1,9 @@
 <template>
   <div :class="configurationDrawerActive ? 'active' : 'hidden'">
-    <div class="click-close" @click="props.closePanel"></div>
+    <div
+      class="click-close"
+      @click="props.closePanel"
+    ></div>
     <ConfigurationHelpPanel
       :item="props.item.config"
       :active="helpState.open"
@@ -8,13 +11,26 @@
         helpState.open = false
       }"
     />
-    <div class="sideshared" :class="wrapperClass()">
+    <div
+      class="sideshared"
+      :class="wrapperClass()"
+    >
       <div class="side-inner">
         <div class="side-inner-title">
-          <div class="title">{{ editing ? 'Edit' : 'Add' }} Requisition</div>
+          <div class="title">
+            {{ editing ? 'Edit' : 'Add' }}
+            Requisition
+          </div>
           <div class="icon">
-            <FeatherButton icon="Cancel" text @click="props.closePanel">
-              <FeatherIcon class="close-icon" :icon="cancelIcon" />
+            <FeatherButton
+              icon="Cancel"
+              text
+              @click="props.closePanel"
+            >
+              <FeatherIcon
+                class="close-icon"
+                :icon="cancelIcon"
+              />
             </FeatherButton>
           </div>
         </div>
@@ -22,7 +38,8 @@
       <div class="slide-outer-body">
         <p class="slide-short">
           To help synchronize inventory automatically from an external source, build an external requisition and
-          schedule it. The external requisition provides a URL that specifies where OpenNMS can get this input information.
+          schedule it. The external requisition provides a URL that specifies where OpenNMS can get this input
+          information.
         </p>
         <div class="slide-inner-body">
           <ProvisionDForm
@@ -47,7 +64,11 @@
         />
         <ConfigurationGeneratedUrl :item="props.item.config" />
         <div class="spinner-button flex button-align-right mt-20">
-          <FeatherButton @click="props.saveCurrentState" primary :disabled="loading">
+          <FeatherButton
+            @click="props.saveCurrentState"
+            primary
+            :disabled="loading"
+          >
             <FeatherSpinner v-if="loading" />
             <span v-if="!loading">Save &amp; Close</span>
           </FeatherButton>
@@ -57,8 +78,11 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed, watch, ref, PropType } from 'vue'
+<script
+  setup
+  lang="ts"
+>
+import { PropType } from 'vue'
 
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
@@ -106,7 +130,7 @@ const editing = computed(() => props.edit)
 const errors = computed(() => props?.item?.errors)
 
 /**
- * Scrolls the drawer to the first error on creation 
+ * Scrolls the drawer to the first error on creation
  * (should draw the user's eye to the problem)
  *  This is unneccessary, but a nice to have.
  */
@@ -158,7 +182,6 @@ const toggleHelp = () => {
 }
 </script>
 
-
 <style lang="scss">
 .side-label {
   .group-label {
@@ -192,7 +215,10 @@ const toggleHelp = () => {
   }
 }
 </style>
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
 
@@ -216,7 +242,6 @@ const toggleHelp = () => {
   height: calc(100vh - 110px);
   overflow-y: auto;
 }
-
 .active {
   opacity: 1;
   pointer-events: all;
@@ -243,13 +268,11 @@ const toggleHelp = () => {
   right: 0;
   bottom: 0;
 }
-
 .slide-inner-body {
   padding: 20px 20px 4px;
   background-color: var(--feather-background);
   @include elevation(1);
 }
-
 .side-inner-title {
   display: flex;
   align-items: center;
@@ -262,7 +285,6 @@ const toggleHelp = () => {
   border-top: 1px solid #d7d7dc;
   border-bottom: 1px solid #d7d7dc;
 }
-
 .title {
   @include headline2();
   color: var(--feather-primary);
@@ -280,7 +302,6 @@ const toggleHelp = () => {
 }
 .sideshared {
   z-index: 2;
-
   background-color: var(--feather-background);
   width: 40vw;
   min-width: 320px;
@@ -305,3 +326,4 @@ const toggleHelp = () => {
   transition: all ease-in-out 0.3s;
 }
 </style>
+

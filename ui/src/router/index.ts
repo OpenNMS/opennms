@@ -2,7 +2,6 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Nodes from '@/containers/Nodes.vue'
 import DeviceConfigBackup from '@/containers/DeviceConfigBackup.vue'
 import FileEditor from '@/containers/FileEditor.vue'
-import ProvisionDConfig from '@/containers/ProvisionDConfig.vue'
 import Resources from '@/components/Resources/Resources.vue'
 import Graphs from '@/components/Resources/Graphs.vue'
 import useRole from '@/composables/useRole'
@@ -49,7 +48,7 @@ const router = createRouter({
     {
       path: '/configuration',
       name: 'Configuration',
-      component: ProvisionDConfig
+      component: () => import('@/containers/ProvisionDConfig.vue')
     },
     {
       path: '/logs',
