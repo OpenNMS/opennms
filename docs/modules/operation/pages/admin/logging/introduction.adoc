@@ -1,0 +1,5 @@
+[[ga-logging-introduction]]
+= Logging
+
+{page-component-title} stores logs into different files in the filesystem depending and named on the daemon that was acting on a process.
+

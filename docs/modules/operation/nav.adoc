@@ -195,4 +195,5 @@
 ** xref:admin/request-logging.adoc[]
 ** xref:admin/restart.adoc[]
 ** xref:admin/daemon-config-files.adoc[]
+** xref:admin/logging/log-file-viewer.adoc[]
 ** xref:admin/housekeeping/introduction.adoc[]
