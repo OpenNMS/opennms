@@ -59,8 +59,8 @@ import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 
 import { populateProvisionD, putProvisionDService } from '@/services/configurationService'
-
-import { useConfigurationToast, useProvisionD } from './hooks'
+import { useProvisionD } from './hooks'
+import useSnackbar from '@/composables/useSnackbar'
 import { ConfigurationHelper } from './ConfigurationHelper'
 
 import ConfigurationTable from './ConfigurationTable.vue'
@@ -103,7 +103,7 @@ const {
   loading
 } = useProvisionD()
 
-const { updateToast } = useConfigurationToast()
+const { showSnackBar } = useSnackbar()
 
 /**
  * Create a Blank Requisition Definition
@@ -170,7 +170,6 @@ const closeConfigurationDrawer = () => {
   enableMainScroll()
 }
 
-
 /**
  * User has decided to save and upload the current state.
  */
@@ -201,7 +200,7 @@ const saveCurrentState = async () => {
     //Set New State with our requisition definitions
     updatedProvisionDData['requisition-def'] = ConfigurationHelper.stripOriginalIndexes(forSending)
 
-    //Toast messages can differ depending on our editing state.
+    //Snackbar messages can differ depending on our editing state.
     let mods = ['Addition', 'was']
     if (editing.value) {
       mods = ['Edits', 'were']
@@ -214,19 +213,18 @@ const saveCurrentState = async () => {
 
       closeConfigurationDrawer()
 
-      updateToast({
-        basic: 'Success!',
-        detail: `${mods[0]} to requisition definition ${mods[1]} successful.`,
-        hasErrors: false
+      showSnackBar({
+        msg: `${mods[0]} to requisition definition ${mods[1]} successful.`,
+        center: false,
+        error: false
       })
-    } catch (e) {
-      updateToast({
-        basic: 'Error!',
-        detail: `${mods[0]} to requisition definition ${mods[1]} not successful.`,
-        hasErrors: true
+    } catch (err) {
+      showSnackBar({
+        msg: `${mods[0]} to requisition definition ${mods[1]} not successful. (${err})`,
+        center: false,
+        error: true
       })
     }
-
   } else {
     // Inform User of Errors.
     selectedProvisionDItem.errors = validatedItem
@@ -253,16 +251,17 @@ const doubleCheckSelected = async (selection: boolean) => {
 
     try {
       await putProvisionDService(updatedProvisionDData)
-      updateToast({
-        basic: 'Success!',
-        detail: 'Deletion of requisition definition was successful.',
-        hasErrors: false
+
+      showSnackBar({
+        msg: 'Deletion of requisition definition was successful.',
+        center: false,
+        error: false
       })
-    } catch (e) {
-      updateToast({
-        basic: 'Failure!',
-        detail: 'Deletion of requisition definition was NOT successful.',
-        hasErrors: true
+    } catch (err) {
+      showSnackBar({
+        msg: `Deletion of requisition definition was NOT successful. (${err})`,
+        center: false,
+        error: true
       })
     }
     populateProvisionD(store)

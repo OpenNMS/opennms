@@ -90,7 +90,7 @@ import { FeatherChip, FeatherChipList } from '@featherds/chips'
 import { FeatherSpinner } from '@featherds/progress'
 
 import { populateProvisionD, putProvisionDService } from '@/services/configurationService'
-import { useConfigurationToast } from './hooks/configurationToast'
+import useSnackbar from '@/composables/useSnackbar'
 import { threadPoolKeys } from './copy/threadPoolKeys'
 import { ConfigurationHelper } from './ConfigurationHelper'
 
@@ -118,7 +118,7 @@ const unTouchedThreadPoolData = computed(() => {
  * Hooks
  */
 const store = useStore()
-const { updateToast } = useConfigurationToast()
+const { showSnackBar } = useSnackbar()
 
 /**
  * User has opted to update threadpool data.
@@ -140,10 +140,10 @@ const updateThreadpools = async () => {
     }
   })
 
-  let toastMessage = {
-    basic: 'Error!',
-    detail: errorMessage,
-    hasErrors: true
+  let snackbarProps = {
+    msg: errorMessage,
+    center: true,
+    error: true
   }
   // If there are no errors.
   if (Object.keys(threadPoolsErrors.value).length === 0) {
@@ -162,23 +162,23 @@ const updateThreadpools = async () => {
       await putProvisionDService(updatedProvisionDData)
       // Redownload + Populate Data.
       await populateProvisionD(store)
-      toastMessage = {
-        basic: 'Success!',
-        detail: 'Thread pool data saved.',
-        hasErrors: false
-      }
-    } catch (e) {
-      toastMessage = {
-        basic: 'Error!',
-        detail: 'Thread Pool data not saved.',
-        hasErrors: true
-      }
 
+      snackbarProps = {
+        msg: 'Thread pool data saved.',
+        center: true,
+        error: false
+      }
+    } catch (err) {
+      snackbarProps = {
+        msg: `Thread pool data not saved. (${err})`,
+        center: true,
+        error: true
+      }
     }
   }
 
-  //Send Toast Message
-  updateToast(toastMessage)
+  //Show snackbar message
+  showSnackBar(snackbarProps)
   loading.value = false
 }
 

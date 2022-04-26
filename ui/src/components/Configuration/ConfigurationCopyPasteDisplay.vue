@@ -38,7 +38,7 @@
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import ContentCopy from '@featherds/icon/action/ContentCopy'
-import { useConfigurationToast } from './hooks/configurationToast'
+import useSnackbar from '@/composables/useSnackbar'
 import { ConfigurationHelper } from './ConfigurationHelper'
 
 /**
@@ -59,7 +59,7 @@ const props = defineProps({
 /**
  * Hooks
  */
-const { updateToast } = useConfigurationToast()
+const { showSnackBar } = useSnackbar()
 
 /**
  * Local State
@@ -79,14 +79,16 @@ const shortText = computed(() => {
 const copyURLToClipboard = () => {
   if (floating.value && props.text) {
     ConfigurationHelper.copyToClipboard(props.text).then(() => {
-      updateToast({
-        basic: `Copied: ${props.text.length > 70 ? props.text.substring(0, 70) + '...' : props.text}`,
-        hasErrors: false
+      showSnackBar({
+        msg: `Copied: ${props.text.length > 70 ? props.text.substring(0, 70) + '...' : props.text}`,
+        center: true,
+        error: false
       })
-    }).catch(() => {
-      updateToast({
-        basic: 'Could not copy to clipboard. Your environment may be insecure.',
-        hasErrors: true
+    }).catch((err) => {
+      showSnackBar({
+        msg: `Could not copy to clipboard. Your environment may be insecure. (${err})`,
+        center: true,
+        error: true
       })
     })
   }

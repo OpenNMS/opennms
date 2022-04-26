@@ -8,11 +8,6 @@ const getProvisionDService = async (context: VuexContext) => {
   }
 }
 
-const updateToastValue = async (context: VuexContext, toastVal: string) => {
-  context.commit('UPDATE_TOAST_VALUE', toastVal)
-}
-
 export default {
   getProvisionDService,
-  updateToastValue
 }
