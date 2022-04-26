@@ -1,10 +1,10 @@
 [[ga-operation-https-client]]
 = SSL Client Connections
 
-To establish secure SSL connections from {page-component-title} to monitored nodes, you need to set up a Java Truststore.
-The truststore should contain all certificates that {page-component-title} need to verify trust when making connections when polling or collecting.
+To establish SSL connections from {page-component-title} to monitored nodes, you need to set up a Java Truststore.
+The truststore should contain all certificates that {page-component-title} needs to verify trust when making connections when polling or collecting.
 
-{page-component-title} will utilize the system truststore for your Java installation.
+{page-component-title} will use the system truststore for your Java installation.
 Since any changes to that truststore may be overwritten if Java is upgraded or reinstalled, you can specify a custom truststore to use.
 
 [[ga-operation-setup-java-truststore]]
@@ -31,11 +31,11 @@ keytool \
 <6> The location of the Java Truststore.
 If this file doesn't exist, it will be created.
 
-If you create a new Java Truststore, you must provide a password to protect the Java Truststore.
+If you create a new Java Truststore, you must provide a password to protect it.
 If you updated an existing Java Truststore, type the password you chose when you first created the Java Truststore.
 
 [[ga-operation-download-certificate]]
-== Download existing public certificate (Optional)
+== Download existing public certificate (optional)
 
 Use the following command to download an existing public certificate, if needed.
 
@@ -54,7 +54,7 @@ openssl \
 <2> Show all certificates in the chain.
 <3> PORT:HOST to connect to; for example, localhost:443.
 <4> Optional.
-If you are serving multiple certificates under one single IP address, you may define a server name; otherwise, the `ip of localhost`:PORT certificate is returned, which may not match the requested server name (`mail.domain.com`, `opennms.domain.com`, `dns.domain.com`).
+If you are serving multiple certificates under one IP address, you may define a server name; otherwise, the `ip of localhost`:PORT certificate is returned, which may not match the requested server name (`mail.domain.com`, `opennms.domain.com`, `dns.domain.com`).
 <5> No input
 <6> Where to store the certificate.
 
@@ -73,12 +73,12 @@ javax.net.ssl.trustStorePassword=change-me
 
 For more details on the Java built-in SSL system properties, see <<ga-operation-ssl-properties, Debugging/Properties>>.
 
-NOTE: Each time you modify the Java Truststore, {page-component-title} services must be restarted for the changes take effect.
+NOTE: Each time you modify the Java Truststore, you must restart {page-component-title} services for the changes to take effect.
 
 [[ga-operation-trust-store-key-store]]
 == Differences between Java Truststore and Java Keystore
 
-The Java **Truststore** determines whether a remote connection should be trusted or not; in other words, whether a remote party is who it claims to be (client use case).
+The Java **Truststore** determines whether a remote connection should be trusted; in other words, whether a remote party is who it claims to be (client use case).
 
 The Java **Keystore** decides which authentication credentials should be sent to the remote host for authentication during SSL handshake (server use case).
 
@@ -105,18 +105,20 @@ This password is used twice: to unlock the keystore file (store password) and to
 The JSSE framework requires these passwords to be identical.
 
 | javax.net.ssl.keyStoreType
-| (Optional) Defaults to `jks`.
+| (Optional) Keystore type. 
+Defaults to `jks`.
 
 | javax.net.ssl.trustStore
-| Location of the Java truststore file that contains the collection of CA certificates this application process (truststore) trusts.
-If a truststore location is not specified using this property, the Java implementation searches for and uses a keystore file in the following locations (in order):
+| Location of the Java Truststore file that contains the collection of CA certificates this application process (truststore) trusts.
+If this property does not specify a truststore location, the Java implementation searches for and uses a keystore file in the following locations (in order):
 `$\{JAVA_HOME}/lib/security/jssecacerts` and `$\{JAVA_HOME}/lib/security/cacerts`.
 
 | javax.net.ssl.trustStorePassword
 | Password to unlock the truststore file.
 
 | javax.net.ssl.trustStoreType
-| (Optional) Defaults to `jks`.
+| (Optional) Truststore type. 
+Defaults to `jks`.
 
 | javax.net.debug
 | (Optional) To switch on logging for the SSL/TLS layer, set this property to ssl.
