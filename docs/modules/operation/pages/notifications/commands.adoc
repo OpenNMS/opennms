@@ -1,0 +1,246 @@
+= Notification Commands
+
+A Notification Command is a named, reusable execution profile for a Java class or external program command used to convey notices to targets.
+There are a number of default commands included, and you can create custom commands to send notifications to a platform of your choice.
+
+== Notification commands included by default
+
+callHomePhone, callMobilePhone, and callWorkPhone::
+Ring one of the phone numbers configured in the user's contact information.
+All three are implemented using the in-process Asterisk notification strategy, and differ only in which contact field is used.
+
+ircCat::
+Conveys a notice to an instance of the IRCcat Internet Relay Chat bot.
+Implemented by the in-process IRCcat notification strategy.
+
+javaEmail and javaPagerEmail::
+By far the most commonly used commands, these deliver a notice to a user's `email` or `pagerEmail` contact field value.
+By configuring a user's `pagerEmail` contact field value to target an email-to-SMS gateway, SMS notifications are trivially easy to configure.
+Both are implemented using the in-process JavaMail notification strategy.
+
+microblogDM, microblogReply, and microblogUpdate::
+Sends a notice to a user as a direct message, at a user via an at-reply, or to everybody as an update via a microblog service with a Twitter v1-compatible API.
+Each command is implemented with a separate, in-process notification strategy.
+
+numericPage and textPage::
+Sends a notice to a user's numeric or alphanumeric pager.
+Implemented as an external command using the `qpage` utility.
+
+xmppGroupMessage and xmppMessage::
+Sends a message to an XMPP group or user.
+Implemented with the in-process XMPP notification strategy.
+
+== Custom notification commands
+
+Notification commands are customizable and extensible by editing the `$\{OPENNMS_HOME}/etc/notificationCommands.xml` file.
+
+IMPORTANT: Use external binary notification commands sparingly as they spawn process additional threads on your core {page-component-title} system.
+
+=== Custom command configuration
+
+The `streamed` attribute dictates whether the the substitution text and/or switch text will be placed in the command line, or simply be placed in the input stream when the command start running.
+
+.Placing boilerplate arguments
+[source, xml]
+----
+   <argument streamed="false">
+      <substitution>-D</substitution>
+   </argument>
+----
+
+.Placing dynamic values
+[source, xml]
+----
+   <argument streamed="false">
+      <switch>-tm</switch>
+   </argument>
+----
+
+NOTE: When you combine the two (substitution and switch), each is written as a separate argument in the command line.
+For example:
++
+[source, xml]
+----
+   <argument streamed="false">
+      <substitution>-Dnodeid=</substitution>
+      <switch>-nodeid</switch>
+   </argument>
+Translates to:
+   -Dnodeid= 8
+and not:
+   -Dnodeid=8
+----
+
+=== Valid switches from the NotificationManager class
+
+The NotificationManager class defines some special switches, providing data for the class / command that executes.
+
+[options="header, autowidth"]
+[cols="3,1,2"]
+|===
+| Internal Name
+| Switch Name
+| Source
+
+| PARAM_TYPE
+| -t
+| binary y/n
+
+| PARAM_DESTINATION
+| -d
+| from notification definition
+
+| PARAM_TEXT_MSG
+| -tm
+| from notification definition
+
+| PARAM_NUM_MSG
+| -nm
+| from notification definition
+
+| PARAM_RESPONSE
+| -r
+|
+
+| PARAM_NODE
+| -nodeid
+| from original event
+
+| PARAM_INTERFACE
+| -interface
+| from original event
+
+| PARAM_SERVICE
+| -service
+| from original event
+
+| PARAM_SUBJECT
+| -subject
+| from notification definition
+
+| PARAM_EMAIL
+| -email
+| from user profile
+
+| PARAM_PAGER_EMAIL
+| -pemail
+| from user profile
+
+| PARAM_XMPP_ADDRESS
+| -xmpp
+| from user profile
+
+| PARAM_TEXT_PAGER_PIN
+| -tp
+| from user profile
+
+| PARAM_NUM_PAGER_PIN
+| -np
+| from user profile
+
+| PARAM_WORK_PHONE
+| -wphone
+| from user profile
+
+| PARAM_HOME_PHONE
+| -hphone
+| from user profile
+
+| PARAM_MOBILE_PHONE
+| -mphone
+| from user profile
+
+| PARAM_TUI_PIN
+| -tuipin
+| from user profile
+|===
+
+=== Extended dynamic values
+
+You can pass arbitrary parameters from the notification to the notificationCommand via the <parameter> tag, which can then be used as required.
+
+== Examples
+
+=== SnmpTrapNotificationStrategy
+
+This configuration sends an OpenNMS trap to an external system with the `nodelabel` in the varbind.
+
+[source, xml]
+----
+    <notification name="snmpTrap" status="on">
+        <uei>uei.opennms.org/nodes/nodeDown</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>trapNotifier</destinationPath>
+        <text-message>
+                All services are down on node %nodeid%.
+        </text-message>
+        <subject>node %nodeid% down.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+        <parameter name="trapVersion" value="v1" />
+        <parameter name="trapTransport" value="UDP" />
+        <parameter name="trapHost" value="my-trap-host.mydomain.org" />
+        <parameter name="trapPort" value="162" />
+        <parameter name="trapCommunity" value="public" />
+        <parameter name="trapEnterprise" value=".1.3.6.1.4.1.5813" />
+        <parameter name="trapGeneric" value="6" />
+        <parameter name="trapSpecific" value="1" />
+        <parameter name="trapVarbind" value="Node: %nodelabel%" />
+    </notification>
+----
+
+The parameters defined here are passed to the notification command as switches.
+You will see in the `notificationCommands.xml` file:
+
+[source, xml]
+----
+    <command binary="false">
+        <name>snmpTrap</name>
+        <execute>org.opennms.netmgt.notifd.SnmpTrapNotificationStrategy</execute>
+        <comment>Class for sending notifications as SNMP Traps</comment>
+        <argument streamed="false">
+                <switch>trapVersion</switch>
+        </argument>
+        <argument streamed="false">
+                <switch>trapTransport</switch>
+        </argument>
+        <argument streamed="false">
+                <switch>trapHost</switch>
+        </argument>
+        <argument streamed="false">
+                <switch>trapPort</switch>
+        </argument>
+        <argument streamed="false">
+                <switch>trapCommunity</switch>
+        </argument>
+        <argument streamed="false">
+                <switch>trapEnterprise</switch>
+        </argument>
+        <argument streamed="false">
+                <switch>trapGeneric</switch>
+        </argument>
+        <argument streamed="false">
+                <switch>trapSpecific</switch>
+        </argument>
+        <argument streamed="false">
+                <switch>trapVarbind</switch>
+        </argument>
+    </command>
+----
+
+Any or none of these parameters and switches can be defined, however, if you define it as a parameter in the notification, you must define it as a switch in the notification command.
+The defaults are:
+
+[source, properties]
+----
+trapVersion="v1" ("v1 or "v2c")
+trapTransport="UDP" (only UDP for now)
+trapHost="127.0.0.1" (any valid hostname or ip address)
+trapPort="162" (any valid IP port)
+trapCommunity="public" (any valid community string)
+trapEnterprise=".1.3.6.1.4.1.5813" (any valid OID)
+trapGeneric="6" (any valid generic ID)
+trapSpecific="1" (any valid trapSpecific ID)
+trapVarbind="OpenNMS Trap Notification" (any string or one or more valid %<event field>% such as "%eventUEI%" in the string)
+----
+
+The one allowed trap varbind will be sent with the object id of `.1.3.6.1.4.1.5813.20.1` and the object type of `DisplayString`.
