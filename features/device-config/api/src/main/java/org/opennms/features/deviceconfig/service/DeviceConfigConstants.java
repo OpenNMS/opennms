@@ -34,4 +34,5 @@ public interface DeviceConfigConstants {
     String CONFIG_TYPE = "config-type";
     String SCHEDULE = "schedule";
     String DEFAULT_CRON_SCHEDULE = "0 0 0 * * ?";
+    String NEVER = "never";
 }

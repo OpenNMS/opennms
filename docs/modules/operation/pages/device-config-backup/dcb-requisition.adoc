@@ -23,3 +23,5 @@ If you want to enable device config backup on existing nodes in a requisition, s
 . Click *Save* to save the metadata and then *Save* to save the requisition.
 . Click *Return* and click *Synchronize*.
 . Choose a scan option and click *Synchronize*.
+
+NOTE: By specifying the value `never` for the key `schedule`, device configuration backups will not be triggered automatically. It is still possible to retrieve backups on demand by using the Web UI or the REST services.

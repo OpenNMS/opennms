@@ -43,8 +43,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -52,8 +52,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.DatatypeConverter;
 
-import com.google.common.base.Strings;
-import net.redhogs.cronparser.CronExpressionDescriptor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.criteria.Criteria;
@@ -69,6 +67,7 @@ import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
 import org.opennms.features.deviceconfig.rest.BackupResponseDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
+import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -79,7 +78,10 @@ import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
+import net.redhogs.cronparser.CronExpressionDescriptor;
 
 public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDeviceConfigRestService.class);
@@ -341,6 +343,10 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
     }
 
     private static ScheduleInfo getScheduleInfo(Date current, String schedulePattern) {
+        if (Strings.isNullOrEmpty(schedulePattern) || DeviceConfigConstants.NEVER.equalsIgnoreCase(schedulePattern)) {
+            return new ScheduleInfo(null, "Never");
+        }
+
         final String cronDescription;
         try {
             cronDescription = CronExpressionDescriptor.getDescription(schedulePattern);
@@ -551,6 +557,7 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         // Calculate next scheduled date over all services
         schedules.values().stream()
             .map(ScheduleInfo::getNextScheduledBackup)
+            .filter(v -> v != null)
             .min(Date::compareTo)
             .ifPresent(dto::setNextScheduledBackupDate);
     }

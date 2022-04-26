@@ -60,6 +60,8 @@ import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 public class DeviceConfigMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitor.class);
 
@@ -140,10 +142,17 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
 
         final Date lastRun = new Date(getKeyedLong(parameters, LAST_RETRIEVAL, 0L));
         final String cronSchedule = getKeyedString(parameters, DeviceConfigConstants.SCHEDULE, DeviceConfigConstants.DEFAULT_CRON_SCHEDULE);
-        final Date nextRun = getNextRunDate(cronSchedule, lastRun);
 
-        if (!triggeredPoll && !nextRun.before(new Date())) {
-            return PollStatus.unknown("Skipping. Next retrieval scheduled for " + nextRun);
+        if (!triggeredPoll) {
+            if (Strings.isNullOrEmpty(cronSchedule) || DeviceConfigConstants.NEVER.equalsIgnoreCase(cronSchedule)) {
+                return PollStatus.unknown("Not scheduled");
+            }
+
+            final Date nextRun = getNextRunDate(cronSchedule, lastRun);
+
+            if (!nextRun.before(new Date())) {
+                return PollStatus.unknown("Skipping. Next retrieval scheduled for " + nextRun);
+            }
         }
 
         String script = getObjectAsStringFromParams(parameters, SCRIPT);
