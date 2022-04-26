@@ -440,7 +440,8 @@ runJava() {
 
     if [ "$dryrun" -eq 0 ]; then
         add_ld_path
-        exec "$JP" "$@"
+        # shellcheck disable=SC2154
+        exec "$JP" "${__onms_default_jvm_args[@]}" "$@"
     else
         tell "Dry run mode is set.  Would have executed: $JP $*"
     fi

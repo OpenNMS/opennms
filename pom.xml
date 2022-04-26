@@ -1548,7 +1548,9 @@
       problematic pauses when starting MockSnmpAgent in unit tests.
     -->
     <argLineMemory>-Xmx2g</argLineMemory>
-    <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom</argLine>
+    <argLineDocumentBuilder>-Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl</argLineDocumentBuilder>
+    <argLineSAXParser>-Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</argLineSAXParser>
+    <argLine>${argLineMemory} ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=/dev/./urandom</argLine>
     <skipITs>true</skipITs>
 
     <!--

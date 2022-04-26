@@ -124,3 +124,8 @@ __onms_get_java_version_string() {
 		printf ''
 	fi
 }
+
+__onms_default_jvm_args=(
+	"-Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl"
+	"-Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl"
+)

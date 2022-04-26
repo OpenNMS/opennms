@@ -21,6 +21,10 @@
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
+
+    <argLineDocumentBuilder>-Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl</argLineDocumentBuilder>
+    <argLineSAXParser>-Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</argLineSAXParser>
+    <argLine>-Xms1g -Xmx1g -XX:+UseG1GC ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=/dev/./urandom</argLine>
   </properties>
   <build>
     <testResources>
@@ -80,8 +84,7 @@
             <forkedProcessTimeoutInSeconds>${test.fork.timeout}</forkedProcessTimeoutInSeconds>
             <!-- Spawn a new JVM for every test so things don't leak over from one to the next -->
             <reuseForks>false</reuseForks>
-            <!-- Configure heap and GC -->
-            <argLine>-Xms1g -Xmx1g -XX:+UseG1GC</argLine>
+            <argLine>${argLine}</argLine>
           </configuration>
           <executions>
             <execution>

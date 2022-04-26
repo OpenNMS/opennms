@@ -138,6 +138,7 @@
                                   <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2/2.0.9" />
                                   <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-logback/2.0.9" />
                                 </delete>
+                                <echo file="${project.build.directory}/assembly/bin/setenv" append="true">export EXTRA_JAVA_OPTS="-Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl -Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl"</echo>
                             </target>
                         </configuration>
                     </execution>
