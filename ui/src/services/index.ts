@@ -25,6 +25,7 @@ import {
 } from './deviceService'
 
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
+import { getAliases, getCredentialsByAlias, addCredentials, updateCredentials } from './scvService'
 
 import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
@@ -73,5 +74,9 @@ export default {
   downloadDeviceConfigs,
   getVendorOptions,
   getOsImageOptions,
-  getHistoryByIpInterface
+  getHistoryByIpInterface,
+  getAliases,
+  getCredentialsByAlias,
+  addCredentials,
+  updateCredentials
 }
