@@ -81,13 +81,10 @@ const copyURLToClipboard = () => {
     ConfigurationHelper.copyToClipboard(props.text).then(() => {
       showSnackBar({
         msg: `Copied: ${props.text.length > 70 ? props.text.substring(0, 70) + '...' : props.text}`,
-        center: true,
-        error: false
       })
     }).catch((err) => {
       showSnackBar({
         msg: `Could not copy to clipboard. Your environment may be insecure. (${err})`,
-        center: true,
         error: true
       })
     })

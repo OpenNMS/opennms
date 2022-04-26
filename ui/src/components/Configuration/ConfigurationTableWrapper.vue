@@ -216,7 +216,6 @@ const saveCurrentState = async () => {
       showSnackBar({
         msg: `${mods[0]} to requisition definition ${mods[1]} successful.`,
         center: false,
-        error: false
       })
     } catch (err) {
       showSnackBar({
@@ -255,7 +254,6 @@ const doubleCheckSelected = async (selection: boolean) => {
       showSnackBar({
         msg: 'Deletion of requisition definition was successful.',
         center: false,
-        error: false
       })
     } catch (err) {
       showSnackBar({

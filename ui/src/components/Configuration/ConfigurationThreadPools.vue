@@ -142,7 +142,6 @@ const updateThreadpools = async () => {
 
   let snackbarProps = {
     msg: errorMessage,
-    center: true,
     error: true
   }
   // If there are no errors.
@@ -165,13 +164,11 @@ const updateThreadpools = async () => {
 
       snackbarProps = {
         msg: 'Thread pool data saved.',
-        center: true,
         error: false
       }
     } catch (err) {
       snackbarProps = {
         msg: `Thread pool data not saved. (${err})`,
-        center: true,
         error: true
       }
     }
