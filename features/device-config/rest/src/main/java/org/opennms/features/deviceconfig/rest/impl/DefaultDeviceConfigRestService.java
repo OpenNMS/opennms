@@ -34,6 +34,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +42,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -62,6 +64,7 @@ import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigQueryResult;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
+import org.opennms.features.deviceconfig.rest.BackupResponseDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
@@ -363,19 +366,34 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
             LOG.error(message);
             return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
         }
+        List<BackupResponseDTO> backupResponses = new ArrayList<>();
 
         for (var requestDto : backupRequestDtoList) {
             try {
-                deviceConfigService.triggerConfigBackup(requestDto.getIpAddress(),
-                    requestDto.getLocation(), requestDto.getServiceName());
-            } catch (Exception e) {
+                if (requestDto.getBlocking()) {
+                    deviceConfigService.triggerConfigBackup(requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName(), true).get();
+                } else {
+                    deviceConfigService.triggerConfigBackup(requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName(), true);
+                }
+            } catch (IllegalArgumentException e) {
                 LOG.error("Unable to trigger config backup for {} at location {} with configType {}",
-                    requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName());
-                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+                        requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName());
+                backupResponses.add(new BackupResponseDTO(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), requestDto));
+            } catch (IOException | ExecutionException | InterruptedException e) {
+                LOG.error("Unable to trigger config backup for {} at location {} with configType {}",
+                        requestDto.getIpAddress(), requestDto.getLocation(), requestDto.getServiceName());
+                backupResponses.add(new BackupResponseDTO(Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage(), requestDto));
             }
         }
+        if (backupResponses.isEmpty()) {
+            return Response.accepted().build();
+        } else if (backupRequestDtoList.size() == 1 && backupResponses.size() == 1) {
+            BackupResponseDTO singleResponse = backupResponses.get(0);
+            return Response.status(singleResponse.getStatus()).entity(singleResponse.getFailureMessage()).build();
+        }
+        // multi response with some failures.
+        return Response.status(207).entity(backupResponses).build();
 
-        return Response.accepted().build();
     }
 
     private Criteria getCriteria(

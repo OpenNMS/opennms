@@ -28,61 +28,42 @@
 
 package org.opennms.features.deviceconfig.rest;
 
-public class BackupRequestDTO {
+public class BackupResponseDTO {
 
-    private String ipAddress;
+    private Integer status;
+    private BackupRequestDTO request;
+    private String failureMessage;
 
-    private String location;
-
-    private String serviceName;
-
-    private Boolean blocking = false;
-
-    public BackupRequestDTO(String ipAddress, String location, String serviceName) {
-        this.ipAddress = ipAddress;
-        this.location = location;
-        this.serviceName = serviceName;
+    public BackupResponseDTO(Integer status, String failureMessage, BackupRequestDTO backupRequestDTO) {
+        this.status = status;
+        this.failureMessage = failureMessage;
+        this.request = backupRequestDTO;
     }
 
-    public BackupRequestDTO(String ipAddress, String location, String serviceName, boolean blocking) {
-        this.ipAddress = ipAddress;
-        this.location = location;
-        this.serviceName = serviceName;
-        this.blocking = blocking;
+    public BackupResponseDTO() {
     }
 
-    public BackupRequestDTO() {
+    public Integer getStatus() {
+        return status;
     }
 
-    public String getIpAddress() {
-        return ipAddress;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
-    public String getLocation() {
-        return location;
+    public BackupRequestDTO getRequest() {
+        return request;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public void setRequest(BackupRequestDTO request) {
+        this.request = request;
     }
 
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public String getFailureMessage() {
+        return failureMessage;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
-    public Boolean getBlocking() {
-        return blocking;
-    }
-
-    public void setBlocking(Boolean blocking) {
-        this.blocking = blocking;
+    public void setFailureMessage(String failureMessage) {
+        this.failureMessage = failureMessage;
     }
 }

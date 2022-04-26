@@ -44,6 +44,6 @@ This API also supports following query params: limit, offset, orderBy order, dev
 .Trigger device configuration backup
 [source,bash]
 ----
-curl -u admin:admin -d '{"ipAddress":"192.168.1.123","location":"Default","serviceName":"DeviceConfig-default"}' -H "Content-Type: application/json" -X POST http://localhost:8980/opennms/rest/device-config/backup -v
+curl -u admin:admin -d '[{"ipAddress":"192.168.1.123","location":"Default","serviceName":"DeviceConfig-default", "blocking": false}]' -H "Content-Type: application/json" -X POST http://localhost:8980/opennms/rest/device-config/backup -v
 ----
 

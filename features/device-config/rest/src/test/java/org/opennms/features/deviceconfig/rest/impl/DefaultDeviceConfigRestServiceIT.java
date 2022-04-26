@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -59,6 +60,7 @@ import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.rest.BackupRequestDTO;
+import org.opennms.features.deviceconfig.rest.BackupResponseDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
@@ -263,24 +265,28 @@ public class DefaultDeviceConfigRestServiceIT {
         String ipAddress = "127.0.0.1";
         String invalidIpAddress = "127.258.1.258";
         String message = "Invalid Ip Interface";
-        Mockito.doNothing().when(deviceConfigService).triggerConfigBackup(Mockito.eq(ipAddress),
-                Mockito.anyString(), Mockito.anyString());
+        CompletableFuture<Boolean> success = new CompletableFuture<>();
+        Mockito.doReturn(success).when(deviceConfigService).triggerConfigBackup(Mockito.eq(ipAddress),
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
         Mockito.doThrow(new IllegalArgumentException(message)).when(deviceConfigService).triggerConfigBackup(Mockito.eq(invalidIpAddress),
-                Mockito.anyString(), Mockito.anyString());
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
 
-        var dto = new BackupRequestDTO(ipAddress, "MINION", "default");
+        var dto = new BackupRequestDTO(ipAddress, "MINION", "default", false);
         Response response = deviceConfigRestService.triggerDeviceConfigBackup(List.of(dto));
         assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.ACCEPTED));
 
-        var invalidDto = new BackupRequestDTO(invalidIpAddress, "MINION", "default");
+        var invalidDto = new BackupRequestDTO(invalidIpAddress, "MINION", "default", false);
         response = deviceConfigRestService.triggerDeviceConfigBackup(List.of(invalidDto));
         assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.BAD_REQUEST));
         assertThat(response.getEntity(), Matchers.is(message));
 
-        // if any fail, BAD_REQUEST is returned
+        // if any fail, Multi response entity is returned
         response = deviceConfigRestService.triggerDeviceConfigBackup(List.of(dto, invalidDto));
-        assertThat(response.getStatusInfo().toEnum(), Matchers.is(Response.Status.BAD_REQUEST));
-        assertThat(response.getEntity(), Matchers.is(message));
+        assertThat(response.getStatusInfo().getStatusCode(), Matchers.is(207));
+        assertThat(response.getEntity(), Matchers.notNullValue());
+        List<BackupResponseDTO> responseDTOList = (List<BackupResponseDTO>) response.getEntity();
+        assertThat(responseDTOList.size(), Matchers.is(1));
+        assertThat(responseDTOList.get(0).getStatus(), Matchers.is(400));
 
         final String nullOrEmptyMessage = "Cannot trigger config backup on empty request list";
 
