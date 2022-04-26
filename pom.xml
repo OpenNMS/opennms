@@ -1180,6 +1180,10 @@
                <bannedDependencies>
                  <excludes>
 
+                   <!-- XML-processing APIs that are provided by the JDK -->
+                   <exclude>xerces:*</exclude>
+                   <exclude>xml-apis:xml-apis</exclude>
+
                    <!-- use org.opennms.dependencies:jaxb-dependencies:pom -->
                    <exclude>com.sun.xml.bind:*</exclude>
                    <exclude>com.sun.xml.bind.mvn:*</exclude>
