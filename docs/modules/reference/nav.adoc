@@ -1,5 +1,6 @@
 .Reference
 * Configuration
+** xref:configuration/file-editor.adoc[]
 ** xref:configuration/filters/filters.adoc[]
 *** xref:configuration/filters/components.adoc[]
 *** xref:configuration/filters/parameters.adoc[]
