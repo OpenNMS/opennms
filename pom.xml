@@ -1835,8 +1835,6 @@
     <trackerVersion>0.7</trackerVersion>
     <twitter4jVersion>3.0.6</twitter4jVersion>
     <xalanVersion>2.7.2</xalanVersion>
-    <xercesVersion>2.9.1</xercesVersion>
-    <xmlApisVersion>99.99.99-exclude-provided-by-jdk11-and-up</xmlApisVersion>
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
@@ -4473,6 +4471,11 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty.websocket</groupId>
+        <artifactId>websocket-client</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.websocket</groupId>
         <artifactId>websocket-server</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
@@ -4486,6 +4489,17 @@
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
         <version>${servletApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>jaxen</groupId>
+        <artifactId>jaxen</artifactId>
+        <version>1.2.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.jcraft</groupId>
@@ -4806,6 +4820,10 @@
         <version>${xalanVersion}</version>
         <exclusions>
           <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
           </exclusion>
@@ -4817,26 +4835,14 @@
         <version>${xalanVersion}</version>
         <exclusions>
           <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
+            <groupId>xerces</groupId>
+            <artifactId>*</artifactId>
           </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>xerces</groupId>
-        <artifactId>xercesImpl</artifactId>
-        <version>${xercesVersion}</version>
-        <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>xml-apis</groupId>
-        <artifactId>xml-apis</artifactId>
-        <version>${xmlApisVersion}</version>
       </dependency>
       <dependency>
         <groupId>xml-apis</groupId>

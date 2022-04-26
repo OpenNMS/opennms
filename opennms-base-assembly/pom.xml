@@ -171,11 +171,6 @@
             </exclusions>
           </dependency>
           <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>${xercesVersion}</version>
-          </dependency>
-          <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>jasper-extensions</artifactId>
             <version>${project.version}</version>

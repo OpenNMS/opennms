@@ -45,6 +45,7 @@
     <module>pax-exam</module>
     <module>quartz</module>
     <module>rancid</module>
+    <module>selenium</module>
     <module>servlet</module>
     <module>smack</module>
     <module>snmp4j</module>
@@ -61,6 +62,8 @@
     <module>spring-test</module>
     <module>spring-web</module>
     <module>twitter4j</module>
+
     <module>jcifs-shaded</module>
+    <module>selenium-shaded</module>
   </modules>
 </project>

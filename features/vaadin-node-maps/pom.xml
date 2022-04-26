@@ -243,6 +243,10 @@
 					<groupId>commons-beanutils</groupId>
 					<artifactId>commons-beanutils-core</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>xerces</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
         <dependency>
