@@ -41,7 +41,7 @@ import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
-import org.opennms.features.config.service.util.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
+import org.opennms.features.config.service.impl.callback.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,28 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.service.util;
+package org.opennms.netmgt.dao.jaxb.callback;
 
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.model.events.EventBuilder;
 
 import java.util.function.Consumer;
 
-/**
- * It is default update notifier for AbstractCmJaxbConfigDao.
- *`
- * @param <E> entity class
- */
-public class DefaultAbstractCmJaxbConfigDaoUpdateCallback<E> implements Consumer<ConfigUpdateInfo> {
+public class ConfigurationReloadEventCallback<E> implements Consumer<ConfigUpdateInfo> {
+    private EventForwarder eventForwarder;
     private AbstractCmJaxbConfigDao<E> abstractCmJaxbConfigDao;
 
-    public DefaultAbstractCmJaxbConfigDaoUpdateCallback(AbstractCmJaxbConfigDao<E> abstractCmJaxbConfigDao) {
-        this.abstractCmJaxbConfigDao = abstractCmJaxbConfigDao;
+    public ConfigurationReloadEventCallback(EventForwarder eventForwarder) {
+        this.eventForwarder = eventForwarder;
     }
 
     @Override
     public void accept(ConfigUpdateInfo configUpdateInfo) {
-        // trigger to reload, which will replace the entity in lastKnownEntityMap
-        abstractCmJaxbConfigDao.loadConfig(configUpdateInfo.getConfigId());
+        // Fire reload event
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI,
+                ConfigurationReloadEventCallback.class.getSimpleName());
+        eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, configUpdateInfo.getConfigName());
+        eventForwarder.sendNow(eventBuilder.getEvent());
     }
 }
