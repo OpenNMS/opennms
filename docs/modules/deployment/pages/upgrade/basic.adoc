@@ -1,15 +1,9 @@
 
 [[upgrade-basic]]
-= Basic upgrade
+= Basic Upgrade
+
 This procedure describes how to do a basic {page-component-title} upgrade, including upgrading the PostgreSQL database to a new version.
 You may need to complete additional steps to upgrade in a more complex setup (running more than one OpenNMS instance, database migration requirements, age of current version, and so on).
-
-A basic upgrade involves the following:
-
-* PostgreSQL upgrade and configuration
-* {page-component-title} update
-* Additional PostgreSQL configuration
-* Backup and upgrade
 
 IMPORTANT: Make sure you complete the tasks in the xref:deployment:upgrade/introduction.adoc#byb_upgrade[before you begin] section before upgrade.
 
@@ -22,7 +16,7 @@ The process should be similar for different versions.
 +
 Expected outcome: `whoami` returns `root`.
 
-. Install latest version PostgreSQL repository package.
+. Install the latest version of the PostgreSQL repository package:
 `yum -y install <repository package location>`
 +
 Expected outcome: `yum repolist pdg*` reports available repos for postgresql versions 9.6 through 14.
@@ -35,7 +29,7 @@ Expected outcome: `rpm -qa | grep postgresql` shows both 9.4 and 12.x package ve
 
 . Initialize the PostgreSQL database: `/usr/bin/postgresql-12-setup initdb`
 +
-Expected result: command complete with no errors.
+Expected result: command completes with no errors.
 
 . Stop OpenNMS: `systemctl stop opennms.service`
 +
@@ -58,7 +52,7 @@ Expected result: `whoami` returns `postgres`
 
 . Run the PostgreSQL upgrade in "check" mode: `/var/lib/pgsql/data -D /var/lib/pgsql/12/data -r -v -c`
 +
-Expected result: output ends with “*Clusters are compatible*”.
+Expected result: output ends with “Clusters are compatible”.
 +
 Verify these paths align with reality.
 
@@ -71,12 +65,12 @@ PostgreSQL's `pg_upgrade` utility copies the existing database into the new data
 This leaves the PostgreSQL 9.4 database in its original state and location which can be used for rollback.
 
 . Replace `/var/lib/pgsql/12/data/postgresql.conf` with the updated copy.
-. Copy `pg_hba.conf`` from the postgresql 9.4 data directory to the postgresql-12 data directory: `cp /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/12/data/pg_hba.conf`
+. Copy `pg_hba.conf` from the postgresql 9.4 data directory to the postgresql-12 data directory: `cp /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/12/data/pg_hba.conf`
 +
 NOTE: Verify these paths align with reality.
 . Exit PostgreSQL shell: `exit`
 +
-Expected outcome:  whoami returns root
+Expected outcome: `whoami` returns `root`
 
 == Update and verify the {page-component-title} repository
 
@@ -105,7 +99,7 @@ Expected result: A lot of rpmnew files; `rpm -q {page-component-title}-core` rep
 
 . Move the package-updated etc directory out of the way: `mv $OPENNMS_HOME/etc $OPENNMS_HOME/etc.as.shipped.2021`
 
-. ##What do regular users do?## Unpack the OpenNMS Support provided config tarball in `/opt/opennms`: `cd /opt/opennms; tar zxvf apple_etc.tar.gz`
+. ##What do users without support tarball do?## Unpack the OpenNMS Support-provided config tarball in `/opt/opennms`: `cd /opt/opennms; tar zxvf apple_etc.tar.gz`
 +
 Expected result: a new /etc directory is created.
 
@@ -136,3 +130,5 @@ Expected result: OpenNMS {page-component-title} starts with no errors and the We
 NOTE: `tail -F /var/log/opennms/manager.log` can illustrate at what point in the startup process {page-component-title} is currently.
 
 . Upgrade is complete and operation is resumed.
+
+##when do they copy over their changed config files?##
