@@ -33,7 +33,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -90,7 +89,7 @@ public class DeviceConfigMonitorTest {
         var config = new byte[] {1, 2, 3};
         var filename = "filename";
 
-        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
                 CompletableFuture.completedFuture(Either.right(new Retriever.Success(config, filename)))
         );
 
@@ -110,7 +109,7 @@ public class DeviceConfigMonitorTest {
 
         var retrievalFailure = "retrieval failure";
 
-        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
                 CompletableFuture.completedFuture(Either.left(new Retriever.Failure(retrievalFailure)))
         );
 
@@ -161,7 +160,7 @@ public class DeviceConfigMonitorTest {
         final Retriever retriever = mock(Retriever.class);
 
         deviceConfigMonitor.setRetriever(retriever);
-        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
                 CompletableFuture.completedFuture(Either.left(new Retriever.Failure("didRun")))
         );
 
@@ -183,7 +182,7 @@ public class DeviceConfigMonitorTest {
         final Retriever retriever = mock(Retriever.class);
 
         deviceConfigMonitor.setRetriever(retriever);
-        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
                 CompletableFuture.completedFuture(Either.left(new Retriever.Failure("didRun")))
         );
 
@@ -197,7 +196,7 @@ public class DeviceConfigMonitorTest {
         final Retriever retriever = mock(Retriever.class);
 
         deviceConfigMonitor.setRetriever(retriever);
-        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
                 CompletableFuture.completedFuture(Either.left(new Retriever.Failure("didRun")))
         );
 
@@ -211,7 +210,7 @@ public class DeviceConfigMonitorTest {
         var deviceConfigMonitor = new DeviceConfigMonitor();
         deviceConfigMonitor.setRetriever(retriever);
 
-        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
+        when(retriever.retrieveConfig(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
                 new CompletableFuture()
         );
 
