@@ -127,7 +127,7 @@ const timeoutIn = () => {
 }
 .inner-float {
   position: absolute;
-  background-color: var(--feather-background);
+  background-color: var($background);
   display: flex;
   @include elevation(2);
   padding: 20px;

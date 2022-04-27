@@ -305,7 +305,7 @@ const advanceActiveUpdate = (newVal: boolean) => {
   margin-bottom: 20px;
 }
 .white-bg {
-  background-color: var(--feather-background);
+  background-color: var($background);
   border: 1px solid #ebedf0;
   margin-top: 16px;
   margin-bottom: 24px;

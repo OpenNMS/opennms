@@ -57,7 +57,10 @@
   </FeatherExpansionPanel>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { reactive, PropType, watch, computed } from 'vue'
 
 import { FeatherExpansionPanel } from '@featherds/expansion'
@@ -199,6 +202,8 @@ watch(props, () => {
 
 <style lang="scss">
 @import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/themes/variables";
+
 #advanced-panel {
   position: relative;
   a[data-ref-id="feather-form-element-clear"] {
@@ -206,11 +211,16 @@ watch(props, () => {
   }
   .feather-expansion-header-button-text {
     @include headline4();
-    color: var(--feather-primary);
+    color: var($primary);
   }
 }
 </style>
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
+@import "@featherds/styles/themes/variables";
+
 .icon {
   width: 40px;
   height: 40px;
@@ -246,7 +256,7 @@ watch(props, () => {
   justify-content: flex-end;
 }
 .delete-icon {
-  color: var(--feather-error);
+  color: var($error);
 }
 </style>
 

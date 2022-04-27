@@ -212,6 +212,7 @@ const rescanToEnglish = (rescanVal: string) => {
   scoped
 >
 @import "@featherds/table/scss/table";
+@import "@featherds/styles/themes/variables";
 
 .main-wrapper {
   table.condensed {
@@ -226,16 +227,16 @@ const rescanToEnglish = (rescanVal: string) => {
   display: flex;
 }
 .tr {
-  background-color: var(--feather-background);
+  background-color: var($background);
   .th {
-    color: var(--feather-primary);
+    color: var($primary);
   }
 }
 .edit-icon {
-  color: var(--feather-primary);
+  color: var($primary);
 }
 .delete-icon {
-  color: var(--feather-error);
+  color: var($error);
 }
 .condensed {
   @include table();

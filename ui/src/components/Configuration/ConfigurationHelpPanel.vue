@@ -213,9 +213,11 @@ const footerNo = () => {
 </script>
 
 <style lang="scss">
+@import "@featherds/styles/themes/variables";
+
 .config-help-header {
   a.config-help-link:visited {
-    color: var(--feather-secondary-variant);
+    color: var($secondary-variant);
   }
 }
 </style>
@@ -224,6 +226,7 @@ const footerNo = () => {
   scoped
 >
 @import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/themes/variables";
 
 .config-help-close {
   display: flex;
@@ -232,7 +235,7 @@ const footerNo = () => {
   height: 50px;
   .button {
     font-size: 42px;
-    color: var(--feather-secondary-variant);
+    color: var($secondary-variant);
     display: flex;
     align-items: center;
     margin: 0;
@@ -240,7 +243,7 @@ const footerNo = () => {
 }
 .config-help-panel {
   position: fixed;
-  background-color: var(--feather-background);
+  background-color: var($background);
   z-index: 5;
   top: 60px;
   right: 0;
@@ -256,14 +259,14 @@ const footerNo = () => {
   padding: 20px 40px;
   a.config-help-link {
     font-weight: 700;
-    color: var(--feather-secondary-variant);
+    color: var($secondary-variant);
     margin-top: 40px;
     margin-bottom: 0px;
   }
 }
 .config-help-title {
   @include headline2();
-  color: var(--feather-primary);
+  color: var($primary);
   margin-top: 32px;
 }
 .config-help-body {
@@ -274,7 +277,7 @@ const footerNo = () => {
   }
 }
 .config-help-hr {
-  border-bottom: 1px solid var(--feather-primary);
+  border-bottom: 1px solid var($primary);
   margin: 0 40px;
   margin-bottom: 80px;
 }
@@ -282,7 +285,7 @@ const footerNo = () => {
   margin: 0 40px;
   .footer-title {
     font-weight: 700;
-    color: var(--feather-primary);
+    color: var($primary);
   }
   .footer-subtitle {
     @include headline4();
@@ -290,7 +293,7 @@ const footerNo = () => {
   }
   .footer-button {
     display: flex;
-    border: 1px solid var(--feather-secondary-variant);
+    border: 1px solid var($secondary-variant);
     max-width: 200px;
     text-align: center;
     height: 50px;
@@ -305,24 +308,24 @@ const footerNo = () => {
       cursor: pointer;
     }
     .footer-yes {
-      color: var(--feather-primary);
+      color: var($primary);
       transition: all ease-in-out 0.3s;
     }
     .footer-no {
-      color: var(--feather-primary);
+      color: var($primary);
       width: 100px;
       transition: all ease-in-out 0.3s;
     }
     &.footer-wrap-yes {
       .footer-yes {
-        background-color: var(--feather-secondary-variant);
-        color: var(--feather-surface);
+        background-color: var($secondary-variant);
+        color: var($surface);
       }
     }
     &.footer-wrap-no {
       .footer-no {
-        background-color: var(--feather-secondary-variant);
-        color: var(--feather-surface);
+        background-color: var($secondary-variant);
+        color: var($surface);
       }
     }
   }

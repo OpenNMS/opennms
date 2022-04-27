@@ -2,17 +2,23 @@
   <div class="wrapper">
     <div class="wrapper-inner">
       <div class="title">No external requisition configured.</div>
-      <div class="paragraph">
-        Add an external requisition to synchronize inventory.
-      </div>
+      <div class="paragraph">Add an external requisition to synchronize inventory.</div>
       <div class="flex button-wrapper">
-        <FeatherButton class="button" primary @click="props.newDefinition">Add External Requisition</FeatherButton>
+        <FeatherButton
+          class="button"
+          primary
+          @click="props.newDefinition"
+          >Add External Requisition</FeatherButton
+        >
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { PropType } from 'vue'
 import { FeatherButton } from '@featherds/button'
 
@@ -22,13 +28,16 @@ import { FeatherButton } from '@featherds/button'
 const props = defineProps({
   newDefinition: { type: Function as PropType<(payload: MouseEvent) => void> }
 })
-
 </script>
 
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/styles/mixins/typography";
+
 .wrapper {
-  background-color: var(--feather-background);
+  background-color: var($background);
 }
 .wrapper-inner {
   display: flex;
@@ -41,7 +50,7 @@ const props = defineProps({
 .title {
   @include headline3();
   margin-bottom: 16px;
-  color: var(--feather-primary);
+  color: var($primary);
 }
 .paragraph {
   @include body-small();
@@ -57,3 +66,4 @@ const props = defineProps({
   margin-top: 20px;
 }
 </style>
+

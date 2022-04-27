@@ -183,9 +183,11 @@ const toggleHelp = () => {
 </script>
 
 <style lang="scss">
+@import "@featherds/styles/themes/variables";
+
 .side-label {
   .group-label {
-    color: var(--feather-primary);
+    color: var($primary);
   }
 }
 .slide-inner-body {
@@ -270,7 +272,7 @@ const toggleHelp = () => {
 }
 .slide-inner-body {
   padding: 20px 20px 4px;
-  background-color: var(--feather-background);
+  background-color: var($background);
   @include elevation(1);
 }
 .side-inner-title {
@@ -281,13 +283,13 @@ const toggleHelp = () => {
   padding-left: 40px;
   padding-right: 40px;
   padding-bottom: 8px;
-  background-color: var(--feather-background);
+  background-color: var($background);
   border-top: 1px solid #d7d7dc;
   border-bottom: 1px solid #d7d7dc;
 }
 .title {
   @include headline2();
-  color: var(--feather-primary);
+  color: var($primary);
   min-height: 40px;
   display: flex;
   align-items: center;
@@ -302,7 +304,7 @@ const toggleHelp = () => {
 }
 .sideshared {
   z-index: 2;
-  background-color: var(--feather-background);
+  background-color: var($background);
   width: 40vw;
   min-width: 320px;
   height: 100vh;

@@ -46,9 +46,10 @@ const convertedItem = computed(() => {
 >
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
+@import "@featherds/styles/themes/variables";
 
 .white-bg {
-  background-color: var(--feather-surface);
+  background-color: var($surface);
   display: flex;
   align-items: flex-start;
   padding: 16px 24px;
@@ -57,7 +58,7 @@ const convertedItem = computed(() => {
 }
 .title {
   @include headline4();
-  color: var(--feather-primary);
+  color: var($primary);
 }
 .url {
   margin-top: 6px;
@@ -66,3 +67,4 @@ const convertedItem = computed(() => {
   color: #a0a1a4;
 }
 </style>
+

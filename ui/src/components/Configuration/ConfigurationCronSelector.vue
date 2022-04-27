@@ -151,7 +151,7 @@ const hasCronValidationError = computed(() => props.errors.occuranceAdvanced || 
     padding: var($spacing-xxs) 0 var($spacing-xxs) var($spacing-m);
 }
 div a.link {
-    color: var(--feather-clickable);
+    color: var($clickable-normal);
     display: inline-block;
     text-decoration: underline;
     &:hover {
@@ -176,3 +176,4 @@ div a.link {
     }
 }
 </style>
+
