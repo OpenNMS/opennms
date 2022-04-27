@@ -57,7 +57,7 @@ import org.springframework.util.Assert
 class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeListener, InitializingBean {
     def m_metadataFieldTypes = new TreeSet<MetadataField>()
     def m_locations = new ArrayList<String>()
-    def m_applications = new HashMap<Set<String>>()
+    def m_applications = new HashMap<String, Set<String>>()
     def m_theme
     def m_geoMetadata
     def m_scanReport
