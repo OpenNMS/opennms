@@ -30,20 +30,25 @@ package org.opennms.core.rpc.utils.mate;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.xml.JaxbUtils;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Interpolator {
-    private static final String OUTER_REGEXP = "\\$\\{([^\\}]+?:[^\\}]+?)\\}";
+    private static final String OUTER_REGEXP = "\\$\\{([^\\{\\}]+?:[^\\{\\}]+?)\\}";
     private static final String INNER_REGEXP = "(?:([^\\|]+?:[^\\|]+)|([^\\|]+))";
     private static final Pattern OUTER_PATTERN = Pattern.compile(OUTER_REGEXP);
     private static final Pattern INNER_PATTERN = Pattern.compile(INNER_REGEXP);
+
+    private static final int MAX_RECURSION_DEPTH = SystemProperties.getInteger("org.opennms.mate.maxRecursionDepth", 8);
 
     private Interpolator() {}
 
@@ -76,9 +81,27 @@ public class Interpolator {
         }
 
         final ImmutableList.Builder<ResultPart> parts = ImmutableList.builder();
+        final String output = interpolateRecursive(raw, parts, scope, 1);
 
-        final StringBuilder stringBuilder = new StringBuilder();
-        final Matcher outerMatcher = OUTER_PATTERN.matcher(raw);
+        return new Result(output, parts.build());
+    }
+
+    private static String interpolateRecursive(final String input, final ImmutableList.Builder<ResultPart> parts, final Scope scope, final int depth) {
+        if (depth > MAX_RECURSION_DEPTH) {
+            return input;
+        }
+
+        final String result = interpolateSingle(input, parts, scope);
+        if (Objects.equals(input, result)) {
+            return result;
+        }
+
+        return interpolateRecursive(result, parts, scope, depth + 1);
+    }
+
+    private static String interpolateSingle(final String input, final ImmutableList.Builder<ResultPart> parts, final Scope scope) {
+        final StringBuilder output = new StringBuilder();
+        final Matcher outerMatcher = OUTER_PATTERN.matcher(input);
         while (outerMatcher.find()) {
             final Matcher innerMatcher = INNER_PATTERN.matcher(outerMatcher.group(1));
 
@@ -101,33 +124,12 @@ public class Interpolator {
                 }
             }
 
-            outerMatcher.appendReplacement(stringBuilder, result);
+            outerMatcher.appendReplacement(output, result);
         }
 
-        outerMatcher.appendTail(stringBuilder);
+        outerMatcher.appendTail(output);
 
-        return new Result(stringBuilder.toString(), parts.build());
-    }
-
-    public static Optional<ContextKey> getContextKeyFromMateData(final String raw) {
-        final Matcher outerMatcher = OUTER_PATTERN.matcher(raw);
-        ContextKey contextKey = null;
-        while (outerMatcher.find()) {
-            final Matcher innerMatcher = INNER_PATTERN.matcher(outerMatcher.group(1));
-
-            String result = "";
-            while (innerMatcher.find()) {
-                if (innerMatcher.group(1) != null) {
-                    final String[] arr = innerMatcher.group(1).split(":", 2);
-                    contextKey = new ContextKey(arr[0], arr[1]);
-                }
-            }
-        }
-        return Optional.ofNullable(contextKey);
-    }
-
-    public static boolean containsMateData(String toCheck) {
-        return toCheck != null && OUTER_PATTERN.matcher(toCheck).find();
+        return output.toString();
     }
 
     public static class Result {
