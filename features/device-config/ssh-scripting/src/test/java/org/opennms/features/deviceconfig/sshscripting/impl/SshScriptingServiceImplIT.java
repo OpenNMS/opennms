@@ -33,6 +33,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.security.KeyPair;
+import java.security.PublicKey;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,6 +43,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sshd.common.config.keys.KeyUtils;
+import org.apache.sshd.common.keyprovider.KeyPairProvider;
+import org.apache.sshd.common.util.security.SecurityUtils;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.util.test.EchoShellFactory;
@@ -57,8 +62,10 @@ public class SshScriptingServiceImplIT {
 
     private SshServer sshd;
 
+    private KeyPair hostKey;
+
     @Before
-    public void prepare() throws IOException {
+    public void prepare() throws Exception {
         setupSSHServer();
     }
 
@@ -162,10 +169,12 @@ public class SshScriptingServiceImplIT {
         assertThat(result.isSuccess(), is(true));
     }
 
-    private void setupSSHServer() throws IOException {
+    private void setupSSHServer() throws Exception {
+        this.hostKey = SecurityUtils.getKeyPairGenerator(KeyUtils.RSA_ALGORITHM).generateKeyPair();
+
         sshd = SshServer.setUpDefaultServer();
         sshd.setShellFactory(new EchoShellFactory());
-        sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
+        sshd.setKeyPairProvider(KeyPairProvider.wrap(this.hostKey));
         sshd.setPasswordAuthenticator(
                 (user, password, session) -> StringUtils.equals(user, USER) && StringUtils.equals(password, PASSWORD)
         );
@@ -199,7 +208,7 @@ public class SshScriptingServiceImplIT {
                             "await: "+expectedIp
                         ).stream().collect(Collectors.joining("\n"));
 
-        final SshScriptingService.Result result = ss.execute(script, USER, PASSWORD, new InetSocketAddress(hostname, sshd.getPort()), null, Collections.emptyMap(), Duration.ofMillis(10000));
+        final SshScriptingService.Result result = ss.execute(script, USER, PASSWORD, new InetSocketAddress(hostname, sshd.getPort()), KeyUtils.getFingerPrint(this.hostKey.getPublic()), Collections.emptyMap(), Duration.ofMillis(10000));
 
         assertThat(result.isSuccess(), is(true));
     }
