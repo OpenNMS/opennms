@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.common.base.Strings;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 
 public class SecureCredentialsVaultScope implements Scope {
@@ -61,6 +62,10 @@ public class SecureCredentialsVaultScope implements Scope {
 
         final var alias = contextKey.key.substring(0, split);
         final var attr = contextKey.key.substring(split + 1);
+        
+        if (Strings.isNullOrEmpty(alias) || Strings.isNullOrEmpty(attr)) {
+            return Optional.empty();
+        }
 
         final var cred = this.scv.getCredentials(alias);
         if (cred == null) {
