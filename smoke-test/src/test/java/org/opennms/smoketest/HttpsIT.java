@@ -40,14 +40,13 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.Assert;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
-
 import org.opennms.smoketest.stacks.StackModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,13 +59,13 @@ import javax.net.ssl.SSLContext;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 
 public class HttpsIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSContainer.class);
+
+    String urlOverHttps = "https://" + STACK.opennms().getHost() + ":" + STACK.opennms().getSSLPort();
 
     @ClassRule
     public static final OpenNMSStack STACK = OpenNMSStack.withModel(StackModel.newBuilder()
@@ -96,15 +95,8 @@ public class HttpsIT {
     public void verifyHTTPSConnection() {
         LOG.info("Verify that the test itself works fine. Empty body.");
 
-        ResponseEntity<String> response = null;
-        String urlOverHttps = "https://" + STACK.opennms().getHost() + ":" + STACK.opennms().getSSLPort();
         try {
-            TrustStrategy acceptingTrustStrategy = new TrustStrategy() {
-                @Override
-                public boolean isTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                    return false;
-                }
-            };
+            TrustStrategy acceptingTrustStrategy = (x509Certificates, s) -> false;
             LOG.info(acceptingTrustStrategy.toString());
             SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
             SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
@@ -123,18 +115,22 @@ public class HttpsIT {
             LOG.info("Before getting a response");
             HttpComponentsClientHttpRequestFactory requestFactory =
                     new HttpComponentsClientHttpRequestFactory(httpClient);
-            response = new RestTemplate(requestFactory)
+
+            LOG.info("Getting response from the server");
+            ResponseEntity<String> response = new RestTemplate(requestFactory)
                     .exchange(urlOverHttps, HttpMethod.GET, null, String.class);
 
+            LOG.info("Before assert");
+            Assert.assertEquals(response.getStatusCode().value(), 200);
+            Assert.assertTrue(response.getBody().contains("Username"));
+            Assert.assertTrue(response.getBody().contains("Password"));
+
+            LOG.info("we have reached the end of the test");
 
         } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
             LOG.error(e.toString());
         }
-        LOG.info("Before assert");
-        Assert.assertEquals(response.getStatusCode().value(), 200);
-        Assert.assertTrue(response.getBody().contains("Username"));
-        Assert.assertTrue(response.getBody().contains("Password"));
 
-        LOG.info("we have reached the end of the test");
     }
+
 }
