@@ -165,6 +165,16 @@
     "@featherds/styles" "^0.10.2"
     vue "^3.1.0-0"
 
+"@featherds/expansion@0.10.2":
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/@featherds/expansion/-/expansion-0.10.2.tgz#927e6f1f5b84e117c6cf03aa87c525453fdcd4a4"
+  integrity sha512-McdgDHhSNIqK07G22vKdjARRNV+/eIOD0pn7SLWPSEwzvzsYlCBJVSzZpgEW2jORtWEvTO8HDR25D/DNyPiOtQ==
+  dependencies:
+    "@featherds/icon" "^0.10.2"
+    "@featherds/progress" "^0.10.2"
+    "@featherds/styles" "^0.10.2"
+    vue "^3.1.0-0"
+
 "@featherds/icon@0.10.2", "@featherds/icon@^0.10.2":
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/@featherds/icon/-/icon-0.10.2.tgz#723bc096600bc1802a9bb45f425a9af565b52e9e"
@@ -248,7 +258,7 @@
     "@featherds/styles" "^0.10.2"
     vue "^3.1.0-0"
 
-"@featherds/progress@0.10.2":
+"@featherds/progress@0.10.2", "@featherds/progress@^0.10.2":
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/@featherds/progress/-/progress-0.10.2.tgz#d0296bc9f945f57c4daa650255e3aef3a87a897b"
   integrity sha512-LF0ZdvZnuvVIF/0RMn/xIWe8ZyHBe3CGDFjIBI4vUXGZJ5Zm8YCI3tlrRx3iDVfoVQ4Tb01djlyOqCtiANt6gQ==
@@ -663,9 +673,9 @@
     "@types/geojson" "*"
 
 "@types/lodash@^4.14.181":
-  version "4.14.181"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.181.tgz#d1d3740c379fda17ab175165ba04e2d03389385d"
-  integrity sha512-n3tyKthHJbkiWhDZs3DkhkCzt2MexYHXlX0td5iMplyfwketaOeKboEVBqzceH7juqvEg3q5oUoBFxSLu7zFag==
+  version "4.14.182"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.182.tgz#05301a4d5e62963227eaafe0ce04dd77c54ea5c2"
+  integrity sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==
 
 "@types/marked@^4.0.3":
   version "4.0.3"
@@ -1257,6 +1267,11 @@ core-util-is@~1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.3.tgz#a6042d3634c2b27e9328f837b965fac83808db85"
   integrity sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==
+
+cronstrue@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/cronstrue/-/cronstrue-2.2.0.tgz#8e02b8ef0fa70a9eab9999f1f838df4bd378b471"
+  integrity sha512-oM/ftAvCNIdygVGGfYp8gxrVc81mDSA2mff0kvu6+ehrZhfYPzGHG8DVcFdrRVizjHnzWoFIlgEq6KTM/9lPBw==
 
 cross-fetch@^3.1.5:
   version "3.1.5"

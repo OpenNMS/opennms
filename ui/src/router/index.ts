@@ -46,6 +46,11 @@ const router = createRouter({
       },
     },
     {
+      path: '/configuration',
+      name: 'Configuration',
+      component: () => import('@/containers/ProvisionDConfig.vue')
+    },
+    {
       path: '/logs',
       name: 'Logs',
       component: () => import('@/containers/Logs.vue'),

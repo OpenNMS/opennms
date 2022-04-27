@@ -463,9 +463,3 @@ export interface Plugin {
   moduleFileName: string
   resourceRootPath: string
 }
-
-export interface Toast {
-  basic: string
-  detail: string
-  hasErrors: boolean
-}

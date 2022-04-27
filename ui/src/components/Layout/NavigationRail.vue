@@ -1,5 +1,7 @@
 <template>
-  <FeatherNavigationRail @update:modelValue="onNavRailClick">
+  <FeatherNavigationRail
+    @update:modelValue="onNavRailClick"
+  >
     <template v-slot:main>
       <FeatherRailItem
         :class="{ selected: isSelected('/') }"
@@ -12,6 +14,12 @@
         href="#/map"
         :icon="Location"
         title="Map"
+      />
+      <FeatherRailItem
+        :class="{ selected: isSelected('/configuration'), 'title-multiline-custom': navRailOpen }"
+        href="#/configuration"
+        :icon="LoggerConfigs"
+        title="External Requisitions and Thread Pools"
       />
       <FeatherRailItem
         :class="{ selected: isSelected('/file-editor') }"
@@ -65,6 +73,7 @@ import useRole from '@/composables/useRole'
 import Instances from '@featherds/icon/hardware/Instances'
 import MinionProfiles from '@featherds/icon/hardware/MinionProfiles'
 import AddNote from '@featherds/icon/action/AddNote'
+import LoggerConfigs from '@featherds/icon/action/LoggerConfigs'
 import Location from '@featherds/icon/action/Location'
 import MarkComplete from '@featherds/icon/action/MarkComplete'
 import Cloud from '@featherds/icon/action/Cloud'
@@ -72,7 +81,7 @@ import Reporting from '@featherds/icon/action/Reporting'
 import UpdateUtilities from '@featherds/icon/action/UpdateUtilities'
 import {
   FeatherNavigationRail,
-  FeatherRailItem,
+  FeatherRailItem
 } from '@featherds/navigation-rail'
 import { Plugin } from '@/types'
 
@@ -86,7 +95,17 @@ const isSelected = (path: string) => path === route.fullPath
 </script>
 
 <style scopes lang="scss">
+@import "@featherds/styles/themes/variables";
+
 .nav-header {
   display: none !important;
 }
+
+.title-multiline-custom {
+  white-space: pre-wrap;
+  height: auto !important;
+  padding-top: var($spacing-xs) !important;
+  padding-bottom: var($spacing-xs) !important;
+}
 </style>
+
