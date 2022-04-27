@@ -36,15 +36,18 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import java.text.Collator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 public class DefaultScvRestService implements ScvRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultScvRestService.class);
 
     private final SecureCredentialsVault scv;
+    private final Pattern pattern = Pattern.compile("\\*{2,}");
 
     public DefaultScvRestService(SecureCredentialsVault scv) {
         this.scv = scv;
@@ -60,8 +63,8 @@ public class DefaultScvRestService implements ScvRestService {
             if (credentials.getUsername() != null && credentials.getPassword() != null) {
                 // Mask password.
                 CredentialsDTO dto = new CredentialsDTO(alias, credentials.getUsername(), "******");
-                dto.addAttributes(credentials.getAttributes());
-                
+                // Mask values in attributes.
+                credentials.getAttributes().forEach((key, value) -> dto.getAttributes().put(key, "******"));
                 return Response.ok(dto).build();
             }
         } catch (Exception e) {
@@ -74,6 +77,10 @@ public class DefaultScvRestService implements ScvRestService {
     @Override
     public Response addCredentials(CredentialsDTO credentialsDTO) {
         if (credentialsDTO != null && !Strings.isNullOrEmpty(credentialsDTO.getAlias())) {
+            Credentials existingCredentials = scv.getCredentials(credentialsDTO.getAlias());
+            if (existingCredentials != null) {
+                Response.status(Response.Status.BAD_REQUEST).entity("alias already exists, use PUT to update").build();
+            }
             Credentials credentials = new Credentials(credentialsDTO.getUsername(),
                     credentialsDTO.getPassword(), credentialsDTO.getAttributes());
             try {
@@ -92,8 +99,26 @@ public class DefaultScvRestService implements ScvRestService {
     public Response editCredentials(String alias, CredentialsDTO credentialsDTO) {
 
         if (credentialsDTO != null && !Strings.isNullOrEmpty(alias) && alias.equals(credentialsDTO.getAlias())) {
-            Credentials credentials = new Credentials(credentialsDTO.getUsername(),
-                    credentialsDTO.getPassword(), credentialsDTO.getAttributes());
+            Credentials credentials = scv.getCredentials(alias);
+            Map<String, String> attributes = new HashMap<>(credentialsDTO.getAttributes());
+            Map<String, String> existingAttributes = credentials != null ? new HashMap<>(credentials.getAttributes()) : new HashMap<>();
+            credentialsDTO.getAttributes().forEach((key, value) -> {
+                // If the value is masked, retrieve that value from existing credentials
+                if (!pattern.matcher(value).matches()) {
+                    attributes.put(key, value);
+                } else {
+                    attributes.get(existingAttributes.get(key));
+                }
+            });
+            // If password is masked, we are using username and password from existing credentials.
+            if (pattern.matcher(credentialsDTO.getPassword()).matches()) {
+                String username = credentials != null ? credentials.getUsername() : null;
+                String password = credentials != null ? credentials.getPassword() : null;
+                credentials = new Credentials(username, password, attributes);
+            } else {
+                credentials = new Credentials(credentialsDTO.getUsername(),
+                        credentialsDTO.getPassword(), attributes);
+            }
             try {
                 scv.setCredentials(alias, credentials);
                 return Response.accepted().build();
