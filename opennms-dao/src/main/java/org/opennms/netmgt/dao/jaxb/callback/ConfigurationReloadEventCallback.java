@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- *     http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -26,35 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.service.impl;
+package org.opennms.netmgt.dao.jaxb.callback;
 
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
-import org.opennms.features.config.service.impl.callback.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.model.events.EventBuilder;
 
-import javax.annotation.PostConstruct;
 import java.util.function.Consumer;
 
-public class ProvisiondCmJaxbConfigTestDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> {
-    public static final String CONFIG_NAME = "provisiond";
+public class ConfigurationReloadEventCallback<E> implements Consumer<ConfigUpdateInfo> {
+    private EventForwarder eventForwarder;
+    private AbstractCmJaxbConfigDao<E> abstractCmJaxbConfigDao;
 
-    public ProvisiondCmJaxbConfigTestDao() {
-        super(ProvisiondConfiguration.class, "Provisiond Configuration");
+    public ConfigurationReloadEventCallback(EventForwarder eventForwarder) {
+        this.eventForwarder = eventForwarder;
     }
 
     @Override
-    protected String getConfigName() {
-        return CONFIG_NAME;
-    }
-
-    @Override
-    protected Consumer<ConfigUpdateInfo> getUpdateCallback() {
-        return new DefaultAbstractCmJaxbConfigDaoUpdateCallback<>(this);
-    }
-
-    @Override
-    @PostConstruct
-    public void postConstruct() {
-        this.addOnReloadedCallback(getDefaultConfigId(), getUpdateCallback());
+    public void accept(ConfigUpdateInfo configUpdateInfo) {
+        // Fire reload event
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI,
+                "config-rest");
+        eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, configUpdateInfo.getConfigName());
+        eventForwarder.sendNow(eventBuilder.getEvent());
     }
 }
