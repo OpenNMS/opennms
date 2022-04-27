@@ -1,5 +1,5 @@
 <template>
-  <div class="attribute-container">
+  <div class="attribute-container" id="scv-attribute">
     <FeatherInput
       ref="keyRef"
       label="key"
@@ -15,7 +15,7 @@
       class="input"
     />
 
-    <FeatherButton icon="Remove attribute">
+    <FeatherButton icon="Remove attribute" @click="removeAttribute">
       <FeatherIcon :icon="Delete" />
     </FeatherButton>
   </div>
@@ -30,6 +30,7 @@ import { useStore } from 'vuex'
 import { SCVCredentials } from '@/types/scv'
 
 const store = useStore()
+const emit = defineEmits(['set-key-error'])
 
 const props = defineProps({
   attributeKey: {
@@ -56,12 +57,14 @@ const isDuplicateKey = (key: string) => {
   for (const [index, [attributeKey]] of entries.entries()) {
     if (key === attributeKey && index !== props.attributeIndex) {
       keyError.value = 'Duplicate keys not allowed.'
+      emit('set-key-error', true)
       return true
     }
   }
 
   // if not, clear errors
   keyError.value = null
+  emit('set-key-error', false)
   return false
 }
 
@@ -72,13 +75,13 @@ const updateAttributeKey = (key: string) => {
 }
 
 const updateAttributeValue = (value: string) => store.dispatch('scvModule/updateAttribute', { key: props.attributeKey, keyVal: { key: props.attributeKey, value }})
+const removeAttribute = () => store.dispatch('scvModule/removeAttribute', props.attributeKey)
 onMounted(() => keyRef.value.focus())
 </script>
 
 <style lang="scss" scoped>
 .attribute-container {
   display: flex;
-  margin-top: 30px;
   gap: 10px;
   .input {
     width: 50%;

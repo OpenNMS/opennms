@@ -58,6 +58,10 @@ const updateAttribute = (context: VuexContext, attribute: { key: string, keyVal:
   context.commit('UPDATE_ATTRIBUTE', attribute)
 }
 
+const removeAttribute = (context: VuexContext, key: string) => {
+  context.commit('REMOVE_ATTRIBUTE', key)
+}
+
 export default {
   getAliases,
   getCredentialsByAlias,
@@ -66,5 +70,6 @@ export default {
   setValue,
   clearCredentials,
   addAttribute,
-  updateAttribute
+  updateAttribute,
+  removeAttribute
 }

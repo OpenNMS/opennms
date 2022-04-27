@@ -3,6 +3,7 @@ import { SCVCredentials } from '@/types/scv'
 export interface State {
   aliases: string[]
   credentials: SCVCredentials
+  dbCredentials: SCVCredentials // used to track changes 
   isEditing: boolean
 }
 
@@ -14,6 +15,7 @@ const state: State = {
     password: '',
     attributes: {}
   },
+  dbCredentials: {} as SCVCredentials,
   isEditing: false
 }
 

@@ -7,6 +7,7 @@ const SAVE_ALIASES = (state: State, aliases: string[]) => {
 
 const SAVE_CREDENTIALS = (state: State, credentials: SCVCredentials) => {
   state.credentials = credentials
+  state.dbCredentials = credentials
 }
 
 const MERGE_CREDENTIALS = (state: State, credentials: Record<string, string>) => {
@@ -19,6 +20,12 @@ const SET_IS_EDITING = (state: State, bool: boolean) => {
 
 const ADD_ATTRIBUTE = (state: State) => {
   state.credentials.attributes = { ...state.credentials.attributes, ...{ '': '' } } // adds empty key/val inputs in form
+}
+
+const REMOVE_ATTRIBUTE = (state: State, key: string) => {
+  const attributes = state.credentials.attributes
+  delete attributes[key]
+  state.credentials.attributes = attributes
 }
 
 const UPDATE_ATTRIBUTE = (state: State, attribute: { key: string, keyVal: { key: string, value: string } }) => {
@@ -42,5 +49,6 @@ export default {
   MERGE_CREDENTIALS,
   SET_IS_EDITING,
   ADD_ATTRIBUTE,
+  REMOVE_ATTRIBUTE,
   UPDATE_ATTRIBUTE
 }

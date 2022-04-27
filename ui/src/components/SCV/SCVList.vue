@@ -1,6 +1,6 @@
 <template>
-  <FeatherList>
-    <FeatherListHeader>
+  <FeatherList class="scv-list">
+    <FeatherListHeader class="title">
       Aliases
     </FeatherListHeader>
     <FeatherListItem
@@ -9,9 +9,6 @@
       :key="alias"
       @click="onAliasClick(alias)">
       <span class="alias">{{ alias }}</span>
-    </FeatherListItem>
-    <FeatherListItem selected v-if="!aliases.length">
-      No aliases available. Please create one.
     </FeatherListItem>
   </FeatherList>
 </template>
@@ -32,7 +29,32 @@ const onAliasClick = (alias: string) => {
 </script>
 
 <style lang="scss" scoped>
-.alias {
-  text-transform: capitalize;
+@import "@featherds/styles/themes/variables";
+@import "@featherds/styles/mixins/elevation";
+@import "@featherds/styles/mixins/typography";
+
+.scv-list {
+  @include elevation(2);
+  background: var($surface);
+  height: calc(100vh - 150px);
+  overflow-y: auto;
+
+  .title {
+    @include headline3
+  }
+
+  .alias {
+    text-transform: capitalize;
+  }
+}
+</style>
+
+<style lang="scss">
+.scv-list {
+  .feather-list-item-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 </style>

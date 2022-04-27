@@ -19,14 +19,13 @@ onMounted(() => store.dispatch('scvModule/getAliases'))
 
 .scv-container {
   padding: 25px;
-  background: var($surface);
   display: flex;
   flex-grow: 1;
-  justify-content: center;
-  gap: 50px;
+  gap: 2px;
 
   .list {
-    width: 300px;
+    min-width: 200px;
+    max-width: 350px;
   }
   .form {
     width: 500px;
