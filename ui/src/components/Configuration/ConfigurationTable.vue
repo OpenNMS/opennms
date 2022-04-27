@@ -9,33 +9,40 @@
             :property="RequisitionData.ImportName"
             :sort="sorts[RequisitionData.ImportName]"
             v-on:sort-changed="sortChanged"
-          >Name</FeatherSortHeader>
+            >Name</FeatherSortHeader
+          >
           <FeatherSortHeader
             scope="col"
             class="onms-sort-header"
             :property="RequisitionData.ImportURL"
             :sort="sorts[RequisitionData.ImportURL]"
             v-on:sort-changed="sortChanged"
-          >URL</FeatherSortHeader>
+            >URL</FeatherSortHeader
+          >
           <FeatherSortHeader
             scope="col"
             class="onms-sort-header"
             :property="RequisitionData.CronSchedule"
             :sort="sorts[RequisitionData.CronSchedule]"
             v-on:sort-changed="sortChanged"
-          >Schedule Frequency</FeatherSortHeader>
+            >Schedule Frequency</FeatherSortHeader
+          >
           <FeatherSortHeader
             scope="col"
             class="onms-sort-header"
             :property="RequisitionData.RescanExisting"
             :sort="sorts[RequisitionData.RescanExisting]"
             v-on:sort-changed="sortChanged"
-          >Rescan Behavior</FeatherSortHeader>
+            >Rescan Behavior</FeatherSortHeader
+          >
           <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-bind:key="key" v-for="(item, key) in filteredItems">
+        <tr
+          v-bind:key="key"
+          v-for="(item, key) in filteredItems"
+        >
           <td>
             <ConfigurationCopyPasteDisplay :text="item[RequisitionData.ImportName]" />
           </td>
@@ -48,14 +55,28 @@
               :text="ConfigurationHelper.cronToEnglish(item[RequisitionData.CronSchedule])"
             />
           </td>
-          <td>{{ rescanToEnglish(item[RequisitionData.RescanExisting]) }}</td>
+          <td>
+            {{ rescanToEnglish(item[RequisitionData.RescanExisting]) }}
+          </td>
           <td>
             <div class="flex">
-              <FeatherButton icon="Edit" @click="() => props.editClicked(item.originalIndex)">
-                <FeatherIcon :icon="Edit" class="edit-icon"></FeatherIcon>
+              <FeatherButton
+                icon="Edit"
+                @click="() => props.editClicked(item.originalIndex)"
+              >
+                <FeatherIcon
+                  :icon="Edit"
+                  class="edit-icon"
+                ></FeatherIcon>
               </FeatherButton>
-              <FeatherButton icon="Delete" @click="() => props.deleteClicked(item.originalIndex)">
-                <FeatherIcon class="delete-icon" :icon="Delete"></FeatherIcon>
+              <FeatherButton
+                icon="Delete"
+                @click="() => props.deleteClicked(item.originalIndex)"
+              >
+                <FeatherIcon
+                  class="delete-icon"
+                  :icon="Delete"
+                ></FeatherIcon>
               </FeatherButton>
             </div>
           </td>
@@ -72,8 +93,11 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed, ComputedRef, reactive, PropType } from 'vue'
+<script
+  setup
+  lang="ts"
+>
+import { ComputedRef, PropType } from 'vue'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherButton } from '@featherds/button'
@@ -152,7 +176,7 @@ const filteredItems = computed(() => {
 })
 
 /**
- * When the user changes which column is sorted. 
+ * When the user changes which column is sorted.
  */
 const sortChanged = (sortVal: ConfigurationTableSort) => {
   sorts.currentSort = sortVal
@@ -160,7 +184,7 @@ const sortChanged = (sortVal: ConfigurationTableSort) => {
 }
 
 /**
- * When the user changes the page number. 
+ * When the user changes the page number.
  */
 const pageUpdate = (newPage: number) => {
   pageVals.value.page = newPage
@@ -170,14 +194,11 @@ const pageUpdate = (newPage: number) => {
 }
 
 /**
- * When the user updates the page size. 
+ * When the user updates the page size.
  */
 const pageSizeUpdate = (newPageSize: number) => {
   pageVals.value.pageSize = newPageSize
 }
-
-
-
 
 /**
  * Convert our Rescan Existing value to something more understandable by Humans.
@@ -185,37 +206,37 @@ const pageSizeUpdate = (newPageSize: number) => {
 const rescanToEnglish = (rescanVal: string) => {
   return rescanCopy[rescanVal]
 }
-
 </script>
+<style
+  lang="scss"
+  scoped
+>
+@import "@featherds/table/scss/table";
+@import "@featherds/styles/themes/variables";
 
-
-<style lang="scss">
 .main-wrapper {
   table.condensed {
-    .onms-sort-header {
+    :deep(.onms-sort-header) {
       > .header-flex-container {
         justify-content: flex-start;
       }
     }
   }
 }
-</style>
-<style lang="scss" scoped>
-@import "@featherds/table/scss/table";
 .flex {
   display: flex;
 }
 .tr {
-  background-color: var(--feather-background);
+  background-color: var($background);
   .th {
-    color: var(--feather-primary);
+    color: var($primary);
   }
 }
 .edit-icon {
-  color: var(--feather-primary);
+  color: var($primary);
 }
 .delete-icon {
-  color: var(--feather-error);
+  color: var($error);
 }
 .condensed {
   @include table();
@@ -228,3 +249,4 @@ const rescanToEnglish = (rescanVal: string) => {
   max-width: 260px;
 }
 </style>
+

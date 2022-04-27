@@ -8,25 +8,32 @@
       <div class="title-flex">
         <div class="title">Thread Pools</div>
         <div v-if="!threadPoolsActive">
-          <FeatherChipList>
+          <FeatherChipList label="">
             <FeatherChip v-if="unTouchedThreadPoolData.importThreads">
-              <template v-slot:icon>{{ unTouchedThreadPoolData.importThreads }}</template>Import Threads
+              <template v-slot:icon>{{ unTouchedThreadPoolData.importThreads }}</template
+              >Import Threads
             </FeatherChip>
             <FeatherChip v-if="unTouchedThreadPoolData.scanThreads">
-              <template v-slot:icon>{{ unTouchedThreadPoolData.scanThreads }}</template>Scan Threads
+              <template v-slot:icon>{{ unTouchedThreadPoolData.scanThreads }}</template
+              >Scan Threads
             </FeatherChip>
             <FeatherChip v-if="unTouchedThreadPoolData.rescanThreads">
-              <template v-slot:icon>{{ unTouchedThreadPoolData.rescanThreads }}</template>Rescan Threads
+              <template v-slot:icon>{{ unTouchedThreadPoolData.rescanThreads }}</template
+              >Rescan Threads
             </FeatherChip>
             <FeatherChip v-if="unTouchedThreadPoolData.writeThreads">
-              <template v-slot:icon>{{ unTouchedThreadPoolData.writeThreads }}</template>Write Threads
+              <template v-slot:icon>{{ unTouchedThreadPoolData.writeThreads }}</template
+              >Write Threads
             </FeatherChip>
           </FeatherChipList>
         </div>
       </div>
     </template>
     <div>
-      <p>Thread pool sizes impact the performance of the provisioning subsystem. Larger systems may require larger values. To adjust them, select a value from the drop-down list.</p>
+      <p>
+        Thread pool sizes impact the performance of the provisioning subsystem. Larger systems may require larger
+        values. To adjust them, select a value from the drop-down list.
+      </p>
       <FeatherInput
         :error="getError('importThreads')"
         type="number"
@@ -55,18 +62,25 @@
         v-model="threadPoolData.writeThreads"
         @keypress="enterCheck"
       />
-      <div class="spinner-button">
-        <FeatherButton primary @click="updateThreadpools" :disabled="loading">
-          <FeatherSpinner v-if="loading" />
-          <span v-if="!loading">Update Thread Pools</span>
-        </FeatherButton>
-      </div>
+      <FeatherButton
+        primary
+        @click="updateThreadpools"
+        :disabled="loading"
+      >
+        <FeatherSpinner
+          v-if="loading"
+          class="spinner-button"
+        />
+        <span v-if="!loading">Update Thread Pools</span>
+      </FeatherButton>
     </div>
   </FeatherExpansionPanel>
 </template>
 
-<script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 
 import { FeatherInput } from '@featherds/input'
@@ -76,7 +90,7 @@ import { FeatherChip, FeatherChipList } from '@featherds/chips'
 import { FeatherSpinner } from '@featherds/progress'
 
 import { populateProvisionD, putProvisionDService } from '@/services/configurationService'
-import { useConfigurationToast } from './hooks/configurationToast'
+import useSnackbar from '@/composables/useSnackbar'
 import { threadPoolKeys } from './copy/threadPoolKeys'
 import { ConfigurationHelper } from './ConfigurationHelper'
 
@@ -104,7 +118,7 @@ const unTouchedThreadPoolData = computed(() => {
  * Hooks
  */
 const store = useStore()
-const { updateToast } = useConfigurationToast()
+const { showSnackBar } = useSnackbar()
 
 /**
  * User has opted to update threadpool data.
@@ -126,10 +140,9 @@ const updateThreadpools = async () => {
     }
   })
 
-  let toastMessage = {
-    basic: 'Error!',
-    detail: errorMessage,
-    hasErrors: true
+  let snackbarProps = {
+    msg: errorMessage,
+    error: true
   }
   // If there are no errors.
   if (Object.keys(threadPoolsErrors.value).length === 0) {
@@ -148,23 +161,21 @@ const updateThreadpools = async () => {
       await putProvisionDService(updatedProvisionDData)
       // Redownload + Populate Data.
       await populateProvisionD(store)
-      toastMessage = {
-        basic: 'Success!',
-        detail: 'Thread pool data saved.',
-        hasErrors: false
-      }
-    } catch (e) {
-      toastMessage = {
-        basic: 'Error!',
-        detail: 'Thread Pool data not saved.',
-        hasErrors: true
-      }
 
+      snackbarProps = {
+        msg: 'Thread pool data saved.',
+        error: false
+      }
+    } catch (err) {
+      snackbarProps = {
+        msg: `Thread pool data not saved. (${err})`,
+        error: true
+      }
     }
   }
 
-  //Send Toast Message
-  updateToast(toastMessage)
+  //Show snackbar message
+  showSnackBar(snackbarProps)
   loading.value = false
 }
 
@@ -186,22 +197,17 @@ const getError = (key: string) => {
 }
 </script>
 
-<style lang="scss">
-.spinner-button {
-  .spinner {
-    width: 20px;
-    height: 20px;
-  }
-  .spinner-container {
-    display: flex;
-    align-items: center;
-    height: 100%;
+<style
+  lang="scss"
+  scoped
+>
+@import "@featherds/styles/mixins/typography";
+
+.expansion-panel{
+  :deep(.feather-expansion-header-button) {
+    height: 72px;
   }
 }
-</style>
-
-<style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
 .title {
   @include headline3();
   margin-right: 16px;
@@ -211,12 +217,4 @@ const getError = (key: string) => {
   align-items: center;
 }
 </style>
-<style lang="scss">
-@import "@featherds/styles/mixins/typography";
 
-#thread-pool-expansion {
-  .feather-expansion-header-button {
-    height: 72px;
-  }
-}
-</style>

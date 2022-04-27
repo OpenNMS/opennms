@@ -6,7 +6,7 @@ test -d repository || (echo "This command must be ran from the features/minion d
 # Inclue the bundled Maven in the $PATH
 MYDIR=$(dirname "$0")
 MYDIR=$(cd "$MYDIR"; pwd)
-export PATH="$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
+export PATH="$MYDIR/../..:$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
 export CONTAINERDIR="${MYDIR}/../container/minion"
 
 cleanup_and_build() {
@@ -19,9 +19,10 @@ cleanup_and_build() {
 
   # Kill off any existing instances
   did_kill_at_least_one_pid=0
+  # shellcheck disable=SC2044
   for pid_file in $(find "${CONTAINERDIR}/target" -name karaf.pid); do
     pid=$(cat "$pid_file")
-    if [[ ! -z $pid ]]; then
+    if [[ -n $pid ]]; then
       $cmd_prefix kill -9 "$pid" 2>/dev/null && did_kill_at_least_one_pid=1
     fi
   done
@@ -35,8 +36,8 @@ cleanup_and_build() {
   $cmd_prefix rm -rf "${CONTAINERDIR}"/target/minion-karaf-*
 
   # Rebuild - we've already verified that we're in the right folder
-  mvn clean install && \
-    (cd "${CONTAINERDIR}"; mvn clean install)
+  compile.pl clean install && \
+    (cd "${CONTAINERDIR}"; compile.pl clean install)
 }
 
 set_instance_specific_configuration() {

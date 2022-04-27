@@ -24,6 +24,8 @@ import {
 import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
 import cronstrue from 'cronstrue'
 
+const cronTabLength = (cronTab: string) => cronTab.replace(/\s$/, '').split(' ').length
+
 /**
  *
  * @param split String array from a crontab, split on a space
@@ -160,18 +162,20 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
  * @returns crontab-ready string
  */
 const convertLocalToCronTab = (item: LocalConfiguration) => {
-  let schedule = '1 * * * * *'
+  let schedule = '0 0 0 * * *'
+
   if (!item.advancedCrontab) {
     const occurance = item.occurance
     const time = item.time
     const [hoursd, minutesd] = time.split(':')
     const hours = parseInt(hoursd)
     const minutes = parseInt(minutesd)
-    if (occurance.name === 'Daily') {
-      schedule = `${minutes} ${hours} * * *`
+
+    if (occurance.name === 'Daily' || !occurance.name) {
+      schedule = `0 ${minutes} ${hours} * * *`
     } else if (occurance.name === 'Weekly') {
-      const week = item.occuranceWeek.id
-      schedule = `${minutes} ${hours} * * ${week}`
+      const week: number | string = item.occuranceWeek.id
+      schedule = `0 ${minutes} ${hours} * * ${week}`
     } else if (occurance.name === 'Monthly') {
       let day: number | string = item.occuranceDay.id
       let final = '*'
@@ -179,11 +183,12 @@ const convertLocalToCronTab = (item: LocalConfiguration) => {
         day = 'L'
         final = '?'
       }
-      schedule = `${minutes} ${hours} ${day} * ${final}`
+      schedule = `0 ${minutes} ${hours} ${day} * ${final}`
     }
   } else {
     schedule = item.occuranceAdvanced
   }
+
   return schedule
 }
 
@@ -379,11 +384,19 @@ const createBlankSubConfiguration = () => {
  * Convert our Cron Schedules to Human Readable String.
  */
 const cronToEnglish = (cronFormatted: string) => {
-  try {
-    return cronstrue.toString(cronFormatted)
-  } catch (e) {
-    return typeof e === 'string' ? e : 'Error Parsing Crontab'
+  let error = ''
+
+  if (cronTabLength(cronFormatted) === 5) {
+    error = ErrorStrings.QuartzFormatSupportError // custom error of 6th part quartz format support
+  } else {
+    try {
+      error = cronstrue.toString(cronFormatted, { dayOfWeekStartIndexZero: false })
+    } catch (e) {
+      error = typeof e === 'string' ? e : 'Error Parsing Crontab'
+    }
   }
+
+  return error
 }
 
 /**
@@ -631,11 +644,17 @@ const stripOriginalIndexes = (dataToUpdate: Array<ProvisionDServerConfiguration>
  */
 const validateBasicCron = (cronTab: string) => {
   let error: unknown | string = ''
-  try {
-    cronstrue.toString(cronTab)
-  } catch (e) {
-    error = e
+
+  if (cronTabLength(cronTab) === 5) {
+    error = ErrorStrings.QuartzFormatSupportError // custom error of 6th part quartz format support
+  } else {
+    try {
+      cronstrue.toString(cronTab, { dayOfWeekStartIndexZero: false })
+    } catch (e) {
+      error = e
+    }
   }
+
   return error
 }
 
@@ -664,13 +683,20 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
  */
 const validateHost = (host: string) => {
   let hostError = ''
-  const ipv4 = new RegExp(
-    /^(([a-z0-9]|[a-z0-9][a-z0-9-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9-]*[a-z0-9])(:[0-9]+)?$/gim
-  )
+  /**
+   * Character separators: hyphen, point, space or % (%20: encoded space).
+   * Expression only valid if:
+   *  - only one separator betwwen word
+   *  - no separator at begin, end or between uri and port
+   *  - expression names (uri, port) can be used, with expression.match(), to target specific part of the host string
+   * */
+  const ipv4 = new RegExp(/^[^\s.\-%](?<uri>[\w]*[\s.\-%]?[\w]*[^\s.\-%20:])*(?<port>:\d{4})?$/, 'gmi')
   const isHostValid = ipv4.test(host)
+
   if (!isHostValid) {
     hostError = ErrorStrings.InvalidHostname
   }
+
   return hostError
 }
 

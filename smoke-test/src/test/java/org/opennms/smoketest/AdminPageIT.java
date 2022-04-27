@@ -55,7 +55,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         new String[] { "Configure SNMP Community Names by IP Address", "//span[text()='SNMP Config Lookup']" },
         new String[] { "Manually Add an Interface", "//span[text()='Enter IP Address']" },
         new String[] { "Delete Nodes", "//span[text()='Delete Nodes']" },
-        new String[] { "Configure Provisioning Subsystem", "//h1[contains(text(), 'Configuration')]" },
+        new String[] { "Configure External Requisitions and Thread Pools", "//h1[contains(text(), 'Configuration')]" },
         new String[] { "Configure Geocoder Service", "//div/nav/ol/li[text()='Geocoder Configuration']" },
 
         // Flow Management

@@ -32,8 +32,7 @@ config:update
 
 <1> A location string is used to assign the Sentinel to a monitoring location with Minions.
 <2> Unique identifier used as a node label for monitoring the Sentinel instance within {page-component-title).
-<3> Base URL for the web UI, which provides the REST endpoints.
-<4> URL that points to ActiveMQ broker.
+<3> URL that points to ActiveMQ broker.
 
 .Configure the credentials and exit Karaf shell
 [source, karaf]

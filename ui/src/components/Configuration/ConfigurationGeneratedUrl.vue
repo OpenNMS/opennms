@@ -1,12 +1,20 @@
 <template>
-  <div class="white-bg" v-if="convertedItem?.url !== '://?=' && convertedItem?.url !== ''">
+  <div
+    class="white-bg"
+    v-if="convertedItem?.url !== '://?=' && convertedItem?.url !== ''"
+  >
     <div class="title">URL:</div>
-    <div class="url">{{ convertedItem?.url }}</div>
+    <div class="url">
+      {{ convertedItem?.url }}
+    </div>
   </div>
 </template>
 
-<script lang="ts" setup>
-import { computed, PropType } from 'vue'
+<script
+  lang="ts"
+  setup
+>
+import { PropType } from 'vue'
 import { LocalConfiguration } from './configuration.types'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import { RequisitionData } from './copy/requisitionTypes'
@@ -30,14 +38,18 @@ const convertedItem = computed(() => {
     url: converted[RequisitionData.ImportURL]
   }
 })
-
 </script>
 
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
+@import "@featherds/styles/themes/variables";
+
 .white-bg {
-  background-color: var(--feather-surface);
+  background-color: var($surface);
   display: flex;
   align-items: flex-start;
   padding: 16px 24px;
@@ -46,7 +58,7 @@ const convertedItem = computed(() => {
 }
 .title {
   @include headline4();
-  color: var(--feather-primary);
+  color: var($primary);
 }
 .url {
   margin-top: 6px;
@@ -55,3 +67,4 @@ const convertedItem = computed(() => {
   color: #a0a1a4;
 }
 </style>
+

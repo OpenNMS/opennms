@@ -1,9 +1,20 @@
 <template>
   <div class="white-bg">
     <div class="flex title-padding">
-      <h3 class="title">Requisition Definitions {{ requisitionDCount }}</h3>
-      <div class="flex button-wrapper" v-if="provisionDList?.length > 0">
-        <FeatherButton class="button" text @click="addNew">Add Requisition Definition</FeatherButton>
+      <h3 class="title">
+        External Requisitions
+        {{ requisitionDCount }}
+      </h3>
+      <div
+        class="flex button-wrapper"
+        v-if="provisionDList?.length > 0"
+      >
+        <FeatherButton
+          class="button"
+          text
+          @click="addNew"
+          >Add External Requisition</FeatherButton
+        >
       </div>
     </div>
     <ConfigurationTable
@@ -13,7 +24,10 @@
       :deleteClicked="deleteClicked"
       :setNewPage="setNewPage"
     />
-    <ConfigurationEmptyTable v-if="provisionDList?.length === 0" :newDefinition="addNew" />
+    <ConfigurationEmptyTable
+      v-if="provisionDList?.length === 0"
+      :newDefinition="addNew"
+    />
     <ConfigurationDrawer
       :loading="loading"
       :updateFormValue="updateFormValue"
@@ -36,18 +50,17 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-
-import { computed, reactive } from 'vue'
+<script
+  lang="ts"
+  setup
+>
 import { useStore } from 'vuex'
 
 import { FeatherButton } from '@featherds/button'
 
-import Add from '@featherds/icon/action/Add'
-
 import { populateProvisionD, putProvisionDService } from '@/services/configurationService'
-
-import { useConfigurationToast, useProvisionD } from './hooks'
+import { useProvisionD } from './hooks'
+import useSnackbar from '@/composables/useSnackbar'
 import { ConfigurationHelper } from './ConfigurationHelper'
 
 import ConfigurationTable from './ConfigurationTable.vue'
@@ -71,7 +84,6 @@ const requisitionDCount = computed(() =>
 )
 const doubleCheck = reactive({ active: false, index: -1, title: '' })
 
-
 /**
  * Hooks
  */
@@ -91,8 +103,7 @@ const {
   loading
 } = useProvisionD()
 
-const { updateToast } = useConfigurationToast()
-
+const { showSnackBar } = useSnackbar()
 
 /**
  * Create a Blank Requisition Definition
@@ -159,7 +170,6 @@ const closeConfigurationDrawer = () => {
   enableMainScroll()
 }
 
-
 /**
  * User has decided to save and upload the current state.
  */
@@ -190,7 +200,7 @@ const saveCurrentState = async () => {
     //Set New State with our requisition definitions
     updatedProvisionDData['requisition-def'] = ConfigurationHelper.stripOriginalIndexes(forSending)
 
-    //Toast messages can differ depending on our editing state.
+    //Snackbar messages can differ depending on our editing state.
     let mods = ['Addition', 'was']
     if (editing.value) {
       mods = ['Edits', 'were']
@@ -203,19 +213,17 @@ const saveCurrentState = async () => {
 
       closeConfigurationDrawer()
 
-      updateToast({
-        basic: 'Success!',
-        detail: `${mods[0]} to requisition definition ${mods[1]} successful.`,
-        hasErrors: false
+      showSnackBar({
+        msg: `${mods[0]} to requisition definition ${mods[1]} successful.`,
+        center: false,
       })
-    } catch (e) {
-      updateToast({
-        basic: 'Error!',
-        detail: `${mods[0]} to requisition definition ${mods[1]} not successful.`,
-        hasErrors: true
+    } catch (err) {
+      showSnackBar({
+        msg: `${mods[0]} to requisition definition ${mods[1]} not successful. (${err})`,
+        center: false,
+        error: true
       })
     }
-
   } else {
     // Inform User of Errors.
     selectedProvisionDItem.errors = validatedItem
@@ -242,16 +250,16 @@ const doubleCheckSelected = async (selection: boolean) => {
 
     try {
       await putProvisionDService(updatedProvisionDData)
-      updateToast({
-        basic: 'Success!',
-        detail: 'Deletion of requisition definition was successful.',
-        hasErrors: false
+
+      showSnackBar({
+        msg: 'Deletion of requisition definition was successful.',
+        center: false,
       })
-    } catch (e) {
-      updateToast({
-        basic: 'Failure!',
-        detail: 'Deletion of requisition definition was NOT successful.',
-        hasErrors: true
+    } catch (err) {
+      showSnackBar({
+        msg: `Deletion of requisition definition was NOT successful. (${err})`,
+        center: false,
+        error: true
       })
     }
     populateProvisionD(store)
@@ -277,13 +285,16 @@ const setNewPage = (newPage: number) => {
 const advanceActiveUpdate = (newVal: boolean) => {
   advancedActive.active = newVal
 }
-
 </script>
 
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/styles/themes/variables";
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
+
 .title {
   @include headline3();
 }
@@ -294,34 +305,19 @@ const advanceActiveUpdate = (newVal: boolean) => {
   margin-bottom: 20px;
 }
 .white-bg {
-  background-color: var(--feather-background);
+  background-color: var($background);
   border: 1px solid #ebedf0;
   margin-top: 16px;
   margin-bottom: 24px;
   @include elevation(2);
 }
-
 .flex {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-
 .buttonIcon {
   font-size: 24px;
 }
 </style>
 
-<style lang="scss">
-@import "@featherds/styles/mixins/typography";
-.button-wrapper {
-  .btn-content {
-    display: flex;
-    align-items: center;
-  }
-  .btn {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-}
-</style>

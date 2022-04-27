@@ -42,7 +42,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
-import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 
 import com.google.common.collect.Sets;
 

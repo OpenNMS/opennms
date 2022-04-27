@@ -1,7 +1,6 @@
 import { ConfigurationHelper } from '../src/components/Configuration/ConfigurationHelper'
 import { RequisitionTypes } from '../src/components/Configuration/copy/requisitionTypes'
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
+import { test, expect } from 'vitest'
 import { LocalConfiguration } from '@/components/Configuration/configuration.types'
 
 test('Convert item to URL query string', () => {
@@ -77,12 +76,10 @@ test('Convert item to URL query string', () => {
     ]
   } as LocalConfiguration
 
-  assert.equal(ConfigurationHelper.convertItemToURL(itemAdvancedOptions), 'https://aa?key=val')
-  assert.equal(ConfigurationHelper.convertItemToURL(itemEmptyAdvancedOptions), 'https://aa')
-  assert.equal(ConfigurationHelper.convertItemToURL(itemAdvancedOptionsNameOnly), 'https://aa')
-  assert.equal(ConfigurationHelper.convertItemToURL(itemAdvancedOptionsValueOnly), 'https://aa')
-  assert.equal(ConfigurationHelper.convertItemToURL(itemMultipleAdvancedOptions), 'https://aa?key1=val1&key2=val2')
-  assert.equal(ConfigurationHelper.convertItemToURL(itemPathQueryString), 'https://aa/path?key1=val1&key2=val2&key3=val3')
+  expect(ConfigurationHelper.convertItemToURL(itemAdvancedOptions)).toEqual('https://aa?key=val')
+  expect(ConfigurationHelper.convertItemToURL(itemEmptyAdvancedOptions)).toEqual('https://aa')
+  expect(ConfigurationHelper.convertItemToURL(itemAdvancedOptionsNameOnly)).toEqual('https://aa')
+  expect(ConfigurationHelper.convertItemToURL(itemAdvancedOptionsValueOnly)).toEqual('https://aa')
+  expect(ConfigurationHelper.convertItemToURL(itemMultipleAdvancedOptions)).toEqual('https://aa?key1=val1&key2=val2')
+  expect(ConfigurationHelper.convertItemToURL(itemPathQueryString)).toEqual('https://aa/path?key1=val1&key2=val2&key3=val3')
 })
-
-test.run()

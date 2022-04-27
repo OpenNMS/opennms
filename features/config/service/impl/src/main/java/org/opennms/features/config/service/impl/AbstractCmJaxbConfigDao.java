@@ -37,7 +37,6 @@ import org.opennms.features.config.service.api.EventType;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.features.config.service.util.BeanFieldCopyUtil;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
-import org.opennms.features.config.service.util.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,9 +76,7 @@ public abstract class AbstractCmJaxbConfigDao<E> {
      *
      * @return Consumer
      */
-    Consumer<ConfigUpdateInfo> getUpdateCallback() {
-        return new DefaultAbstractCmJaxbConfigDaoUpdateCallback<>(this);
-    }
+    protected abstract Consumer<ConfigUpdateInfo> getUpdateCallback();
 
     /**
      * The default configId when getConfig without passing configId
@@ -92,8 +89,6 @@ public abstract class AbstractCmJaxbConfigDao<E> {
 
     /**
      * <p>Constructor for AbstractJaxbConfigDao.</p>
-     * It will use {@link DefaultAbstractCmJaxbConfigDaoUpdateCallback},
-     * override getUpdateCallback if you need to change.
      *
      * @param entityClass a {@link java.lang.Class} object.
      * @param description a {@link java.lang.String} object.
@@ -110,7 +105,7 @@ public abstract class AbstractCmJaxbConfigDao<E> {
     @PostConstruct
     public void postConstruct() {
         Set<String> configIds = configurationManagerService.getConfigIds(this.getConfigName());
-        configIds.forEach(configId -> this.addOnReloadedCallback(configId, getUpdateCallback()));
+        configIds.forEach(configId -> this.addOnReloadedCallback(configId, this.getUpdateCallback()));
     }
 
     /**

@@ -1,6 +1,6 @@
 [template]
 src = "opennms-datasources.xml.tpl"
-dest = "/opt/opennms/etc/opennms-datasources.xml"
+dest = "/usr/share/opennms/etc/opennms-datasources.xml"
 keys = [
     "opennms/database/connection/poolfactory",
     "opennms/database/connection/idletimeout",

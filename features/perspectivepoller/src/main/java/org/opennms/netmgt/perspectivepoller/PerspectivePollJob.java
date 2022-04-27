@@ -72,7 +72,7 @@ public class PerspectivePollJob implements Job {
                 .withService(svc.getMonitoredService())
                 .withTimeToLive(svc.getServiceConfig().getInterval())
                 .withMonitor(svc.getServiceMonitor())
-                .withAttributes(createParameterMap(svc.getServiceConfig()))
+                .withAttributes(svc.getServiceConfig().getParameterMap())
                 .withPatternVariables(svc.getPatternVariables())
                 .execute()
                 .whenComplete((res, ex) -> {
@@ -118,18 +118,5 @@ public class PerspectivePollJob implements Job {
 
                     span.finish();
                 });
-    }
-
-    private static Map<String,Object> createParameterMap(final Service svc) {
-        final Map<String,Object> m = new ConcurrentSkipListMap<String,Object>();
-        for (final Parameter p : svc.getParameters()) {
-            Object val = p.getValue();
-            if (val == null) {
-                val = (p.getAnyObject() == null ? "" : p.getAnyObject());
-            }
-
-            m.put(p.getKey(), val);
-        }
-        return m;
     }
 }

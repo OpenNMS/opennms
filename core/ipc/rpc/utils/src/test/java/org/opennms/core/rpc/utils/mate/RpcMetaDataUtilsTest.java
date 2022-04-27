@@ -54,6 +54,11 @@ public class RpcMetaDataUtilsTest {
         metaData.put(new ContextKey("ctx2", "key4"), "val4");
         metaData.put(new ContextKey("ctx3", "port"), "1234");
         metaData.put(new ContextKey("ctx3", "user"), "papapape");
+        metaData.put(new ContextKey("ctx4", "inner"), "outer");
+        metaData.put(new ContextKey("ctx4", "outer:example"), "working");
+        metaData.put(new ContextKey("ctx5", "key1"), "${ctx5:key2}");
+        metaData.put(new ContextKey("ctx5", "key2"), "working");
+        metaData.put(new ContextKey("ctx6", "key1"), "${ctx6:key1}a");
     }
 
     @Test
@@ -66,10 +71,12 @@ public class RpcMetaDataUtilsTest {
         attributes.put("attribute4", "aaa${ctx1:key4}bbb");
         attributes.put("attribute5", "aaa${ctx1:key4|}bbb");
         attributes.put("attribute6", "aaa${ctx1:key4|default}bbb");
-        attributes.put("attribute7", new Integer(42));
-        attributes.put("attribute8", new Long(42L));
-        attributes.put("attribute9", "aaa${ctx1:key4|${nodeLabel}}bbb");
-        attributes.put("attribute10", "aaa${abc}bbb");
+        attributes.put("attribute7", Integer.valueOf(42));
+        attributes.put("attribute8", Long.valueOf(42L));
+        attributes.put("attribute9", "aaa${abc}bbb");
+        attributes.put("attribute10", "aaa${ctx4:${ctx4:inner}:example}bbb");
+        attributes.put("attribute11", "aaa${ctx5:key1}bbb");
+        attributes.put("attribute12", "xx${ctx6:key1}yy");
 
         final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new MapScope(Scope.ScopeName.NODE, this.metaData));
 
@@ -84,25 +91,10 @@ public class RpcMetaDataUtilsTest {
         Assert.assertTrue(interpolatedAttributes.get("attribute8") instanceof Long);
         Assert.assertEquals(42, interpolatedAttributes.get("attribute7"));
         Assert.assertEquals(42L, interpolatedAttributes.get("attribute8"));
-        Assert.assertEquals("aaa${nodeLabel}bbb", interpolatedAttributes.get("attribute9"));
-        Assert.assertEquals("aaa${abc}bbb", interpolatedAttributes.get("attribute10"));
-    }
-
-    @Test
-    public void testGetContextKeyFromMedataInterpolator() {
-
-        Optional<ContextKey> output = Interpolator.getContextKeyFromMateData("${ctx1:key1|ctx2:key2|ctx3:key3}");
-        Assert.assertTrue(output.isPresent());
-        Assert.assertEquals("ctx3", output.get().context);
-        Assert.assertEquals("key3", output.get().key);
-        output = Interpolator.getContextKeyFromMateData("${ctx1:key1|default}");
-        Assert.assertTrue(output.isPresent());
-        Assert.assertEquals("ctx1", output.get().context);
-        Assert.assertEquals("key1", output.get().key);
-
-        // Test invalid
-        output = Interpolator.getContextKeyFromMateData("${ctx1|default}");
-        Assert.assertFalse(output.isPresent());
+        Assert.assertEquals("aaa${abc}bbb", interpolatedAttributes.get("attribute9"));
+        Assert.assertEquals("aaaworkingbbb", interpolatedAttributes.get("attribute10"));
+        Assert.assertEquals("aaaworkingbbb", interpolatedAttributes.get("attribute11"));
+        Assert.assertEquals("xx${ctx6:key1}aaaaaaaayy", interpolatedAttributes.get("attribute12"));
     }
 
     @Test

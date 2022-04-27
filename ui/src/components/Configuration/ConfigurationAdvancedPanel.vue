@@ -7,7 +7,11 @@
     @update:modelValue="props.activeUpdate"
   >
     <div>
-      <div v-bind:key="index" v-for="(item, index) in props.items" class="item-wrapper">
+      <div
+        v-bind:key="index"
+        v-for="(item, index) in props.items"
+        class="item-wrapper"
+      >
         <FeatherAutocomplete
           type="single"
           label="Key"
@@ -31,18 +35,32 @@
           :hint="item.hint || ' '"
           v-model="item.value"
         />
-        <FeatherButton icon="Delete" @click="() => deleteAdvancedOption(index)">
-          <FeatherIcon class="delete-icon" :icon="Delete"></FeatherIcon>
+        <FeatherButton
+          icon="Delete"
+          @click="() => deleteAdvancedOption(index)"
+        >
+          <FeatherIcon
+            class="delete-icon"
+            :icon="Delete"
+          ></FeatherIcon>
         </FeatherButton>
       </div>
       <div class="button-wrapper">
-        <FeatherButton :disabled="buttonAddDisabled" @click="addAdvancedOption" primary>Add</FeatherButton>
+        <FeatherButton
+          :disabled="buttonAddDisabled"
+          @click="addAdvancedOption"
+          primary
+          >Add</FeatherButton
+        >
       </div>
     </div>
   </FeatherExpansionPanel>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { reactive, PropType, watch, computed } from 'vue'
 
 import { FeatherExpansionPanel } from '@featherds/expansion'
@@ -51,6 +69,8 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherInput } from '@featherds/input'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 import Delete from '@featherds/icon/action/Delete'
+
+import { orderBy } from 'lodash'
 
 import { advancedKeys, dnsKeys, openDaylightKeys, aciKeys, zabbixKeys, prisKeys } from './copy/advancedKeys'
 import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'
@@ -86,16 +106,16 @@ const results = reactive({
 const buttonAddDisabled = computed(() => {
   const itemsLength = props.items.length
 
-  if(!itemsLength) return false; // enabled
+  if (!itemsLength) return false // enabled
 
   const { key, value } = props.items[itemsLength - 1] // last item
   return !(key.name && value) // disabled
-});
+})
 
 /**
- * Depending on which Type is selected, we have different 
+ * Depending on which Type is selected, we have different
  * keys in our Advanced Options select options. This
- * method determines which to load. This should eventually be 
+ * method determines which to load. This should eventually be
  * moved to an API solution so we don't store values locally.
  */
 const getKeysBasedOnType = (type: string, subType: string) => {
@@ -105,7 +125,7 @@ const getKeysBasedOnType = (type: string, subType: string) => {
   if (type === RequisitionTypes.DNS) {
     keys = dnsKeys
   } else if (type === RequisitionTypes.VMWare) {
-    keys = advancedKeys
+    keys = orderBy(advancedKeys, 'name', 'asc')
   } else if (type === RequisitionTypes.RequisitionPlugin) {
     if (subType === RequisitionPluginSubTypes.OpenDaylight) {
       keys = openDaylightKeys
@@ -121,7 +141,7 @@ const getKeysBasedOnType = (type: string, subType: string) => {
 }
 
 /**
- * 
+ *
  * @param searchVal The Key Name to search for
  * @param index Since there are multiple search boxes, we need to know which one to generate results for.
  */
@@ -167,8 +187,8 @@ const fillAutoComplete = () => {
 
 /**
  * When you activate the advanced section, our code waits
- * for 150 milliseconds to give FeatherExpansion panel a chance to populate the DOM 
- * If FeatherAutoComplete ever includes the option to set a single value 
+ * for 150 milliseconds to give FeatherExpansion panel a chance to populate the DOM
+ * If FeatherAutoComplete ever includes the option to set a single value
  * by default to the textarea, then this can be removed.
  */
 watch(props, () => {
@@ -178,11 +198,12 @@ watch(props, () => {
     }, 150)
   }
 })
-
 </script>
 
 <style lang="scss">
 @import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/themes/variables";
+
 #advanced-panel {
   position: relative;
   a[data-ref-id="feather-form-element-clear"] {
@@ -190,11 +211,16 @@ watch(props, () => {
   }
   .feather-expansion-header-button-text {
     @include headline4();
-    color: var(--feather-primary);
+    color: var($primary);
   }
 }
 </style>
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
+@import "@featherds/styles/themes/variables";
+
 .icon {
   width: 40px;
   height: 40px;
@@ -230,6 +256,7 @@ watch(props, () => {
   justify-content: flex-end;
 }
 .delete-icon {
-  color: var(--feather-error);
+  color: var($error);
 }
 </style>
+

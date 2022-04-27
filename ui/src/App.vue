@@ -11,6 +11,7 @@
 
     <div class="main-content">
       <Spinner />
+      <Snackbar />
       <router-view v-slot="{ Component }">
         <keep-alive include="MapKeepAlive">
           <component :is="Component" />
@@ -25,6 +26,7 @@ import { useStore } from 'vuex'
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Menubar from './components/Layout/Menubar.vue'
 import Spinner from './components/Common/Spinner.vue'
+import Snackbar from '@/components/Common/Snackbar.vue'
 import NavigationRail from './components/Layout/NavigationRail.vue'
 
 const store = useStore()

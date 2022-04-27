@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>dependencies</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>30.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>org.opennms.dependencies.spring-beans-31-shaded</artifactId>
+
+  <name>OpenNMS :: Dependencies :: Spring Beans 3.1 (Shaded)</name>
+  <description>This module is used to patch upstream `spring-beans` with security fixes.</description>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+  <properties>
+    <enforcer-skip-banned-dependencies>true</enforcer-skip-banned-dependencies>
+    <mySpringVersion>3.1.4.RELEASE</mySpringVersion>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven.shade.plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>org.springframework:spring-beans</include>
+                </includes>
+              </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>org.springframework:spring-beans</artifact>
+                  <excludes>
+                    <excludeDefaults>false</excludeDefaults>
+                    <exclude>org/springframework/beans/CachedIntrospectionResults*</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <manifestEntries>
+                    <Bundle-Description>${project.description}</Bundle-Description>
+                    <Bundle-License>http://www.apache.org/licenses/LICENSE-2.0.txt</Bundle-License>
+                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                    <Bundle-Name>${project.name}</Bundle-Name>
+                    <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                    <Bundle-Vendor>The OpenNMS Group, Inc.</Bundle-Vendor>
+                    <Bundle-Version>${opennms.osgi.version}</Bundle-Version>
+                    <Export-Package>org.springframework.beans;version="${mySpringVersion}";uses:="org.springframework.core,org.springframework.core.convert,org.springframework.util",org.springframework.beans.annotation;version="${mySpringVersion}",org.springframework.beans.factory;version="${mySpringVersion}";uses:="org.springframework.beans",org.springframework.beans.factory.access;version="${mySpringVersion}";uses:="org.springframework.beans,org.springframework.beans.factory",org.springframework.beans.factory.access.el;version="${mySpringVersion}";uses:="javax.el,org.springframework.beans.factory",org.springframework.beans.factory.annotation;version="${mySpringVersion}";uses:="org.springframework.beans,org.springframework.beans.factory,org.springframework.beans.factory.config,org.springframework.beans.factory.support,org.springframework.beans.factory.wiring,org.springframework.core,org.springframework.core.type",org.springframework.beans.factory.config;version="${mySpringVersion}";uses:="javax.inject,org.apache.commons.logging,org.springframework.beans,org.springframework.beans.factory,org.springframework.beans.support,org.springframework.core,org.springframework.core.convert,org.springframework.core.io.support,org.springframework.util",org.springframework.beans.factory.parsing;version="${mySpringVersion}";uses:="org.apache.commons.logging,org.springframework.beans,org.springframework.beans.factory,org.springframework.beans.factory.config,org.springframework.core.io",org.springframework.beans.factory.serviceloader;version="${mySpringVersion}";uses:="org.springframework.beans.factory,org.springframework.beans.factory.config",org.springframework.beans.factory.support;version="${mySpringVersion}";uses:="javax.inject,net.sf.cglib.proxy,org.apache.commons.logging,org.springframework.beans,org.springframework.beans.factory,org.springframework.beans.factory.config,org.springframework.core,org.springframework.core.convert,org.springframework.core.env,org.springframework.core.io,org.springframework.core.io.support,org.springframework.util",org.springframework.beans.factory.wiring;version="${mySpringVersion}";uses:="org.springframework.beans.factory",org.springframework.beans.factory.xml;version="${mySpringVersion}";uses:="javax.xml.parsers,org.springframework.beans,org.springframework.beans.factory,org.springframework.beans.factory.config,org.springframework.beans.factory.parsing,org.springframework.beans.factory.support,org.springframework.core.env,org.springframework.core.io,org.springframework.core.io.support,org.w3c.dom,org.xml.sax",org.springframework.beans.propertyeditors;version="${mySpringVersion}";uses:="org.springframework.core.io",org.springframework.beans.support;version="${mySpringVersion}";uses:="org.springframework.beans,org.springframework.core.env,org.springframework.core.io,org.springframework.util"</Export-Package>
+                    <Import-Package>javax.el;version="[1.0.0, 3.0.0)";resolution:="optional",javax.inject;version="[1.0.0, 2.0.0)";resolution:="optional",javax.xml.parsers;version="0";resolution:="optional",net.sf.cglib.proxy;version="[2.1.3, 3.0.0)";resolution:="optional",org.apache.commons.logging;version="[1.1.1, 2.0.0)",org.springframework.core;version="[3.1.4,3.1.5)",org.springframework.core.annotation;version="[3.1.4,3.1.5)",org.springframework.core.convert;version="[3.1.4,3.1.5)",org.springframework.core.env;version="[3.1.4,3.1.5)",org.springframework.core.io;version="[3.1.4,3.1.5)",org.springframework.core.io.support;version="[3.1.4,3.1.5)",org.springframework.core.type;version="[3.1.4,3.1.5)",org.springframework.util;version="[3.1.4,3.1.5)",org.springframework.util.xml;version="[3.1.4,3.1.5)",org.w3c.dom;version="0";resolution:="optional",org.xml.sax;version="0";resolution:="optional"</Import-Package>
+                  </manifestEntries>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>${mySpringVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-asm</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${mySpringVersion}</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-asm</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+</project>
