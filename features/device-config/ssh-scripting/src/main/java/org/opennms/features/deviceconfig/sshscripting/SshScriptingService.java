@@ -41,6 +41,7 @@ public interface SshScriptingService {
      * @param script contains statements separated by new lines
      * @param user the ssh user
      * @param password the ssh user's password
+     * @param authKey the private ssh key
      * @param target the ssh target to connect to
      * @param hostKeyFingerprint host key fingerprint to accept from the target system
      * @param vars variables that can be referenced in the script; variables are referenced by "{@code ${varname}}" expressions
@@ -51,6 +52,7 @@ public interface SshScriptingService {
             String script,
             String user,
             String password,
+            final String authKey,
             final SocketAddress target,
             final String hostKeyFingerprint,
             Map<String, String> vars,

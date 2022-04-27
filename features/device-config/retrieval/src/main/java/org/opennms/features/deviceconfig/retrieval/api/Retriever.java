@@ -50,6 +50,7 @@ public interface Retriever {
             String script,
             String user,
             String password,
+            String authKey,
             final SocketAddress target,
             final String hostKeyFingerprint,
             String configType,
