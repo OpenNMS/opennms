@@ -8,7 +8,7 @@
       <div class="title-flex">
         <div class="title">Thread Pools</div>
         <div v-if="!threadPoolsActive">
-          <FeatherChipList>
+          <FeatherChipList label="">
             <FeatherChip v-if="unTouchedThreadPoolData.importThreads">
               <template v-slot:icon>{{ unTouchedThreadPoolData.importThreads }}</template
               >Import Threads
