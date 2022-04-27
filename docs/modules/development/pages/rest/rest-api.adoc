@@ -144,7 +144,7 @@ The right pane allows you to add input parameters (if needed) and click "Try" to
 
 This screenshot displays an example of sending a Rest API request to get all current alarms in the system.
 
-The response status and response time are displayed and you can use the tabs to via the Json response, response headers, as well as a listing of the corresponding `curl` command.
+The response status and response time are displayed and you can use the tabs to view the Json response, response headers, as well as a listing of the corresponding `curl` command.
 
 For most `POST` and `PUT` commands, additional Json request data is required; the API Explorer will generally display the schema and some example Json for the particular request.
 

@@ -3,7 +3,7 @@
 
 The File Editor, available in the new UI, allow users to view and edit configuration files (`.xml`, `.cfg`, `.drl`, etc.) with the OpenNMS UI instead of having to edit them directly in the file system (for example in the `/etc` directory).
 
-NOTE: Making changes to configuration files will affect how OpenNMS operates and that incorrectly editing a file could result in features no longer working or not working as intended.
+NOTE: Making changes to configuration files will affect how OpenNMS operates and incorrectly editing a file could result in features no longer working or not working as intended.
 
 To access the File Editor, go to the new UI, for example by clicking on "UI Preview", then navigating to "File Editor".
 
@@ -11,7 +11,7 @@ To access the File Editor, go to the new UI, for example by clicking on "UI Prev
 
 After navigating to the File Editor, a tree view of the OpenNMS `/etc` directory is displayed.
 
-From here you can navigate to any configuration file
+From here you can:
 
 - navigate to any file
 - expand and collapse subtrees
