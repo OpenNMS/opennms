@@ -82,9 +82,9 @@ The following key is available under this context:
 | service:name       | The full name of the service
 |===
 
-=== SCV
+=== SCV (Secure Credentials Vault)
 
-The special context `scv` provides access to values stored in the Secure Credential Vault.
+The special context `scv` provides access to values stored in the Secure Credentials Vault.
 The key used in this context must consist of the alias and the attribute of the credential separated by a colon.
 
 Example: `${scv:mydevice:password}`.
@@ -141,7 +141,7 @@ If there is no such username defined, the fallback `account` will be used.
 If neither exist, the fallback value `admin` will be used.
 
 `${scv:${requisition:credentials|node:label}:password}`
-Will resolve the `credentials` value specified in the requisitioning UI while using the node label as fallback value.
+Will resolve the `credentials` value specified in the requisition UI while using the node label as fallback value.
 This in turn is used to resolve the outer pattern and access the final password for this device.
 
 To resolve the value associated with context-key pair, the DSL uses scopes that determine the resolution order.
