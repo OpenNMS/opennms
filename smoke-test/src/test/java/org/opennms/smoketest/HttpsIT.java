@@ -96,22 +96,27 @@ public class HttpsIT {
         LOG.info("Verify that the test itself works fine. Empty body.");
 
         try {
-            TrustStrategy acceptingTrustStrategy = (x509Certificates, s) -> false;
-            LOG.info(acceptingTrustStrategy.toString());
+            // This TrustStrategy will make sure that we do not care about Self Signed Cert (true)
+            TrustStrategy acceptingTrustStrategy = (x509Certificates, s) -> true;
+            LOG.info("Trust Strategy is ready");
+
             SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
             SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
                     NoopHostnameVerifier.INSTANCE);
+
             LOG.info("Before Registry");
             Registry<ConnectionSocketFactory> socketFactoryRegistry =
                     RegistryBuilder.<ConnectionSocketFactory>create()
                             .register("https", sslsf)
                             .register("http", new PlainConnectionSocketFactory())
                             .build();
+
             LOG.info("Before BasicHTTP");
             BasicHttpClientConnectionManager connectionManager =
                     new BasicHttpClientConnectionManager(socketFactoryRegistry);
             CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslsf)
                     .setConnectionManager(connectionManager).build();
+
             LOG.info("Before getting a response");
             HttpComponentsClientHttpRequestFactory requestFactory =
                     new HttpComponentsClientHttpRequestFactory(httpClient);
