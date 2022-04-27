@@ -19,6 +19,7 @@ View metadata currently assigned to nodes, interfaces and services, on the detai
 
 image::metadata/metadata-view.png[]
 
+[[ga-metadata-contexts]]
 == Contexts
 
 A context distinguishes different kinds of metadata use.
@@ -81,6 +82,14 @@ The following key is available under this context:
 | service:name       | The full name of the service
 |===
 
+=== SCV
+
+The special context `scv` provides access to values stored in the Secure Credential Vault.
+The key used in this context must consist of the alias and the attribute of the credential separated by a colon.
+
+Example: `${scv:mydevice:password}`.
+This will access the `password` attribute of a credential named `mydevice`.
+
 [[ga-metadata-webui]]
 == Adding Metadata through the Web UI
 
@@ -110,6 +119,9 @@ Use a `|` to separate optional fallback context-key pairs and default value.
 If the first context:key item is not available (not on a service, interface, node or any other of the special contexts) the next one after the | is used.
 The last one, the default value, is not interpreted as a `context:key` but is used as a literal and will always succeed.
 
+The interpolation supports recursive evaluation.
+This allows a user to specify an pattern inside another pattern or to provide whole expressions stored as metadata.
+
 *Examples*
 
 `${requisition:username}`::
@@ -127,6 +139,10 @@ Separate each fallback context-key-pair by a `|`.
 Will resolve to the `username` as defined in the requisitioning UI.
 If there is no such username defined, the fallback `account` will be used.
 If neither exist, the fallback value `admin` will be used.
+
+`${scv:${requisition:credentials|node:label}:password}`
+Will resolve the `credentials` value specified in the requisitioning UI while using the node label as fallback value.
+This in turn is used to resolve the outer pattern and access the final password for this device.
 
 To resolve the value associated with context-key pair, the DSL uses scopes that determine the resolution order.
 The last scope will be queried first and if a scope does not contain the queried context-key tuple, the next one will be queried.
