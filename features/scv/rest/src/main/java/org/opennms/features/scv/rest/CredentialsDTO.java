@@ -31,6 +31,7 @@ package org.opennms.features.scv.rest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public class CredentialsDTO {
 
@@ -104,5 +105,10 @@ public class CredentialsDTO {
     @Override
     public int hashCode() {
         return Objects.hash(alias, username, password, attributes);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Credentials[alias=%s, username=%s,password=XXXXXX]", alias, username);
     }
 }

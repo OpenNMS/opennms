@@ -48,6 +48,7 @@ public class DefaultScvRestService implements ScvRestService {
 
     private final SecureCredentialsVault scv;
     private final Pattern pattern = Pattern.compile("\\*{2,}");
+    private final String MASKED_PASSWORD = "******";
 
     public DefaultScvRestService(SecureCredentialsVault scv) {
         this.scv = scv;
@@ -62,9 +63,9 @@ public class DefaultScvRestService implements ScvRestService {
             }
             if (credentials.getUsername() != null && credentials.getPassword() != null) {
                 // Mask password.
-                CredentialsDTO dto = new CredentialsDTO(alias, credentials.getUsername(), "******");
+                CredentialsDTO dto = new CredentialsDTO(alias, credentials.getUsername(), MASKED_PASSWORD);
                 // Mask values in attributes.
-                credentials.getAttributes().forEach((key, value) -> dto.getAttributes().put(key, "******"));
+                credentials.getAttributes().forEach((key, value) -> dto.getAttributes().put(key, MASKED_PASSWORD));
                 return Response.ok(dto).build();
             }
         } catch (Exception e) {
