@@ -153,21 +153,20 @@ public class EntityScopeProviderIT {
     @Test
     @Transactional
     public void testScvInterpolation() {
-
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("username", "${requisition:dcb:username}");
         attributes.put("password", "${requisition:dcb:password}");
+
         OnmsNode node = this.populator.getNode1();
         OnmsMetaData metaData1 = new OnmsMetaData("requisition", "dcb:username", "${scv:alias:username}");
         OnmsMetaData metaData2 = new OnmsMetaData("requisition", "dcb:password", "${scv:alias:password}");
         node.getMetaData().add(metaData1);
         node.getMetaData().add(metaData2);
         this.populator.getNodeDao().saveOrUpdate(node);
-        secureCredentialsVault.setCredentials("alias", new Credentials("horizon", "OpenNMS@30"));
 
-        Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new FallbackScope(
-                this.provider.getScopeForNode(this.populator.getNode1().getId())
-        ));
+        this.secureCredentialsVault.setCredentials("alias", new Credentials("horizon", "OpenNMS@30"));
+
+        Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, this.provider.getScopeForNode(this.populator.getNode1().getId()));
 
         Assert.assertEquals(interpolatedAttributes.get("username"), "horizon");
         Assert.assertEquals(interpolatedAttributes.get("password"), "OpenNMS@30");

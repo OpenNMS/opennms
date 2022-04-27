@@ -30,6 +30,8 @@ package org.opennms.core.rpc.utils.mate;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.xml.JaxbUtils;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -45,6 +47,8 @@ public class Interpolator {
     private static final String INNER_REGEXP = "(?:([^\\|]+?:[^\\|]+)|([^\\|]+))";
     private static final Pattern OUTER_PATTERN = Pattern.compile(OUTER_REGEXP);
     private static final Pattern INNER_PATTERN = Pattern.compile(INNER_REGEXP);
+
+    private static final int MAX_RECURSION_DEPTH = SystemProperties.getInteger("org.opennms.mate.maxRecursionDepth", 8);
 
     private Interpolator() {}
 
@@ -77,18 +81,22 @@ public class Interpolator {
         }
 
         final ImmutableList.Builder<ResultPart> parts = ImmutableList.builder();
-        final String output = interpolateRecursive(raw, parts, scope);
+        final String output = interpolateRecursive(raw, parts, scope, 1);
 
         return new Result(output, parts.build());
     }
 
-    private static String interpolateRecursive(final String input, final ImmutableList.Builder<ResultPart> parts, final Scope scope) {
+    private static String interpolateRecursive(final String input, final ImmutableList.Builder<ResultPart> parts, final Scope scope, final int depth) {
+        if (depth > MAX_RECURSION_DEPTH) {
+            return input;
+        }
+
         final String result = interpolateSingle(input, parts, scope);
         if (Objects.equals(input, result)) {
             return result;
         }
 
-        return interpolateRecursive(result, parts, scope);
+        return interpolateRecursive(result, parts, scope, depth + 1);
     }
 
     private static String interpolateSingle(final String input, final ImmutableList.Builder<ResultPart> parts, final Scope scope) {

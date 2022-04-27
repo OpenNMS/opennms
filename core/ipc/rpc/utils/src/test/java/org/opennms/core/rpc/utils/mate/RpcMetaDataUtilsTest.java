@@ -58,6 +58,7 @@ public class RpcMetaDataUtilsTest {
         metaData.put(new ContextKey("ctx4", "outer:example"), "working");
         metaData.put(new ContextKey("ctx5", "key1"), "${ctx5:key2}");
         metaData.put(new ContextKey("ctx5", "key2"), "working");
+        metaData.put(new ContextKey("ctx6", "key1"), "${ctx6:key1}a");
     }
 
     @Test
@@ -75,6 +76,7 @@ public class RpcMetaDataUtilsTest {
         attributes.put("attribute9", "aaa${abc}bbb");
         attributes.put("attribute10", "aaa${ctx4:${ctx4:inner}:example}bbb");
         attributes.put("attribute11", "aaa${ctx5:key1}bbb");
+        attributes.put("attribute12", "xx${ctx6:key1}yy");
 
         final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new MapScope(Scope.ScopeName.NODE, this.metaData));
 
@@ -92,6 +94,7 @@ public class RpcMetaDataUtilsTest {
         Assert.assertEquals("aaa${abc}bbb", interpolatedAttributes.get("attribute9"));
         Assert.assertEquals("aaaworkingbbb", interpolatedAttributes.get("attribute10"));
         Assert.assertEquals("aaaworkingbbb", interpolatedAttributes.get("attribute11"));
+        Assert.assertEquals("xx${ctx6:key1}aaaaaaaayy", interpolatedAttributes.get("attribute12"));
     }
 
     @Test
