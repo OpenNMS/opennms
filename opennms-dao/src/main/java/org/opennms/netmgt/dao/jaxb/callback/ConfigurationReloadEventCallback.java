@@ -48,7 +48,7 @@ public class ConfigurationReloadEventCallback<E> implements Consumer<ConfigUpdat
     public void accept(ConfigUpdateInfo configUpdateInfo) {
         // Fire reload event
         EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI,
-                ConfigurationReloadEventCallback.class.getSimpleName());
+                "config-rest");
         eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, configUpdateInfo.getConfigName());
         eventForwarder.sendNow(eventBuilder.getEvent());
     }
