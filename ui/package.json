@@ -19,7 +19,7 @@
     "@featherds/checkbox": "0.10.2",
     "@featherds/chips": "0.10.2",
     "@featherds/date-input": "0.10.2",
-    "@featherds/dialog": "0.10.2",
+    "@featherds/dialog": "0.10.8",
     "@featherds/drawer": "0.10.2",
     "@featherds/dropdown": "0.10.2",
     "@featherds/expansion": "0.10.2",
