@@ -5,6 +5,7 @@
       label="key"
       @update:modelValue="updateAttributeKey"
       :modelValue="attributeKey"
+      :error="keyError"
       class="input"
     />
     <FeatherInput
@@ -25,8 +26,12 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Remove'
+import { useStore } from 'vuex'
+import { SCVCredentials } from '@/types/scv'
 
-defineProps({
+const store = useStore()
+
+const props = defineProps({
   attributeKey: {
     type: String,
     required: true
@@ -42,9 +47,31 @@ defineProps({
 })
 
 const keyRef = ref()
-const updateAttributeKey = (key: string) => console.log(key)
-const updateAttributeValue = (value: string) => console.log(value)
+const keyError = ref()
+const credentials = computed<SCVCredentials>(() => store.state.scvModule.credentials)
 
+const isDuplicateKey = (key: string) => {
+  // check to see if the key already exists in another prop
+  const entries = Object.entries(credentials.value.attributes)
+  for (const [index, [attributeKey]] of entries.entries()) {
+    if (key === attributeKey && index !== props.attributeIndex) {
+      keyError.value = 'Duplicate keys not allowed.'
+      return true
+    }
+  }
+
+  // if not, clear errors
+  keyError.value = null
+  return false
+}
+
+const updateAttributeKey = (key: string) => {
+  if (!isDuplicateKey(key)) {
+    store.dispatch('scvModule/updateAttribute', { key: props.attributeKey, keyVal: { key, value: props.attributeValue} })
+  }
+}
+
+const updateAttributeValue = (value: string) => store.dispatch('scvModule/updateAttribute', { key: props.attributeKey, keyVal: { key: props.attributeKey, value }})
 onMounted(() => keyRef.value.focus())
 </script>
 
