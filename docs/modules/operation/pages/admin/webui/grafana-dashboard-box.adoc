@@ -72,6 +72,26 @@ When no tag is given all dashboards will be displayed
 | Maximum number of entries to be displayed (0 for unlimited)
 | Integer
 | 0
+
+| org.opennms.grafanaBox.link.protocol
+| The protocol used to build each dashboard link url.
+| String
+| org.opennms.grafanaBox.protocol
+
+| org.opennms.grafanaBox.link.hostname
+| Hostname used to build each dashboard link url.
+| String
+| org.opennms.grafanaBox.hostname
+
+| org.opennms.grafanaBox.link.port
+| The port used to build each dashboard link url.
+| Integer
+| org.opennms.grafanaBox.port
+
+| org.opennms.grafanaBox.link.basePath
+| The Grafana base path used to build each dashboard link url.
+| String
+| org.opennms.grafanaBox.basePath
 |===
 
 TIP: If you have Grafana behind a proxy it is important the `org.opennms.grafanaBox.hostname` is reachable.
