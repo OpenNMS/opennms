@@ -162,7 +162,7 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
  * @returns crontab-ready string
  */
 const convertLocalToCronTab = (item: LocalConfiguration) => {
-  let schedule = '0 0 0 * * *'
+  let schedule = ''
 
   if (!item.advancedCrontab) {
     const occurance = item.occurance
@@ -171,21 +171,22 @@ const convertLocalToCronTab = (item: LocalConfiguration) => {
     const hours = parseInt(hoursd)
     const minutes = parseInt(minutesd)
 
-    if (occurance.name === 'Daily' || !occurance.name) {
-      schedule = `0 ${minutes} ${hours} * * *`
-    } else if (occurance.name === 'Weekly') {
-      const week: number | string = item.occuranceWeek.id
-      schedule = `0 ${minutes} ${hours} * * ${week}`
-    } else if (occurance.name === 'Monthly') {
-      let day: number | string = item.occuranceDay.id
-      let final = '*'
-      if (day === 32) {
-        day = 'L'
-        final = '?'
-      }
-      schedule = `0 ${minutes} ${hours} ${day} * ${final}`
+    switch(occurance.name) {
+      case 'Daily':
+        schedule = `0 ${minutes} ${hours} * * ?`
+        break
+      case 'Weekly':
+        schedule = `0 ${minutes} ${hours} ? * ${item.occuranceWeek.id}`
+        break
+      case 'Monthly':
+        schedule = `0 ${minutes} ${hours} ${item.occuranceDay.id === 32 ? 'L' : item.occuranceDay.id} * ?`
+        break
+      default:
+        // normal mode, at drawer open (Schedule type field empty)
+        schedule = '0 0 0 * * ?' // 'sec min hr DOM mth DOW'
     }
   } else {
+    // advanced mode
     schedule = item.occuranceAdvanced
   }
 
@@ -395,7 +396,7 @@ const cronToEnglish = (cronFormatted: string) => {
       error = typeof e === 'string' ? e : 'Error Parsing Crontab'
     }
   }
-
+  
   return error
 }
 
