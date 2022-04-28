@@ -651,6 +651,12 @@
           <version>${project.version}</version>
           <scope>compile</scope>
       </dependency>
+    <!-- Test to check if CircleCI will proceed with the test -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>

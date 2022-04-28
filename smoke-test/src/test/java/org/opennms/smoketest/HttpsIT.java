@@ -65,7 +65,7 @@ public class HttpsIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSContainer.class);
 
-    String urlOverHttps = "https://" + STACK.opennms().getHost() + ":" + STACK.opennms().getSSLPort();
+    private final String urlOverHttps = "https://" + STACK.opennms().getHost() + ":" + STACK.opennms().getSSLPort();
 
     @ClassRule
     public static final OpenNMSStack STACK = OpenNMSStack.withModel(StackModel.newBuilder()
