@@ -1,4 +1,4 @@
-import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
+import { DeviceConfigBackup, DeviceConfigQueryParams, status } from '@/types/deviceConfig'
 
 export interface State {
   deviceConfigBackups: DeviceConfigBackup[]
@@ -6,7 +6,7 @@ export interface State {
   modalDeviceConfigBackup: DeviceConfigBackup
   selectedIds: number[]
   vendorOptions: string[]
-  backupStatusOptions: string[]
+  backupStatusOptions: status[]
   osImageOptions: string[]
   deviceConfigTotal: string
   historyModalBackups: DeviceConfigBackup[]
@@ -18,7 +18,7 @@ const state: State = {
   modalDeviceConfigBackup: {} as DeviceConfigBackup,
   selectedIds: [],
   vendorOptions: [],
-  backupStatusOptions: ['success', 'failed', 'no backup'],
+  backupStatusOptions: ['success', 'failed', 'none'],
   osImageOptions: [],
   deviceConfigTotal: 'N/A',
   historyModalBackups: []

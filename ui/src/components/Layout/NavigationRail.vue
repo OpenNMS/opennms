@@ -54,6 +54,13 @@
         :icon="MinionProfiles"
         title="Configuration Management"
       />
+      <FeatherRailItem
+        v-if="adminRole"
+        :class="{ selected: isSelected('/scv') }"
+        href="#/scv"
+        :icon="Security"
+        title="Secure Credentials Vault"
+      />
 
       <!-- loop plugin menu items -->
       <FeatherRailItem
@@ -79,6 +86,7 @@ import MarkComplete from '@featherds/icon/action/MarkComplete'
 import Cloud from '@featherds/icon/action/Cloud'
 import Reporting from '@featherds/icon/action/Reporting'
 import UpdateUtilities from '@featherds/icon/action/UpdateUtilities'
+import Security from '@featherds/icon/hardware/Security'
 import {
   FeatherNavigationRail,
   FeatherRailItem
