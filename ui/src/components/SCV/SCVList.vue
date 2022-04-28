@@ -8,7 +8,7 @@
       :selected="selectedAlias === alias && isEditing" 
       :key="alias"
       @click="onAliasClick(alias)">
-      <span class="alias">{{ alias }}</span>
+      {{ alias }}
     </FeatherListItem>
   </FeatherList>
 </template>
@@ -41,10 +41,6 @@ const onAliasClick = (alias: string) => {
 
   .title {
     @include headline3
-  }
-
-  .alias {
-    text-transform: capitalize;
   }
 }
 </style>
