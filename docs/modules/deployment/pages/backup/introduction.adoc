@@ -24,6 +24,12 @@ Please be aware that `/tmp` is not persisted as most operating systems will dele
 
 [{tabs}]
 ====
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/backup-centos-rhel8.adoc[]
+--
+
 ifeval::["{page-component-title}" == "Horizon"]
 Debian/Ubuntu::
 +

@@ -1,0 +1,105 @@
+[[restore-centos-rhel8]]
+.Restore User/Group definition
+
+[source, console]
+----
+sudo cat /tmp/opennms-passwd.txt >> /etc/passwd
+sudo cat /tmp/opennms-group.txt >> /etc/group
+----
+
+.Create log folder
+----
+sudo mkdir /var/log/opennms
+chown opennms. /var/log/opennms
+----
+
+.Restore OpenNMS {page-component-title} binaries, RRD archives, configurations
+
+[source, console]
+----
+sudo tar -xzf /tmp/opennms-opt.tar.gz -C / && \
+sudo tar -xzf /tmp/opennms-var.tar.gz -C /
+----
+
+.Create OpenNMS systemd unit
+[source, console]
+----
+sudo cp /opt/opennms/etc/opennms.service /lib/systemd/system/
+----
+
+._Assign CAP_NET_RAW capabilities_
+{page-component-title} runs as a non-root user, which requires having a Linux kernel greater than 3.10.
+If you run on an older kernel, and are unable to upgrade your OS, you need to assign CAP_NET_RAW capabilities:
+
+Run `systemctl edit --full opennms.service` and add the following lines to the `[Service]` section:
+
+[source, console]
+----
+CapabilityBoundingSet=CAP_NET_RAW
+AmbientCapabilities=CAP_NET_RAW
+----
+
+Reload the sytemd unit with `systemctl daemon-reload` and restart the service with `systemctl restart opennms`.
+
+
+.Install PostgreSQL Database
+[source, console]
+----
+sudo dnf -y install postgresql-server postgresql
+----
+
+.Change the access policy for PostgreSQL
+[source, console]
+----
+sudo vi /var/lib/pgsql/data/pg_hba.conf
+----
+
+.Allow {page-component-title} to access the database over the local network with an MD5 hashed password
+[source, pg_hba.conf]
+----
+host    all             all             127.0.0.1/32            md5<1>
+host    all             all             ::1/128                 md5<1>
+----
+
+<1> Change method from `ident` to `md5` for IPv4 and IPv6 on localhost.
+
+.Apply configuration changes for PostgreSQL
+[source, console]
+----
+sudo systemctl reload postgresql
+----
+
+.Restore OpenNMS Database
+[source, console]
+----
+sudo runuser -l postgres -c 'psql -f /tmp/opennms_postgres.dmp postgres'
+----
+
+.Install OpenJDK
+[source, console]
+----
+sudo dnf -y install java-11-openjdk
+sudo /opt/opennms/bin/runjava -s
+----
+
+.Run `install -dis` command
+[source, console]
+----
+sudo /opt/opennms/bin/install -dis
+----
+
+
+
+.Allow connection to the web UI from your network
+[source, console]
+----
+sudo firewall-cmd --permanent --add-port=8980/tcp
+sudo systemctl reload firewalld
+----
+
+.Start OpenNMS service
+
+[source, console]
+----
+sudo systemctl start opennms
+----

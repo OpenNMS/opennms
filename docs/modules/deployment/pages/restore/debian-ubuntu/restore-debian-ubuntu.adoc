@@ -3,18 +3,24 @@
 
 [source, console]
 ----
-sudo echo /tmp/opennms-passwd.txt >> /etc/passwd
-sudo echo /tmp/opennms-group.txt >> /etc/group
+sudo cat /tmp/opennms-passwd.txt >> /etc/passwd
+sudo cat /tmp/opennms-group.txt >> /etc/group
 ----
 
-.Restore OpenNMS {page-component-title} binaries, logs, RRD archives, configurations
+.Create log folder
+----
+sudo mkdir /var/log/opennms
+chown opennms. /var/log/opennms
+----
+
+.Restore OpenNMS {page-component-title} binaries, RRD archives, configurations
 
 [source, console]
 ----
-sudo tar -xzf /tmp/opennms.tar.gz -C / && \
-sudo tar -xzf /tmp/etc-opennms.tar.gz -C / && \
-sudo tar -xzf /tmp/var-lib-opennms.tar.gz -C / && \
-sudo tar -xzf /tmp/usr-share-java-opennms.tar.gz -C
+sudo tar -xzf /tmp/opennms-usr-share.tar.gz -C / && \
+sudo tar -xzf /tmp/opennms-etc.tar.gz -C / && \
+sudo tar -xzf /tmp/opennms-var-lib.tar.gz -C / && \
+sudo tar -xzf /tmp/opennms-usr-share-java.tar.gz -C
 ----
 
 .Create OpenNMS systemd unit
@@ -33,7 +39,7 @@ sudo apt -y install postgresql
 .Restore OpenNMS Database
 [source, console]
 ----
-sudo runuser -l postgres -c 'psql -f /tmp/opennms_postgres.dmp postgres'
+sudo runuser -l postgres -c 'psql -f /tmp/opennms-postgres.dmp postgres'
 ----
 
 .Install OpenJDK
