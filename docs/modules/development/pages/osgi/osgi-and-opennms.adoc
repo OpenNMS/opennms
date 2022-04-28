@@ -51,7 +51,7 @@ After creating a Maven module, add the following plugin to pom.xml to create the
 
 == Adding a Karaf feature
 
-A feature is a combination of bundles that can be installed in karaf.
+A feature is a combination of bundles that can be installed in Karaf.
 For a given module, all the dependencies need to be specified in feature.
 Sometimes there are run time dependencies that will trigger only when you actually do something in the feature.
 
@@ -75,7 +75,7 @@ You can define the features in following feature files, located in container/fea
 
 * features.xml - All the features specific to OpenNMS and common to Minion/Sentinel.
 
-* features-minion.xml - All the features that are needed only in Minion.
+* features-minion.xml - All the features that are specific to Minion.
 
 * features-sentinel.xml - All the features that are specific to Sentinel.
 
@@ -98,7 +98,7 @@ You can define the features in following feature files, located in container/fea
 === Modules that need to be on Spring
 
 If a Maven module should be loaded in Spring by default, that Maven module should be included in `opennms-base-assembly/pom.xml`.
-Spring dependencies will be available in `${opennms.target}/opennms/lib`.
+All the modules that are loaded in Spring will be available in `${opennms.target}/opennms/lib`.
 
 Some modules are only defined in Spring (legacy, RPC modules like opennms-services).
 These are loaded in Default ClassLoader.
@@ -120,7 +120,7 @@ Health Check validates whether all features are enabled.
 health:check
 ----
 
-If you see any failure related to bundle, you can do `bundle:diag id` to understand specific failure.
+If you see any failure related to a bundle, you can do `bundle:diag id` to understand the specific failure.
 
 === Reload a specific Maven module dynamically for debugging
 
