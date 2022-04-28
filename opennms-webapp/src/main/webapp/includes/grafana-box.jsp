@@ -69,7 +69,7 @@
     int grafanaSoTimeout = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.soTimeout", "500"));
     String grafanaLinkProtocol = System.getProperty("org.opennms.grafanaBox.link.protocol", grafanaProtocol);
     String grafanaLinkHostname = System.getProperty("org.opennms.grafanaBox.link.hostname", grafanaHostname);
-    String grafanaLinkBasePath = System.getProperty("org.opennms.grafanaBox.link.basePath", grafanaBasePath);
+    String grafanaLinkBasePath = System.getProperty("org.opennms.grafanaBox.link.basePath", "");
     int grafanaLinkPort = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.link.port", Integer.toString(grafanaPort)));
 
     String errorMessage = null;
