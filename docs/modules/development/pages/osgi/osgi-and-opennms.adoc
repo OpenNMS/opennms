@@ -1,6 +1,8 @@
 [[OSGI-and-OpenNMS]]
 = OSGi Integration within OpenNMS
 
+OpenNMS uses https://www.osgi.org/resources/what-is-osgi/[OSGi] framework in a https://karaf.apache.org/manual/latest/[Karaf] Container. This document explains how a Maven module (OSGi bundle) can be integrated into the system.
+
 == Avoid host key checking for Karaf SSH
 
 Add the following lines to `.ssh/config`
