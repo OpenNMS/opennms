@@ -1,9 +1,9 @@
 [[OSGI-and-OpenNMS]]
-= OSGI Integration within OpenNMS
+= OSGi Integration within OpenNMS
 
-== Avoid host key checking for karaf SSH
+== Avoid host key checking for Karaf SSH
 
-Add following lines to `.ssh/config`
+Add the following lines to `.ssh/config`
 ----
 Host localhost
     HostKeyAlgorithms +ssh-dss
@@ -11,13 +11,13 @@ Host localhost
 UserKnownHostsFile=/dev/null
 ----
 
-== Adding a new maven module
+== Add a new Maven module
 
-This section describes how to integrate a new maven module into OpenNMS.
+This section describes how to integrate a new Maven module into OpenNMS.
 
-Any new maven module that we need to add to OpennMS is mostly a bundle (jar + OSGi metadata)
+Any new Maven module that we need to add to OpennMS is mostly a bundle (jar + OSGi metadata).
 
-After creating a maven module, add following plugin to pom.xml to create necessary OSGi metadata.
+After creating a Maven module, add the following plugin to pom.xml to create the necessary OSGi metadata.
 [source, xml]
 ----
     <packaging>bundle</packaging>
@@ -44,15 +44,16 @@ After creating a maven module, add following plugin to pom.xml to create necessa
     </build>
 ----
 
-<1> Can define packages that can be exported here, optional not needed by default.
-<2> Can import packages from dependent modules, optional not needed by default.
-<3> Private packages that shouldn't be exported, optional not needed by default.
-<4> Add this when the module is for adding karaf commands ( needed only karaf command bundles)
+<1> Can define packages that can be exported here; optional not needed by default.
+<2> Can import packages from dependent modules; optional not needed by default.
+<3> Private packages that should not be exported; optional not needed by default.
+<4> Add this when the module is for adding Karaf commands (needed only for Karaf command bundles).
 
-== Adding a karaf feature
+== Adding a Karaf feature
 
-A feature is a combination of bundles that can be installed in karaf. For a given module, all the dependencies need to be
-specified in feature.  Sometimes there are runtime dependencies which will only trigger when you actually do something in the feature.
+A feature is a combination of bundles that can be installed in karaf.
+For a given module, all the dependencies need to be specified in feature.
+Sometimes there are run time dependencies that will trigger only when you actually do something in the feature.
 
 .Example feature
 [source, xml]
@@ -70,48 +71,50 @@ specified in feature.  Sometimes there are runtime dependencies which will only 
 
 === Feature definitions
 
-You can define the features in following feature files which are in container/features/src/main/resources/
+You can define the features in following feature files, located in container/features/src/main/resources/
 
-features.xml - All the features that are specific to OpenNMS and common to Minion/Sentinel
+* features.xml - All the features specific to OpenNMS and common to Minion/Sentinel.
 
-features-minion.xml - All the features that are only needed in Minion
+* features-minion.xml - All the features that are needed only in Minion.
 
-features-sentinel.xml - All the features that are specific to Sentinel.
+* features-sentinel.xml - All the features that are specific to Sentinel.
 
-=== Making new feature available on Karaf Container.
+=== Make new feature available on Karaf Container.
 
-For OpenNMS, this needs to be added in `opennms-full-assembly/pom.xml` in `<features>`.
+* OpenNMS: add the feature in `opennms-full-assembly/pom.xml`.
 
-For Minion, this needs to be added in `features/minion/repository/pom.xml` in `<features>` and also add maven dependencies.
+* Minion: add this feature and Maven dependencies in  `features/minion/repository/pom.xml`.
 
-For Sentinel, this needs to be added in `features/sentinel/repository/pom.xml` in `<features>` and also add maven dependencies.
+* Sentinel: add this feature and Maven dependencies in  `features/sentinel/repository/pom.xml`.
 
-=== Installing a new feature by default.
+=== Install a new feature by default
 
-For OpenNMS, this needs to be added in `container/karaf/src/main/filtered-resources/etc/org.apache.karaf.features.cfg`.
+* OpenNMS: add the feature in `container/karaf/src/main/filtered-resources/etc/org.apache.karaf.features.cfg`.
 
-For Minion, this needs to be added in `features/minion/repository/src/main/resources/features.boot`.
+* Minion: add the feature in `features/minion/repository/src/main/resources/features.boot`.
 
-For Sentinel, this needs to be added in `features/container/sentinel/src/main/filtered-resources/etc/org.apache.karaf.features.cfg`
+* Sentinel: add this feature in `features/container/sentinel/src/main/filtered-resources/etc/org.apache.karaf.features.cfg`.
 
 === Modules that need to be on Spring
 
-If a maven module should be loaded in Spring by default, that maven module should be included in `opennms-base-assembly/pom.xml`. Once you add a dependency here, it will be available in `target/opennms/lib`
+If a Maven module should be loaded in Spring by default, that Maven module should be included in `opennms-base-assembly/pom.xml`.
+Spring dependencies will be available in `${opennms.target}/opennms/lib`.
 
-Some modules are only defined in Spring ( legacy, RPC modules ex: opennms-services). These are loaded in Default ClassLoader.
+Some modules are only defined in Spring (legacy, RPC modules like opennms-services).
+These are loaded in Default ClassLoader.
 
-Spring beans can be added to OSGi Service Registry by exposing it as `<onmsgi:service>`.
+Add Spring beans to the OSGi service registry by exposing the bean as `<onmsgi:service>`.
 
 
 === When to add a package to custom.properties
 
-Packages added to custom.properties are loaded in default classloader even when loaded in OSGi.
-Those packages that are loaded in Spring but if they also get accessed through OSGi, we have to export these packages in custom.properties.
+Packages added to custom.properties are loaded in the default classloader even when loaded in OSGi.
+You must use custom.properties to export packages that are loaded in Spring but also accessed through OSGi.
 
 === Health Check
 
-Health Check is available on all karaf containers.
-Health Check validates whether all features are enabled or not.
+Health Check is available on all Karaf containers.
+Health Check validates whether all features are enabled.
 
 ----
 health:check
@@ -119,17 +122,12 @@ health:check
 
 If you see any failure related to bundle, you can do `bundle:diag id` to understand specific failure.
 
-=== Reload a specific maven module dynamically for debugging
+=== Reload a specific Maven module dynamically for debugging
 
 ----
 bundle:watch *
 ----
 
-By doing bundle watch in karaf container, it watches any updates in local m2 repository.
-Do `mvn clean install` in specific module to update it in local karaf repository.
-
-
-
-
-
+`bundle:watch~` in the Karaf container, watches any updates in the local m2 repository.
+Do `mvn clean install` in a specific module to update it in the local Karaf repository.
 
