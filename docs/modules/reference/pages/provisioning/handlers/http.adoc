@@ -10,7 +10,7 @@ The HTTP(S) handler imports a properly-formatted requisition definition from an 
 ifeval::["{page-component-title}" == "Horizon"]
 Prior to {page-component-title} 30, you set external requisitions in the `provisiond-configuration.xml` file.
 This file is no longer available.
-You must use the UI to configure an external requisition.
+You must use the UI or the xref:development:rest/config_management.adoc#config-rest-api[config management REST API] to configure an external requisition.
 endif::[]
 
 To configure an HTTP(S) requisition, follow the steps in xref:reference:provisioning/handlers/introduction.adoc#create-req-def[Create an external requisition], but specify HTTP or HTTPS as the type, set the host, path, schedule, and rescan behavior.

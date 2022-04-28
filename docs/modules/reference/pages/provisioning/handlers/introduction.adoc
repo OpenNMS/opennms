@@ -5,7 +5,7 @@
 = Import Handlers
 
 {page-component-title} supports import handlers to help provision nodes from an external system (foreign source) into a requisition.
-OpenNMS does this through external requisitions you specify in the External Requisitions and Thread Pools UI.
+OpenNMS does this through external requisitions you specify in the External Requisitions and Thread Pools UI or configure via the xref:development:rest/config_management.adoc#config-rest-api[config management REST API].
 
 ifeval::["{page-component-title}" == "Horizon"]
 NOTE: Prior to {page-component-title} 30, you set external requisitions in the `provisiond-configuration.xml` file.
@@ -65,6 +65,8 @@ To adjust them, follow these steps:
 . In the *Thread Pools* area, select a value from the drop-down list for each item you want to update.
 . Click *Update Thread Pools*.
 
+NOTE: You can also configure thread pool sizes via the xref:development:rest/config_management.adoc#config-rest-api[config management REST API].
+
 [[create-req-def]]
 == Create an external requisition
 
@@ -73,6 +75,8 @@ An external requisition defines the URL, schedule, and rescan behaviour to retri
 OpenNMS constructs the URL from the parameters (host, zone, foreign source) associated with the type of external source the user defines.
 
 The following example shows how to create an external requisition to schedule an import from a DNS server running on the localhost, requesting nodes from the "localhost" zone, "DNS-example" requisition name, and imported daily at midnight.
+
+NOTE: You can also create an external requisition via the xref:development:rest/config_management.adoc#config-rest-api[config management REST API].
 
 . Log in to {page-component-title} as an admin user.
 . Click the gear icon and click *Configure External Requisitions and Thread Pools*.

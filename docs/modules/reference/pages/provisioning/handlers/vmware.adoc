@@ -50,7 +50,7 @@ If you have multiple vCenter servers, you can specify multiple `<vmware-server /
 ifeval::["{page-component-title}" == "Horizon"]
 Prior to {page-component-title} 30, you set external requisitions in the `provisiond-configuration.xml` file.
 This file is no longer available.
-You must use the UI to configure an external requisition.
+You must use the UI or the xref:development:rest/config_management.adoc#config-rest-api[config management REST API] to configure an external requisition.
 endif::[]
 
 To configure a VMware requisition, follow the steps in xref:reference:provisioning/handlers/introduction.adoc#create-req-def[Create an external requisition], but specify VMWare as the type, the host (name must match the case of the hostname entered in the `vmware-config.xml` file), username, password, schedule, and rescan behavior.

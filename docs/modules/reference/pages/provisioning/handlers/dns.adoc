@@ -15,7 +15,7 @@ The format of the URL for this protocol handler is: `dns://<host>[:port]/<zone>[
 ifeval::["{page-component-title}" == "Horizon"]
 Prior to {page-component-title} 30, you set external requisitions in the `provisiond-configuration.xml` file.
 This file is no longer available.
-You must use the UI to configure an external requisition.
+You must use the UI or the xref:development:rest/config_management.adoc#config-rest-api[config management REST API] to configure an external requisition.
 endif::[]
 
 To configure a DNS requisition, follow the steps in xref:reference:provisioning/handlers/introduction.adoc#create-req-def[Create an external requisition], but specify DNS as the type, and set the host, DNS zone, requisition name, schedule, and rescan behavior.
