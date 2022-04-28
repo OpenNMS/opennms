@@ -13,7 +13,7 @@ const getAliases = async (): Promise<string[]> => {
     const resp = await rest.get(endpoint)
     return resp.data
   } catch (err) {
-    showSnackBar({ msg: 'Failed to return alises.' })
+    showSnackBar({ msg: 'Failed to return aliases.' })
     return []
   } finally {
     stopSpinner()
@@ -37,7 +37,7 @@ const addCredentials = async (credentials: SCVCredentials): Promise<number | nul
   try {
     startSpinner()
     const resp = await rest.post(endpoint, credentials)
-    showSnackBar({ msg: 'Alias added.' })
+    showSnackBar({ msg: 'Credentials added.' })
     return resp.status
   } catch (err) {
     showSnackBar({ msg: 'Failed to add credentials.' })
@@ -51,10 +51,10 @@ const updateCredentials = async (credentials: SCVCredentials): Promise<number | 
   try {
     startSpinner()
     const resp = await rest.put(`${endpoint}/${credentials.alias}`, credentials)
-    showSnackBar({ msg: 'Alias updated.' })
+    showSnackBar({ msg: 'Credentials updated.' })
     return resp.status
   } catch (err) {
-    showSnackBar({ msg: 'Failed to update alias credentials.' })
+    showSnackBar({ msg: 'Failed to update credentials.' })
     return null
   } finally {
     stopSpinner()

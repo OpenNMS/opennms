@@ -1,17 +1,19 @@
 <template>
   <div class="form-container" id="scv">
-    <p class="title">Add Alias</p>
+    <p class="title">{{ isEditing ? 'Update' : 'Add' }} Credentials</p>
     <FeatherInput
+      data-test="alias-input"
       :disabled="isEditing"
       label="Alias"
       @update:modelValue="updateAlias"
       :modelValue="credentials.alias"
       :error="aliasError"
-      class="input"
+      class="alias-input"
     />
 
     <form autocomplete="off" class="row">
       <FeatherInput
+        data-test="username-input"
         autocomplete="new-username"
         label="Username"
         @update:modelValue="updateUsername"
@@ -20,6 +22,7 @@
       />
 
       <FeatherInput
+        data-test="password-input"
         autocomplete="new-password"
         label="Password"
         @update:modelValue="updatePassword"
@@ -29,7 +32,7 @@
       />
     </form>
 
-    <div class="add-btn" @click="addAttribute">
+    <div class="add-btn" @click="addAttribute" data-test="add-attr-btn">
       <FeatherIcon :icon="Add" aria-hidden="true" focusable="false" />
       Add attribute
     </div>
@@ -45,22 +48,25 @@
     <div class="btns">
       <FeatherButton
         v-if="!isEditing"
+        data-test="add-creds-btn"
         :disabled="disabled"
         primary 
         @click="addCredentials">
-          Add Alias
+          Add Credentials
       </FeatherButton>
 
-      <FeatherButton 
+      <FeatherButton
         v-if="isEditing"
+        data-test="update-creds-btn"
         :disabled="disabled"
         primary 
         @click="updateCredentials">
-          Update Alias
+          Update Credentials
       </FeatherButton>
 
       <FeatherButton
         primary 
+        data-test="clear-btn"
         @click="clearCredentials">
           Clear Form
       </FeatherButton>
@@ -142,12 +148,18 @@ const addAttribute = () => store.dispatch('scvModule/addAttribute')
 
   .title {
     @include headline3;
+    margin-top: 11px;
+    margin-bottom: 9px;
   }
 
   .row {
     display: flex;
     flex-direction: row;
     gap: 10px;
+  }
+
+  .alias-input {
+    width: calc(50% - 5px);
   }
   .input {
     width: 50%;

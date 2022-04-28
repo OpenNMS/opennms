@@ -1,6 +1,7 @@
 <template>
   <div class="attribute-container" id="scv-attribute">
     <FeatherInput
+      data-test="attr-key"
       ref="keyRef"
       label="key"
       @update:modelValue="updateAttributeKey"
@@ -9,13 +10,14 @@
       class="input"
     />
     <FeatherInput
+      data-test="attr-value"
       label="value"
       @update:modelValue="updateAttributeValue"
       :modelValue="attributeValue"
       class="input"
     />
 
-    <FeatherButton icon="Remove attribute" @click="removeAttribute">
+    <FeatherButton icon="Remove attribute" @click="removeAttribute" data-test="rm-attr-btn">
       <FeatherIcon :icon="Delete" />
     </FeatherButton>
   </div>

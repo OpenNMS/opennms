@@ -155,10 +155,9 @@
           </td>
           <td v-date>{{ config.lastUpdatedDate }}</td>
           <td>
-            <div
-              :class="config.backupStatus.replace(' ', '').toLowerCase()"
-              class="option"
-            >{{ config.backupStatus }}</div>
+            <div :class="config.backupStatus" class="option">
+              {{ config.backupStatus === 'none' ? 'No Backup' : config.backupStatus }}
+            </div>
           </td>
           <td v-date>{{ config.nextScheduledBackupDate }}</td>
           <td>{{ Object.values(config.scheduledInterval)[0] }}</td>
