@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- <pre>{{props.config}}</pre> -->
     <div
       class="flex"
       v-if="!props.config.advancedCrontab"

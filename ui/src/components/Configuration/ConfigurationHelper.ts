@@ -32,6 +32,8 @@ const cronTabLength = (cronTab: string) => cronTab.replace(/\s$/, '').split(' ')
  * @returns Human Readable time in 12 hour format.
  */
 const buildFullTime = (split: Array<string>) => {
+// const buildFullTime = (hrmin:object) => {
+  // console.log('hrmin',hrmin)
   const { hour, AM } = parseHour(split)
 
   return withTwoZeros(hour) + ':' + withTwoZeros(split[0]) + (AM ? 'AM' : 'PM')
@@ -66,17 +68,133 @@ const checkForDuplicateName = (
  * @returns A formatted object for display to humans
  */
 const convertCronTabToLocal = (cronFormatted: string) => {
-  const split = cronFormatted.split(' ')
+  // console.log('cronFormatted',cronFormatted) // 0 45 15 ? * 7
+  const split = cronFormatted.split(' ') 
+  // console.log('split',split)
+  
+  // [sec   min   hr   DOM   mth  DOW]
+  // ['0', '45', '15', '?', '*', '7'] rq1: At 03:45 PM, only on Saturday
+  // ['0', '0',  '0',  '1', '*', '?'] rq2: At 12:00 AM, on day 1 of the month
+  // ['0', '59', '1',  '*', '*', '?'] rq3: At 01:59 AM
+  // ['0', '0', '23',  'L', '*', '?'] rq4: At 11:00 PM, on the last day of the month
+  const [sec, min, hr, DOM, mth, DOW] = [...split]
+  // sec: 0-59
+  // min: 0-59
+  // hr: 0-23
+  // DOM: 1-31, L
+  // mth: 1-12 | JAN-DEC
+  // DOW: 1-7 | SUN-SAT
+   
+
+  // occurance.name: 
+  //  Daily
+  //  Weekly - DOW: 1-7 | SUN-SAT
+  //  Monthly - DOM: 1-31, L
+  let local = {
+    occurance: {
+      name: '',
+      id: '0'
+    },
+    occuranceDay: {
+      name: '',
+      id: '0'
+    },
+    occuranceWeek: {
+      name: '',
+      id: '0'
+    }
+  }
+  const regexDOW = /[1-7]/g
+  const hasDOW = regexDOW.test(DOW)
+  // console.log('hasDOW', hasDOW)
+  if(hasDOW) {
+    local = { 
+      occurance: scheduleTypes.find((d) => d.name === 'Weekly'),
+      occuranceWeek: weekTypes.find((d) => d.id === parseInt(DOW)),
+      occuranceDay: {
+        name: '',
+        id: '0'
+      },
+    }
+  }
+  
+  const regexDOM = /[1-31L]/g
+  const hasDOM = regexDOM.test(DOM)
+  // console.log('hasDOM', hasDOM)
+  if(hasDOM) {
+    local = { 
+      occurance: scheduleTypes.find((d) => d.name === 'Monthly'),
+      occuranceDay: dayTypes.find((d) => d.id === (DOM === 'L' ? 32 : parseInt(DOM))),
+      occuranceWeek: {
+        name: '',
+        id: '0'
+      },
+    }
+  }
+
+  if(!hasDOW && !hasDOM) {
+    local = {
+      occurance: scheduleTypes.find((d) => d.name === 'Daily'),
+      occuranceWeek: {
+        name: '',
+        id: '0'
+      },
+      occuranceDay: {
+        name: '',
+        id: '0'
+      },
+    }
+  }
+  // console.log('local',local)
+  const prefixZero = (num: number) => {
+    if(num >= 10) return num
+
+    return `0${num}`
+  }
+  let cronProps = {
+    advancedCrontab: false,
+    occuranceAdvanced: ''
+  }
+  const isCronAdvancedMode = (parseInt(sec) > 0) || mth !== '*'
+  if(isCronAdvancedMode) {
+    cronProps = {
+      advancedCrontab: true,
+      occuranceAdvanced: cronFormatted
+    } 
+  }
+
+  const time = `${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`
+
+  const newLocal = {
+    ...local,
+    time, //: `${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`, 
+    twentyFourHour: time, //`${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`, 
+    ...cronProps,
+    monthly: DOM === 'L' ? 32 : DOM,
+    weekly: DOW
+  }
+  // console.log('newLocal',newLocal)
+  // debugger
+  return newLocal
+}
+
+/* const convertCronTabToLocal = (cronFormatted: string) => {
+  // console.log('cronFormatted',cronFormatted) // 0 45 15 ? * 7
+  const split = cronFormatted.split(' ') 
+  // console.log('split',split)
   const time = buildFullTime(split)
   let lastDay = false
+
   if (split[2] === 'L') {
     lastDay = true
   }
+
   const monthly = lastDay ? 32 : parseInt(split[2])
   const weekly = parseInt(split[4])
   const occuranceDetails = parseOccuranceDetails(monthly, weekly)
   const occuranceAdvanced = cronFormatted
   let advancedCrontab = false
+  
   if (
     time === 'NaN' ||
     split.length > 5 ||
@@ -90,6 +208,7 @@ const convertCronTabToLocal = (cronFormatted: string) => {
   ) {
     advancedCrontab = true
   }
+  //debugger
   return {
     twentyFourHour: withTwoZeros(split[1]) + ':' + withTwoZeros(split[0]),
     time,
@@ -99,7 +218,7 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     occuranceAdvanced,
     ...occuranceDetails
   }
-}
+} */
 
 /**
  * @param fullURL server URL
@@ -189,7 +308,7 @@ const convertLocalToCronTab = (item: LocalConfiguration) => {
     // advanced mode
     schedule = item.occuranceAdvanced
   }
-
+  //debugger
   return schedule
 }
 
@@ -248,6 +367,7 @@ const convertServerConfigurationToLocal = (clickedItem: ProvisionDServerConfigur
   } = convertCronTabToLocal(clickedItem[RequisitionData.CronSchedule])
 
   const urlVars = convertURLToLocal(clickedItem[RequisitionData.ImportURL])
+  //debugger
   return {
     name: clickedItem[RequisitionData.ImportName],
     rescanBehavior,
@@ -838,7 +958,7 @@ const validateType = (typeName: string) => {
  */
 const withTwoZeros = (numZero: string | number) => {
   const minute = typeof numZero === 'string' ? parseInt(numZero) : numZero
-
+  console.log('>>>',minute < 10 ? '0' + numZero : numZero)
   return minute < 10 ? '0' + numZero : numZero
 }
 
