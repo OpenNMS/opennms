@@ -3,7 +3,7 @@ import { SCVCredentials } from '@/types/scv'
 export interface State {
   aliases: string[]
   credentials: SCVCredentials
-  dbCredentials: SCVCredentials // used to track changes 
+  dbCredentials: SCVCredentials // used to track changes
   isEditing: boolean
 }
 

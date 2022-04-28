@@ -28,7 +28,7 @@ const REMOVE_ATTRIBUTE = (state: State, key: string) => {
   state.credentials.attributes = attributes
 }
 
-const UPDATE_ATTRIBUTE = (state: State, attribute: { key: string, keyVal: { key: string, value: string } }) => {
+const UPDATE_ATTRIBUTE = (state: State, attribute: { key: string; keyVal: { key: string; value: string } }) => {
   const attributes = state.credentials.attributes
 
   // updating the value

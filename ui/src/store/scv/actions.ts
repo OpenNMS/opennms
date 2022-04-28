@@ -54,7 +54,7 @@ const addAttribute = (context: VuexContext) => {
   context.commit('ADD_ATTRIBUTE')
 }
 
-const updateAttribute = (context: VuexContext, attribute: { key: string, keyVal: { key: string, value: string } }) => {
+const updateAttribute = (context: VuexContext, attribute: { key: string; keyVal: { key: string; value: string } }) => {
   context.commit('UPDATE_ATTRIBUTE', attribute)
 }
 

@@ -43,7 +43,7 @@ const router = createRouter({
 
         if (rolesAreLoaded.value) checkRoles()
         else whenever(rolesAreLoaded, () => checkRoles())
-      },
+      }
     },
     {
       path: '/logs',
@@ -59,7 +59,7 @@ const router = createRouter({
 
         if (rolesAreLoaded.value) checkRoles()
         else whenever(rolesAreLoaded, () => checkRoles())
-      },
+      }
     },
     {
       path: '/map',
@@ -119,7 +119,7 @@ const router = createRouter({
 
         if (rolesAreLoaded.value) checkRoles()
         else whenever(rolesAreLoaded, () => checkRoles())
-      },
+      }
     },
     {
       path: '/scv',
@@ -135,7 +135,7 @@ const router = createRouter({
 
         if (rolesAreLoaded.value) checkRoles()
         else whenever(rolesAreLoaded, () => checkRoles())
-      },
+      }
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
