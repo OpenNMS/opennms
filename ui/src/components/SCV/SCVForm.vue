@@ -123,7 +123,7 @@ const aliasError = computed<string | null>(() => {
 })
 
 const setKeyError = (val: boolean) => keyError.value = val
-const updateAlias = (val: string) => store.dispatch('scvModule/setValue', { alias: val }) 
+const updateAlias = (val: string) => store.dispatch('scvModule/setValue', { alias: val.toLowerCase() }) 
 const updateUsername = (val: string) => store.dispatch('scvModule/setValue', { username: val })
 const updatePassword = (val: string) => store.dispatch('scvModule/setValue', { password: val }) 
 const addCredentials = () => store.dispatch('scvModule/addCredentials')
