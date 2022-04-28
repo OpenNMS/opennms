@@ -90,7 +90,7 @@ const convertCronTabToLocal = (cronFormatted: string) => {
   //  Daily
   //  Weekly - DOW: 1-7 | SUN-SAT
   //  Monthly - DOM: 1-31, L
-  let local = {
+  let local: object = {
     occurance: {
       name: '',
       id: '0'
