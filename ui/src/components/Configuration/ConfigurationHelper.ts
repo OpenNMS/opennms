@@ -28,19 +28,6 @@ const cronTabLength = (cronTab: string) => cronTab.replace(/\s$/, '').split(' ')
 
 /**
  *
- * @param split String array from a crontab, split on a space
- * @returns Human Readable time in 12 hour format.
- */
-const buildFullTime = (split: Array<string>) => {
-// const buildFullTime = (hrmin:object) => {
-  // console.log('hrmin',hrmin)
-  const { hour, AM } = parseHour(split)
-
-  return withTwoZeros(hour) + ':' + withTwoZeros(split[0]) + (AM ? 'AM' : 'PM')
-}
-
-/**
- *
  * @param name The name we're looking for
  * @param existingError Any existing error message that's already been set.
  * @param existingList Our full list of ProvisionD Configuration Items
@@ -63,33 +50,14 @@ const checkForDuplicateName = (
 }
 
 /**
- *
+ * ['0', '45', '15', '?', '*', '7']
+ * [sec   min   hr   DOM   mth  DOW]
  * @param cronFormatted A Crontab string
  * @returns A formatted object for display to humans
  */
 const convertCronTabToLocal = (cronFormatted: string) => {
-  console.log('cronFormatted',cronFormatted)
   const cronFormatterList = cronFormatted.split(' ') 
-  console.log('cronFormatterList',cronFormatterList)
-  console.log('cronFormatterList.length',cronFormatterList.length)
-  
-  // [sec   min   hr   DOM   mth  DOW]
-  // ['0', '45', '15', '?', '*', '7'] rq1: At 03:45 PM, only on Saturday
-  // ['0', '0',  '0',  '1', '*', '?'] rq2: At 12:00 AM, on day 1 of the month
-  // ['0', '59', '1',  '*', '*', '?'] rq3: At 01:59 AM
-  // ['0', '0', '23',  'L', '*', '?'] rq4: At 11:00 PM, on the last day of the month
-  // ['0', '0', '0',   '?', '*', 'MON'] rq5: At 12:00 AM, only on Monday
   const [sec, min, hr, DOM, mth, DOW] = [...cronFormatterList]
-  // sec: 0-59
-  // min: 0-59
-  // hr: 0-23
-  // DOM: 1-31, L
-  // mth: 1-12 | JAN-DEC
-  // DOW: 1-7 | SUN-SAT
-  // occurance.name: 
-  //  Daily
-  //  Weekly - DOW: 1-7 | SUN-SAT
-  //  Monthly - DOM: 1-31, L
   const empty = {
     name: '',
     id: 0
@@ -99,26 +67,53 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     occuranceDay: empty,
     occuranceWeek: empty
   }
-  const regexDOW = /[1-7]/g
+
+  const hasDOM = (dayOfMonth: string) => {
+    const regexDOM = /[1-31L]/g
+
+    return regexDOM.test(dayOfMonth)
+  }
+  const hasDOW = (dayOfWeek: string) => {
+    const regexDOW = /[1-7]/g
+    
+    return regexDOW.test(dayOfWeek)
+  }
   // const regexDOW = /[1-7]|SUN|MON|TUE|WED|THU|FRI|SAT/g
-  // console.log(regexDOW)
-  const hasDOW = regexDOW.test(DOW)
-  console.log('hasDOW', hasDOW)
-  if(hasDOW) {
+  if(hasDOW(DOW)) {
     timeInputField.occurance = scheduleTypes.find((d) => d.name === 'Weekly') || empty
     timeInputField.occuranceWeek = weekTypes.find((d) => d.id === parseInt(DOW)) || empty
-  }
-  
-  const regexDOM = /[1-31L]/g
-  const hasDOM = regexDOM.test(DOM)
-  // console.log('hasDOM', hasDOM)
-  if(hasDOM) {
+  } else if(hasDOM(DOM)) {
     timeInputField.occurance = scheduleTypes.find((d) => d.name === 'Monthly') || empty
     timeInputField.occuranceDay = dayTypes.find((d) => d.id === (DOM === 'L' ? 32 : parseInt(DOM))) || empty
+  } else {
+    timeInputField.occurance = scheduleTypes.find((d) => d.name === 'Daily') || empty
   }
 
-  if(!hasDOW && !hasDOM) {
-    timeInputField.occurance = scheduleTypes.find((d) => d.name === 'Daily') || empty
+  const isCronAdvancedFormat = () => {
+    const regexDOMWeekdays = /\d+W/g
+    const regexDOWLastNthDay = /[L#]/g
+    const regexDOWCharValues = /[SUN|MON|TUE|WED|THU|FRI|SAT]/g
+    const regexAnyOtherSpecChars = /[,-/]/g
+
+    return (
+      parseInt(sec) > 0
+      || mth !== '*' // specific month can't be set in UI
+      || regexDOMWeekdays.test(DOM) // 15W (the nearest weekday to the 15th of the month): can't be set in UI
+      || regexDOWLastNthDay.test(DOW) // L and #: can't be set in UI
+      || regexDOWCharValues.test(DOW) // todo: condition to be removed, once the support is implemented
+      || regexAnyOtherSpecChars.test(DOW) // can't be set in UI
+      || cronFormatterList.length > 6 // Year (7th part: 1970-2099): can't be set in UI
+    )
+  }
+  let cronProps = {
+    advancedCrontab: false,
+    occuranceAdvanced: ''
+  }
+  if(isCronAdvancedFormat()) {
+    cronProps = {
+      advancedCrontab: true,
+      occuranceAdvanced: cronFormatted
+    } 
   }
 
   const prefixZero = (num: number) => {
@@ -126,47 +121,6 @@ const convertCronTabToLocal = (cronFormatted: string) => {
 
     return `0${num}`
   }
-
-  let cronProps = {
-    advancedCrontab: false,
-    occuranceAdvanced: ''
-  }
-  const regexDOMWeekdays = /\d+W/g
-  const regexDOWLastNthDay = /[L#]/g
-  const regexDOWCharValues = /[SUN|MON|TUE|WED|THU|FRI|SAT]/g
-  const regexAnyOtherSpecChars = /[,-/]/g
-  /**
-   * TODO - not supported
-   *  - Year (7th part): 1970-2099
-   *  - DOM
-   *    - W (weekday)
-   *      - 15W (nearest weekday of the 15th of the month)
-   *        - fire on 14th Friday if 15th is Saturday
-   *        - fire on 16th Monday if 15th is Sunday
-   *      - 1W
-   *        - fire on 3nd Monday if 1st is Saturday
-   *  - DOW
-   *    - # (nth day of the month)
-   *      - 6#3: 3rd Friday of the monthly
-   *  - [,-/]
-   */
-  // const isCronAdvancedMode = true
-  const isCronAdvancedMode = (
-    parseInt(sec) > 0
-    || mth !== '*'
-    || regexDOWCharValues.test(DOW)
-    || regexDOWLastNthDay.test(DOW)
-    || regexAnyOtherSpecChars.test(DOW)
-    || regexDOMWeekdays.test(DOM)
-    || cronFormatterList.length > 6// Year (7th part: 1970-2099)
-  )
-  if(isCronAdvancedMode) {
-    cronProps = {
-      advancedCrontab: true,
-      occuranceAdvanced: cronFormatted
-    } 
-  }
-
   const time = `${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`
 
   return {
@@ -178,59 +132,6 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     ...cronProps,
   }
 }
-
-/* const convertCronTabToLocal = (cronFormatted: string) => {
-  // console.log('cronFormatted',cronFormatted) // 0 45 15 ? * 7
-  const split = cronFormatted.split(' ') 
-  // console.log('split',split)
-  const time = buildFullTime(split)
-  let lastDay = false
-
-  if (split[2] === 'L') {
-    lastDay = true
-  }
-
-  const monthly = lastDay ? 32 : parseInt(split[2])
-  const weekly = parseInt(split[4])
-  const occuranceDetails = parseOccuranceDetails(monthly, weekly)
-  const occuranceAdvanced = cronFormatted
-  let advancedCrontab = false
-  
-  if (
-    time === 'NaN' ||
-    split.length > 5 ||
-    (occuranceDetails.occurance.name === 'Daily' && !isNaN(monthly) && isNaN(weekly)) ||
-    (cronFormatted.includes('?') && !cronFormatted.includes('L')) ||
-    cronFormatted.includes('/') ||
-    cronFormatted.includes('#') ||
-    cronFormatted.includes('-') ||
-    cronFormatted.includes(',') ||
-    /[A-KM-Za-kM-Z]/.test(cronFormatted)
-  ) {
-    advancedCrontab = true
-  }
-
-  // const result = {
-  //   twentyFourHour: withTwoZeros(split[1]) + ':' + withTwoZeros(split[0]),
-  //   time,
-  //   monthly,
-  //   weekly,
-  //   advancedCrontab,
-  //   occuranceAdvanced,
-  //   ...occuranceDetails
-  // } 
-  // debugger
-  // return result
-  return {
-    twentyFourHour: withTwoZeros(split[1]) + ':' + withTwoZeros(split[0]),
-    time,
-    monthly,
-    weekly,
-    advancedCrontab,
-    occuranceAdvanced,
-    ...occuranceDetails
-  }
-} */
 
 /**
  * @param fullURL server URL
@@ -715,49 +616,6 @@ const parseHint = (key: string, type: string, subType: string) => {
 }
 
 /**
- * Used to parse a Crontab into human readable values.
- * @param split A crontab, split on spaces.
- * @returns The hour (with AM/PM) the crontab will be occuring on.
- */
-const parseHour = (split: Array<string>) => {
-  let hour = parseInt(split?.[1] || '')
-  let AM = true
-  if (hour > 12) {
-    AM = false
-    hour = hour - 12
-  }
-  if (hour === 0) {
-    hour = 12
-  }
-  return { AM, hour }
-}
-
-/**
- * Used to parse a Crontab into human readable values.
- * @param monthly Monthly Crontab Value
- * @param weekly Weekly Crontab Value
- * @returns On what schedule this Crontab is happening.
- */
-const parseOccuranceDetails = (monthly: number, weekly: number) => {
-  let occurance = scheduleTypes.find((d) => d.name === 'Daily')
-  let occuranceWeek
-  let occuranceDay
-  if (!isNaN(monthly) && isNaN(weekly)) {
-    occurance = scheduleTypes.find((d) => d.name === 'Monthly')
-    occuranceDay = dayTypes.find((d) => d.id == monthly)
-  } else if (isNaN(monthly) && !isNaN(weekly)) {
-    occurance = scheduleTypes.find((d) => d.name === 'Weekly')
-    occuranceWeek = weekTypes.find((d) => d.id == weekly)
-  }
-
-  return {
-    occurance: occurance || { name: '', id: 0 },
-    occuranceDay: occuranceDay || { name: '', id: 0 },
-    occuranceWeek: occuranceWeek || { name: '', id: 0 }
-  }
-}
-
-/**
  * Last step before saving to the server.
  * @param dataToUpdate Full Server-Ready, already converted with convertLocalToServer object to be saved to the server.
  * @returns An object for the server without the additional fields we tacked on for context.
@@ -961,17 +819,6 @@ const validatePath = (path: string) => {
 
 const validateType = (typeName: string) => {
   return !typeName ? ErrorStrings.TypeError : ''
-}
-
-/**
- *
- * @param numZero Number that might not have a leading zero if its less than 10
- * @returns A number that has a leading zero if its less than 10
- */
-const withTwoZeros = (numZero: string | number) => {
-  const minute = typeof numZero === 'string' ? parseInt(numZero) : numZero
-  console.log('>>>',minute < 10 ? '0' + numZero : numZero)
-  return minute < 10 ? '0' + numZero : numZero
 }
 
 /**
