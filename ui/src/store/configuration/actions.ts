@@ -9,5 +9,5 @@ const getProvisionDService = async (context: VuexContext) => {
 }
 
 export default {
-  getProvisionDService,
+  getProvisionDService
 }

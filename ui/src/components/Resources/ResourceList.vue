@@ -26,7 +26,7 @@ import {
   FeatherListItem,
   FeatherList
 } from '@featherds/list'
-import { Resource } from '@/types'
+import { Resource, UpdateModelFunction } from '@/types'
 
 const store = useStore()
 
@@ -34,7 +34,7 @@ const searchValue = ref('')
 
 const resources = computed<Resource[]>(() => store.getters['resourceModule/getFilteredResourcesList'])
 
-const search = (val: string) => store.dispatch('resourceModule/setSearchValue', val || '')
+const search: UpdateModelFunction = (val: string) => store.dispatch('resourceModule/setSearchValue', val || '')
 const selectResource = (name: string) => { 
   store.dispatch('resourceModule/getResourcesForNode', name)
   store.dispatch('graphModule/getPreFabGraphs', name)

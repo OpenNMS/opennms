@@ -6,9 +6,11 @@ import Resources from '@/components/Resources/Resources.vue'
 import Graphs from '@/components/Resources/Graphs.vue'
 import useRole from '@/composables/useRole'
 import useSnackbar from '@/composables/useSnackbar'
+import useSpinner from '@/composables/useSpinner'
 
 const { adminRole, dcbRole, rolesAreLoaded } = useRole()
 const { showSnackBar } = useSnackbar()
+const { startSpinner, stopSpinner } = useSpinner()
 
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
@@ -149,4 +151,6 @@ const router = createRouter({
   ]
 })
 
+router.beforeEach(() => startSpinner())
+router.afterEach(() => stopSpinner())
 export default router

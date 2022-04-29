@@ -1,5 +1,6 @@
 <template>
   <FeatherNavigationRail
+    id="main-nav-rail"
     @update:modelValue="onNavRailClick"
   >
     <template v-slot:main>
@@ -102,18 +103,20 @@ const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRail
 const isSelected = (path: string) => path === route.fullPath
 </script>
 
-<style scopes lang="scss">
+<style lang="scss">
 @import "@featherds/styles/themes/variables";
 
-.nav-header {
-  display: none !important;
-}
+#main-nav-rail {
+  .nav-header {
+    display: none !important;
+  }
 
-.title-multiline-custom {
-  white-space: pre-wrap;
-  height: auto !important;
-  padding-top: var($spacing-xs) !important;
-  padding-bottom: var($spacing-xs) !important;
+  .title-multiline-custom {
+    white-space: pre-wrap;
+    height: auto !important;
+    padding-top: var($spacing-xs) !important;
+    padding-bottom: var($spacing-xs) !important;
+  }
 }
 </style>
 

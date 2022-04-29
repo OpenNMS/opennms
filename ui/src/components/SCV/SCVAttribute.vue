@@ -30,6 +30,7 @@ import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Remove'
 import { useStore } from 'vuex'
 import { SCVCredentials } from '@/types/scv'
+import { UpdateModelFunction } from '@/types'
 
 const store = useStore()
 const emit = defineEmits(['set-key-error'])
@@ -70,13 +71,13 @@ const isDuplicateKey = (key: string) => {
   return false
 }
 
-const updateAttributeKey = (key: string) => {
+const updateAttributeKey: UpdateModelFunction = (key: string) => {
   if (!isDuplicateKey(key)) {
     store.dispatch('scvModule/updateAttribute', { key: props.attributeKey, keyVal: { key, value: props.attributeValue} })
   }
 }
 
-const updateAttributeValue = (value: string) => store.dispatch('scvModule/updateAttribute', { key: props.attributeKey, keyVal: { key: props.attributeKey, value }})
+const updateAttributeValue: UpdateModelFunction = (value: string) => store.dispatch('scvModule/updateAttribute', { key: props.attributeKey, keyVal: { key: props.attributeKey, value }})
 const removeAttribute = () => store.dispatch('scvModule/removeAttribute', props.attributeKey)
 onMounted(() => keyRef.value.focus())
 </script>

@@ -32,6 +32,7 @@ import { sub, getUnixTime } from 'date-fns'
 import { StartEndTime } from '@/types'
 import { FeatherInput } from '@featherds/input'
 import useSpinner from '@/composables/useSpinner'
+import { UpdateModelFunction } from '@/types'
 
 const el = document.getElementById('card')
 const { arrivedState } = useScroll(el, { offset: { bottom: 100 } })
@@ -81,7 +82,7 @@ const addGraphDefinition = () => {
   }
 }
 
-const searchHandler = (searchInputVal: string) => {
+const searchHandler: UpdateModelFunction = (searchInputVal: string) => {
   startSpinner()
   searchVal.value = searchInputVal
 
