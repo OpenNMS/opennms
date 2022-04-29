@@ -20,7 +20,6 @@
 
 	<reference id="messageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
 	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
-	<reference id="twinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
 
 	<!-- Config Bean -->
 	<bean id="trapdConfig" class="org.opennms.netmgt.trapd.TrapdConfigBean">
@@ -42,6 +41,9 @@
 		<argument ref="trapdConfig"/>
 		<property name="messageDispatcherFactory" ref="messageDispatcherFactory"/>
 		<property name="distPollerDao" ref="distPollerDao"/>
-		<property name="twinSubscriber" ref="twinSubscriber"/>
 	</bean>
+
+	<reference-list id="twinSubscriberRef" interface="org.opennms.core.ipc.twin.api.TwinSubscriber" availability="optional">
+		<reference-listener bind-method="bind" unbind-method="unbind" ref="trapListener"/>
+	</reference-list>
 </blueprint>
