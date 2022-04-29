@@ -214,7 +214,7 @@ const all = ref(false)
 const tableWrap = ref<HTMLElement | null>(null)
 const defaultQuerySize = 20
 const selectedDeviceConfigBackups = ref<Record<string, boolean>>({})
-const sortStates: DeviceConfigQueryParams = reactive({
+const sortStates: Record<string, SORT> = reactive({
   deviceName: SORT.ASCENDING,
   ipAddress: SORT.NONE,
   location: SORT.NONE,

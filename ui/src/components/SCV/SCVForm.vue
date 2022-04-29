@@ -81,6 +81,7 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add' 
 import { SCVCredentials } from '@/types/scv'
+import { UpdateModelFunction } from '@/types'
 import SCVAttribute from './SCVAttribute.vue'
 
 const store = useStore()
@@ -100,7 +101,7 @@ const isMasked = (password: string) => {
 
 // if the username has changed and the password is masked
 // warn the user that the password must also be updated
-const passwordError = computed<string | null>(() => {
+const passwordError = computed<string | undefined>(() => {
   if (
     dbCredentials.value.username && credentials.value.password &&
     credentials.value.username !== dbCredentials.value.username && 
@@ -108,24 +109,24 @@ const passwordError = computed<string | null>(() => {
 
     return 'Password cannot be masked with updated usernames.'  
   }
-  return null
+  return undefined
 })
 
 // Error if alias name is not unique.
-const aliasError = computed<string | null>(() => {
+const aliasError = computed<string | undefined>(() => {
   if (
     !isEditing.value && 
     credentials.value.alias && 
     aliases.value.includes(credentials.value.alias.toLowerCase())) {
     return 'Alias already in use.'
   }
-  return null
+  return undefined
 })
 
 const setKeyError = (val: boolean) => keyError.value = val
-const updateAlias = (val: string) => store.dispatch('scvModule/setValue', { alias: val.toLowerCase() }) 
-const updateUsername = (val: string) => store.dispatch('scvModule/setValue', { username: val })
-const updatePassword = (val: string) => store.dispatch('scvModule/setValue', { password: val }) 
+const updateAlias: UpdateModelFunction = (val: string) => store.dispatch('scvModule/setValue', { alias: val.toLowerCase() }) 
+const updateUsername: UpdateModelFunction = (val: string) => store.dispatch('scvModule/setValue', { username: val })
+const updatePassword: UpdateModelFunction = (val: string) => store.dispatch('scvModule/setValue', { password: val }) 
 const addCredentials = () => store.dispatch('scvModule/addCredentials')
 const updateCredentials = () => store.dispatch('scvModule/updateCredentials')
 const clearCredentials = () => store.dispatch('scvModule/clearCredentials')

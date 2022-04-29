@@ -7,7 +7,7 @@
       hint="Human-friendly name. Must be unique."
       :error="errors.name"
       :modelValue="config.name"
-      @update:modelValue="(val: string) => updateFormValue('name', val)"
+      @update:modelValue="(val) => updateFormValue('name', val)"
     />
     <div class="flex-center">
       <FeatherSelect
@@ -17,7 +17,7 @@
         :options="requisitionTypeList"
         :error="errors.type"
         :modelValue="config.type"
-        @update:modelValue="(val: {name:string}) => {
+        @update:modelValue="(val: {name:string}): void => {
           props.updateFormValue('type', val)
           updateHint(val.name)
         }"
@@ -42,7 +42,7 @@
         class="side-input host-update mb-16"
         :error="errors.host"
         :modelValue="config.host"
-        @update:modelValue="(val: string) => updateFormValue('host', val)"
+        @update:modelValue="(val) => updateFormValue('host', val)"
         :hint="hostHint || 'vCenter server host or IP address'"
       />
     </div>
@@ -54,7 +54,7 @@
         class="side-input mb-16"
         :error="errors.urlPath"
         :modelValue="config.urlPath"
-        @update:modelValue="(val: string) => updateFormValue('urlPath', val)"
+        @update:modelValue="(val) => updateFormValue('urlPath', val)"
         hint="URL path starting with a /"
       />
     </div>
@@ -64,10 +64,10 @@
       <FeatherSelect
         class="side-input mb-16"
         textProp="name"
-        hint
+        hint=""
         label="Requisition Plugin"
         :options="requisitionSubTypes"
-        @update:modelValue="(val: string) => updateFormValue('subType', val)"
+        @update:modelValue="(val) => updateFormValue('subType', val)"
         :modelValue="config.subType"
       />
     </div>
@@ -79,7 +79,7 @@
         class="side-input mb-16"
         :error="errors.zone"
         :modelValue="config.zone"
-        @update:modelValue="(val: string) => updateFormValue('zone', val)"
+        @update:modelValue="(val) => updateFormValue('zone', val)"
         hint="DNS zone to use as basis for this definition"
       />
       <FeatherInput
@@ -87,7 +87,7 @@
         class="side-input mb-16"
         :error="errors.foreignSource"
         :modelValue="config.foreignSource"
-        @update:modelValue="(val: string) => updateFormValue('foreignSource', val)"
+        @update:modelValue="(val) => updateFormValue('foreignSource', val)"
         hint="Name to use for resulting requisition"
       />
     </div>
@@ -102,7 +102,7 @@
           class="side-input full-width mr-16 mb-16"
           :error="errors.username"
           :modelValue="config.username"
-          @update:modelValue="(val: string) => updateFormValue('username', val)"
+          @update:modelValue="(val) => updateFormValue('username', val)"
           hint="vSphere username"
         />
         <FeatherInput
@@ -111,7 +111,7 @@
           class="side-input full-width mb-16"
           :error="errors.password"
           :modelValue="config.password"
-          @update:modelValue="(val: string) => updateFormValue('password', val)"
+          @update:modelValue="(val) => updateFormValue('password', val)"
           hint="vSphere password"
         />
       </div>
@@ -124,7 +124,7 @@
         class="side-input mb-16"
         :error="errors.path"
         :modelValue="config.path"
-        @update:modelValue="(val: string) => updateFormValue('path', val)"
+        @update:modelValue="(val) => updateFormValue('path', val)"
         hint="File path starting with a /"
       />
     </div>
@@ -138,7 +138,7 @@
         class="side-label"
         label="Rescan Behavior"
         :modelValue="config.rescanBehavior"
-        @update:modelValue="(val: string) => updateFormValue('rescanBehavior', val)"
+        @update:modelValue="(val) => updateFormValue('rescanBehavior', val)"
       >
         <FeatherRadio
           v-for="({value, name}) in rescanItems"

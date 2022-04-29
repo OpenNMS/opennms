@@ -13,7 +13,7 @@ const getProvisionDService = async () => {
     if (response.status === 200) {
       return response.data
     }
-  } catch(err) {
+  } catch (err) {
     console.error('issue with getProvisionDService api', err)
   }
 }

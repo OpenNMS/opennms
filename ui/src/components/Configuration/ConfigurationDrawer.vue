@@ -101,7 +101,7 @@ import { LocalConfigurationWrapper } from './configuration.types'
  */
 const props = defineProps({
   configurationDrawerActive: Boolean,
-  activeUpdate: Function,
+  activeUpdate:  { type: Function as PropType<(_v: boolean) => void>, required: true },
   closePanel: { type: Function as PropType<(payload: MouseEvent) => void>, required: true },
   item: { type: Object as PropType<LocalConfigurationWrapper>, required: true },
   advancedActive: Boolean,

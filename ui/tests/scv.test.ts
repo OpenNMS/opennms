@@ -19,7 +19,7 @@ const wrapper = mount(SCV, {
 
 test('adding an alias should enable the add btn', async () => {
   const addCredsBtn = wrapper.get('[data-test="add-creds-btn"]')
-  const aliasInput = wrapper.get('[data-test="alias-input"]')
+  const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
 
   // expect add btn to start disabled
   expect(addCredsBtn.attributes('aria-disabled')).toBe('true')
@@ -30,7 +30,7 @@ test('adding an alias should enable the add btn', async () => {
 
 test('the user may not add a duplicate alias', async () => {
   const addCredsBtn = wrapper.get('[data-test="add-creds-btn"]')
-  const aliasInput = wrapper.get('[data-test="alias-input"]')
+  const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
 
   // add alias1 to the list of current aliases
   store.commit('scvModule/SAVE_ALIASES', ['alias1'])
@@ -60,8 +60,8 @@ test('the update btn should appear and be enabled', async () => {
 })
 
 test('if password is masked and username is being updated, prevent submission', async () => {
-  const usernameInput = wrapper.get('[data-test="username-input"]')
-  const passwordInput = wrapper.get('[data-test="password-input"]')
+  const usernameInput = wrapper.get('[data-test="username-input"] .feather-input')
+  const passwordInput = wrapper.get('[data-test="password-input"] .feather-input')
 
   // simulate clicking on an alias to update
   store.commit('scvModule/SAVE_CREDENTIALS', mockCredentials)
@@ -83,9 +83,9 @@ test('if password is masked and username is being updated, prevent submission', 
 })
 
 test('the clear btn', async () => {
-  const usernameInput = wrapper.get('[data-test="username-input"]')
-  const passwordInput = wrapper.get('[data-test="password-input"]')
-  const aliasInput = wrapper.get('[data-test="alias-input"]')
+  const usernameInput = wrapper.get('[data-test="username-input"] .feather-input')
+  const passwordInput = wrapper.get('[data-test="password-input"] .feather-input')
+  const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
   const clearBtn = wrapper.get('[data-test="clear-btn"]')
   await clearBtn.trigger('click')
 

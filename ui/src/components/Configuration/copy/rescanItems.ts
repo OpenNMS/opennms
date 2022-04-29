@@ -1,4 +1,4 @@
-export const rescanCopy: Record<string, unknown> = {
+export const rescanCopy: Record<string, string> = {
   true: 'Scan all nodes',
   dbonly: 'No scanning',
   false: 'Scan added nodes only'
