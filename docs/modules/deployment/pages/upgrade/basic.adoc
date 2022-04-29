@@ -108,9 +108,6 @@ Expected outcome: `$OPENNMS_HOME/etc/java.conf` contains a path to the Java 11 J
 
 . Run the opennms installer: `$OPENNMS_HOME/bin/install -dis`
 +
-NOTE: This step took approximately two hours in a lab environment processing 1.9 million database events.
-It may be faster on your own hardware, but may still take significant time.
-+
 Expected result: A long delay, followed by output containing: `Upgrade completed successfully!`
 
 . Clear the Karaf cache: `yes | $OPENNMS_HOME/bin/fix-karaf-setup.sh`
