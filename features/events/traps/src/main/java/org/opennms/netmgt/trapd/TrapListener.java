@@ -102,13 +102,30 @@ public class TrapListener implements TrapNotificationListener {
     }
 
     public void start() {
-        m_twinSubscription = m_twinSubscriber.subscribe(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, (config) ->  {
+        if (m_twinSubscriber != null) {
+            subscribe();
+        } else {
+            open(new TrapListenerConfig());
+        }
+    }
+
+    public void subscribe() {
+        m_twinSubscription = m_twinSubscriber.subscribe(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, (config) -> {
             try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Trapd.LOG4J_CATEGORY)) {
                 LOG.info("Got listener config update - reloading");
                 this.close();
                 this.open(config);
             }
         });
+    }
+
+    public void bind(TwinSubscriber twinSubscriber) {
+        m_twinSubscriber = twinSubscriber;
+        subscribe();
+    }
+
+    public void unbind(TwinSubscriber twinSubscriber) {
+        m_twinSubscriber = null;
     }
 
     private void open(final TrapListenerConfig config) {
@@ -186,14 +203,6 @@ public class TrapListener implements TrapNotificationListener {
 
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         m_distPollerDao = Objects.requireNonNull(distPollerDao);
-    }
-
-    public TwinSubscriber getTwinSubscriber() {
-        return this.m_twinSubscriber;
-    }
-
-    public void setTwinSubscriber(final TwinSubscriber twinSubscriber) {
-        this.m_twinSubscriber = Objects.requireNonNull(twinSubscriber);
     }
 
     private void restartWithNewConfig(final TrapdConfigBean newConfig) {
