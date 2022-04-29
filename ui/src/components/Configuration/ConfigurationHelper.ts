@@ -135,7 +135,6 @@ const convertCronTabToLocal = (cronFormatted: string) => {
   const regexDOWLastNthDay = /[L#]/g
   const regexDOWCharValues = /[SUN|MON|TUE|WED|THU|FRI|SAT]/g
   const regexAnyOtherSpecChars = /[,-/]/g
-  // console.log('***',regexDOMWeekdays.test(DOM))
   /**
    * TODO - not supported
    *  - Year (7th part): 1970-2099
@@ -158,7 +157,7 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     || regexDOWCharValues.test(DOW)
     || regexDOWLastNthDay.test(DOW)
     || regexAnyOtherSpecChars.test(DOW)
-    // || regexDOMWeekdays.test(DOM) // depends if we want to support SUN...SAT in basic
+    || regexDOMWeekdays.test(DOM)
     || cronFormatterList.length > 6// Year (7th part: 1970-2099)
   )
   if(isCronAdvancedMode) {
