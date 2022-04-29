@@ -10,6 +10,7 @@ IMPORTANT: Make sure you complete the tasks in the xref:deployment:upgrade/intro
 == PostgreSQL upgrade and configuration
 This example illustrates an upgrade from PostgreSQL 9.4 to 12.
 The process should be similar for different versions.
+See the link:https://www.postgresql.org/docs/[PostgreSQL documentation] for more details.
 
 . Become root:
 `sudo su -`
