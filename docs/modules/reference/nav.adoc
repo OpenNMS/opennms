@@ -150,5 +150,5 @@
 ** xref:daemons/daemon-config-files/syslogd.adoc[]
 ** xref:daemons/daemon-config-files/telemetryd.adoc[]
 ** xref:daemons/daemon-config-files/trapd.adoc[]
-** xref:logging/introduction.adoc[]
+** xref:operation:admin/logging/introduction.adoc[]
 * xref:glossary.adoc[]
