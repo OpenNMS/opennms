@@ -1,7 +1,9 @@
 [[OSGI-and-OpenNMS]]
 = OSGi Integration within OpenNMS
 
-OpenNMS uses https://www.osgi.org/resources/what-is-osgi/[OSGi] framework in a https://karaf.apache.org/manual/latest/[Karaf] Container. This document explains how a Maven module (OSGi bundle) can be integrated into the system.
+OpenNMS uses https://www.osgi.org/resources/what-is-osgi/[OSGi] framework in a https://karaf.apache.org/manual/latest/[Karaf] Container.
+
+This document explains how to integrate a Maven module (OSGi bundle) into the system.
 
 
 == Add a new Maven module
