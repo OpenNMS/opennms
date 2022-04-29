@@ -16,19 +16,19 @@ parameters:
   main_branch:
     description: the auto-merge main branch
     type: string
-    default: develop
+    default: release-30.x
   main_branch_label:
     description: the auto-merge main branch (escaped, no slashes)
     type: string
-    default: develop
+    default: release-30.x
   next_branch:
     description: the auto-merge target branch
     type: string
-    default: ""
+    default: develop
   next_branch_label:
     description: the auto-merge target branch (escaped, no slashes)
     type: string
-    default: ""
+    default: develop
 
   ### sub-tree "module" build setup ###
   trigger-docs:
@@ -57,3 +57,4 @@ parameters:
     description: whether to trigger a code coverage build
     type: boolean
     default: false
+
