@@ -98,7 +98,7 @@ public class FilesystemRestService {
         }
 
         try {
-            return Files.find(etcFolder, 4, (path, basicFileAttributes) -> isSupportedExtension(path))
+            return Files.find(etcFolder.toRealPath(), 4, (path, basicFileAttributes) -> isSupportedExtension(path))
                     .map(p -> etcFolder.relativize(p).toString())
                     .filter(p -> !changedFilesOnly || !doesFileExistAndMatchContentsWithEtcPristine(p))
                     .sorted()

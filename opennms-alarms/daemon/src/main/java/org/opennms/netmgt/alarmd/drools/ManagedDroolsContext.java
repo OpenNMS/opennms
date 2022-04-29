@@ -333,7 +333,7 @@ public class ManagedDroolsContext {
             throw new IllegalStateException("Expected to find Drools rules for alarmd in '" + droolsRulesRoot
                     + "' but the path is not a directory! Aborting.");
         }
-        return Files.find(droolsRulesRoot, 3, (path, attrs) -> attrs.isRegularFile()
+        return Files.find(droolsRulesRoot.toRealPath(), 3, (path, attrs) -> attrs.isRegularFile()
                 && path.toString().endsWith(".drl"))
                 .map(Path::toFile)
                 .sorted(Comparator.naturalOrder())

@@ -77,7 +77,7 @@ public class LogRestService {
         }
 
         try {
-            return Files.find(logFolder, 1,
+            return Files.find(logFolder.toRealPath(), 1,
                     (path, basicFileAttributes) -> path.getFileName().toString().endsWith(LOG_FILE_EXTENSION))
                     .map(p -> p.getFileName().toString())
                     .sorted()
