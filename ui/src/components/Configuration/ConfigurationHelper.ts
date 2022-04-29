@@ -68,7 +68,7 @@ const checkForDuplicateName = (
  * @returns A formatted object for display to humans
  */
 const convertCronTabToLocal = (cronFormatted: string) => {
-  // console.log('cronFormatted',cronFormatted) // 0 45 15 ? * 7
+  // console.log('cronFormatted',cronFormatted)
   const split = cronFormatted.split(' ') 
   // console.log('split',split)
   
@@ -84,77 +84,49 @@ const convertCronTabToLocal = (cronFormatted: string) => {
   // DOM: 1-31, L
   // mth: 1-12 | JAN-DEC
   // DOW: 1-7 | SUN-SAT
-   
-
   // occurance.name: 
   //  Daily
   //  Weekly - DOW: 1-7 | SUN-SAT
   //  Monthly - DOM: 1-31, L
-  let local: object = {
-    occurance: {
-      name: '',
-      id: '0'
-    },
-    occuranceDay: {
-      name: '',
-      id: '0'
-    },
-    occuranceWeek: {
-      name: '',
-      id: '0'
-    }
+  const empty = {
+    name: '',
+    id: 0
   }
+  let occurance = empty
+  let occuranceDay = empty
+  let occuranceWeek = empty
+  
   const regexDOW = /[1-7]/g
   const hasDOW = regexDOW.test(DOW)
   // console.log('hasDOW', hasDOW)
   if(hasDOW) {
-    local = { 
-      occurance: scheduleTypes.find((d) => d.name === 'Weekly'),
-      occuranceWeek: weekTypes.find((d) => d.id === parseInt(DOW)),
-      occuranceDay: {
-        name: '',
-        id: '0'
-      },
-    }
+    occurance = scheduleTypes.find((d) => d.name === 'Weekly') || empty
+    occuranceWeek = weekTypes.find((d) => d.id === parseInt(DOW)) || empty
   }
   
   const regexDOM = /[1-31L]/g
   const hasDOM = regexDOM.test(DOM)
   // console.log('hasDOM', hasDOM)
   if(hasDOM) {
-    local = { 
-      occurance: scheduleTypes.find((d) => d.name === 'Monthly'),
-      occuranceDay: dayTypes.find((d) => d.id === (DOM === 'L' ? 32 : parseInt(DOM))),
-      occuranceWeek: {
-        name: '',
-        id: '0'
-      },
-    }
+    occurance = scheduleTypes.find((d) => d.name === 'Monthly') || empty
+    occuranceDay = dayTypes.find((d) => d.id === (DOM === 'L' ? 32 : parseInt(DOM))) || empty
   }
 
   if(!hasDOW && !hasDOM) {
-    local = {
-      occurance: scheduleTypes.find((d) => d.name === 'Daily'),
-      occuranceWeek: {
-        name: '',
-        id: '0'
-      },
-      occuranceDay: {
-        name: '',
-        id: '0'
-      },
-    }
+    occurance = scheduleTypes.find((d) => d.name === 'Daily') || empty
   }
-  // console.log('local',local)
+
   const prefixZero = (num: number) => {
     if(num >= 10) return num
 
     return `0${num}`
   }
+
   let cronProps = {
     advancedCrontab: false,
     occuranceAdvanced: ''
   }
+
   const isCronAdvancedMode = (parseInt(sec) > 0) || mth !== '*'
   if(isCronAdvancedMode) {
     cronProps = {
@@ -165,17 +137,16 @@ const convertCronTabToLocal = (cronFormatted: string) => {
 
   const time = `${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`
 
-  const newLocal = {
-    ...local,
-    time, //: `${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`, 
-    twentyFourHour: time, //`${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`, 
-    ...cronProps,
+  return {
+    occurance,
+    occuranceWeek,
+    occuranceDay,
+    time,
+    twentyFourHour: time,
     monthly: DOM === 'L' ? 32 : DOM,
-    weekly: DOW
+    weekly: DOW,
+    ...cronProps,
   }
-  // console.log('newLocal',newLocal)
-  // debugger
-  return newLocal
 }
 
 /* const convertCronTabToLocal = (cronFormatted: string) => {
@@ -208,7 +179,18 @@ const convertCronTabToLocal = (cronFormatted: string) => {
   ) {
     advancedCrontab = true
   }
-  //debugger
+
+  // const result = {
+  //   twentyFourHour: withTwoZeros(split[1]) + ':' + withTwoZeros(split[0]),
+  //   time,
+  //   monthly,
+  //   weekly,
+  //   advancedCrontab,
+  //   occuranceAdvanced,
+  //   ...occuranceDetails
+  // } 
+  // debugger
+  // return result
   return {
     twentyFourHour: withTwoZeros(split[1]) + ':' + withTwoZeros(split[0]),
     time,
