@@ -1,6 +1,6 @@
 
 [[upgrade-basic]]
-= Basic Upgrade
+= Basic Upgrade Steps
 
 This procedure describes how to do a basic {page-component-title} upgrade, including upgrading the PostgreSQL database to a new version.
 You may need to complete additional steps to upgrade in a more complex setup (running more than one OpenNMS instance, database migration requirements, age of current version, and so on).
