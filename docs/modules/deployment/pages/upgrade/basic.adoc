@@ -25,7 +25,7 @@ Expected outcome: `yum repolist pdg*` reports available repos for postgresql ver
 +
 Upstream versions are designed to coexist with multiple installed versions.
 +
-Expected outcome: `rpm -qa | grep postgresql` shows both 9.4 and 12.x package versions installed.
+Expected result: `rpm -qa | grep postgresql` shows both 9.4 and 12.x package versions installed.
 
 . Initialize the PostgreSQL database: `/usr/bin/postgresql-12-setup initdb`
 +
