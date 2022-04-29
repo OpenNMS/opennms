@@ -68,7 +68,7 @@ const checkForDuplicateName = (
  * @returns A formatted object for display to humans
  */
 const convertCronTabToLocal = (cronFormatted: string) => {
-  // console.log('cronFormatted',cronFormatted)
+  console.log('cronFormatted',cronFormatted)
   const split = cronFormatted.split(' ') 
   // console.log('split',split)
   
@@ -92,28 +92,30 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     name: '',
     id: 0
   }
-  let occurance = empty
-  let occuranceDay = empty
-  let occuranceWeek = empty
+  const timeInputField = {
+    occurance: empty,
+    occuranceDay: empty,
+    occuranceWeek: empty
+  }
   
   const regexDOW = /[1-7]/g
   const hasDOW = regexDOW.test(DOW)
   // console.log('hasDOW', hasDOW)
   if(hasDOW) {
-    occurance = scheduleTypes.find((d) => d.name === 'Weekly') || empty
-    occuranceWeek = weekTypes.find((d) => d.id === parseInt(DOW)) || empty
+    timeInputField.occurance = scheduleTypes.find((d) => d.name === 'Weekly') || empty
+    timeInputField.occuranceWeek = weekTypes.find((d) => d.id === parseInt(DOW)) || empty
   }
   
   const regexDOM = /[1-31L]/g
   const hasDOM = regexDOM.test(DOM)
   // console.log('hasDOM', hasDOM)
   if(hasDOM) {
-    occurance = scheduleTypes.find((d) => d.name === 'Monthly') || empty
-    occuranceDay = dayTypes.find((d) => d.id === (DOM === 'L' ? 32 : parseInt(DOM))) || empty
+    timeInputField.occurance = scheduleTypes.find((d) => d.name === 'Monthly') || empty
+    timeInputField.occuranceDay = dayTypes.find((d) => d.id === (DOM === 'L' ? 32 : parseInt(DOM))) || empty
   }
 
   if(!hasDOW && !hasDOM) {
-    occurance = scheduleTypes.find((d) => d.name === 'Daily') || empty
+    timeInputField.occurance = scheduleTypes.find((d) => d.name === 'Daily') || empty
   }
 
   const prefixZero = (num: number) => {
@@ -138,9 +140,7 @@ const convertCronTabToLocal = (cronFormatted: string) => {
   const time = `${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`
 
   return {
-    occurance,
-    occuranceWeek,
-    occuranceDay,
+    ...timeInputField,
     time,
     twentyFourHour: time,
     monthly: DOM === 'L' ? 32 : DOM,
