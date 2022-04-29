@@ -718,7 +718,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jarsigner-plugin</artifactId>
-        <version>1.2</version>
+        <version>3.0.0</version>
         <configuration>
           <keystore>${webstart.keystore}</keystore>
           <keypass>${webstart.keypass}</keypass>
