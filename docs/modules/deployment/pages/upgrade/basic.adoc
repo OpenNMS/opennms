@@ -97,12 +97,6 @@ Expected outcome: `systemctl status postgresql-12.service` reports postgresql-12
 +
 Expected result: A lot of rpmnew files; `rpm -q {page-component-title}-core` reports the new version is installed.
 
-. Move the package-updated etc directory out of the way: `mv $OPENNMS_HOME/etc $OPENNMS_HOME/etc.as.shipped.2021`
-
-. ##What do users without support tarball do?## Unpack the OpenNMS Support-provided config tarball in `/opt/opennms`: `cd /opt/opennms; tar zxvf apple_etc.tar.gz`
-+
-Expected result: a new /etc directory is created.
-
 . Install Java 11: `yum -y install java-11-openjdk java-11-openjdk-devel`
 +
 Expected result: `rpm -q java-11-openjdk` returns a result.
