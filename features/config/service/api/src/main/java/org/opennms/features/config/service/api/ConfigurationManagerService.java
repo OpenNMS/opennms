@@ -31,6 +31,7 @@ package org.opennms.features.config.service.api;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.exception.ValidationException;
 
 import java.util.Map;
 import java.util.Optional;
@@ -86,6 +87,21 @@ public interface ConfigurationManagerService {
      */
     void unregisterConfiguration(String configName, String configId);
 
+    /**
+     * update config to a registered service name. It can be partial data and copy into existing config.
+     * The flow of update
+     * 1. reading the config by configName & configId
+     * 2. if replace is true, the whole new config will be replaced directly
+     *    if replace is false, the new config will copy to existing database config by its property keys to config in database
+     * 3. validate
+     * 4. update db
+     *
+     * @param configName
+     * @param configId
+     * @param configObject
+     * @param isReplace
+     * @throws ValidationException
+     */
     void updateConfiguration(String configName, String configId,
                              JsonAsString configObject, boolean isReplace);
 

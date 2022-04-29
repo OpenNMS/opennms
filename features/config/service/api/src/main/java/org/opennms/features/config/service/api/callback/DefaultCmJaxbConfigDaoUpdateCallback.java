@@ -26,22 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.service.impl.callback;
+package org.opennms.features.config.service.api.callback;
 
+import org.opennms.features.config.service.api.CmJaxbConfigDao;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
-import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 
 import java.util.function.Consumer;
 
 /**
  * It is default update notifier for AbstractCmJaxbConfigDao.
- *`
+ *
  * @param <E> entity class
  */
-public class DefaultAbstractCmJaxbConfigDaoUpdateCallback<E> implements Consumer<ConfigUpdateInfo> {
-    private AbstractCmJaxbConfigDao<E> abstractCmJaxbConfigDao;
+public class DefaultCmJaxbConfigDaoUpdateCallback<E> implements Consumer<ConfigUpdateInfo> {
+    private CmJaxbConfigDao<E> abstractCmJaxbConfigDao;
 
-    public DefaultAbstractCmJaxbConfigDaoUpdateCallback(AbstractCmJaxbConfigDao<E> abstractCmJaxbConfigDao) {
+    public DefaultCmJaxbConfigDaoUpdateCallback(CmJaxbConfigDao<E> abstractCmJaxbConfigDao) {
         this.abstractCmJaxbConfigDao = abstractCmJaxbConfigDao;
     }
 

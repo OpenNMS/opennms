@@ -28,29 +28,34 @@
 
 package org.opennms.netmgt.dao.jaxb.callback;
 
-import org.opennms.features.config.service.api.CmJaxbConfigDao;
+import org.json.JSONObject;
+import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
-import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
+import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.opennms.netmgt.config.provisiond.RequisitionDef;
+import org.quartz.CronExpression;
 
 import java.util.function.Consumer;
 
-public class ConfigurationReloadEventCallback<E> implements Consumer<ConfigUpdateInfo> {
-    private EventForwarder eventForwarder;
-    private CmJaxbConfigDao<E> cmJaxbConfigDao;
-
-    public ConfigurationReloadEventCallback(EventForwarder eventForwarder) {
-        this.eventForwarder = eventForwarder;
-    }
-
+public class ProvisiondConfigurationValidationCallback implements Consumer<ConfigUpdateInfo> {
     @Override
     public void accept(ConfigUpdateInfo configUpdateInfo) {
-        // Fire reload event
-        EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI,
-                "config-rest");
-        eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, configUpdateInfo.getConfigName());
-        eventForwarder.sendNow(eventBuilder.getEvent());
+        JSONObject json = configUpdateInfo.getConfigJson();
+        if (json == null) {
+            throw new ValidationException(String.format("%s config is empty.", configUpdateInfo.getConfigName()));
+        }
+        ProvisiondConfiguration provisiondConfiguration = ConfigConvertUtil.jsonToObject(json.toString(), ProvisiondConfiguration.class);
+        this.validateCron(provisiondConfiguration);
+    }
+
+    private void validateCron(ProvisiondConfiguration provisiondConfiguration) {
+        for (RequisitionDef r : provisiondConfiguration.getRequisitionDefs()) {
+            r.getCronSchedule().ifPresent(exp -> {
+                if (!CronExpression.isValidExpression(exp)) {
+                    throw new ValidationException(String.format("Invalid cron expression. %s", exp));
+                }
+            });
+        }
     }
 }

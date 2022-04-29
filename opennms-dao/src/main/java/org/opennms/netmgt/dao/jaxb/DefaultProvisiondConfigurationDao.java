@@ -34,6 +34,7 @@ import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.jaxb.callback.ConfigurationReloadEventCallback;
+import org.opennms.netmgt.dao.jaxb.callback.ProvisiondConfigurationValidationCallback;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,7 +52,6 @@ import java.util.function.Consumer;
 public class DefaultProvisiondConfigurationDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> implements ProvisiondConfigurationDao {
 
     private static final String CONFIG_NAME = "provisiond";
-    private static final String DEFAULT_CONFIG_ID = "default";
 
     @Autowired
     private EventForwarder eventForwarder;
@@ -170,17 +170,17 @@ public class DefaultProvisiondConfigurationDao extends AbstractCmJaxbConfigDao<P
     }
 
     @Override
-    protected Consumer<ConfigUpdateInfo> getUpdateCallback(){
+    public Consumer<ConfigUpdateInfo> getUpdateCallback(){
         return new ConfigurationReloadEventCallback(eventForwarder);
+    }
+
+    @Override
+    public Consumer<ConfigUpdateInfo> getValidationCallback(){
+        return new ProvisiondConfigurationValidationCallback();
     }
 
     @Override
     public String getConfigName() {
         return CONFIG_NAME;
-    }
-
-    @Override
-    protected String getDefaultConfigId() {
-        return DEFAULT_CONFIG_ID;
     }
 }
