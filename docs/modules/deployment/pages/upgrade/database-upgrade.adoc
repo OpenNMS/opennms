@@ -1,0 +1,37 @@
+
+[[posgresql-upgrade]]
+= PostgreSQL upgrade and configuration
+
+This example illustrates an upgrade from PostgreSQL 9.4 to 12.
+The process should be similar for different versions.
+See the link:https://www.postgresql.org/docs/[PostgreSQL documentation] for more details.
+
+[{tabs}]
+====
+CentOS/RHEL::
++
+--
+include::db-rhel.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Ubuntu::
++
+--
+include::ubuntu/install-minion.adoc[]
+--
+
+Debian::
++
+--
+include::debian/install-minion.adoc[]
+--
+
+Docker::
++
+--
+include::docker/minion.adoc[]
+--
+endif::[]
+====
+

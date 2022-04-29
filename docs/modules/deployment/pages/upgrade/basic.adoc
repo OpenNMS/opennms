@@ -2,81 +2,23 @@
 [[upgrade-basic]]
 = Basic Upgrade Steps
 
-This procedure describes how to do a basic {page-component-title} upgrade, including upgrading the PostgreSQL database to a new version.
+This procedure describes how to do a basic {page-component-title} upgrade.
 You may need to complete additional steps to upgrade in a more complex setup (running more than one OpenNMS instance, database migration requirements, age of current version, and so on).
 
 IMPORTANT: Make sure you complete the tasks in the xref:deployment:upgrade/introduction.adoc#byb_upgrade[before you begin] section before upgrade.
-
-== PostgreSQL upgrade and configuration
-This example illustrates an upgrade from PostgreSQL 9.4 to 12.
-The process should be similar for different versions.
-See the link:https://www.postgresql.org/docs/[PostgreSQL documentation] for more details.
-
-. Become root:
-`sudo su -`
-+
-Expected outcome: `whoami` returns `root`.
-
-. Install the latest version of the PostgreSQL repository package:
-`yum -y install <repository package location>`
-+
-Expected outcome: `yum repolist pdg*` reports available repos for postgresql versions 9.6 through 14.
-
-. Install new PostgreSQL version: `yum -y install postgresql-12 postgresql-12-server`
-+
-Upstream versions are designed to coexist with multiple installed versions.
-+
-Expected result: `rpm -qa | grep postgresql` shows both 9.4 and 12.x package versions installed.
-
-. Initialize the PostgreSQL database: `/usr/bin/postgresql-12-setup initdb`
-+
-Expected result: command completes with no errors.
-
-. Stop OpenNMS: `systemctl stop opennms.service`
-+
-Expected result: `systemctl status opennms.service` reports opennms is stopped.
-+
-NOTE: Your OpenNMS downtime starts at this point.
-
-. Stop earlier version of PostgreSQL: `systemctl stop postgresql`
-+
-Expected result: `systemctl status postgresql.service` reports postgresql is stopped.
-
-. Disable earlier version PostgreSQL: `systemctl disable postgresql`
-. Stop PostgreSQL 12: `systemctl postgresql-12 stop`
-+
-Expected result: `systemctl status postgresql-12.service` reports postgresql-12 is stopped.
-
-. Become the `postgres` user: `sudo su – postgres`
-+
-Expected result: `whoami` returns `postgres`
-
-. Run the PostgreSQL upgrade in "check" mode: `/var/lib/pgsql/data -D /var/lib/pgsql/12/data -r -v -c`
-+
-Expected result: output ends with “Clusters are compatible”.
-+
-Verify these paths align with reality.
-
-. Run the PostgreSQL upgrade without "check": `/usr/pgsql-12/bin/pg_upgrade -b /usr/bin -B /usr/pgsql-12/bin -d /var/lib/pgsql/data -D /var/lib/pgsql/12/data -r -v`
-+
-Expected outcome: output ends with “Upgrade Complete”.
-+
-NOTE: Verify these paths align with reality.
-PostgreSQL's `pg_upgrade` utility copies the existing database into the new database and does not alter the existing database's data files.
-This leaves the PostgreSQL 9.4 database in its original state and location which can be used for rollback.
-
-. Replace `/var/lib/pgsql/12/data/postgresql.conf` with the updated copy.
-. Copy `pg_hba.conf` from the postgresql 9.4 data directory to the postgresql-12 data directory: `cp /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/12/data/pg_hba.conf`
-+
-NOTE: Verify these paths align with reality.
-. Exit PostgreSQL shell: `exit`
-+
-Expected outcome: `whoami` returns `root`
+In addition, if xref:releasenotes:whatsnew.adoc[system requirements] in the new version require you to upgrade your PostgreSQL database, we recommend you do this before the {page-component-title} upgrade.
 
 == Update and verify the {page-component-title} repository
 
 Your {page-component-title} repository is defined in a file in `/etc/yum.repos.d/`.
-It may be named {page-component-title}.repo  but is not guaranteed to be.
+
+ifeval::["{page-component-title}" == "Horizon"]
+It may be named `opennms-repo-stable-<OSversion>.repo but is not guaranteed to be.
+endif::[]
+
+ifeval::["{page-component-title}" == "Meridian"]
+It may be named {page-component-title}.repo but is not guaranteed to be.
+endif::[]
 
 . Use the text editor of your choice to edit your {page-component-title} repository config to change the `baseurl` of the repository from the old release family to the new release family.
 . Verify that the attribute `enabled=1` is defined, or enabled, or absent entirely
@@ -92,7 +34,15 @@ Expected outcome: `rpm -q iplike-pgsql12` reports an _iplike-pgsql12_ package is
 +
 Expected outcome: `systemctl status postgresql-12.service` reports postgresql-12 has started.
 
-. Make a backup copy of your OpenNMS config: `mv /opt/opennms/etc /opt/opennms/etc.backup`
+. Make a backup copy of your OpenNMS config:
++
+`mv /opt/opennms/etc /opt/opennms/etc.backup`
++
+OR, to leave the original `etc` and make an identical copy in `/tmp` for easier reconciliation:
++
+`rsync -Ppav /opt/opennms/etc /tmp/etc.orig`
++
+`rsync -Ppav /opt/opennms/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf`
 
 . Upgrade the {page-component-title} packages to the new version: `yum -y upgrade {page-component-title}-core {page-component-title}-webapp-jetty`
 +
@@ -123,4 +73,6 @@ NOTE: `tail -F /var/log/opennms/manager.log` can illustrate at what point in the
 
 . Upgrade is complete and operation is resumed.
 
-##when do they copy over their changed config files?##
+NOTE: If you upgrade in place, OpenNMS renames any shipped config that conflicts with an existing user-modified config to `.rpmnew`.
+You must inspect these files manually and reconcile the differences.
+Use `diff -Bbw` and `diff -y`.
