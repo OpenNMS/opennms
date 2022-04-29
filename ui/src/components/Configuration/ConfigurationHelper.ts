@@ -69,15 +69,17 @@ const checkForDuplicateName = (
  */
 const convertCronTabToLocal = (cronFormatted: string) => {
   console.log('cronFormatted',cronFormatted)
-  const split = cronFormatted.split(' ') 
-  // console.log('split',split)
+  const cronFormatterList = cronFormatted.split(' ') 
+  console.log('cronFormatterList',cronFormatterList)
+  console.log('cronFormatterList.length',cronFormatterList.length)
   
   // [sec   min   hr   DOM   mth  DOW]
   // ['0', '45', '15', '?', '*', '7'] rq1: At 03:45 PM, only on Saturday
   // ['0', '0',  '0',  '1', '*', '?'] rq2: At 12:00 AM, on day 1 of the month
   // ['0', '59', '1',  '*', '*', '?'] rq3: At 01:59 AM
   // ['0', '0', '23',  'L', '*', '?'] rq4: At 11:00 PM, on the last day of the month
-  const [sec, min, hr, DOM, mth, DOW] = [...split]
+  // ['0', '0', '0',   '?', '*', 'MON'] rq5: At 12:00 AM, only on Monday
+  const [sec, min, hr, DOM, mth, DOW] = [...cronFormatterList]
   // sec: 0-59
   // min: 0-59
   // hr: 0-23
@@ -97,10 +99,11 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     occuranceDay: empty,
     occuranceWeek: empty
   }
-  
   const regexDOW = /[1-7]/g
+  // const regexDOW = /[1-7]|SUN|MON|TUE|WED|THU|FRI|SAT/g
+  // console.log(regexDOW)
   const hasDOW = regexDOW.test(DOW)
-  // console.log('hasDOW', hasDOW)
+  console.log('hasDOW', hasDOW)
   if(hasDOW) {
     timeInputField.occurance = scheduleTypes.find((d) => d.name === 'Weekly') || empty
     timeInputField.occuranceWeek = weekTypes.find((d) => d.id === parseInt(DOW)) || empty
@@ -128,8 +131,36 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     advancedCrontab: false,
     occuranceAdvanced: ''
   }
-
-  const isCronAdvancedMode = (parseInt(sec) > 0) || mth !== '*'
+  const regexDOMWeekdays = /\d+W/g
+  const regexDOWLastNthDay = /[L#]/g
+  const regexDOWCharValues = /[SUN|MON|TUE|WED|THU|FRI|SAT]/g
+  const regexAnyOtherSpecChars = /[,-/]/g
+  // console.log('***',regexDOMWeekdays.test(DOM))
+  /**
+   * TODO - not supported
+   *  - Year (7th part): 1970-2099
+   *  - DOM
+   *    - W (weekday)
+   *      - 15W (nearest weekday of the 15th of the month)
+   *        - fire on 14th Friday if 15th is Saturday
+   *        - fire on 16th Monday if 15th is Sunday
+   *      - 1W
+   *        - fire on 3nd Monday if 1st is Saturday
+   *  - DOW
+   *    - # (nth day of the month)
+   *      - 6#3: 3rd Friday of the monthly
+   *  - [,-/]
+   */
+  // const isCronAdvancedMode = true
+  const isCronAdvancedMode = (
+    parseInt(sec) > 0
+    || mth !== '*'
+    || regexDOWCharValues.test(DOW)
+    || regexDOWLastNthDay.test(DOW)
+    || regexAnyOtherSpecChars.test(DOW)
+    // || regexDOMWeekdays.test(DOM) // depends if we want to support SUN...SAT in basic
+    || cronFormatterList.length > 6// Year (7th part: 1970-2099)
+  )
   if(isCronAdvancedMode) {
     cronProps = {
       advancedCrontab: true,
