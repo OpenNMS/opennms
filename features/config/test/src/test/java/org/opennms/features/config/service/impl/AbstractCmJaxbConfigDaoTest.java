@@ -103,7 +103,6 @@ public class AbstractCmJaxbConfigDaoTest {
         DefaultCmJaxbConfigDaoUpdateCallback updateCallback = Mockito.mock(DefaultCmJaxbConfigDaoUpdateCallback.class);
         Consumer<ConfigUpdateInfo> validateCallback = Mockito.mock(Consumer.class);
 
-
         provisiondCmJaxbConfigTestDao.addOnReloadedCallback(provisiondCmJaxbConfigTestDao.getDefaultConfigId(), updateCallback);
         provisiondCmJaxbConfigTestDao.addValidationCallback(validateCallback);
 

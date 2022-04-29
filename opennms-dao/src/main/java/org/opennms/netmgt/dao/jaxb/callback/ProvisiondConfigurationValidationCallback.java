@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.jaxb.callback;
 
 import org.json.JSONObject;
+import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
@@ -45,8 +46,13 @@ public class ProvisiondConfigurationValidationCallback implements Consumer<Confi
         if (json == null) {
             throw new ValidationException(String.format("%s config is empty.", configUpdateInfo.getConfigName()));
         }
-        ProvisiondConfiguration provisiondConfiguration = ConfigConvertUtil.jsonToObject(json.toString(), ProvisiondConfiguration.class);
-        this.validateCron(provisiondConfiguration);
+        try {
+            ProvisiondConfiguration provisiondConfiguration = ConfigConvertUtil.jsonToObject(json.toString(), ProvisiondConfiguration.class);
+            this.validateCron(provisiondConfiguration);
+        } catch (ConfigConversionException e) {
+            // convert to validation error so that the event handler can forward to RESTful API
+            throw new ValidationException(e.getMessage());
+        }
     }
 
     private void validateCron(ProvisiondConfiguration provisiondConfiguration) {

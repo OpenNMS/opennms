@@ -73,6 +73,7 @@ class EventHandlerManager {
                 try {
                     c.accept(actualIdent);
                 } catch (Exception e) {
+                    // throw out to let web api obtain exception
                     if (e instanceof ValidationException) {
                         throw e;
                     }

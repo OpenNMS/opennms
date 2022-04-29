@@ -157,7 +157,6 @@ public abstract class AbstractCmJaxbConfigDao<E> implements CmJaxbConfigDao {
         configurationManagerService.updateConfiguration(this.getConfigName(), configId, new JsonAsString(jsonConfigString), isReplace);
     }
 
-
     /**
      * it will update the default config
      *
