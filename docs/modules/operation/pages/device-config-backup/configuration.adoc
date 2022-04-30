@@ -26,9 +26,28 @@ ssh -p 8201 admin@localhost
 [source, karaf]
 ----
 config:edit org.opennms.features.deviceconfig.tftp
-config:property-set port 69
+config:property-set port 10069
 config:update
 ----
+
+The OpenNMS {page-component-title} core services run as an unprivileged user and can't bind on port numbers < 1024 without escalated privileges.
+For this reason, the default port for the TFTP listener is set to port number 6969/udp instead of the IANA registered port number 69/udp.
+The following example shows how to configure the local firewall daemon to forward port 69/udp to 6969/udp.
+
+[{tabs}]
+====
+CentOS/RHEL 7/8::
++
+--
+include::centos-rhel/firewall-core.adoc[]
+--
+
+Debian/Ubuntu::
++
+--
+include::debian-ubuntu/firewall-core.adoc[]
+--
+====
 
 == (optional) Enable push-based configuration upload
 
