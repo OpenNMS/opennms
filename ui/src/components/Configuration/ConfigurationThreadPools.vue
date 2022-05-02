@@ -145,7 +145,7 @@ const updateThreadpools = async () => {
   // If there are no errors.
   if (Object.keys(threadPoolsErrors.value).length === 0) {
     try {
-      // reduce provisionD data object to thread pool sizes, in order to determine whether thread pool sizes value hava changed, upon update button clicked
+      // reduce provisionD data object to thread pool sizes, in order to determine whether thread pool sizes value has changed, upon update button clicked
       const reducedUpdatedProvisionDData = threadPoolKeys.reduce((acc, key) => {
         const obj: Record<string, string> = {}
 
