@@ -2866,7 +2866,7 @@ then-request@^6.0.0:
     promise "^8.0.0"
     qs "^6.4.0"
 
-tinypool@^0.1.2:
+tinypool@^0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/tinypool/-/tinypool-0.1.3.tgz#b5570b364a1775fd403de5e7660b325308fee26b"
   integrity sha512-2IfcQh7CP46XGWGGbdyO4pjcKqsmVqFAPcXfPxcPXmOWt9cYkTP9HcDmGgsfijYoAEc4z9qcpM/BaBz46Y9/CQ==
@@ -2998,16 +2998,16 @@ vite@^2.9.5, vite@^2.9.6:
   optionalDependencies:
     fsevents "~2.3.2"
 
-vitest@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/vitest/-/vitest-0.10.0.tgz#ab8930194f2a8943c533cca735cba2bca705d5bc"
-  integrity sha512-8UXemUg9CA4QYppDTsDV76nH0e1p6C8lV9q+o9i0qMSK9AQ7vA2sjoxtkDP0M+pwNmc3ZGYetBXgSJx0M1D/gg==
+vitest@^0.10.1:
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/vitest/-/vitest-0.10.1.tgz#974ea084dd7550cd3465f926b3a085fe06761332"
+  integrity sha512-jFNObjJ48WnfJzxpopJOrd7ZnRCE3OGgE2KSQ1AGmKxNPTgadMCLx81GBrIcxIjuz2E/8qmGBPtC5VH01ihl7A==
   dependencies:
     "@types/chai" "^4.3.1"
     "@types/chai-subset" "^1.3.3"
     chai "^4.3.6"
     local-pkg "^0.4.1"
-    tinypool "^0.1.2"
+    tinypool "^0.1.3"
     tinyspy "^0.3.2"
     vite "^2.9.5"
 
