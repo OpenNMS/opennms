@@ -67,47 +67,60 @@
     <DCBSearch class="dcb-search" />
   </div>
 
-  <div ref="tableWrap" id="wrap" class="dcb-table">
+  <div
+    ref="tableWrap"
+    id="wrap"
+    class="dcb-table"
+  >
     <table summary="Device Config Backup">
       <thead>
         <tr>
           <th>
-            <FeatherCheckbox v-model="all" @update:modelValue="selectAll" data-test="all-checkbox" />
+            <FeatherCheckbox
+              v-model="all"
+              @update:modelValue="selectAll"
+              data-test="all-checkbox"
+            />
           </th>
           <FeatherSortHeader
             scope="col"
             property="deviceName"
             :sort="sortStates.deviceName"
             v-on:sort-changed="sortByColumnHandler"
-          >Node Name</FeatherSortHeader>
+            >Node Name</FeatherSortHeader
+          >
 
           <FeatherSortHeader
             scope="col"
             property="ipAddress"
             :sort="sortStates.ipAddress"
             v-on:sort-changed="sortByColumnHandler"
-          >IP Address</FeatherSortHeader>
+            >IP Address</FeatherSortHeader
+          >
 
           <FeatherSortHeader
             scope="col"
             property="location"
             :sort="sortStates.location"
             v-on:sort-changed="sortByColumnHandler"
-          >Location</FeatherSortHeader>
+            >Location</FeatherSortHeader
+          >
 
           <FeatherSortHeader
             scope="col"
             property="lastBackup"
             :sort="sortStates.lastBackup"
             v-on:sort-changed="sortByColumnHandler"
-          >Last Backup Date</FeatherSortHeader>
+            >Last Backup Date</FeatherSortHeader
+          >
 
           <FeatherSortHeader
             scope="col"
             property="lastUpdated"
             :sort="sortStates.lastUpdated"
             v-on:sort-changed="sortByColumnHandler"
-          >Last Attempted</FeatherSortHeader>
+            >Last Attempted</FeatherSortHeader
+          >
 
           <th>
             <DCBTableStatusDropdown />
@@ -118,18 +131,23 @@
             property="scheduleDate"
             :sort="sortStates.scheduleDate"
             v-on:sort-changed="sortByColumnHandler"
-          >Schedule Date</FeatherSortHeader>
+            >Schedule Date</FeatherSortHeader
+          >
 
           <FeatherSortHeader
             scope="col"
             property="scheduleInterval"
             :sort="sortStates.scheduleInterval"
             v-on:sort-changed="sortByColumnHandler"
-          >Schedule Interval</FeatherSortHeader>
+            >Schedule Interval</FeatherSortHeader
+          >
         </tr>
       </thead>
       <tbody>
-        <tr v-for="config in deviceConfigBackups" :key="config.id">
+        <tr
+          v-for="config in deviceConfigBackups"
+          :key="config.id"
+        >
           <td>
             <FeatherCheckbox
               class="device-config-checkbox"
@@ -138,24 +156,46 @@
             />
           </td>
           <td>
-            <router-link :to="`/node/${config.nodeId}`" target="_blank">
-            {{ config.deviceName }}
+            <router-link
+              :to="`/node/${config.nodeId}`"
+              target="_blank"
+            >
+              {{ config.deviceName }}
               <span title="Running Configuration">
-                <FeatherIcon v-if="config.configType !== 'default'" :icon="Speed" />
+                <FeatherIcon
+                  v-if="config.configType !== 'default'"
+                  :icon="Speed"
+                />
               </span>
             </router-link>
           </td>
           <td>{{ config.ipAddress }}</td>
           <td>{{ config.location }}</td>
-          <td class="last-backup-date pointer" @click="onLastBackupDateClick(config)">
-            <span title="View config" v-date>{{ config.lastBackupDate }}</span>
-            <span title="View config" v-if="config.lastBackupDate">
-              <FeatherIcon :icon="ViewDetails" class="view-config" />
+          <td
+            class="last-backup-date pointer"
+            @click="onLastBackupDateClick(config)"
+          >
+            <span
+              title="View config"
+              v-date
+              >{{ config.lastBackupDate }}</span
+            >
+            <span
+              title="View config"
+              v-if="config.lastBackupDate"
+            >
+              <FeatherIcon
+                :icon="ViewDetails"
+                class="view-config"
+              />
             </span>
           </td>
           <td v-date>{{ config.lastUpdatedDate }}</td>
           <td>
-            <div :class="config.backupStatus" class="option">
+            <div
+              :class="config.backupStatus"
+              class="option"
+            >
               {{ config.backupStatus === 'none' ? 'No Backup' : config.backupStatus }}
             </div>
           </td>
@@ -165,9 +205,13 @@
       </tbody>
     </table>
   </div>
-  <DCBModal @close="dcbModalVisible = false" :visible="dcbModalVisible">
+  <DCBModal
+    @close="dcbModalVisible = false"
+    :visible="dcbModalVisible"
+  >
     <template v-slot:content>
-      <DCBModalViewHistoryContentVue @onCompare="onCompare"
+      <DCBModalViewHistoryContentVue
+        @onCompare="onCompare"
         v-if="dcbModalVisible && dcbModalContentComponentName === DCBModalContentComponentNames.DCBModalViewHistoryContent"
       />
       <DCBModalLastBackupContent
@@ -180,7 +224,10 @@
   </DCBModal>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { useStore } from 'vuex'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherSortObject } from '@/types'
@@ -328,7 +375,10 @@ onMounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/table/scss/table";
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
@@ -339,7 +389,6 @@ onMounted(() => {
   white-space: nowrap;
 
   table {
-    width: 100%;
     margin-top: 0px !important;
     font-size: 12px !important;
     @include table;
@@ -429,3 +478,4 @@ onMounted(() => {
   }
 }
 </style>
+

@@ -56,9 +56,7 @@ const checkForDuplicateName = (
  * @returns A formatted object for display to humans
  */
 const convertCronTabToLocal = (cronFormatted: string) => {
-  console.log(cronFormatted)
   const cronFormatterList = cronFormatted.split(' ') 
-  console.log(cronFormatterList)
   const [sec, min, hr, DOM, mth, DOW] = [...cronFormatterList]
   const occuranceEmptyProps = {
     name: '',
@@ -80,7 +78,6 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     
     return regexDOW.test(dayOfWeek)
   }
-  // const regexDOW = /[1-7]|SUN|MON|TUE|WED|THU|FRI|SAT/g
   if(hasDOW(DOW)) {
     occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Weekly') || occuranceEmptyProps
     occuranceSection.occuranceWeek = weekTypes.find((d) => d.id === parseInt(DOW)) || occuranceEmptyProps
@@ -130,7 +127,7 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     ...advancedProps,
     time,
     twentyFourHour: time,
-    monthly: DOM === 'L' ? 32 : DOM, // last day of the month
+    monthly: DOM === 'L' ? 32 : DOM, // 32: id of last day of the month
     weekly: DOW,
   }
 }
@@ -196,7 +193,6 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
  * @returns crontab-ready string
  */
 const convertLocalToCronTab = (item: LocalConfiguration) => {
-  console.log('item.occuranceAdvanced',item.occuranceAdvanced)
   let schedule = ''
 
   if (!item.advancedCrontab) {

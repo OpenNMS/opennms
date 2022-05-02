@@ -1,7 +1,10 @@
 <template>
   <div class="feather-row">
     <div class="feather-col-12">
-      <table class="tl1 tl2 tl3, tl4, tl5" summary="SNMP Interfaces">
+      <table
+        class="tl1 tl2 tl3, tl4, tl5"
+        summary="SNMP Interfaces"
+      >
         <thead>
           <tr>
             <th scope="col">SNMP ifIndex</th>
@@ -12,7 +15,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="snmpInterface in snmpInterfaces" :key="snmpInterface.id">
+          <tr
+            v-for="snmpInterface in snmpInterfaces"
+            :key="snmpInterface.id"
+          >
             <td>{{ snmpInterface.ifIndex }}</td>
             <td>{{ snmpInterface.ifDescr || 'N/A' }}</td>
             <td>{{ snmpInterface.ifName || 'N/A' }}</td>
@@ -35,7 +41,10 @@
   />
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
 import useQueryParameters from '@/composables/useQueryParams'
@@ -53,7 +62,7 @@ const snmpInterfaces = computed(() => store.state.nodesModule.snmpInterfaces)
 <style lang="scss">
 @import "@featherds/table/scss/table";
 table {
-  width: 100%;
   @include table;
 }
 </style>
+

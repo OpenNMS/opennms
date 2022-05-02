@@ -1,7 +1,10 @@
-  <template>
+<template>
   <div class="feather-row">
     <div class="feather-col-12">
-      <table class="tl1 tl2 tl3" summary="IP Interfaces">
+      <table
+        class="tl1 tl2 tl3"
+        summary="IP Interfaces"
+      >
         <thead>
           <tr>
             <th scope="col">IP Address</th>
@@ -11,7 +14,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="ipInterface in ipInterfaces" :key="ipInterface.id">
+          <tr
+            v-for="ipInterface in ipInterfaces"
+            :key="ipInterface.id"
+          >
             <td>{{ ipInterface.ipAddress }}</td>
             <td>{{ ipInterface.hostName || 'N/A' }}</td>
             <td>{{ ipInterface.ifIndex || 'N/A' }}</td>
@@ -30,8 +36,11 @@
     totalCountStateName="ipInterfacesTotalCount"
   />
 </template>
-  
-<script setup lang="ts">
+
+<script
+  setup
+  lang="ts"
+>
 import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
 import useQueryParameters from '@/composables/useQueryParams'
@@ -50,7 +59,7 @@ const ipInterfaces = computed(() => store.state.nodesModule.ipInterfaces)
 <style lang="scss">
 @import "@featherds/table/scss/table";
 table {
-  width: 100%;
   @include table;
 }
 </style>
+

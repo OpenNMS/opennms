@@ -5,7 +5,10 @@
     </div>
     <div class="feather-row">
       <div class="feather-col-12">
-        <table class="tl1 tl2 tl3 tl4" summary="Recent Events">
+        <table
+          class="tl1 tl2 tl3 tl4"
+          summary="Recent Events"
+        >
           <thead>
             <tr>
               <th scope="col">Id</th>
@@ -15,14 +18,21 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="event in events" :key="event.id" :class="getRowClass(event)">
+            <tr
+              v-for="event in events"
+              :key="event.id"
+              :class="getRowClass(event)"
+            >
               <td>
                 <router-link :to="`/event/${event.id}`">{{ event.id }}</router-link>
               </td>
               <td v-date>{{ event.createTime }}</td>
               <td>{{ event.severity }}</td>
               <td>
-                <span v-html="event.logMessage" class="log-message"></span>
+                <span
+                  v-html="event.logMessage"
+                  class="log-message"
+                ></span>
               </td>
             </tr>
           </tbody>
@@ -38,8 +48,11 @@
     />
   </div>
 </template>
-  
-<script setup lang="ts">
+
+<script
+  setup
+  lang="ts"
+>
 import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
 import useQueryParameters from '@/composables/useQueryParams'
@@ -55,8 +68,11 @@ const { queryParameters, updateQueryParameters } = useQueryParameters({
 const events = computed(() => store.state.eventsModule.events)
 const getRowClass = (data: Event) => data.severity.toLowerCase()
 </script>
-  
-<style lang="scss" scoped>
+
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/table/scss/table";
 @import "@featherds/styles/mixins/elevation";
 .card {
@@ -65,7 +81,6 @@ const getRowClass = (data: Event) => data.severity.toLowerCase()
   margin-bottom: 15px;
 }
 table {
-  width: 100%;
   @include table;
 }
 .log-message {
@@ -82,3 +97,4 @@ table {
   color: var($state-color-on-surface);
 }
 </style>
+
