@@ -77,5 +77,6 @@ public interface DeviceConfigService {
         String getServiceName();
         String getConfigType();
         String getSchedule();
+        String getRetentionPeriod();
     }
 }

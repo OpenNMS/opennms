@@ -30,18 +30,27 @@ package org.opennms.features.deviceconfig.monitor.adaptor;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
+import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
@@ -49,13 +58,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.base.Strings;
-
-
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitorAdaptor.class);
     private static final String DEVICE_CONFIG_SVC_NAME = "DeviceConfig";
+    private static final Period DEFAULT_RETENTION_PERIOD = Period.of(1, 0, 0);
 
     @Autowired
     private DeviceConfigDao deviceConfigDao;
@@ -78,7 +85,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         var latestConfig = deviceConfigDao.getLatestConfigForInterface(ipInterface, svc.getSvcName());
 
         String encodingAttribute = getObjectAsString(parameters.get("encoding"));
-        String configTypeAttribute = getObjectAsString(parameters.get("config-type"));
+        String configTypeAttribute = getObjectAsString(parameters.get(DeviceConfigConstants.CONFIG_TYPE));
         String encoding = !Strings.isNullOrEmpty(encodingAttribute) ? encodingAttribute : Charset.defaultCharset().name();
         String configType = !Strings.isNullOrEmpty(configTypeAttribute) ? configTypeAttribute : ConfigType.Default;
 
@@ -127,6 +134,8 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                     content,
                     deviceConfig.getFilename());
             sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI);
+
+            cleanupStaleConfigs(parameters, ipInterface, svc.getSvcName());
         }
 
         return status;
@@ -151,11 +160,48 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         return null;
     }
 
+    private void cleanupStaleConfigs(Map<String, Object> parameters, OnmsIpInterface ipInterface, String serviceName) {
+        // Check for stale config records and delete them
+        final Date currentDate = new Date();
+        final String retentionPeriodPattern = getObjectAsString(parameters.get(DeviceConfigConstants.RETENTION_PERIOD));
+        final Period retentionPeriod = getRetentionPeriodOrDefault(retentionPeriodPattern);
+        final Date retentionDate = Date.from(currentDate.toInstant().atZone(ZoneId.systemDefault()).minus(retentionPeriod).toInstant());
+
+        // Get history of configs with config data, see if any exist that are not the latest one and are also
+        // older than the retention date
+        List<DeviceConfig> allConfigs = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, serviceName);
+        Optional<DeviceConfig> lastGoodConfig = allConfigs.stream().filter(dc -> dc.getConfig() != null).findFirst();
+
+        if (lastGoodConfig.isPresent()) {
+            List<DeviceConfig> configsToDelete = allConfigs.stream()
+                .filter(dc ->
+                    !dc.getId().equals(lastGoodConfig.get().getId()) &&
+                    dc.getConfig() != null &&
+                    dc.getLastUpdated().getTime() < retentionDate.getTime())
+                .collect(Collectors.toList());
+
+            if (!configsToDelete.isEmpty()) {
+                LOG.debug("DCB: Found {} stale device config records to delete", configsToDelete.size());
+                configsToDelete.forEach(dc -> deviceConfigDao.delete(dc.getId()));
+            }
+        }
+    }
+
+    private static Period getRetentionPeriodOrDefault(String pattern) {
+        if (!Strings.isNullOrEmpty(pattern)) {
+            try {
+                return Period.parse(pattern);
+            } catch (DateTimeParseException ignored) {
+            }
+        }
+
+        return DEFAULT_RETENTION_PERIOD;
+    }
+
     private void sendEvent(OnmsIpInterface ipInterface, String serviceName, String uei) {
         EventBuilder bldr = new EventBuilder(uei, "poller");
         bldr.setIpInterface(ipInterface);
         bldr.setService(serviceName);
         eventForwarder.sendNow(bldr.getEvent());
     }
-
 }
