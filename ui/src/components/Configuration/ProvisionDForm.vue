@@ -174,10 +174,8 @@ const hostHint = computed(() => {
  *
  */
 watch(formActive, () => {
-  if (formActive.value) {
-    if (firstInput.value) {
-      firstInput.value.focus()
-    }
+  if (formActive.value && firstInput.value) {
+    firstInput.value.focus()
   }
 })
 

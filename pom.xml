@@ -719,7 +719,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jarsigner-plugin</artifactId>
-        <version>1.2</version>
+        <version>3.0.0</version>
         <configuration>
           <keystore>${webstart.keystore}</keystore>
           <keypass>${webstart.keypass}</keypass>
@@ -1801,7 +1801,7 @@
     <paxWebVersion>7.3.23</paxWebVersion>
     <protobufVersion>3.16.1</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
-    <postgresqlVersion>42.2.18</postgresqlVersion>
+    <postgresqlVersion>42.3.3</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
@@ -1864,7 +1864,7 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
-    <vaadinVersion>8.13.0</vaadinVersion>
+    <vaadinVersion>8.14.3</vaadinVersion>
     <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <vaadinAddonContextMenuVersion>3.1.0</vaadinAddonContextMenuVersion>

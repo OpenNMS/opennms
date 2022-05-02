@@ -4,22 +4,40 @@
       :modelValue="displayRawValues"
       @update:modelValue="valueDisplayHandler"
       class="raw-checkbox"
-    >Raw values</FeatherCheckbox>
-    <table summary="Graph values" :id="`${id}-table`" @dblclick="highlightTableText">
+      >Raw values</FeatherCheckbox
+    >
+    <table
+      summary="Graph values"
+      :id="`${id}-table`"
+      @dblclick="highlightTableText"
+    >
       <thead>
         <tr>
-          <th class="time-column" scope="col">Date/Time</th>
+          <th
+            class="time-column"
+            scope="col"
+          >
+            Date/Time
+          </th>
           <th
             v-for="metric of convertedGraphData.metrics"
             :key="metric.name"
             scope="col"
-          >{{ getHeaderFromMetricName(metric.name as string) }}</th>
+          >
+            {{ getHeaderFromMetricName(metric.name as string) }}
+          </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(timestamp, index) in graphData.timestamps" :key="timestamp">
+        <tr
+          v-for="(timestamp, index) in graphData.timestamps"
+          :key="timestamp"
+        >
           <td>{{ !displayRawValues ? graphData.formattedTimestamps[index] : timestamp }}</td>
-          <td v-for="metric of convertedGraphData.metrics" :key="metric.name">
+          <td
+            v-for="metric of convertedGraphData.metrics"
+            :key="metric.name"
+          >
             {{
               !displayRawValues ?
                 formatColumnValue(getColumnFromMetricName(metric.name as string)[index]) :
@@ -32,7 +50,10 @@
   </div>
 </template>
 
-<script setup lang=ts>
+<script
+  setup
+  lang="ts"
+>
 import { ConvertedGraphData, GraphMetricsResponse } from '@/types'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { format } from 'd3'
@@ -95,14 +116,16 @@ const highlightTableText = () => {
 }
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 @import "@featherds/table/scss/table";
 #wrap {
   height: calc(100% - 29px);
   overflow: auto;
 
   table {
-    width: 100%;
     @include table();
     &.condensed {
       @include table-condensed();
@@ -119,3 +142,4 @@ const highlightTableText = () => {
   }
 }
 </style>
+

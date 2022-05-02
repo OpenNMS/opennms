@@ -1,3 +1,4 @@
+[[config-rest-api]]
 = Config Management
 
 Use the Config Management REST API to manage configurations for OpenNMS.

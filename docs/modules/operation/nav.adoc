@@ -186,6 +186,7 @@
 ***** xref:admin/webui/opsboard/criteria-builder.adoc[]
 *** xref:admin/webui/surveillance-view.adoc[]
 *** xref:admin/webui/trends.adoc[]
+*** xref:admin/webui/ui-preview.adoc[]
 ** xref:admin/system-properties/introduction.adoc[]
 *** xref:admin/system-properties/system-proxies.adoc[]
 ** xref:admin/config-tester.adoc[]
@@ -195,4 +196,5 @@
 ** xref:admin/request-logging.adoc[]
 ** xref:admin/restart.adoc[]
 ** xref:admin/daemon-config-files.adoc[]
+** xref:admin/logging/log-file-viewer.adoc[]
 ** xref:admin/housekeeping/introduction.adoc[]
