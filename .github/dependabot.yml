@@ -22,6 +22,7 @@ updates:
     versioning-strategy: "increase-if-necessary"
     reviewers:
       - "rangerrick"
+      - "gabinator305"
     labels:
       - "dependency update"
     commit-message:
@@ -54,6 +55,7 @@ updates:
     target-branch: "foundation-2022"
     reviewers:
       - "rangerrick"
+      - "gabinator305"
     labels:
       - "dependency update"
     commit-message:
