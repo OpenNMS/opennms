@@ -37,6 +37,12 @@
       <artifactId>vaadin-compatibility-shared</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.vaadin.external.gwt</groupId>
+      <artifactId>gwt-elemental</artifactId>
+      <version>${gwtVersion}.vaadin2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <version>${gwtVersion}</version>
