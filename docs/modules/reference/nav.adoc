@@ -1,5 +1,6 @@
 .Reference
 * Configuration
+** xref:configuration/file-editor.adoc[]
 ** xref:configuration/filters/filters.adoc[]
 *** xref:configuration/filters/components.adoc[]
 *** xref:configuration/filters/parameters.adoc[]
@@ -149,4 +150,5 @@
 ** xref:daemons/daemon-config-files/syslogd.adoc[]
 ** xref:daemons/daemon-config-files/telemetryd.adoc[]
 ** xref:daemons/daemon-config-files/trapd.adoc[]
+** xref:operation:admin/logging/introduction.adoc[]
 * xref:glossary.adoc[]

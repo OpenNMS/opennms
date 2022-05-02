@@ -1,0 +1,66 @@
+[[file-editor]]
+= Manage Configuration Files in the UI
+
+The File Editor, available in the new UI, lets users view and edit configuration files (`.xml`, `.cfg`, `.drl`, etc.) with the OpenNMS UI instead of having to edit them directly in the file system (for example in the `/etc` directory).
+
+NOTE: Making changes to configuration files will affect how OpenNMS operates and incorrectly editing a file could result in features no longer working or not working as intended.
+
+To access the File Editor, go to the new UI, for example by clicking on "UI Preview", then navigating to "File Editor".
+
+== View Files
+
+After navigating to the File Editor, the UI displays a tree view of the OpenNMS `/etc` directory.
+
+From here you can:
+
+- navigate to any file
+- expand and collapse subtrees
+- search for any part of a file or directory name
+- view and edit files
+
+.File Editor main screen
+image::configuration/file-editor-main.png[]
+
+## Edit Files
+
+To edit a file, type in the file text display.
+
+To save the file, click "Save".
+
+CAUTION: This will overwrite the file on disk; there is no versioning or backup file support at this time.
+
+Click the *Reset* button to reload the file from disk into the editor.
+This will be the text as it was last saved to disk, not necessarily the original text before you began editing.
+
+## Add Files
+
+To add a new file, navigate to a folder and click the plus `+` sign.
+
+Enter a file name, add some text, and click *Save*.
+
+Note that validation will run when you attempt to save the file and may prevent it from being saved.
+A message at the bottom of the text editor provides more information on why validation failed.
+
+To delete a file, click on the minus sign `-` to the right of the file name.
+A confirmation dialog appears.
+Click *Confirm* to delete the file or *Cancel* to cancel the action.
+
+CAUTION: Deleting a file is permanent; the file will be removed from disk and is unrecoverable.
+
+.Add a new file
+image::configuration/file-editor-add-new.png[300,300]
+
+## Activate the Changes
+
+Depending on which file was edited, OpenNMS may detect and apply the configuration changes automatically, or else may require a restart.
+
+Some additional information can be found in these topics:
+
+** xref:operation:admin/daemon-config-files.adoc[]
+** xref:reference:daemons/introduction#ga-daemons[Daemon Reference] provides an overview of all daemons, their related configuration files, and which ones you can reload without restarting OpenNMS
+
+## Console
+
+A console window at the bottom of the edit pane appears with some detailed information after you perform actions such as save or delete.
+Click *Clear* to clear the console text or *Minimize* to minimize the console window.
+
