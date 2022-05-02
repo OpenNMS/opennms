@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,25 +28,53 @@
 
 package org.opennms.reporting.availability.render;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 
-public class PDFReportRendererTest extends TestCase {
+public class PDFReportRendererTest {
+    private String testOutputFile = "target/sampleDocument.pdf";
+    private PDFReportRenderer renderer = null;
+
+    @Before
+    public void setUp() throws Exception {
+        final var tempDir = Files.createTempDirectory("pdf-report-");
+
+        renderer = new PDFReportRenderer();
+        renderer.setBaseDir(tempDir.toAbsolutePath().toString());
+
+        final Properties p = new Properties();
+        p.setProperty("log4j.logger.FOP", "INFO");
+        p.setProperty("log4j.logger.org.apache", "INFO");
+        p.setProperty("log4j.logger.org.apache.fop.fonts", "WARN");
+
+        MockLogAppender.setupLogging(true, p);
+    }
+
+    @Test
     public void testPdfRendering() throws Exception {
-        new PDFReportRenderer().render(
+        renderer.render(
                 new InputStreamReader(
                         // This is a freely-licensed sample XSL-FO document from IBM developerWorks
                         Thread.currentThread().getContextClassLoader().getResourceAsStream("org/opennms/reporting/availability/render/currency.fo"), 
                         StandardCharsets.UTF_8
                 ),
-                new FileOutputStream("target/sampleDocument.pdf"),
+                new FileOutputStream(testOutputFile),
                 new InputStreamReader(
                         Thread.currentThread().getContextClassLoader().getResourceAsStream("org/opennms/reporting/availability/render/identity.xsl"), 
                         StandardCharsets.UTF_8
                 )
         );
+
+        assertTrue(Files.exists(Path.of(testOutputFile)));
     }
 }

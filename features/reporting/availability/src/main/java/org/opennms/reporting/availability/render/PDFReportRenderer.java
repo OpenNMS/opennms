@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,15 +28,18 @@
 
 package org.opennms.reporting.availability.render;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.xmlgraphics.util.MimeConstants.MIME_PDF;
+
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 import javax.xml.transform.OutputKeys;
@@ -45,10 +48,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
-import org.apache.fop.apps.MimeConstants;
+import org.apache.fop.apps.FopFactoryBuilder;
+import org.apache.fop.configuration.ConfigurationException;
+import org.apache.fop.configuration.DefaultConfiguration;
+import org.apache.fop.configuration.DefaultConfigurationBuilder;
 import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,17 +78,6 @@ public class PDFReportRenderer implements ReportRenderer {
 
     private String m_baseDir;
 
-    /**
-     * <p>Constructor for PDFReportRenderer.</p>
-     */
-    public PDFReportRenderer() {
-    }
-
-    /**
-     * <p>render</p>
-     *
-     * @throws org.opennms.reporting.availability.render.ReportRenderException if any.
-     */
     @Override
     public void render() throws ReportRenderException {
         render(m_inputFileName, m_outputFileName, m_xsltResource);
@@ -103,8 +97,9 @@ public class PDFReportRenderer implements ReportRenderer {
                     return outputStream.toByteArray();
                 }
             });
+        } catch (final ReportRenderException e) {
+            throw e;
         } catch (final Exception e) {
-            if (e instanceof ReportRenderException) throw (ReportRenderException)e;
             throw new ReportRenderException(e);
         }
     }
@@ -115,29 +110,22 @@ public class PDFReportRenderer implements ReportRenderer {
         try {
             Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
                 @Override public Void call() throws Exception {
-                    FileInputStream in = null, xslt = null;
-                    Reader xsl = null, xml = null;
+                    LOG.debug("Rendering {} with XSL File {} to OutputStream", inputFileName, xsltResource.getDescription());
 
-                    try {
-                        LOG.debug("Rendering {} with XSL File {} to OutputStream", inputFileName, xsltResource.getDescription());
-    
-                        in = new FileInputStream(xsltResource.getFile());
-                        xsl = new InputStreamReader(in, StandardCharsets.UTF_8);
-                        xslt = new FileInputStream(inputFileName);
-                        xml = new InputStreamReader(xslt, StandardCharsets.UTF_8);
-            
+                    try (
+                        final var in = new FileInputStream(xsltResource.getFile());
+                        final var xsl = new InputStreamReader(in, UTF_8);
+                        final var xslt = new FileInputStream(inputFileName);
+                        final var xml = new InputStreamReader(xslt, UTF_8);
+                    ) {
                         render(xml, outputStream, xsl);
                         return null;
-                    } finally {
-                        IOUtils.closeQuietly(xml);
-                        IOUtils.closeQuietly(xslt);
-                        IOUtils.closeQuietly(xsl);
-                        IOUtils.closeQuietly(in);
                     }
                 }
             });
+        } catch (final ReportRenderException e) {
+            throw e;
         } catch (final Exception e) {
-            if (e instanceof ReportRenderException) throw (ReportRenderException)e;
             throw new ReportRenderException(e);
         }
     }
@@ -149,23 +137,20 @@ public class PDFReportRenderer implements ReportRenderer {
             Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
                 @Override public Void call() throws Exception {
                     LOG.debug("Rendering InputStream with XSL File {} to OutputStream", xsltResource.getDescription());
-            
-                    FileInputStream xslt = null;
-                    Reader xsl = null, xml = null;
-                    try {
-                        xslt = new FileInputStream(xsltResource.getFile());
-                        xsl = new InputStreamReader(xslt, StandardCharsets.UTF_8);
-                        xml = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-            
+
+                    try (
+                        final var xslt = new FileInputStream(xsltResource.getFile());
+                        final var xsl = new InputStreamReader(xslt, UTF_8);
+                        final var xml = new InputStreamReader(inputStream, UTF_8);
+                    ) {
                         render(xml, outputStream, xsl);
                         return null;
-                    } finally {
-                        IOUtils.closeQuietly(xml);
                     }
                 }
             });
+        } catch (final ReportRenderException e) {
+            throw e;
         } catch (final Exception e) {
-            if (e instanceof ReportRenderException) throw (ReportRenderException)e;
             throw new ReportRenderException(e);
         }
     }
@@ -176,60 +161,64 @@ public class PDFReportRenderer implements ReportRenderer {
         try {
             Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
                 @Override public Void call() throws Exception {
-            
-                    LOG.debug("Rendering {} with XSL File {} to {} with base directory of {}", m_baseDir, inputFileName, xsltResource.getDescription(), outputFileName);
-            
-                    FileInputStream in = null, xslt = null;
-                    FileOutputStream out = null;
-                    Reader xsl = null, xml = null;
-                    try {
-            
-                        xslt = new FileInputStream(xsltResource.getFile());
-                        xsl = new InputStreamReader(xslt, StandardCharsets.UTF_8);
-                        in = new FileInputStream(m_baseDir + "/" + inputFileName);
-                        xml = new InputStreamReader(in, StandardCharsets.UTF_8);
-            
-                        out = new FileOutputStream(new File(m_baseDir + "/" + outputFileName));
-                        
+                    Objects.requireNonNull(m_baseDir);
+
+                    LOG.debug("Rendering {} with XSL File {} to {} with base directory of {}", inputFileName, xsltResource.getDescription(), outputFileName, m_baseDir);
+
+                    try (
+                        final var xslt = new FileInputStream(xsltResource.getFile());
+                        final var xsl = new InputStreamReader(xslt, UTF_8);
+                        final var in = new FileInputStream(Path.of(m_baseDir, inputFileName).toFile());
+                        final var xml = new InputStreamReader(in, UTF_8);
+                        final var out = new FileOutputStream(Path.of(m_baseDir, outputFileName).toFile());
+                    ) {
                         render(xml, out, xsl);
                         return null;
-                    } finally {
-                        IOUtils.closeQuietly(out);
-                        IOUtils.closeQuietly(xml);
-                        IOUtils.closeQuietly(in);
-                        IOUtils.closeQuietly(xsl);
-                        IOUtils.closeQuietly(xslt);
                     }
                 }
             });
+        } catch (final ReportRenderException e) {
+            throw e;
         } catch (final Exception e) {
-            if (e instanceof ReportRenderException) throw (ReportRenderException)e;
             throw new ReportRenderException(e);
         }
     }
 
-    /**
-     * <p>render</p>
-     *
-     * @param in a {@link java.io.Reader} object.
-     * @param out a {@link java.io.OutputStream} object.
-     * @param xslt a {@link java.io.Reader} object.
-     * @throws org.opennms.reporting.availability.render.ReportRenderException if any.
-     */
+    /** {@inheritDoc} */
     public void render(final Reader in, final OutputStream out, final Reader xslt) throws ReportRenderException {
         try {
-            final FopFactory fopFactory = FopFactory.newInstance();
-            fopFactory.setStrictValidation(false);
-            final Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, out);
+            Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
+                @Override public Void call() throws Exception {
+                    Objects.requireNonNull(m_baseDir);
 
-            final TransformerFactory tfact = TransformerFactory.newInstance();
-            final Transformer transformer = tfact.newTransformer(new StreamSource(xslt));
-            transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
-            final StreamSource streamSource = new StreamSource(in);
-            transformer.transform(streamSource, new SAXResult(fop.getDefaultHandler()));
+                    final var base = Path.of(getBaseDir());
+
+                    final FopFactory fopFactory = getFopFactoryForBase(base);
+                    final Fop fop = fopFactory.newFop(MIME_PDF, out);
+
+                    final TransformerFactory tfact = TransformerFactory.newInstance();
+
+                    final Transformer transformer = tfact.newTransformer(new StreamSource(xslt));
+                    transformer.setOutputProperty(OutputKeys.ENCODING, UTF_8.name());
+
+                    final StreamSource streamSource = new StreamSource(in);
+                    transformer.transform(streamSource, new SAXResult(fop.getDefaultHandler()));
+
+                    return null;
+                }
+            });
         } catch (final Exception e) {
             throw new ReportRenderException(e);
         }
+    }
+
+    public static FopFactory getFopFactoryForBase(final Path base) throws ConfigurationException {
+        final DefaultConfiguration cfg = new DefaultConfigurationBuilder().build(PDFReportRenderer.class.getResourceAsStream("fop-configuration.xml"));
+        return new FopFactoryBuilder(base.toAbsolutePath().toUri())
+            .setConfiguration(cfg)
+            .setStrictFOValidation(false)
+            .setComplexScriptFeatures(false)
+            .build();
     }
 
     /** {@inheritDoc} */

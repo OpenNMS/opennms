@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,48 +30,46 @@ package org.opennms.web.extremecomponent.view.resolver;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.fop.apps.FOUserAgent;
-import org.apache.fop.apps.Fop;
-import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
 import org.extremecomponents.table.core.Preferences;
 import org.extremecomponents.table.filter.ViewResolver;
+import org.opennms.reporting.availability.render.PDFReportRenderer;
 
 public class OnmsPdfViewResolver implements ViewResolver {
 
     @Override
     public void resolveView(ServletRequest request, ServletResponse response, Preferences preferences, Object viewData) throws Exception {
-        InputStream is = new ByteArrayInputStream(((String) viewData).getBytes(StandardCharsets.UTF_8));
-        
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        
-        FopFactory fopFactory = FopFactory.newInstance();
-        fopFactory.setStrictValidation(false);
-        FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
-        Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, out);
-        
-        TransformerFactory tfact = TransformerFactory.newInstance();
-        Transformer transformer = tfact.newTransformer();
-        Source src = new StreamSource(is);
-        Result res = new SAXResult(fop.getDefaultHandler());
-        transformer.transform(src, res);
-        
-        byte[] contents = out.toByteArray();
-        response.setContentLength(contents.length);
-        response.getOutputStream().write(contents);
+        try (
+             final var is = new ByteArrayInputStream(((String) viewData).getBytes(StandardCharsets.UTF_8));
+        ) {
+            final var out = new ByteArrayOutputStream();
 
+            final var base = Files.createTempDirectory("fop-pdf-view-resolver-");
+            final var fopFactory = PDFReportRenderer.getFopFactoryForBase(base);
+
+            final var foUserAgent = fopFactory.newFOUserAgent();
+            final var fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, out);
+
+            final var tfact = TransformerFactory.newInstance();
+            final var  transformer = tfact.newTransformer();
+
+            final var src = new StreamSource(is);
+            final var res = new SAXResult(fop.getDefaultHandler());
+            transformer.transform(src, res);
+
+            final var contents = out.toByteArray();
+            response.setContentLength(contents.length);
+            response.getOutputStream().write(contents);
+        }
     }
 
 }

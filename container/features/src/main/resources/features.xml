@@ -138,6 +138,7 @@
         <bundle>mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
     </feature>
     <feature name="fop" version="${fopVersion}" description="Apache :: XML Graphics :: FOP">
+        <feature>batik</feature>
         <bundle>wrap:mvn:org.apache.xmlgraphics/fop/${fopVersion}</bundle>
     </feature>
     <feature name="gemini-blueprint" version="${eclipseGeminiVersion}" description="Eclipse :: Gemini Blueprint">

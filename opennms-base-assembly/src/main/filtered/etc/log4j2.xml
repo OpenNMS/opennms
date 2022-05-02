@@ -122,6 +122,12 @@
     <logger name="org.apache.coyote" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
+    <logger name="FOP" additivity="false" level="WARN">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.apache.fop" additivity="false" level="WARN">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
     <logger name="org.apache.mina.filter.logging" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>

@@ -150,12 +150,6 @@
       <artifactId>org.opennms.features.reporting.core</artifactId>
     </dependency>
     <dependency>
-      <groupId>avalon-framework</groupId>
-      <artifactId>avalon-framework</artifactId>
-      <version>4.1.3</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>fop</artifactId>
       <version>${fopVersion}</version>
