@@ -98,8 +98,9 @@ public class FilesystemRestService {
         }
 
         try {
-            return Files.find(etcFolder.toRealPath(), 4, (path, basicFileAttributes) -> isSupportedExtension(path))
-                    .map(p -> etcFolder.relativize(p).toString())
+            java.nio.file.Path realEtcFolder = etcFolder.toRealPath();
+            return Files.find(realEtcFolder, 4, (path, basicFileAttributes) -> isSupportedExtension(path))
+                    .map(p -> realEtcFolder.relativize(p).toString())
                     .filter(p -> !changedFilesOnly || !doesFileExistAndMatchContentsWithEtcPristine(p))
                     .sorted()
                     .collect(Collectors.toList());
