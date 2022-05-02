@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,6 +51,8 @@ import org.slf4j.LoggerFactory;
 
 public class SeleniumMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(SeleniumMonitor.class);
+
+    private final GroovyClassLoader m_gcl = new GroovyClassLoader();
 
     public static class BaseUrlUtils{
         private static Pattern s_ipAddrPattern = Pattern.compile("\\$\\{ipAddr\\}");
@@ -181,11 +183,9 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
 
     private Class<?> createGroovyClass(String filename) throws CompilationFailedException, IOException 
     {
-        GroovyClassLoader gcl = new GroovyClassLoader();
-        
         String file = System.getProperty("opennms.home") + "/etc/selenium/" + filename;
         System.err.println("File name: " + file);
-        return gcl.parseClass( new File( file ) );
+        return m_gcl.parseClass( new File( file ) );
     }
 
 }
