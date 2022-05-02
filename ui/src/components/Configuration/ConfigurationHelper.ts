@@ -58,14 +58,14 @@ const checkForDuplicateName = (
 const convertCronTabToLocal = (cronFormatted: string) => {
   const cronFormatterList = cronFormatted.split(' ') 
   const [sec, min, hr, DOM, mth, DOW] = [...cronFormatterList]
-  const empty = {
+  const occuranceEmptyProps = {
     name: '',
     id: 0
   }
-  const timeInputField = {
-    occurance: empty,
-    occuranceDay: empty,
-    occuranceWeek: empty
+  const occuranceSection = {
+    occurance: occuranceEmptyProps,
+    occuranceDay: occuranceEmptyProps,
+    occuranceWeek: occuranceEmptyProps
   }
 
   const hasDOM = (dayOfMonth: string) => {
@@ -80,13 +80,13 @@ const convertCronTabToLocal = (cronFormatted: string) => {
   }
   // const regexDOW = /[1-7]|SUN|MON|TUE|WED|THU|FRI|SAT/g
   if(hasDOW(DOW)) {
-    timeInputField.occurance = scheduleTypes.find((d) => d.name === 'Weekly') || empty
-    timeInputField.occuranceWeek = weekTypes.find((d) => d.id === parseInt(DOW)) || empty
+    occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Weekly') || occuranceEmptyProps
+    occuranceSection.occuranceWeek = weekTypes.find((d) => d.id === parseInt(DOW)) || occuranceEmptyProps
   } else if(hasDOM(DOM)) {
-    timeInputField.occurance = scheduleTypes.find((d) => d.name === 'Monthly') || empty
-    timeInputField.occuranceDay = dayTypes.find((d) => d.id === (DOM === 'L' ? 32 : parseInt(DOM))) || empty
+    occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Monthly') || occuranceEmptyProps
+    occuranceSection.occuranceDay = dayTypes.find((d) => d.id === (DOM === 'L' ? 32 : parseInt(DOM))) || occuranceEmptyProps
   } else {
-    timeInputField.occurance = scheduleTypes.find((d) => d.name === 'Daily') || empty
+    occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Daily') || occuranceEmptyProps
   }
 
   const isCronAdvancedFormat = () => {
@@ -105,12 +105,12 @@ const convertCronTabToLocal = (cronFormatted: string) => {
       || cronFormatterList.length > 6 // Year (7th part: 1970-2099): can't be set in UI
     )
   }
-  let cronProps = {
+  let advancedProps = {
     advancedCrontab: false,
     occuranceAdvanced: ''
   }
   if(isCronAdvancedFormat()) {
-    cronProps = {
+    advancedProps = {
       advancedCrontab: true,
       occuranceAdvanced: cronFormatted
     } 
@@ -124,12 +124,12 @@ const convertCronTabToLocal = (cronFormatted: string) => {
   const time = `${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`
 
   return {
-    ...timeInputField,
+    ...occuranceSection,
+    ...advancedProps,
     time,
     twentyFourHour: time,
-    monthly: DOM === 'L' ? 32 : DOM,
+    monthly: DOM === 'L' ? 32 : DOM, // last day of the month
     weekly: DOW,
-    ...cronProps,
   }
 }
 
@@ -214,14 +214,14 @@ const convertLocalToCronTab = (item: LocalConfiguration) => {
         schedule = `0 ${minutes} ${hours} ${item.occuranceDay.id === 32 ? 'L' : item.occuranceDay.id} * ?`
         break
       default:
-        // normal mode, at drawer open (Schedule type field empty)
-        schedule = '0 0 0 * * ?' // 'sec min hr DOM mth DOW'
+        // basic mode, at drawer open
+        schedule = '0 0 0 * * ?' // 'sec min hr DOM mth DOW' (occurance input fields empty)
     }
   } else {
     // advanced mode
     schedule = item.occuranceAdvanced
   }
-  //debugger
+
   return schedule
 }
 
@@ -280,7 +280,7 @@ const convertServerConfigurationToLocal = (clickedItem: ProvisionDServerConfigur
   } = convertCronTabToLocal(clickedItem[RequisitionData.CronSchedule])
 
   const urlVars = convertURLToLocal(clickedItem[RequisitionData.ImportURL])
-  //debugger
+  
   return {
     name: clickedItem[RequisitionData.ImportName],
     rescanBehavior,
@@ -816,7 +816,6 @@ const validatePath = (path: string) => {
  * @param typeName Type selected (File,DNS,HTTP...)
  * @returns Message if empty, empty string on value.
  */
-
 const validateType = (typeName: string) => {
   return !typeName ? ErrorStrings.TypeError : ''
 }
