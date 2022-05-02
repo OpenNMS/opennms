@@ -39,11 +39,6 @@
 ** xref:service-assurance/polling-packages.adoc[]
 ** xref:service-assurance/service-monitors.adoc[]
 ** xref:application-perspective-monitoring/application-perspective-monitoring.adoc[]
-** xref:device-config-backup/introduction.adoc[]
-*** xref:device-config-backup/ssh.adoc[]
-*** xref:device-config-backup/configuration.adoc[]
-*** xref:device-config-backup/dcb-requisition.adoc[]
-*** xref:device-config-backup/dcb.adoc[]
 
 * xref:performance-data-collection/introduction.adoc[]
 ** xref:performance-data-collection/collectd/collection-packages.adoc[]
@@ -95,6 +90,12 @@
 ** xref:notifications/bonus-strategies.adoc[]
 *** xref:notifications/strategies/mattermost.adoc[]
 *** xref:notifications/strategies/slack.adoc[]
+
+* xref:device-config-backup/introduction.adoc[]
+** xref:device-config-backup/ssh.adoc[]
+** xref:device-config-backup/configuration.adoc[]
+** xref:device-config-backup/dcb-requisition.adoc[]
+** xref:device-config-backup/dcb.adoc[]
 
 * xref:bsm/introduction.adoc[]
 ** xref:bsm/business-service-hierarchy.adoc[]
