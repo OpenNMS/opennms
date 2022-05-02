@@ -128,11 +128,11 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         if (!configDefinition.get().getAllowMultiple()) {
             if (!DEFAULT_CONFIG_ID.equals(configId)) {
                 throw new ConfigRuntimeException(String.format(
-                        "For the service '%s' is only one configuration with id='%s' allowed; provided was id '%s'", configName, DEFAULT_CONFIG_ID, configId));
+                        "The '%s' service allows only one configuration with id='%s'.", configName, DEFAULT_CONFIG_ID, configId));
             }
             if (!configIds.isEmpty()) {
                 throw new ConfigAlreadyExistsException(String.format(
-                        "For the service '%s' found existing configuration(s) with id(s) other than '%s'", configName, DEFAULT_CONFIG_ID));
+                        "The service '%s' found existing configuration(s) with id(s) other than '%s'.", configName, DEFAULT_CONFIG_ID));
             }
         }
 
