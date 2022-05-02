@@ -107,12 +107,14 @@ const errorDefaultMessage = 'Thread pool values have to be between 1 and 2000.'
 const threadPoolData = computed(() => {
   const localThreads: Record<string, string> = {}
   threadPoolKeys.forEach((key) => (localThreads[key] = store?.state?.configuration?.provisionDService?.[key]))
+
   return reactive(localThreads)
 })
 
 const unTouchedThreadPoolData = computed(() => {
   const localThreads: Record<string, string> = {}
   threadPoolKeys.forEach((key) => (localThreads[key] = store?.state?.configuration?.provisionDService?.[key]))
+
   return reactive(localThreads)
 })
 
