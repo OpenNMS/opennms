@@ -10,6 +10,7 @@ export interface SnackbarProps {
   msg: string
   center?: boolean
   error?: boolean
+  timeout?: number
 }
 
 export interface SearchResultResponse {
