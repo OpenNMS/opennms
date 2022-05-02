@@ -102,7 +102,7 @@ final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
     public static final String PARAMETER_MIMETYPE = "mimetype";
     public static final String PARAMETER_CHARSET = "charset";
     public static final String PARAMETER_BANNER = "banner";
-    public static final String PARAMETER_SSLFILTER = "usesslfiler";
+    public static final String PARAMETER_SSLFILTER = "usesslfilter";
 
     public static final String PARAMETER_USERNAME = "auth-username";
     public static final String PARAMETER_PASSWORD = "auth-password";
