@@ -14,7 +14,7 @@ Use auto discovery if you do not have a "source of truth" for your network inven
 Auto discovery can become that source.
 Be aware that auto discovery can include entities you do not want to monitor, if not properly configured.
 
-Directed discovery is effective if you know your inventory, particularly with smaller networks (i.e., 100–200 nodes).
+Directed discovery is effective if you know your inventory, particularly with smaller networks (for example, 100–200 nodes).
 It is also useful for areas of your network that you cannot auto discover.
 
 Regardless of the method, provisioning is an iterative process.
@@ -48,12 +48,12 @@ For an example of the resulting XML configuration, see link:#SNMP-community-xml[
 [[foreign-source-definition]]
 == Edit Default Foreign Source Definition
 
-The default foreign source definition serves as a template that defines the services to detect on (DNS, FTP, ICMP, etc.), the scan interval for discovery, and the policies to use when provisioning.
+The default foreign source definition serves as a template that defines the services to detect on (DNS, FTP, ICMP, and so on), the scan interval for discovery, and the policies to use when provisioning.
 
 Policies determine entity persistence and/or set attributes on the discovered entities that control {page-component-title} management behavior.
 Provisiond applies the existing default foreign source definition unless you choose to modify it.
 
-.Edit detectors and set scan interval
+=== Edit detectors and set scan interval
 
 . In the web UI, click the gear icon in the top right.
 . In the *Provisioning* area, choose *Manage Provisioning Requisitions*.
@@ -89,7 +89,7 @@ Specify `0` to disable automatic scanning.
 
 . Click *Save*.
 
-.Create policies
+=== Create policies
 
 . Click the *Policies* tab in the *Default Foreign Source Definition* screen.
 . Specify a name for the policy, select the class from the drop down, and fill out any information associated with that class.
