@@ -1,0 +1,48 @@
+
+= Plugin Development with OIA
+
+The OpenNMS Integration API (OIA) implements a software development kit that provides a stable base to build plugins to extend the configuration of OpenNMS, consume its outputs, and expose expanded functionality.
+
+OIA clearly identifies, documents, and provides ongoing compatibility guarantees for its integration points, so plugin creators can write code that targets a clear set of interfaces and works with a broad range of OpenNMS releases.
+As OIA adoption increases, users benefit from an ecosystem of plugins that can be built more quickly, validated more easily, and assured to work with future releases of OpenNMS.
+
+== Features
+
+API users can take advantage of the following features and interfaces.
+See the interfaces defined in the `api` module for a complete list.
+
+* *Extend*
+** Event configuration
+** Syslog configuration (message to event mappings)
+** SNMP data collection configuration
+** Resource type definitions (data collection)
+** Graph definitions (data collection)
+** Thresholding configuration
+
+* *Consume*
+** Runtime information
+*** Version - major, minor, patch, snapshot
+*** Container type - OpenNMS vs. Minion vs. Sentinel
+** Alarm lifecycle callbacks
+** DAOs
+*** Node
+*** SNMP interface
+*** Topology (edges)
+** Coordination API
+** Events
+
+* *Expose*
+** Health checks
+*** Provide custom health checks to verify the sanity of your plugin
+** Alarm persister extensions
+*** Mangle alarms before they are persisted
+** Service monitors
+** Service collectors
+** Provisiond detectors
+** Ticketers
+** https://github.com/OpenNMS/opennms-integration-api/blob/master/api/src/main/java/org/opennms/integration/api/v1/timeseries/README.md[Time series storage]
+** Graph API extensions (i.e., custom topology)
+
+== Start a new project with OIA
+
+== Build a new plugin
