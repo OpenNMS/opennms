@@ -2,6 +2,8 @@
 
 * xref:build-from-source.adoc[]
 
+* xref:osgi/osgi-and-opennms.adoc[]
+
 * xref:minion/introduction.adoc[]
 ** xref:minion/container.adoc[]
 ** xref:minion/guidelines.adoc[]

@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
-import { QueryParameters } from '@/types'
+import { QueryParameters, UpdateModelFunction } from '@/types'
 import useQueryParameters from '@/composables/useQueryParams'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSortHeader, SORT } from '@featherds/table'
@@ -89,7 +89,7 @@ const { queryParameters, updateQueryParameters, sort } = useQueryParameters({
   offset: 0,
   orderBy: 'label'
 }, 'nodesModule/getNodes')
-const searchFilterHandler = (val = '') => {
+const searchFilterHandler: UpdateModelFunction = (val = '') => {
   const searchQueryParam: QueryParameters = { _s: `node.label==${val}*` }
   const updatedParams = { ...queryParameters.value, ...searchQueryParam }
   store.dispatch('nodesModule/getNodes', updatedParams)

@@ -6,6 +6,8 @@ export interface VuexContext {
   dispatch: Dispatch
 }
 
+export type UpdateModelFunction = (_value: any) => any
+
 export interface SnackbarProps {
   msg: string
   center?: boolean
@@ -318,17 +320,6 @@ export interface AppInfo {
     enabled: boolean
   }
   version: string
-}
-
-export interface Notification {
-  msg: string
-  severity: NotificationSeverity
-}
-
-export enum NotificationSeverity {
-  ERROR = 'error',
-  WARNING = 'warning',
-  SUCCESS = 'success'
 }
 
 export interface StartEndTime {

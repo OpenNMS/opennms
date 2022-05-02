@@ -36,8 +36,8 @@ const onSeveritySelect = () => store.dispatch('mapModule/setSelectedSeverity', s
 .severity-select {
   position: absolute;
   width: 250px;
-  right: 51px;
-  top: 11px;
+  right: 60px;
+  top: 80px;
   z-index: var($zindex-tooltip);
   .feather-input-wrapper {
     background: var($primary-text-on-color);

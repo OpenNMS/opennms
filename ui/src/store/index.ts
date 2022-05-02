@@ -17,6 +17,7 @@ import resourceModule from './resource'
 import graphModule from './graph'
 import pluginModule from './plugin'
 import deviceModule from './device'
+import scvModule from './scv'
 
 export default createStore({
   modules: {
@@ -35,6 +36,7 @@ export default createStore({
     resourceModule,
     graphModule,
     pluginModule,
-    deviceModule
+    deviceModule,
+    scvModule
   }
 })

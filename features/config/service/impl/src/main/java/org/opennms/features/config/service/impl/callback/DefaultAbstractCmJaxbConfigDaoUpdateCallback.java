@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- *     http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -26,35 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.service.impl;
+package org.opennms.features.config.service.impl.callback;
 
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
-import org.opennms.features.config.service.impl.callback.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 
-import javax.annotation.PostConstruct;
 import java.util.function.Consumer;
 
-public class ProvisiondCmJaxbConfigTestDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> {
-    public static final String CONFIG_NAME = "provisiond";
+/**
+ * It is default update notifier for AbstractCmJaxbConfigDao.
+ *`
+ * @param <E> entity class
+ */
+public class DefaultAbstractCmJaxbConfigDaoUpdateCallback<E> implements Consumer<ConfigUpdateInfo> {
+    private AbstractCmJaxbConfigDao<E> abstractCmJaxbConfigDao;
 
-    public ProvisiondCmJaxbConfigTestDao() {
-        super(ProvisiondConfiguration.class, "Provisiond Configuration");
+    public DefaultAbstractCmJaxbConfigDaoUpdateCallback(AbstractCmJaxbConfigDao<E> abstractCmJaxbConfigDao) {
+        this.abstractCmJaxbConfigDao = abstractCmJaxbConfigDao;
     }
 
     @Override
-    protected String getConfigName() {
-        return CONFIG_NAME;
-    }
-
-    @Override
-    protected Consumer<ConfigUpdateInfo> getUpdateCallback() {
-        return new DefaultAbstractCmJaxbConfigDaoUpdateCallback<>(this);
-    }
-
-    @Override
-    @PostConstruct
-    public void postConstruct() {
-        this.addOnReloadedCallback(getDefaultConfigId(), getUpdateCallback());
+    public void accept(ConfigUpdateInfo configUpdateInfo) {
+        // trigger to reload, which will replace the entity in lastKnownEntityMap
+        abstractCmJaxbConfigDao.loadConfig(configUpdateInfo.getConfigId());
     }
 }

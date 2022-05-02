@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,28 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.service.util;
+package org.opennms.netmgt.dao.jaxb.callback;
 
+import org.junit.Test;
+import org.mockito.Mockito;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
-import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.xml.event.Event;
 
-import java.util.function.Consumer;
+public class ConfigurationReloadEventCallbackTest {
+    private String configName = "provisiond";
 
-/**
- * It is default update notifier for AbstractCmJaxbConfigDao.
- *`
- * @param <E> entity class
- */
-public class DefaultAbstractCmJaxbConfigDaoUpdateCallback<E> implements Consumer<ConfigUpdateInfo> {
-    private AbstractCmJaxbConfigDao<E> abstractCmJaxbConfigDao;
+    @Test
+    public void testEventTriggered() {
+        EventForwarder eventForwarder = Mockito.mock(EventForwarder.class);
 
-    public DefaultAbstractCmJaxbConfigDaoUpdateCallback(AbstractCmJaxbConfigDao<E> abstractCmJaxbConfigDao) {
-        this.abstractCmJaxbConfigDao = abstractCmJaxbConfigDao;
+        ConfigUpdateInfo info = new ConfigUpdateInfo(configName);
+        ConfigurationReloadEventCallback callback = new ConfigurationReloadEventCallback(eventForwarder);
+        callback.accept(info);
+        Mockito.verify(eventForwarder, Mockito.times(1)).sendNow(Mockito.any(Event.class));
     }
 
-    @Override
-    public void accept(ConfigUpdateInfo configUpdateInfo) {
-        // trigger to reload, which will replace the entity in lastKnownEntityMap
-        abstractCmJaxbConfigDao.loadConfig(configUpdateInfo.getConfigId());
-    }
 }

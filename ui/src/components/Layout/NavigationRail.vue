@@ -1,5 +1,6 @@
 <template>
   <FeatherNavigationRail
+    id="main-nav-rail"
     @update:modelValue="onNavRailClick"
   >
     <template v-slot:main>
@@ -54,6 +55,13 @@
         :icon="MinionProfiles"
         title="Configuration Management"
       />
+      <FeatherRailItem
+        v-if="adminRole"
+        :class="{ selected: isSelected('/scv') }"
+        href="#/scv"
+        :icon="Security"
+        title="Secure Credentials Vault"
+      />
 
       <!-- loop plugin menu items -->
       <FeatherRailItem
@@ -79,6 +87,7 @@ import MarkComplete from '@featherds/icon/action/MarkComplete'
 import Cloud from '@featherds/icon/action/Cloud'
 import Reporting from '@featherds/icon/action/Reporting'
 import UpdateUtilities from '@featherds/icon/action/UpdateUtilities'
+import Security from '@featherds/icon/hardware/Security'
 import {
   FeatherNavigationRail,
   FeatherRailItem
@@ -94,18 +103,20 @@ const onNavRailClick = () => store.dispatch('appModule/setNavRailOpen', !navRail
 const isSelected = (path: string) => path === route.fullPath
 </script>
 
-<style scopes lang="scss">
+<style lang="scss">
 @import "@featherds/styles/themes/variables";
 
-.nav-header {
-  display: none !important;
-}
+#main-nav-rail {
+  .nav-header {
+    display: none !important;
+  }
 
-.title-multiline-custom {
-  white-space: pre-wrap;
-  height: auto !important;
-  padding-top: var($spacing-xs) !important;
-  padding-bottom: var($spacing-xs) !important;
+  .title-multiline-custom {
+    white-space: pre-wrap;
+    height: auto !important;
+    padding-top: var($spacing-xs) !important;
+    padding-bottom: var($spacing-xs) !important;
+  }
 }
 </style>
 

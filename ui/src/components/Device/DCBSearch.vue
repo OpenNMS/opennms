@@ -17,11 +17,12 @@ import { FeatherIcon } from '@featherds/icon'
 import SearchIcon from '@featherds/icon/action/Search'
 import { useDebounceFn } from '@vueuse/core'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'
+import { UpdateModelFunction } from '@/types'
 
 const store = useStore()
 const searchVal = ref<string | undefined>(undefined)
 
-const searchFilterHandler = (val = '') => {
+const searchFilterHandler: UpdateModelFunction = (val = '') => {
   if (searchVal.value === undefined && val === '') return // prevents dup mounted call from feather
   searchVal.value = val
 

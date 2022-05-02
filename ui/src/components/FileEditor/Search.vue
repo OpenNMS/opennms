@@ -17,6 +17,7 @@
 import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import { FeatherButton } from '@featherds/button'
+import { UpdateModelFunction } from '@/types'
 
 const store = useStore()
 
@@ -24,7 +25,7 @@ const contentModified = computed(() => store.state.fileEditorModule.contentModif
 const hasSelectedFile = computed(() => store.state.fileEditorModule.selectedFileName !== '')
 const searchValue = computed(() => store.state.fileEditorModule.searchValue)
 const disableBtn = computed(() => !contentModified.value || !hasSelectedFile.value)
-const search = (val: string) => store.dispatch('fileEditorModule/setSearchValue', val || '')
+const search: UpdateModelFunction = (val: string) => store.dispatch('fileEditorModule/setSearchValue', val || '')
 const reset = () => store.dispatch('fileEditorModule/triggerFileReset')
 const save = () => store.dispatch('fileEditorModule/saveModifiedFile')
 </script>

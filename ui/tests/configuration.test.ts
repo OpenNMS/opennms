@@ -81,5 +81,7 @@ test('Convert item to URL query string', () => {
   expect(ConfigurationHelper.convertItemToURL(itemAdvancedOptionsNameOnly)).toEqual('https://aa')
   expect(ConfigurationHelper.convertItemToURL(itemAdvancedOptionsValueOnly)).toEqual('https://aa')
   expect(ConfigurationHelper.convertItemToURL(itemMultipleAdvancedOptions)).toEqual('https://aa?key1=val1&key2=val2')
-  expect(ConfigurationHelper.convertItemToURL(itemPathQueryString)).toEqual('https://aa/path?key1=val1&key2=val2&key3=val3')
+  expect(ConfigurationHelper.convertItemToURL(itemPathQueryString)).toEqual(
+    'https://aa/path?key1=val1&key2=val2&key3=val3'
+  )
 })

@@ -41,21 +41,22 @@ const split = ref()
 const nodesReady = ref(false)
 const leafletComponent = ref()
 
+// resizes the map / loads missing tiles
+const resize = debounce(() => leafletComponent.value.invalidateSizeFn(), 200)
+
 const minimizeBottomPane = () => {
   // override splitpane event
   split.value.panes[0].size = 96
   split.value.panes[1].size = 4
-  setTimeout(() => leafletComponent.value.invalidateSizeFn(), 200)
+  resize()
 }
-
-// resize the map when splitter dragged
-const resize = debounce(() => leafletComponent.value.invalidateSizeFn(), 200)
 
 onMounted(async () => {
   startSpinner()
   await store.dispatch('mapModule/getNodes')
   await store.dispatch('mapModule/getAlarms')
   stopSpinner()
+  resize()
   nodesReady.value = true
   // commented out until we do topology
   // store.dispatch('mapModule/getNodesGraphEdges')
