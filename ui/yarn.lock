@@ -3016,10 +3016,10 @@ vue-demi@*:
   resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.12.5.tgz#8eeed566a7d86eb090209a11723f887d28aeb2d1"
   integrity sha512-BREuTgTYlUr0zw0EZn3hnhC3I6gPWv+Kwh4MCih6QcAeaTlaIX0DwOVN0wHej7hSvDPecz4jygy/idsgKfW58Q==
 
-vue-diff@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/vue-diff/-/vue-diff-1.2.2.tgz#85913ac8b005737fcaba8a23c769d851c6e0c6bb"
-  integrity sha512-zzXi666ZfxEPQhZ/AEEIvFlvmbBnWOM6pbg8hCmfl55MP00UQ0kfb6Y1uUSMmROxEP/zE5KzZ8ms+0T/V8Suzw==
+vue-diff@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/vue-diff/-/vue-diff-1.2.3.tgz#0dcad603fec571da162d9b9591785507a138ecba"
+  integrity sha512-PoFW5j1eOrO+R+XwhHAzAoDZNAWVMzcsmX6LyFp/X7FHSDoBtPUymxx14hB6pCIeOEHd75ujtYIAlDTngMSPrQ==
   dependencies:
     "@vueuse/core" "^8.3.1"
     diff-match-patch "^1.0.5"
