@@ -10,69 +10,20 @@ In addition, if xref:releasenotes:whatsnew.adoc[system requirements] in the new 
 
 == Update and verify the {page-component-title} repository
 
-Your {page-component-title} repository is defined in a file in `/etc/yum.repos.d/`.
+[{tabs}]
+====
+CentOS/RHEL::
++
+--
+include::rhel/up-rhel.adoc[]
+--
 
 ifeval::["{page-component-title}" == "Horizon"]
-It may be named `opennms-repo-stable-<OSversion>.repo but is not guaranteed to be.
+Debian/Ubuntu::
++
+--
+include::ubuntu/up-ubuntu.adoc[]
+--
+
 endif::[]
-
-ifeval::["{page-component-title}" == "Meridian"]
-It may be named {page-component-title}.repo but is not guaranteed to be.
-endif::[]
-
-. Use the text editor of your choice to edit your {page-component-title} repository config to change the `baseurl` of the repository from the old release family to the new release family.
-. Verify that the attribute `enabled=1` is defined, or enabled, or absent entirely
-. Purge any cached yum data: `yum clean all`
-+
-Expected outcome: `yum repolist` does not show an error pertaining to the {page-component-title} repo; `yum info {page-component-title}-core` shows an available current package version.
-
-. Install the PostgreSQL 12 version of iplike: `yum -y install iplike-pgsql12`
-+
-Expected outcome: `rpm -q iplike-pgsql12` reports an _iplike-pgsql12_ package is installed.
-
-. Start postgresql-12: `systemctl start postgresql-12.service`
-+
-Expected outcome: `systemctl status postgresql-12.service` reports postgresql-12 has started.
-
-. Make a backup copy of your OpenNMS config:
-+
-`mv /opt/opennms/etc /opt/opennms/etc.backup`
-+
-OR, to leave the original `etc` and make an identical copy in `/tmp` for easier reconciliation:
-+
-`rsync -Ppav /opt/opennms/etc /tmp/etc.orig`
-+
-`rsync -Ppav /opt/opennms/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf`
-
-. Upgrade the {page-component-title} packages to the new version: `yum -y upgrade {page-component-title}-core {page-component-title}-webapp-jetty`
-+
-Expected result: A lot of rpmnew files; `rpm -q {page-component-title}-core` reports the new version is installed.
-
-. Install Java 11: `yum -y install java-11-openjdk java-11-openjdk-devel`
-+
-Expected result: `rpm -q java-11-openjdk` returns a result.
-
-. Execute runjava:
-`$OPENNMS_HOME/bin/runjava -S /usr/lib/jvm/java-11/bin/java`
-+
-Expected outcome: `$OPENNMS_HOME/etc/java.conf` contains a path to the Java 11 JDK.
-
-. Run the opennms installer: `$OPENNMS_HOME/bin/install -dis`
-+
-Expected result: A long delay, followed by output containing: `Upgrade completed successfully!`
-
-. Clear the Karaf cache: `yes | $OPENNMS_HOME/bin/fix-karaf-setup.sh`
-+
-Expected outcome: The directory `$OPENNMS_HOME/data/` is empty.
-
-. Start OpenNMS {page-component-title}: `systemctl start opennms.service`
-+
-Expected result: OpenNMS {page-component-title} starts with no errors and the Web UI is accessible as normal.
-+
-NOTE: `tail -F /var/log/opennms/manager.log` can illustrate at what point in the startup process {page-component-title} is currently.
-
-. Upgrade is complete and operation is resumed.
-
-NOTE: If you upgrade in place, OpenNMS renames any shipped config that conflicts with an existing user-modified config to `.rpmnew`.
-You must inspect these files manually and reconcile the differences.
-Use `diff -Bbw` and `diff -y`.
+====

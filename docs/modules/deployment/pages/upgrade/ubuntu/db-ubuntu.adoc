@@ -1,0 +1,63 @@
+
+. Become root:
+`sudo su -`
++
+Expected outcome: `whoami` returns `root`.
+
+. Install the latest version of the PostgreSQL repository package.
+For example:
+`apt -y install <repository package location>`
+
++
+(See https://www.postgresql.org/download/linux/redhat/[PostgreSQL Yum Repository] for more information on database installation.)
++
+Expected outcome: `apt repolist pdg*` reports available repos for postgresql versions 9.6 through 14.
+
+. Install new PostgreSQL version: `apt -y install postgresql-12 postgresql-12-server`
++
+Upstream versions are designed to coexist with multiple installed versions.
+
+. Initialize the PostgreSQL database: `/usr/bin/postgresql-12-setup initdb`
++
+Expected result: command completes with no errors.
+
+. Stop OpenNMS: `systemctl stop opennms.service`
++
+Expected result: `systemctl status opennms.service` reports opennms is stopped.
++
+NOTE: Your OpenNMS downtime starts at this point.
+
+. Stop earlier version of PostgreSQL: `systemctl stop postgresql`
++
+Expected result: `systemctl status postgresql.service` reports postgresql is stopped.
+
+. Disable earlier version PostgreSQL: `systemctl disable postgresql`
+. Stop PostgreSQL 12: `systemctl postgresql-12 stop`
++
+Expected result: `systemctl status postgresql-12.service` reports postgresql-12 is stopped.
+
+. Become the `postgres` user: `sudo su – postgres`
++
+Expected result: `whoami` returns `postgres`
+
+. Run the PostgreSQL upgrade in "check" mode: `/var/lib/pgsql/data -D /var/lib/pgsql/12/data -r -v -c`
++
+Expected result: output ends with “Clusters are compatible”.
++
+Verify these paths align with reality.
+
+. Run the PostgreSQL upgrade without "check": `/usr/pgsql-12/bin/pg_upgrade -b /usr/bin -B /usr/pgsql-12/bin -d /var/lib/pgsql/data -D /var/lib/pgsql/12/data -r -v`
++
+Expected outcome: output ends with “Upgrade Complete”.
++
+NOTE: Verify these paths align with reality.
+PostgreSQL's `pg_upgrade` utility copies the existing database into the new database and does not alter the existing database's data files.
+This leaves the PostgreSQL 9.4 database in its original state and location which can be used for rollback.
+
+. Replace `/var/lib/pgsql/12/data/postgresql.conf` with the updated copy.
+. Copy `pg_hba.conf` from the postgresql 9.4 data directory to the postgresql-12 data directory: `cp /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/12/data/pg_hba.conf`
++
+NOTE: Verify these paths align with reality.
+. Exit PostgreSQL shell: `exit`
++
+Expected outcome: `whoami` returns `root`

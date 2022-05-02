@@ -11,27 +11,16 @@ See the link:https://www.postgresql.org/docs/[PostgreSQL documentation] for more
 CentOS/RHEL::
 +
 --
-include::db-rhel.adoc[]
+include::rhel/db-rhel.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
-Ubuntu::
+Debian/Ubuntu::
 +
 --
-include::ubuntu/install-minion.adoc[]
+include::ubuntu/db-ubuntu.adoc[]
 --
 
-Debian::
-+
---
-include::debian/install-minion.adoc[]
---
-
-Docker::
-+
---
-include::docker/minion.adoc[]
---
 endif::[]
 ====
 
