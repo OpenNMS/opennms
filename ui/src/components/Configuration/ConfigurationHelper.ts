@@ -56,7 +56,9 @@ const checkForDuplicateName = (
  * @returns A formatted object for display to humans
  */
 const convertCronTabToLocal = (cronFormatted: string) => {
+  console.log(cronFormatted)
   const cronFormatterList = cronFormatted.split(' ') 
+  console.log(cronFormatterList)
   const [sec, min, hr, DOM, mth, DOW] = [...cronFormatterList]
   const occuranceEmptyProps = {
     name: '',
@@ -194,6 +196,7 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
  * @returns crontab-ready string
  */
 const convertLocalToCronTab = (item: LocalConfiguration) => {
+  console.log('item.occuranceAdvanced',item.occuranceAdvanced)
   let schedule = ''
 
   if (!item.advancedCrontab) {
