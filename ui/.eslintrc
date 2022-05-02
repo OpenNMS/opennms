@@ -23,23 +23,23 @@
   "rules": {
     "vue/script-setup-uses-vars": "error",
     "indent": [
-        "error", 2, {"SwitchCase": 1}
-      ],
-      "semi": [
-        "error",
-        "never"
-      ],
-      "quotes": [
-        "error",
-        "single"
-      ],
-      "vue/html-quotes": [ 
-        "error", 
-        "double", 
-        { "avoidEscape": false } 
-      ],
-      "@typescript-eslint/no-explicit-any": "off",
-      "vue/multi-word-component-names": "off"
+      "error", 2, {"SwitchCase": 1}
+    ],
+    "semi": [
+      "error",
+      "never"
+    ],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "vue/html-quotes": [ 
+      "error", 
+      "double", 
+      { "avoidEscape": false } 
+    ],
+    "@typescript-eslint/no-explicit-any": "off",
+    "comma-dangle": ["error", "never"]
   },
   "globals": {
     "defineProps": "readonly",
