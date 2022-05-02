@@ -6,6 +6,7 @@
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 import { PropType } from 'vue'
 import { useStore } from 'vuex'
+type Mode = 'split' | 'unified'
 
 const store = useStore()
 
@@ -19,7 +20,7 @@ defineProps({
     required: true
   },
   mode: {
-    type: String,
+    type: String as PropType<Mode>,
     default: 'split'
   }
 })

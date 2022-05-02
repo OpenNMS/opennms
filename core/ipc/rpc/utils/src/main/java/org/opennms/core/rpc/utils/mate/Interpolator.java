@@ -77,7 +77,7 @@ public class Interpolator {
 
     public static Result interpolate(final String raw, final Scope scope) {
         if (raw == null) {
-            return null;
+            return new Result(null, List.of());
         }
 
         final ImmutableList.Builder<ResultPart> parts = ImmutableList.builder();

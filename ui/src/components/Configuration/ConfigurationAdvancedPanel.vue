@@ -88,7 +88,7 @@ const props = defineProps({
   advancedKeyUpdate: { type: Function, required: true },
   deleteAdvancedOption: { type: Function, required: true },
   active: { type: Boolean, required: true },
-  activeUpdate: Function,
+  activeUpdate: { type: Function as PropType<(_v: boolean) => void>, required: true },
   helpState: Object,
 })
 

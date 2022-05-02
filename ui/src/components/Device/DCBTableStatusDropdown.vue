@@ -11,7 +11,9 @@
       :key="option"
       @click="filterByStatus(option)"
     >
-      <div class="option" :class="option.replace(' ', '').toLowerCase()">{{ option }}</div>
+      <div class="option" :class="option">
+      {{ option === 'none' ? 'No Backup' : option }}
+      </div>
     </FeatherDropdownItem>
   </FeatherDropdown>
 </template>
@@ -21,17 +23,16 @@ import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import ArrowDown from '@featherds/icon/navigation/ArrowDropDown'
 import { useStore } from 'vuex'
-import { DeviceConfigQueryParams } from '@/types/deviceConfig'
+import { DeviceConfigQueryParams, status } from '@/types/deviceConfig'
 
 const store = useStore()
-const backupStatusOptions = computed<string[]>(() => store.state.deviceModule.backupStatusOptions)
+const backupStatusOptions = computed<status[]>(() => store.state.deviceModule.backupStatusOptions)
 
-const filterByStatus = (value: string) => {
+const filterByStatus = (value: status) => {
   const newQueryParams: DeviceConfigQueryParams = {
     limit: 20,
     offset: 0,
-    groupBy: 'status',
-    groupByValue: value
+    status: value
   }
 
   store.dispatch('deviceModule/updateDeviceConfigBackupQueryParams', newQueryParams)

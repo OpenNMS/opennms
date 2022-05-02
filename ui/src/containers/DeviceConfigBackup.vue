@@ -40,8 +40,8 @@ onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
 :deep(.failed) {
   @include status-bar(var($error));
 }
-:deep(.nobackup) {
-  @include status-bar(var($secondary-variant));
+:deep(.none) {
+  @include status-bar(var($shade-4));
 }
 
 .card {

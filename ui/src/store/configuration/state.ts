@@ -7,7 +7,7 @@ export interface State {
 const state: State = {
   types: [],
   provisionDService: null,
-  sendModifiedData: null,
+  sendModifiedData: null
 }
 
 export default state

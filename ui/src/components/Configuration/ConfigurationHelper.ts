@@ -144,7 +144,7 @@ const getQueryStringFromAdvancedOptions = (fullURL: string, advancedOptions: Adv
   let queryString = ''
   advancedOptions.forEach((option, index) => {
     if (option.key.name && option.value) {
-      queryString += `${(index > 0 || hasQueryParams()) ? '&' : '?'}${option.key.name}=${option.value}`
+      queryString += `${index > 0 || hasQueryParams() ? '&' : '?'}${option.key.name}=${option.value}`
     }
   })
 

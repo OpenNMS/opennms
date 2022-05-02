@@ -240,8 +240,7 @@ defineExpose({ invalidateSizeFn })
 .search-bar {
   position: absolute;
   margin-left: 10px;
-  margin-bottom: 23px;
-  margin-top: -5px;
+  margin-top: 10px;
 }
 .geo-map {
   height: 100%;

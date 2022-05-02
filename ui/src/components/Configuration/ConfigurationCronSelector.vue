@@ -10,7 +10,7 @@
         label="Schedule Type"
         :options="scheduleTypes"
         :error="props.errors.occurance"
-        @update:modelValue="(val: string) => updateFormValue('occurance', val)"
+        @update:modelValue="(val: unknown) => updateFormValue('occurance', val as string)"
         :modelValue="props.config.occurance"
         class="occurance"
       />
@@ -20,7 +20,7 @@
         label="Day of Month"
         :options="dayTypes"
         :error="props.errors.occuranceDay"
-        @update:modelValue="(val: string) => updateFormValue('occuranceDay', val)"
+        @update:modelValue="(val: unknown) => updateFormValue('occuranceDay', val as string)"
         :modelValue="props.config.occuranceDay"
         class="occurance-day"
       />
@@ -30,7 +30,7 @@
         label="Day of Week"
         :options="weekTypes"
         :error="props.errors.occuranceWeek"
-        @update:modelValue="(val: string) => updateFormValue('occuranceWeek', val)"
+        @update:modelValue="(val: unknown) => updateFormValue('occuranceWeek', val as string)"
         :modelValue="props.config.occuranceWeek"
         class="occurance-week"
       />
@@ -38,7 +38,7 @@
         type="time"
         class="time"
         label="Schedule Time"
-        @update:modelValue="(val: string) => updateFormValue('time', val)"
+        @update:modelValue="(val: unknown) => updateFormValue('time', val as string)"
         :modelValue="props.config.time"
       />
     </div>
@@ -51,7 +51,7 @@
         class="advanced-entry"
         :error="props.errors.occuranceAdvanced"
         label="Advanced (Cron) Schedule"
-        @update:modelValue="(val: string) => updateFormValue('occuranceAdvanced', val)"
+        @update:modelValue="(val: unknown) => updateFormValue('occuranceAdvanced', val as string)"
         :modelValue="props.config.occuranceAdvanced"
       />
     </div>
@@ -65,7 +65,7 @@
       <div>
         <FeatherCheckbox
           :modelValue="props.config.advancedCrontab"
-          @update:modelValue="(val: string) => updateFormValue('advancedCrontab', val)"
+          @update:modelValue="(val: unknown) => updateFormValue('advancedCrontab', val as string)"
           >Advanced (Cron) Schedule</FeatherCheckbox
         >
       </div>

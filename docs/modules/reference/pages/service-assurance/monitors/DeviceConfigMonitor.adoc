@@ -38,6 +38,12 @@ This monitor tries to retrieve configuration from the network device and shows t
 | `0 0 0 * * ?`
 The default cron expression runs every 24 hrs at 12:00 a.m.
 
+| host-key
+| SSH fingerprint of the remote host key.
+  If this is specified, the provided fingerprint will be used to verify the host key of the remote host.
+  The key must be encoded as `HASH:BASE64`.
+  One can use `ssh-keygen -l -f <(ssh-keyscan $TARGET)` to find the fingerprints of a remote system.
+| _unchecked_
 
 |===
 
