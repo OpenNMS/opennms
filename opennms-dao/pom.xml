@@ -195,6 +195,12 @@
       <artifactId>dnsjava-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <!-- for cron validation -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>quartz-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>

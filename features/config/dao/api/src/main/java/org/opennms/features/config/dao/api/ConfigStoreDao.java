@@ -114,23 +114,6 @@ public interface ConfigStoreDao<T> {
     Optional<T> getConfig(String configName, String configId);
 
     /**
-     * update config to a registered service name. It can be partial data and copy into existing config.
-     * The flow of update
-     * 1. reading the config by configName & configId
-     * 2. if replace is true, the whole new config will be replaced directly 
-     *    if replace is false, the new config will copy to existing database config by its property keys to config in database
-     * 3. validate
-     * 4. update db
-     *
-     * @param configName
-     * @param configId
-     * @param config (JSONObject)
-     * @param isReplace
-     * @throws ValidationException
-     */
-    void updateConfig(String configName, String configId, JSONObject config, boolean isReplace) throws ValidationException;
-
-    /**
      * **replace** all configs for the registered service name
      *
      * @param configName

@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -98,7 +99,7 @@ public class FilesystemRestService {
         }
 
         try {
-            return Files.find(etcFolder, 4, (path, basicFileAttributes) -> isSupportedExtension(path))
+            return Files.find(etcFolder, 4, (path, basicFileAttributes) -> isSupportedExtension(path), FileVisitOption.FOLLOW_LINKS)
                     .map(p -> etcFolder.relativize(p).toString())
                     .filter(p -> !changedFilesOnly || !doesFileExistAndMatchContentsWithEtcPristine(p))
                     .sorted()

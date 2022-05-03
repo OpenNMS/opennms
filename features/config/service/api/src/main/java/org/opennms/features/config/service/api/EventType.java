@@ -29,5 +29,5 @@
 package org.opennms.features.config.service.api;
 
 public enum EventType {
-    CREATE, UPDATE, DELETE;
+    CREATE, VALIDATE, UPDATE, DELETE;
 }

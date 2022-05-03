@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.jaxb.callback;
 
+import org.opennms.features.config.service.api.CmJaxbConfigDao;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -38,7 +39,7 @@ import java.util.function.Consumer;
 
 public class ConfigurationReloadEventCallback<E> implements Consumer<ConfigUpdateInfo> {
     private EventForwarder eventForwarder;
-    private AbstractCmJaxbConfigDao<E> abstractCmJaxbConfigDao;
+    private CmJaxbConfigDao<E> cmJaxbConfigDao;
 
     public ConfigurationReloadEventCallback(EventForwarder eventForwarder) {
         this.eventForwarder = eventForwarder;
