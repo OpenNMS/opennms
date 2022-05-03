@@ -61,7 +61,8 @@
 | All logging about the service availability monitors.
 
 | provisiond.log
-| The node provisioning processes are being logged here. This includes also service detection and policy results.
+| The node provisioning processes are being logged here.
+This also includes service detection and policy results.
 
 | queued.log
 |
