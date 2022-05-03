@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -126,5 +126,17 @@ public class TrapListenerTest {
         user.setPrivacyProtocol(privatcyProtocol);
         user.setSecurityName(securityName);
         return user;
+    }
+
+    @Test
+    public void noSubscriberTest() throws Exception {
+        TrapListener listener = new TrapListener(initialConfig);
+        listener.start();
+        Assert.assertEquals(Boolean.FALSE, listener.isRegisteredForTraps());
+        try {
+            Thread.currentThread().sleep(61 * 1000);
+        }
+        catch (Exception e) {}
+        Assert.assertEquals(Boolean.TRUE, listener.isRegisteredForTraps());
     }
 }
