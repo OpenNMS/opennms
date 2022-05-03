@@ -3,13 +3,14 @@
 
 [source, console]
 ----
-sudo cat /tmp/opennms-passwd.txt >> /etc/passwd
+sudo cat /tmp/opennms-passwd.txt >> /etc/passwd && /
 sudo cat /tmp/opennms-group.txt >> /etc/group
 ----
 
 .Create log folder
+[source, console]
 ----
-sudo mkdir /var/log/opennms
+sudo mkdir /var/log/opennms && /
 chown opennms. /var/log/opennms
 ----
 
@@ -20,7 +21,7 @@ chown opennms. /var/log/opennms
 sudo tar -xzf /tmp/opennms-usr-share.tar.gz -C / && \
 sudo tar -xzf /tmp/opennms-etc.tar.gz -C / && \
 sudo tar -xzf /tmp/opennms-var-lib.tar.gz -C / && \
-sudo tar -xzf /tmp/opennms-usr-share-java.tar.gz -C
+sudo tar -xzf /tmp/opennms-usr-share-java.tar.gz -C /
 ----
 
 .Create OpenNMS systemd unit

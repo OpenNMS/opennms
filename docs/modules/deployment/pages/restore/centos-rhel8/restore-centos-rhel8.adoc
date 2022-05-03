@@ -3,13 +3,14 @@
 
 [source, console]
 ----
-sudo cat /tmp/opennms-passwd.txt >> /etc/passwd
+sudo cat /tmp/opennms-passwd.txt >> /etc/passwd && \
 sudo cat /tmp/opennms-group.txt >> /etc/group
 ----
 
 .Create log folder
+[source, console]
 ----
-sudo mkdir /var/log/opennms
+sudo mkdir /var/log/opennms && \
 chown opennms. /var/log/opennms
 ----
 
@@ -39,24 +40,8 @@ sudo dnf -y install postgresql-server postgresql
 
 .Change the access policy for PostgreSQL
 [source, console]
-----
-sudo vi /var/lib/pgsql/data/pg_hba.conf
-----
 
-.Allow {page-component-title} to access the database over the local network with an MD5 hashed password
-[source, pg_hba.conf]
-----
-host    all             all             127.0.0.1/32            md5<1>
-host    all             all             ::1/128                 md5<1>
-----
-
-<1> Change method from `ident` to `md5` for IPv4 and IPv6 on localhost.
-
-.Apply configuration changes for PostgreSQL
-[source, console]
-----
-sudo systemctl reload postgresql
-----
+Follow the xref:deployment:core/centos-rhel8/postgresql.adoc#core-centos-rhel8-pg_hba[pg_hba] config section.
 
 .Restore OpenNMS Database
 [source, console]

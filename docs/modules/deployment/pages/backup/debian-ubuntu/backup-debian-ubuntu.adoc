@@ -23,6 +23,6 @@ sudo runuser -l postgres -c 'pg_dumpall -f /tmp/opennms-postgres.dmp'
 . Back up OpenNMS {page-component-title} operating system user
 [source, console]
 ----
-sudo grep opennms /etc/passwd > /tmp/opennms-passwd.txt
+sudo grep opennms /etc/passwd > /tmp/opennms-passwd.txt && \
 sudo grep opennms /etc/group > /tmp/opennms-group.txt
 ----
