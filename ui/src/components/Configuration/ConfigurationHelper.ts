@@ -21,7 +21,7 @@ import {
   RequisitionPluginSubTypes,
   RequisitionHTTPTypes
 } from './copy/requisitionTypes'
-import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
+import { scheduleTypes, weekTypes, weekNameTypes, dayTypes } from './copy/scheduleTypes'
 import cronstrue from 'cronstrue'
 
 const cronTabLength = (cronTab: string) => cronTab.replace(/\s$/, '').split(' ').length
@@ -51,13 +51,14 @@ const checkForDuplicateName = (
 
 /**
  * ['0', '45', '15', '?', '*', '7']
- * [sec   min   hr   DOM   mth  DOW]
+ * [sec   min   hr   DoM   mth  DoW]
  * @param cronFormatted A Crontab string
  * @returns A formatted object for display to humans
  */
 const convertCronTabToLocal = (cronFormatted: string) => {
   const cronFormatterList = cronFormatted.split(' ') 
-  const [sec, min, hr, DOM, mth, DOW] = [...cronFormatterList]
+  const [sec, min, hr, DoM, mth] = [...cronFormatterList]
+  let [,,,,, DoW] = [...cronFormatterList]
   const occuranceEmptyProps = {
     name: '',
     id: 0
@@ -68,22 +69,38 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     occuranceWeek: occuranceEmptyProps
   }
 
-  const hasDOM = (dayOfMonth: string) => {
-    const regexDOM = /[1-31L]/g
+  const hasDoM = (dayOfMonth: string) => {
+    const regexDoM = /[1-31L]/g
 
-    return regexDOM.test(dayOfMonth)
+    return regexDoM.test(dayOfMonth)
   }
-  const hasDOW = (dayOfWeek: string) => {
-    const regexDOW = /[1-7]/g
+
+  /**
+   * SUN...SAT pattern: additional cron support for the UI basic mode, if Day of Week was set with name (SUN...SAT) in advanced mode.
+   * Note
+   *  - edit a requisition: when expression contains SUN...SAT, drawer will be opened in UI basic mode and expression containing SUN...SAT will be translated to 1...7 and set in Day of Week input field.
+   * @param dayOfWeek (string) Can be 1...7 or SUN...SAT
+   * @returns (boolean) Determine if day of week is set in the expression
+   */
+  const hasDoW = (dayOfWeek: string) => {
+    const regexDoW = /([1-7])|(SUN)|(MON)|(TUE)|(WED)|(THU)|(FRI)|(SAT)/g
+    const dowMatched = dayOfWeek.match(regexDoW) 
     
-    return regexDOW.test(dayOfWeek)
+    if(!dowMatched) return false
+
+    if(!Number.isInteger(Number(dayOfWeek))) {
+      DoW = (weekNameTypes.find((d) => d.name === dowMatched[0]) || {}).id?.toString() || '?'
+    }
+
+    return true
   }
-  if(hasDOW(DOW)) {
+  
+  if(hasDoW(DoW)) {
     occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Weekly') || occuranceEmptyProps
-    occuranceSection.occuranceWeek = weekTypes.find((d) => d.id === parseInt(DOW)) || occuranceEmptyProps
-  } else if(hasDOM(DOM)) {
+    occuranceSection.occuranceWeek = weekTypes.find((d) => d.id === parseInt(DoW)) || occuranceEmptyProps
+  } else if(hasDoM(DoM)) {
     occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Monthly') || occuranceEmptyProps
-    occuranceSection.occuranceDay = dayTypes.find((d) => d.id === (DOM === 'L' ? 32 : parseInt(DOM))) || occuranceEmptyProps
+    occuranceSection.occuranceDay = dayTypes.find((d) => d.id === (DoM === 'L' ? 32 : parseInt(DoM))) || occuranceEmptyProps
   } else {
     occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Daily') || occuranceEmptyProps
   }
@@ -91,16 +108,14 @@ const convertCronTabToLocal = (cronFormatted: string) => {
   const isCronAdvancedFormat = () => {
     const regexDOMWeekdays = /\d+W/g
     const regexDOWLastNthDay = /[L#]/g
-    const regexDOWCharValues = /[SUN|MON|TUE|WED|THU|FRI|SAT]/g
     const regexAnyOtherSpecChars = /[,-/]/g
 
     return (
       parseInt(sec) > 0
       || mth !== '*' // specific month can't be set in UI
-      || regexDOMWeekdays.test(DOM) // 15W (the nearest weekday to the 15th of the month): can't be set in UI
-      || regexDOWLastNthDay.test(DOW) // L and #: can't be set in UI
-      || regexDOWCharValues.test(DOW) // todo: condition to be removed, once the support is implemented
-      || regexAnyOtherSpecChars.test(DOW) // can't be set in UI
+      || regexDOMWeekdays.test(DoM) // 15W (the nearest weekday to the 15th of the month): can't be set in UI
+      || regexDOWLastNthDay.test(DoW) // L and #: can't be set in UI
+      || regexAnyOtherSpecChars.test(DoW) // can't be set in UI
       || cronFormatterList.length > 6 // Year (7th part: 1970-2099): can't be set in UI
     )
   }
@@ -127,8 +142,8 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     ...advancedProps,
     time,
     twentyFourHour: time,
-    monthly: DOM === 'L' ? 32 : DOM, // 32: id of last day of the month
-    weekly: DOW,
+    monthly: DoM === 'L' ? 32 : DoM, // 32: id of last day of the month
+    weekly: DoW,
   }
 }
 
@@ -214,7 +229,7 @@ const convertLocalToCronTab = (item: LocalConfiguration) => {
         break
       default:
         // basic mode, at drawer open
-        schedule = '0 0 0 * * ?' // 'sec min hr DOM mth DOW' (occurance input fields empty)
+        schedule = '0 0 0 * * ?' // 'sec min hr DoM mth DOW' (occurance input fields empty)
     }
   } else {
     // advanced mode
