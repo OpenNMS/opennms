@@ -52,7 +52,7 @@
 |
 
 | notifd.log
-| Information about the notifications that were or were not send.
+| Information about the notifications that were or were not sent.
 
 | perspectivepollerd.log
 |
