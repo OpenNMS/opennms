@@ -1,0 +1,67 @@
+
+In this example, we assume that OpenNMS and PostgreSQL run in a Docker container using `docker-compose`.
+As a reference setup, you can use our https://github.com/opennms-forge/stack-play[stack play setups].
+This example upgrades from PostgreSQL 10 to PostgreSQL 13.
+
+. Stop the stack.
+.. Run `docker-compose down` in your compose folder.
+
+. Create a new PostgreSQL data folder: `mkdir /var/lib/docker/volumes/STACK_NAME-data-postgres/_datanew`
+
++
+
+In the `docker-compose.yaml` definitions of the https://github.com/opennms-forge/stack-play[stack play setups], the PostgreSQL data folder is defined as a Docker volume.
+We can easily create a new folder for PostgreSQL 13.
+
+. Use Tianon's https://github.com/tianon/docker-postgres-upgrade[Docker images] for upgrade.
+.. Tianon's Docker images run all required commands you normally have to do manually.
+
++
+[source, console]
+----
+docker run --rm \
+-v /var/lib/docker/volumes/STACK_NAME-data-postgres/_data:/var/lib/postgresql/10/data \
+-v /var/lib/docker/volumes/STACK_NAME-data-postgres/_datanew:/var/lib/postgresql/13/data \
+tianon/postgres-upgrade:10-to-13
+----
+
+. Rename the data folders:
+
++
+
+[source, console]
+----
+`mv /var/lib/docker/volumes/STACK_NAME-data-postgres/_data /var/lib/docker/volumes/STACK_NAME-data-postgres/_dataold`
+`mv /var/lib/docker/volumes/STACK_NAME-data-postgres/_datanew /var/lib/docker/volumes/STACK_NAME-data-postgres/data-postgres/_data`
+----
+
+. Raise PostgreSQL version in docker-compose.yaml
+
++
+
+From:
+
++
+
+[source, console]
+----
+...
+   services:
+     database:
+       image: postgres:10
+...
+----
+
++
+
+To:
+
++
+[source, console]
+----
+services:
+   database:
+      image: postgres:13
+----
+
+. Start the stack: `docker-compose up -d`
