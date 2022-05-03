@@ -1,7 +1,7 @@
 
 = IFTTT Integration
 
-The free web-based IFTTT service lets you combine web applications using simple conditional instructions.
+The IFTTT service lets you combine web applications using simple conditional instructions.
 Each supported service has several triggers that you can use to trigger the actions of other services.
 This lets you, for example, change brightness and color of a smart bulb, and send messages or date to IoT devices.
 
@@ -73,7 +73,7 @@ The following example shows the configuration file for a WiFi light bulb control
 The defined applets use `value1` for setting the color and `value2` for setting the brightness.
 The third value demonstrates the use of placeholders.
 For the severity-based trigger sets, you can use the following placeholders in the three value fields:
-`%os%`/`%oldSeverity` for old severity, `%ns%`/`%newSeverity%` for new severity, `%oc%`/`%oldCount` for old alarm count and `%nc%`/``%newCount% for new alarm count.
+`%os%`/`%oldSeverity` for old severity, `%ns%`/`%newSeverity%` for new severity, `%oc%`/`%oldCount` for old alarm count and `%nc%`/`%newCount% for new alarm count.
 This is useful for sending messages or operating LED displays via IFTTT.
 
 [source, xml]

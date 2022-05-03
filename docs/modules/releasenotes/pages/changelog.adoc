@@ -2,9 +2,9 @@
 
 = Changelog
 
-[releasenotes-changelog-29.0.5]
+[[releasenotes-changelog-29.0.5]]
 
-==== Release 29.0.5
+== Release 29.0.5
 
 Release 29.0.5 contains a number of bug and security fixes, as well as a few enhancements.
 
@@ -14,7 +14,7 @@ but are updating anyway link:https://www.merriam-webster.com/dictionary/belt-and
 
 The codename for Horizon 29.0.5 is https://wikipedia.org/wiki/$$Kingfisher$$[_Kingfisher_].
 
-===== Bug
+=== Bug
 
 * TimescaleDB extension can't added to existing opennms DB. (Issue http://issues.opennms.org/browse/NMS-13441[NMS-13441])
 * Enlinkd API response extremely slow for some nodes (Issue http://issues.opennms.org/browse/NMS-13507[NMS-13507])
@@ -25,7 +25,7 @@ The codename for Horizon 29.0.5 is https://wikipedia.org/wiki/$$Kingfisher$$[_Ki
 * CVE-2021-45105: Update to Log4j 2.17.0 (Issue http://issues.opennms.org/browse/NMS-13868[NMS-13868])
 * upgrade to log4j2 2.17.1 and pax-logging 1.11.13/2.0.14 (Issue http://issues.opennms.org/browse/NMS-13878[NMS-13878])
 
-===== Enhancement
+=== Enhancement
 
 * Consolidate all IPC features into one / need conf.d changes (Issue http://issues.opennms.org/browse/NMS-13610[NMS-13610])
 * Add metrics about twin communication (Issue http://issues.opennms.org/browse/NMS-13649[NMS-13649])

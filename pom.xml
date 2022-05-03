@@ -718,7 +718,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jarsigner-plugin</artifactId>
-        <version>1.2</version>
+        <version>3.0.0</version>
         <configuration>
           <keystore>${webstart.keystore}</keystore>
           <keypass>${webstart.keypass}</keypass>
@@ -1184,6 +1184,10 @@
                    <exclude>com.sun.xml.bind:*</exclude>
                    <exclude>com.sun.xml.bind.mvn:*</exclude>
                    <exclude>org.glassfish.jaxb:jaxb-core</exclude>
+
+                   <!-- use org.opennms.dependencies:org.opennms.dependencies.spring-beans-XX-shaded for CVE-2022-22965 -->
+                   <exclude>org.springframework:spring-beans</exclude>
+                   <exclude>org.apache.servicemix.bundles:org.apache.servicemix.bundles.spring-beans</exclude>
 
                  </excludes>
                </bannedDependencies>
@@ -1710,7 +1714,7 @@
     <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
-    <eclipseGeminiVersion>2.0.0.RELEASE</eclipseGeminiVersion>
+    <eclipseGeminiVersion>2.1.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <elasticsearchNettyVersion>4.1.43.Final</elasticsearchNettyVersion>
     <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
@@ -1786,11 +1790,11 @@
     <newtsVersion>1.5.5</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxLoggingVersion>2.0.14</paxLoggingVersion>
-    <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
+    <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
     <paxWebVersion>7.3.16</paxWebVersion>
     <protobufVersion>3.16.1</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
-    <postgresqlVersion>42.2.18</postgresqlVersion>
+    <postgresqlVersion>42.3.3</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
@@ -1848,7 +1852,7 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
-    <vaadinVersion>8.12.4</vaadinVersion>
+    <vaadinVersion>8.14.3</vaadinVersion>
     <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <vaadinAddonContextMenuVersion>3.1.0</vaadinAddonContextMenuVersion>

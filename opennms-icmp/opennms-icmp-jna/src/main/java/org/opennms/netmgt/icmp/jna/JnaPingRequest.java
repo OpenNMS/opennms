@@ -40,7 +40,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.protocols.rt.Request;
+import org.opennms.core.tracker.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
