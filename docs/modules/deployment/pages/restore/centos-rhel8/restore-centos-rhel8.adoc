@@ -28,19 +28,8 @@ sudo cp /opt/opennms/etc/opennms.service /lib/systemd/system/
 ----
 
 ._Assign CAP_NET_RAW capabilities_
-{page-component-title} runs as a non-root user, which requires having a Linux kernel greater than 3.10.
-If you run on an older kernel, and are unable to upgrade your OS, you need to assign CAP_NET_RAW capabilities:
 
-Run `systemctl edit --full opennms.service` and add the following lines to the `[Service]` section:
-
-[source, console]
-----
-CapabilityBoundingSet=CAP_NET_RAW
-AmbientCapabilities=CAP_NET_RAW
-----
-
-Reload the sytemd unit with `systemctl daemon-reload` and restart the service with `systemctl restart opennms`.
-
+Follow the xref:deployment:core/centos-rhel/initialize-core.adoc#initialize-core-cap[Assign CAP_NET_RAW capabilities] section.
 
 .Install PostgreSQL Database
 [source, console]
@@ -88,14 +77,13 @@ sudo /opt/opennms/bin/runjava -s
 sudo /opt/opennms/bin/install -dis
 ----
 
-
-
-.Allow connection to the web UI from your network
+.Firewall Configuration
 [source, console]
-----
-sudo firewall-cmd --permanent --add-port=8980/tcp
-sudo systemctl reload firewalld
-----
+
+Depending on where OpenNMS gets restored the firewall settings have to be set again.
+
+xref:deployment:core/centos-rhel/initialize-core.adoc#initialize-core-firewall
+xref:deployment:core/centos-rhel/firewall-core.adoc
 
 .Start OpenNMS service
 

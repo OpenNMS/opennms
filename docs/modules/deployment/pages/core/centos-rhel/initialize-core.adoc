@@ -40,6 +40,7 @@ sudo /opt/opennms/bin/runjava -s
 sudo /opt/opennms/bin/install -dis
 ----
 
+[[initialize-core-cap]]
 ._Assign CAP_NET_RAW capabilities_
 {page-component-title} runs as a non-root user, which requires having a Linux kernel greater than 3.10.
 If you run on an older kernel, and are unable to upgrade your OS, you need to assign CAP_NET_RAW capabilities:
@@ -62,6 +63,7 @@ Reload the sytemd unit with `systemctl daemon-reload` and restart the service wi
 sudo systemctl enable --now opennms
 ----
 
+[[initialize-core-firewall]]
 .Allow connection to the web UI from your network
 [source, console]
 ----
