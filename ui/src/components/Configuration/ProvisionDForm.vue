@@ -17,10 +17,10 @@
         :options="requisitionTypeList"
         :error="errors.type"
         :modelValue="config.type"
-        @update:modelValue="(val: {name:string}): void => {
+        @update:modelValue="(((val: {name:string}) => {
           props.updateFormValue('type', val)
           updateHint(val.name)
-        }"
+        }) as any)"
       />
       <div class="icon">
         <FeatherButton
@@ -34,9 +34,7 @@
         </FeatherButton>
       </div>
     </div>
-    <div
-      v-if="RequsitionTypesUsingHost.includes(config.type.name)"
-    >
+    <div v-if="RequsitionTypesUsingHost.includes(config.type.name)">
       <FeatherInput
         label="Host"
         class="side-input host-update mb-16"
@@ -46,9 +44,7 @@
         :hint="hostHint || 'vCenter server host or IP address'"
       />
     </div>
-    <div
-      v-if="RequisitionHTTPTypes.includes(config.type.name)"
-    >
+    <div v-if="RequisitionHTTPTypes.includes(config.type.name)">
       <FeatherInput
         label="Path"
         class="side-input mb-16"
@@ -58,9 +54,7 @@
         hint="URL path starting with a /"
       />
     </div>
-    <div
-      v-if="[RequisitionTypes.RequisitionPlugin].includes(config.type.name)"
-    >
+    <div v-if="[RequisitionTypes.RequisitionPlugin].includes(config.type.name)">
       <FeatherSelect
         class="side-input mb-16"
         textProp="name"
@@ -71,9 +65,7 @@
         :modelValue="config.subType"
       />
     </div>
-    <div
-      v-if="[RequisitionTypes.DNS].includes(config.type.name)"
-    >
+    <div v-if="[RequisitionTypes.DNS].includes(config.type.name)">
       <FeatherInput
         label="Zone"
         class="side-input mb-16"
@@ -91,12 +83,8 @@
         hint="Name to use for resulting requisition"
       />
     </div>
-    <div
-      v-if="[RequisitionTypes.VMWare].includes(config.type.name)"
-    >
-      <div
-        class="flex-center side-input"
-      >
+    <div v-if="[RequisitionTypes.VMWare].includes(config.type.name)">
+      <div class="flex-center side-input">
         <FeatherInput
           label="Username"
           class="side-input full-width mr-16 mb-16"
@@ -116,9 +104,7 @@
         />
       </div>
     </div>
-    <div
-      v-if="[RequisitionTypes.File].includes(config.type.name)"
-    >
+    <div v-if="[RequisitionTypes.File].includes(config.type.name)">
       <FeatherInput
         label="Path"
         class="side-input mb-16"
@@ -150,7 +136,10 @@
     </div>
   </div>
 </template>
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { FeatherSelect } from '@featherds/select'
 import { requisitionSubTypes, RequsitionTypesUsingHost, RequisitionTypes, requisitionTypeList, RequisitionHTTPTypes } from './copy/requisitionTypes'
 import { rescanItems } from './copy/rescanItems'
@@ -185,10 +174,8 @@ const hostHint = computed(() => {
  *
  */
 watch(formActive, () => {
-  if (formActive.value) {
-    if (firstInput.value) {
-      firstInput.value.focus()
-    }
+  if (formActive.value && firstInput.value) {
+    firstInput.value.focus()
   }
 })
 
@@ -212,7 +199,10 @@ const updateHint = (val:string) => {
   ConfigurationHelper.forceSetHint({hint}, 0,'.host-update')
 }
 </script>
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 .side-input {
     padding-bottom: 0;
 }

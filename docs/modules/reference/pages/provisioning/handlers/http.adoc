@@ -1,12 +1,23 @@
+//ui-provd: the contextual help from the external requisition screen links to this help, using the URL https://docs.opennms.com/horizon/latest/reference/provisioning/handlers/introduction.html. Ensure link in UI does not break if changing this section of docs.
 
 [[http-handler]]
 = HTTP(S) Handler
 
 The HTTP(S) handler imports a properly-formatted requisition definition from an XML document served by a remote web server.
 
-Examples:
+== Configure HTTP(S) requisition
 
-== Simple
+ifeval::["{page-component-title}" == "Horizon"]
+Prior to {page-component-title} 30, you set external requisitions in the `provisiond-configuration.xml` file.
+This file is no longer available.
+You must use the UI or the xref:development:rest/config_management.adoc#config-rest-api[config management REST API] to configure an external requisition.
+endif::[]
+
+To configure an HTTP(S) requisition, follow the steps in xref:reference:provisioning/handlers/introduction.adoc#create-req-def[Create an external requisition], but specify HTTP or HTTPS as the type, set the host, path, schedule, and rescan behavior.
+
+== Examples
+
+=== Simple
 
 [source]
 ----
@@ -15,7 +26,7 @@ http://myinventory.server.org/nodes.cgi
 https://myinventory.server.org/nodes.cgi
 ----
 
-== Using the generic handler
+=== Using the generic handler
 
 [source]
 ----
@@ -25,12 +36,3 @@ requisition://https?url=http%3A%2F%2Fmyinventory.server.org%2Fnodes.cgi
 ----
 
 TIP: When using the generic handler, the address should be URL encoded.
-
-== Using the OpenNMS Provisioning Integration Server (PRIS)
-
-The https://github.com/OpenNMS/opennms-provisioning-integration-server[OpenNMS Provisioning Integration Server (PRIS)] is a stand-alone service that can convert an existing list into the proper XML format for import.
-
-[source]
-----
-http://localhost:8000/requisitions/myServer
-----
