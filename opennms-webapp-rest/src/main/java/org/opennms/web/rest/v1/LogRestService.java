@@ -30,6 +30,7 @@ package org.opennms.web.rest.v1;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -78,7 +79,7 @@ public class LogRestService {
 
         try {
             return Files.find(logFolder, 1,
-                    (path, basicFileAttributes) -> path.getFileName().toString().endsWith(LOG_FILE_EXTENSION))
+                    (path, basicFileAttributes) -> path.getFileName().toString().endsWith(LOG_FILE_EXTENSION), FileVisitOption.FOLLOW_LINKS)
                     .map(p -> p.getFileName().toString())
                     .sorted()
                     .collect(Collectors.toList());
