@@ -18,7 +18,7 @@ sudo tar -cvzf /tmp/opennms-var.tar.gz /var/opennms
 sudo runuser -l postgres -c 'pg_dumpall -f /tmp/opennms-postgres.dmp'
 ----
 
-. Back up OpenNMS {page-component-title} operating system user
+.Back up OpenNMS {page-component-title} operating system user
 [source, console]
 ----
 sudo grep opennms /etc/passwd > /tmp/opennms-passwd.txt && \
