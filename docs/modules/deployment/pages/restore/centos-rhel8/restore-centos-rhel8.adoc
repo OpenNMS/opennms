@@ -67,7 +67,7 @@ sudo /opt/opennms/bin/install -dis
 
 Depending on where OpenNMS gets restored, you need to set the firewall settings again.
 
-xref:deployment:core/centos-rhel/initialize-core.adoc#initialize-core-firewall
+See xref:deployment:core/centos-rhel/initialize-core.adoc#initialize-core-firewall[firewall settings] and xref:deployment:core/centos-rhel/firewall-core.adoc[firewall core].
 xref:deployment:core/centos-rhel/firewall-core.adoc
 
 .Start OpenNMS service
