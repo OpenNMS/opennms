@@ -142,6 +142,9 @@
 ** xref:flows/aggregation.adoc[]
 ** xref:flows/troubleshooting.adoc[]
 
+* xref:geographical-map/introduction.adoc[]
+** xref:geographical-map/searching.adoc[]
+
 * xref:kafka-producer/kafka-producer.adoc[]
 ** xref:kafka-producer/enable-kafka.adoc[]
 ** xref:kafka-producer/configure-kafka.adoc[]
