@@ -56,9 +56,10 @@ const checkForDuplicateName = (
  * @returns A formatted object for display to humans
  */
 const convertCronTabToLocal = (cronFormatted: string) => {
-  const cronFormatterList = cronFormatted.split(' ') 
-  const [sec, min, hr, DoM, mth] = [...cronFormatterList]
-  let [,,,,, DoW] = [...cronFormatterList]
+  const cronFormattedList = cronFormatted.split(' ') 
+  console.log('cronFormattedList',cronFormattedList)
+  const [sec, min, hr, DoM, mth] = [...cronFormattedList]
+  let [,,,,, DoW] = [...cronFormattedList]
   const occuranceEmptyProps = {
     name: '',
     id: 0
@@ -69,65 +70,85 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     occuranceWeek: occuranceEmptyProps
   }
 
-  const hasDoM = (dayOfMonth: string) => {
-    const regexDoM = /[1-31L]/g
-
-    return regexDoM.test(dayOfMonth)
-  }
-
-  /**
-   * SUN...SAT pattern: additional cron support for the UI basic mode, if Day of Week was set with name (SUN...SAT) in advanced mode.
-   * Note
-   *  - edit a requisition: when expression contains SUN...SAT, drawer will be opened in UI basic mode and expression containing SUN...SAT will be translated to 1...7 and set in Day of Week input field.
-   * @param dayOfWeek (string) Can be 1...7 or SUN...SAT
-   * @returns (boolean) Determine if day of week is set in the expression
-   */
-  const hasDoW = (dayOfWeek: string) => {
-    const regexDoW = /([1-7])|(SUN)|(MON)|(TUE)|(WED)|(THU)|(FRI)|(SAT)/g
-    const dowMatched = dayOfWeek.match(regexDoW) 
-    
-    if(!dowMatched) return false
-
-    if(!Number.isInteger(Number(dayOfWeek))) {
-      DoW = (weekNameTypes.find((d) => d.name === dowMatched[0]) || {}).id?.toString() || '?'
-    }
-
-    return true
-  }
-  
-  if(hasDoW(DoW)) {
-    occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Weekly') || occuranceEmptyProps
-    occuranceSection.occuranceWeek = weekTypes.find((d) => d.id === parseInt(DoW)) || occuranceEmptyProps
-  } else if(hasDoM(DoM)) {
-    occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Monthly') || occuranceEmptyProps
-    occuranceSection.occuranceDay = dayTypes.find((d) => d.id === (DoM === 'L' ? 32 : parseInt(DoM))) || occuranceEmptyProps
-  } else {
-    occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Daily') || occuranceEmptyProps
-  }
-
-  const isCronAdvancedFormat = () => {
-    const regexDOMWeekdays = /\d+W/g
-    const regexDOWLastNthDay = /[L#]/g
+  const isCronAdvancedFormat = ((s: string, dm: string, m: string, dw: string, exp = []) => {
+    console.log('>>> exp',exp)
+    const regexDoMWeekdays = /\d+W/g
+    const regexDoWLastNthDay = /[L#]/g
     const regexAnyOtherSpecChars = /[,-/]/g
 
+    const hasSec = parseInt(s) > 0 // sec: can't be set in UI
+    const hasMth = m !== '*' // specific month can't be set in UI
+    const hasDoMWeekdays = regexDoMWeekdays.test(dm) // 15W (the nearest weekday to the 15th of the month): can't be set in UI
+    const hasDoWLastNthDay = regexDoWLastNthDay.test(dw) // L and #: can't be set in UI
+    // const parts = exp.filter((_, i) => i !== 0)
+    const hasAnyOtherSpecChars = exp.some((p) => regexAnyOtherSpecChars.test(p)) // [,-/]: can't be set in UI
+    // console.log('hasAnyOtherSpecChars', hasAnyOtherSpecChars)
+    const hasYear = exp.length > 6 // Year (7th part: 1970-2099): can't be set in UI
+
     return (
-      parseInt(sec) > 0
-      || mth !== '*' // specific month can't be set in UI
-      || regexDOMWeekdays.test(DoM) // 15W (the nearest weekday to the 15th of the month): can't be set in UI
-      || regexDOWLastNthDay.test(DoW) // L and #: can't be set in UI
-      || regexAnyOtherSpecChars.test(DoW) // can't be set in UI
-      || cronFormatterList.length > 6 // Year (7th part: 1970-2099): can't be set in UI
+      // parseInt(s) > 0 
+      hasSec
+      // || mth !== '*'
+      || hasMth
+      // || regexDoMWeekdays.test(DoM)
+      || hasDoMWeekdays
+      // || regexDoWLastNthDay.test(DoW)
+      || hasDoWLastNthDay
+      // || regexAnyOtherSpecChars.test(DoW)
+      || hasAnyOtherSpecChars
+      // || exp.length > 6 
+      || hasYear
     )
-  }
+  })(sec, DoM, mth, DoW, cronFormattedList)
+
   let advancedProps = {
     advancedCrontab: false,
     occuranceAdvanced: ''
   }
-  if(isCronAdvancedFormat()) {
+  // console.log('isCronAdvancedFormat()',isCronAdvancedFormat())
+  console.log('isCronAdvancedFormat',isCronAdvancedFormat)
+  // if(isCronAdvancedFormat()) {
+  if(isCronAdvancedFormat) {
     advancedProps = {
       advancedCrontab: true,
       occuranceAdvanced: cronFormatted
     } 
+  } else {
+    const hasDoM = (dayOfMonth: string) => {
+      const regexDoM = /[1-31L]/g
+  
+      return regexDoM.test(dayOfMonth)
+    }
+  
+    /**
+     * SUN...SAT pattern: additional cron support for the UI basic mode, if Day of Week was set with name (SUN...SAT) in advanced mode.
+     * Note
+     *  - edit a requisition: when expression contains SUN...SAT, drawer will be opened in UI basic mode and expression containing SUN...SAT will be translated to 1...7 and set in Day of Week input field.
+     * @param dayOfWeek (string) Can be 1...7 or SUN...SAT
+     * @returns (boolean) Determine if day of week is set in the expression
+     */
+    const hasDoW = (dayOfWeek: string) => {
+      const regexDoW = /([1-7])|(SUN)|(MON)|(TUE)|(WED)|(THU)|(FRI)|(SAT)/g
+      const dowMatched = dayOfWeek.match(regexDoW) 
+      
+      if(!dowMatched) return false
+  
+      if(!Number.isInteger(Number(dayOfWeek))) {
+        DoW = (weekNameTypes.find((d) => d.name === dowMatched[0]) || {}).id?.toString() || '?'
+      }
+  
+      return true
+    }
+    
+    if(hasDoW(DoW)) {
+      occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Weekly') || occuranceEmptyProps
+      occuranceSection.occuranceWeek = weekTypes.find((d) => d.id === parseInt(DoW)) || occuranceEmptyProps
+    } else if(hasDoM(DoM)) {
+      occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Monthly') || occuranceEmptyProps
+      occuranceSection.occuranceDay = dayTypes.find((d) => d.id === (DoM === 'L' ? 32 : parseInt(DoM))) || occuranceEmptyProps
+    } else {
+      occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Daily') || occuranceEmptyProps
+    }
   }
 
   const prefixZero = (num: number) => {
@@ -135,15 +156,15 @@ const convertCronTabToLocal = (cronFormatted: string) => {
 
     return `0${num}`
   }
-  const time = `${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`
+  const time = isCronAdvancedFormat ? '00:00' : `${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`
 
   return {
     ...occuranceSection,
     ...advancedProps,
     time,
-    twentyFourHour: time,
+    twentyFourHour:time,
     monthly: DoM === 'L' ? 32 : DoM, // 32: id of last day of the month
-    weekly: DoW,
+    weekly: DoW
   }
 }
 

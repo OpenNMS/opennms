@@ -183,7 +183,7 @@ const updateThreadpools = async () => {
           msg: messageUpdateSuccess
         })
       } else {
-        messageUpdateSuccess += ' Restart OpeNMS for this change to take effect.'
+        messageUpdateSuccess += ' Restart OpenNMS for this change to take effect.'
 
         showSnackBar({
           msg: messageUpdateSuccess,
