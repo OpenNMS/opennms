@@ -1,11 +1,11 @@
 [[restore]]
-= Restoring OpenNMS {page-component-title} 
+= Restore OpenNMS {page-component-title} 
 
 This section describes a basic restore process for a default OpenNMS {page-component-title} xref:deployment:core/getting-started.adoc#getting-started-core[installation].
 OpenNMS {page-component-title} binaries, logs, RRD archives, configurations and the database will be restored.
 
 NOTE: In this example the backup storage path is `/tmp` for demonstration purposes.
-Please be aware that `/tmp` is not persisted as most operating systems will delete the content at bootup.
+Please be aware that `/tmp` is not persisted, as most operating systems will delete the content at bootup.
 
 [[restore-objectives]]
 == Objectives
@@ -24,7 +24,7 @@ Please be aware that `/tmp` is not persisted as most operating systems will dele
 NOTE: PostgreSQL link:https://www.postgresql.org/about/news/announcing-apt-archivepostgresqlorg-2024/[archive repository] provides also older PostgreSQL versions
 * Database password for `opennms` and `postgres` user
 
-== Restore Backups
+== Restore backups
 
 [{tabs}]
 ====

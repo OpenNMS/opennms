@@ -5,7 +5,7 @@
 sudo systemctl stop opennms
 ----
 
-.Backup OpenNMS {page-component-title} binaries, RRD archives, configurations
+.Back up OpenNMS {page-component-title} binaries, RRD archives, configurations
 [source, console]
 ----
 sudo tar --exclude='usr/share/opennms/data/cache' -cvzf /tmp/opennms-usr-share.tar.gz /usr/share/opennms && \

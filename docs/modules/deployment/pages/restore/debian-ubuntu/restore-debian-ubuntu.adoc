@@ -1,5 +1,5 @@
 [[restore-debian-ubuntu]]
-.Restore User/Group definition
+.Restore user/group definition
 
 [source, console]
 ----
@@ -31,13 +31,13 @@ sudo cp /etc/opennms/opennms.service /lib/systemd/system/ && \
 sudo systemctl daemon-reload
 ----
 
-.Install PostgreSQL Database
+.Install PostgreSQL database
 [source, console]
 ----
 sudo apt -y install postgresql
 ----
 
-.Restore OpenNMS Database
+.Restore OpenNMS database
 [source, console]
 ----
 sudo runuser -l postgres -c 'psql -f /tmp/opennms-postgres.dmp postgres'
