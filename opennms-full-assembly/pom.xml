@@ -326,6 +326,7 @@
                 <feature>management</feature>
                 <feature>minimal</feature>
                 <feature>obr</feature>
+                <feature>opennms-bridge-http-service</feature>
                 <feature>package</feature>
                 <feature>profile</feature>
                 <feature>scheduler</feature>
