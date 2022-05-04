@@ -10,7 +10,7 @@
 		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 		http://camel.apache.org/schema/blueprint
-		http://camel.apache.org/schema/blueprint/camel-blueprint-2.19.1.xsd
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.21.5.xsd
 ">
 
   <cm:property-placeholder id="serverProperties" persistent-id="org.opennms.core.ipc.grpc.client"

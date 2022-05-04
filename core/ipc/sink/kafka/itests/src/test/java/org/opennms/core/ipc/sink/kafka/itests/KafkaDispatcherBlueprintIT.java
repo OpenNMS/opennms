@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,7 +41,7 @@ import org.opennms.distributed.core.api.SystemType;
 
 public class KafkaDispatcherBlueprintIT extends CamelBlueprintTest {
 
-    @Override
+	@Override
     protected String getBlueprintDescriptor() {
         return "classpath:/OSGI-INF/blueprint/blueprint-ipc-client.xml,blueprint-empty-camel-context.xml";
     }
@@ -76,7 +76,6 @@ public class KafkaDispatcherBlueprintIT extends CamelBlueprintTest {
     }
 
     @Test
-    public void canBlueprintLoadSuccesfully() {
-
+    public void canBlueprintLoadSuccesfully() throws Exception {
     }
 }

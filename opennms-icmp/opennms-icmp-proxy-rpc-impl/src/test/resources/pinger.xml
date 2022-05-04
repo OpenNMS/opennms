@@ -11,7 +11,7 @@
   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
-  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.21.5.xsd
 ">
     <bean id="pingerFactory" class="org.opennms.netmgt.icmp.jna.JnaPingerFactory"/>
 </beans>
