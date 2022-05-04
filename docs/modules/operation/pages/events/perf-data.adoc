@@ -1,6 +1,9 @@
 = Performance Data
 
 This feature lets users persist performance data from SNMP traps in a time series database.
+OpenNMS already persists traps in an events form.
+Trap output is not the same as SNMP; it always embeds values into a string.
+Events support named regex extraction, a good starting point for persisting extracted parameters into time series.
 
 == How it works
 - The feature uses event matching with eventconf to check that the collection information exists.
@@ -17,7 +20,7 @@ This feature lets users persist performance data from SNMP traps in a time serie
 View result performance graph in menu:Reports[Reports > Resource Graphs].
 
 [[collection-config]]
-=== Config eventconf with collection for the first event will be look l
+=== Config eventconf with collection
 This is an example of event collection config.
 Put the file in the etc/events directory and make sure it is registered in eventconf.xml.
 If your event will keep firing a lot and you only want the performance data without overwhelming the event table, consider setting `<logmsg dest="donotpersist"></logmsg>`.
@@ -178,5 +181,5 @@ Example:
 ```
 
 [[karaf-collector]]
-=== enable opennms-events-collector in karaf
+=== Enable opennms-events-collector in karaf
 ssh into karaf and run `feature:install opennms-events-collector`
