@@ -98,8 +98,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>groovy-dependencies</artifactId>
+      <type>pom</type>
       <scope>test</scope>
     </dependency>
     <dependency>
