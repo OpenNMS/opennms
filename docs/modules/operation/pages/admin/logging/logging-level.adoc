@@ -1,6 +1,6 @@
 [[ga-logging-level]]
 
-== Logging Level
+= Logging Level
 
 Each daemon provides different levels of logging verbosity.
 
@@ -11,19 +11,19 @@ Each daemon provides different levels of logging verbosity.
 | Description
 
 | INFO
-| anything that is likely to be useful to the average user to determine the current general behavior/state of the system
+| Anything likely to be useful to the average user to determine the current general behavior/state of the system.
 
 | WARNING
-| messages relating to code that has a failure but it might be temporary or recoverable, or code that is misconfigured but can continue running in a regressed state
+| Messages relating to code that has a failure that might be temporary or recoverable, or code that is misconfigured but can continue running in a regressed state.
 
 | ERROR
-| only things that cause code to stop working and be unrecoverable
+| Only things that cause code to stop working and be unrecoverable.
 
 | DEBUG
-| additional info that can help diagnose issues
+| Additional information that can help diagnose issues.
 
 | TRACE
-| even more additional info that is often only useful to developers, or is very high-output and thus could cause performance issues by enabling
+| Even more additional information that is often useful only to developers, or is very high output and thus could cause performance issues when enabled.
 
 |===
 

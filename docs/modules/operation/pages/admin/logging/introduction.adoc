@@ -3,18 +3,17 @@
 
 {page-component-title} stores logs in different files in the file system depending and named on the daemon that was acting on a process.
 
-For example: Logs for xref:operation:service-assurance/introduction.adoc#ga-service-assurance[service assurance checks] that are done by `pollerd` are stored in a file called `pollerd.log`.
+For example, logs for xref:operation:service-assurance/introduction.adoc#ga-service-assurance[service assurance checks] that are done by `pollerd` are stored in the `pollerd.log` file.
 
 The log files can be found in `/var/log/opennms/`.
 
-== List of log files
 
 For information on the different log files, how they are named, and what they include, see xref:reference:logging/introduction.adoc[List of log files].
 
 [[ga-change-logging]]
 == Change logging
 
-{page-component-title} uses the https://logging.apache.org/log4j/[Apache Log4j] framework for managing how the logs are being written, structured or rotated.
+{page-component-title} uses the https://logging.apache.org/log4j/[Apache Log4j] framework to manage how the logs are written, structured, or rotated.
 
 The configuration file can be found in `/etc/opennms/log4j2.xml`.
 
@@ -22,14 +21,14 @@ Each daemon can have an individual logging level.
 
 The corresponding configuration in this file can be found in the XML tree path
 
-*configuration/loggers/root/DynamicThresholdFilter/KeyValuePair*
+`configuration/loggers/root/DynamicThresholdFilter/KeyValuePair`
 
-The default logging level is `WARN`.
-But the levels can be set to `TRACE`, `INFO`, `DEBUG`, `WARN`, or `ERROR` depending on the need.
+The default logging level is WARN.
+You can set the levels to TRACE, INFO, DEBUG, WARN, or ERROR depending on the need.
 
-For troubleshooting purposes `DEBUG` can be used. 
-By saving the changes in this file {page-component-title} needs a few seconds to apply the changes.
-The additional `DEBUG` log output is now also being written to the corresponding log file.
+For troubleshooting, use DEBUG. 
+After saving the changes in this file, {page-component-title} needs a few seconds to apply the changes.
+The additional DEBUG log output is now also being written to the corresponding log file.
 
-NOTE: Don't forget to set the logging level back to `WARN` after changing it to an higher severity.
-Depending on the scale {page-component-title} can generate a lot more logs which will require more disk space.
+NOTE: Don't forget to set the logging level back to WARN after changing it to a higher severity.
+Depending on the scale, {page-component-title} can generate a lot more logs, which requires more disk space.
