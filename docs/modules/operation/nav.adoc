@@ -142,6 +142,9 @@
 ** xref:flows/aggregation.adoc[]
 ** xref:flows/troubleshooting.adoc[]
 
+* xref:geographical-map/introduction.adoc[]
+** xref:geographical-map/searching.adoc[]
+
 * xref:kafka-producer/kafka-producer.adoc[]
 ** xref:kafka-producer/enable-kafka.adoc[]
 ** xref:kafka-producer/configure-kafka.adoc[]
@@ -190,3 +193,5 @@
 ** xref:admin/daemon-config-files.adoc[]
 ** xref:admin/logging/introduction.adoc[]
 *** xref:admin/logging/logging-level.adoc[]
+** xref:admin/backup/introduction.adoc[]
+** xref:admin/restore/introduction.adoc[]

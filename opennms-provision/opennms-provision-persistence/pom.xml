@@ -140,8 +140,9 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>groovy-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <!-- test dependencies -->
     <dependency>
