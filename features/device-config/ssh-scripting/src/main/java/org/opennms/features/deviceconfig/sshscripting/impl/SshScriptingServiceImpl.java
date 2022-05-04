@@ -169,6 +169,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 return  KeyUtils.checkFingerPrint(hostKeyFingerprint, publicKey).getKey();
             });
 
+            // We allow also older algorithms here, because Cisco and Aruba devices seem to be pretty picky.
             sshClient.setKeyExchangeFactories(NamedFactory.setUpTransformedFactories(
                     false,
                     BuiltinDHFactories.VALUES,
