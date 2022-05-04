@@ -49,17 +49,34 @@ const checkForDuplicateName = (
   return errorMessage
 }
 
+const isCronAdvancedFormat = (cronFormatted: string) => {
+  const cronFormattedList = cronFormatted.split(' ')
+  const [sec,,, DoM, mth, DoW, yr] = cronFormattedList // yr (7th part: 1970-2099): can't be set in UI
+  
+  const regexDoMWeekdays = /\d+W/g
+  const regexDoWLastNthDay = /[L#]/g
+  const regexAnyOtherSpecChars = /[,-/]/g
+
+  const hasSec = parseInt(sec) > 0 // sec: can't be set in UI
+  const hasMth = mth !== '*' // specific month can't be set in UI
+  const hasDoMWeekdays = regexDoMWeekdays.test(DoM) // 15W (the nearest weekday to the 15th of the month): can't be set in UI
+  const hasDoWLastNthDay = regexDoWLastNthDay.test(DoW) // L and #: can't be set in UI
+  const hasAnyOtherSpecChars = cronFormattedList.some((p) => regexAnyOtherSpecChars.test(p)) // [,-/]: can't be set in UI
+
+  return hasSec || hasMth || hasDoMWeekdays || hasDoWLastNthDay || hasAnyOtherSpecChars || yr
+}
+
 /**
- * ['0', '45', '15', '?', '*', '7']
- * [sec   min   hr   DoM   mth  DoW]
+ * ['0', '45', '15', '?', '*', '7', 2022]
+ * [sec   min   hr   DoM   mth  DoW, yr]
  * @param cronFormatted A Crontab string
  * @returns A formatted object for display to humans
  */
 const convertCronTabToLocal = (cronFormatted: string) => {
   const cronFormattedList = cronFormatted.split(' ') 
-  console.log('cronFormattedList',cronFormattedList)
-  const [sec, min, hr, DoM, mth] = [...cronFormattedList]
+  const [, min, hr, DoM] = [...cronFormattedList]
   let [,,,,, DoW] = [...cronFormattedList]
+  
   const occuranceEmptyProps = {
     name: '',
     id: 0
@@ -70,49 +87,26 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     occuranceWeek: occuranceEmptyProps
   }
 
-  const isCronAdvancedFormat = ((s: string, dm: string, m: string, dw: string, exp = []) => {
-    console.log('>>> exp',exp)
-    const regexDoMWeekdays = /\d+W/g
-    const regexDoWLastNthDay = /[L#]/g
-    const regexAnyOtherSpecChars = /[,-/]/g
+  const prefixZero = (num: number) => {
+    if(num >= 10) return num
 
-    const hasSec = parseInt(s) > 0 // sec: can't be set in UI
-    const hasMth = m !== '*' // specific month can't be set in UI
-    const hasDoMWeekdays = regexDoMWeekdays.test(dm) // 15W (the nearest weekday to the 15th of the month): can't be set in UI
-    const hasDoWLastNthDay = regexDoWLastNthDay.test(dw) // L and #: can't be set in UI
-    // const parts = exp.filter((_, i) => i !== 0)
-    const hasAnyOtherSpecChars = exp.some((p) => regexAnyOtherSpecChars.test(p)) // [,-/]: can't be set in UI
-    // console.log('hasAnyOtherSpecChars', hasAnyOtherSpecChars)
-    const hasYear = exp.length > 6 // Year (7th part: 1970-2099): can't be set in UI
-
-    return (
-      // parseInt(s) > 0 
-      hasSec
-      // || mth !== '*'
-      || hasMth
-      // || regexDoMWeekdays.test(DoM)
-      || hasDoMWeekdays
-      // || regexDoWLastNthDay.test(DoW)
-      || hasDoWLastNthDay
-      // || regexAnyOtherSpecChars.test(DoW)
-      || hasAnyOtherSpecChars
-      // || exp.length > 6 
-      || hasYear
-    )
-  })(sec, DoM, mth, DoW, cronFormattedList)
-
+    return `0${num}`
+  }
+  
   let advancedProps = {
     advancedCrontab: false,
     occuranceAdvanced: ''
   }
-  // console.log('isCronAdvancedFormat()',isCronAdvancedFormat())
-  console.log('isCronAdvancedFormat',isCronAdvancedFormat)
-  // if(isCronAdvancedFormat()) {
-  if(isCronAdvancedFormat) {
+
+  let time = `${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`
+
+  if(isCronAdvancedFormat(cronFormatted)) {
     advancedProps = {
       advancedCrontab: true,
       occuranceAdvanced: cronFormatted
-    } 
+    }
+    
+    time = '00:00'
   } else {
     const hasDoM = (dayOfMonth: string) => {
       const regexDoM = /[1-31L]/g
@@ -121,7 +115,7 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     }
   
     /**
-     * SUN...SAT pattern: additional cron support for the UI basic mode, if Day of Week was set with name (SUN...SAT) in advanced mode.
+     * SUN...SAT pattern: additional expression support for the UI basic mode, if Day of Week was set with name (SUN...SAT) in advanced mode.
      * Note
      *  - edit a requisition: when expression contains SUN...SAT, drawer will be opened in UI basic mode and expression containing SUN...SAT will be translated to 1...7 and set in Day of Week input field.
      * @param dayOfWeek (string) Can be 1...7 or SUN...SAT
@@ -150,13 +144,6 @@ const convertCronTabToLocal = (cronFormatted: string) => {
       occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Daily') || occuranceEmptyProps
     }
   }
-
-  const prefixZero = (num: number) => {
-    if(num >= 10) return num
-
-    return `0${num}`
-  }
-  const time = isCronAdvancedFormat ? '00:00' : `${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`
 
   return {
     ...occuranceSection,
@@ -229,28 +216,33 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
  * @returns crontab-ready string
  */
 const convertLocalToCronTab = (item: LocalConfiguration) => {
+  // console.log('item',item)
+  console.log('item.occuranceAdvanced',item.occuranceAdvanced)
   let schedule = ''
 
   if (!item.advancedCrontab) {
-    const occurance = item.occurance
-    const time = item.time
-    const [hoursd, minutesd] = time.split(':')
-    const hours = parseInt(hoursd)
-    const minutes = parseInt(minutesd)
-
-    switch(occurance.name) {
-      case 'Daily':
-        schedule = `0 ${minutes} ${hours} * * ?`
-        break
-      case 'Weekly':
-        schedule = `0 ${minutes} ${hours} ? * ${item.occuranceWeek.id}`
-        break
-      case 'Monthly':
-        schedule = `0 ${minutes} ${hours} ${item.occuranceDay.id === 32 ? 'L' : item.occuranceDay.id} * ?`
-        break
-      default:
-        // basic mode, at drawer open
-        schedule = '0 0 0 * * ?' // 'sec min hr DoM mth DOW' (occurance input fields empty)
+    // only translate if expression is in basic format
+    if(!isCronAdvancedFormat(item.occuranceAdvanced)) {
+      const occurance = item.occurance
+      const time = item.time
+      const [hoursd, minutesd] = time.split(':')
+      const hours = parseInt(hoursd)
+      const minutes = parseInt(minutesd)
+  
+      switch(occurance.name) {
+        case 'Daily':
+          schedule = `0 ${minutes} ${hours} * * ?`
+          break
+        case 'Weekly':
+          schedule = `0 ${minutes} ${hours} ? * ${item.occuranceWeek.id}`
+          break
+        case 'Monthly':
+          schedule = `0 ${minutes} ${hours} ${item.occuranceDay.id === 32 ? 'L' : item.occuranceDay.id} * ?`
+          break
+        default:
+          // basic mode, at drawer open
+          schedule = '0 0 0 * * ?' // 'sec min hr DoM mth DOW' (occurance input fields empty)
+      }
     }
   } else {
     // advanced mode
