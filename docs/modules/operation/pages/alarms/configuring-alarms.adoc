@@ -74,7 +74,7 @@ The `$dpname%` portion of the key refers to the "distributed poller name", which
 
 .Least Significant reduction-key Attribute
 ====
-Decreasing the significance of the reduction-key is a way to aggregate, for example, all nodes down in to a single alarm.
+Decreasing the significance of the reduction-key is a way to aggregate, for example, all nodes into a single alarm.
 However, there are caveats:
 
 [source, xml]
@@ -97,7 +97,7 @@ There are currently three types of alarms:
 
 * alarm-type="1" (problem alarm)
 * alarm-type="2" (resolving alarm)
-* alarm-type="3" (notification alarm... alarm with no resolution such as SNMP Authentication Failures)
+* alarm-type="3" (notification alarm ... alarm with no resolution, such as SNMP authentication failures)
 
 The alarm-type attribute helps Alarmd with pairwise resolution, matching the resolution events to problem events.
 
@@ -107,7 +107,7 @@ NOTE: If an alarm transitions from an alarm-type 2 back to alarm-type 1, the sev
 This attribute is used in the pairwise correlation feature of Alarmd.
 When configuring a resolution alarm, set this attribute to match the reduction-key of the corresponding problem alarm.
 
-.Example of a `interfaceUp` event clearing a `interfaceDown` alarm
+.Example of an `interfaceUp` event clearing an `interfaceDown` alarm
 [source, xml]
 ----
    <event>
@@ -127,7 +127,7 @@ When configuring a resolution alarm, set this attribute to match the reduction-k
                   auto-clean="false"/>
    </event>
 ----
-<1> The `interfaceDown` event sets a `reduction-key` that include enough info to identify a specific interface on a specific node.
+<1> The `interfaceDown` event sets a `reduction-key` that includes enough information to identify a specific interface on a specific node.
 <2> The `interfaceUp` has a `clear-key` that matches the `reduction-key` of an `interfaceDown` alarm, allowing a match to automatically clear the previous alarm.
 
 == Auto-clean attribute
