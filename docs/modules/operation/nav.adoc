@@ -149,6 +149,9 @@
 ** xref:flows/thresholding.adoc[]
 ** xref:flows/troubleshooting.adoc[]
 
+* xref:geographical-map/introduction.adoc[]
+** xref:geographical-map/searching.adoc[]
+
 * xref:kafka-producer/kafka-producer.adoc[]
 ** xref:kafka-producer/enable-kafka.adoc[]
 ** xref:kafka-producer/configure-kafka.adoc[]
@@ -196,5 +199,8 @@
 ** xref:admin/request-logging.adoc[]
 ** xref:admin/restart.adoc[]
 ** xref:admin/daemon-config-files.adoc[]
+** xref:admin/backup/introduction.adoc[]
+** xref:admin/restore/introduction.adoc[]
 ** xref:admin/logging/log-file-viewer.adoc[]
 ** xref:admin/housekeeping/introduction.adoc[]
+
