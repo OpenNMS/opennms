@@ -44,9 +44,8 @@ public class BgpSessionMonitorTest {
 
     @Test
     public void testDefaultOidConstruction() {
-        final BgpSessionMonitor bgpSessionMonitor = new BgpSessionMonitor();
         final Map<String, Object> params = new TreeMap<>();
-        final BgpSessionMonitor.BgpOids bgpOids = bgpSessionMonitor.constructOids(params);
+        final BgpSessionMonitor.BgpOids bgpOids = new BgpSessionMonitor.BgpOids(params);
         Assert.assertEquals(RFC1269_BGP_PEER_STATE_OID, bgpOids.bgpPeerStateOid);
         Assert.assertEquals(RFC1269_BGP_PEER_ADMIN_STATE_OID, bgpOids.bgpPeerAdminStateOid);
         Assert.assertEquals(RFC1269_BGP_PEER_FSM_EST_TIME_OID, bgpOids.bgpPeerFsmEstTimeOid);
@@ -56,14 +55,13 @@ public class BgpSessionMonitorTest {
 
     @Test
     public void testOverwriteOidConstruction() {
-        final BgpSessionMonitor bgpSessionMonitor = new BgpSessionMonitor();
         final Map<String, Object> params = new TreeMap<>();
         params.put("bgpPeerStateOid", ".9.1");
         params.put("bgpPeerAdminStateOid", ".9.2");
         params.put("bgpPeerRemoteAsOid", ".9.3");
         params.put("bgpPeerLastErrorOid", ".9.4");
         params.put("bgpPeerFsmEstTimeOid", ".9.5");
-        final BgpSessionMonitor.BgpOids bgpOids = bgpSessionMonitor.constructOids(params);
+        final BgpSessionMonitor.BgpOids bgpOids = new BgpSessionMonitor.BgpOids(params);
         Assert.assertEquals(".1.3.6.1.2.1.15", bgpOids.bgpBaseOid);
         Assert.assertEquals(".9.1", bgpOids.bgpPeerStateOid);
         Assert.assertEquals(".9.2", bgpOids.bgpPeerAdminStateOid);
@@ -74,10 +72,9 @@ public class BgpSessionMonitorTest {
 
     @Test
     public void testBaseOidConstruction() {
-        final BgpSessionMonitor bgpSessionMonitor = new BgpSessionMonitor();
         final Map<String, Object> params = new TreeMap<>();
         params.put("bgpBaseOid", ".9");
-        final BgpSessionMonitor.BgpOids bgpOids = bgpSessionMonitor.constructOids(params);
+        final BgpSessionMonitor.BgpOids bgpOids = new BgpSessionMonitor.BgpOids(params);
         Assert.assertEquals(".9", bgpOids.bgpBaseOid);
         Assert.assertEquals(".9.3.1.2", bgpOids.bgpPeerStateOid);
         Assert.assertEquals(".9.3.1.3", bgpOids.bgpPeerAdminStateOid);

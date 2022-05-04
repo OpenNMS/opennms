@@ -83,7 +83,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
      */
     private static final String BGP_PEER_FSM_EST_TIME_SUFFIX = ".3.1.16";
 
-    class BgpOids {
+    static class BgpOids {
         final String bgpBaseOid;
         /**
          * OID for the table that represents the BGP-peer states.
@@ -106,7 +106,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
          */
         final String bgpPeerFsmEstTimeOid;
 
-        private BgpOids(final Map<String, Object> parameters) {
+        public BgpOids(final Map<String, Object> parameters) {
             this.bgpBaseOid = ParameterMap.getKeyedString(parameters, "bgpBaseOid", BGP_BASE_OID_DEFAULT);
             this.bgpPeerStateOid = ParameterMap.getKeyedString(parameters, "bgpPeerStateOid", this.bgpBaseOid + BGP_PEER_STATE_OID_SUFFIX);
             this.bgpPeerAdminStateOid = ParameterMap.getKeyedString(parameters, "bgpPeerAdminStateOid", this.bgpBaseOid + BGP_PEER_ADMIN_STATE_OID_SUFFIX);
@@ -150,10 +150,6 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
         }
     };
 
-    BgpOids constructOids(final Map<String, Object> parameters) {
-        return new BgpOids(parameters);
-    }
-
     /**
      * {@inheritDoc}
      *
@@ -166,7 +162,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        final BgpOids bgpOids = constructOids(parameters);
+        final BgpOids bgpOids = new BgpOids(parameters);
 
         String returnValue = "";
 
