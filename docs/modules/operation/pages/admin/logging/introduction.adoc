@@ -19,9 +19,7 @@ The configuration file can be found in `/etc/opennms/log4j2.xml`.
 
 Each daemon can have an individual logging level.
 
-The corresponding configuration in this file can be found in the XML tree path
-
-`configuration/loggers/root/DynamicThresholdFilter/KeyValuePair`
+The corresponding configuration in this file can be found in the XML tree path: `configuration/loggers/root/DynamicThresholdFilter/KeyValuePair`.
 
 The default logging level is WARN.
 You can set the levels to TRACE, INFO, DEBUG, WARN, or ERROR depending on the need.
