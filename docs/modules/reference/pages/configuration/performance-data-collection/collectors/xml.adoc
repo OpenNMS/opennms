@@ -98,6 +98,10 @@ The request element can have the following optional child elements:
 | How often to repeat the request in case of an error.
 | 0
 
+| disable-ssl-verification
+| Do not attempt to verify the name of on the SSL certificate against the `xml-source` URL attribute.
+| false
+
 | use-system-proxy
 | Should the system-wide proxy settings be used?
 Configure the system proxy settings via <<operation:admin/system-properties/introduction.adoc#system-properties, system properties>>.
@@ -115,12 +119,31 @@ The referenced `opennms-nodes.xml` file contains:
 </xml-groups>
 ----
 
+== HTTP headers
+
+If the endpoint being collected requires additional headers, they can be added as part of the `<request>` object.
+
+[source, xml]
+----
+  <xml-source url="https://{nodelabel}/api/path/to/endpoint">
+    <request method="GET">
+      <header name="Authorization" value="Bearer static_token_here" />
+      <header name="X-Api-Key" value="api-key-here" />
+    </request>
+    <import-groups>xml-datacollection/file.xml</import-groups>
+  </xml-source>
+----
+
+== Test XML collection via Karaf
+
 With the configuration in place, you can test it using the `collect` command available in the Karaf Shell:
 
 [source, console]
 ----
 opennms:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
 ----
+
+NOTE: If you specify a `handler-class` in the collectd configuration, you must also include it in the Karaf command when testing.
 
 == Caveats
 
