@@ -55,6 +55,7 @@
         <feature>camel-blueprint</feature>
         <feature>camel-jaxb</feature>
         <feature>opennms-health</feature>
+        <feature>opennms-util</feature>
         <feature>scv-api</feature>
 
         <!-- Used for the REST client in core-impl -->
@@ -87,6 +88,7 @@
 
     <feature name="sentinel-persistence" description="Sentinel :: Persistence" version="${project.version}">
         <feature>sentinel-core</feature>
+        <feature>opennms-kvstore-api</feature>
         <feature>opennms-persistence</feature>
         <feature>sentinel-distpoller-dao</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-healthcheck/${project.version}</bundle>
@@ -129,8 +131,8 @@
         <feature>opennms-jest</feature>
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-dnsresolver-netty</feature>
-        <feature>sentinel-kvstore-api</feature>
         <feature>opennms-kafka</feature>
+        <feature>opennms-kvstore-api</feature>
         <feature>rate-limited-logger</feature>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
@@ -224,16 +226,18 @@
     <feature name="sentinel-blobstore-noop"
              description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: No-Op" version="${project.version}">
         <feature>opennms-blobstore-shell</feature>
-        <feature>sentinel-kvstore-api</feature>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.no-op/${project.version}</bundle>
+        <feature>opennms-blobstore-noop</feature>
     </feature>
-    
+
     <feature name="sentinel-distributed-cassandra-api"
-             description="OpenNMS :: Features :: Distributed :: Cassandra :: API"
-             version="${project.version}">
+             description="OpenNMS :: Features :: Distributed :: Cassandra :: API" version="${project.version}">
+        <feature>dropwizard-metrics</feature>
+        <feature>guava</feature>
+        <feature>netty4</feature>
+        <bundle>mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.cassandra.api/${project.version}</bundle>
     </feature>
-    
+
     <feature name="sentinel-newts-cassandra"
              description="OpenNMS :: Features :: Distributed :: Cassandra :: Newts Impl." version="${project.version}">
         <feature version="${cassandraVersion}" prerequisite="true">cassandra-driver</feature>
@@ -246,29 +250,26 @@
              description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Cassandra"
              version="${project.version}">
         <feature>sentinel-newts-cassandra</feature>
+        <feature>opennms-blobstore-cassandra</feature>
         <feature>opennms-blobstore-shell</feature>
-        <feature>sentinel-kvstore-api</feature>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.cassandra/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-jsonstore-postgres"
              description="OpenNMS :: Features :: Distributed :: Key Value Store :: JSON :: Postgres"
              version="${project.version}">
+        <feature>opennms-jsonstore-postgres</feature>
         <feature>opennms-jsonstore-shell</feature>
-        <feature>sentinel-kvstore-api</feature>
         <feature>sentinel-persistence</feature>
-        <bundle dependency="true">mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.postgres-shared/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.json.postgres/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-config-dao-common" version="${project.version}" description="OpenNMS :: Config DAO :: Common">
+        <feature>jackson1</feature>
         <feature>resilience4j</feature>
-        <feature>sentinel-kvstore-api</feature>
+        <feature>opennms-config</feature>
         <feature>opennms-config-dao-api</feature>
+        <feature>opennms-kvstore-api</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
         <bundle>mvn:org.opennms/org.opennms.config-dao.common-impl/${project.version}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
     </feature>
 
     <feature name="sentinel-config-dao-thresholding" version="${project.version}" description="OpenNMS :: Config DAO :: Thresholding">

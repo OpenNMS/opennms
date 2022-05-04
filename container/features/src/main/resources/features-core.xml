@@ -41,6 +41,34 @@
         <bundle>mvn:com.google.guava/guava/21.0</bundle>
     </feature>
 
+    <feature name="httpclient" version="${httpclientVersion}" description="Apache HTTPClient">
+        <bundle dependency="true">wrap:mvn:org.apache.httpcomponents/httpcore-nio/${httpcoreVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpasyncclient-osgi/${httpasyncclientVersion}</bundle>
+    </feature>
+
+    <!-- deprecated: this is unmaintained and we should eliminate dependencies using it, if possible -->
+    <feature name="jackson1" version="${jacksonVersion}" description="Jackson 1.x">
+        <feature>jaxb</feature>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-jaxrs/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
+    </feature>
+
+    <feature name="javax.mail" version="1.6.7" description="javax.mail">
+        <bundle dependency="true">mvn:com.sun.mail/jakarta.mail/1.6.7</bundle>
+    </feature>
+
+    <feature name="jaxb" version="${eclipselinkVersion}" description="EclipseLink :: MOXy">
+        <feature>javax.mail</feature>
+        <bundle dependency="true">mvn:org.eclipse.persistence/org.eclipse.persistence.moxy/${eclipselinkVersion}</bundle>
+        <bundle dependency="true">mvn:org.eclipse.persistence/org.eclipse.persistence.core/${eclipselinkVersion}</bundle>
+        <bundle dependency="true">mvn:org.eclipse.persistence/org.eclipse.persistence.asm/${eclipselinkVersion}</bundle>
+        <bundle dependency="true">mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/${eclipselinkVersion}</bundle>
+    </feature>
+
     <feature name="netty4" version="${netty4Version}" description="Netty">
         <bundle dependency="true">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-codec/${netty4Version}</bundle>

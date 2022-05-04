@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<features 
+<features
   name="minion-${project.version}"
   xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -10,6 +10,7 @@
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
     <feature name="minion-core-api" description="OpenNMS :: Distributed :: Core :: API" version="${project.version}">
+      <feature>opennms-core-ipc-twin-common</feature>
       <feature>opennms-distributed-core-api</feature>
     </feature>
 
@@ -37,6 +38,7 @@
 
     <feature name="minion-snmp-proxy" description="OpenNMS :: Minion :: SNMP Proxy" version="${project.version}">
       <feature>opennms-core-ipc-rpc-api</feature>
+      <feature>opennms-core-ipc-twin-common</feature>
       <feature>opennms-config-api</feature>
       <feature>opennms-model</feature>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
@@ -52,6 +54,8 @@
     </feature>
 
     <feature name="minion-provisiond-detectors" description="Minion :: Provisond :: Detectors" version="${project.version}">
+      <feature>activemq</feature>
+      <feature>activemq-blueprint</feature>
       <feature>opennms-config</feature>
       <feature>opennms-dao-api</feature>
       <feature>opennms-icmp-best</feature>
@@ -62,10 +66,10 @@
     </feature>
 
     <feature name="minion-provisiond-requisitions" description="Minion :: Provisond :: Requisitions" version="${project.version}">
+      <feature>opennms-core-ipc-rpc-api</feature>
       <feature>opennms-core-web</feature>
       <feature>opennms-dao-api</feature>
       <feature>opennms-provisioning</feature>
-      <feature>opennms-core-ipc-rpc-api</feature>
       <bundle>mvn:org.opennms/opennms-requisition-service/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-requisition-dns/${project.version}</bundle>
     </feature>
@@ -84,7 +88,7 @@
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.provision/${project.version}</bundle>
     </feature>
-    
+
     <feature name="minion-shell-poller" description="Minion :: Shell :: Poller" version="${project.version}">
       <feature>minion-poller</feature>
       <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.poller/${project.version}</bundle>
@@ -98,7 +102,7 @@
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.client-rpc/${project.version}</bundle>
       <feature>opennms-poller-monitors-core</feature>
     </feature>
-    
+
     <feature name="minion-collection" description="Minion :: Collection" version="${project.version}">
       <feature>commons-cli</feature>
 
@@ -131,8 +135,10 @@
 
     <feature name="minion-telemetryd-receivers" description="Minion :: Telemetry :: Receivers" version="${project.version}">
       <feature version="${netty4Version}">netty4</feature>
+      <feature>commons-lang3</feature>
+      <feature>resilience4j</feature>
+      <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-dnsresolver-api</feature>
-      <feature>dropwizard-metrics</feature>
       <feature>opennms-util</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
@@ -160,6 +166,7 @@
     <feature name="opennms-core-ipc-grpc-client" description="OpenNMS :: Core :: IPC :: GRPC :: Client" version="${project.version}">
       <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-core-ipc-rpc-api</feature>
+      <feature>opennms-core-ipc-sink-api</feature>
       <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.client/${project.version}</bundle>
@@ -167,10 +174,9 @@
     </feature>
 
     <feature name="opennms-core-ipc-twin-grpc-subscriber" description="OpenNMS :: Core :: IPC :: Twin :: GRPC :: Subscriber" version="${project.version}">
+        <feature>opennms-core-ipc-twin-common</feature>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.subscriber/${project.version}</bundle>
         <feature>json-patch</feature>
@@ -189,9 +195,7 @@
     </feature>
 
     <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
-        <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
-        <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
-        <feature>commons-lang3</feature>
+        <feature>opennms-health-api</feature>
         <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
     </feature>
 
@@ -200,10 +204,10 @@
         <feature>minion-health-check</feature>
         <feature>opennms-provisioning</feature>
         <feature>opennms-dao-api</feature>
+        <feature>opennms-distributed-kvstore-api</feature>
         <bundle dependency="true">mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
         <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.minion/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
     </feature>
 
 </features>

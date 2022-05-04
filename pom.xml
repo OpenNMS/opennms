@@ -1702,7 +1702,7 @@
     <cxfXjcVersion>3.3.0</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
-    <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
+    <dropwizardMetricsVersion>3.2.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.1.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
@@ -1713,7 +1713,7 @@
     <felixProxyVersion>3.0.4</felixProxyVersion>
     <fopVersion>1.0</fopVersion>
     <freemarkerVersion>2.3.23</freemarkerVersion>
-    <fstVersion>2.47</fstVersion>
+    <fstVersion>2.57</fstVersion>
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
@@ -1786,7 +1786,7 @@
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxLoggingVersion>2.0.14</paxLoggingVersion>
     <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
-    <paxWebVersion>7.3.23</paxWebVersion>
+    <paxWebVersion>7.4.4</paxWebVersion>
     <pktsVersion>3.0.0</pktsVersion>
     <protobufVersion>3.16.1</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
