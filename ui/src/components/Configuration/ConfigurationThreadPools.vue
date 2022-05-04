@@ -30,7 +30,7 @@
       </div>
     </template>
     <div>
-      <p>
+      <p class="pb-xl">
         Thread pool sizes impact the performance of the provisioning subsystem. Larger systems may require larger
         values. To adjust them, select a value from the drop-down list.
       </p>
