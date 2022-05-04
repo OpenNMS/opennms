@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -57,7 +57,7 @@ import org.springframework.util.Assert
 class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeListener, InitializingBean {
     def m_metadataFieldTypes = new TreeSet<MetadataField>()
     def m_locations = new ArrayList<String>()
-    def m_applications = new HashMap<Set<String>>()
+    def m_applications = new HashMap<String, Set<String>>()
     def m_theme
     def m_geoMetadata
     def m_scanReport
