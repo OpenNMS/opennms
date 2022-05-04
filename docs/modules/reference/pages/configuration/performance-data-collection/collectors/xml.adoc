@@ -54,6 +54,13 @@ The available handlers include:
 * org.opennms.protocols.json.collector.DefaultJsonCollectionHandler
 * org.opennms.protocols.http.collector.HttpCollectionHandler
 
+
+=== Caveats
+
+The `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler` requires the fetched document to be a single element of type `object` to make xpath query work.
+If the root element is an array, it will be wrapped in an object accessible as `/elements`.
+
+
 == XML collection configuration
 
 Understanding xref:operation:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
@@ -142,10 +149,3 @@ With the configuration in place, you can test it using the `collect` command ava
 ----
 opennms:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
 ----
-
-NOTE: If you specify a `handler-class` in the collectd configuration, you must also include it in the Karaf command when testing.
-
-== Caveats
-
-The `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler` requires the fetched document to be a single element of type `object` to make xpath query work.
-If the root element is an array, it will be wrapped in an object, whereas the original array is accessible as `/elements`.
