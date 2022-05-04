@@ -27,8 +27,9 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jackson1-dependencies</artifactId>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
