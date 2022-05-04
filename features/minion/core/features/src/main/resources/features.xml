@@ -5,7 +5,7 @@
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
 
     <!-- Apache Camel features -->
-    <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
+    <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/camel</repository>
 
     <feature name="minion-core" description="Minion :: Core" version="${project.version}">
         <feature>camel-core</feature>

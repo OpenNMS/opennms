@@ -48,7 +48,7 @@
     <skip.surefire.tests>false</skip.surefire.tests>
     <skipITs>true</skipITs>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <camelVersion>2.19.1</camelVersion>
+    <camelVersion>2.21.5</camelVersion>
     <groovyVersion>3.0.14</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.14.2</jackson2Version>
