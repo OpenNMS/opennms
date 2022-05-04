@@ -54,7 +54,10 @@
         :modelValue="props.config.occuranceAdvanced"
       />
     </div>
-    <div class="feather-input-hint-custom">
+    <div
+      :class="`feather-input-hint-custom
+      ${advancedCronTabHasErrorInHint}`"
+    >
       {{ !hasCronValidationError ? scheduledTime : '' }}
     </div>
     <div class="flex">
@@ -121,6 +124,13 @@ const scheduledTime = computed(() => {
   return ret
 })
 
+const errorRegex = /^Error/
+const advancedCronTabHasErrorInHint = computed(() => {
+  if(!props.config.advancedCrontab || !errorRegex.test(ConfigurationHelper.cronToEnglish(props.config.occuranceAdvanced))) return ''
+
+  return 'error'
+})
+
 const hasCronValidationError = computed(() => props.errors.occuranceAdvanced || props.errors.occuranceDay || props.errors.occuranceWeek)
 </script>
 <style lang="scss">
@@ -149,6 +159,9 @@ const hasCronValidationError = computed(() => props.errors.occuranceAdvanced || 
     justify-content: flex-end;
     min-height: var($spacing-xl);
     padding: var($spacing-xxs) 0 var($spacing-xxs) var($spacing-m);
+    &.error {
+      color: var($error)
+    }
 }
 div a.link {
     color: var($clickable-normal);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.EventType;
 import org.slf4j.Logger;
@@ -51,6 +52,7 @@ class EventHandlerManager {
         handlerMap = new ConcurrentHashMap<>();
         handlerMap.put(EventType.CREATE, new ConcurrentHashMap<>());
         handlerMap.put(EventType.DELETE, new ConcurrentHashMap<>());
+        handlerMap.put(EventType.VALIDATE, new ConcurrentHashMap<>());
         handlerMap.put(EventType.UPDATE, new ConcurrentHashMap<>());
     }
 
@@ -71,6 +73,10 @@ class EventHandlerManager {
                 try {
                     c.accept(actualIdent);
                 } catch (Exception e) {
+                    // throw out to let web api obtain exception
+                    if (e instanceof ValidationException) {
+                        throw e;
+                    }
                     LOG.warn("Fail to notify {}, callback: {}, error: {}",
                             actualIdent, v, e.getMessage(), e);
                 }

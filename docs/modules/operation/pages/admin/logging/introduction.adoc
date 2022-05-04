@@ -1,0 +1,8 @@
+[[ga-logging-introduction]]
+= Logging
+
+TBD in separate PR
+
+{page-component-title} stores logs into different files...
+
+* xref:admin/logging/log-file-viewer.adoc[Log File Viewer]

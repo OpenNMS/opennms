@@ -5,7 +5,10 @@
     </div>
     <div class="feather-row">
       <div class="feather-col-12">
-        <table class="tl1 tl2 tl3" summary="Outages">
+        <table
+          class="tl1 tl2 tl3"
+          summary="Outages"
+        >
           <thead>
             <tr>
               <th scope="col">IP Address</th>
@@ -14,7 +17,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="outage in outages" :key="outage.id">
+            <tr
+              v-for="outage in outages"
+              :key="outage.id"
+            >
               <td>{{ outage.ipAddress }}</td>
               <td>{{ outage.hostname }}</td>
               <td>{{ outage.serviceName }}</td>
@@ -34,7 +40,10 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
 import useQueryParameters from '@/composables/useQueryParams'
@@ -48,7 +57,10 @@ const { queryParameters, updateQueryParameters } = useQueryParameters({
 const outages = computed(() => store.state.nodesModule.outages)
 </script>
 
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 @import "@featherds/table/scss/table";
 @import "@featherds/styles/mixins/elevation";
 .card {
@@ -57,7 +69,7 @@ const outages = computed(() => store.state.nodesModule.outages)
   margin-bottom: 15px;
 }
 table {
-  width: 100%;
   @include table;
 }
 </style>
+

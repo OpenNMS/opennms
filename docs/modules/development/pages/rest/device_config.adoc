@@ -27,11 +27,11 @@ This API also supports following query params: limit, offset, orderBy order, dev
 
 | `/device-config/latest`
 | GET
-| Retrieves the latest configuration for all the devices.
+| Retrieves the latest configuration for all the devices. This API supports the following query parameters: limit, offset, orderBy, order, search, status.
 
 | `/device-config/download?id=\{id1, id2}`
 | GET
-| Download the configurations with the given ID.
+| Download the configurations with the given ID or IDs.
 
 | `/device-config/backup`
 | POST

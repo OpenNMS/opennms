@@ -207,6 +207,14 @@ const rescanToEnglish = (rescanVal: string) => {
   return rescanCopy[rescanVal]
 }
 </script>
+<style lang="scss">
+@import "@featherds/table/scss/table";
+
+table {
+  @include table();
+  @include table-condensed();
+}
+</style>
 <style
   lang="scss"
   scoped
@@ -215,6 +223,19 @@ const rescanToEnglish = (rescanVal: string) => {
 @import "@featherds/styles/themes/variables";
 
 .main-wrapper {
+  /* table {
+    @include table();
+    @include table-condensed();
+  } */
+  /* :deep(table) {
+    &.condensed {
+      .onms-sort-header {
+        > .header-flex-container {
+          justify-content: flex-start;
+        }
+      }
+    }
+  } */
   table.condensed {
     :deep(.onms-sort-header) {
       > .header-flex-container {
@@ -238,10 +259,10 @@ const rescanToEnglish = (rescanVal: string) => {
 .delete-icon {
   color: var($error);
 }
-.condensed {
+/* .condensed {
   @include table();
   @include table-condensed();
-}
+} */
 .main-wrapper {
   padding: 16px 24px;
 }

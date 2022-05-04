@@ -40,6 +40,7 @@ import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.exception.ConfigAlreadyExistsException;
+import org.opennms.features.config.exception.ConfigNotFoundException;
 import org.opennms.features.config.exception.ConfigRuntimeException;
 import org.opennms.features.config.exception.SchemaAlreadyExistsException;
 import org.opennms.features.config.exception.SchemaNotFoundException;
@@ -127,14 +128,15 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         if (!configDefinition.get().getAllowMultiple()) {
             if (!DEFAULT_CONFIG_ID.equals(configId)) {
                 throw new ConfigRuntimeException(String.format(
-                        "For the service '%s' is only one configuration with id='%s' allowed; provided was id '%s'", configName, DEFAULT_CONFIG_ID, configId));
+                        "The '%s' service allows only one configuration with id='%s'.", configName, DEFAULT_CONFIG_ID, configId));
             }
             if (!configIds.isEmpty()) {
                 throw new ConfigAlreadyExistsException(String.format(
-                        "For the service '%s' found existing configuration(s) with id(s) other than '%s'", configName, DEFAULT_CONFIG_ID));
+                        "The service '%s' found existing configuration(s) with id(s) other than '%s'.", configName, DEFAULT_CONFIG_ID));
             }
         }
 
+        this.eventHandlerManager.callEventHandlers(EventType.VALIDATE, new ConfigUpdateInfo(configName, configId, new JSONObject(configObject.toString())));
         configStoreDao.addConfig(configName, configId, new JSONObject(configObject.toString()));
         LOG.info("ConfigurationManager.registeredConfiguration(configName={}, configId={}, config={});", configName, configId, configObject);
 
@@ -149,7 +151,29 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 
     @Override
     public void updateConfiguration(String configName, String configId, JsonAsString config, boolean isReplace) {
-        configStoreDao.updateConfig(configName, configId, new JSONObject(config.toString()), isReplace);
+        Optional<ConfigData<JSONObject>> configData = configStoreDao.getConfigs(configName);
+        if (configData.isEmpty()) {
+            throw new ConfigNotFoundException("ConfigData not found configName: " + configName);
+        }
+        Map<String, JSONObject> configs = configData.get().getConfigs();
+        if (!configs.containsKey(configId)) {
+            throw new ConfigNotFoundException("Config not found configName: " + configName + ", configId: " + configId);
+        }
+
+        JSONObject configObject = new JSONObject(config.toString());
+        JSONObject configToUpdate;
+        if (isReplace) {
+            configToUpdate = configObject;
+            configs.put(configId, configToUpdate);
+        } else {
+            configToUpdate = configs.get(configId);
+
+            // copy all first level keys' value into existing config
+            configObject.keySet().forEach(key -> configToUpdate.put(key, configObject.get(key)));
+        }
+
+        this.eventHandlerManager.callEventHandlers(EventType.VALIDATE, new ConfigUpdateInfo(configName, configId, configToUpdate));
+        configStoreDao.updateConfigs(configName, configData.get());
         this.eventHandlerManager.callEventHandlers(EventType.UPDATE, new ConfigUpdateInfo(configName, configId));
     }
 
