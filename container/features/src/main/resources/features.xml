@@ -8,6 +8,7 @@
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
     <repository>mvn:org.opennms.integration.api/karaf-features/${opennmsApiVersion}/xml</repository>
     <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
+    <repository>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</repository>
     <feature name="opennms-camel-amqp" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Camel Wrapper">
         <!-- start this early so camel-amqp doesn't use its old version -->
         <bundle start-level="75">mvn:org.apache.qpid/proton-j/0.34.0</bundle>

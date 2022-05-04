@@ -35,13 +35,22 @@ import java.util.Properties;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Test;
 import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.distributed.core.api.SystemType;
 
 public class KafkaDispatcherBlueprintIT extends CamelBlueprintTest {
 
-    @Override
+	@Override
+	public void setUp() throws Exception {
+		Properties props = new Properties();
+		props.setProperty("log4j.logger.org.apache.camel", "TRACE");
+		MockLogAppender.setupLogging(props);
+		super.setUp();
+	}
+
+	@Override
     protected String getBlueprintDescriptor() {
         return "classpath:/OSGI-INF/blueprint/blueprint-ipc-client.xml,blueprint-empty-camel-context.xml";
     }
@@ -76,7 +85,6 @@ public class KafkaDispatcherBlueprintIT extends CamelBlueprintTest {
     }
 
     @Test
-    public void canBlueprintLoadSuccesfully() {
-
+    public void canBlueprintLoadSuccesfully() throws Exception {
     }
 }
