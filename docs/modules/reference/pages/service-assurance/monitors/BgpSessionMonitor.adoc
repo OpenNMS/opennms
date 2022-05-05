@@ -76,7 +76,8 @@ See http://www.freesoft.org/CIE/RFC/1771/31.htm[RFC1771 BGP Finite State Machine
 | n/a
 
 | bgpBaseOid
-| Default base OID for the table that represents the BGP sessions
+| Default base OID for the table that represents the BGP sessions.
+
 | .1.3.6.1.2.1.15
 
 | bgpPeerStateOid
