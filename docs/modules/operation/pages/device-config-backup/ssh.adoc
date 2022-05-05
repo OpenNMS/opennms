@@ -99,7 +99,7 @@ There are several example scripts available in the directory `$\{OPENNMS_HOME}/e
 
 | cisco-ios-startup.dcb
 | Cisco IOS
-| retrieves startup-config from Cisco IOS device
+| Retrieves startup-config from Cisco IOS device.
 
 | juniper-junos-config-gz.dcb
 | Juniper JunOS
