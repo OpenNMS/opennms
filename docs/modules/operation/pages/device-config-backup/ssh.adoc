@@ -121,7 +121,7 @@ There are several example scripts available in the directory `$\{OPENNMS_HOME}/e
 === Configuring DCB user accounts
 
 We strongly recommend limiting the privileges of the user accounts used for configuration retrieval.
-The following examples demonstrate, how to configure a `dcb` user account, specifying its password `Pa55w0rd` and limiting its privileges to configuration retrieval commands.
+The following examples demonstrate how to configure a `dcb` user account, specifying its password `Pa55w0rd` and limiting its privileges to configuration retrieval commands.
 
 ==== ArubaOS
 
