@@ -111,7 +111,7 @@ There are several example scripts available in the directory `$\{OPENNMS_HOME}/e
 
 | juniper-junos-config-txt.dcb
 | Juniper JunOS
-| retrieves uncompressed configuration from Juniper JunOS device
+| Retrieves uncompressed configuration from Juniper Junos device.
 
 | paloalto-panos-config.dcb
 | Palo Alto PanOS
