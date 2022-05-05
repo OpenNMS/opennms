@@ -91,7 +91,7 @@ There are several example scripts available in the directory `$\{OPENNMS_HOME}/e
 
 | aruba-os.dcb
 | Aruba OS
-| retrieves config from ArubaOS device
+| Retrieves config from ArubaOS device.
 
 | cisco-ios-running.dcb
 | Cisco IOS
