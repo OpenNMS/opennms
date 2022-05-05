@@ -83,7 +83,7 @@ There are several example scripts available in the directory `$\{OPENNMS_HOME}/e
 
 | aruba-cx-cli.dcb
 | Aruba OS-CX
-| retrieves config from ArubaOS-CX device in cli format
+| Retrieves config from ArubaOS-CX device in CLI format.
 
 | aruba-cx-json.dcb
 | Aruba OS-CX
