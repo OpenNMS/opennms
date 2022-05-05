@@ -100,7 +100,8 @@ See http://www.freesoft.org/CIE/RFC/1771/31.htm[RFC1771 BGP Finite State Machine
 | bgpBaseOid.3.1.14
 
 | bgpPeerFsmEstTimeOid
-| OID suffix for the table that represents the BGP-peer established time
+| OID suffix for the table that represents the BGP-peer established time.
+
 | bgpBaseOid.3.1.16
 |===
 
