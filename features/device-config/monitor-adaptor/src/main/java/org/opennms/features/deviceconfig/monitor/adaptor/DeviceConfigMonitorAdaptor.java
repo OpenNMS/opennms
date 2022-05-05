@@ -126,16 +126,17 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                     LOG.warn("Failed to decompress content from file {}", deviceConfig.getFilename());
                 }
             }
-            deviceConfigDao.updateDeviceConfigContent(
-                    ipInterface,
-                    svc.getSvcName(),
-                    configType,
-                    encoding,
-                    content,
-                    deviceConfig.getFilename());
+
+            Optional<Long> updatedId = deviceConfigDao.updateDeviceConfigContent(
+                ipInterface,
+                svc.getSvcName(),
+                configType,
+                encoding,
+                content,
+                deviceConfig.getFilename());
             sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI);
 
-            cleanupStaleConfigs(parameters, ipInterface, svc.getSvcName());
+            cleanupStaleConfigs(parameters, ipInterface, svc.getSvcName(), updatedId);
         }
 
         return status;
@@ -160,30 +161,25 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         return null;
     }
 
-    private void cleanupStaleConfigs(Map<String, Object> parameters, OnmsIpInterface ipInterface, String serviceName) {
-        // Check for stale config records and delete them
+    /**
+     * Clean up any "stale" DeviceConfig records from the database. These are DeviceConfig records
+     * containing configuration data that are beyond the configured retention date.
+     * However, the latest configuration data is always retained.
+     * @param excludedId If present, do not delete this record even if it is beyond the retention date,
+     *      it represents the most recent "active" configuration.
+     */
+    private void cleanupStaleConfigs(Map<String, Object> parameters, OnmsIpInterface ipInterface, String serviceName,
+                                     Optional<Long> excludedId) {
         final Date currentDate = new Date();
         final String retentionPeriodPattern = getObjectAsString(parameters.get(DeviceConfigConstants.RETENTION_PERIOD));
         final Period retentionPeriod = getRetentionPeriodOrDefault(retentionPeriodPattern);
         final Date retentionDate = Date.from(currentDate.toInstant().atZone(ZoneId.systemDefault()).minus(retentionPeriod).toInstant());
 
-        // Get history of configs with config data, see if any exist that are not the latest one and are also
-        // older than the retention date
-        List<DeviceConfig> allConfigs = deviceConfigDao.findConfigsForInterfaceSortedByDate(ipInterface, serviceName);
-        Optional<DeviceConfig> lastGoodConfig = allConfigs.stream().filter(dc -> dc.getConfig() != null).findFirst();
+        List<DeviceConfig> staleConfigs = deviceConfigDao.findStaleConfigs(ipInterface, serviceName, retentionDate, excludedId);
 
-        if (lastGoodConfig.isPresent()) {
-            List<DeviceConfig> configsToDelete = allConfigs.stream()
-                .filter(dc ->
-                    !dc.getId().equals(lastGoodConfig.get().getId()) &&
-                    dc.getConfig() != null &&
-                    dc.getLastUpdated().getTime() < retentionDate.getTime())
-                .collect(Collectors.toList());
-
-            if (!configsToDelete.isEmpty()) {
-                LOG.debug("DCB: Found {} stale device config records to delete", configsToDelete.size());
-                configsToDelete.forEach(dc -> deviceConfigDao.delete(dc.getId()));
-            }
+        if (!staleConfigs.isEmpty()) {
+            LOG.debug("DCB: Found {} stale device config records to delete", staleConfigs.size());
+            staleConfigs.stream().map(DeviceConfig::getId).forEach(deviceConfigDao::delete);
         }
     }
 

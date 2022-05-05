@@ -28,18 +28,18 @@
 
 package org.opennms.features.deviceconfig.persistence.impl;
 
+import com.google.common.base.Strings;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.google.common.base.Strings;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.ResultTransformer;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigQueryResult;
@@ -80,6 +80,27 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
 
         return find("from DeviceConfig dc where dc.lastUpdated is not null AND dc.ipInterface.id = ? AND serviceName = ? ORDER BY lastUpdated DESC",
                 ipInterface.getId(), serviceName);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<DeviceConfig> findStaleConfigs(OnmsIpInterface ipInterface, String serviceName,
+            Date staleDate, Optional<Long> excludedId) {
+        var builder = new CriteriaBuilder(DeviceConfig.class);
+        builder
+            .isNotNull("lastUpdated")
+            .isNotNull("config")
+            .eq("ipInterface.id", ipInterface.getId())
+            .eq("serviceName", serviceName)
+            .lt("lastUpdated", staleDate);
+
+        if (excludedId.isPresent()) {
+            builder.not().eq("id", excludedId.get());
+        }
+
+        var criteria = builder.toCriteria();
+
+        return findMatching(criteria);
     }
 
     @Override
@@ -256,7 +277,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     }
 
     @Override
-    public void updateDeviceConfigContent(
+    public Optional<Long> updateDeviceConfigContent(
             OnmsIpInterface ipInterface,
             String serviceName,
             String configType,
@@ -267,6 +288,8 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         Date currentTime = new Date();
         Optional<DeviceConfig> configOptional = getLatestConfigForInterface(ipInterface, serviceName);
         DeviceConfig lastDeviceConfig = configOptional.orElse(null);
+        Optional<Long> updatedDeviceId = configOptional.map(DeviceConfig::getId);
+
         // Config retrieval succeeded
         if (lastDeviceConfig != null &&
             // Config didn't change, just update last updated field.
@@ -303,8 +326,12 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             deviceConfig.setLastSucceeded(currentTime);
             deviceConfig.setStatus(DeviceConfigStatus.SUCCESS);
             saveOrUpdate(deviceConfig);
+            updatedDeviceId = Optional.of(deviceConfig.getId());
+
             LOG.info("Persisted changed device config - ipInterface: {}; service: {}; type: {}", ipInterface, serviceName, configType);
         }
+
+        return updatedDeviceId;
     }
 
     @Override
