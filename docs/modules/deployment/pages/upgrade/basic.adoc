@@ -27,3 +27,11 @@ include::ubuntu/up-ubuntu.adoc[]
 
 endif::[]
 ====
+
+
+[[posgresql-upgrade]]
+== PostgreSQL upgrade and configuration
+
+Refer to the https://www.postgresql.org/docs/[PostgreSQL documentation) for information on how to upgrade a PostgreSQL database.
+
+You must stop the OpenNMS service while doing maintenance on database services.
