@@ -26,8 +26,11 @@
 
     <feature name="guava" version="${guavaOsgiVersion}" description="Google :: Guava">
         <feature prerequisite="true">wrap</feature>
-        <bundle start-level="30" dependency="true">wrap:mvn:com.google.guava/guava/${guavaVersion}</bundle>
-        <!-- <bundle start-level="30" dependency="true">wrap:mvn:com.google.code.findbugs/jsr305/1.3.9</bundle> -->
+        <bundle start-level="30" dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <bundle start-level="30" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14</bundle>
+        <bundle start-level="30" dependency="true">wrap:mvn:com.google.errorprone/error_prone_annotations/2.10.0</bundle>
+        <bundle start-level="30" dependency="true">wrap:mvn:org.checkerframework/checker-qual/2.0.0</bundle>
+        <bundle start-level="30" dependency="true">wrap:mvn:com.google.j2objc/j2objc-annotations/1.1</bundle>
     </feature>
  
     <feature name="guava17" version="17.0" description="Google :: Guava">
@@ -36,10 +39,6 @@
  
     <feature name="guava21" version="21.0" description="Google :: Guava">
         <bundle>mvn:com.google.guava/guava/21.0</bundle>
-    </feature>
- 
-    <feature name="guava25" version="25.0" description="Google :: Guava">
-        <bundle>mvn:com.google.guava/guava/25.0-jre</bundle>
     </feature>
  
     <feature name="netty4" version="${netty4Version}" description="Netty">
@@ -51,10 +50,8 @@
         <bundle dependency="true">mvn:io.netty/netty-resolver/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-transport/${netty4Version}</bundle>
-        <!--
         <bundle dependency="true">mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
-        -->
     </feature>
  
     <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">

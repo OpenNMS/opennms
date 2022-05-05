@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -100,7 +100,7 @@ public class FilterParamDef {
 
     @Override
     public String toString() {
-       return com.google.common.base.Objects.toStringHelper(this)
+       return com.google.common.base.MoreObjects.toStringHelper(this)
                  .add("Key", this.key)
                  .add("Value", this.value)
                  .toString();
