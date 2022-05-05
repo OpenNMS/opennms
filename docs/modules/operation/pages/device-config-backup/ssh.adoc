@@ -115,7 +115,7 @@ There are several example scripts available in the directory `$\{OPENNMS_HOME}/e
 
 | paloalto-panos-config.dcb
 | Palo Alto PanOS
-| retrieves configuration from Palo Alto PanOS device
+| Retrieves configuration from Palo Alto PAN-OS device.
 |===
 
 === Configuring DCB user accounts
