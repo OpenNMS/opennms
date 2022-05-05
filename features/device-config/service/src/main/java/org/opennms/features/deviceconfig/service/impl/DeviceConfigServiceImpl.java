@@ -180,11 +180,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                         public String getSchedule() {
                             return getKeyedString(pollerParameters, DeviceConfigConstants.SCHEDULE, DeviceConfigConstants.DEFAULT_CRON_SCHEDULE);
                         }
-
-                        @Override
-                        public String getRetentionPeriod() {
-                            return getKeyedString(pollerParameters, DeviceConfigConstants.RETENTION_PERIOD, null);
-                        }
                     };
                 })
                 // Collect to resulting map
