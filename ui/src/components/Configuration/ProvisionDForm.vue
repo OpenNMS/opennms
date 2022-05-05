@@ -2,7 +2,7 @@
   <div>
     <FeatherInput
       ref="firstInput"
-      class="side-input mb-16"
+      class="side-input mb-m"
       label="Name"
       hint="Human-friendly name. Must be unique."
       :error="errors.name"
@@ -11,7 +11,7 @@
     />
     <div class="flex-center">
       <FeatherSelect
-        class="side-input full-width mb-16"
+        class="side-input full-width mb-m"
         textProp="name"
         label="External Source"
         :options="requisitionTypeList"
@@ -37,7 +37,7 @@
     <div v-if="RequsitionTypesUsingHost.includes(config.type.name)">
       <FeatherInput
         label="Host"
-        class="side-input host-update mb-16"
+        class="side-input host-update mb-m"
         :error="errors.host"
         :modelValue="config.host"
         @update:modelValue="(val) => updateFormValue('host', val)"
@@ -47,7 +47,7 @@
     <div v-if="RequisitionHTTPTypes.includes(config.type.name)">
       <FeatherInput
         label="Path"
-        class="side-input mb-16"
+        class="side-input mb-m"
         :error="errors.urlPath"
         :modelValue="config.urlPath"
         @update:modelValue="(val) => updateFormValue('urlPath', val)"
@@ -56,7 +56,7 @@
     </div>
     <div v-if="[RequisitionTypes.RequisitionPlugin].includes(config.type.name)">
       <FeatherSelect
-        class="side-input mb-16"
+        class="side-input mb-m"
         textProp="name"
         hint=""
         label="Requisition Plugin"
@@ -68,7 +68,7 @@
     <div v-if="[RequisitionTypes.DNS].includes(config.type.name)">
       <FeatherInput
         label="Zone"
-        class="side-input mb-16"
+        class="side-input mb-m"
         :error="errors.zone"
         :modelValue="config.zone"
         @update:modelValue="(val) => updateFormValue('zone', val)"
@@ -76,7 +76,7 @@
       />
       <FeatherInput
         label="Requisition Name"
-        class="side-input mb-16"
+        class="side-input mb-m"
         :error="errors.foreignSource"
         :modelValue="config.foreignSource"
         @update:modelValue="(val) => updateFormValue('foreignSource', val)"
@@ -87,7 +87,7 @@
       <div class="flex-center side-input">
         <FeatherInput
           label="Username"
-          class="side-input full-width mr-16 mb-16"
+          class="side-input full-width mr-m mb-m"
           :error="errors.username"
           :modelValue="config.username"
           @update:modelValue="(val) => updateFormValue('username', val)"
@@ -96,7 +96,7 @@
         <FeatherInput
           type="password"
           label="Password"
-          class="side-input full-width mb-16"
+          class="side-input full-width mb-m"
           :error="errors.password"
           :modelValue="config.password"
           @update:modelValue="(val) => updateFormValue('password', val)"
@@ -107,7 +107,7 @@
     <div v-if="[RequisitionTypes.File].includes(config.type.name)">
       <FeatherInput
         label="Path"
-        class="side-input mb-16"
+        class="side-input mb-m"
         :error="errors.path"
         :modelValue="config.path"
         @update:modelValue="(val) => updateFormValue('path', val)"
@@ -169,10 +169,7 @@ const hostHint = computed(() => {
   return ConfigurationHelper.getHostHint(props.item.config.type.name)
 })
 
-/**
- * Focus the first field in the drawer when opened.
- *
- */
+// Focus the first field in the drawer when opened.
 watch(formActive, () => {
   if (formActive.value && firstInput.value) {
     firstInput.value.focus()
@@ -184,15 +181,9 @@ const updateCronValue = (type:string, val:string) => {
 }
 
 /**
- * The following function is related to getting the Hint Text
- * to update properly in the FeatherInput component. Currently if you update the Hint Text
- * after the initial render, FeatherInput does not react to the untracked attribute.
- * We could forcibly mount + unmount the component as an alternative which would also render
- * the correct text, but I felt like these easily removable two lines of code is preferable
- * than a forced re-render.
- *
- * In the case that FeatherInput properly updates when the Hint Text is updated, just remove
- * the two proceeding lines of code (getHostHint and forceSetHint)
+ * The following function is related to getting the Hint Text to update properly in the FeatherInput component. Currently if you update the Hint Text after the initial render, FeatherInput does not react to the untracked attribute.
+ * We could forcibly mount + unmount the component as an alternative which would also render the correct text, but I felt like these easily removable two lines of code is preferable than a forced re-render.
+ * In the case that FeatherInput properly updates when the Hint Text is updated, just remove the two proceeding lines of code (getHostHint and forceSetHint)
  **/
 const updateHint = (val:string) => {
   const hint = ConfigurationHelper.getHostHint(val)
@@ -209,21 +200,11 @@ const updateHint = (val:string) => {
 .occurance {
     width: 100%;
 }
-.time {
-    margin-left: 16px;
-    width: 100%;
-}
 .flex-center {
     display: flex;
 }
 .full-width {
     width: 100%;
-}
-.mr-16 {
-    margin-right: 16px;
-}
-.mb-16 {
-    margin-bottom: 16px;
 }
 </style>
 

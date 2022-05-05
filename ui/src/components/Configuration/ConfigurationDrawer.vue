@@ -162,7 +162,6 @@ watch(errors, () => {
   }
 })
 
-
 /**
  * Determines which classes to apply to the drawer.
  */
