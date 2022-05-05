@@ -170,7 +170,7 @@ cisco-ios(config)#privilege exec level 2 copy startup-config
 cisco-ios(config)#exit
 ----
 
-==== Juniper JunOS
+==== Juniper Junos
 
 .Example for creating a dcb account based on a custom login class dcb-class
 [source, script]
