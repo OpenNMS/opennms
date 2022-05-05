@@ -60,7 +60,10 @@ public class TrapListener implements TrapNotificationListener {
     private static final Logger LOG = LoggerFactory.getLogger(TrapListener.class);
 
     // True if trap configuration has been received from the core instance
-    private AtomicBoolean m_configured = new AtomicBoolean(false);
+    private boolean m_configured = false;
+    private Object configuredLock = new Object();
+
+    public static long SUBSCRIBER_TIMEOUT_MS = 60 * 1000;
 
     @Autowired
     private MessageDispatcherFactory m_messageDispatcherFactory;
@@ -116,13 +119,13 @@ public class TrapListener implements TrapNotificationListener {
                 public void run() {
                     delayedConfigurationCheck();
                 }
-            }, 60 * 1000); // wait 60 seconds for connection from core
+            }, SUBSCRIBER_TIMEOUT_MS); // wait 60 seconds for connection from core
         }
     }
 
     private void delayedConfigurationCheck() {
-        synchronized (m_configured) {
-            if (!m_configured.get()) {
+        synchronized (configuredLock) {
+            if (!m_configured) {
                 LOG.warn("No trap configuration received from core, using default settings");
                 this.open(new TrapListenerConfig());
             }
@@ -133,8 +136,8 @@ public class TrapListener implements TrapNotificationListener {
         m_twinSubscription = m_twinSubscriber.subscribe(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, (config) -> {
             try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Trapd.LOG4J_CATEGORY)) {
                 LOG.info("Got listener config update - reloading");
-                synchronized(m_configured) {
-                    m_configured.set(true);
+                synchronized(configuredLock) {
+                    m_configured = true;
                     this.close();
                     this.open(config);
                 }

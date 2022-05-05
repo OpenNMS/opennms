@@ -31,6 +31,8 @@ package org.opennms.netmgt.trapd;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import com.jayway.awaitility.Awaitility;
+import java.util.concurrent.TimeUnit;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 
@@ -133,10 +135,9 @@ public class TrapListenerTest {
         TrapListener listener = new TrapListener(initialConfig);
         listener.start();
         Assert.assertEquals(Boolean.FALSE, listener.isRegisteredForTraps());
-        try {
-            Thread.currentThread().sleep(61 * 1000);
-        }
-        catch (Exception e) {}
-        Assert.assertEquals(Boolean.TRUE, listener.isRegisteredForTraps());
+        
+        Awaitility.await().atMost(TrapListener.SUBSCRIBER_TIMEOUT_MS + 1000, TimeUnit.MILLISECONDS).with()
+            .pollInterval(1, TimeUnit.SECONDS)
+            .until(() -> listener.isRegisteredForTraps());
     }
 }
