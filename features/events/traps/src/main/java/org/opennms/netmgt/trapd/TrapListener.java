@@ -63,7 +63,7 @@ public class TrapListener implements TrapNotificationListener {
     private boolean m_configured = false;
     private Object configuredLock = new Object();
 
-    public static long SUBSCRIBER_TIMEOUT_MS = 60 * 1000;
+    private long subscriberTimeoutMs = 60 * 1000;
 
     @Autowired
     private MessageDispatcherFactory m_messageDispatcherFactory;
@@ -119,7 +119,7 @@ public class TrapListener implements TrapNotificationListener {
                 public void run() {
                     delayedConfigurationCheck();
                 }
-            }, SUBSCRIBER_TIMEOUT_MS); // wait 60 seconds for connection from core
+            }, subscriberTimeoutMs); // wait 60 seconds for connection from core
         }
     }
 
@@ -292,5 +292,13 @@ public class TrapListener implements TrapNotificationListener {
             return false;
         }
         return !newConfig.getSnmpV3Users().equals(m_config.getSnmpV3Users());
+    }
+
+    void setSubscriberTimeoutMs(long ms) {
+        subscriberTimeoutMs = ms;
+    }
+
+    long getSubscriberTimeoutMs() {
+        return subscriberTimeoutMs;
     }
 }

@@ -133,10 +133,11 @@ public class TrapListenerTest {
     @Test
     public void noSubscriberTest() throws Exception {
         TrapListener listener = new TrapListener(initialConfig);
+        listener.setSubscriberTimeoutMs(2 * 1000);
         listener.start();
         Assert.assertEquals(Boolean.FALSE, listener.isRegisteredForTraps());
         
-        Awaitility.await().atMost(TrapListener.SUBSCRIBER_TIMEOUT_MS + 1000, TimeUnit.MILLISECONDS).with()
+        Awaitility.await().atMost(10 * 1000, TimeUnit.MILLISECONDS).with()
             .pollInterval(1, TimeUnit.SECONDS)
             .until(() -> listener.isRegisteredForTraps());
     }
