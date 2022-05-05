@@ -270,7 +270,7 @@
         <bundle>wrap:mvn:org.owasp.encoder/encoder/${owaspEncoderVersion}$Export-Package=org.owasp.encoder</bundle>
     </feature>
     <feature name="owasp-html-sanitizer" version="${owaspHtmlSanitizerVersion}" description="OWASP :: HTML Sanitizer">
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <bundle>wrap:mvn:com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/${owaspHtmlSanitizerVersion}$Export-Package=org.owasp.html</bundle>
     </feature>
     <feature name="postgresql" version="${postgresqlVersion}" description="PostgreSQL :: JDBC Driver">
@@ -295,7 +295,7 @@
         <bundle>mvn:org.springframework.security/spring-security-web/${springSecurityVersion}</bundle>
     </feature>
     <feature name="jicmp" version="2.0.1" description="jicmp">
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <bundle>mvn:org.opennms/jicmp-api/2.0.1</bundle>
     </feature>
     <feature name="jicmp6" version="2.0.1" description="jicmp6">
@@ -386,7 +386,7 @@
     <feature name="opennms-core-daemon" version="${project.version}" description="OpenNMS :: Core :: Daemon">
         <feature>activemq-client</feature>
         <feature>camel-jms</feature>
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-activemq-pool</feature>
         <feature>opennms-core</feature>
         <feature>opennms-config</feature>
@@ -442,7 +442,7 @@
     </feature>
     <feature name="opennms-collection-commands" version="${project.version}" description="OpenNMS :: Collection :: Shell Commands">
         <feature>dropwizard-metrics</feature>
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.commands/${project.version}</bundle>
     </feature>
     <feature name="opennms-collection-core" version="${project.version}" description="OpenNMS :: Collection :: Core">
@@ -502,7 +502,7 @@
     </feature>
     <feature name="opennms-core-ipc-sink-api" version="${project.version}" description="OpenNMS :: Core :: IPC :: Sink :: API">
         <feature>dropwizard-metrics</feature>
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>javax.mail</feature>
         <feature>org.json</feature>
         <feature>rate-limited-logger</feature>
@@ -591,7 +591,7 @@
     </feature>
     <feature name="opennms-core-ipc-rpc-commands" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: Shell Commands">
         <feature>dropwizard-metrics</feature>
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.commands/${project.version}</bundle>
     </feature>
@@ -610,7 +610,7 @@
     </feature>
     <feature name="opennms-dao" version="${project.version}" description="OpenNMS :: DAO">
         <feature>commons-jxpath</feature>
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>hibernate-validator41</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-collection-core</feature>
@@ -637,7 +637,7 @@
     <feature name="opennms-events-commands" version="${project.version}" description="OpenNMS :: Events :: Shell Commands">
         <feature>commons-jexl</feature>
         <feature>dropwizard-metrics</feature>
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.commands/${project.version}</bundle>
     </feature>
     <!--This feature lives on Minion, OpenNMS and Sentinel is the reason it needs separate feature.-->
@@ -662,7 +662,7 @@
     </feature>
 
     <feature name="opennms-icmp-api" version="${project.version}" description="OpenNMS :: ICMP :: API">
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-core</feature>
         <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
     </feature>
@@ -674,7 +674,7 @@
         <bundle>mvn:org.opennms/opennms-icmp-best/${project.version}</bundle>
     </feature>
     <feature name="opennms-icmp-jna" version="${project.version}" description="OpenNMS :: ICMP :: JNA">
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-icmp-api</feature>
         <feature>java-native-access</feature>
         <bundle>mvn:org.opennms.core/org.opennms.core.icmp-jna/${project.version}</bundle>
@@ -706,7 +706,7 @@
     <feature name="opennms-measurements-api" version="${project.version}" description="OpenNMS :: Measurements :: API">
         <feature version="[4.2,4.3)">spring</feature>
         <feature>commons-lang</feature>
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <bundle>mvn:org.opennms.features.measurements/org.opennms.features.measurements.api/${project.version}</bundle>
     </feature>
     <feature name="opennms-measurements-shell" version="${project.version}" description="OpenNMS :: Measurements :: Shell">
@@ -769,7 +769,7 @@
         <feature>camel-core</feature>
         <feature>camel-http</feature>
         <feature>camel-netty4</feature>
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>dropwizard-metrics</feature>
         <feature>opennms-core</feature>
         <feature>opennms-core-camel</feature>
@@ -800,7 +800,7 @@
         <feature version="[4.2,4.3)">spring</feature>
         <feature>camel-core</feature>
         <feature>camel-http</feature>
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-core</feature>
         <feature>opennms-core-camel</feature>
@@ -1358,6 +1358,7 @@
         <details>The Vaadin web application framework including some addons and osgi related packages.</details>
         <!-- Dependencies -->
         <feature version="${guavaOsgiVersion}">guava</feature>
+        <feature>http-whiteboard</feature>
         <bundle>mvn:com.vaadin.external.gwt/gwt-elemental/2.8.2.vaadin2</bundle>
         <bundle>wrap:mvn:com.google.gwt/gwt-user/${gwtVersion}/$Export-Package=com.google.*</bundle>
         <bundle>mvn:com.vaadin.external/gentyref/1.2.0.vaadin1</bundle>
@@ -1395,8 +1396,7 @@
         <feature>geolocation</feature>
         <feature>commons-lang3</feature>
         <feature>commons-net</feature>
-        <!-- needed by jinjava, which is embedded in org.opennms.features.topology.app -->
-        <feature>guava25</feature>
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>jackson-core</feature>
         <feature>jackson-dataformat-yaml</feature>
         <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.app/${project.version}</bundle>
@@ -1652,21 +1652,6 @@
         <bundle>mvn:io.github.resilience4j/resilience4j-circuitbreaker/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-bulkhead/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-retry/${resilience4jVersion}</bundle>
-    </feature>
-
-    <feature name="netty4" version="${netty4Version}" description="Netty">
-        <bundle>mvn:io.netty/netty-resolver/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-common/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-buffer/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-transport/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-handler/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
-        <!--
-        <bundle>mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
-        -->
     </feature>
 
     <feature name="opennms-blobstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Shell" version="${project.version}">

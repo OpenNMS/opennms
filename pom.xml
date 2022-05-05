@@ -1720,10 +1720,9 @@
     <groovyVersion>2.5.16</groovyVersion>
     <grpcVersion>1.46.0</grpcVersion>
     <gsonVersion>2.8.5</gsonVersion>
-    <guavaVersion>18.0</guavaVersion>
-    <guavaOsgiVersion>${guavaVersion}</guavaOsgiVersion>
+    <guavaVersion>25.1-jre</guavaVersion>
+    <guavaOsgiVersion>25.1.0</guavaOsgiVersion>
     <guavagRPCVersion>28.2-jre</guavagRPCVersion>
-    <guavaOldVersion>17.0</guavaOldVersion>
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
@@ -1744,6 +1743,8 @@
     <jaxbRuntimeVersion>2.3.3</jaxbRuntimeVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
     <jakartaXmlBindVersion>2.3.3</jakartaXmlBindVersion>
+    <!-- this should match what's in Karaf's lib/jdk9plus directory -->
+    <javaxAnnotationApiVersion>1.3.1</javaxAnnotationApiVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.4.44.v20210927</jettyVersion>
@@ -1781,7 +1782,7 @@
     <mockitoVersion>3.4.6</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.78.Final</netty4Version>
-    <newtsVersion>1.5.5</newtsVersion>
+    <newtsVersion>1.5.7</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxLoggingVersion>2.0.14</paxLoggingVersion>
     <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
@@ -4053,6 +4054,11 @@
         <version>1.0.0</version>
       </dependency>
       <dependency>
+        <groupId>com.google.errorprone</groupId>
+        <artifactId>error_prone_annotations</artifactId>
+        <version>2.10.0</version>
+      </dependency>
+      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${guavaVersion}</version>
@@ -4363,17 +4369,15 @@
         <artifactId>istack-commons-runtime</artifactId>
         <version>3.0.10</version>
       </dependency>
-      <!-- this should match what's in Karaf's lib/jdk9plus directory -->
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>txw2</artifactId>
         <version>${jaxbRuntimeVersion}</version>
       </dependency>
-      <!-- this should match what's in Karaf's lib/jdk9plus directory -->
       <dependency>
         <groupId>javax.annotation</groupId>
         <artifactId>javax.annotation-api</artifactId>
-        <version>1.3.1</version>
+        <version>${javaxAnnotationApiVersion}</version>
       </dependency>
       <dependency>
         <groupId>javassist</groupId>
