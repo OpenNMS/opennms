@@ -55,6 +55,7 @@
 
     <feature name="spring" description="Spring 3.1.x support" version="3.1.4.RELEASE">
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
+        <bundle start-level="30">mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-core/3.1.4.RELEASE</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-asm/3.1.4.RELEASE</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-expression/3.1.4.RELEASE</bundle>
@@ -133,6 +134,7 @@
 
     <feature name="spring" description="Spring 3.2.x support" version="3.2.18.RELEASE_1">
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
+        <bundle start-level="30">mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/3.2.18.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/3.2.18.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-32-shaded/${project.version}</bundle>
@@ -210,6 +212,7 @@
 
     <feature name="spring" description="Spring 4.0.x support" version="4.0.9.RELEASE_1">
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
+        <bundle start-level="30">mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/4.0.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/4.0.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-40-shaded/${project.version}</bundle>
@@ -283,6 +286,7 @@
 
     <feature name="spring" description="Spring 4.1.x support" version="4.1.9.RELEASE_1">
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
+        <bundle start-level="30">mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/4.1.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/4.1.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-41-shaded/${project.version}</bundle>
@@ -356,6 +360,7 @@
 
     <feature name="spring" description="Spring 4.2.x support" version="4.2.9.RELEASE_1">
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
+        <bundle start-level="30">mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/4.2.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/4.2.9.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-42-shaded/${project.version}</bundle>
@@ -429,6 +434,7 @@
 
     <feature name="spring" description="Spring 4.3.x support" version="4.3.30.RELEASE_1">
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
+        <bundle start-level="30">mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/4.3.30.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/4.3.30.RELEASE_1</bundle>
         <bundle start-level="30">mvn:org.opennms.dependencies/org.opennms.dependencies.spring-beans-43-shaded/${project.version}</bundle>

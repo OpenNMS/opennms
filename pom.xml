@@ -1722,8 +1722,8 @@
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.5.16</groovyVersion>
     <gsonVersion>2.8.5</gsonVersion>
-    <guavaVersion>18.0</guavaVersion>
-    <guavaOldVersion>17.0</guavaOldVersion>
+    <guavaVersion>25.1-jre</guavaVersion>
+    <guavaOsgiVersion>25.1.0</guavaOsgiVersion>
     <gwtVersion>2.8.2</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
@@ -1766,7 +1766,7 @@
     <minaVersion>2.0.16</minaVersion>
     <mockitoVersion>1.10.19</mockitoVersion>
     <netty4Version>4.1.48.Final</netty4Version>
-    <newtsVersion>1.5.5</newtsVersion>
+    <newtsVersion>1.5.7</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxLoggingVersion>1.11.13</paxLoggingVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
@@ -3970,6 +3970,13 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${guavaVersion}</version>
+        <exclusions>
+          <!-- not necessary at runtime -->
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
@@ -3981,6 +3988,12 @@
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-dev</artifactId>
         <version>${gwtVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- Vaadin -->
       <dependency>
@@ -4245,6 +4258,11 @@
         <groupId>javax.annotation</groupId>
         <artifactId>jsr250-api</artifactId>
         <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>1.3.2</version>
       </dependency>
       <dependency>
         <groupId>javax.activation</groupId>
@@ -4799,6 +4817,12 @@
         <groupId>com.swrve</groupId>
         <artifactId>rate-limited-logger</artifactId>
         <version>${rateLimitedLoggerVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.spockframework</groupId>

@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features name="karaf-extensions" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/core</repository>
+
     <feature name="karaf-extender" description="Karaf Extender" version="${project.version}">
-        <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <bundle>mvn:org.opennms.container/extender/${project.version}</bundle>
     </feature>
 
     <feature name="scv" description="Secure Credentials Vault" version="${project.version}">
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <bundle dependency="true">mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
-        <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
