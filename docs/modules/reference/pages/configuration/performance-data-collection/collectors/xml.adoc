@@ -54,6 +54,13 @@ The available handlers include:
 * org.opennms.protocols.json.collector.DefaultJsonCollectionHandler
 * org.opennms.protocols.http.collector.HttpCollectionHandler
 
+
+=== Caveats
+
+The `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler` requires the fetched document to be a single element of type `object` to make xpath query work.
+If the root element is an array, it will be wrapped in an object accessible as `/elements`.
+
+
 == XML collection configuration
 
 Understanding xref:operation:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
@@ -98,6 +105,10 @@ The request element can have the following optional child elements:
 | How often to repeat the request in case of an error.
 | 0
 
+| disable-ssl-verification
+| Do not attempt to verify the name on the SSL certificate against the `xml-source` URL attribute.
+| false
+
 | use-system-proxy
 | Should the system-wide proxy settings be used?
 Configure the system proxy settings via <<operation:admin/system-properties/introduction.adoc#system-properties, system properties>>.
@@ -115,14 +126,26 @@ The referenced `opennms-nodes.xml` file contains:
 </xml-groups>
 ----
 
+== HTTP headers
+
+If the endpoint being collected requires additional headers, you can add them as part of the `<request>` object.
+
+[source, xml]
+----
+  <xml-source url="https://{nodelabel}/api/path/to/endpoint">
+    <request method="GET">
+      <header name="Authorization" value="Bearer static_token_here" />
+      <header name="X-Api-Key" value="api-key-here" />
+    </request>
+    <import-groups>xml-datacollection/file.xml</import-groups>
+  </xml-source>
+----
+
+== Test XML collection via Karaf
+
 With the configuration in place, you can test it using the `collect` command available in the Karaf Shell:
 
 [source, console]
 ----
 opennms:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
 ----
-
-== Caveats
-
-The `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler` requires the fetched document to be a single element of type `object` to make xpath query work.
-If the root element is an array, it will be wrapped in an object, whereas the original array is accessible as `/elements`.
