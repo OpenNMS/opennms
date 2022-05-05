@@ -107,7 +107,7 @@ There are several example scripts available in the directory `$\{OPENNMS_HOME}/e
 
 | juniper-junos-config-set.dcb
 | Juniper JunOS
-| retrieves configuration from Juniper JunOS device in set-format
+| Retrieves configuration from Juniper Junos device in set-format.
 
 | juniper-junos-config-txt.dcb
 | Juniper JunOS
