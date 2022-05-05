@@ -106,7 +106,7 @@ The request element can have the following optional child elements:
 | 0
 
 | disable-ssl-verification
-| Do not attempt to verify the name of on the SSL certificate against the `xml-source` URL attribute.
+| Do not attempt to verify the name on the SSL certificate against the `xml-source` URL attribute.
 | false
 
 | use-system-proxy
@@ -128,7 +128,7 @@ The referenced `opennms-nodes.xml` file contains:
 
 == HTTP headers
 
-If the endpoint being collected requires additional headers, they can be added as part of the `<request>` object.
+If the endpoint being collected requires additional headers, you can add them as part of the `<request>` object.
 
 [source, xml]
 ----
