@@ -136,7 +136,11 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                 deviceConfig.getFilename());
             sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI);
 
-            cleanupStaleConfigs(parameters, ipInterface, svc.getSvcName(), updatedId);
+            // if no record previously existed, don't need to call cleanup since
+            // we just added the first record
+            if (latestConfig.isPresent()) {
+                cleanupStaleConfigs(parameters, ipInterface, svc.getSvcName(), updatedId);
+            }
         }
 
         return status;
