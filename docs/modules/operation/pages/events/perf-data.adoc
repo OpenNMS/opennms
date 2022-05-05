@@ -1,0 +1,185 @@
+= Performance Data
+
+This feature lets users persist performance data from SNMP traps in a time series database.
+OpenNMS already persists traps in an events form.
+Trap output is not the same as SNMP; it always embeds values into a string.
+Events support named regex extraction, a good starting point for persisting extracted parameters into time series.
+
+== How it works
+- The feature uses event matching with eventconf to check that the collection information exists.
+- It tries to look up parameters stated in the config against the event's parameters.
+- If `paramValue` exists in eventconf, OpenNMS converts the matching key into numeric values.
+- Based on the collection setting, it will persist data into `nodeSnmp`, `interfaceSnmp`, or `resource type`.
+
+== Install and configure event-sourced performance data collection
+. <<collection-config,Configure eventconf with collection>>.
+. <<snmp-graph, Create snmp-graph.properties>>.
+. <<resource-types, Create resource-types if you are using the generic type>>.
+. <<karaf-collector,Enable opennms-events-collector in Karaf>>.
+
+View result performance graph in menu:Reports[Reports > Resource Graphs].
+
+[[collection-config]]
+=== Config eventconf with collection
+This is an example of event collection config.
+Put the file in the etc/events directory and make sure it is registered in eventconf.xml.
+If your event will keep firing a lot and you only want the performance data without overwhelming the event table, consider setting `<logmsg dest="donotpersist"></logmsg>`.
+
+```
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22222.2.4.3.12.2.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>4</mevalue>
+            </maskelement>
+            <varbind>
+                <vbnumber>1</vbnumber>
+                <vbvalue>
+                    <![CDATA[~.*Time=(?<TIME>[\d]*).*Value=(?<VALUE>[\d]+).*Status=(?<STATUS>[\w]+).*Tag=(?<TAG>[\w.]+).*]]></vbvalue>
+            </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/test/regex</uei>
+        <event-label>test: varbind with regex</event-label>
+        <descr>Testing varbind with regex</descr>
+        <logmsg dest="donotpersist"></logmsg>
+        <collectionGroup name="nodeGroup" resourceType="nodeSnmp">
+            <rrd step="60" heartBeat="120">
+                <rra>RRA:AVERAGE:0.5:1:8928</rra>
+            </rrd>
+            <collection name="TIME" type="counter"/>
+            <collection name="STATUS" type="gauge">
+              <paramValue key="primary" value="1"/>
+              <paramValue key="secondary" value="2"/>
+            </collection>
+        </collectionGroup>
+        <collectionGroup name="eventTypeGroup" resourceType="eventType" instance="STATUS">
+            <rrd step="60" heartBeat="120">
+                <rra>RRA:AVERAGE:0.5:1:8928</rra>
+            </rrd>
+            <collection name="VALUE" type="gauge"/>
+        </collectionGroup>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22222.2.4.3.12.2.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>5</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/test/varbind</uei>
+        <event-label>test: full varbind</event-label>
+        <descr>Testing full varbind.</descr>
+        <logmsg dest="donotpersist"></logmsg>
+        <collectionGroup name="interfaceGroup" resourceType="interfaceSnmp">
+            <rrd step="60" heartBeat="120">
+                <rra>RRA:AVERAGE:0.5:1:8928</rra>
+            </rrd>
+            <collection name=".1.3.6.1.4.1.22222.2.4.3.12.2.21" rename="fulltext" type="gauge"/>
+        </collectionGroup>
+        <severity>Normal</severity>
+    </event>
+</events>
+```
+The example trap for the first event will look like the following:
+
+`snmptrap -v1 -c public 127.0.0.1:10162 .1.3.6.1.4.1.22222.2.4.3.12.2.2 '127.0.0.1' 6 4 100 .1.3.6.1.4.1.22222.2.4.3.12.2.21 s "Time=200 Value=300 Status=secondary Tag=Text"`
+
+Make sure the name used in varbind (for example, "regex") matches the event's parameter name.
+The `Value` parameter must be numeric.
+If the value is a string, use a `paramValue` tag to create a key-value mapping to translate the string into a numeric value.
+When you are using generic-type time series, you will also want to register the instance parameter.
+It will become part of the name of the time series.
+(Just like system mount point, it is dynamically created based on input.)
+
+Make sure to quote the regex in CDATA.
+
+[[snmp-graph]]
+=== Create snmp-graph.properties
+You need to create separate snmp-graph settings in the etc/snmp-graph.properties.d directory.
+
+Example:
+```
+reports=TIME, VALUE, STATUS, uei.opennms.org_traps_test_varbind
+
+report.TIME.name=TIME
+report.TIME.columns=TIME
+report.TIME.type=nodeSnmp
+report.TIME.command=--title="TIME" \
+ --vertical-label="Bytes per second" \
+ DEF:octIn={rrd1}:bytesIn:AVERAGE \
+ AREA:octIn#73d216: \
+ LINE1:octIn#4e9a06:"In " \
+ GPRINT:octIn:AVERAGE:"Avg  \\: %8.2lf %s" \
+ GPRINT:octIn:MIN:"Min  \\: %8.2lf %s" \
+ GPRINT:octIn:MAX:"Max  \\: %8.2lf %s\\n"
+
+report.STATUS.name=STATUS
+report.STATUS.columns=STATUS
+report.STATUS.type=nodeSnmp
+report.STATUS.command=--title="STATUS" \
+ --vertical-label="Bytes per second" \
+ DEF:octIn={rrd1}:bytesIn:AVERAGE \
+ AREA:octIn#73d216: \
+ LINE1:octIn#4e9a06:"In " \
+ GPRINT:octIn:AVERAGE:"Avg  \\: %8.2lf %s" \
+ GPRINT:octIn:MIN:"Min  \\: %8.2lf %s" \
+ GPRINT:octIn:MAX:"Max  \\: %8.2lf %s\\n"
+
+report.VALUE.name=VALUE
+report.VALUE.columns=VALUE
+report.VALUE.type=eventType
+report.VALUE.command=--title="VALUE" \
+ --vertical-label="Bytes per second" \
+ DEF:octOut={rrd1}:bytesOut:AVERAGE \
+ AREA:octOut#73d216: \
+ LINE1:octOut#4e9a06:"Out " \
+ GPRINT:octOut:AVERAGE:"Avg  \\: %8.2lf %s" \
+
+report.uei.opennms.org_traps_test_varbind.name=uei.opennms.org_traps_test_varbind
+report.uei.opennms.org_traps_test_varbind.columns=uei.opennms.org_traps_test_varbind
+report.uei.opennms.org_traps_test_varbind.type=interfaceSnmp
+report.uei.opennms.org_traps_test_varbind.command=--title="uei.opennms.org_traps_test_varbind" \
+ --vertical-label="Bytes per second" \
+ DEF:octIn={rrd1}:bytesIn:AVERAGE \
+ AREA:octIn#73d216: \
+ LINE1:octIn#4e9a06:"In " \
+ GPRINT:octIn:AVERAGE:"Avg  \\: %8.2lf %s"
+```
+
+[[resource-types]]
+=== Create resource-types if you are using generic type
+If your time series data type is not nodeSnmp/interfaceSnmp, you need to create a resource-type file in etc/resource-types.d.
+Make sure you match the name with evenconf's resourceType.
+There is also ${instance} variable available to provide a name to help indicate what an event binds to.
+
+Example:
+```
+<resource-types>
+  <resourceType name="eventType" label="Event Application" resourceLabel="Instance ${instance}">
+     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+     <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+</resource-types>
+```
+
+[[karaf-collector]]
+=== Enable opennms-events-collector in karaf
+ssh into karaf and run `feature:install opennms-events-collector`
