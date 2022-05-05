@@ -95,7 +95,7 @@ There are several example scripts available in the directory `$\{OPENNMS_HOME}/e
 
 | cisco-ios-running.dcb
 | Cisco IOS
-| retrieves running-config from Cisco IOS device
+| Retrieves running-config from Cisco IOS device.
 
 | cisco-ios-startup.dcb
 | Cisco IOS
