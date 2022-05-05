@@ -20,6 +20,7 @@
     <module>dnsjava</module>
     <module>drools</module>
     <module>felix</module>
+    <module>groovy</module>
     <module>hibernate</module>
     <module>jasper</module>
     <module>jasypt</module>
