@@ -81,7 +81,8 @@ See http://www.freesoft.org/CIE/RFC/1771/31.htm[RFC1771 BGP Finite State Machine
 | .1.3.6.1.2.1.15
 
 | bgpPeerStateOid
-| OID suffix for the table that represents the BGP-peer states
+| OID suffix for the table that represents the BGP-peer states.
+
 | bgpBaseOid.3.1.2
 
 | bgpPeerAdminStateOid
