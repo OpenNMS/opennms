@@ -77,7 +77,7 @@ Use `diff -Bbw` and `diff -y`.
 +
 [source, console]
 ----
-$OPENNMS_HOME/bin/install -dis
+${OPENNMS_HOME}/bin/install -dis
 ----
 +
 The upgrade may take some time.
