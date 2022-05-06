@@ -160,17 +160,17 @@ const convertCronTabToLocal = (cronFormatted: string) => {
  * @param advancedOptions array of kv pairs
  * @returns Query string to append to server URL
  */
-const getQueryStringFromAdvancedOptions = (fullURL: string, advancedOptions: AdvancedOption[]): string => {
-  const hasQueryParams = () => fullURL.includes('?')
+const getQueryStringFromAdvancedOptions = (queryPart: string, advancedOptions: AdvancedOption[]): string => {
+  let queryString = queryPart
 
-  let queryString = ''
-  advancedOptions.forEach((option, index) => {
-    if (option.key.name && option.value) {
-      queryString += `${index > 0 || hasQueryParams() ? '&' : '?'}${option.key.name}=${option.value}`
-    }
+  advancedOptions.forEach(({key, value}) => {
+    const optionQuery = `${key.name}=${value}`
+    const regexOption = new RegExp(optionQuery, '')
+    
+    if(!regexOption.test(queryString)) queryString += (queryString.length === 0 ? '' : '&').concat(optionQuery)
   })
 
-  return queryString
+  return queryString.length > 0 ? `?${queryString}` : ''
 }
 
 /**
@@ -183,6 +183,11 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   let protocol = localItem.type.name.toLowerCase()
   const type = localItem.type.name
   let host = localItem.host
+  
+  const [path, query] = localItem.urlPath.split('?')
+  localItem.path = path
+  localItem.query = query || ''
+
   if (type === RequisitionTypes.RequisitionPlugin) {
     host = localItem.subType.value
     protocol = RequisitionTypes.RequisitionPluginForServer
@@ -196,11 +201,12 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   } else if (type === RequisitionTypes.File) {
     host = `${localItem.path}`
   } else if (type === RequisitionTypes.HTTP || type === RequisitionTypes.HTTPS) {
-    host = `${localItem.host}${localItem.urlPath}`
+    host = `${localItem.host}${localItem.path}`
   }
 
   const fullURL = `${protocol}://${host}`
-  const queryString = getQueryStringFromAdvancedOptions(fullURL, localItem.advancedOptions)
+  const queryString = getQueryStringFromAdvancedOptions(localItem.query, localItem.advancedOptions)
+
   return fullURL + queryString
 }
 
@@ -216,33 +222,29 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
  * @returns crontab-ready string
  */
 const convertLocalToCronTab = (item: LocalConfiguration) => {
-  // console.log('item',item)
-  console.log('item.occuranceAdvanced',item.occuranceAdvanced)
   let schedule = ''
 
-  if (!item.advancedCrontab) {
-    // only translate if expression is in basic format
-    if(!isCronAdvancedFormat(item.occuranceAdvanced)) {
-      const occurance = item.occurance
-      const time = item.time
-      const [hoursd, minutesd] = time.split(':')
-      const hours = parseInt(hoursd)
-      const minutes = parseInt(minutesd)
+  // only translate if expression is in basic format
+  if(!item.advancedCrontab) {
+    const occurance = item.occurance
+    const time = item.time
+    const [hoursd, minutesd] = time.split(':')
+    const hours = parseInt(hoursd)
+    const minutes = parseInt(minutesd)
   
-      switch(occurance.name) {
-        case 'Daily':
-          schedule = `0 ${minutes} ${hours} * * ?`
-          break
-        case 'Weekly':
-          schedule = `0 ${minutes} ${hours} ? * ${item.occuranceWeek.id}`
-          break
-        case 'Monthly':
-          schedule = `0 ${minutes} ${hours} ${item.occuranceDay.id === 32 ? 'L' : item.occuranceDay.id} * ?`
-          break
-        default:
-          // basic mode, at drawer open
-          schedule = '0 0 0 * * ?' // 'sec min hr DoM mth DOW' (occurance input fields empty)
-      }
+    switch(occurance.name) {
+      case 'Daily':
+        schedule = `0 ${minutes} ${hours} * * ?`
+        break
+      case 'Weekly':
+        schedule = `0 ${minutes} ${hours} ? * ${item.occuranceWeek.id}`
+        break
+      case 'Monthly':
+        schedule = `0 ${minutes} ${hours} ${item.occuranceDay.id === 32 ? 'L' : item.occuranceDay.id} * ?`
+        break
+      default:
+        // basic mode, at drawer open
+        schedule = '0 0 0 * * ?' // 'sec min hr DoM mth DOW' (occurance input fields empty)
     }
   } else {
     // advanced mode
@@ -260,14 +262,15 @@ const convertLocalToCronTab = (item: LocalConfiguration) => {
  */
 const convertLocalToServer = (localItem: LocalConfiguration, stripIndex = false) => {
   const schedule = convertLocalToCronTab(localItem)
+
   let rescanVal = RescanVals.True
   if (localItem.rescanBehavior === 0) {
     rescanVal = RescanVals.False
   } else if (localItem.rescanBehavior === 2) {
     rescanVal = RescanVals.DBOnly
   }
-  const finalURL = convertItemToURL(localItem)
 
+  const finalURL = convertItemToURL(localItem)
   const fullRet = {
     [RequisitionData.ImportName]: localItem.name,
     [RequisitionData.ImportURL]: finalURL,
@@ -332,11 +335,13 @@ const convertURLToLocal = (urlIn: string) => {
   let localConfig: LocalSubConfiguration = createBlankSubConfiguration()
 
   const url = urlIn.split('/')
+
   const typeRaw = url[0].split(':')[0]
   let urlPath = ''
   for (let i = 3; i < url.length; i++) {
     urlPath += '/' + url[i]
   }
+
   localConfig.type = findFullType(typeRaw)
   switch (localConfig.type.name) {
     case RequisitionTypes.File:
@@ -437,7 +442,8 @@ const createBlankSubConfiguration = () => {
     foreignSource: '',
     subType: { id: 0, name: '', value: '' },
     type: { name: '', id: 0 },
-    urlPath: ''
+    urlPath: '',
+    query: ''
   }
 }
 
