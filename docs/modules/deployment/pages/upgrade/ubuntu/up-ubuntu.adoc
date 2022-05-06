@@ -65,7 +65,7 @@ NOTE: If you upgrade in place, OpenNMS renames any shipped config that conflicts
 Inspect these files manually and reconcile the differences.
 Use `diff -Bbw` and `diff -y`.
 
-. Run the opennms installer:
+. Run the {page-component-title} installer:
 +
 [source, console]
 ----
