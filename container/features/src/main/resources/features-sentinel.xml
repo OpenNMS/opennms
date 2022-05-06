@@ -165,7 +165,7 @@
              description="OpenNMS :: Features :: Distributed :: Coordination :: Zookeeper" version="${project.version}">
         <feature version="${project.version}">sentinel-coordination-api</feature>
         <feature version="${project.version}">sentinel-coordination-common</feature>
-        <feature version="3.4.7">zookeeper-dependencies</feature>
+        <feature version="${zookeeperVersion}">zookeeper-dependencies</feature>
         <bundle>mvn:org.opennms.features.distributed/coordination-zookeeper/${project.version}</bundle>
     </feature>
 
@@ -175,14 +175,14 @@
         <bundle>mvn:org.opennms.features.distributed/coordination-shell/${project.version}</bundle>
     </feature>
 
-    <feature name="zookeeper-dependencies" version="3.4.7" description="ZooKeeper Dependencies">
-        <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.7</bundle>
+    <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
+        <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
         <bundle dependency="true">mvn:com.google.guava/guava/16.0.1</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.6</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.6</bundle>
-        <bundle dependency="true">mvn:org.apache.curator/curator-client/2.9.1</bundle>
-        <bundle dependency="true">mvn:org.apache.curator/curator-framework/2.9.1</bundle>
-        <bundle dependency="true">mvn:org.apache.curator/curator-recipes/2.9.1</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>
     </feature>
 
     <!-- Newts -->

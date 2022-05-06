@@ -30,6 +30,7 @@ package org.opennms.features.distributed.coordination.zookeeper;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.recipes.leader.CancelLeadershipException;
 import org.apache.curator.framework.recipes.leader.LeaderSelector;
 import org.apache.curator.framework.recipes.leader.LeaderSelectorListener;
 import org.apache.curator.framework.recipes.leader.LeaderSelectorListenerAdapter;
@@ -92,6 +93,10 @@ public final class ZookeeperDomainManager extends ConnectionBasedDomainManager {
             if (newState == ConnectionState.LOST || newState == ConnectionState.SUSPENDED) {
                 LOG.trace("calling becomeStandby()");
                 becomeStandby();
+            }
+
+            if (client == null) {
+                throw new CancelLeadershipException();
             }
 
             super.stateChanged(client, newState);
