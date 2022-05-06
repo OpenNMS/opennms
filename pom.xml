@@ -623,7 +623,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.4</version>
+        <version>3.4.0</version>
         <configuration>
           <maxmemory>3g</maxmemory>
           <additionalparam>-Xdoclint:none</additionalparam>
