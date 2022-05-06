@@ -215,6 +215,10 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   }
   
   const fullURL = `${protocol}://${host}`
+
+  // File type accepts all characters as path value, including separator character (?), which also means it does not have url query part. Hence we just return the path content as is.
+  if(type === RequisitionTypes.File) return fullURL
+
   const queryString = getQueryStringFromAdvancedOptions(query, localItem.advancedOptions)
 
   return fullURL + queryString
@@ -346,16 +350,17 @@ const convertURLToLocal = (urlIn: string) => {
 
   const url = urlIn.split('/')
 
-  const typeRaw = url[0].split(':')[0]
   let urlPath = ''
   for (let i = 3; i < url.length; i++) {
     urlPath += '/' + url[i]
   }
 
+  const typeRaw = url[0].split(':')[0]
   localConfig.type = findFullType(typeRaw)
+
   switch (localConfig.type.name) {
     case RequisitionTypes.File:
-      localConfig.path = findPath(urlIn)
+      localConfig.path = urlPath
       break
     case RequisitionTypes.VMWare:
       localConfig.host = findHost(url)
@@ -564,22 +569,6 @@ const findHost = (url: Array<string>) => {
 
 /**
  *
- * @param urlIn
- * @returns A File Path from the URL
- */
-const findPath = (urlIn: string) => {
-  let path = ''
-  const pathPart = urlIn.split(SplitTypes.file)[1]
-  if (pathPart.includes('?')) {
-    path = pathPart.split('?')[0]
-  } else {
-    path = pathPart
-  }
-  return path
-}
-
-/**
- *
  * @param url A full URL split by '/'
  * @returns The requisition subtype if it exists
  */
@@ -629,6 +618,9 @@ const getHostHint = (type: string) => {
  * @returns An Object we can use in our Advanced Options section of the ProvisionD Form
  */
 const parseAdvancedOptions = (fullURL: string, type: string, subType: string) => {
+  // File type does not support url query part (?key=value&...), hence no advanced options parsing is required
+  if(type === RequisitionTypes.File) return []
+
   return fullURL.includes('?')
     ? fullURL
       .split('?')[1]
