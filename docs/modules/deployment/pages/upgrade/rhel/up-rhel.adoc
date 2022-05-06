@@ -51,14 +51,14 @@ yum -y upgrade opennms
 yum-config-manager --disable opennms-repo-stable-*
 ----
 
-. Install Java 11:
+. Upgrade Java 11 to the latest release:
 +
 [source, console]
 ----
 yum -y install java-11-openjdk java-11-openjdk-devel
 ----
 
-. Execute runjava:
+. Execute `runjava` to update which JVM {page-component-title} will use:
 +
 [source, console]
 ----
@@ -67,12 +67,12 @@ ${OPENNMS_HOME}/bin/runjava -s
 
 . Check for configuration file changes, and update accordingly, using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[Idenfity Changed Configuration Files].
 +
-NOTE: If you upgrade in place, OpenNMS renames any shipped config that conflicts with an existing user-modified config to `.rpmnew`.
+NOTE: If you upgrade in place, OpenNMS renames any shipped config that conflicts with an existing user-modified config to `.rpmnew` or `.rpmsave`.
 Inspect these files manually and reconcile the differences.
 Use `diff -Bbw` and `diff -y`.
 If any `.rpmnew` or `.rpmsave` file exist within the configuration directory, services will not start.
 
-. Run the opennms installer:
+. Run the {page-component-title} installer:
 +
 [source, console]
 ----
