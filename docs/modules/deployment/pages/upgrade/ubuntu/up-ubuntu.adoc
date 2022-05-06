@@ -32,8 +32,8 @@ apt-get clean
 +
 [source, console]
 ----
-rsync -Ppav /opt/opennms/etc /tmp/etc.orig
-rsync -Ppav /opt/opennms/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf
+rsync -Ppav ${OPENNMS_HOME}/etc /tmp/etc.orig
+rsync -Ppav ${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf
 ----
 
 . Upgrade the {page-component-title} packages to the new version:
