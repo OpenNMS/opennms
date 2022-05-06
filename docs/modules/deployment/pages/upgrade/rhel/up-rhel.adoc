@@ -20,7 +20,6 @@ yum -y install yum-utils
 yum-config-manager --enable opennms-repo-stable-*
 ----
 
-Verify that the attribute `enabled=1` is defined, or enabled, or absent entirely.
 . Purge any cached yum data:
 +
 [source, console]
@@ -58,7 +57,11 @@ yum -y install java-11-openjdk java-11-openjdk-devel
 $OPENNMS_HOME/bin/runjava -s
 ----
 
-. Handle your config file changes.
+. Check for configuration file changes, and update accordingly, using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[Idenfity Changed Configuration Files].
++
+NOTE: If you upgrade in place, OpenNMS renames any shipped config that conflicts with an existing user-modified config to `.rpmnew`.
+Inspect these files manually and reconcile the differences.
+Use `diff -Bbw` and `diff -y`.
 
 . Run the opennms installer:
 +
@@ -68,7 +71,8 @@ $OPENNMS_HOME/bin/install -dis
 ----
 +
 
-Expected result: A long delay, followed by output containing: `Upgrade completed successfully!`
+The upgrade may take some time.
+Eventually the following message appears: `Upgrade completed successfully!`
 
 . Clear the Karaf cache:
 +
@@ -84,10 +88,6 @@ yes | $OPENNMS_HOME/bin/fix-karaf-setup.sh
 systemctl start opennms.service
 ----
 +
-NOTE: `tail -F /var/log/opennms/manager.log` can illustrate at what point in the startup process {page-component-title} is currently.
+NOTE: `tail -F /var/log/opennms/manager.log` can illustrate the current point in the startup process {page-component-title} is.
 
 . Upgrade is complete and operation is resumed.
-
-NOTE: If you upgrade in place, OpenNMS renames any shipped config that conflicts with an existing user-modified config to `.rpmnew`.
-You must inspect these files manually and reconcile the differences.
-Use `diff -Bbw` and `diff -y`.

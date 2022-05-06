@@ -30,4 +30,4 @@
 * xref:upgrade/introduction.adoc[]
 ** xref:upgrade/diff.adoc[]
 ** xref:upgrade/basic.adoc[]
-** xref:upgrade/database-upgrade.adoc[]
+

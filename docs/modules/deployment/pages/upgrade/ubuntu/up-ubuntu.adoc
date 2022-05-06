@@ -11,15 +11,30 @@ endif::[]
 
 . Become root.
 . Use the text editor of your choice to edit your {page-component-title} repository config to change the `baseurl` of the repository from the old release family to the new release family.
-. Verify that the attribute `enabled=1` is defined, or enabled, or absent entirely
-. Purge any cached a data: `apt clean`
-. Make a backup copy of your OpenNMS config:
+. Enable auto updates:
 +
+[source, console]
+----
+sudo apt-mark unhold libopennms-java \
+              libopennmsdeps-java \
+              opennms-common \
+              opennms-db
+----
+
+. Purge any cached a data:
++
+[source, console]
+----
+apt clean
+----
+
+. Make a backup copy of your OpenNMS config:
 +
 [source, console]
 ----
 rsync -Ppav /opt/opennms/etc /tmp/etc.orig
 rsync -Ppav /opt/opennms/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf
+----
 
 . Upgrade the {page-component-title} packages to the new version:
 +
@@ -27,9 +42,8 @@ rsync -Ppav /opt/opennms/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf
 ----
 apt -y upgrade opennms
 ----
-
 +
-Expected result: A lot of rpmnew files; `rpm -q {page-component-title}-core` reports the new version is installed.
+You will see a lot of rpmnew files; `rpm -q {page-component-title}-core` reports the new version is installed.
 
 . Install Java 11:
 +
@@ -42,7 +56,14 @@ apt -y install java-11-openjdk java-11-openjdk-devel
 +
 [source, console]
 ----
-$OPENNMS_HOME/bin/runjava -S /usr/lib/jvm/java-11/bin/java
+$OPENNMS_HOME/bin/runjava -s
+----
+
+. Check for configuration file changes, and update accordingly, using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[Idenfity Changed Configuration Files].
++
+NOTE: If you upgrade in place, OpenNMS renames any shipped config that conflicts with an existing user-modified config to `.rpmnew`.
+Inspect these files manually and reconcile the differences.
+Use `diff -Bbw` and `diff -y`.
 
 . Run the opennms installer:
 +
@@ -51,7 +72,8 @@ $OPENNMS_HOME/bin/runjava -S /usr/lib/jvm/java-11/bin/java
 $OPENNMS_HOME/bin/install -dis
 ----
 +
-Expected result: A long delay, followed by output containing: `Upgrade completed successfully!`
+The upgrade may take some time.
+Eventually the following message appears: `Upgrade completed successfully!`
 
 . Clear the Karaf cache:
 +
@@ -69,6 +91,3 @@ systemctl start opennms.service
 NOTE: `tail -F /var/log/opennms/manager.log` can illustrate at what point in the startup process {page-component-title} is currently.
 
 . Upgrade is complete and operation is resumed.
-
-NOTE: Inspect your configuration files manually and reconcile any differences.
-Use `diff -Bbw` and `diff -y`.
