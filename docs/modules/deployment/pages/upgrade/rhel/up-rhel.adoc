@@ -57,7 +57,7 @@ yum-config-manager --disable opennms-repo-stable-*
 yum -y install java-11-openjdk java-11-openjdk-devel
 ----
 
-. Execute runjava:
+. Execute `runjava` to update which JVM {page-component-title} will use:
 +
 [source, console]
 ----
