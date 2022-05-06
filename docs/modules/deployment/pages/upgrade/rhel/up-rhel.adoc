@@ -50,7 +50,7 @@ yum -y upgrade opennms
 yum-config-manager --disable opennms-repo-stable-*
 ----
 
-. Install Java 11:
+. Upgrade Java 11 to the latest release:
 +
 [source, console]
 ----
