@@ -40,7 +40,7 @@ rsync -Ppav /opt/opennms/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf
 +
 [source, console]
 ----
-apt -y upgrade opennms
+apt-get upgrade opennms
 ----
 +
 You will see a lot of rpmnew files; `rpm -q {page-component-title}-core` reports the new version is installed.
