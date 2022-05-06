@@ -3,7 +3,7 @@
 = Basic Upgrade Steps
 
 This procedure describes how to do a basic {page-component-title} upgrade.
-You may need to complete additional steps to upgrade in a more complex setup (running more than one OpenNMS instance, database migration requirements, age of current version, and so on).
+You may need to complete additional steps to upgrade in a more complex setup (running more than one OpenNMS instance, database migration requirements, and/or age of current version).
 
 IMPORTANT: Make sure you complete the tasks in the xref:deployment:upgrade/introduction.adoc#byb_upgrade[before you begin] section before starting.
 In addition, if xref:releasenotes:whatsnew.adoc[system requirements] in the new version require you to <<posgresql-upgrade, upgrade your PostgreSQL database>>, you must do this before the {page-component-title} upgrade.
