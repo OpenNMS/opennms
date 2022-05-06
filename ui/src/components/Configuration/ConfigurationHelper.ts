@@ -156,22 +156,25 @@ const convertCronTabToLocal = (cronFormatted: string) => {
 }
 
 /**
+ * In cases where query can also be set in Advanced Options section, the latter takes precedence over the one that is set in Path/Username/Password input field, if both contain same kv (e.g. HTTP/HTTPS/VMWare external source)
  * @param queryPart URL part after ? (? is not included)
  * @param advancedOptions array of kv pairs
  * @returns Query string to append to server URL
  */
-const getQueryStringFromAdvancedOptions = (queryPart: string, advancedOptions: AdvancedOption[]): string => {
+const getQueryStringFromAdvancedOptions = (queryPart = '', advancedOptions: AdvancedOption[]): string => {
   let optionString = ''
   
   advancedOptions.forEach(({key, value}) => {
     if(key.name && value) {
-      optionString += (optionString.length > 0 ? '&' : '').concat(`${key.name}=${value}`)
+      optionString += (optionString?.length > 0 ? '&' : '').concat(`${key.name}=${value}`)
     }
   })
 
-  if(queryPart.length === 0 && optionString.length === 0) return ''
-  
-  const uniqueQuery = [...new Set(queryPart.split('&').concat(optionString.split('&')))].filter((q) => q.length > 0)
+  if(queryPart?.length === 0 && optionString?.length === 0) return ''
+
+  const queryPartSplit = queryPart?.split('&')
+  const optionsStringSplit = optionString?.split('&')
+  const uniqueQuery = [...new Set([...queryPartSplit, ...optionsStringSplit])].filter((q) => q.length > 0)
 
   return `?${uniqueQuery.join('&')}`
 }
@@ -186,37 +189,33 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   let protocol = localItem.type.name.toLowerCase()
   const type = localItem.type.name
   let host = localItem.host
+  const path = localItem.urlPath.split('?')[0]
+  let query = localItem.urlPath.split('?')[1]
   
-  const [path, query] = localItem.urlPath.split('?')
-  localItem.query = query || ''
+  if(type === RequisitionTypes.DNS) {
+    host = `${localItem.host}/${localItem.zone || ''}`
+    if (localItem.foreignSource) {
+      host += `/${localItem.foreignSource}`
+    }
+  } else if(type === RequisitionTypes.File) {
+    host = `${localItem.path}`
+  } else if(type === RequisitionTypes.HTTP || type === RequisitionTypes.HTTPS) {
+    host = `${localItem.host}${path}`
+  } else if(type === RequisitionTypes.RequisitionPlugin) {
+    // Note: the following needs to be revalidated to ensure it's working as expected once the option is reactivated in the External Source input field
+    host = localItem.subType.value
+    protocol = RequisitionTypes.RequisitionPluginForServer
+  } else if(type === RequisitionTypes.VMWare) {
+    host = localItem.host
 
-  switch(type) {
-    case RequisitionTypes.DNS:
-      host = `${localItem.host}/${localItem.zone || ''}`
-      if (localItem.foreignSource) {
-        host += `/${localItem.foreignSource}`
-      }
-      break
-    case RequisitionTypes.File:
-      host = `${localItem.path}`
-      break
-    case RequisitionTypes.HTTP:
-    case RequisitionTypes.HTTPS:
-      host = `${localItem.host}${path}`
-      break
-    case RequisitionTypes.RequisitionPlugin:
-      // Note: the following needs to be revalidated to ensure it's working as expected once the option is reactivated in the External Source input field
-      host = localItem.subType.value
-      protocol = RequisitionTypes.RequisitionPluginForServer
-      break
-    case RequisitionTypes.VMWare:
-      host = `${localItem.host}?${VMWareFields.Username}=${localItem.username}&${VMWareFields.Password}=${localItem.password}&`
-      break
-    default:
+    const usernameQuery = localItem.username ? `${VMWareFields.Username}=${localItem.username}` : ''
+    const passwordQuery = localItem.password ? `${VMWareFields.Password}=${localItem.password}` : ''
+
+    query = usernameQuery && passwordQuery ? `${usernameQuery}&${passwordQuery}` : usernameQuery || passwordQuery
   }
-
+  
   const fullURL = `${protocol}://${host}`
-  const queryString = getQueryStringFromAdvancedOptions(localItem.query, localItem.advancedOptions)
+  const queryString = getQueryStringFromAdvancedOptions(query, localItem.advancedOptions)
 
   return fullURL + queryString
 }
