@@ -25,7 +25,7 @@ sudo apt-mark unhold libopennms-java \
 +
 [source, console]
 ----
-apt clean
+apt-get clean
 ----
 
 . Make a backup copy of your OpenNMS config:
