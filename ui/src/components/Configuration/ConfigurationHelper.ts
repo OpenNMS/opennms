@@ -164,10 +164,12 @@ const getQueryStringFromAdvancedOptions = (queryPart: string, advancedOptions: A
   let queryString = queryPart
 
   advancedOptions.forEach(({key, value}) => {
-    const optionQuery = `${key.name}=${value}`
-    const regexOption = new RegExp(optionQuery, '')
-    
-    if(!regexOption.test(queryString)) queryString += (queryString.length === 0 ? '' : '&').concat(optionQuery)
+    if(key.name && value) {
+      const optionQuery = `${key.name}=${value}`
+      const regexOption = new RegExp(optionQuery, '')
+      
+      if(!regexOption.test(queryString)) queryString += (queryString.length === 0 ? '' : '&').concat(optionQuery)
+    }
   })
 
   return queryString.length > 0 ? `?${queryString}` : ''
@@ -206,7 +208,7 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
 
   const fullURL = `${protocol}://${host}`
   const queryString = getQueryStringFromAdvancedOptions(localItem.query, localItem.advancedOptions)
-
+  
   return fullURL + queryString
 }
 
