@@ -156,7 +156,7 @@ const convertCronTabToLocal = (cronFormatted: string) => {
 }
 
 /**
- * @param queryPart URL part after ?
+ * @param queryPart URL part after ? (? is not included)
  * @param advancedOptions array of kv pairs
  * @returns Query string to append to server URL
  */
@@ -171,9 +171,9 @@ const getQueryStringFromAdvancedOptions = (queryPart: string, advancedOptions: A
 
   if(queryPart.length === 0 && optionString.length === 0) return ''
   
-  const uniqueQuery = new Set(queryPart.split('&').concat(optionString.split('&')))
-  
-  return `?${[...uniqueQuery].join('&')}`
+  const uniqueQuery = [...new Set(queryPart.split('&').concat(optionString.split('&')))].filter((q) => q.length > 0)
+
+  return `?${uniqueQuery.join('&')}`
 }
 
 /**
