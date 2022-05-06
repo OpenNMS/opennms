@@ -156,23 +156,24 @@ const convertCronTabToLocal = (cronFormatted: string) => {
 }
 
 /**
- * @param fullURL server URL
+ * @param queryPart URL part after ?
  * @param advancedOptions array of kv pairs
  * @returns Query string to append to server URL
  */
 const getQueryStringFromAdvancedOptions = (queryPart: string, advancedOptions: AdvancedOption[]): string => {
-  let queryString = [...new Set(queryPart.split('&'))].join('&') // remove duplicates in queryPart
+  let optionString = ''
   
   advancedOptions.forEach(({key, value}) => {
     if(key.name && value) {
-      const optionQuery = `${key.name}=${value}`
-      const regexOption = new RegExp(optionQuery, '')
-      
-      if(!regexOption.test(queryString)) queryString += (queryString.length === 0 ? '' : '&').concat(optionQuery)
+      optionString += (optionString.length > 0 ? '&' : '').concat(`${key.name}=${value}`)
     }
   })
 
-  return queryString.length > 0 ? `?${queryString}` : ''
+  if(queryPart.length === 0 && optionString.length === 0) return ''
+  
+  const uniqueQuery = new Set(queryPart.split('&').concat(optionString.split('&')))
+  
+  return `?${[...uniqueQuery].join('&')}`
 }
 
 /**
@@ -187,23 +188,31 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   let host = localItem.host
   
   const [path, query] = localItem.urlPath.split('?')
-  localItem.path = path
   localItem.query = query || ''
 
-  if (type === RequisitionTypes.RequisitionPlugin) {
-    host = localItem.subType.value
-    protocol = RequisitionTypes.RequisitionPluginForServer
-  } else if (type === RequisitionTypes.DNS) {
-    host = `${localItem.host}/${localItem.zone || ''}`
-    if (localItem.foreignSource) {
-      host += `/${localItem.foreignSource}`
-    }
-  } else if (type === RequisitionTypes.VMWare) {
-    host = `${localItem.host}?${VMWareFields.Username}=${localItem.username}&${VMWareFields.Password}=${localItem.password}&`
-  } else if (type === RequisitionTypes.File) {
-    host = `${localItem.path}`
-  } else if (type === RequisitionTypes.HTTP || type === RequisitionTypes.HTTPS) {
-    host = `${localItem.host}${localItem.path}`
+  switch(type) {
+    case RequisitionTypes.DNS:
+      host = `${localItem.host}/${localItem.zone || ''}`
+      if (localItem.foreignSource) {
+        host += `/${localItem.foreignSource}`
+      }
+      break
+    case RequisitionTypes.File:
+      host = `${localItem.path}`
+      break
+    case RequisitionTypes.HTTP:
+    case RequisitionTypes.HTTPS:
+      host = `${localItem.host}${path}`
+      break
+    case RequisitionTypes.RequisitionPlugin:
+      // Note: the following needs to be revalidated to ensure it's working as expected once the option is reactivated in the External Source input field
+      host = localItem.subType.value
+      protocol = RequisitionTypes.RequisitionPluginForServer
+      break
+    case RequisitionTypes.VMWare:
+      host = `${localItem.host}?${VMWareFields.Username}=${localItem.username}&${VMWareFields.Password}=${localItem.password}&`
+      break
+    default:
   }
 
   const fullURL = `${protocol}://${host}`
