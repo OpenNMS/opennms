@@ -42,8 +42,16 @@ rsync -Ppav /opt/opennms/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf
 ----
 apt-get upgrade opennms
 ----
+
+. Disable auto updates:
 +
-You will see a lot of rpmnew files; `rpm -q {page-component-title}-core` reports the new version is installed.
+[source, console]
+----
+sudo apt-mark hold libopennms-java \
+              libopennmsdeps-java \
+              opennms-common \
+              opennms-db
+----
 
 . Upgrade Java 11 to the latest release:
 +
