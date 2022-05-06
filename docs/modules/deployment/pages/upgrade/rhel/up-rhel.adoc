@@ -86,7 +86,7 @@ Eventually the following message appears: `Upgrade completed successfully!`
 +
 [source, console]
 ----
-yes | $OPENNMS_HOME/bin/fix-karaf-setup.sh
+yes | ${OPENNMS_HOME}/bin/fix-karaf-setup.sh
 ----
 
 . Start OpenNMS {page-component-title}:
