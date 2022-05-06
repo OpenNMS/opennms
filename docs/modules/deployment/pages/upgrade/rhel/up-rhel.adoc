@@ -12,6 +12,7 @@ endif::[]
 . Become root.
 ifeval::["{page-component-title}" == "Meridian"]
 . Use the text editor of your choice to edit your {page-component-title} repository config to change the `baseurl` of the repository from the old release family to the new release family.
+Similar to the following: /https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2021/stable/rhel8, where REPO_USER and REPO_PASS are your {page-component-title} subscription credentials.
 endif::[]
 . Enable auto updates:
 +
@@ -70,7 +71,7 @@ ${OPENNMS_HOME}/bin/runjava -s
 NOTE: If you upgrade in place, OpenNMS renames any shipped config that conflicts with an existing user-modified config to `.rpmnew` or `.rpmsave`.
 Inspect these files manually and reconcile the differences.
 Use `diff -Bbw` and `diff -y`.
-If any `.rpmnew` or `.rpmsave` file exist within the configuration directory, services will not start.
+If any `.rpmnew` or `.rpmsave` files exist within the configuration directory, services will not start.
 
 . Run the {page-component-title} installer:
 +
