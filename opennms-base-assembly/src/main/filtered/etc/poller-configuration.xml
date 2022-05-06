@@ -360,6 +360,8 @@
          <parameter key="ssh-timeout" value="${requisition:dcb:ssh-timeout|60000}"/>
          <!-- schedule is a cron expression -->
          <parameter key="schedule" value="${requisition:dcb:schedule|0 0 0 * * ?}"/>
+         <!-- retention-period is a Java Period expression -->
+         <parameter key="retention-period" value="${requisition:dcb:retention-period|P1Y}"/>
          <parameter key="script-file" value="${requisition:dcb:script-file|assets:operating-system|node:os|default}.dcb"/>
       </service>
       <downtime begin="0" interval="300000"/><!-- 300s -->

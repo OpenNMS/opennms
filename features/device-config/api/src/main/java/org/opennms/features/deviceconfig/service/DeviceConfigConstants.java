@@ -29,10 +29,10 @@
 package org.opennms.features.deviceconfig.service;
 
 public interface DeviceConfigConstants {
-
-    String TRIGGERED_POLL = "dcbTriggeredPoll";
-    String CONFIG_TYPE = "config-type";
-    String SCHEDULE = "schedule";
-    String DEFAULT_CRON_SCHEDULE = "0 0 0 * * ?";
-    String NEVER = "never";
+    static final String TRIGGERED_POLL = "dcbTriggeredPoll";
+    static final String CONFIG_TYPE = "config-type";
+    static final String SCHEDULE = "schedule";
+    static final String DEFAULT_CRON_SCHEDULE = "0 0 0 * * ?";
+    static final String NEVER = "never";
+    static final String RETENTION_PERIOD = "retention-period";
 }
