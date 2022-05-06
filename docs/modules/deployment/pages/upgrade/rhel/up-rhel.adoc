@@ -10,8 +10,9 @@ It may be named {page-component-title}.repo but is not guaranteed to be.
 endif::[]
 
 . Become root.
-
+ifeval::["{page-component-title}" == "Meridian"]
 . Use the text editor of your choice to edit your {page-component-title} repository config to change the `baseurl` of the repository from the old release family to the new release family.
+endif::[]
 . Enable auto updates:
 +
 [source, console]

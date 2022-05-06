@@ -22,7 +22,7 @@ ifeval::["{page-component-title}" == "Horizon"]
 Debian/Ubuntu::
 +
 --
-include::ubuntu/up-ubuntu.adoc[]
+include::debian/up-debian.adoc[]
 --
 
 endif::[]
