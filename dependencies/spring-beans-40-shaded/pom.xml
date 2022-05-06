@@ -46,7 +46,6 @@
                 <filter>
                   <artifact>org.apache.servicemix.bundles:org.apache.servicemix.bundles.spring-beans</artifact>
                   <excludes>
-                    <excludeDefaults>false</excludeDefaults>
                     <exclude>org/springframework/beans/CachedIntrospectionResults*</exclude>
                   </excludes>
                 </filter>
