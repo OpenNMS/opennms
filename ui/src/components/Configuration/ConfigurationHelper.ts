@@ -161,8 +161,8 @@ const convertCronTabToLocal = (cronFormatted: string) => {
  * @returns Query string to append to server URL
  */
 const getQueryStringFromAdvancedOptions = (queryPart: string, advancedOptions: AdvancedOption[]): string => {
-  let queryString = queryPart
-
+  let queryString = [...new Set(queryPart.split('&'))].join('&') // remove duplicates in queryPart
+  
   advancedOptions.forEach(({key, value}) => {
     if(key.name && value) {
       const optionQuery = `${key.name}=${value}`
@@ -208,7 +208,7 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
 
   const fullURL = `${protocol}://${host}`
   const queryString = getQueryStringFromAdvancedOptions(localItem.query, localItem.advancedOptions)
-  
+
   return fullURL + queryString
 }
 
