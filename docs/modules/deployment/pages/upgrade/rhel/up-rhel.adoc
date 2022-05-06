@@ -75,7 +75,7 @@ If any `.rpmnew` or `.rpmsave` file exist within the configuration directory, se
 +
 [source, console]
 ----
-$OPENNMS_HOME/bin/install -dis
+${OPENNMS_HOME}/bin/install -dis
 ----
 +
 
