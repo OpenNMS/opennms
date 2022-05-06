@@ -52,7 +52,7 @@ You will see a lot of rpmnew files; `rpm -q {page-component-title}-core` reports
 apt-get install java-11-openjdk java-11-openjdk-devel
 ----
 
-. Execute runjava:
+. Execute `runjava` to update which JVM {page-component-title} will use:
 +
 [source, console]
 ----
