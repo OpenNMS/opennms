@@ -45,7 +45,7 @@ apt-get upgrade opennms
 +
 You will see a lot of rpmnew files; `rpm -q {page-component-title}-core` reports the new version is installed.
 
-. Install Java 11:
+. Upgrade Java 11 to the latest release:
 +
 [source, console]
 ----
