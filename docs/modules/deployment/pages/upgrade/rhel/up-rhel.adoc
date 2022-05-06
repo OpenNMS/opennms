@@ -71,7 +71,7 @@ Inspect these files manually and reconcile the differences.
 Use `diff -Bbw` and `diff -y`.
 If any `.rpmnew` or `.rpmsave` file exist within the configuration directory, services will not start.
 
-. Run the opennms installer:
+. Run the {page-component-title} installer:
 +
 [source, console]
 ----
