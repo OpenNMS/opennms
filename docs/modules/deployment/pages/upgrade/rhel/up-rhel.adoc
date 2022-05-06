@@ -61,7 +61,7 @@ yum -y install java-11-openjdk java-11-openjdk-devel
 +
 [source, console]
 ----
-$OPENNMS_HOME/bin/runjava -s
+${OPENNMS_HOME}/bin/runjava -s
 ----
 
 . Check for configuration file changes, and update accordingly, using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[Idenfity Changed Configuration Files].
