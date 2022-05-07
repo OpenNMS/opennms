@@ -161,20 +161,25 @@ const convertCronTabToLocal = (cronFormatted: string) => {
  * @param advancedOptions array of kv pairs
  * @returns Query string to append to server URL
  */
-const getQueryStringFromAdvancedOptions = (queryPart = '', advancedOptions: AdvancedOption[]): string => {
+const getQueryStringFromAdvancedOptions = (queryPart = '', advancedOptions: AdvancedOption[], type = ''): string => {
   let optionString = ''
+  let queryPartList = queryPart.split('&')
   
   advancedOptions.forEach(({key, value}) => {
     if(key.name && value) {
       optionString += (optionString?.length > 0 ? '&' : '').concat(`${key.name}=${value}`)
     }
+
+    if(type === RequisitionTypes.VMWare) {
+      // if username and/or password is set in both input field and in Advanced Options section, then remove it from query Part, hence the one in Advanced Options takes precedence
+      queryPartList = queryPart.split('&').filter((q) => !q.includes(key.name))
+    }
   })
 
   if(queryPart?.length === 0 && optionString?.length === 0) return ''
 
-  const queryPartSplit = queryPart?.split('&')
   const optionsStringSplit = optionString?.split('&')
-  const uniqueQuery = [...new Set([...queryPartSplit, ...optionsStringSplit])].filter((q) => q.length > 0)
+  const uniqueQuery = [...new Set([...queryPartList, ...optionsStringSplit])].filter((q) => q.length > 0)
 
   return `?${uniqueQuery.join('&')}`
 }
@@ -208,6 +213,7 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   } else if(type === RequisitionTypes.VMWare) {
     host = localItem.host
 
+    // username/password: set as query string if set in UI input field
     const usernameQuery = localItem.username ? `${VMWareFields.Username}=${localItem.username}` : ''
     const passwordQuery = localItem.password ? `${VMWareFields.Password}=${localItem.password}` : ''
 
@@ -219,7 +225,7 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   // File type accepts all characters as path value, including separator character (?), which also means it does not have url query part. Hence we just return the path content as is.
   if(type === RequisitionTypes.File) return fullURL
 
-  const queryString = getQueryStringFromAdvancedOptions(query, localItem.advancedOptions)
+  const queryString = getQueryStringFromAdvancedOptions(query, localItem.advancedOptions, type)
 
   return fullURL + queryString
 }
