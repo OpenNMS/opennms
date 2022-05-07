@@ -2,7 +2,7 @@
 Your {page-component-title} repository is defined in a file in `/etc/apt/sources.list`.
 
 ifeval::["{page-component-title}" == "Horizon"]
-It may be named `opennms-repo-stable-<OSversion>.repo but is not guaranteed to be.
+It may be named `opennms-repo-stable-<OSversion>.repo` but is not guaranteed to be.
 endif::[]
 
 . Become root.
@@ -66,7 +66,7 @@ ${OPENNMS_HOME}/bin/runjava -s
 +
 NOTE: Debian prompts you to keep or overwrite your files during the `apt upgrade` process.
 Inspect these files manually and reconcile the differences.
-Use `diff -Bbw` and `diff -y`.
+Use `diff -Bbw` and `diff -y` to look for changes.
 
 . Run the {page-component-title} installer:
 +
@@ -76,7 +76,8 @@ ${OPENNMS_HOME}/bin/install -dis
 ----
 +
 The upgrade may take some time.
-Eventually the following message appears: `Upgrade completed successfully!`
+The message `Upgrade completed successfully!` will confirm the upgrade has completed.
+If you do not get this message, check the output of the install command for any error messages.
 
 . Clear the Karaf cache:
 +

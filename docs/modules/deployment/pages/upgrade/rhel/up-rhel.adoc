@@ -1,12 +1,10 @@
 
 Your {page-component-title} repository is defined in a file in `/etc/yum.repos.d/`.
-
 ifeval::["{page-component-title}" == "Horizon"]
-It may be named `opennms-repo-stable-<OSversion>.repo but is not guaranteed to be.
+It most likely will be named `opennms-repo-stable-<OSversion>.repo`, but is not guaranteed to be.
 endif::[]
-
 ifeval::["{page-component-title}" == "Meridian"]
-It may be named {page-component-title}.repo but is not guaranteed to be.
+It may be named `{page-component-title}.repo`, but is not guaranteed to be.
 endif::[]
 
 . Become root.
@@ -70,7 +68,7 @@ ${OPENNMS_HOME}/bin/runjava -s
 +
 NOTE: If you upgrade in place, OpenNMS renames any shipped config that conflicts with an existing user-modified config to `.rpmnew` or `.rpmsave`.
 Inspect these files manually and reconcile the differences.
-Use `diff -Bbw` and `diff -y`.
+Use `diff -Bbw` and `diff -y` to look for changes.
 If any `.rpmnew` or `.rpmsave` files exist within the configuration directory, services will not start.
 
 . Run the {page-component-title} installer:
@@ -82,7 +80,8 @@ ${OPENNMS_HOME}/bin/install -dis
 +
 
 The upgrade may take some time.
-Eventually the following message appears: `Upgrade completed successfully!`
+The message `Upgrade completed successfully!` will confirm the upgrade has completed.
+If you do not get this message, check the output of the install command for any error messages.
 
 . Clear the Karaf cache:
 +
