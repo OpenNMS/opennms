@@ -213,7 +213,7 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   } else if(type === RequisitionTypes.VMWare) {
     host = localItem.host
 
-    // username/password: set as query string if set in UI input field
+    // username/password if set in UI input field: translated to have/save them as query part of the URL
     const usernameQuery = localItem.username ? `${VMWareFields.Username}=${localItem.username}` : ''
     const passwordQuery = localItem.password ? `${VMWareFields.Password}=${localItem.password}` : ''
 
