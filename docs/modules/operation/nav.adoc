@@ -79,6 +79,7 @@
 ** xref:events/eventbus.adoc[]
 ** xref:events/event-configuration.adoc[]
 ** xref:events/event-translator.adoc[]
+** xref:events/perf-data.adoc[]
 
 * xref:alarms/introduction.adoc[]
 ** xref:alarms/alarmd.adoc[]
