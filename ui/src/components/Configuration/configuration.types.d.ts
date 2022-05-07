@@ -79,5 +79,4 @@ export type LocalSubConfiguration = {
   subType: { id: number; name: string; value: string }
   type: { name: string; id: number }
   urlPath: string
-  query: string
 }

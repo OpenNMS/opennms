@@ -47,6 +47,7 @@ export const useProvisionD = () => {
   const createNewRequisition = () => {
     selectedProvisionDItem.config.host = ''
     selectedProvisionDItem.config.advancedOptions = []
+    selectedProvisionDItem.config.urlPath = ''
   }
 
   /**

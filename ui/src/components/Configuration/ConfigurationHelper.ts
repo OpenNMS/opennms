@@ -115,7 +115,7 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     }
   
     /**
-     * SUN...SAT pattern: additional expression support for the UI basic mode, if Day of Week was set with name (SUN...SAT) in advanced mode.
+     * SUN...SAT pattern: additional expression support for the UI basic mode, if Day of Week (DoW) was set with name (SUN...SAT) in advanced mode.
      * Note
      *  - edit a requisition: when expression contains SUN...SAT, drawer will be opened in UI basic mode and expression containing SUN...SAT will be translated to 1...7 and set in Day of Week input field.
      * @param dayOfWeek (string) Can be 1...7 or SUN...SAT
@@ -149,14 +149,14 @@ const convertCronTabToLocal = (cronFormatted: string) => {
     ...occuranceSection,
     ...advancedProps,
     time,
-    twentyFourHour:time,
+    twentyFourHour: time,
     monthly: DoM === 'L' ? 32 : DoM, // 32: id of last day of the month
     weekly: DoW
   }
 }
 
 /**
- * In cases where query can also be set in Advanced Options section, the latter takes precedence over the one that is set in Path/Username/Password input field, if both contain same kv (e.g. HTTP/HTTPS/VMWare external source)
+ * In cases where query can also be set in Advanced Options section, the latter takes precedence over the one that is set in Path|Username|Password input field, if both contain same key=value (e.g. HTTP/HTTPS/VMWare external source type)
  * @param queryPart URL part after ? (? is not included)
  * @param advancedOptions array of kv pairs
  * @returns Query string to append to server URL
@@ -191,7 +191,7 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   let host = localItem.host
   const path = localItem.urlPath.split('?')[0]
   let query = localItem.urlPath.split('?')[1]
-  
+
   if(type === RequisitionTypes.DNS) {
     host = `${localItem.host}/${localItem.zone || ''}`
     if (localItem.foreignSource) {
@@ -457,8 +457,7 @@ const createBlankSubConfiguration = () => {
     foreignSource: '',
     subType: { id: 0, name: '', value: '' },
     type: { name: '', id: 0 },
-    urlPath: '',
-    query: ''
+    urlPath: ''
   }
 }
 
