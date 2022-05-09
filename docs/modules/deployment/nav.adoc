@@ -29,3 +29,5 @@
 
 * xref:upgrade/introduction.adoc[]
 ** xref:upgrade/diff.adoc[]
+** xref:upgrade/basic.adoc[]
+
