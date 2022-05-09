@@ -94,8 +94,8 @@ When no tag is given all dashboards will be displayed
 | org.opennms.grafanaBox.basePath
 |===
 
-TIP: If you have Grafana behind a reverse proxy, you may need to specify a different set of values for the sets of properties with link in their names versus the ones without link.
-The properties with link in their names, if set, are used to build the links that are shown to users; the other properties are used to construct the URLs used for internal interaction with the Grafana REST API.
+NOTE: If you have Grafana behind a reverse proxy, you may need to specify the `org.opennms.grafanaBox.link.*` properties.
+The "link" properties, if set, are used to build the links that are shown to users, independent of the other properties which are used for internal interaction with the Grafana REST API.
 
 The process to generate a Grafana API Key can be found in the https://grafana.com/docs/grafana/latest/http_api/[HTTP API documentation].
 Copy the API Key to `opennms.properties` as `org.opennms.grafanaBox.apiKey`.
