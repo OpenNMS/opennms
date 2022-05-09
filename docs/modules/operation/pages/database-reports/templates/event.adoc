@@ -1,22 +1,57 @@
 [[event-report]]
 = Event Analysis Report
 
-Analyse events based on event source and quantity by nodes.
+
+=== Report Contents
+
+This report provides an analysis of all events over the past 30 days.  This report contains the following 6 sections:
+
+* All events by source
+* Top 25 events by unique event identifier ("UEI") and event source
+* Top 25 event hours
+* Top 25 events by node
+* Top 25 events by node and UEI
+* Top 25 nodes with generic enterprise default traps
+//QUESTION: Need explanation of last section
+
+The first section includes a pie showing all events by source, along with a table with the data for the pie chart.  This section allso includes two line charts shoowing the Total average processed events per hour and the events per day.  Finally it contains a table with information on the database providing the above information.
+
+The next four sections each contain a table and a line chart showing a breakdown of the top 25 events over the last 30 days broken down by event source, hours, node, and node and UEI.  The last section shows the top 25 nodes with generic enterprise default traps and the number of events.
+//QUESTION: Need clarification on all these sections, especially "TOP 25 event hours" and "Top 25 nodes with generic enterprise default traps".  The y axis on all the charts are the same and the values are not all integers, so it doesn't look like these are tallies, which is what is inall of the tables.
+
+This report can be customized with a company logo in the header that is approximately 195px by 50px.
 
 == Parameters
 
-[options="header"]
-[cols="1,3"]
+[options="header, autowidth"]
+[cols="1,2,3,4"]
 
 |===
 | Field
+| Type
 | Description
+| Default
 
-| OpenNMS URL base for embedded links
-|
+| URL for embedded links
+| URL
+| This URL base for OpenNMS embedded links will be used for all links to OpenNMS data in this report.
+| http://localhost:8980/opennms
+// COMMENT: Might be nice to get some other sample values.  Not sure what typical configurations look like (e.g., is "localhost" the only thing that changes or can this be configured on another port).
 
 | Report Format
-| Specify PDF or CSV.
+| Choice
+| Dropdown menu with a choice of PDF or CSV
+| PDF
+
+| Deliver the Report
+| Checkbox
+| Check the box to deliver the report via email upon report creation
+| Unchecked
+
+| Schedule the Report
+| Checkbox
+| Check this box to create a schedule for the report
+| Unchecked
 
 |===
 

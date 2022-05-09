@@ -1,30 +1,52 @@
 [[traffic-rate-report]]
 = Average and Peak Traffic Rates for Nodes by Interface Report
 
-Average and peak traffic rates for nodes by interface.
+== Report Content
+This report provides the average and peak traffic rates for nodes whose category matches the specified surveillance category with the specified report time frame.
 
-//same parameters as total-bytes.adoc and response-time.adoc
+This report can be customized with a company logo in the header and footer that is approximately 195px by 50px.
 
 == Parameters
 
-[options="header"]
-[cols="1,3"]
+[options="header, autowidth"]
+[cols="1,2,3,4"]
 
 |===
 | Field
+| Type
 | Description
+| Default
 
 | Surveillance Category
-| Use the % sign as a placeholder for any string literal.
+| String
+| Identify the category of data for this availability report. Standard values include: "Routers", "Switches", "Servers", "Production", "Test" and "Development".  Users can add custom categories.
+| %
+// COMMENT: The default should probably be set to "Routers" like the Availability Summary.
 
-| Report Start Date
-|
+| Start Date
+| Date
+| The starting date for the data contained in this report.
+| Today - 7 days
 
-| Report End Date
-| Note the report fails if the end date is later than the current time.
+| End Date
+| Date
+| The end date for the data contained in this report. If the End Date is later than the Start Date, the report will fail.
+| Today
 
 | Report Format
-| Specify PDF or CSV.
+| Choice
+| Dropdown menu with a choice of PDF or CSV
+| PDF
+
+| Deliver the Report
+| Checkbox
+| Check the box to deliver the report via email upon report creation
+| Unchecked
+
+| Schedule the Report
+| Checkbox
+| Check this box to create a schedule for the report
+| Unchecked
 
 |===
 

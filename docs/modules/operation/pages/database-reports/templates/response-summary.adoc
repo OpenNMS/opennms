@@ -1,29 +1,55 @@
-[[response-time-report]]
+[[response-time-summary-report]]
 = Response Time Summary Report
 
-Response time by node across one or more surveillance categories.
+== Report Content
+This report provides a summary of the response time for nodes whose category matches the specified Surveillance Category over the specified time period.
+
+This report can be customized with a company logo in the header and footer that is approximately 195px by 50px.
+// QUESTION:  THE Response Time Summary Report and the Response Time by Node Report look like they are providing the same information.  I am sure this is not true, but I cannot identify the differences.  The summaries in the app are identical.
 
 == Parameters
 
-[options="header"]
-[cols="1,3"]
+[options="header, autowidth"]
+[cols="1,2,3,4"]
 
 |===
 | Field
+| Type
 | Description
+| Default
+
 
 | Surveillance Category
-| Use the % sign as a placeholder for any string literal.
+| String
+| Identify the category of data for this availability report. Standard values include: "Routers", "Switches", "Servers", "Production", "Test" and "Development".  Users can add custom categories.
+| %
+// COMMENT: The default should probably be set to "Routers" like the Availability Summary.
 
 | Report Time Range
+| Integer
 | The range in days from the report start date. Must be an integer.
-//what is default behaviour?
+| 7
 
-| Report Start Date
-|
+| Start Date
+| Date
+| The starting date for the data contained in this report.
+| Today - 7 days
 
 | Report Format
-| Specify PDF or CSV.
+| Choice
+| Dropown menu with a choice of PDF or CSV
+| PDF
+
+| Deliver the Report
+| Checkbox
+| Check the box to deliver the report via email upon report creation
+| Unchecked
+
+| Schedule the Report
+| Checkbox
+| Check this box to create a schedule for the report
+| Unchecked
+
 
 |===
 

@@ -1,19 +1,53 @@
 [[morning-report]]
 = Early Morning Report
 
-Global overview of outages, notifications, and events in the last 24 hours.
+== Report Contents
+
+This report provides a global overview of outages, notifications, and events in the last 24 hours.
+
+In the Outage Overview section, there are two pie charts, one that shows the current outages and one that shows the outages resolved in the last 24 hours.
+// QUESTION: Not sure what the pie slices represent
+
+The next section provides outage details in two tables, the first shows the current outages by nodes and the second table shows the resolved outages by node.
+
+The third section is a stacked bar chart that shows teh resolved outages over the last 24 hours.
+//QUESTION: Not sure what each stack represents.
+
+The fourth section provides an overview of notifications over the past 24 hours.  It includes a pie chart and table showing the number of notifications by the media type.
+// QUESTION: I don't know what the slices are.
+
+// QUESTION: I am not sure what "media type"
+
+The fifth section provides and overview of events over the last 24 hours.  The first stacked bar chart shows the types of events in each hour.  The second stacked bar chart shoes the top 20 nodes with events and includes all events acknowledged and unacknowledged.
+// QUESTION:  It is not clear what the stacks are, nor is it clear how the second stacked bar chart is different from the first.
+
+This report can be customized with a company logo in the page header that is approximately 195px by 50 px.
 
 == Parameters
 
-[options="header"]
-[cols="1,3"]
+[options="header, autowidth"]
+[cols="1,2,3,4"]
 
 |===
 | Field
+| Type
 | Description
+| Default
 
 | Report Format
-| Specify PDF or CSV.
+| Choice
+| Dropdown menu with a choice of PDF or CSV
+| PDF
+
+| Deliver the Report
+| Checkbox
+| Check the box to deliver the report via email upon report creation
+| Unchecked
+
+| Schedule the Report
+| Checkbox
+| Check this box to create a schedule for the report
+| Unchecked
 
 |===
 

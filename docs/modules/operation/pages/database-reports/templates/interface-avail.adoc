@@ -1,33 +1,80 @@
 [[interface-avail-report]]
 = Interface Availability Report
-Shows interface availability for interfaces with outages within the time range.
+
+=== Report Contents
+
+This report shows interface availability for interfaces with outages within the time range.  It is a multipage report that provides the following availability data for all router interfaces by IP address over the user-specified date range:
+
+* Number of Outages
+* Mean Time To Restore ("MTTR") (in hours)
+* Length of Time for Each Outage (in hours)
+* Percent Outage (per unit in category)
+* Percent Availability (per unit in category)
+//QUESTION: Need to validate explanation of the last two, in the summary chart at the end, are these averages over the entire period or per day?
+
+This report can be customized with a company logo in both the header and footer that is approximately 195px by 50px.
+
+//ToDo: change company logo file in ../report-templates/assets/images to OpenNMS current logo
+
 
 == Parameters
 
-[options="header"]
-[cols="1,3"]
+[options="header, autowidth"]
+[cols="1,2,3,4"]
 
 |===
 | Field
+| Type
 | Description
+| Default
 
 | Report Time Range in Days
-| The range in days from the report start date. Must be an integer.
-//what is default behaviour?
+| Integer
+| The range in days from the report start date.
+| 7
 
 | Availability Warning
-| 
+| Double
+| Percent availability that triggers a warning.
+| 98
 
 | Availability Critical
-|
-
-// Availability warning/critical also appear in the availability and SNMP availability reports.
+| Double
+| Availability percentage at which status is considered critical.
+| 97
 
 | Start Date
-|
+| Date
+| Start date for the report.
+| Today - 7 days
+
+// Hidden Parameters
+//| Node ID
+//| Integer
+//| \**Not sure what this means - it is in the subreport**
+//| 3
+//Need to find out what this means.  Is the node a group of interfaces?
+
+//| Node Label
+//| String
+//| Name for the node that will appear at the top of the table of data by IP address.
+//| nodelabel
+// End Hidden Parameters
 
 | Report Format
-| Specify PDF or CSV.
+| Choice
+| Dropdown menu with a choice of PDF or CSV
+| PDF
+
+| Deliver the Report
+| Checkbox
+| Check the box to deliver the report via email upon report creation
+| Unchecked
+
+| Schedule the Report
+| Checkbox
+| Check this box to create a schedule for the report
+| Unchecked
 
 |===
 

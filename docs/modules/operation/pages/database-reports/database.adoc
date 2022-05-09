@@ -28,6 +28,92 @@ The {page-component-title} Report Engine passes a JDBC connection to the {page-c
 
 For more details on how JasperReports works, please refer to the Jaspersoft Studio link:http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation].
 
+[[ga-database-report-use-existing-report]]
+
+== Using existing reports
+
+OpenNMS provides the following sample report templates, located in `$OPENNMS_HOME/etc/report-templates`, which you can customize to suit your needs:
+
+
+[options="header, autowidth"]
+|===
+| Report Name            | Category     | Description
+
+|  xref:operation:database-reports/templates/avail-summary.adoc#avail-summary-report[Availability Summary]
+| Status
+| One page summary showing summary statistics on outages and availability for user-specified surveillance category during a user-specified number of days.
+
+
+| xref:operation:database-reports/templates/availability.adoc#availability-report[Availability by Node]
+| Status
+| List of availability statistics for each node in user-specified category during a user-specified number of days.
+
+| Default Calendar
+| Unknown
+| xxxx
+// QUESTION: Need help getting info on this report.  It is not a JasperReport.
+
+| Default Classic
+| Unknown
+| xxxx
+// QUESTION: Need help getting info on this report.  It is not a JasperReport.
+
+| xref:operation:database-reports/templates/event.adoc#event-report[Event Analysis]
+| Status
+| Tables and charts showing different slices on the top 25 events over the past 30 days.
+
+| xref:operation:database-reports/templates/grafana.adoc#grafana-report[Grafana Dashboards]
+| Grafana
+| Create Report from Grafana Dashboard, 3 options are provided.
+// ToDo: Get more detail on reports, find out why helper file with zoneid is not work; check to see if zoneid is depracated.
+
+| xref:operation:database-reports/templates/interface-avail.adoc#interface-avail-report[Interface Availability]
+| Status
+| Shows the availability of interfaces with outages within a time range.
+
+| xref:operation:database-reports/templates/maintenance-expired.adoc#maintenance-expired-report[Maintenance Contracts Expired]
+| Asset Management
+| Shows which assets with maintenance contracts are going to expire within a given time range.
+// COMMENT: The name of this report is misleading to me.
+
+| xref:operation:database-reports/templates/maintenance-stragegy.adoc#maintenance-strategy-report[Maintenance Contracts Strategy]
+| Asset Management
+| Provides an overview of assets, showing how many within each age group have an active contract, no contract or an expired contract; and shows how many will be expiring in the next 12 months.
+
+| xref:operation:database-reports/templates/morning.adoc#morning-report[Early Morning Report]
+| Status
+| Summary of status of network nodes over the past 24 hours.
+
+| xref:operation:database-reports/templates/response-summary.adoc#response-time-summary-report[Response Time Summary]
+| Status
+| Summary of response times across surveillance category.
+
+| xref:operation:database-reports/templates/response-time.adoc#response-time-report[Response Time by Node]
+| Status
+| Response times by node.
+
+| xref:operation:database-reports/templates/serial.adoc#serial-interface-report[Serial Interface Utilization Summary]
+| Status
+| Summary of serial interface utilization.
+
+| xref:operation:database-reports/templates/snmp.adoc#snmp-report[SNMP Interface Availability]
+| Status
+| Status of SNMP interfaces over time range.
+
+| xref:operation:database-reports/templates/total-bytes.adoc#total-bytes-report[Total Bytes Transferred by Interface]
+| Usage
+| Bytes transferred by interface.
+
+| xref:operation:database-reports/templates/traffic-rates.adoc#traffic-rate-report[Average and Peak Traffic Rates for Nodes by Interface]
+| Usage
+| Average and peak traffic rates for nodes by interface.
+
+|===
+
+// Comment: The current Jasper Reports version is 6.19.1 and these reports were written for 6.3.0, so modifying the jrxml files with the current version is very challenging.  The vast majority of the reports that I have tried with the current version do not render without at least several modifications.  Is there any plan to upgrade the Jasper Reports code?
+
+// Comment: The apps list of database reports needs some editing.  There are inconsistencies across the descriptions and pages prompting for Report Parameters. Finally, the order of the reports seem random.
+
 [[ga-database-report-add-custom-report]]
 
 == Modify existing reports

@@ -1,26 +1,54 @@
 [[serial-interface-report]]
 = Serial Interface Utilization Summary Report
 
-Summary of ...
+== Report Content
+
+This report provides the following availability data for serial interfaces over the user-specified date range:
+
+* Number of Outages
+* Mean Time To Restore ("MTTR") (in hours)
+* Length of Time for Each Outage (in hours)
+* Percent Outage (per unit in category)
+* Percent Availability (per unit in category)
+//QUESTION: Need to validate explanation of the last two, in the summary chart at the end, are these averages over the entire period or per day?
+
+This report can be customized with a company logo in the header and footer that is approximately 195px by 50px logo.
 
 == Parameters
 
-[options="header"]
-[cols="1,3"]
+[options="header, autowidth"]
+[cols="1,2,3,4"]
 
 |===
 | Field
+| Type
 | Description
+| Default
 
-Report Time Range
-| The range in days from the report start date. Must be an integer.
-//what is default behaviour?
+| Time Range in Days
+| Integer
+| The range in days from the Report Start Date.
+| 7
 
-| Report Start Date
-|
+| Start Date
+| Date
+| The starting date for the data contained in this report.
+| Today - 7 days
 
 | Report Format
-| Specify PDF or CSV.
+| Choice
+| Dropdown menu with a choice of PDF or CSV
+| PDF
+
+| Deliver the Report
+| Checkbox
+| Check the box to deliver the report via email upon report creation
+| Unchecked
+
+| Schedule the Report
+| Checkbox
+| Check this box to create a schedule for the report
+| Unchecked
 
 |===
 

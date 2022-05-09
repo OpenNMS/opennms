@@ -2,36 +2,74 @@
 = Availability by Node Report
 Availability by node across one or more surveillance categories.
 
+=== Report Contents
+
+This report provides the following availability data for nodes that have the user-specified surveillance category over the specified date range:
+
+* Number of Outages
+* Mean Time To Restore ("MTTR") (in hours)
+* Length of Time for Each Outage (in hours)
+* Percent Outage (per unit in category)
+* Percent Availability (per unit in category)
+//QUESTION: Need to validate explanation of the last two, in the summary chart at the end, are these averages over the entire period or per day?
+
+After the data is listed for each node, summary statistics (average, minimum and maximum) are provided for each availability data points listed above.
+
+This report can be customized with a company logo in the header and footer that is approximately 195px by 50px logo.
+
 == Parameters
 
-[options="header"]
-[cols="1,3"]
+[options="header, autowidth"]
+[cols="1,2,3,4"]
 
 |===
 | Field
+| Type
 | Description
+| Default
 
 | Surveillance Category
-| Use the % sign as a placeholder for any string literal.
+| String
+| Identify the category of data for this availability report. Standard values include: "Routers", "Switches", "Servers", "Production", "Test" and "Development".  Users can add custom categories.
+| "Routers"
 
-| Report Time Range in Days
-| The range in days from the report start date. Must be an integer.
-//what is default behaviour?
+
+| Number of Days
+| Integer
+| The range in days from the report Start Date.
+| 7
 
 | Availability Warning
-| 
+| Double
+| Availability percentage that triggers a warning.
+| 98
 
 | Availability Critical
-|
-
-// Availability warning/critical also appear in the Interface availability and SNMP availability reports.
+| Double
+| Availability percentage at which status is considered critical.
+| 97
 
 | Start Date
-|
+| Date
+| The starting date for the data contained in this report.
+| Today - 7 days
 
 | Report Format
-| Specify PDF or CSV.
+| Choice
+| Dropdown menu with a choice of PDF or CSV
+| PDF
+
+| Deliver the Report
+| Checkbox
+| Check the box to deliver the report via email upon report creation
+| Unchecked
+
+| Schedule the Rport
+| Checkbox
+| Check this box to create a schedule for the report
+| Unchecked
 
 |===
+
 
 include::standard.adoc[]
