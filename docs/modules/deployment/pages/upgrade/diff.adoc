@@ -7,16 +7,16 @@ You need to back up your customized configuration files so that you can merge th
 
 Consider one of the following options to identify changed configuration files:
 
-* <<config-diff, run the config-diff.sh script>> (to show which files have changed)
-* make the `$OPENNMS_HOME/etc` folder a git repo to track changes between versions (to show content lines that have changed as well)
+* <<config-diff, Run the config-diff.sh script>> to show which files have changed.
+* Make the `$\{OPENNMS_HOME}/etc` folder a git repo to track changes between versions.
 
 [[config-diff]]
 == Run the config-diff.sh script
 
-The config-diff tool identifies differences between the default {page-component-title} configuration and what you are running.
+The `config-diff` tool identifies differences between the default {page-component-title} configuration and what you are running.
 Identifying these differences helps you to determine what you need to migrate as part of an upgrade.
 
-Run the config-diff tool in the /bin directory to determine changes from a pristine installation:
+Run the `config-diff` tool in the `$\{OPENNMS_HOME}/bin` directory to determine changes from a pristine installation:
 
 [source, console]
 ----
@@ -24,7 +24,7 @@ cd ${OPENNMS_HOME}/bin
 ./config-diff.sh -d
 ----
 
-TIP: The colordiff command, available in Debian and Red Hat distributions, colors the output for better legibility of changes.
+TIP: The `colordiff` command, available in Debian and Red Hat distributions, colors the output for better legibility of changes.
 
 Note the following in the config-diff.sh output:
 

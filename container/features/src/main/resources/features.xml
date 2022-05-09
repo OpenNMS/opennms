@@ -152,6 +152,35 @@
         <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-extender/${eclipseGeminiVersion}</bundle>
         <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-io/${eclipseGeminiVersion}</bundle>
     </feature>
+    <feature name="groovy" version="${groovyVersion}" description="Groovy">
+        <bundle>mvn:org.codehaus.groovy/groovy/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-ant/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-bsf/${groovyVersion}</bundle>
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-cli-commons/${groovyVersion}</bundle> -->
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-cli-picocli/${groovyVersion}</bundle> -->
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-console/${groovyVersion}</bundle> -->
+        <bundle>mvn:org.codehaus.groovy/groovy-datetime/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-dateutil/${groovyVersion}</bundle>
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-docgenerator/${groovyVersion}</bundle> -->
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-groovydoc/${groovyVersion}</bundle> -->
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-groovysh/${groovyVersion}</bundle> -->
+        <bundle>mvn:org.codehaus.groovy/groovy-jaxb/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-jmx/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-json/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-jsr223/${groovyVersion}</bundle>
+        <!-- needed by jsr223 support -->
+        <bundle>mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.2</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-macro/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-nio/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-servlet/${groovyVersion}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-sql/${groovyVersion}</bundle>
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-swing/${groovyVersion}</bundle> -->
+        <bundle>mvn:org.codehaus.groovy/groovy-templates/${groovyVersion}</bundle>
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-test/${groovyVersion}</bundle> -->
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-test-junit5/${groovyVersion}</bundle> -->
+        <!-- <bundle>mvn:org.codehaus.groovy/groovy-testng/${groovyVersion}</bundle> -->
+        <bundle>mvn:org.codehaus.groovy/groovy-xml/${groovyVersion}</bundle>
+    </feature>
     <feature name="guava" version="${guavaVersion}" description="Google :: Guava">
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
     </feature>
@@ -1067,7 +1096,7 @@
     </feature>
     <feature name="opennms-telemetry-nxos" version="${project.version}" description="OpenNMS :: Telemetry :: NX-OS">
         <feature>opennms-telemetry-collection</feature>
-	<bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.nxos/org.opennms.features.telemetry.protocols.nxos.adapter/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-graphite" version="${project.version}" description="OpenNMS :: Telemetry :: Graphite">
@@ -1432,10 +1461,10 @@
     </feature>
     <feature name="opennms-topology-runtime-graphml" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: GraphML">
         <details>GraphML runtime and plugins for the OpenNMS topology web app.</details>
+        <feature>groovy</feature>
         <feature>opennms-graphml</feature>
         <feature>opennms-topology-runtime-base</feature>
         <bundle>mvn:org.opennms.features.topology.plugins.topo/graphml/${project.version}</bundle>
-        <bundle>mvn:org.codehaus.groovy/groovy-all/${groovyVersion}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.osgi-jsr223/${project.version}</bundle>
     </feature>
     <feature name="opennms-topology-runtime-asset" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: Runtime :: Asset">
@@ -1639,7 +1668,7 @@
         <bundle>mvn:io.github.resilience4j/resilience4j-core/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-circuitbreaker/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-bulkhead/${resilience4jVersion}</bundle>
-        <bundle>mvn:io.github.resilience4j/resilience4j-retry/${resilience4jVersion}</bundle>        
+        <bundle>mvn:io.github.resilience4j/resilience4j-retry/${resilience4jVersion}</bundle>
     </feature>
 
     <feature name="netty4" version="${netty4Version}" description="Netty">
