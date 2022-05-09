@@ -23,6 +23,7 @@ import {
 } from './copy/requisitionTypes'
 import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
 import cronstrue from 'cronstrue'
+import ipRegex from 'ip-regex'
 
 const cronTabLength = (cronTab: string) => cronTab.replace(/\s$/, '').split(' ').length
 
@@ -673,15 +674,9 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
  */
 const validateHost = (host: string) => {
   let hostError = ''
-  /**
-   * Character separators: hyphen, point, space or % (%20: encoded space).
-   * Expression only valid if:
-   *  - only one separator betwwen word
-   *  - no separator at begin, end or between uri and port
-   *  - expression names (uri, port) can be used, with expression.match(), to target specific part of the host string
-   * */
-  const ipv4 = new RegExp(/^[^\s.\-%](?<uri>[\w]*[\s.\-%]?[\w]*[^\s.\-%20:])*(?<port>:\d{4})?$/, 'gmi')
-  const isHostValid = ipv4.test(host)
+
+  // Tests against a regex for matching both IPv4 and IPv6.
+  const isHostValid = ipRegex({exact: true}).test(host)
 
   if (!isHostValid) {
     hostError = ErrorStrings.InvalidHostname

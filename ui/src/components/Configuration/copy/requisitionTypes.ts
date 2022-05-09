@@ -2,7 +2,7 @@ export const RequisitionFields = {
   Name: 'Name'
 }
 export const RequisitionTypes = {
-  VMWare: 'VMWare',
+  VMWare: 'VMware',
   RequisitionPlugin: 'Requisition Plugin',
   DNS: 'DNS',
   File: 'File',
