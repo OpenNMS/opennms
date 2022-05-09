@@ -1,0 +1,57 @@
+= Loop Detector
+
+The Loop Detector was created to give {page-component-title} users the ability to force a service on to an interface during service detection.
+Using this method, a passive node, interface, and service can be added with one event, the New Suspect event (uei.opennms.org/internal/newSuspect).
+This is the process to add a passive service using this method:
+
+First, add a detector for the new service to the default foreign-source definition. Use the LOOP class:
+
+Add parameters:
+
+; ipMatch : 169.254.*.*
+; supported : true
+
+
+Here's the representation of the above in `default-foreign-source.xml`:
+
+[source, xml]
+----
+        <detector name="PCR" class="org.opennms.netmgt.provision.detector.loop.LoopDetector">
+            <parameter key="ipMatch" value="169.254.*.*"/>
+            <parameter key="supported" value="true"/>
+        </detector>
+----
+
+This configuration will cause the PCR service to be detected (without any actual network-based scanning happening) on any interface with an IP address starting with "169.254".
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.loop.LoopDetector`
+|===
+
+== Configuration and use
+
+.Parameters for the LoopDetector
+[options="header, autowidth"]
+[cols="1,4,1"]
+|===
+| Parameter
+| Description
+| Default
+
+3+| *Required*
+
+| ipMatch
+| IP address wildcard.
+If the node has an IP address that matches, the service will be flagged for the node.
+| none
+
+3+| *Optional*
+
+| isSupported
+| ?
+| true
+
+|===
