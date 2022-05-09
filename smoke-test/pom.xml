@@ -507,10 +507,24 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- 4.2.0 is the last version that used groovy 2.x,
+         force it to match ours since it's a transient dependency -->
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
-      <version>4.3.3</version>
+      <version>4.2.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.groovy</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>groovy-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
