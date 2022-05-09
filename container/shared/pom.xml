@@ -43,15 +43,10 @@
                     <bootRepositories>
                         <!-- OPENNMS: Add the OpenNMS Karaf extensions feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
+                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/shared</repository>
+                        <!-- OPENNMS: Additional tools -->
                         <repository>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</repository>
                     </bootRepositories>
-                    <!-- use this instead of bootRepositories when we move to karaf-maven-plugin 4.2.x or higher -->
-                    <!-- <descriptors>
-                        <!-/- OPENNMS: Add the OpenNMS Karaf extensions feature repository -/->
-                        <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</descriptor>
-                        <!-/- OPENNMS: Additional tools -/->
-                        <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
-                    </descriptors> -->
                     <installedFeatures>
                         <feature>wrapper</feature>
 
@@ -208,6 +203,14 @@
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
             <classifier>karaf-extensions</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>shared</classifier>
             <type>xml</type>
             <scope>runtime</scope>
         </dependency>
