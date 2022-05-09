@@ -53,7 +53,7 @@
         :class="{ selected: isSelected('/device-config-backup') }"
         href="#/device-config-backup"
         :icon="MinionProfiles"
-        title="Configuration Management"
+        title="Device Configs"
       />
       <FeatherRailItem
         v-if="adminRole"
