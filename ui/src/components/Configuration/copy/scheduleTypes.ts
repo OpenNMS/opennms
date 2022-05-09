@@ -48,3 +48,12 @@ export const weekTypes = [
   { name: 'Friday', id: 6 },
   { name: 'Saturday', id: 7 }
 ]
+export const weekNameTypes = [
+  { name: 'SUN', id: 1 },
+  { name: 'MON', id: 2 },
+  { name: 'TUE', id: 3 },
+  { name: 'WED', id: 4 },
+  { name: 'THU', id: 5 },
+  { name: 'FRI', id: 6 },
+  { name: 'SAT', id: 7 }
+]
