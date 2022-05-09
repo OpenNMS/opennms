@@ -37,9 +37,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
+
+import org.opennms.core.utils.StringUtils;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
@@ -47,8 +48,14 @@ import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -58,6 +65,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.net.InetAddress;
+
+import static org.opennms.netmgt.events.api.EventConstants.PARM_IPINTERFACE_ID;
+
+@EventListener(name = "OpenNMS.DeviceConfig", logPrefix = "poller")
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigMonitorAdaptor.class);
@@ -72,6 +84,12 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
     @Autowired
     private EventForwarder eventForwarder;
+
+    @Autowired
+    private NodeDao nodeDao;
+
+    @Autowired
+    private SessionUtils sessionUtils;
 
     @Override
     public PollStatus handlePollResult(MonitoredService svc, Map<String, Object> parameters, PollStatus status) {
@@ -144,6 +162,40 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         }
 
         return status;
+    }
+
+    @EventHandler(uei = EventConstants.INTERFACE_DELETED_EVENT_UEI)
+    public void handleInterfaceDeletedEvent(IEvent event) {
+        LOG.debug("Received event: {}", event.getUei());
+        Long nodeId = event.getNodeid();
+        Integer ipInterfaceId = -1;
+        if (nodeId == null) {
+            LOG.error(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Event with no node ID: " + event);
+            return;
+        }
+
+        InetAddress ipAddress = event.getInterfaceAddress();
+        if (ipAddress == null) {
+            LOG.error(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Event with no Interface Address : " + event);
+            return;
+        }
+        IParm iParm = event.getParm(PARM_IPINTERFACE_ID);
+        if (iParm.isValid()) {
+            String value = iParm.getValue().getContent();
+            ipInterfaceId = StringUtils.parseInt(value, ipInterfaceId);
+        }
+        if(ipInterfaceId < 0) {
+            LOG.error(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Event with no Interface Id : " + event);
+            return;
+        }
+        final  Integer interfaceId = ipInterfaceId;
+        sessionUtils.withTransaction(() -> {
+
+            List<DeviceConfig> deviceConfigList = deviceConfigDao.getAllDeviceConfigsWithAnInterfaceId(interfaceId);
+            deviceConfigList.forEach(dc -> deviceConfigDao.delete(dc));
+            LOG.info("Deleted all device configs on Interface {}", interfaceId);
+            return null;
+        });
     }
 
     public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {

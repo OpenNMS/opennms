@@ -16,4 +16,10 @@
 
     <bean id="deviceConfigMonitorAdaptor" class="org.opennms.features.deviceconfig.monitor.adaptor.DeviceConfigMonitorAdaptor"/>
     <onmsgi:service interface="org.opennms.netmgt.poller.ServiceMonitorAdaptor" ref="deviceConfigMonitorAdaptor" />
+
+    <bean id="deviceConfigEventListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+        <property name="annotatedListener" ref="deviceConfigMonitorAdaptor" />
+        <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    </bean>
+
 </beans>
