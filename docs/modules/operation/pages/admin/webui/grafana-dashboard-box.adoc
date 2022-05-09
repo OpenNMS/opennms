@@ -45,8 +45,6 @@ image::webui/startpage/01_grafana-box.png[]
 | org.opennms.grafanaBox.apiKey
 | The API key is needed for the ReST calls to work. +
 The process to generate a Grafana API Key can be found in the https://grafana.com/docs/grafana/latest/http_api/[HTTP API documentation].
-Copy the API Key to `opennms.properties` as `org.opennms.grafanaBox.apiKey`.
-
 | String
 |
 
