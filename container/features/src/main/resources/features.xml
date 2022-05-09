@@ -7,6 +7,7 @@
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
     <repository>mvn:org.opennms.integration.api/karaf-features/${opennmsApiVersion}/xml</repository>
     <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
+    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/core</repository>
     <feature name="opennms-amqp-event-forwarder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Forwarder">
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
@@ -172,9 +173,6 @@
         <!-- <bundle>mvn:org.codehaus.groovy/groovy-test-junit5/${groovyVersion}</bundle> -->
         <!-- <bundle>mvn:org.codehaus.groovy/groovy-testng/${groovyVersion}</bundle> -->
         <bundle>mvn:org.codehaus.groovy/groovy-xml/${groovyVersion}</bundle>
-    </feature>
-    <feature name="guava" version="${guavaVersion}" description="Google :: Guava">
-        <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
     </feature>
     <feature name="guava17" version="${guavaOldVersion}" description="Google :: Guava">
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaOldVersion}</bundle>
@@ -1531,6 +1529,7 @@
 
         <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle dependency="true">mvn:com.github.ben-manes.caffeine/caffeine/${caffeineVersion}</bundle>
+        <bundle>mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
         <bundle>mvn:org.opennms.features.dnsresolver/org.opennms.features.dnsresolver.netty/${project.version}</bundle>
     </feature>
 
@@ -1542,21 +1541,6 @@
         <bundle>mvn:io.github.resilience4j/resilience4j-circuitbreaker/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-bulkhead/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-retry/${resilience4jVersion}</bundle>
-    </feature>
-
-    <feature name="netty4" version="${netty4Version}" description="Netty">
-        <bundle>mvn:io.netty/netty-resolver/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-common/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-buffer/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-transport/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-handler/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
-        <!--
-        <bundle>mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
-        -->
     </feature>
 
     <feature name="opennms-blobstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Shell" version="${project.version}">

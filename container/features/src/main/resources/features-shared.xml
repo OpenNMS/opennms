@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="opennms-shared-${project.version}"
+          xmlns="http://karaf.apache.org/xmlns/features/v1.3.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0"
+>
+
+    <!--
+         This file is for features that should be shared across Minion and Sentinel, but are exported in
+         `custom.properties` in the core.
+
+         NOTE: if you add something here, always make sure:
+         * you create the same feature in `features-core.xml` but with no dependencies
+         * anything you put in this file is also in `$OPENNMS_HOME/lib/` by way of Maven dependencies
+         * you update `custom.properties` with any exports from the bundles you add to this file
+    -->
+
+    <feature name="cassandra-driver" version="${cassandraVersion}" description="Datastax Cassandra Driver">
+        <feature version="[16,22)">guava</feature>
+        <feature version="[${netty4Version},5)">netty4</feature>
+        <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-ffi/2.1.7</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-posix/3.0.44</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</bundle>
+    </feature>
+
+    <feature name="guava" version="${guavaVersion}" description="Google :: Guava">
+        <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
+    </feature>
+
+    <feature name="netty4" version="${netty4Version}" description="Netty">
+        <bundle>mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-common/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-handler/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-resolver/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport/${netty4Version}</bundle>
+        <!--
+        <bundle>mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
+        -->
+    </feature>
+
+</features>
