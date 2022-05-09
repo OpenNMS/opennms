@@ -25,9 +25,7 @@
           :results="results.list[index]"
         ></FeatherAutocomplete>
         <!-- Blank space ' ' below is part of forceSetHint() workaround for FeatherInput.
-            If item.hint is blank on initial load, it will not render the internal element we need
-            for forced update. So when item.hint is empty, we supply an empty space which is enough
-            to force FeatherInput to render the help label.
+            If item.hint is blank on initial load, it will not render the internal element we need for forced update. So when item.hint is empty, we supply an empty space which is enough to force FeatherInput to render the help label.
         -->
         <FeatherInput
           class="hint-label"
@@ -61,7 +59,7 @@
   setup
   lang="ts"
 >
-import { reactive, PropType, watch, computed } from 'vue'
+import { PropType } from 'vue'
 
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherIcon } from '@featherds/icon'
@@ -89,7 +87,7 @@ const props = defineProps({
   deleteAdvancedOption: { type: Function, required: true },
   active: { type: Boolean, required: true },
   activeUpdate: { type: Function as PropType<(_v: boolean) => void>, required: true },
-  helpState: Object,
+  helpState: Object
 })
 
 /**

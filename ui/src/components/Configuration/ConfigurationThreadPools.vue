@@ -30,7 +30,7 @@
       </div>
     </template>
     <div>
-      <p>
+      <p class="pb-xl">
         Thread pool sizes impact the performance of the provisioning subsystem. Larger systems may require larger
         values. To adjust them, select a value from the drop-down list.
       </p>
@@ -183,7 +183,7 @@ const updateThreadpools = async () => {
           msg: messageUpdateSuccess
         })
       } else {
-        messageUpdateSuccess += ' Restart OpeNMS for this change to take effect.'
+        messageUpdateSuccess += ' Restart OpenNMS for this change to take effect.'
 
         showSnackBar({
           msg: messageUpdateSuccess,
