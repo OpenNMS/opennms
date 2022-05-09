@@ -50,6 +50,8 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigSinkDTO
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigConsumer.class);
 
+    private static final String DEVICE_CONFIG_PREFIX = "DeviceConfig";
+
     private final MessageConsumerManager consumerManager;
     private final DeviceConfigSinkModule module;
     private final IpInterfaceDao ipInterfaceDao;
@@ -78,7 +80,7 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigSinkDTO
         try {
             var address = InetAddress.getByAddress(message.address);
             LOG.debug("handle message - location: " + message.location + "; address: " + address.getHostAddress() + "; fileName: " + message.fileName);
-            OnmsIpInterface ipInterface = ipInterfaceDao.findByIpAddressAndLocation(address.getHostAddress(), message.location);
+            OnmsIpInterface ipInterface = findMatchingInterface(address.getHostAddress(), message.location);
             if (ipInterface != null) {
                 byte[] content = message.config;
                 if (DeviceConfigUtil.isGzipFile(message.fileName)) {
@@ -104,6 +106,19 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigSinkDTO
         } catch (Exception e) {
             LOG.error("could not handle device config backup message", e);
         }
+    }
+
+    private OnmsIpInterface findMatchingInterface(final String ipAddress, final String location) {
+        var ipInterfaces = this.ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
+        OnmsIpInterface iface = ipInterfaces.size() > 0 ? ipInterfaces.get(0) : null;
+        if (ipInterfaces.size() > 1) {
+            var optionalInterface = ipInterfaces
+                    .stream().filter(ipInterface ->
+                            ipInterface.getMonitoredServices().stream().anyMatch(monitoredService ->
+                                    monitoredService.getServiceName().startsWith(DEVICE_CONFIG_PREFIX))).findFirst();
+            iface = optionalInterface.orElseGet(() -> ipInterfaces.stream().findFirst().orElse(null));
+        }
+        return iface;
     }
 
     @Override
