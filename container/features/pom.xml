@@ -51,6 +51,16 @@
                   <classifier>experimental</classifier>
                 </artifact>
                 <artifact>
+                  <file>${project.build.outputDirectory}/features-core.xml</file>
+                  <type>xml</type>
+                  <classifier>core</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/features-shared.xml</file>
+                  <type>xml</type>
+                  <classifier>shared</classifier>
+                </artifact>
+                <artifact>
                   <file>${project.build.outputDirectory}/features-minion.xml</file>
                   <type>xml</type>
                   <classifier>minion</classifier>

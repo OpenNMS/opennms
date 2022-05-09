@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features name="minion-core-features" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
 
+    <!-- OpenNMS Minion/Sentinel shared features -->
+    <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/shared</repository>
+
     <!-- Apache ActiveMQ features -->
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
 

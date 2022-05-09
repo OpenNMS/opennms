@@ -6,6 +6,7 @@
         xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
 >
     <!-- OpenNMS Features -->
+    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/shared</repository>
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
     <!-- Newts Features -->
@@ -236,7 +237,7 @@
     
     <feature name="sentinel-newts-cassandra"
              description="OpenNMS :: Features :: Distributed :: Cassandra :: Newts Impl." version="${project.version}">
-        <feature>cassandra-driver</feature>
+        <feature version="[${cassandraVersion},4)">cassandra-driver</feature>
         <feature>sentinel-newts</feature>
         <feature>sentinel-distributed-cassandra-api</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.cassandra.newts-impl/${project.version}</bundle>

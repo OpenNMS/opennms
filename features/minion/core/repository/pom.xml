@@ -32,6 +32,7 @@
                                 <!-- Add Minion features -->
                                 <descriptor>mvn:org.opennms.features.minion/core-features/${project.version}/xml</descriptor>
                                 <!-- Add OpenNMS features -->
+                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/shared</descriptor>
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
                             </descriptors>
                             <!-- To ensure that all JAR files for a feature 
@@ -173,6 +174,13 @@
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>shared</classifier>
             <type>xml</type>
         </dependency>
         <dependency>
