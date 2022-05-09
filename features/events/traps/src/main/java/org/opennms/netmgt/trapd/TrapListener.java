@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,9 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
@@ -55,6 +58,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class TrapListener implements TrapNotificationListener {
     private static final Logger LOG = LoggerFactory.getLogger(TrapListener.class);
+
+    // True if trap configuration has been received from the core instance
+    private boolean m_configured = false;
+    private Object configuredLock = new Object();
+
+    private long subscriberTimeoutMs = 60 * 1000;
 
     @Autowired
     private MessageDispatcherFactory m_messageDispatcherFactory;
@@ -102,13 +111,47 @@ public class TrapListener implements TrapNotificationListener {
     }
 
     public void start() {
-        m_twinSubscription = m_twinSubscriber.subscribe(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, (config) ->  {
+        if (m_twinSubscriber != null) {
+            subscribe();
+        } else {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    delayedConfigurationCheck();
+                }
+            }, subscriberTimeoutMs); // wait 60 seconds for connection from core
+        }
+    }
+
+    private void delayedConfigurationCheck() {
+        synchronized (configuredLock) {
+            if (!m_configured) {
+                LOG.warn("No trap configuration received from core, using default settings");
+                this.open(new TrapListenerConfig());
+            }
+        }
+    }
+
+    public void subscribe() {
+        m_twinSubscription = m_twinSubscriber.subscribe(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, (config) -> {
             try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Trapd.LOG4J_CATEGORY)) {
                 LOG.info("Got listener config update - reloading");
-                this.close();
-                this.open(config);
+                synchronized(configuredLock) {
+                    m_configured = true;
+                    this.close();
+                    this.open(config);
+                }
             }
         });
+    }
+
+    public void bind(TwinSubscriber twinSubscriber) {
+        m_twinSubscriber = twinSubscriber;
+        subscribe();
+    }
+
+    public void unbind(TwinSubscriber twinSubscriber) {
+        m_twinSubscriber = null;
     }
 
     private void open(final TrapListenerConfig config) {
@@ -180,20 +223,16 @@ public class TrapListener implements TrapNotificationListener {
         }
     }
 
+    public boolean isRegisteredForTraps() {
+        return m_registeredForTraps;
+    }
+
     public void setMessageDispatcherFactory(MessageDispatcherFactory messageDispatcherFactory) {
         m_messageDispatcherFactory = Objects.requireNonNull(messageDispatcherFactory);
     }
 
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         m_distPollerDao = Objects.requireNonNull(distPollerDao);
-    }
-
-    public TwinSubscriber getTwinSubscriber() {
-        return this.m_twinSubscriber;
-    }
-
-    public void setTwinSubscriber(final TwinSubscriber twinSubscriber) {
-        this.m_twinSubscriber = Objects.requireNonNull(twinSubscriber);
     }
 
     private void restartWithNewConfig(final TrapdConfigBean newConfig) {
@@ -253,5 +292,13 @@ public class TrapListener implements TrapNotificationListener {
             return false;
         }
         return !newConfig.getSnmpV3Users().equals(m_config.getSnmpV3Users());
+    }
+
+    void setSubscriberTimeoutMs(long ms) {
+        subscriberTimeoutMs = ms;
+    }
+
+    long getSubscriberTimeoutMs() {
+        return subscriberTimeoutMs;
     }
 }
