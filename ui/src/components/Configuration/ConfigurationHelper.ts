@@ -24,6 +24,7 @@ import {
 import { scheduleTypes, weekTypes, weekNameTypes, dayTypes } from './copy/scheduleTypes'
 import cronstrue from 'cronstrue'
 import ipRegex from 'ip-regex'
+import isValidDomain from 'is-valid-domain'
 
 const cronTabLength = (cronTab: string) => cronTab.replace(/\s$/, '').split(' ').length
 
@@ -362,6 +363,7 @@ const convertURLToLocal = (urlIn: string) => {
     urlPath += '/' + url[i]
   }
 
+  const path = urlPath.split('?')[0]
   const typeRaw = url[0].split(':')[0]
   localConfig.type = findFullType(typeRaw)
 
@@ -380,11 +382,11 @@ const convertURLToLocal = (urlIn: string) => {
       break
     case RequisitionTypes.HTTP:
       localConfig.host = findHost(url)
-      localConfig.urlPath = urlPath
+      localConfig.urlPath = path
       break
     case RequisitionTypes.HTTPS:
       localConfig.host = findHost(url)
-      localConfig.urlPath = urlPath
+      localConfig.urlPath = path
       break
   }
 
@@ -709,15 +711,15 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
 }
 
 /**
- * Validates a Hostname. Can be an IP address or valid hostname.
+ * Validates a Hostname. Can be an IP address or valid domain name.
  * @param host Hostname
  * @returns Blank if Valid, Error Message if Not.
  */
 const validateHost = (host: string) => {
   let hostError = ''
 
-  // Tests against a regex for matching both IPv4 and IPv6.
-  const isHostValid = ipRegex({exact: true}).test(host)
+  // Either IPv4, IPv6, or a valid domain name
+  const isHostValid = ipRegex({exact: true}).test(host) || isValidDomain(host)
 
   if (!isHostValid) {
     hostError = ErrorStrings.InvalidHostname
