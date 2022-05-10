@@ -11,6 +11,7 @@
 			<category><![CDATA[DNS and DHCP Servers]]></category>                    
 			<category><![CDATA[Database Servers]]></category>
 			<category><![CDATA[JMX Servers]]></category>
+			<category><![CDATA[Device Config Backup]]></category>
 			<category><![CDATA[Other Servers]]></category>
 		</section>
 		<section>
