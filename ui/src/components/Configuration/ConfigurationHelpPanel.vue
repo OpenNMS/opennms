@@ -150,7 +150,7 @@ const helpText = computed(() => {
   } else if (typeName === RequisitionTypes.VMWare) {
     helpVals = {
       title: RequisitionTypes.VMWare,
-      subTitle: 'The VMware adapter pulls hosts and/or virtual machines from a vCenter server into OpenNMS. With this adapter, you can automatically add, update, or remove nodes from your inventory based on the status of the VMware entity. Requires the host, username, and password parameters to construct the URL OpenNMS uses to locate this external source.',
+      subTitle: 'The VMware adapter pulls hosts and/or virtual machines from a vCenter server into OpenNMS. With this adapter, you can automatically add, update, or remove nodes from your inventory based on the status of the VMware entity. Uses the host, optional username, and optional password parameters to construct the URL OpenNMS uses to locate this external source. If username and password are left blank, the system will rely on credentials configured in vmware-config.xml.',
       help: 'See the online documentation for detailed information on supported options:',
       linkCopy: 'READ FULL ARTICLE',
       link: 'https://docs.opennms.com/horizon/latest/reference/provisioning/handlers/vmware.html'
