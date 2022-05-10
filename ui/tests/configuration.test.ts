@@ -121,8 +121,20 @@ test('Validate host/zone fn should allow ipv4, ipv6, and domains', () => {
   expect(ConfigurationHelper.validateHost('domain.com')).toEqual('')
   expect(ConfigurationHelper.validateHost('domain.xyz')).toEqual('')
   expect(ConfigurationHelper.validateHost('my.best.domain.com')).toEqual('')
-  expect(ConfigurationHelper.validateHost('192.168.31.1301')).toEqual(ErrorStrings.InvalidHostname)
-  expect(ConfigurationHelper.validateHost('.com')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('domaindotcom')).toEqual('')
+  expect(ConfigurationHelper.validateHost('domain-dotcom')).toEqual('')
+  expect(ConfigurationHelper.validateHost('domain123-com')).toEqual('')
+  expect(ConfigurationHelper.validateHost('my123.domain-123.com123')).toEqual('')
+  expect(ConfigurationHelper.validateHost('my-123-domain.com-123')).toEqual('')
+  expect(ConfigurationHelper.validateHost('123my.do-main.com')).toEqual('')
+
+  // cannot start with hyphen
+  expect(ConfigurationHelper.validateHost('-domaindotcom')).toEqual(ErrorStrings.InvalidHostname)
+  // cannot contain space
+  expect(ConfigurationHelper.validateHost('domain com')).toEqual(ErrorStrings.InvalidHostname)
+  // cannot be over 49 characters unless valid domain
+  const longHostname = 'testalonghostnameover49characterslongtestalonghostn'
+  expect(ConfigurationHelper.validateHost(longHostname)).toEqual(ErrorStrings.InvalidHostname)
 })
 
 test('The HTTP/S type config path does not contain params', () => {
