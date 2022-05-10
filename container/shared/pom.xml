@@ -12,6 +12,10 @@
     <packaging>karaf-assembly</packaging>
     <name>OpenNMS :: Container :: Karaf (Shared)</name>
 
+    <properties>
+        <license.skipAddThirdParty>true</license.skipAddThirdParty>
+    </properties>
+
     <build>
         <resources>
             <resource>
