@@ -10,7 +10,7 @@
   <!-- Only use BASIC auth for the RESTful APIs -->
   <http pattern="/rest/**" realm="OpenNMS Realm" create-session="never">
     <!-- OPTIONS pre-flight requests should always be accepted -->
-    <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
+    <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE,ROLE_CONFIG_EDITOR"/>
 
     <!-- Calls to health/overview are always accepted -->
     <intercept-url pattern="/rest/health/probe" method="GET" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
@@ -55,6 +55,15 @@
     <intercept-url pattern="/rest/device-config/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
     <intercept-url pattern="/rest/device-config/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
     <intercept-url pattern="/rest/device-config/**" method="PUT" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
+
+    <!--
+      Must have ROLE_CONFIG_EDITOR to view or edit files. Added here, but additional checks are done in code
+      to disallow any other role.
+    -->
+    <intercept-url pattern="/rest/filesystem/**" method="GET" access="ROLE_CONFIG_EDITOR"/>
+    <intercept-url pattern="/rest/filesystem/**" method="DELETE" access="ROLE_CONFIG_EDITOR"/>
+    <intercept-url pattern="/rest/filesystem/**" method="POST" access="ROLE_CONFIG_EDITOR"/>
+    <intercept-url pattern="/rest/filesystem/**" method="PUT" access="ROLE_CONFIG_EDITOR"/>
 
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>

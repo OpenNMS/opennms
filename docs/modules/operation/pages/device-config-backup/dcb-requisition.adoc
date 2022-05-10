@@ -20,6 +20,7 @@ If you want to enable device config backup on existing nodes in a requisition, s
 .. `password`: password for the device
 .. `script-file`: name of the device configuration script for this type of device
 .. `schedule`: a cron expression to specify the time to fetch the device backup configuration (default is `0 0 0 * * ?`, every 24 hrs at 12:00 a.m.)
+.. `retention-period`: an *optional* Java `Period` expression to specify the length of time before "stale" configuration data is deleted from the database (default is `P1Y`, one year)
 . Click *Save* to save the metadata and then *Save* to save the requisition.
 . Click *Return* and click *Synchronize*.
 . Choose a scan option and click *Synchronize*.
