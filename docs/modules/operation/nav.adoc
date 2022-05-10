@@ -155,7 +155,7 @@
 * xref:snmp-poller/concepts.adoc[]
 
 
-* xref:admin/introduction.adoc[]
+* {page-component-title} Administration
 ** xref:admin/webui/introduction.adoc[]
 *** xref:admin/webui/dashboard.adoc[]
 *** xref:admin/webui/grafana-dashboard-box.adoc[]
@@ -193,4 +193,4 @@
 ** xref:admin/daemon-config-files.adoc[]
 ** xref:admin/backup/introduction.adoc[]
 ** xref:admin/restore/introduction.adoc[]
-
+** xref:admin/housekeeping/introduction.adoc[]

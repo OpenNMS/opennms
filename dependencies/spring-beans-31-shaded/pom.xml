@@ -46,7 +46,6 @@
                 <filter>
                   <artifact>org.springframework:spring-beans</artifact>
                   <excludes>
-                    <excludeDefaults>false</excludeDefaults>
                     <exclude>org/springframework/beans/CachedIntrospectionResults*</exclude>
                   </excludes>
                 </filter>
