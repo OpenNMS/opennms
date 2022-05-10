@@ -163,7 +163,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.0.ONMS.1</version>
         <inherited>true</inherited>
         <executions>
           <execution>
@@ -1962,6 +1962,14 @@
         <skipPdfGeneration>false</skipPdfGeneration>
         <skipSignJar>false</skipSignJar>
       </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
     <profile>
       <id>smoke</id>
