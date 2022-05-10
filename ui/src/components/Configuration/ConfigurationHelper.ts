@@ -718,8 +718,11 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
 const validateHost = (host: string) => {
   let hostError = ''
 
-  // Either IPv4, IPv6, or a valid domain name
-  const isHostValid = ipRegex({exact: true}).test(host) || isValidDomain(host)
+  // no spaces, may contain (but not start with), hyphen or dot, cannot be over 49 chars
+  const customHostnameRegex = /^[a-zA-Z0-9]{1}[a-zA-Z0-9-.]{0,48}$/
+
+  // Either IPv4, IPv6, a valid domain name, or passes custom regex
+  const isHostValid = ipRegex({exact: true}).test(host) || isValidDomain(host) || customHostnameRegex.test(host)
 
   if (!isHostValid) {
     hostError = ErrorStrings.InvalidHostname
