@@ -40,6 +40,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
@@ -66,6 +67,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigServiceImpl.class);
+
+    private static final String DEVICE_CONFIG_PREFIX = "DeviceConfig";
 
     private static final String DEVICE_CONFIG_SERVICE_CLASS_NAME = "org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor";
 
@@ -127,7 +130,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     @Override
     public List<RetrievalDefinition> getRetrievalDefinitions(final String ipAddress, final String location) {
-        final var iface = this.ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
+        final var iface = findMatchingInterface(ipAddress, location, null);
         PollerConfig pollerConfig;
         try {
             pollerConfig = this.getPollerConfig();
@@ -193,7 +196,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         final var monitor = getPollerConfig().getServiceMonitor(match.service.getName());
 
         final AbstractMap.SimpleImmutableEntry<Boolean, MonitoredService> boundServicePair = sessionUtils.withReadOnlyTransaction(() -> {
-            final OnmsIpInterface ipInterface = ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
+            final OnmsIpInterface ipInterface = findMatchingInterface(ipAddress, location, serviceName);
             if (ipInterface == null) {
                 return null;
             }
@@ -238,6 +241,23 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                     .withAttribute(DeviceConfigConstants.TRIGGERED_POLL, "true")
                     .execute();
         }
+    }
+
+    private OnmsIpInterface findMatchingInterface(final String ipAddress, final String location, String serviceName) {
+        var ipInterfaces = this.ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location);
+        OnmsIpInterface iface = ipInterfaces.size() > 0 ? ipInterfaces.get(0) : null;
+        if (ipInterfaces.size() > 1) {
+            var optionalInterface = ipInterfaces
+                    .stream().filter(ipInterface ->
+                            ipInterface.getMonitoredServices().stream().anyMatch(monitoredService -> {
+                                if (Strings.isNullOrEmpty(serviceName)) {
+                                    return monitoredService.getServiceName().startsWith(DEVICE_CONFIG_PREFIX);
+                                }
+                                return monitoredService.getServiceName().equals(serviceName);
+                            })).findFirst();
+            iface = optionalInterface.orElseGet(() -> ipInterfaces.stream().findFirst().orElse(null));
+        }
+        return iface;
     }
 
     public void setLocationAwarePollerClient(LocationAwarePollerClient locationAwarePollerClient) {
