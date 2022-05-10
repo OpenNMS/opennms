@@ -121,7 +121,7 @@ public class HttpsIT {
      * This test will open the page over HTTPS accepting any self-signed certificate which will allow us to verify the page is opened.
      * Test will confirm response 200, Username and Password fields.
      */
-    //@Test
+    @Test
     public void verifyHTTPSConnection() {
         LOG.info("Verify that the test itself works fine. Empty body.");
 
@@ -168,7 +168,7 @@ public class HttpsIT {
 
     }
 
-    @Test
+    //@Test
     public void verifyHttp() {
         String json  = given()
                 .auth().basic(AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME, AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD)
@@ -179,7 +179,7 @@ public class HttpsIT {
         LOG.info(json.toString());
     }
 
-    @Test
+    //@Test
     public void simpleCode() throws IOException {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
@@ -189,7 +189,7 @@ public class HttpsIT {
         LOG.info(resp.body().toString());
     }
 
-    @Test
+    //@Test
     public void simpleHTTPSCode() throws IOException {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
@@ -199,7 +199,7 @@ public class HttpsIT {
         LOG.info(resp.body().toString());
     }
 
-    //@Test
+    @Test
     public void okHttpTest() throws KeyManagementException, NoSuchAlgorithmException, IOException {
         OkHttpClient client = new OkHttpClient();
         OkHttpClient.Builder clientBuilder = client.newBuilder().readTimeout(6000, TimeUnit.SECONDS);
