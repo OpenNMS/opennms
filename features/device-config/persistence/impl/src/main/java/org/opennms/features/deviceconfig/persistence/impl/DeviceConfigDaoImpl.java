@@ -231,7 +231,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
 
     @Override
     public List<DeviceConfig> getAllDeviceConfigsWithAnInterfaceId(Integer ipInterfaceId) {
-        return find("from DeviceConfig dc where dc.lastUpdated is not null AND dc.ipInterface.id = ? ORDER BY lastUpdated DESC",
+        return find("from DeviceConfig dc where dc.ipInterface.id = ? ",
                 ipInterfaceId);
     }
 

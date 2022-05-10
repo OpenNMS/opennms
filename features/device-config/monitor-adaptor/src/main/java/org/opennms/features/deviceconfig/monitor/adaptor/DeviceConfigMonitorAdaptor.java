@@ -192,8 +192,10 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         sessionUtils.withTransaction(() -> {
 
             List<DeviceConfig> deviceConfigList = deviceConfigDao.getAllDeviceConfigsWithAnInterfaceId(interfaceId);
-            deviceConfigList.forEach(dc -> deviceConfigDao.delete(dc));
-            LOG.info("Deleted all device configs on Interface {}", interfaceId);
+            if (!deviceConfigList.isEmpty()) {
+                deviceConfigList.forEach(dc -> deviceConfigDao.delete(dc));
+                LOG.info("Deleted all device configs on Interface {}", interfaceId);
+            }
             return null;
         });
     }
