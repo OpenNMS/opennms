@@ -72,6 +72,8 @@ public interface DeviceConfigDao extends OnmsDao<DeviceConfig, Long> {
 
     int getLatestConfigCountForEachInterface(String searchTerm, Set<DeviceConfigStatus> statuses);
 
+    List<DeviceConfig> getAllDeviceConfigsWithAnInterfaceId(Integer ipInterfaceId);
+
     /**
      * Update the content of the specific device config.
      * @return An {@link Optional} containing the id of the {@link DeviceConfig} record that was updated.

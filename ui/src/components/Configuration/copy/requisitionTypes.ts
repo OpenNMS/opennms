@@ -63,7 +63,9 @@ export const ErrorStrings = {
   FilePathStart: 'Path must start with a /',
   MustHave: (nameType: string) => `Must have a ${nameType.toLocaleLowerCase()}`,
   NameShort: (nameType: string) => `${nameType} must have at least two chars`,
-  NameLong: (nameType: string, length = 255) => `${nameType} must be shorter than ${length}`
+  NameLong: (nameType: string, length = 255) => `${nameType} must be shorter than ${length}`,
+  Password: 'Must include a password',
+  Username: 'Must include a username'
 }
 
 export const requisitionTypeList = [

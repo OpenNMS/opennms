@@ -767,6 +767,14 @@ const validateLocalItem = (
     if (localItem.type.name === RequisitionTypes.File) {
       errors.path = validatePath(localItem.path)
     }
+    if (localItem.type.name === RequisitionTypes.VMWare) {
+      if (localItem.username && !localItem.password) {
+        errors.password = ErrorStrings.Password
+      }
+      if (localItem.password && !localItem.username) {
+        errors.username = ErrorStrings.Username
+      }
+    }
     if (!localItem.advancedCrontab) {
       errors = validateCronTab(localItem, errors)
     } else {
