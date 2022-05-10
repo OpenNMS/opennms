@@ -1,0 +1,9 @@
+await: Press any key to continue
+send: a
+await: #
+send: copy running-config tftp ${tftpServerIp} running-config${filenameSuffix}
+await: #
+send: exit
+await: >
+send: exit
+send: y
