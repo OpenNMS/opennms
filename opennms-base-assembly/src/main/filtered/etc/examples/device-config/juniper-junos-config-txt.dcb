@@ -1,0 +1,12 @@
+await: >
+send: show configuration | save /var/tmp/juniper.conf
+await: >
+send: start shell
+await: %
+send: cd /var/tmp
+await: %
+send: tftp ${tftpServerIp}
+await: tftp>
+send: put juniper.conf juniper.conf${filenameSuffix}
+await: tftp>
+send: exit

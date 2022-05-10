@@ -40,16 +40,21 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.sshd.client.ClientBuilder;
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.config.keys.KeyUtils;
+import org.apache.sshd.common.NamedFactory;
+import org.apache.sshd.common.kex.BuiltinDHFactories;
+import org.apache.sshd.common.signature.BuiltinSignatures;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.deviceconfig.sshscripting.SshScriptingService;
 import org.slf4j.Logger;
@@ -148,6 +153,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 InetAddress tftpServerIPv6Address
         ) throws Exception {
             sshClient = SshClient.setUpDefaultClient();
+
             sshClient.setServerKeyVerifier((clientSession, socketAddress, publicKey) -> {
                 if (hostKeyFingerprint == null) {
                     // If there is no host key specified, we accept all host keys as a graceful default.
@@ -162,6 +168,15 @@ public class SshScriptingServiceImpl implements SshScriptingService {
 
                 return  KeyUtils.checkFingerPrint(hostKeyFingerprint, publicKey).getKey();
             });
+
+            // We allow also older algorithms here, because Cisco and Aruba devices seem to be pretty picky.
+            sshClient.setKeyExchangeFactories(NamedFactory.setUpTransformedFactories(
+                    false,
+                    BuiltinDHFactories.VALUES,
+                    ClientBuilder.DH2KEX
+            ));
+
+            sshClient.setSignatureFactories(new ArrayList<>(BuiltinSignatures.VALUES));
 
             sshClient.start();
             try {

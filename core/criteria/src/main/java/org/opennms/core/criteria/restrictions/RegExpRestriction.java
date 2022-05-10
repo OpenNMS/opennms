@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,14 +28,19 @@
 
 package org.opennms.core.criteria.restrictions;
 
-public interface Restriction {
-    // don't forget to update RestrictionVisitor
-    public static enum RestrictionType {
-        NULL, NOTNULL, EQ, NE, GT, GE, LT, LE, ALL, ANY, LIKE, ILIKE, IN, NOT, BETWEEN, SQL, IPLIKE, MULTIAND, REGEXP
+public class RegExpRestriction  extends AttributeValueRestriction {
+
+    public RegExpRestriction(final String attribute, final Object value) {
+        super(RestrictionType.REGEXP, attribute, value);
     }
 
-    public abstract void visit(final RestrictionVisitor visitor);
+    @Override
+    public void visit(final RestrictionVisitor visitor) {
+        visitor.visitRegExp(this);
+    }
 
-    public RestrictionType getType();
-
+    @Override
+    public String toString() {
+        return "RegExpRestriction [attribute=" + getAttribute() + ", value=" + getValue() + "]";
+    }
 }

@@ -55,34 +55,67 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 final public class BgpSessionMonitor extends SnmpMonitorStrategy {
-    
+
     public static final Logger LOG = LoggerFactory.getLogger(BgpSessionMonitor.class);
 
     /**
-     * Default OID for the table that represents the BGP-peer states.
+     * Default base OID for the table that represents the BGP sessions
      */
-    private static final String BGP_PEER_STATE_OID = ".1.3.6.1.2.1.15.3.1.2";
-    
+    private static final String BGP_BASE_OID_DEFAULT = ".1.3.6.1.2.1.15";
     /**
-     * Default OID for the table that represents the BGP-peer admin states.
+     * Suffix for the table that represents the BGP-peer states.
      */
-    private static final String BGP_PEER_ADMIN_STATE_OID = ".1.3.6.1.2.1.15.3.1.3";
-    
+    private static final String BGP_PEER_STATE_OID_SUFFIX = ".3.1.2";
     /**
-     * Default OID for the table that represents the BGP-peer remote AS number.
+     * Suffix for the table that represents the BGP-peer admin states.
      */
-    private static final String BGP_PEER_REMOTEAS_OID = ".1.3.6.1.2.1.15.3.1.9";
-    
+    private static final String BGP_PEER_ADMIN_STATE_OID_SUFFIX = ".3.1.3";
     /**
-     * Default OID for the table that represents the BGP-peer last error code.
+     * Suffix for the table that represents the BGP-peer remote AS number.
      */
-    private static final String BGP_PEER_LAST_ERROR_OID = ".1.3.6.1.2.1.15.3.1.14";
-    
+    private static final String BGP_PEER_REMOTEAS_SUFFIX = ".3.1.9";
     /**
-     * Default OID for the table that represents the BGP-peer established time.
+     * Suffix for the table that represents the BGP-peer last error code.
      */
-    private static final String BGP_PEER_FSM_EST_TIME_OID = ".1.3.6.1.2.1.15.3.1.16";
-    
+    private static final String BGP_PEER_LAST_ERROR_SUFFIX = ".3.1.14";
+    /**
+     * Suffix for the table that represents the BGP-peer established time.
+     */
+    private static final String BGP_PEER_FSM_EST_TIME_SUFFIX = ".3.1.16";
+
+    static class BgpOids {
+        final String bgpBaseOid;
+        /**
+         * OID for the table that represents the BGP-peer states.
+         */
+        final String bgpPeerStateOid;
+        /**
+         * OID for the table that represents the BGP-peer admin states.
+         */
+        final String bgpPeerAdminStateOid;
+        /**
+         * OID for the table that represents the BGP-peer remote AS number.
+         */
+        final String bgpPeerRemoteAsOid;
+        /**
+         * OID for the table that represents the BGP-peer last error code.
+         */
+        final String bgpPeerLastErrorOid;
+        /**
+         * OID for the table that represents the BGP-peer established time.
+         */
+        final String bgpPeerFsmEstTimeOid;
+
+        public BgpOids(final Map<String, Object> parameters) {
+            this.bgpBaseOid = ParameterMap.getKeyedString(parameters, "bgpBaseOid", BGP_BASE_OID_DEFAULT);
+            this.bgpPeerStateOid = ParameterMap.getKeyedString(parameters, "bgpPeerStateOid", this.bgpBaseOid + BGP_PEER_STATE_OID_SUFFIX);
+            this.bgpPeerAdminStateOid = ParameterMap.getKeyedString(parameters, "bgpPeerAdminStateOid", this.bgpBaseOid + BGP_PEER_ADMIN_STATE_OID_SUFFIX);
+            this.bgpPeerRemoteAsOid = ParameterMap.getKeyedString(parameters, "bgpPeerRemoteAsOid", this.bgpBaseOid + BGP_PEER_REMOTEAS_SUFFIX);
+            this.bgpPeerLastErrorOid = ParameterMap.getKeyedString(parameters, "bgpPeerLastErrorOid", this.bgpBaseOid + BGP_PEER_LAST_ERROR_SUFFIX);
+            this.bgpPeerFsmEstTimeOid = ParameterMap.getKeyedString(parameters, "bgpPeerFsmEstTimeOid", this.bgpBaseOid + BGP_PEER_FSM_EST_TIME_SUFFIX);
+        }
+    }
+
     /**
      * Implement the BGP Peer states
      */
@@ -128,7 +161,8 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
      *                Thrown for any uncrecoverable errors.
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {   
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+        final BgpOids bgpOids = new BgpOids(parameters);
 
         String returnValue = "";
 
@@ -169,7 +203,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
             LOG.debug("poll: SnmpAgentConfig address: {}", agentConfig);
     
             // Get the BGP peer state
-            SnmpObjId bgpPeerStateSnmpObject = SnmpObjId.get(BGP_PEER_STATE_OID + "." + bgpPeerIp);
+            SnmpObjId bgpPeerStateSnmpObject = SnmpObjId.get(bgpOids.bgpPeerStateOid + "." + bgpPeerIp);
             SnmpValue bgpPeerState = SnmpUtils.get(agentConfig, bgpPeerStateSnmpObject);
             
             // If no peer state is received or SNMP is not possible, service is down
@@ -191,7 +225,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
             }
             
             // Peer state is not established gather some information
-            SnmpObjId bgpPeerAdminStateSnmpObject = SnmpObjId.get(BGP_PEER_ADMIN_STATE_OID + "." + bgpPeerIp);
+            SnmpObjId bgpPeerAdminStateSnmpObject = SnmpObjId.get(bgpOids.bgpPeerAdminStateOid + "." + bgpPeerIp);
             SnmpValue bgpPeerAdminState = SnmpUtils.get(agentConfig, bgpPeerAdminStateSnmpObject);
             // Check correct MIB-Support
             if (bgpPeerAdminState == null)
@@ -202,7 +236,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
                 adminStateMsg = resolveAdminState(bgpPeerAdminState.toInt());
             }
             
-            SnmpObjId bgpPeerRemoteAsSnmpObject = SnmpObjId.get(BGP_PEER_REMOTEAS_OID + "." + bgpPeerIp);
+            SnmpObjId bgpPeerRemoteAsSnmpObject = SnmpObjId.get(bgpOids.bgpPeerRemoteAsOid + "." + bgpPeerIp);
             SnmpValue bgpPeerRemoteAs = SnmpUtils.get(agentConfig, bgpPeerRemoteAsSnmpObject);
             // Check correct MIB-Support
             if (bgpPeerRemoteAs == null)
@@ -213,7 +247,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
                 remoteAsMsg = bgpPeerRemoteAs.toString();
             }
 
-            SnmpObjId bgpPeerLastErrorSnmpObject = SnmpObjId.get(BGP_PEER_LAST_ERROR_OID + "." + bgpPeerIp);
+            SnmpObjId bgpPeerLastErrorSnmpObject = SnmpObjId.get(bgpOids.bgpPeerLastErrorOid + "." + bgpPeerIp);
             SnmpValue bgpPeerLastError = SnmpUtils.get(agentConfig, bgpPeerLastErrorSnmpObject);
             // Check correct MIB-Support
             if (bgpPeerLastError == null)
@@ -224,7 +258,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
                 lastErrorMsg = resolveBgpErrorCode(bgpPeerLastError.toHexString());
             }
             
-            SnmpObjId bgpPeerFsmEstTimeSnmpObject = SnmpObjId.get(BGP_PEER_FSM_EST_TIME_OID + "." + bgpPeerIp);
+            SnmpObjId bgpPeerFsmEstTimeSnmpObject = SnmpObjId.get(bgpOids.bgpPeerFsmEstTimeOid + "." + bgpPeerIp);
             SnmpValue bgpPeerFsmEstTime = SnmpUtils.get(agentConfig, bgpPeerFsmEstTimeSnmpObject);
             // Check correct MIB-Support
             if (bgpPeerFsmEstTime == null)
