@@ -229,6 +229,12 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         return count;
     }
 
+    @Override
+    public List<DeviceConfig> getAllDeviceConfigsWithAnInterfaceId(Integer ipInterfaceId) {
+        return find("from DeviceConfig dc where dc.ipInterface.id = ? ",
+                ipInterfaceId);
+    }
+
     private DeviceConfigQueryCriteria createSqlQueryCriteria(Integer limit, Integer offset,
         String orderBy, String order, String searchTerm, Set<DeviceConfigStatus> statuses) {
         var criteria = new DeviceConfigQueryCriteria();

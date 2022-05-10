@@ -649,6 +649,8 @@ public abstract class EventConstants {
      */
     public static final String PARM_NEW_IFINDEX = "newIfIndex";
 
+    public static final String PARM_IPINTERFACE_ID = "ipInterfaceID";
+
     /**
      * The nodeLabel from the node table when sent as an event parm.
      */
