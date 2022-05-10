@@ -200,7 +200,9 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
             return future.toCompletableFuture().get(timeout, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             LOG.error("Device config retrieval failed - target: " + target, e);
-            return PollStatus.unavailable("Device config retrieval failed - target: " + target + "; message: " + e.getMessage());
+            final var pollStatus = PollStatus.unavailable("Device config retrieval failed - target: " + target + "; message: " + e.getMessage());
+            pollStatus.setDeviceConfig(new DeviceConfig());
+            return pollStatus;
         }
     }
 
