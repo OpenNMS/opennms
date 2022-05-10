@@ -61,12 +61,14 @@
           <td>
             <div class="flex">
               <FeatherButton
+                primary
                 icon="Edit"
                 @click="() => props.editClicked(item.originalIndex)"
+                :disabled="Boolean(item[RequisitionData.ImportURL].startsWith('requisition://'))"
+                data-test="edit-btn"
               >
                 <FeatherIcon
                   :icon="Edit"
-                  class="edit-icon"
                 ></FeatherIcon>
               </FeatherButton>
               <FeatherButton
@@ -252,9 +254,6 @@ table {
   .th {
     color: var($primary);
   }
-}
-.edit-icon {
-  color: var($primary);
 }
 .delete-icon {
   color: var($error);

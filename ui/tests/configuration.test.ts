@@ -1,8 +1,37 @@
+import { mount } from '@vue/test-utils'
+import store from '@/store'
 import { ConfigurationHelper } from '../src/components/Configuration/ConfigurationHelper'
-import { RequisitionTypes } from '../src/components/Configuration/copy/requisitionTypes'
+import { RequisitionTypes, RequisitionData } from '../src/components/Configuration/copy/requisitionTypes'
 import { test, expect } from 'vitest'
-import { LocalConfiguration } from '@/components/Configuration/configuration.types'
+import { LocalConfiguration, ProvisionDServerConfiguration } from '@/components/Configuration/configuration.types'
 import { ErrorStrings } from '@/components/Configuration/copy/requisitionTypes'
+import ConfigurationTable from '@/components/Configuration/ConfigurationTable.vue'
+
+const mockRequisitionProvisionDServiceConfig = {
+  [RequisitionData.ImportName]: 'test',
+  [RequisitionData.ImportURL]: 'requisition://dns?host=test',
+  [RequisitionData.CronSchedule]: '0 0 0 * * ?'
+} as ProvisionDServerConfiguration
+
+const mockHttpProvisionDServiceConfig = {
+  [RequisitionData.ImportName]: 'test',
+  [RequisitionData.ImportURL]: 'https://aa?key=val',
+  [RequisitionData.CronSchedule]: '0 0 0 * * ?'
+} as ProvisionDServerConfiguration
+
+const mockProps = {
+  itemList: [mockHttpProvisionDServiceConfig],
+  editClicked: () => '',
+  deleteClicked: () => '',
+  setNewPage: () => ''
+}
+
+const wrapper = mount(ConfigurationTable, {
+  global: {
+    plugins: [store]
+  },
+  propsData: mockProps
+})
 
 test('Convert item to URL query string', () => {
   const itemEmptyAdvancedOptions = {
@@ -112,4 +141,17 @@ test('The File type config path keeps params', () => {
   const fileUrlIn = 'file:///mypath?key1=key2'
   const res = ConfigurationHelper.convertURLToLocal(fileUrlIn)
   expect(res.path).toEqual('/mypath?key1=key2')
+})
+
+test('The edit btn disables if the record starts with "requisition://"', async () => {
+  const editBtn = wrapper.get('[data-test="edit-btn"]')
+  // expect edit btn to be enabled
+  expect(editBtn.attributes('aria-disabled')).toBeUndefined()
+
+  // update props with requisition type url
+  const newProps = {...mockProps, itemList: [mockRequisitionProvisionDServiceConfig]}
+  await wrapper.setProps(newProps)
+
+  // expect edit btn to be disabled
+  expect(editBtn.attributes('aria-disabled')).toBe('true')
 })
