@@ -176,4 +176,13 @@ test('Display appropriate form errors', async () => {
   errors = ConfigurationHelper.validateLocalItem(mockLocalConfig, [], 1, false)
   expect(errors.username).toBe(ErrorStrings.Username)
   expect(errors.password).toBe('')
+
+  // update form props
+  mockLocalConfig.username = ''
+  mockLocalConfig.password = ''
+
+  // expect no errors if fields left blank
+  errors = ConfigurationHelper.validateLocalItem(mockLocalConfig, [], 1, false)
+  expect(errors.username).toBe('')
+  expect(errors.password).toBe('')
 })
