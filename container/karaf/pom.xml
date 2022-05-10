@@ -14,6 +14,10 @@
     <packaging>karaf-assembly</packaging>
     <name>OpenNMS :: OSGi Container :: Embedded Karaf</name>
 
+    <properties>
+        <license.skipAddThirdParty>true</license.skipAddThirdParty>
+    </properties>
+
     <build>
         <!-- Include resources from src/main in the distribution -->
         <resources>
