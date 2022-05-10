@@ -1,10 +1,9 @@
 import { mount } from '@vue/test-utils'
 import store from '@/store'
 import { ConfigurationHelper } from '../src/components/Configuration/ConfigurationHelper'
-import { RequisitionTypes, RequisitionData } from '../src/components/Configuration/copy/requisitionTypes'
+import { RequisitionTypes, RequisitionData, ErrorStrings } from '../src/components/Configuration/copy/requisitionTypes'
 import { test, expect } from 'vitest'
 import { LocalConfiguration, ProvisionDServerConfiguration } from '@/components/Configuration/configuration.types'
-import { ErrorStrings } from '@/components/Configuration/copy/requisitionTypes'
 import ConfigurationTable from '@/components/Configuration/ConfigurationTable.vue'
 
 const mockRequisitionProvisionDServiceConfig = {
@@ -149,9 +148,32 @@ test('The edit btn disables if the record starts with "requisition://"', async (
   expect(editBtn.attributes('aria-disabled')).toBeUndefined()
 
   // update props with requisition type url
-  const newProps = {...mockProps, itemList: [mockRequisitionProvisionDServiceConfig]}
+  const newProps = { ...mockProps, itemList: [mockRequisitionProvisionDServiceConfig] }
   await wrapper.setProps(newProps)
 
   // expect edit btn to be disabled
   expect(editBtn.attributes('aria-disabled')).toBe('true')
+})
+
+test('Display appropriate form errors', async () => {
+  const mockLocalConfig = {
+    username: 'test',
+    password: '',
+    type: { name: 'VMware', id: 1 },
+    occurance: { name: ''}
+  } as LocalConfiguration
+
+  let errors = ConfigurationHelper.validateLocalItem(mockLocalConfig, [], 1, false)
+  // expect password input error
+  expect(errors.password).toBe(ErrorStrings.Password)
+  expect(errors.username).toBe('')
+
+  // update form props
+  mockLocalConfig.username = ''
+  mockLocalConfig.password = 'pass'
+
+  // expect username input error
+  errors = ConfigurationHelper.validateLocalItem(mockLocalConfig, [], 1, false)
+  expect(errors.username).toBe(ErrorStrings.Username)
+  expect(errors.password).toBe('')
 })
