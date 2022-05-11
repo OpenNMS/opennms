@@ -4,6 +4,7 @@ const enum Roles {
   ROLE_ADMIN = 'ROLE_ADMIN',
   ROLE_USER = 'ROLE_USER',
   ROLE_REST = 'ROLE_REST',
+  ROLE_CONFIG_EDITOR = 'ROLE_CONFIG_EDITOR',
   ROLE_DEVICE_CONFIG_BACKUP = 'ROLE_DEVICE_CONFIG_BACKUP'
 }
 
@@ -23,9 +24,10 @@ const hasOneOf = (...rolesToCheck: Role[]) => {
 
 const useRole = () => {
   const adminRole = computed<boolean>(() => hasOneOf(Roles.ROLE_ADMIN))
+  const configEditorRole = computed<boolean>(() => hasOneOf(Roles.ROLE_CONFIG_EDITOR))
   const dcbRole = computed<boolean>(() => hasOneOf(Roles.ROLE_ADMIN, Roles.ROLE_REST, Roles.ROLE_DEVICE_CONFIG_BACKUP))
 
-  return { adminRole, dcbRole, rolesAreLoaded }
+  return { adminRole, configEditorRole, dcbRole, rolesAreLoaded }
 }
 
 export default useRole
