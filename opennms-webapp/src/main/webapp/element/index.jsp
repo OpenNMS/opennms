@@ -235,8 +235,7 @@
             <div class="input-group">
                 <select id="bycat_value" class="form-control custom-select" name="searchvalue">
                 <% for (int i = 0; i < Asset.CATEGORIES.length; i++) { %>
-                    <option><%=Asset.CATEGORIES[i]%>
-                    </option>
+                    <option><%=Asset.CATEGORIES[i]%></option>
                 <% } %>
                 </select>
                 <div class="input-group-append">
