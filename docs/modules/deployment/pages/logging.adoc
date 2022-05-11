@@ -8,7 +8,7 @@ To change this setting, edit `$\{OPENNMS_HOME}/etc/log4j2.xml` and locate the fo
 <KeyValuePair key="..." value="WARN" />
 ----
 
-The log level can be altered to the following values: `DEBUG`, `INFO`, `WARN`, `ERROR`.
-Changes to `log4j2.xml` will take effect within 60 seconds with no extra action needed.
+You can alter the log level to one of the following values: `DEBUG`, `INFO`, `WARN`, `ERROR`.
+Changes to `log4j2.xml` take effect within 60 seconds with no extra action needed.
 
 On busy systems, setting the log level to `DEBUG` may create so much noise as to be impractical or even have performance impacts.
