@@ -298,6 +298,7 @@ commands:
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
+              -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
               $MAVEN_TARGETS
