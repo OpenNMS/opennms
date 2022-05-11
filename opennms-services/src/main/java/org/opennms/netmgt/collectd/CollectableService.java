@@ -91,7 +91,7 @@ class CollectableService implements ReadyRunnable {
 
     protected static final String USE_COLLECTION_START_TIME_SYS_PROP = "org.opennms.netmgt.collectd.useCollectionStartTime";
 
-    private final boolean m_usingStrictInterval = Boolean.getBoolean(STRICT_INTERVAL_SYS_PROP);
+    private final boolean m_usingStrictInterval = !System.getProperties().containsKey(STRICT_INTERVAL_SYS_PROP) || Boolean.getBoolean(STRICT_INTERVAL_SYS_PROP);
 
     /**
      * Interface's parent node identifier
