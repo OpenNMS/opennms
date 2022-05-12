@@ -37,8 +37,10 @@ import java.util.stream.Collectors;
 import org.opennms.integration.api.v1.config.events.EventConfExtension;
 import org.opennms.integration.api.v1.config.events.EventDefinition;
 import org.opennms.integration.api.v1.config.events.LogMsgDestType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
+import org.opennms.netmgt.xml.eventconf.CollectionGroup;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.LogDestType;
@@ -97,6 +99,9 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
                 .map(EventConfExtensionManager::toParameter)
                 .collect(Collectors.toList());
         event.setParameters(parms);
+        event.setCollectionGroup(def.getCollectionGroup().stream()
+                .map(EventConfExtensionManager::toCollectionGroup)
+                .collect(Collectors.toList()));
         return event;
     }
 
@@ -197,5 +202,67 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         final ManagedObject managedObject = new ManagedObject();
         managedObject.setType(mo.getType());
         return managedObject;
+    }
+
+    private static CollectionGroup toCollectionGroup(org.opennms.integration.api.v1.config.events.CollectionGroup apiCollectionGroup) {
+        if (apiCollectionGroup == null) {
+            return null;
+        }
+        final CollectionGroup collectionGroup = new CollectionGroup();
+        collectionGroup.setName(apiCollectionGroup.getName());
+        collectionGroup.setInstance(apiCollectionGroup.getInstance());
+        collectionGroup.setResourceType(apiCollectionGroup.getResourceType());
+        collectionGroup.setRrd(toRrd(apiCollectionGroup.getRrd()));
+        collectionGroup.setCollection(apiCollectionGroup.getCollection().stream()
+                .map(EventConfExtensionManager::toCollection).collect(Collectors.toList()));
+        return collectionGroup;
+    }
+
+    private static CollectionGroup.Rrd toRrd(org.opennms.integration.api.v1.config.events.CollectionGroup.Rrd apiRrd) {
+        if (apiRrd == null) {
+            return null;
+        }
+        final CollectionGroup.Rrd rrd = new CollectionGroup.Rrd();
+        rrd.setRras(apiRrd.getRras());
+        rrd.setHeartBeat(apiRrd.getHeartBeat());
+        rrd.setStep(apiRrd.getStep());
+        return rrd;
+    }
+
+    private static CollectionGroup.Collection toCollection(org.opennms.integration.api.v1.config.events.CollectionGroup.Collection apiCollection) {
+        if (apiCollection == null) {
+            return null;
+        }
+        final CollectionGroup.Collection collection = new CollectionGroup.Collection();
+        collection.setName(apiCollection.getName());
+        collection.setType(toAttributeType(apiCollection.getType()));
+        collection.setParamValue(apiCollection.getParamValue().stream()
+                .map(EventConfExtensionManager::toParamValue).collect(Collectors.toList()));
+        collection.setRename(apiCollection.getRename());
+        return collection;
+    }
+
+    private static AttributeType toAttributeType(org.opennms.integration.api.v1.config.events.AttributeType type) {
+        if (type != null) {
+            switch(type) {
+                case GAUGE:
+                    return AttributeType.GAUGE;
+                case COUNTER:
+                    return AttributeType.COUNTER;
+                case STRING:
+                    return AttributeType.STRING;
+            }
+        }
+        return AttributeType.GAUGE;
+    }
+
+    private static CollectionGroup.ParamValue toParamValue(org.opennms.integration.api.v1.config.events.CollectionGroup.ParamValue apiParamValue) {
+        if (apiParamValue == null) {
+            return null;
+        }
+        final CollectionGroup.ParamValue paramValue = new CollectionGroup.ParamValue();
+        paramValue.setName(apiParamValue.getName());
+        paramValue.setValue(apiParamValue.getValue());
+        return paramValue;
     }
 }
