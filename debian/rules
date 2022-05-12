@@ -40,40 +40,10 @@ build: configure $(STAMP_BUILD)
 $(STAMP_BUILD):
 	dh_testdir
 	# -Duser.home=$(HOME) is needed to get maven to use the correct ~/.m2/ directory when being run with fakeroot
-	@if [ -f "$$OPENNMS_SETTINGS_XML" ]; then \
-		echo "using $$OPENNMS_SETTINGS_XML"; \
-		if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
-			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./compile.pl -Denable.snapshots=true -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install && \
-				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install; \
-			else \
-				./compile.pl -DupdatePolicy=never -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install && \
-				./assemble.pl -DupdatePolicy=never -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) -PskipCompile install; \
-			fi; \
-		else \
-			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
-			else \
-				./assemble.pl -DupdatePolicy=never -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
-			fi; \
-		fi; \
-	else \
-		if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
-			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./compile.pl -Denable.snapshots=true -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install && \
-				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install; \
-			else \
-				./compile.pl -DupdatePolicy=never -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install && \
-				./assemble.pl -DupdatePolicy=never -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) -PskipCompile install; \
-			fi; \
-		else \
-			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
-			else \
-				./assemble.pl -DupdatePolicy=never -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
-			fi; \
-		fi; \
+	@if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
+		./compile.pl $(shell debian/get-build-args.sh) $(BUILDDEFINES) -PskipCompile install && \
 	fi
+	./assemble.pl $(shell debian/get-build-args.sh) -Dbuild.profile=fulldir $(BUILDDEFINES) -PskipCompile install
 	find debian/temp -type d -name .svn -exec rm -rf {} \;
 	find debian/temp -type d -name .git -exec rm -rf {} \;
 	touch $(STAMP_BUILD)
