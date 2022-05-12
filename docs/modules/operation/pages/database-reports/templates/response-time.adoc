@@ -21,7 +21,8 @@ This report can be customized with company logos in the page header and page foo
 
 | Surveillance Category
 | String
-| Identify the category of data for this availability report. Standard values include: "Routers", "Switches", "Servers", "Production", "Test" and "Development".  Users can add custom categories.
+| Identify a category to filter nodes to be included in the report.
+If no categories match the entered string, the report will not have data.
 | %
 // COMMENT: The default should probably be set to "Routers" like the Availability Summary.
 
