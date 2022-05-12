@@ -100,7 +100,7 @@ OpenNMS provides the following sample report templates, located in `$OPENNMS_HOM
 | Status
 | Status of SNMP interfaces over time range.
 
-| xref:operation:database-reports/templates/total-bytes.adoc#total-bytes-report[Total Bytes Transferred by Interface]
+| xref:operation:database-reports/templates/total-bytes.adoc[Total Bytes Transferred by Interface]
 | Usage
 | Bytes transferred by interface.
 
