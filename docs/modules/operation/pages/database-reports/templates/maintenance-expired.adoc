@@ -23,7 +23,8 @@ This report can be customized with a 3 company logos that are approximately 195p
 
 | Show Expired Maintenance Contracts
 | String
-| Specify true or false.  True will include contracts that have already expired along with assets with maintenance contracts that will expire within the number of days specified for the warning threshold below.
+| Specify true or false.
+True will include contracts that have already expired along with assets with maintenance contracts that will expire within the number of days specified for the warning threshold below.
 | true
 
 | Format for Expire Date
