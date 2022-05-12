@@ -1843,6 +1843,28 @@
 
   <profiles>
     <profile>
+      <id>production</id>
+      <activation>
+        <property>
+          <name>build.type</name>
+          <value>production</value>
+        </property>
+      </activation>
+      <properties>
+        <runPingTests>true</runPingTests>
+        <skipPdfGeneration>false</skipPdfGeneration>
+        <skipSignJar>false</skipSignJar>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>enable.license</id>
       <activation>
         <property><name>enable.license</name><value>true</value></property>
@@ -1961,14 +1983,6 @@
         <skipPdfGeneration>false</skipPdfGeneration>
         <skipSignJar>false</skipSignJar>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
     <profile>
       <id>smoke</id>
