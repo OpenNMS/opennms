@@ -39,7 +39,7 @@ OpenNMS provides the following sample report templates, located in `$OPENNMS_HOM
 |===
 | Report Name            | Category     | Description
 
-|  xref:operation:database-reports/templates/avail-summary.adoc#avail-summary-report[Availability Summary]
+|  xref:operation:database-reports/templates/avail-summary.adoc[Availability Summary]
 | Status
 | One page summary showing summary statistics on outages and availability for user-specified surveillance category during a user-specified number of days.
 
