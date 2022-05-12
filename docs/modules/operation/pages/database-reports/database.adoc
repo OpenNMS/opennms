@@ -88,7 +88,7 @@ OpenNMS provides the following sample report templates, located in `$OPENNMS_HOM
 | Status
 | Summary of response times across surveillance category.
 
-| xref:operation:database-reports/templates/response-time.adoc#response-time-report[Response Time by Node]
+| xref:operation:database-reports/templates/response-time.adoc[Response Time by Node]
 | Status
 | Response times by node.
 
