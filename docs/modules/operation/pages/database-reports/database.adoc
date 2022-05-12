@@ -92,7 +92,7 @@ OpenNMS provides the following sample report templates, located in `$OPENNMS_HOM
 | Status
 | Response times by node.
 
-| xref:operation:database-reports/templates/serial.adoc#serial-interface-report[Serial Interface Utilization Summary]
+| xref:operation:database-reports/templates/serial.adoc[Serial Interface Utilization Summary]
 | Status
 | Summary of serial interface utilization.
 
