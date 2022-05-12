@@ -2,7 +2,7 @@
 = Event Analysis Report
 
 
-=== Report Contents
+== Report Contents
 
 This report provides an analysis of all events over the past 30 days.  This report contains the following 6 sections:
 
