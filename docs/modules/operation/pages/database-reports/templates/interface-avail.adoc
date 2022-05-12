@@ -3,7 +3,8 @@
 
 === Report Contents
 
-This report shows interface availability for interfaces with outages within the time range.  It is a multipage report that provides the following availability data for all router interfaces by IP address over the user-specified date range:
+This report shows interface availability for interfaces with outages within the time range.
+It is a multipage report that provides the following availability data for all router interfaces by IP address over the user-specified date range:
 
 * Number of Outages
 * Mean Time To Restore ("MTTR") (in hours)
