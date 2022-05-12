@@ -38,7 +38,7 @@ If not categories match the entered string, the report will not have data.
 
 | Report Format
 | Choice
-| Dropown menu with a choice of PDF or CSV
+| Dropdown menu with a choice of PDF or CSV
 | PDF
 
 | Deliver the Report
