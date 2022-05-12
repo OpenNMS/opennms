@@ -58,7 +58,7 @@ OpenNMS provides the following sample report templates, located in `$OPENNMS_HOM
 | xxxx
 // QUESTION: Need help getting info on this report.  It is not a JasperReport.
 
-| xref:operation:database-reports/templates/event.adoc#event-report[Event Analysis]
+| xref:operation:database-reports/templates/event.adoc[Event Analysis]
 | Status
 | Tables and charts showing different slices on the top 25 events over the past 30 days.
 
