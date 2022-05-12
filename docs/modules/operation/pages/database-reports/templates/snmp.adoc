@@ -1,7 +1,7 @@
 [[snmp-report]]
 = SNMP Interface Availability Report
 
-=== Report Contents
+== Report Contents
 
 This report provides the following availability data for SNMP interfaces (by IP address) over the specified date range:
 
