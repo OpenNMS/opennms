@@ -14,7 +14,9 @@ This report provides an analysis of all events over the past 30 days.  This repo
 * Top 25 nodes with generic enterprise default traps
 //QUESTION: Need explanation of last section
 
-The first section includes a pie showing all events by source, along with a table with the data for the pie chart.  This section allso includes two line charts shoowing the Total average processed events per hour and the events per day.  Finally it contains a table with information on the database providing the above information.
+The first section includes a pie showing all events by source, along with a table with the data for the pie chart.
+This section also includes two line charts showing the Total average processed events per hour and the events per day.
+Finally it contains a table with information on the database providing the above information.
 
 The next four sections each contain a table and a line chart showing a breakdown of the top 25 events over the last 30 days broken down by event source, hours, node, and node and UEI.
 The last section shows the top 25 nodes with generic enterprise default traps and the number of events.
