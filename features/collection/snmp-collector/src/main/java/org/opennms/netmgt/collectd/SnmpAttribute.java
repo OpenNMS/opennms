@@ -124,28 +124,29 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      */
     @Override
     public Number getNumericValue() {
-        if (getValue() == null) {
+        final SnmpValue snmpValue = getValue();
+        if (snmpValue == null) {
             LOG.debug("No data collected for attribute {}. Skipping", this);
             return null;
-        } else if (getValue().isNumeric()) {
-            return getValue().toLong();
+        } else if (snmpValue.isNumeric()) {
+            return snmpValue.toLong();
         } else {
             // Check to see if this is a 63-bit counter packed into an octetstring
-            Long value = SnmpUtils.getProtoCounter63Value(getValue());
+            Long value = SnmpUtils.getProtoCounter63Value(snmpValue);
             if (value != null) {
                 return value;
             }
 
             try {
                 if (AttributeType.COUNTER.equals(getType())) { // See NMS-7839: for RRDtool the raw counter value must be an integer.
-                    return Long.valueOf(getValue().toString());
+                    return Long.valueOf(snmpValue.toString());
                 }
-                return Double.valueOf(getValue().toString());
+                return Double.valueOf(snmpValue.toString());
             } catch(NumberFormatException e) {
                 LOG.trace("Unable to process data received for attribute {} maybe this is not a number? See bug 1473 for more information. Skipping.", this);
-                if (getValue().getType() == SnmpValue.SNMP_OCTET_STRING) {
+                if (snmpValue.getType() == SnmpValue.SNMP_OCTET_STRING) {
                     try {
-                        return Long.valueOf(getValue().toHexString(), 16);
+                        return Long.valueOf(snmpValue.toHexString(), 16);
                     } catch(NumberFormatException ex) {
                         LOG.trace("Unable to process data received for attribute {} maybe this is not a number? See bug 1473 for more information. Skipping.", this);
                     }
