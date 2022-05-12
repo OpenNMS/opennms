@@ -51,9 +51,7 @@
     <intercept-url pattern="/rest/classifications/**" method="PUT" access="ROLE_REST,ROLE_ADMIN,ROLE_FLOW_MANAGER" />
 
     <!-- Allow certain actions for the ROLE_USER role -->
-    <intercept-url pattern="/rest/resources/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER" />
-    <intercept-url pattern="/rest/resources/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN" />
-    <intercept-url pattern="/rest/resources/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_USER" />
+    <intercept-url pattern="/rest/resources/generateId" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER" />
 
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
