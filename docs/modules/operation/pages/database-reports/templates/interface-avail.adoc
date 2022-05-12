@@ -1,7 +1,7 @@
 [[interface-avail-report]]
 = Interface Availability Report
 
-=== Report Contents
+== Report Contents
 
 This report shows interface availability for interfaces with outages within the time range.
 It is a multipage report that provides the following availability data for all router interfaces by IP address over the user-specified date range:
