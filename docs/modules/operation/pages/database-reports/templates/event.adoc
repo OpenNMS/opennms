@@ -16,7 +16,8 @@ This report provides an analysis of all events over the past 30 days.  This repo
 
 The first section includes a pie showing all events by source, along with a table with the data for the pie chart.  This section allso includes two line charts shoowing the Total average processed events per hour and the events per day.  Finally it contains a table with information on the database providing the above information.
 
-The next four sections each contain a table and a line chart showing a breakdown of the top 25 events over the last 30 days broken down by event source, hours, node, and node and UEI.  The last section shows the top 25 nodes with generic enterprise default traps and the number of events.
+The next four sections each contain a table and a line chart showing a breakdown of the top 25 events over the last 30 days broken down by event source, hours, node, and node and UEI.
+The last section shows the top 25 nodes with generic enterprise default traps and the number of events.
 //QUESTION: Need clarification on all these sections, especially "TOP 25 event hours" and "Top 25 nodes with generic enterprise default traps".  The y axis on all the charts are the same and the values are not all integers, so it doesn't look like these are tallies, which is what is inall of the tables.
 
 This report can be customized with a company logo in the header that is approximately 195px by 50px.
