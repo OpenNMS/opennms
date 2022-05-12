@@ -48,10 +48,13 @@ import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -103,7 +106,7 @@ public class DeviceConfigMonitorAdaptorIT {
     private SessionUtils sessionUtils;
     
     @Autowired
-    private EventIpcManager eventIpcManager;
+    private MockEventIpcManager eventIpcManager;
 
     private OnmsIpInterface ipInterface;
     private OnmsNode node;
@@ -147,8 +150,9 @@ public class DeviceConfigMonitorAdaptorIT {
         attributes.put("encoding", StandardCharsets.UTF_16.name());
 
         // Send failed update first ( scenario 1)
+        String failureReason = "Failed to connect to SSHServer";
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(new org.opennms.netmgt.poller.DeviceConfig());
-        Mockito.when(pollStatus.getReason()).thenReturn("Failed to connect to SSHServer");
+        Mockito.when(pollStatus.getReason()).thenReturn(failureReason);
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
         Optional<DeviceConfig> configOnMonday = deviceConfigDao.getLatestConfigForInterface(ipInterface, DEFAULT_SERVICE_NAME);
         Assert.assertTrue(configOnMonday.isPresent());
@@ -156,7 +160,9 @@ public class DeviceConfigMonitorAdaptorIT {
         Assert.assertEquals(configOnMonday.get().getLastFailed(), configOnMonday.get().getLastUpdated());
         Assert.assertNull(configOnMonday.get().getCreatedTime());
         Assert.assertNull(configOnMonday.get().getLastSucceeded());
-
+        EventBuilder builder = new EventBuilder(EventConstants.DEVICE_CONFIG_RETRIEVAL_FAILED_UEI, "poller");
+        builder.addParam(EventConstants.PARM_LOSTSERVICE_REASON, failureReason);
+        eventIpcManager.getEventAnticipator().anticipateEvent(builder.getEvent());
 
         // Send valid config (Scenario 2)
         byte[] configInBytes = config.getBytes(StandardCharsets.UTF_16);
@@ -165,6 +171,8 @@ public class DeviceConfigMonitorAdaptorIT {
         Mockito.when(pollStatus.getDeviceConfig()).thenReturn(deviceConfig);
         // Send pollStatus with config to adaptor.
         deviceConfigAdaptor.handlePollResult(service, attributes, pollStatus);
+        builder = new EventBuilder(EventConstants.DEVICE_CONFIG_RETRIEVAL_SUCCEEDED_UEI, "poller");
+        eventIpcManager.getEventAnticipator().anticipateEvent(builder.getEvent());
 
         Optional<DeviceConfig> configOnTuesday = deviceConfigDao.getLatestConfigForInterface(ipInterface, DEFAULT_SERVICE_NAME);
         Assert.assertTrue(configOnTuesday.isPresent());

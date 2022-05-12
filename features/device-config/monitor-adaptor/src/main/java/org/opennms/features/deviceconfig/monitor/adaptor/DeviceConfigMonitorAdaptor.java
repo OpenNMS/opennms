@@ -68,6 +68,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.net.InetAddress;
 
 import static org.opennms.netmgt.events.api.EventConstants.PARM_IPINTERFACE_ID;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_LOSTSERVICE_REASON;
 
 @EventListener(name = "OpenNMS.DeviceConfig", logPrefix = "poller")
 public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
@@ -132,7 +133,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                     configType,
                     encoding,
                     status.getReason());
-            sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_FAILED_UEI);
+            sendEvent(ipInterface, svc.getSvcName(), EventConstants.DEVICE_CONFIG_RETRIEVAL_FAILED_UEI, status.getReason());
         } else {
             // Config retrieval succeeded
             // De-compress if content is compressed.
@@ -200,25 +201,6 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         });
     }
 
-    public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
-        this.deviceConfigDao = deviceConfigDao;
-    }
-
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        this.ipInterfaceDao = ipInterfaceDao;
-    }
-
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        this.eventForwarder = eventForwarder;
-    }
-
-    private String getObjectAsString(Object object) {
-        if (object instanceof String) {
-            return (String) object;
-        }
-        return null;
-    }
-
     /**
      * Clean up any "stale" DeviceConfig records from the database. These are DeviceConfig records
      * containing configuration data that are beyond the configured retention date.
@@ -252,10 +234,36 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         return DEFAULT_RETENTION_PERIOD;
     }
 
-    private void sendEvent(OnmsIpInterface ipInterface, String serviceName, String uei) {
+    private void sendEvent(OnmsIpInterface ipInterface, String serviceName, String uei, String reason) {
         EventBuilder bldr = new EventBuilder(uei, "poller");
         bldr.setIpInterface(ipInterface);
         bldr.setService(serviceName);
-        eventForwarder.sendNow(bldr.getEvent());
+        if (!Strings.isNullOrEmpty(reason)) {
+            bldr.addParam(PARM_LOSTSERVICE_REASON, reason);
+        }
+        eventForwarder.sendNowSync(bldr.getEvent());
+    }
+
+    private String getObjectAsString(Object object) {
+        if (object instanceof String) {
+            return (String) object;
+        }
+        return null;
+    }
+
+    private void sendEvent(OnmsIpInterface ipInterface, String serviceName, String uei) {
+        sendEvent(ipInterface, serviceName, uei, null);
+    }
+
+    public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
+        this.deviceConfigDao = deviceConfigDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        this.ipInterfaceDao = ipInterfaceDao;
+    }
+
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        this.eventForwarder = eventForwarder;
     }
 }

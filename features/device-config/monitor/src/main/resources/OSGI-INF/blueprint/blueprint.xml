@@ -4,9 +4,15 @@
 		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
     <reference id="retriever" interface="org.opennms.features.deviceconfig.retrieval.api.Retriever" availability="mandatory" />
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
+    <reference id="deviceConfigDao" interface="org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao" availability="mandatory"/>
 
     <bean id="deviceConfigMonitor" class="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor" >
         <property name="retriever" ref="retriever"/>
+        <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+        <property name="deviceConfigDao" ref="deviceConfigDao"/>
+        <property name="sessionUtils" ref="sessionUtils"/>
     </bean>
 
     <service ref="deviceConfigMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
