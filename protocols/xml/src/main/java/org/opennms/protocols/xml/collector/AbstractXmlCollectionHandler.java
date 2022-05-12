@@ -226,7 +226,8 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
                 final Resource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
                 LOG.debug("fillCollectionSet: processing resource {}", collectionResource);
                 for (XmlObject object : group.getXmlObjects()) {
-                    String value = (String) xpath.evaluate(object.getXpath(), resource, XPathConstants.STRING);
+                    final String value = object.map((String) xpath.evaluate(object.getXpath(), resource, XPathConstants.STRING));
+
                     builder.withAttribute(collectionResource, group.getName(), object.getName(), value, object.getDataType());
                 }
                 processXmlResource(builder, collectionResource, resourceName, group.getName());

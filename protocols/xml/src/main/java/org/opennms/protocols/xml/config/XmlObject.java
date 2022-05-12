@@ -29,11 +29,15 @@
 package org.opennms.protocols.xml.config;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -63,6 +67,12 @@ public class XmlObject implements Serializable, Comparable<XmlObject>, Cloneable
     @XmlAttribute(name="xpath", required=true)
     private String m_xpath;
 
+    @XmlElement(name="xml-mapping")
+    private List<XmlMapping> xmlMappings = new ArrayList<>();
+
+    @XmlTransient
+    private static final XmlMapping[] OF_XML_MAPPINGS = new XmlMapping[0];
+
     /**
      * Instantiates a new XML object.
      */
@@ -83,6 +93,7 @@ public class XmlObject implements Serializable, Comparable<XmlObject>, Cloneable
         m_name = copy.m_name;
         m_dataType = copy.m_dataType;
         m_xpath = copy.m_xpath;
+        copy.xmlMappings.stream().forEach(o -> xmlMappings.add(o.clone()));
     }
 
     /**
@@ -148,6 +159,7 @@ public class XmlObject implements Serializable, Comparable<XmlObject>, Cloneable
         .append(getName(), obj.getName())
         .append(getDataType(), obj.getDataType())
         .append(getXpath(), obj.getXpath())
+        .append(getXmlMappings().toArray(OF_XML_MAPPINGS), obj.getXmlMappings().toArray(OF_XML_MAPPINGS))
         .toComparison();
     }
 
@@ -162,9 +174,30 @@ public class XmlObject implements Serializable, Comparable<XmlObject>, Cloneable
             .append(getName(), other.getName())
             .append(getDataType(), other.getDataType())
             .append(getXpath(), other.getXpath())
+            .append(getXmlMappings().toArray(OF_XML_MAPPINGS), other.getXmlMappings().toArray(OF_XML_MAPPINGS))
             .isEquals();
         }
         return false;
+    }
+
+    public List<XmlMapping> getXmlMappings() {
+        return xmlMappings;
+    }
+
+    public void setXmlMappings(final List<XmlMapping> xmlMappings) {
+        this.xmlMappings = xmlMappings;
+    }
+
+
+    public String map(final String from) {
+        if (xmlMappings != null) {
+            for(final XmlMapping xmlMapping : xmlMappings) {
+                if (xmlMapping.getFrom().equals(from)) {
+                    return xmlMapping.getTo();
+                }
+            }
+        }
+        return from;
     }
 
     @Override
