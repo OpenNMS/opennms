@@ -2,7 +2,7 @@
 = Availability Summary Report (Default Configuration for Past 7 Days)
 
 
-=== Report Contents
+== Report Contents
 
 This report provides a summary of availability across one or more surveillance categories.  One page report with average, minimum and maximum values for the following availability data for the specified surveillance category over the specified date range:
 
