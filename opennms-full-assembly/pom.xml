@@ -12,7 +12,6 @@
   <name>OpenNMS Full Assembly</name>
   <properties>
     <build.profile>default</build.profile>
-    <maven.metadata.legacy>true</maven.metadata.legacy>
   </properties>
   <profiles>
     <profile>
