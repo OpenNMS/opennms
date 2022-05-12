@@ -29,11 +29,7 @@
 package org.opennms.netmgt.collectd;
 
 
-import org.opennms.netmgt.collection.api.AttributeGroupType;
-import org.opennms.netmgt.collection.api.AttributeType;
-import org.opennms.netmgt.collection.api.CollectionAttribute;
-import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
-import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.api.*;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +45,7 @@ public class NumericAttributeType extends SnmpAttributeType implements NumericCo
 
     private final AttributeType m_type;
 
-    private static final String[] s_numericTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring" };
+    private static final String[] s_numericTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring", "opaque" };
 
     /**
      * <p>isNumericType</p>
