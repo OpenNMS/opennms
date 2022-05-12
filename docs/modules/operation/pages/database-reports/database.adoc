@@ -80,7 +80,7 @@ OpenNMS provides the following sample report templates, located in `$OPENNMS_HOM
 | Asset Management
 | Provides an overview of assets, showing how many within each age group have an active contract, no contract or an expired contract; and shows how many will be expiring in the next 12 months.
 
-| xref:operation:database-reports/templates/morning.adoc#morning-report[Early Morning Report]
+| xref:operation:database-reports/templates/morning.adoc[Early Morning Report]
 | Status
 | Summary of status of network nodes over the past 24 hours.
 
