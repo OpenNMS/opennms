@@ -104,7 +104,7 @@ OpenNMS provides the following sample report templates, located in `$OPENNMS_HOM
 | Usage
 | Bytes transferred by interface.
 
-| xref:operation:database-reports/templates/traffic-rates.adoc#traffic-rate-report[Average and Peak Traffic Rates for Nodes by Interface]
+| xref:operation:database-reports/templates/traffic-rates.adoc[Average and Peak Traffic Rates for Nodes by Interface]
 | Usage
 | Average and peak traffic rates for nodes by interface.
 
