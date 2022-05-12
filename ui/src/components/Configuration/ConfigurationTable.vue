@@ -22,7 +22,6 @@
           <th
             scope="col"
             class="onms-sort-header"
-            v-on:sort-changed="sortChanged"
             >Schedule Frequency</th
           >
           <FeatherSortHeader
