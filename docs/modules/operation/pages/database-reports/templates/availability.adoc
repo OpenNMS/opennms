@@ -2,7 +2,7 @@
 = Availability by Node Report
 Availability by node across one or more surveillance categories.
 
-=== Report Contents
+== Report Contents
 
 This report provides the following availability data for nodes that have the user-specified surveillance category over the specified date range:
 
