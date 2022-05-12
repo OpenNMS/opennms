@@ -119,7 +119,7 @@ image::database-reports/PDF-Report.png[pdf report]
 //| Grafana Dashboard UID
 //| String
 
-//| Granfana Endpoint UID
+//| Grafana Endpoint UID
 //| String
 // End Hidden Parameters
 
