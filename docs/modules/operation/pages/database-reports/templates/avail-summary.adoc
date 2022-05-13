@@ -13,7 +13,8 @@ This report provides a summary of availability across one or more surveillance c
 * Percent Availability (per unit in category)
 //QUESTION: Need to validate explanation of the last two
 
-This report has a pie chart showing percent available time to outage time.  It can be customized with a company logo in the header that is approximately 195px by 50px.
+This report has a pie chart showing percent available time to outage time.
+It can be customized with a company logo in the header that is approximately 195px by 50px.
 
 == Parameters
 
