@@ -38,7 +38,7 @@
         :error="getError('importThreads')"
         type="number"
         label="Import"
-        hint="Maximum number of concurrent Java threads to use to import data."
+        hint="Number of threads to allocate for importing requisitions."
         v-model="threadPoolData.importThreads"
         @keypress="enterCheck"
       />
@@ -46,7 +46,7 @@
         :error="getError('scanThreads')"
         type="number"
         label="Scan"
-        hint="Maximum number of concurrent Java threads to use for a scan."
+        hint="Number of threads to allocate for scanning new nodes."
         v-model="threadPoolData.scanThreads"
         @keypress="enterCheck"
       />
@@ -54,7 +54,7 @@
         :error="getError('rescanThreads')"
         type="number"
         label="Rescan"
-        hint="Maximum number of concurrent Java threads to use for a rescan."
+        hint="Number of threads to allocate for rescanning existing nodes."
         v-model="threadPoolData.rescanThreads"
         @keypress="enterCheck"
       />
@@ -63,7 +63,7 @@
         :error="getError('writeThreads')"
         type="number"
         label="Write"
-        hint="Maximum number of Java threads to use for writing to the database."
+        hint="Number of threads to allocate for writing to the database."
         v-model="threadPoolData.writeThreads"
         @keypress="enterCheck"
       />
