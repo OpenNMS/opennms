@@ -62,7 +62,7 @@ OpenNMS provides the following sample report templates, located in `$OPENNMS_HOM
 | Status
 | Tables and charts showing different slices on the top 25 events over the past 30 days.
 
-| xref:operation:database-reports/templates/grafana.adoc#grafana-report[Grafana Dashboards]
+| xref:operation:database-reports/templates/grafana.adoc[Grafana Dashboards]
 | Grafana
 | Create Report from Grafana Dashboard, 3 options are provided.
 // ToDo: Get more detail on reports, find out why helper file with zoneid is not work; check to see if zoneid is depracated.
