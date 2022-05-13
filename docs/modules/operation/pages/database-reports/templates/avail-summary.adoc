@@ -28,7 +28,8 @@ This report has a pie chart showing percent available time to outage time.  It c
 
 | Surveillance Category
 | String
-| Identify the category of data for this availability report. Standard values include: "Routers", "Switches", "Servers", "Production", "Test" and "Development".  Users can add custom categories. If no categories match the entered string, the report will have not data.
+| Identify a category to filter nodes to be included in the report. 
+If no categories match the entered string, the report will not have data.
 | %
 //COMMENT: This default should be changed to "Routers" like the default in the Availability report.
 //COMMENT: Would it be possible to get the list of existing categories and put it into a dropdown?  That might also allow multiple categories to be selected
